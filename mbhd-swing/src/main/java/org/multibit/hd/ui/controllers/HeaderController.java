@@ -131,8 +131,9 @@ public class HeaderController extends AbstractController {
       updateRemaining();
 
       // The alert structure has changed so inform the view
-      ViewEvents.fireAlertAddedEvent(alertModels.get(0));
-
+      if (!alertModels.isEmpty()) {
+        ViewEvents.fireAlertAddedEvent(alertModels.get(0));
+      }
     } else {
 
       // Use an empty event to signal that the event should be hidden

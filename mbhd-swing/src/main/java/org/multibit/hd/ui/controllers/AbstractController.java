@@ -20,7 +20,9 @@ public abstract class AbstractController {
     CoreServices.uiEventBus.register(this);
 
     // All controllers are registered for hardware events
-    HardwareWalletService.hardwareEventBus.register(this);
+    // this allows easier targeting of specific event state
+    // handling (e.g. alerts for attach/detach, wizards for PIN etc)
+    HardwareWalletService.hardwareWalletEventBus.register(this);
 
   }
 }

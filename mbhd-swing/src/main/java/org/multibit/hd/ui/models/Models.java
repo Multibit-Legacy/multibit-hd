@@ -4,7 +4,8 @@ import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.TransactionSeenEvent;
-import org.multibit.hd.hardware.core.events.HardwareWalletSystemEvent;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
@@ -146,16 +147,24 @@ public class Models {
   }
 
   /**
-   * @param hardwareWalletSystemEvent The hardware event
+   * @param event The hardware wallet event (e.g. SHOW_PIN_ENTRY etc)
    *
    * @return An alert model suitable for use for displaying the information, absent if the Bitcoin URI does not contain sufficient information
    */
-  public static AlertModel newHardwareWalletSystemAlertModel(HardwareWalletSystemEvent hardwareWalletSystemEvent) {
+  public static AlertModel newHardwareWalletAlertModel(HardwareWalletEvent event) {
 
-    switch (hardwareWalletSystemEvent.getMessageType()) {
-      case DEVICE_CONNECTED:
+    switch (event.getEventType()) {
+      case SHOW_DEVICE_READY:
+
+        String label = "";
+        if (event.getMessage().isPresent()) {
+          Features features = (Features) event.getMessage().get();
+          label=features.getLabel();
+        }
 
         // Provide action to allow user to enter PIN
+        // (required if device prompts when providing
+        // encrypted info to unlock wallet)
         JButton button = Buttons.newAlertPanelButton(new AbstractAction() {
           @Override
           public void actionPerformed(ActionEvent e) {
@@ -165,21 +174,16 @@ public class Models {
         }, MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);
 
         return Models.newAlertModel(
-          Languages.safeText(MessageKey.TREZOR_CONNECTED_ALERT, "Aardvark"),
+          Languages.safeText(MessageKey.TREZOR_CONNECTED_ALERT, label),
           RAGStatus.GREEN,
           button
         );
-      case DEVICE_DISCONNECTED:
+      case SHOW_DEVICE_DETACHED:
         return Models.newAlertModel(
           Languages.safeText(MessageKey.TREZOR_DISCONNECTED_ALERT),
           RAGStatus.AMBER
         );
-      case DEVICE_FAILURE:
-        return Models.newAlertModel(
-          Languages.safeText(MessageKey.TREZOR_FAILURE_ALERT),
-          RAGStatus.RED
-        );
-      case DEVICE_EOF:
+      case SHOW_DEVICE_FAILED:
         return Models.newAlertModel(
           Languages.safeText(MessageKey.TREZOR_FAILURE_ALERT),
           RAGStatus.RED

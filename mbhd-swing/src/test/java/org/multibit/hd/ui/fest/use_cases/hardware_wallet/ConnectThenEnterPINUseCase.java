@@ -1,8 +1,11 @@
 package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
+import com.google.common.base.Optional;
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
-import org.multibit.hd.hardware.core.messages.SystemMessageType;
+import org.multibit.hd.hardware.core.messages.Features;
+import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -26,8 +29,13 @@ public class ConnectThenEnterPINUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
+    Features features = new Features();
+    features.setLabel("Aardvark");
+
     // Simulate the insertion of a device
-    HardwareWalletEvents.fireSystemEvent(SystemMessageType.DEVICE_CONNECTED);
+    HardwareWalletEvents.fireHardwareWalletEvent(
+      HardwareWalletEventType.SHOW_DEVICE_READY,
+      (HardwareWalletMessage) Optional.of(features));
 
     // Allow time for the view to react
     pauseForViewReset();

@@ -25,6 +25,11 @@ import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.hardware.core.HardwareWalletClient;
+import org.multibit.hd.hardware.core.HardwareWalletService;
+import org.multibit.hd.hardware.core.wallets.HardwareWallets;
+import org.multibit.hd.hardware.trezor.clients.TrezorHardwareWalletClient;
+import org.multibit.hd.hardware.trezor.wallets.v1.TrezorV1UsbHardwareWallet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +91,11 @@ public class CoreServices {
   private static BitcoinNetworkService bitcoinNetworkService;
 
   /**
+   * Keep track of the hardware wallets
+   */
+  private static HardwareWalletService hardwareWalletService;
+
+  /**
    * Keeps track of all the contact services against hard and soft wallets
    */
   private static Map<WalletId, ContactService> contactServiceMap = Maps.newHashMap();
@@ -111,6 +121,21 @@ public class CoreServices {
     applicationEventService = new ApplicationEventService();
     securityCheckingService = new SecurityCheckingService();
     configurationService = new ConfigurationService();
+
+    // Use factory to statically bind the specific hardware wallet
+    // TODO Consider allowing relay clients here
+    TrezorV1UsbHardwareWallet wallet = HardwareWallets.newUsbInstance(
+      TrezorV1UsbHardwareWallet.class,
+      Optional.<Short>absent(),
+      Optional.<Short>absent(),
+      Optional.<String>absent()
+    );
+
+    // Wrap the hardware wallet in a suitable client to simplify message API
+    HardwareWalletClient client = new TrezorHardwareWalletClient(wallet);
+
+    // Wrap the client in a service for high level API suitable for downstream applications
+    hardwareWalletService = new HardwareWalletService(client);
 
   }
 
@@ -156,6 +181,9 @@ public class CoreServices {
     // Start security checking service
     securityCheckingService.start();
 
+    // Start the hardware service
+    hardwareWalletService.start();
+
   }
 
   /**
@@ -196,6 +224,7 @@ public class CoreServices {
 
             // Reset the existing services
             bitcoinNetworkService = null;
+            hardwareWalletService = null;
             contactServiceMap = Maps.newHashMap();
             walletServiceMap = Maps.newHashMap();
             historyServiceMap = Maps.newHashMap();
@@ -260,6 +289,14 @@ public class CoreServices {
   public static SecurityCheckingService getSecurityCheckingService() {
     log.trace("Get security checking service");
     return securityCheckingService;
+  }
+
+  /**
+   * @return The hardware wallet service singleton
+   */
+  public static HardwareWalletService getHardwareWalletService() {
+    log.trace("Get hardware wallet service");
+    return hardwareWalletService;
   }
 
   /**

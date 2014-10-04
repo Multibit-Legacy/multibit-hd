@@ -20,7 +20,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.*;
 import org.multibit.hd.core.store.TransactionInfo;
-import org.multibit.hd.hardware.core.events.HardwareWalletSystemEvent;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
@@ -40,10 +40,10 @@ import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsState;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
-import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
@@ -89,6 +89,9 @@ public class MainController extends AbstractController implements
 
   // Start with the assumption that it is fine to avoid annoying "everything is OK" alert
   private RAGStatus lastExchangeSeverity = RAGStatus.GREEN;
+
+  // Start with the assumption that it is fine to avoid annoying "device is detached" alert
+  private boolean isDetachRelevant = false;
 
   // Keep a thread pool for transaction status checking
   private static final ListeningExecutorService transactionCheckingExecutorService = SafeExecutors.newFixedThreadPool(10, "transaction-checking");
@@ -534,14 +537,31 @@ public class MainController extends AbstractController implements
    * @param event The event
    */
   @Subscribe
-  public void onHardwareWalletSystemEvent(final HardwareWalletSystemEvent event) {
+  public void onHardwareWalletEvent(final HardwareWalletEvent event) {
+
+    // Quick check for relevancy
+    switch (event.getEventType()) {
+      case SHOW_DEVICE_DETACHED:
+        if (!isDetachRelevant) {
+          // Ignore the detach since we've never been attached
+          return;
+        }
+        // Ensure we ignore the detach in the future
+        isDetachRelevant = false;
+        break;
+      case SHOW_DEVICE_READY:
+        // Now that we've been attached we want to trap detach later
+        isDetachRelevant = true;
+        break;
+    }
 
     // Ensure we return from this event quickly
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+
         // Attempt to create a suitable alert model
-        AlertModel alertModel = Models.newHardwareWalletSystemAlertModel(event);
+        AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
 
         ControllerEvents.fireAddAlertEvent(alertModel);
       }

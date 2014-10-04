@@ -12,7 +12,6 @@ import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.Coins;
-import org.multibit.hd.hardware.core.events.HardwareWalletSystemEvent;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -354,8 +353,4 @@ public class Formats {
 
   }
 
-
-  public static Optional<String> formatAlertMessage(HardwareWalletSystemEvent hardwareWalletSystemEvent) {
-    return null;
-  }
 }
