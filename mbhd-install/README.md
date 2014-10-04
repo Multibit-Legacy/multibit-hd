@@ -7,8 +7,9 @@ held under version control and so it is necessary to do some preparation before 
 
 ### Semi-automatic preparation
 
-The Ant script will automatically download and extract the correct JWrapper JAR for the version of MultiBit HD but it
-will not pull down the JRE-1.7 pack since the final goal is to have the `multibit.org` site providing the latest tested
+The Ant script will automatically download and extract the correct JWrapper JAR 
+for the version of MultiBit HD but it will not pull down the JRE-1.7 pack since 
+the final goal is to have the `multibit.org` site providing the latest tested
 JREs for each operating system.
 
 This script is controlled by the Maven POM.
@@ -18,15 +19,19 @@ This script is controlled by the Maven POM.
 The following files are essential
 
 * `jwrapper-000version.jar` should be copied into `mbhd-install` (automatic)
-* `mbhd-install/JRE-1.7` should contain the supported JREs by unzipping the provided JRE download from JWrapper (manual)
+* `mbhd-install/JRE-1.7` should contain the supported JREs by unzipping the
+ [provided JRE 1.7 ZIP download from JWrapper](http://www.jwrapper.com/download.html) (manual)
 
 All the above, and the derivative files that are produced, are git ignored.
 
+The `__MAC_OSX` contents can be safely removed.
+
 Later these JREs will be automatically downloaded over HTTPS from the main site.
 
-During the build process the JWrapper JAR will be extracted into a substantial collection of supporting structures that
-are git ignored. Among these is `lib/jwrapper_utils.jar` that provides the native code to manage the Bitcoin URI protocol 
-handler so that browsers can hand over to MultiBit HD.
+During the build process the JWrapper JAR will be extracted into a substantial 
+collection of supporting structures that are git ignored. Among these is 
+`jwrapperlib/jwrapper_utils.jar` that provides the native code to manage the Bitcoin 
+URI protocol handler so that browsers can hand over to MultiBit HD.
 
 ### The build command
 
@@ -36,14 +41,48 @@ Once the JREs are in place, the build command is
 mvn -Dinstaller=true clean install
 ```
 
-The first time this process is run it will take ages (typically 20mins) as `pack200` compresses large artifacts.
-Subsequent builds are a lot faster.
+The first time this process is run it will take ages (typically 20mins) as 
+`pack200` compresses large artifacts. Subsequent builds are a lot faster.
 
-The final installers are available in `mbhd-install/target` for upload to the `multibit.org` site.
+The final installers are available in `mbhd-install/target` for upload to 
+the `multibit.org` site.
+
+If you are going to be doing a lot of installer work then you can execute the
+above command within the `mbhd-install` module to save rebuilding the entire
+project every time.       
+
+## How the installer works
+
+JWrapper lives up to its name and provides an os-specific native wrapper around
+the MultiBit HD executable JAR. Into this wrapper are a number of hooks which
+allow for customisation during the installation process.
+ 
+These hooks are provided in a non-standard source tree (`src/main/jwrapper`)
+which have specific names to match their purpose within the JWrapper framework.
+
+To work on these classes you will need to have the `jwrapperlib/jwrapper_utils.jar` 
+(referenced earlier) present on the IDE classpath which requires a manual operation 
+since it is outside of Maven by design. You will also have to mark the directory 
+as a source tree. 
+
+### MultiBitHDLauncher.java
+
+This is the native entry point to the application as far as the operating system
+is concerned. It handles external events (such as Bitcoin URI clicks) and delegates
+to the main MultiBitHD class to start and stop the application.
+
+### MultiBitHDPostInstall.java
+
+After the application is installed, this class executes and performs any native
+operations such as updating the local system registry for protocol handling or
+other similar requirements.
+
+Once the installation has completed this class is not used again.
  
 ## Notes on various installers
 
-The choice of a robust installer has been a difficult one. Here are the notes that lead to the current situation.
+The choice of a robust installer has been a difficult one. Here are the notes 
+that lead to the current situation.
 
 ### JWrapper (the winner)
 
@@ -115,3 +154,5 @@ a standard JRE leaving it to developers to package their own.
 The JavaFX packager from Oracle has been hailed as the correct way to deploy a JavaFX application,
 but our experience has shown that it is very tricky to configure within a Maven build. Packaging a
 JRE with it leads to a huge download size and there are no facilities for OS-specific scripts.
+
+Later on we may revisit the JavaFX approach, but for now we're sticking with JWrapper.
