@@ -74,6 +74,12 @@ public enum BitcoinNetwork {
    * @return The current Bitcoin network parameters key
    */
   public static BitcoinNetwork current() {
+
+    if (Configurations.currentConfiguration == null) {
+      // We should only be in this situation during testing
+      return BitcoinNetwork.MAIN_NET;
+    }
+
     return BitcoinNetwork.of(
       Configurations
         .currentConfiguration
