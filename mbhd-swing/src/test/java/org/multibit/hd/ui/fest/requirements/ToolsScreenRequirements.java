@@ -2,14 +2,14 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.tools.ShowToolsScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.tools.about.ShowThenCancelAboutUseCase;
-import org.multibit.hd.ui.fest.use_cases.tools.change_password.ShowThenCancelChangePasswordUseCase;
-import org.multibit.hd.ui.fest.use_cases.tools.change_password.VerifyChangePasswordUseCase;
-import org.multibit.hd.ui.fest.use_cases.tools.empty_wallet.ShowThenCancelEmptyWalletUseCase;
-import org.multibit.hd.ui.fest.use_cases.tools.repair_wallet.ShowThenCancelRepairWalletUseCase;
-import org.multibit.hd.ui.fest.use_cases.tools.sign_message.ShowThenFinishSignMessageUseCase;
-import org.multibit.hd.ui.fest.use_cases.tools.verify_message.ShowThenFinishVerifyMessageUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.tools.ShowToolsScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.tools.about.ShowThenCancelAboutUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.tools.change_password.ShowThenCancelChangePasswordUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.tools.change_password.VerifyChangePasswordUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.tools.empty_wallet.ShowThenCancelEmptyWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.tools.repair_wallet.ShowThenCancelRepairWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.tools.sign_message.ShowThenFinishSignMessageUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.tools.verify_message.ShowThenFinishVerifyMessageUseCase;
 
 import java.util.Map;
 

@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.contacts.*;
+import org.multibit.hd.ui.fest.use_cases.sidebar.contacts.*;
 
 import java.util.Map;
 

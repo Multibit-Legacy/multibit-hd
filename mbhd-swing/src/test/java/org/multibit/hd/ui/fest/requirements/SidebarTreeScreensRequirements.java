@@ -2,14 +2,15 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.contacts.ShowContactsScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.exit.ShowExitScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.help.ShowHelpScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.history.ShowHistoryScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.payments.ShowPaymentsScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.send_request.ShowSendRequestScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.settings.ShowSettingsScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.tools.ShowToolsScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.SidebarAccessibilityUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.contacts.ShowContactsScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.exit.ShowExitScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.help.ShowHelpScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.history.ShowHistoryScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.payments.ShowPaymentsScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.send_request.ShowSendRequestScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.ShowSettingsScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.tools.ShowToolsScreenUseCase;
 
 import java.util.Map;
 
@@ -28,6 +29,9 @@ public class SidebarTreeScreensRequirements {
 
     Map<String,Object> parameters = Maps.newHashMap();
 
+    new SidebarAccessibilityUseCase(window).execute(parameters);
+
+    // Verify each screen shows
     new ShowSendRequestScreenUseCase(window).execute(parameters);
     new ShowPaymentsScreenUseCase(window).execute(parameters);
     new ShowContactsScreenUseCase(window).execute(parameters);

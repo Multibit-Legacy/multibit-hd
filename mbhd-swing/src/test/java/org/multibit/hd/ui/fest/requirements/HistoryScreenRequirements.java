@@ -2,14 +2,14 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.history.*;
+import org.multibit.hd.ui.fest.use_cases.sidebar.history.*;
 
 import java.util.Map;
 
 /**
  * <p>FEST Swing UI test to provide:</p>
  * <ul>
- * <li>Exercise the "contacts" screen to verify its wizards show correctly</li>
+ * <li>Exercise the "history" screen to verify its wizards show correctly</li>
  * </ul>
  *
  * @since 0.0.1
