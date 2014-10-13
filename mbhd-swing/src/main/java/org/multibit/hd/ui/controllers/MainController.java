@@ -20,8 +20,13 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.*;
 import org.multibit.hd.core.store.TransactionInfo;
+import org.multibit.hd.hardware.core.HardwareWalletClient;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.messages.Features;
+import org.multibit.hd.hardware.core.wallets.HardwareWallets;
+import org.multibit.hd.hardware.trezor.clients.TrezorHardwareWalletClient;
+import org.multibit.hd.hardware.trezor.wallets.v1.TrezorV1HidHardwareWallet;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
@@ -83,6 +88,11 @@ public class MainController extends AbstractController implements
 
   final ListeningExecutorService handoverExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-handover");
 
+  /**
+   * Hardware wallet USB monitor service
+   */
+  final ListeningExecutorService hardwareWalletMonitoringExecutorService = SafeExecutors.newSingleThreadExecutor("hardware-wallet-monitoring");
+
   // Keep track of other controllers for use after a preferences change
   private final HeaderController headerController;
   private final SidebarController sidebarController;
@@ -121,6 +131,12 @@ public class MainController extends AbstractController implements
     this.bitcoinURIListeningService = bitcoinURIListeningService;
     this.headerController = headerController;
     this.sidebarController = sidebarController;
+
+    // Subscribe to hardware wallet events
+    HardwareWalletService.hardwareWalletEventBus.register(this);
+
+    // Initialise the HardwareWalletService
+    initialiseHardwareWallet();
 
   }
 
@@ -541,6 +557,23 @@ public class MainController extends AbstractController implements
    */
   @Subscribe
   public void onHardwareWalletEvent(final HardwareWalletEvent event) {
+    log.debug("Received hardware event: '{}'", event.getEventType().name());
+
+    switch (event.getEventType()) {
+      case SHOW_DEVICE_FAILED:
+        // Treat as end of example
+        break;
+      case SHOW_DEVICE_DETACHED:
+        // Can simply wait for another device to be connected again
+        break;
+      case SHOW_DEVICE_READY:
+        // Get some information about the device
+        Features features = hardwareWalletService.get().getContext().getFeatures().get();
+        log.info("Features: {}", features);
+
+      default:
+        // Ignore
+    }
 
     // Quick check for relevancy
     switch (event.getEventType()) {
@@ -622,6 +655,43 @@ public class MainController extends AbstractController implements
     exchangeTickerService = Optional.of(CoreServices.newExchangeService(bitcoinConfiguration));
     exchangeTickerService.get().start();
 
+  }
+
+  /**
+   * Initialise listening to hardware wallet activity over USB
+   */
+  private void initialiseHardwareWallet() {
+    // Use a new thread to monitor the USB bus for hardware wallet activity
+    hardwareWalletMonitoringExecutorService.execute(new Runnable() {
+      @Override
+      public void run() {
+
+        // Use factory to statically bind the specific hardware wallet
+        TrezorV1HidHardwareWallet wallet = HardwareWallets.newUsbInstance(
+                TrezorV1HidHardwareWallet.class,
+                Optional.<Integer>absent(),
+                Optional.<Integer>absent(),
+                Optional.<String>absent()
+        );
+
+        // Wrap the hardware wallet in a suitable client to simplify message API
+        HardwareWalletClient client = new TrezorHardwareWalletClient(wallet);
+
+        // Wrap the client in a service for high level API suitable for downstream applications
+        hardwareWalletService = Optional.of(new HardwareWalletService(client));
+
+        // Register for the high level hardware wallet events
+        HardwareWalletService.hardwareWalletEventBus.register(this);
+
+        // Start the service
+        hardwareWalletService.get().start();
+
+        // This thread continues until shutdown
+        while (true) {
+
+        }
+      }
+    });
   }
 
   /**
