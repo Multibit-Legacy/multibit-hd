@@ -74,6 +74,14 @@ Of course, if you want to contribute coding effort or deeper code review and com
 
 As always, donations to the MultiBit address are welcome: [1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty](bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org).
 
+#### Where's the Trezor support ?
+
+We've begun the process of integrating the Trezor device through the [MultiBit Hardware](https://github.com/bitcoin-solutions/multibit-hardware) project. If you are a hardware 
+wallet developer, or are just interested to learn how the Trezor device works under the covers please watch this project.
+
+From now you should be able to attach your Trezor device and see an alert message providing information and a button to switch your current wallet over to one that tracks your
+Trezor device. All private keys remain on the Trezor device and associated contacts, payments and so on are keep encrypted in your wallet.
+
 #### Why not Java 8 ?
 
 At the time MBHD was being written (Q4 2013 - Q2 2014) Java 8 was not in production release and the sheer size of the packaged download was coming in at 150Mb (18x MultiBit Classic and 3x the standard Java 7 packaged footprints). That footprint alone would be sufficient to dramatically increase the cost of serving the application and deter people from downloading in countries where bandwidth is less available.
@@ -110,12 +118,6 @@ In Java 7 the Nimbus look and feel became integrated with the JDK. It provides a
 Using Nimbus ensures that we don't have this or similar problems.
 
 [Technical details on the default colours](http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary)
-
-#### Where's the Trezor support ?
-
-Due to the complexity of getting MultiBit HD working with a "soft" wallet we've moved the Trezor support into a
-different branch (`mbhd-trezor`) which is periodically updated from `develop`. Once the main MBHD code has finalised
-then we will be integrating Trezor into the main branch.
 
 #### I want an installer not this IDE
 
