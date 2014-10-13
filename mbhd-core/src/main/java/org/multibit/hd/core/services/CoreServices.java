@@ -268,8 +268,8 @@ public class CoreServices {
         // Wrap the client in a service for high level API suitable for downstream applications
         hardwareWalletService = new HardwareWalletService(client);
 
-      } catch (Exception e) {
-        log.warn("Could not create the hardware wallet.", e);
+      } catch (Throwable throwable) {
+        log.warn("Could not create the hardware wallet.", throwable);
         hardwareWalletService = null;
       }
     }
