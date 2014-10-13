@@ -29,7 +29,7 @@ import org.multibit.hd.hardware.core.HardwareWalletClient;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.wallets.HardwareWallets;
 import org.multibit.hd.hardware.trezor.clients.TrezorHardwareWalletClient;
-import org.multibit.hd.hardware.trezor.wallets.v1.TrezorV1UsbHardwareWallet;
+import org.multibit.hd.hardware.trezor.wallets.v1.TrezorV1HidHardwareWallet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -255,12 +255,11 @@ public class CoreServices {
     if (hardwareWalletService == null ) {
 
       try {
-        // Use factory to statically bind the specific hardware wallet
-        // TODO Consider allowing relay clients here via the bitcoin configuration
-        TrezorV1UsbHardwareWallet wallet = HardwareWallets.newUsbInstance(
-          TrezorV1UsbHardwareWallet.class,
-          Optional.<Short>absent(),
-          Optional.<Short>absent(),
+        // Use factory to statically bind a specific hardware wallet
+        TrezorV1HidHardwareWallet wallet = HardwareWallets.newUsbInstance(
+          TrezorV1HidHardwareWallet.class,
+          Optional.<Integer>absent(),
+          Optional.<Integer>absent(),
           Optional.<String>absent()
         );
         // Wrap the hardware wallet in a suitable client to simplify message API
