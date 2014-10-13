@@ -27,7 +27,7 @@ public class SidebarTreeScreensRequirements {
 
   public static void verifyUsing(FrameFixture window) {
 
-    Map<String,Object> parameters = Maps.newHashMap();
+    Map<String, Object> parameters = Maps.newHashMap();
 
     new SidebarAccessibilityUseCase(window).execute(parameters);
 
@@ -40,6 +40,5 @@ public class SidebarTreeScreensRequirements {
     new ShowSettingsScreenUseCase(window).execute(parameters);
     new ShowToolsScreenUseCase(window).execute(parameters);
     new ShowExitScreenUseCase(window).execute(parameters);
-
   }
 }

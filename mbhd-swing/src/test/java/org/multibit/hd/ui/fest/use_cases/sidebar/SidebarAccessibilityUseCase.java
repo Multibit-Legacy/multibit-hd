@@ -1,9 +1,11 @@
 package org.multibit.hd.ui.fest.use_cases.sidebar;
 
+import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
+import java.awt.event.KeyEvent;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -28,8 +30,7 @@ public class SidebarAccessibilityUseCase extends AbstractFestUseCase {
 
     assertThat(parameters).isNotNull();
 
-    // Selecting multi-wallet row 0 does not trigger detail view in FEST but works fine in app
-
+    // Start by selecting row 0
     window
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
@@ -41,37 +42,117 @@ public class SidebarAccessibilityUseCase extends AbstractFestUseCase {
       .button(MessageKey.SHOW_SEND_WIZARD.getKey())
       .requireVisible();
 
+    // Down to Payments
     window
-      .button(MessageKey.SHOW_REQUEST_WIZARD.getKey())
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_DOWN));
+    window
+      .table(MessageKey.PAYMENTS.getKey())
       .requireVisible();
 
-    // Change the selection away from Send/Request
+    // Down to Contacts
     window
       .tree(MessageKey.SIDEBAR_TREE.getKey())
-      .requireVisible()
-      .requireEnabled()
-      .selectRow(PAYMENTS_ROW);
-
-    // Expect the Payment screen to show (no Send/Request showing)
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_DOWN));
     window
-      .button(newNotShowingJButtonFixture(MessageKey.SHOW_SEND_WIZARD.getKey()));
+      .table(MessageKey.CONTACTS.getKey())
+      .requireVisible();
 
-    window
-      .button(newNotShowingJButtonFixture(MessageKey.SHOW_REQUEST_WIZARD.getKey()));
-
+    // Down to Help
     window
       .tree(MessageKey.SIDEBAR_TREE.getKey())
-      .requireVisible()
-      .requireEnabled()
-      .selectRow(SEND_REQUEST_ROW);
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_DOWN));
+    window
+      .button(MessageKey.VIEW_IN_EXTERNAL_BROWSER.getKey())
+      .requireVisible();
 
-    // Expect the Send/Request screen to show
+    // Down to History
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_DOWN));
+    window
+      .table(MessageKey.HISTORY.getKey())
+      .requireVisible();
+
+    // Down to Settings
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_DOWN));
+    window
+      .button(MessageKey.SHOW_LANGUAGE_WIZARD.getKey())
+      .requireVisible();
+
+    // Down to Tools
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_DOWN));
+    window
+      .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
+      .requireVisible();
+
+    // Down to Exit
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_DOWN));
+    window
+      .button(MessageKey.CANCEL.getKey())
+      .requireVisible()
+      .click();
+
+    // Up to Tools
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_UP));
+    window
+      .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
+      .requireVisible();
+
+    // Up to Settings
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_UP));
+    window
+      .button(MessageKey.SHOW_LANGUAGE_WIZARD.getKey())
+      .requireVisible();
+
+    // Up to History
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_UP));
+    window
+      .table(MessageKey.HISTORY.getKey())
+      .requireVisible();
+
+    // Up to Help
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_UP));
+    window
+      .button(MessageKey.VIEW_IN_EXTERNAL_BROWSER.getKey())
+      .requireVisible();
+
+    // Up to Contacts
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_UP));
+    window
+      .table(MessageKey.CONTACTS.getKey())
+      .requireVisible();
+
+    // Up to Payments
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_UP));
+    window
+      .table(MessageKey.PAYMENTS.getKey())
+      .requireVisible();
+
+    // Up to Send/Request
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_UP));
     window
       .button(MessageKey.SHOW_SEND_WIZARD.getKey())
-      .requireVisible();
-
-    window
-      .button(MessageKey.SHOW_REQUEST_WIZARD.getKey())
       .requireVisible();
 
   }

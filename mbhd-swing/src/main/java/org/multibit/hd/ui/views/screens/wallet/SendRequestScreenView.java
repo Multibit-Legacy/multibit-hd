@@ -248,8 +248,6 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
         displayRequestedPaymentsMaV.getView().createView();
         displayRequestedPaymentsMaV.getView().updateView();
 
-        sendBitcoin.requestFocusInWindow();
-
       }
     });
 
