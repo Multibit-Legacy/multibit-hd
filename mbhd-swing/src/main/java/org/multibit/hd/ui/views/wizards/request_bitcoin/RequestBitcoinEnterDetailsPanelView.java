@@ -19,6 +19,7 @@ import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
+import org.multibit.hd.core.utils.Addresses;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -196,7 +197,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     final PaymentRequestData paymentRequestData = new PaymentRequestData();
     paymentRequestData.setNote(notesTextArea.getText());
     paymentRequestData.setDate(DateTime.now());
-    paymentRequestData.setAddress(displayBitcoinAddressMaV.getModel().getValue());
+    paymentRequestData.setAddress(Addresses.parse(displayBitcoinAddressMaV.getModel().getValue()).get());
     paymentRequestData.setLabel(transactionLabel.getText());
     paymentRequestData.setAmountCoin(enterAmountMaV.getModel().getCoinAmount());
 

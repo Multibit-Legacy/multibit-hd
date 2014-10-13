@@ -28,7 +28,7 @@ public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequest
     columns[1] = paymentRequestData.getType() == null ? "" : paymentRequestData.getType().toString();
 
     // Bitcoin address
-    columns[2] = paymentRequestData.getAddress() == null ? "" : paymentRequestData.getAddress();
+    columns[2] = paymentRequestData.getAddress() == null ? "" : paymentRequestData.getAddress().toString();
 
     // Description
     columns[3] = paymentRequestData.getDescription() == null ? "" : paymentRequestData.getDescription();

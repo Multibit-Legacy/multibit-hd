@@ -6,7 +6,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.config.BitcoinNetwork;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.Recipient;

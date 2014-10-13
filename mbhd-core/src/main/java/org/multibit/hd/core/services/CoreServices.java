@@ -12,7 +12,7 @@ import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
-import org.multibit.hd.core.config.BitcoinNetwork;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
@@ -93,7 +93,7 @@ public class CoreServices {
   /**
    * Keep track of the hardware wallets
    */
-  private static HardwareWalletService hardwareWalletService;
+  private static Optional<HardwareWalletService> hardwareWalletService = Optional.absent();
 
   /**
    * Keeps track of all the contact services against hard and soft wallets
@@ -166,11 +166,6 @@ public class CoreServices {
     // Start security checking service
     securityCheckingService.start();
 
-    // Attempt to start the hardware wallet service
-    if (getOrCreateHardwareWalletService() != null) {
-      hardwareWalletService.start();
-    }
-
   }
 
   /**
@@ -204,8 +199,8 @@ public class CoreServices {
 
             log.info("Applying soft shutdown. Waiting for processes to clean up...");
 
-            if (hardwareWalletService != null) {
-              hardwareWalletService.stopAndWait();
+            if (hardwareWalletService.isPresent()) {
+              hardwareWalletService.get().stopAndWait();
             }
 
             // Provide a short delay while modules deal with the ShutdownEvent
@@ -249,10 +244,10 @@ public class CoreServices {
   /**
    * @return Create a new hardware wallet service or return the extant one
    */
-  public static synchronized HardwareWalletService getOrCreateHardwareWalletService() {
+  public static synchronized Optional<HardwareWalletService> getOrCreateHardwareWalletService() {
 
     log.trace("Get hardware wallet service");
-    if (hardwareWalletService == null ) {
+    if (!hardwareWalletService.isPresent()) {
 
       try {
         // Use factory to statically bind a specific hardware wallet
@@ -266,11 +261,11 @@ public class CoreServices {
         HardwareWalletClient client = new TrezorHardwareWalletClient(wallet);
 
         // Wrap the client in a service for high level API suitable for downstream applications
-        hardwareWalletService = new HardwareWalletService(client);
+        hardwareWalletService = Optional.of(new HardwareWalletService(client));
 
       } catch (Throwable throwable) {
         log.warn("Could not create the hardware wallet.", throwable);
-        hardwareWalletService = null;
+        hardwareWalletService = Optional.absent();
       }
     }
 

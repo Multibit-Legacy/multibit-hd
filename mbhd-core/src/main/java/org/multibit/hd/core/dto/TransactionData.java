@@ -1,5 +1,6 @@
 package org.multibit.hd.core.dto;
 
+import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.TransactionConfidence;
 import com.google.common.base.Optional;
@@ -12,7 +13,6 @@ import java.util.Collection;
  * <p>Data object to provide the following to Payments display:</p>
  * <ul>
  * <li>Contains transaction relevant data</li>
- * <li>Immutable</li>
  * </ul>
  *
  * @since 0.0.1
@@ -37,16 +37,16 @@ public class TransactionData implements PaymentData {
 
   private final PaymentType type;
 
+  private final boolean coinBase;
+
   private String description;
 
   private String note;
 
-  private final boolean coinBase;
-
   /**
    * The transaction in its raw form (toStringed)
    */
-  private String rawTransaction;
+  private final String rawTransaction;
 
   /**
    * The size (in bytes)of the transaction
@@ -56,7 +56,7 @@ public class TransactionData implements PaymentData {
   /**
    * The bitcoin addresses in this wallet that the transaction sends bitcoin to
    */
-  private Collection<String> outputAddresses;
+  private final Collection<Address> outputAddresses;
 
   /**
    * @param transactionId     The transaction ID
@@ -75,10 +75,23 @@ public class TransactionData implements PaymentData {
    * @param size              The size in bytes
    * @param isMock            True if this is a mock (CSV export header)
    */
-  public TransactionData(String transactionId, DateTime date, PaymentStatus statusWithOrdinal,
-                         Coin amountBTC, FiatPayment amountFiat, Optional<Coin> miningFee, Optional<Coin> clientFee,
-                         TransactionConfidence.ConfidenceType confidenceType, PaymentType paymentType, String description,
-                         boolean isCoinbase, Collection<String> outputAddresses, String rawTransaction, int size, boolean isMock) {
+  public TransactionData(
+    String transactionId,
+    DateTime date,
+    PaymentStatus statusWithOrdinal,
+    Coin amountBTC,
+    FiatPayment amountFiat,
+    Optional<Coin> miningFee,
+    Optional<Coin> clientFee,
+    TransactionConfidence.ConfidenceType confidenceType,
+    PaymentType paymentType,
+    String description,
+    boolean isCoinbase,
+    Collection<Address> outputAddresses,
+    String rawTransaction,
+    int size,
+    boolean isMock
+  ) {
 
     // Apply preconditions if being used in a real environment
     if (!isMock) {
@@ -131,24 +144,50 @@ public class TransactionData implements PaymentData {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
 
     TransactionData that = (TransactionData) o;
 
-    if (statusWithOrdinal != that.statusWithOrdinal) return false;
-    if (!amountBTC.equals(that.amountBTC)) return false;
-    if (amountFiat != null) {
-      if (!amountFiat.equals(that.amountFiat)) return false;
+    if (statusWithOrdinal != that.statusWithOrdinal) {
+      return false;
     }
-    if (confidenceType != that.confidenceType) return false;
-    if (!miningFee.equals(that.miningFee)) return false;
-    if (!clientFee.equals(that.clientFee)) return false;
-    if (!transactionId.equals(that.transactionId)) return false;
-    if (!type.equals(that.type)) return false;
-    if (!date.equals(that.date)) return false;
-    if (!description.equals(that.description)) return false;
-    if (!note.equals(that.note)) return false;
+    if (!amountBTC.equals(that.amountBTC)) {
+      return false;
+    }
+    if (amountFiat != null) {
+      if (!amountFiat.equals(that.amountFiat)) {
+        return false;
+      }
+    }
+    if (confidenceType != that.confidenceType) {
+      return false;
+    }
+    if (!miningFee.equals(that.miningFee)) {
+      return false;
+    }
+    if (!clientFee.equals(that.clientFee)) {
+      return false;
+    }
+    if (!transactionId.equals(that.transactionId)) {
+      return false;
+    }
+    if (!type.equals(that.type)) {
+      return false;
+    }
+    if (!date.equals(that.date)) {
+      return false;
+    }
+    if (!description.equals(that.description)) {
+      return false;
+    }
+    if (!note.equals(that.note)) {
+      return false;
+    }
 
     return true;
   }
@@ -241,7 +280,7 @@ public class TransactionData implements PaymentData {
     return coinBase;
   }
 
-  public Collection<String> getOutputAddresses() {
+  public Collection<Address> getOutputAddresses() {
     return outputAddresses;
   }
 

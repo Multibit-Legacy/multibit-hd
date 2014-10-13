@@ -239,7 +239,9 @@ public enum MessageKey {
   ENTER_ACCESS_CODE("enter_access_code"),
   ENTER_ACCESS_CODE_TOOLTIP("enter_access_code_tooltip"),
   EXCHANGE_RATE_LABEL("exchange_rate_label"),
+
   NOT_AVAILABLE("not_available"),
+
   NO_CLIENT_FEE_WAS_ADDED("no_client_fee_was_added"),
 
   ALERT_SOUND("alert_sound"),

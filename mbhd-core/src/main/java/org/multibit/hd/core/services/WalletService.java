@@ -86,7 +86,7 @@ public class WalletService {
   /**
    * The payment requests in a map, indexed by the bitcoin address
    */
-  private final Map<String, PaymentRequestData> paymentRequestMap = Maps.newHashMap();
+  private final Map<Address, PaymentRequestData> paymentRequestMap = Maps.newHashMap();
 
   /**
    * The additional transaction information, in the form of a map, index by the transaction hash
@@ -263,13 +263,19 @@ public class WalletService {
       boolean isRawTransactionMatched = false;
 
       if (paymentData instanceof PaymentRequestData) {
+
         PaymentRequestData paymentRequestData = (PaymentRequestData) paymentData;
         isQrCodeLabelMatched = paymentRequestData.getLabel().toLowerCase().contains(lowerQuery);
-        isPaymentAddressMatched = paymentRequestData.getAddress().toLowerCase().contains(lowerQuery);
+
+        // Exact match only
+        isPaymentAddressMatched = paymentRequestData.getAddress().toString().equals(query);
+
       } else if (paymentData instanceof TransactionData) {
+
         TransactionData transactionData = (TransactionData) paymentData;
         isOutputAddressMatched = Joiner.on(" ").join(transactionData.getOutputAddresses()).toLowerCase().contains(lowerQuery);
         isRawTransactionMatched = transactionData.getRawTransaction().toLowerCase().contains(lowerQuery);
+
       }
       if (isDescriptionMatched
         || isNoteMatched
@@ -354,7 +360,7 @@ public class WalletService {
       e1.printStackTrace();
     }
 
-    List<String> outputAddresses = calculateOutputAddresses(transaction);
+    List<Address> outputAddresses = calculateOutputAddresses(transaction);
 
     // Create the DTO from the raw transaction info
     TransactionData transactionData = new TransactionData(
@@ -520,13 +526,12 @@ public class WalletService {
     return description;
   }
 
-  private List<String> calculateOutputAddresses(Transaction transaction) {
-    List<String> outputAddresses = Lists.newArrayList();
+  private List<Address> calculateOutputAddresses(Transaction transaction) {
+    List<Address> outputAddresses = Lists.newArrayList();
 
     if (transaction.getOutputs() != null) {
       for (TransactionOutput transactionOutput : transaction.getOutputs()) {
-        String outputAddress = transactionOutput.getScriptPubKey().getToAddress(networkParameters).toString();
-        outputAddresses.add(outputAddress);
+        outputAddresses.add(transactionOutput.getScriptPubKey().getToAddress(networkParameters));
       }
     }
 
@@ -765,7 +770,7 @@ public class WalletService {
     List<PaymentRequestData> paymentRequestDataList = Lists.newArrayList();
 
     if (transactionData != null && transactionData.getOutputAddresses() != null) {
-      for (String address : transactionData.getOutputAddresses()) {
+      for (Address address : transactionData.getOutputAddresses()) {
         PaymentRequestData paymentRequestData = paymentRequestMap.get(address);
         if (paymentRequestData != null) {
           // This transaction funds this payment address

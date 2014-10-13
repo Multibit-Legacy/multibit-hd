@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
@@ -9,7 +8,6 @@ import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.BitcoinConfiguration;
-import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.CoreMessageKey;
@@ -212,7 +210,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       // Display in the system timezone
       dateValue.setText(LocalisedDateUtils.formatFriendlyDateLocal(date));
 
-      displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(paymentRequestData.getAddress());
+      displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(paymentRequestData.getAddress().toString());
 
       qrCodeLabelValue.setText(paymentRequestData.getLabel());
 
@@ -277,7 +275,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
         PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
 
-        String bitcoinAddress = paymentRequestData.getAddress();
+        Address bitcoinAddress = paymentRequestData.getAddress();
         Coin coin = paymentRequestData.getAmountCoin();
         String label = paymentRequestData.getLabel();
 
@@ -299,31 +297,4 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     };
   }
 
-  /**
-   * @return A new action for opening the sign message wizard with the shown address
-   */
-  private Action getShowSignMessageWizardAction() {
-    // Open the sign message wizard
-    return new AbstractAction() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-
-        PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
-
-        String bitcoinAddressString = paymentRequestData.getAddress();
-        try {
-          Address bitcoinAddress = new Address(BitcoinNetwork.current().get(), bitcoinAddressString);
-
-          // This does not work - main controller needs to do this
-          //Panels.showLightBox(Wizards.newSignMessageWizard(bitcoinAddress).getWizardScreenHolder());
-          log.debug("Want to open sign message for the address '" + bitcoinAddressString + "'");
-
-        } catch (AddressFormatException afe) {
-          afe.printStackTrace();
-        }
-      }
-
-    };
-  }
 }

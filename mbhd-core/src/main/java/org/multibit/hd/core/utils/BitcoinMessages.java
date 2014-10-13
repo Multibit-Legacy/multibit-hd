@@ -5,7 +5,6 @@ import com.google.bitcoin.core.AddressFormatException;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 
 import java.util.List;

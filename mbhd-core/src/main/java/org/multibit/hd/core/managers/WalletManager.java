@@ -26,7 +26,7 @@ import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.brit.services.TransactionConfidenceSentBySelfProvider;
 import org.multibit.hd.brit.services.TransactionSentBySelfProvider;
 import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.config.BitcoinNetwork;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;

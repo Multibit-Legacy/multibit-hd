@@ -18,6 +18,7 @@
 
 package org.multibit.hd.core.store;
 
+import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -27,6 +28,7 @@ import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.protobuf.MBHDPaymentsProtos;
+import org.multibit.hd.core.utils.Addresses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,8 +140,14 @@ public class PaymentsProtobufSerializer {
     List<MBHDPaymentsProtos.PaymentRequest> paymentRequestProtos = paymentsProto.getPaymentRequestList();
     if (paymentRequestProtos != null) {
       for (MBHDPaymentsProtos.PaymentRequest paymentRequestProto : paymentRequestProtos) {
+
         PaymentRequestData paymentRequestData = new PaymentRequestData();
-        paymentRequestData.setAddress(paymentRequestProto.getAddress());
+        Optional<Address> address = Addresses.parse(paymentRequestProto.getAddress());
+        if (address.isPresent()) {
+          paymentRequestData.setAddress(address.get());
+          log.warn("Failed to parse address: '{}'", paymentRequestProto.getAddress());
+        }
+
         if (paymentRequestProto.hasLabel()) {
           paymentRequestData.setLabel(paymentRequestProto.getLabel());
         }
@@ -299,9 +307,11 @@ public class PaymentsProtobufSerializer {
     MBHDPaymentsProtos.PaymentRequest.Builder paymentRequestBuilder = MBHDPaymentsProtos.PaymentRequest.newBuilder();
 
     if (paymentRequestData != null) {
-      paymentRequestBuilder.setAddress(paymentRequestData.getAddress() == null ? "" : paymentRequestData.getAddress());
+
+      paymentRequestBuilder.setAddress(paymentRequestData.getAddress() == null ? "" : paymentRequestData.getAddress().toString());
       paymentRequestBuilder.setNote(paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote());
       paymentRequestBuilder.setAmountBTC(paymentRequestData.getAmountCoin() == null ? 0 : paymentRequestData.getAmountCoin().longValue());
+
       if (paymentRequestData.getDate() != null) {
         paymentRequestBuilder.setDate(paymentRequestData.getDate().getMillis());
       }

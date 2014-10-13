@@ -1,6 +1,7 @@
 package org.multibit.hd.core.services;
 
 import com.google.bitcoin.core.Address;
+import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.exceptions.ContactsSaveException;
@@ -64,7 +65,7 @@ public interface ContactService {
    *
    * @return The single matching contact if present
    */
-  com.google.common.base.Optional<Contact> filterContactsForSingleMatch(String query, boolean excludeNotPayable);
+  Optional<Contact> filterContactsForSingleMatch(String query, boolean excludeNotPayable);
 
   /**
    * @param selectedContacts The selected contacts to add to the store

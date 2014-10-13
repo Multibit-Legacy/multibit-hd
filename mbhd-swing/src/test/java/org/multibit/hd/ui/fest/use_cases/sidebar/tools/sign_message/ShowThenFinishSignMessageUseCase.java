@@ -3,7 +3,7 @@ package org.multibit.hd.ui.fest.use_cases.sidebar.tools.sign_message;
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.crypto.DeterministicKey;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.core.config.BitcoinNetwork;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.SignMessageResult;
 import org.multibit.hd.core.managers.WalletManager;

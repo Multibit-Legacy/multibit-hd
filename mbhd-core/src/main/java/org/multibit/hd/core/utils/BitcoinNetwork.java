@@ -1,7 +1,8 @@
-package org.multibit.hd.core.config;
+package org.multibit.hd.core.utils;
 
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.params.MainNetParams;
+import org.multibit.hd.core.config.Configurations;
 
 import java.util.Locale;
 
@@ -14,7 +15,6 @@ import java.util.Locale;
  * @since 0.0.1
  *  
  */
-// TODO (GR) Move to utils package
 public enum BitcoinNetwork {
 
   /**

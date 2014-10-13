@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.core.config.BitcoinNetwork;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.DocumentMaxLengthFilter;
@@ -108,37 +108,37 @@ public class TextBoxes {
   }
 
   /**
-    * @param rows    The number of rows (normally 6)
-    * @param columns The number of columns (normally 60)
-    *
-    * @return A new read only text field with default theme
-    */
-   public static JTextArea newTextArea(int rows, int columns) {
+   * @param rows    The number of rows (normally 6)
+   * @param columns The number of columns (normally 60)
+   *
+   * @return A new read only text field with default theme
+   */
+  public static JTextArea newTextArea(int rows, int columns) {
 
-     JTextArea textArea = new JTextArea(rows, columns);
+    JTextArea textArea = new JTextArea(rows, columns);
 
-     // Set the theme
-     textArea.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
-     textArea.setBackground(Themes.currentTheme.dataEntryBackground());
+    // Set the theme
+    textArea.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
+    textArea.setBackground(Themes.currentTheme.dataEntryBackground());
 
-     textArea.setOpaque(false);
+    textArea.setOpaque(false);
 
-     // Ensure line wrapping occurs correctly
-     textArea.setLineWrap(true);
-     textArea.setWrapStyleWord(true);
+    // Ensure line wrapping occurs correctly
+    textArea.setLineWrap(true);
+    textArea.setWrapStyleWord(true);
 
-     // Ensure TAB transfers focus
-     AbstractAction transferFocus = new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         ((Component) e.getSource()).transferFocus();
-       }
-     };
-     textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
-     textArea.getActionMap().put("transferFocus", transferFocus);
+    // Ensure TAB transfers focus
+    AbstractAction transferFocus = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        ((Component) e.getSource()).transferFocus();
+      }
+    };
+    textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
+    textArea.getActionMap().put("transferFocus", transferFocus);
 
-     return textArea;
+    return textArea;
 
-   }
+  }
 
   /**
    * @param listener The document listener for detecting changes to the content
@@ -182,22 +182,22 @@ public class TextBoxes {
   }
 
   /**
-    * @return A new "enter QR code label" text field
-    */
-   public static JTextField newEnterQRCodeLabel() {
+   * @return A new "enter QR code label" text field
+   */
+  public static JTextField newEnterQRCodeLabel() {
 
-     JTextField textField = newTextField(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
+    JTextField textField = newTextField(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
 
-     // Ensure it is accessible
-     AccessibilityDecorator.apply(textField, MessageKey.QR_CODE_LABEL, MessageKey.QR_CODE_LABEL_TOOLTIP);
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.QR_CODE_LABEL, MessageKey.QR_CODE_LABEL_TOOLTIP);
 
-     // Limit the length of the underlying document
-     DefaultStyledDocument doc = new DefaultStyledDocument();
-     doc.setDocumentFilter(new DocumentMaxLengthFilter(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH));
-     textField.setDocument(doc);
+    // Limit the length of the underlying document
+    DefaultStyledDocument doc = new DefaultStyledDocument();
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH));
+    textField.setDocument(doc);
 
-     return textField;
-   }
+    return textField;
+  }
 
   /**
    * @return A new "enter tag" text field
@@ -343,6 +343,20 @@ public class TextBoxes {
     textField.setText(bitcoinAddress);
 
     return textField;
+  }
+
+  /**
+   * @return A new "display recipient Bitcoin addresses" multi-line text field
+   */
+  public static JTextArea newDisplayRecipientBitcoinAddresses() {
+
+    // 3 rows should be sufficient to cover all transactions from us
+    JTextArea textArea = newReadOnlyTextArea(3, 34);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textArea, MessageKey.RECIPIENT, MessageKey.RECIPIENT_TOOLTIP);
+
+    return textArea;
   }
 
   /**
