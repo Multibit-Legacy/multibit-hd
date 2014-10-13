@@ -24,8 +24,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   private Semaphore done = new Semaphore(0);
   private boolean caughtUp = false;
 
-  //private int numberOfBlocksAtStart = -1;
-  //private int downloadPercent = 0;
   private int numberOfConnectedPeers = 0;
 
   // Start with peer count suppression until blocks start to arrive
@@ -38,25 +36,27 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
     log.trace("Number of blocks left = {}", blocksLeft);
 
-    if (caughtUp)
-          return;
+    if (caughtUp) {
+      return;
+    }
 
-      if (blocksLeft == 0) {
-          caughtUp = true;
-          doneDownload();
-          done.release();
+    if (blocksLeft == 0) {
+      caughtUp = true;
+      doneDownload();
+      done.release();
+    }
+
+    if (blocksLeft < 0 || originalBlocksLeft <= 0) {
+      return;
+    }
+
+    double pct = 100.0 - (100.0 * (blocksLeft / (double) originalBlocksLeft));
+    if ((int) pct != lastPercent) {
+      if (block != null) {
+        progress(pct, blocksLeft, new Date(block.getTimeSeconds() * 1000));
       }
-
-      if (blocksLeft < 0 || originalBlocksLeft <= 0)
-          return;
-
-      double pct = 100.0 - (100.0 * (blocksLeft / (double) originalBlocksLeft));
-      if ((int) pct != lastPercent) {
-        if (block != null) {
-          progress(pct, blocksLeft, new Date(block.getTimeSeconds() * 1000));
-        }
-        lastPercent = (int) pct;
-      }
+      lastPercent = (int) pct;
+    }
 
     // Determine if peer count message should be suppressed
     // (avoids UI confusion between synchronizing and peer count)
@@ -82,13 +82,14 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     startDownload(blocksLeft);
     // Only mark this the first time, because this method can be called more than once during a chain download
     // if we switch peers during it.
-    if (originalBlocksLeft == -1)
-        originalBlocksLeft = blocksLeft;
-    else
-        log.info("Chain download switched to {}", peer);
+    if (originalBlocksLeft == -1) {
+      originalBlocksLeft = blocksLeft;
+    } else {
+      log.info("Chain download switched to {}", peer);
+    }
     if (blocksLeft == 0) {
-        doneDownload();
-        done.release();
+      doneDownload();
+      done.release();
     }
 
     // Reset the number of blocks at the start of the download
@@ -152,7 +153,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
     // Loop through all the wallets, seeing if the transaction is relevant and adding them as pending if so.
     if (transaction != null) {
-      // TODO - want to iterate over all open wallets
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
       if (currentWalletSummary.isPresent()) {
         if (currentWalletSummary.get() != null) {
@@ -163,7 +163,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
                 if (!(transaction.isTimeLocked() && transaction.getConfidence().getSource() != TransactionConfidence.Source.SELF)) {
                   if (currentWallet.getTransaction(transaction.getHash()) == null) {
 
-                    log.debug("MultiBitHD adding a new pending transaction for the wallet '{}'\n{}",
+                    log.debug(
+                      "MultiBitHD adding a new pending transaction for the wallet '{}'\n{}",
                       currentWalletSummary.get().getWalletId(),
                       transaction.toString()
                     );
@@ -194,35 +195,19 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   }
 
   /**
-   * <p>Calculate an appropriate download percent</p>
-   *
-   * @param blocksLeft The number of blocks left to download
-   */
-//  private void updateDownloadPercent(int blocksLeft) {
-//
-//    if (numberOfBlocksAtStart == -1) {
-//      // We don't have a number of blocks at the start so count down from the blocksLeft figure
-//      numberOfBlocksAtStart = blocksLeft;
-//    }
-//
-//    if (blocksLeft == 0 && numberOfBlocksAtStart == 0) {
-//      // Nothing to download so we are finished
-//      downloadPercent = 100;
-//    } else {
-//      downloadPercent = (int) ((1 - ((double) blocksLeft / numberOfBlocksAtStart)) * 100);
-//    }
-//  }
-
-
-  /**
    * Called when download progress is made.
    *
    * @param pct  the percentage of chain downloaded, estimated
    * @param date the date of the last block downloaded
    */
   protected void progress(double pct, int blocksSoFar, Date date) {
-      log.info(String.format("Chain download %d%% done with %d blocks to go, block date %s", (int) pct,
-              blocksSoFar, DateFormat.getDateTimeInstance().format(date)));
+    log.trace(
+      String.format(
+        "Chain download %d%% done with %d blocks to go, block date %s",
+        (int) pct,
+        blocksSoFar,
+        DateFormat.getDateTimeInstance().format(date))
+    );
   }
 
   /**
@@ -231,9 +216,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    * @param blocks the number of blocks to download, estimated
    */
   protected void startDownload(int blocks) {
-      if (blocks > 0 && originalBlocksLeft == -1)
-          log.info("Downloading block chain of size " + blocks + ". " +
-                  (blocks > 1000 ? "This may take a while." : ""));
 
   }
 
@@ -247,7 +229,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    * Wait for the chain to be downloaded.
    */
   public void await() throws InterruptedException {
-      done.acquire();
+    done.acquire();
   }
 }
 
