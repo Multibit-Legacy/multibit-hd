@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.components.text_fields;
 
 import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -33,18 +32,16 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
   private final Color validColor = Themes.currentTheme.dataEntryBackground();
 
   private final ContactService contactService;
-  private final NetworkParameters networkParameters;
 
   /**
    * @param contactService    The contact service for the current wallet
-   * @param networkParameters The network parameters
+   *
    */
-  public ThemeAwareRecipientInputVerifier(ContactService contactService, NetworkParameters networkParameters) {
+  public ThemeAwareRecipientInputVerifier(ContactService contactService) {
 
     Preconditions.checkNotNull(contactService, "'contactService' must be present");
 
     this.contactService = contactService;
-    this.networkParameters = networkParameters;
 
   }
 
@@ -88,6 +85,9 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
 
               textField.setText(contact.getName());
               textField.setRecipient(Optional.of(recipient));
+
+              // Validated as a recipient
+              isValid = true;
 
             }
           }

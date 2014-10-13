@@ -56,7 +56,7 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
     editor.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
 
     // Validate as a Contact with Bitcoin address, or a direct Bitcoin address
-    final ThemeAwareRecipientInputVerifier verifier = new ThemeAwareRecipientInputVerifier(contactService, networkParameters);
+    final ThemeAwareRecipientInputVerifier verifier = new ThemeAwareRecipientInputVerifier(contactService);
     editor.setInputVerifier(verifier);
 
     editor.getDocument().addDocumentListener(new DocumentListener() {

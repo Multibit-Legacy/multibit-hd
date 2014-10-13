@@ -128,14 +128,6 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
   }
 
   @Override
-  public void fireInitialStateViewEvents() {
-
-    // Send button starts off enabled (nothing to confirm besides values)
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
-
-  }
-
-  @Override
   public boolean beforeShow() {
 
     Configuration configuration = Configurations.currentConfiguration;
@@ -200,6 +192,10 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
       @Override
       public void run() {
         getCancelButton().requestFocusInWindow();
+        // Enable the Send button after showing since there is nothing to stop confirmation
+        // It should start disabled to avoid double click skipping the confirmation
+        ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+
       }
     });
 

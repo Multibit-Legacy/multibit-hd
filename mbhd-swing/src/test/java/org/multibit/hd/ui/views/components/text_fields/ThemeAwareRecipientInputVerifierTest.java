@@ -50,7 +50,7 @@ public class ThemeAwareRecipientInputVerifierTest {
 
     JComboBox<Recipient> comboBox = ComboBoxes.newRecipientComboBox(contactService, BitcoinNetwork.current().get());
 
-    ThemeAwareRecipientInputVerifier testObject = new ThemeAwareRecipientInputVerifier(contactService, BitcoinNetwork.current().get());
+    ThemeAwareRecipientInputVerifier testObject = new ThemeAwareRecipientInputVerifier(contactService);
 
     RecipientComboBoxEditor.RecipientComboBoxTextField comboEditor = ((RecipientComboBoxEditor.RecipientComboBoxTextField) comboBox.getEditor().getEditorComponent());
 
@@ -96,7 +96,7 @@ public class ThemeAwareRecipientInputVerifierTest {
 
     JComboBox<Recipient> comboBox = ComboBoxes.newRecipientComboBox(contactService, BitcoinNetwork.current().get());
 
-    ThemeAwareRecipientInputVerifier testObject = new ThemeAwareRecipientInputVerifier(contactService, BitcoinNetwork.current().get());
+    ThemeAwareRecipientInputVerifier testObject = new ThemeAwareRecipientInputVerifier(contactService);
 
     RecipientComboBoxEditor.RecipientComboBoxTextField comboEditor = ((RecipientComboBoxEditor.RecipientComboBoxTextField) comboBox.getEditor().getEditorComponent());
 
