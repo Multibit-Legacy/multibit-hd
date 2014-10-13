@@ -18,14 +18,15 @@
 
 package org.multibit.hd.core.store;
 
+import com.google.bitcoin.core.Address;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.protobuf.MBHDContactsProtos;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.multibit.hd.core.utils.Addresses;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,8 +54,6 @@ import java.util.UUID;
  * <p>Based on the original work by Miron Cuperman for the Bitcoinj project</p>
  */
 public class ContactsProtobufSerializer {
-
-  private static final Logger log = LoggerFactory.getLogger(ContactsProtobufSerializer.class);
 
   public ContactsProtobufSerializer() {
   }
@@ -85,10 +84,11 @@ public class ContactsProtobufSerializer {
   }
 
   private static MBHDContactsProtos.Contact makeContactProto(Contact contact) {
+
     MBHDContactsProtos.Contact.Builder contactBuilder = MBHDContactsProtos.Contact.newBuilder();
     contactBuilder.setId(contact.getId().toString());
     contactBuilder.setName(contact.getName());
-    contactBuilder.setBitcoinAddress(contact.getBitcoinAddress().or(""));
+    contactBuilder.setBitcoinAddress(contact.getBitcoinAddress().isPresent() ? contact.getBitcoinAddress().get().toString() : "");
     contactBuilder.setEmail(contact.getEmail().or(""));
     contactBuilder.setImagePath(contact.getImagePath().or(""));
     contactBuilder.setExtendedPublicKey(contact.getExtendedPublicKey().or(""));
@@ -157,7 +157,8 @@ public class ContactsProtobufSerializer {
         Contact contact = new Contact(id, name);
 
         contact.setEmail(contactProto.getEmail());
-        contact.setBitcoinAddress(contactProto.getBitcoinAddress());
+        Optional<Address> address = Addresses.parse(contactProto.getBitcoinAddress());
+        contact.setBitcoinAddress(address.orNull());
         contact.setImagePath(contactProto.getImagePath());
         contact.setExtendedPublicKey(contactProto.getExtendedPublicKey());
         contact.setNotes(contactProto.getNotes());

@@ -1,8 +1,6 @@
 package org.multibit.hd.ui.views.components.auto_complete;
 
 import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Strings;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.Recipient;
@@ -29,11 +27,9 @@ public class AutoCompleteFilters {
 
   /**
    * @param contactService    The contact service to use for queries
-   * @param networkParameters The network parameters
-   *
    * @return An auto-complete filter linked to the Contact API
    */
-  public static AutoCompleteFilter<Recipient> newRecipientFilter(final ContactService contactService, final NetworkParameters networkParameters) {
+  public static AutoCompleteFilter<Recipient> newRecipientFilter(final ContactService contactService) {
 
     return new AutoCompleteFilter<Recipient>() {
 
@@ -71,17 +67,11 @@ public class AutoCompleteFilters {
 
         int i = 0;
         for (Contact contact : contacts) {
-          String address = null;
-          try {
-            address = contact.getBitcoinAddress().orNull();
-            Address bitcoinAddress = new Address(networkParameters, address);
-            Recipient recipient = new Recipient(bitcoinAddress);
-            recipient.setContact(contact);
-            recipients[i] = recipient;
-            i++;
-          } catch (AddressFormatException e) {
-            throw new IllegalArgumentException("Recipients must have a valid Bitcoin address ('"+address+"'). Check contact filter: "+contact, e);
-          }
+          Address bitcoinAddress = contact.getBitcoinAddress().get();
+          Recipient recipient = new Recipient(bitcoinAddress);
+          recipient.setContact(contact);
+          recipients[i] = recipient;
+          i++;
         }
 
         return recipients;

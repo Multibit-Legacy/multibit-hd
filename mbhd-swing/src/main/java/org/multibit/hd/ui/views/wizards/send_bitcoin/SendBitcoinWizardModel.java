@@ -1,20 +1,19 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.brit.dto.FeeState;
-import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,8 +136,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public Recipient getRecipient() {
     return enterAmountPanelModel
-            .getEnterRecipientModel()
-            .getRecipient().get();
+      .getEnterRecipientModel()
+      .getRecipient().get();
   }
 
   /**
@@ -146,8 +145,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public Coin getCoinAmount() {
     return enterAmountPanelModel
-            .getEnterAmountModel()
-            .getCoinAmount();
+      .getEnterAmountModel()
+      .getCoinAmount();
   }
 
   /**
@@ -155,8 +154,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
    */
   public Optional<BigDecimal> getLocalAmount() {
     return enterAmountPanelModel
-            .getEnterAmountModel()
-            .getLocalAmount();
+      .getEnterAmountModel()
+      .getLocalAmount();
   }
 
   /**
@@ -228,10 +227,10 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
     Coin coin = enterAmountPanelModel.getEnterAmountModel().getCoinAmount();
     Address bitcoinAddress = enterAmountPanelModel
-            .getEnterRecipientModel()
-            .getRecipient()
-            .get()
-            .getBitcoinAddress();
+      .getEnterRecipientModel()
+      .getRecipient()
+      .get()
+      .getBitcoinAddress();
 
     Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState();
 
@@ -251,14 +250,14 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
     }
     // Prepare the transaction i.e work out the fee sizes
     sendRequestSummary = new SendRequestSummary(
-            bitcoinAddress,
-            coin,
-            fiatPayment,
-            changeAddress,
-            BitcoinNetworkService.DEFAULT_FEE_PER_KB,
-            null,
-            feeState,
-            emptyWallet);
+      bitcoinAddress,
+      coin,
+      fiatPayment,
+      changeAddress,
+      BitcoinNetworkService.DEFAULT_FEE_PER_KB,
+      null,
+      feeState,
+      emptyWallet);
 
     log.debug("Just about to prepare transaction for sendRequestSummary: {}", sendRequestSummary);
     return bitcoinNetworkService.prepareTransaction(sendRequestSummary);
@@ -312,19 +311,14 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
         // Attempt to locate a contact with the address in the Bitcoin URI to reassure user
         List<Contact> contacts = CoreServices
-                .getOrCreateContactService(currentWalletSummary.get().getWalletId())
-                .filterContactsByBitcoinAddress(address.get());
+          .getOrCreateContactService(currentWalletSummary.get().getWalletId())
+          .filterContactsByBitcoinAddress(address.get());
 
         if (!contacts.isEmpty()) {
-          // Offer the first contact with the matching address
-          try {
-            Address bitcoinAddress = new Address(networkParameters, contacts.get(0).getBitcoinAddress().get());
-            recipient = Optional.of(new Recipient(bitcoinAddress));
-            recipient.get().setContact(contacts.get(0));
-          } catch (AddressFormatException e) {
-            // This would indicate a failed filter in the ContactService
-            throw new IllegalArgumentException("Contact has an malformed Bitcoin address: " + contacts.get(0), e);
-          }
+          // Offer the first contact with the matching address (already null checked)
+          Address bitcoinAddress = contacts.get(0).getBitcoinAddress().get();
+          recipient = Optional.of(new Recipient(bitcoinAddress));
+          recipient.get().setContact(contacts.get(0));
         } else {
           // No matching contact so make an anonymous Recipient
           recipient = Optional.of(new Recipient(address.get()));
@@ -337,13 +331,13 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
       // Must have a valid address and therefore recipient to be here
       enterAmountPanelModel
-              .getEnterRecipientModel()
-              .setValue(recipient.get());
+        .getEnterRecipientModel()
+        .setValue(recipient.get());
 
       // Add in any amount or treat as zero
       enterAmountPanelModel
-              .getEnterAmountModel()
-              .setCoinAmount(amount.or(Coin.ZERO));
+        .getEnterAmountModel()
+        .setCoinAmount(amount.or(Coin.ZERO));
     }
   }
 }

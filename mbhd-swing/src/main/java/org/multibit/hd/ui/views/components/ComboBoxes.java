@@ -553,7 +553,7 @@ public class ComboBoxes {
     Preconditions.checkNotNull(contactService, "'contactService' must be present");
     Preconditions.checkNotNull(networkParameters, "'networkParameters' must be present");
 
-    AutoCompleteFilter<Recipient> filter = AutoCompleteFilters.newRecipientFilter(contactService, networkParameters);
+    AutoCompleteFilter<Recipient> filter = AutoCompleteFilters.newRecipientFilter(contactService);
 
     JComboBox<Recipient> comboBox = newComboBox(filter.create());
 

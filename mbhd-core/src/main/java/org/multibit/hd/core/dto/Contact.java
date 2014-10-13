@@ -1,5 +1,6 @@
 package org.multibit.hd.core.dto;
 
+import com.google.bitcoin.core.Address;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -23,7 +24,7 @@ public class Contact {
 
   private Optional<String> email = Optional.absent();
   private Optional<String> imagePath = Optional.absent();
-  private Optional<String> bitcoinAddress = Optional.absent();
+  private Optional<Address> bitcoinAddress = Optional.absent();
   private Optional<String> extendedPublicKey = Optional.absent();
   private Optional<String> notes = Optional.absent();
   private List<String> tags = Lists.newArrayList();
@@ -80,11 +81,11 @@ public class Contact {
   /**
    * @return The Bitcoin address
    */
-  public Optional<String> getBitcoinAddress() {
+  public Optional<Address> getBitcoinAddress() {
     return bitcoinAddress;
   }
 
-  public void setBitcoinAddress(String bitcoinAddress) {
+  public void setBitcoinAddress(Address bitcoinAddress) {
     this.bitcoinAddress = Optional.fromNullable(bitcoinAddress);
   }
 

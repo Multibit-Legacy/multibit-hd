@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.Coin;
-import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
@@ -10,7 +9,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.Recipient;
@@ -51,12 +49,11 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
   private JLabel statusValue;
   private JLabel typeValue;
   private JLabel descriptionValue;
+
+  // Use a text area to allow for multiple output addresses that are not matched to a Contact
   private JTextArea recipientValue;
+
   private JLabel recipientImageLabel;
-
-
-  // TODO Inject this
-  private final NetworkParameters networkParameters = BitcoinNetwork.current().get();
 
   /**
    * @param wizard The wizard managing the states
@@ -175,33 +172,33 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
           // Received bitcoin
           recipientValue.setText(Languages.safeText(MessageKey.THIS_BITCOIN_WAS_SENT_TO_YOU));
+          recipientValue.setRows(1);
         } else {
           // Contact may be one of the output addresses
-          Collection<Address> addressList = transactionData.getOutputAddresses();
+          Collection<Address> outputAddresses = transactionData.getOutputAddresses();
 
-          Optional<Contact> matchedContact = matchContact(addressList);
+          Optional<Contact> matchedContact = matchContact(outputAddresses);
           if (matchedContact.isPresent()) {
             // Show their gravatar if possible
             displayGravatar(matchedContact.get(), recipientImageLabel);
           } else {
             // No matching contact - provide an unambiguous message
-            switch (addressList.size()) {
+            switch (outputAddresses.size()) {
               case 0:
                 // Do not know
                 recipientValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+                recipientValue.setRows(1);
                 break;
               case 1:
                 // We can unambiguously set a recipient address (e.g. empty wallet tx)
-                recipientValue.setText(addressList.iterator().next().toString());
+                recipientValue.setText(outputAddresses.iterator().next().toString());
+                recipientValue.setRows(1);
                 break;
               default:
                 // More than one match
-                recipientValue.setText(Joiner.on("\n").join(addressList));
+                recipientValue.setText(Joiner.on("\n").join(outputAddresses));
+                recipientValue.setRows(outputAddresses.size() <=5 ? outputAddresses.size() : 5);
                 break;
-            }
-
-            if (addressList.size() == 1) {
-            } else {
             }
           }
         }
@@ -213,14 +210,12 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
    * <p>Matches a Contact against one of the supplied addresses. If more than one matches then the first is selected
    * since the other is most likely to be a change address to ourselves.</p>
    *
-   * @param addressList The addresses to match
+   * @param addresses The addresses to match
    *
    * @return The matching contact if present
    */
-  private Optional<Contact> matchContact(Collection<Address> addressList) {
+  private Optional<Contact> matchContact(Collection<Address> addresses) {
 
-    // This is a bit inefficient - could have a hashmap of Contacts, keyed by address
-    // Or store the address sent to
     ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
     List<Contact> allContacts = contactService.allContacts();
 
@@ -228,8 +223,8 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
     for (Contact contact : allContacts) {
 
-      if (addressList != null) {
-        for (Address address : addressList) {
+      if (addresses != null) {
+        for (Address address : addresses) {
           if (contact.getBitcoinAddress().isPresent() && contact.getBitcoinAddress().get().equals(address)) {
 
             // This is a contact for this address

@@ -44,8 +44,6 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
 
   private JTextArea rawTransactionTextArea;
 
-  private JLabel sizeValue;
-
   /**
    * @param wizard The wizard managing the states
    */

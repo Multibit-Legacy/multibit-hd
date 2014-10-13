@@ -216,7 +216,7 @@ public class ContactTableModel extends AbstractTableModel {
       rowData[CHECKBOX_COLUMN_INDEX] = data[row][CHECKBOX_COLUMN_INDEX] == null ? false: data[row][CHECKBOX_COLUMN_INDEX];
       rowData[NAME_COLUMN_INDEX] = contact.getName();
       rowData[EMAIL_COLUMN_INDEX] = contact.getEmail().or("");
-      rowData[ADDRESS_COLUMN_INDEX] = contact.getBitcoinAddress().or("");
+      rowData[ADDRESS_COLUMN_INDEX] = contact.getBitcoinAddress().isPresent() ? contact.getBitcoinAddress().get().toString() : "";
       rowData[TAG_COLUMN_INDEX] = Joiner.on(" ").join(contact.getTags());
 
       // Ensure we download the contact image asynchronously
