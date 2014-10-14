@@ -514,7 +514,9 @@ public enum WalletManager implements WalletEventListener {
     Wallet wallet = new WalletProtobufSerializer().readWallet(BitcoinNetwork.current().get(), walletExtensions, walletProto);
     wallet.setKeychainLookaheadSize(WalletManager.LOOK_AHEAD_SIZE);
 
-    log.debug("Just loaded wallet:\n" + wallet.toString());
+    // Too much information is revealed for debug
+    log.trace("Just loaded wallet:\n{}", wallet.toString());
+
     return wallet;
   }
 
