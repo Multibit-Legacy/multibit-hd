@@ -14,7 +14,7 @@ package org.multibit.hd.ui.languages;
  * <p>Resource keys are simply the message key enum name in lower case.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum MessageKey {
 

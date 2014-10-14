@@ -8,12 +8,12 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *  <p>Interface to provide the following to History API:</p>
- *  <ul>
- *  <li>Common methods for history data access</li>
- *  </ul>
- *  </p>
- *  
+ * <p>Interface to provide the following to History API:</p>
+ * <ul>
+ * <li>Common methods for history data access</li>
+ * </ul>
+ * </p>
+ *
  */
 public interface HistoryService {
 

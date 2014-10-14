@@ -3,10 +3,10 @@ package org.multibit.hd.core.events;
 import org.multibit.hd.core.dto.CoreMessageKey;
 
 /**
- *  <p>Event to provide the following to UIEventbus subscribers
- *  <ul>
- *  <li>Success/ failure of export transactions and payment requests</li>
- *  </ul>
+ * <p>Event to provide the following to UIEventbus subscribers
+ * <ul>
+ * <li>Success/ failure of export transactions and payment requests</li>
+ * </ul>
  */
 public class ExportPerformedEvent implements CoreEvent {
 

@@ -10,7 +10,7 @@ import org.multibit.hd.ui.languages.Languages;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class HtmlUtils {
 

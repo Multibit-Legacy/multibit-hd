@@ -9,11 +9,11 @@ import org.joda.time.DateTime;
 import java.util.Set;
 
 /**
- *  <p>DTO to provide the following to WalletService:</p>
- *  <ul>
- *  <li>Additional payment request info</li>
- *  </ul>
- *  
+ * <p>DTO to provide the following to WalletService:</p>
+ * <ul>
+ * <li>Additional payment request info</li>
+ * </ul>
+ *
  */
 public class PaymentRequestData implements PaymentData {
 

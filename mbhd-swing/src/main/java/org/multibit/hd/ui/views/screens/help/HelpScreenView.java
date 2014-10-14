@@ -40,7 +40,7 @@ import static org.multibit.hd.core.managers.InstallationManager.MBHD_WEBSITE_HEL
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 

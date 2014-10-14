@@ -10,15 +10,15 @@ import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.store.TransactionInfo;
 
 /**
- *  <p>Class to provide the following to WalletManager:<br>
- *  <ul>
- *  <li>Provides sentBySelf information using either Transacitoninfo or the transactionConfidence</li>
- *  </ul>
- *  Example:<br>
- *  <pre>
- *  </pre>
- *  </p>
- *  
+ * <p>Class to provide the following to WalletManager:<br>
+ * <ul>
+ * <li>Provides sentBySelf information using either Transacitoninfo or the transactionConfidence</li>
+ * </ul>
+ * Example:<br>
+ * <pre>
+ * </pre>
+ * </p>
+ *
  */
 public class TransactionInfoSentBySelfProvider implements TransactionSentBySelfProvider {
 

@@ -11,7 +11,7 @@ import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCa
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class QuickUnlockEmptyWalletFixtureRequirements {
 

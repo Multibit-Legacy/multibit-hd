@@ -16,7 +16,7 @@ import java.util.Map;
  * <p>Requires the "send/request" amount screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class SendNoFundsConfirmScreenUseCase extends AbstractFestUseCase {
 

@@ -34,7 +34,7 @@ import static org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletState.EMP
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState> {
 

@@ -5,7 +5,7 @@ package org.multibit.hd.ui.views.components.renderers;
  * <ul>
  * <li>Customised iconography for Bitcoin symbol</li>
  * </ul>
- *  
+ *
  */
 
 import org.multibit.hd.core.config.BitcoinConfiguration;

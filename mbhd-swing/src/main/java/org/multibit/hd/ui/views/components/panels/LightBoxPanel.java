@@ -17,7 +17,7 @@ import java.awt.event.MouseListener;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class LightBoxPanel extends JPanel {
 

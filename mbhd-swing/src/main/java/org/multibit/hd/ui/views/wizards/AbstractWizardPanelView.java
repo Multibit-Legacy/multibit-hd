@@ -34,7 +34,7 @@ import java.util.List;
  * @param <P> the wizard panel model
  *
  * @since 0.0.1
- *  
+ *
  */
 public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> {
 

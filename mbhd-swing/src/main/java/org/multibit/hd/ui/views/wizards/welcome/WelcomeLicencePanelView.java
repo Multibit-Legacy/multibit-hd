@@ -33,7 +33,7 @@ import java.io.IOException;
  * </ul>
  *
  * @since 0.0.3
- *  
+ *
  */
 public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
 

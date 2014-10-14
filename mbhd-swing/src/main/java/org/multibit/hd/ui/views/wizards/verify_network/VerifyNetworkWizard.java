@@ -14,7 +14,7 @@ import java.util.Map;
  * </ol>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class VerifyNetworkWizard extends AbstractWizard<VerifyNetworkWizardModel> {
 

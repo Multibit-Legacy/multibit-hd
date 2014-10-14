@@ -8,7 +8,7 @@ package org.multibit.hd.core.events;
  * <p>All UI components must refresh their view to reflect potential changes that affect them.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ConfigurationChangedEvent implements CoreEvent {
 

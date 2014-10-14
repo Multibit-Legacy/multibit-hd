@@ -20,16 +20,16 @@ import java.io.FileOutputStream;
 import java.util.Arrays;
 
 /**
- *  <p>Reader / Writer to provide the following to Services:<br>
- *  <ul>
- *  <li>load an AES encrypted file</li>
+ * <p>Reader / Writer to provide the following to Services:<br>
+ * <ul>
+ * <li>load an AES encrypted file</li>
  * <li>write an AES encrypted file</li>
- *  </ul>
- *  Example:<br>
- *  <pre>
- *  </pre>
- *  </p>
- *  
+ * </ul>
+ * Example:<br>
+ * <pre>
+ * </pre>
+ * </p>
+ *
  */
 public class EncryptedFileReaderWriter {
   private static final Logger log = LoggerFactory.getLogger(EncryptedFileReaderWriter.class);

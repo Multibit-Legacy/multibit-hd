@@ -14,7 +14,7 @@ package org.multibit.hd.core.dto;
  * <p>Resource keys are simply the message key enum name prefixed with "core_" in lower case.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum CoreMessageKey {
 

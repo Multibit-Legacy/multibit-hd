@@ -11,11 +11,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**
- *  <p>Renderer to provide the following to tables:</p>
- *  <ul>
- *  <li>Renders dates</li>
- *  </ul>
- *  
+ * <p>Renderer to provide the following to tables:</p>
+ * <ul>
+ * <li>Renders dates</li>
+ * </ul>
+ *
  */
 public class TrailingJustifiedDateTableCellRenderer extends DefaultTableCellRenderer {
 

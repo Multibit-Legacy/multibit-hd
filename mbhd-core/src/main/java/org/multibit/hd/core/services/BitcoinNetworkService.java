@@ -50,7 +50,7 @@ import java.util.concurrent.TimeoutException;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class BitcoinNetworkService extends AbstractService {
 

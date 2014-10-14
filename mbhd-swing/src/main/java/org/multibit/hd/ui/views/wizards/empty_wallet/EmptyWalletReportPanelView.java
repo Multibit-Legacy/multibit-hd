@@ -33,7 +33,7 @@ import javax.swing.*;
  * <p>Much of this code is lifted straight from SendBitcoinReportPanelView</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, EmptyWalletReportPanelModel> {
 

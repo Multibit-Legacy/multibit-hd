@@ -10,7 +10,7 @@ import org.multibit.hd.hardware.core.HardwareWalletService;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public abstract class AbstractController {
 

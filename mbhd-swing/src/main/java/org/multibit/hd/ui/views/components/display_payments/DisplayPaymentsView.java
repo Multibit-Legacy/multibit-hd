@@ -29,7 +29,7 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsModel> {
 

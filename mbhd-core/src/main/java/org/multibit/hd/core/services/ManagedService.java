@@ -10,7 +10,7 @@ import org.multibit.hd.core.events.ShutdownEvent;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public interface ManagedService {
 

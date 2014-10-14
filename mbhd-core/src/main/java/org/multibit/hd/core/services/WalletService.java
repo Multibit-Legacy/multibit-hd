@@ -42,10 +42,10 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 /**
- *  <p>Service to provide the following to GUI classes:</p>
- *  <ul>
- *  <li>list Transactions in the current wallet</li>
- *  </ul>
+ * <p>Service to provide the following to GUI classes:</p>
+ * <ul>
+ * <li>list Transactions in the current wallet</li>
+ * </ul>
  * <p/>
  * Most of the functionality is provided by WalletManager and BackupManager.
  */

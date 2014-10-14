@@ -28,7 +28,7 @@ import java.awt.image.BufferedImage;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EnterRecipientView extends AbstractComponentView<EnterRecipientModel> {
 

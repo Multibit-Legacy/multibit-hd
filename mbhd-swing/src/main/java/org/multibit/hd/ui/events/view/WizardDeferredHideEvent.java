@@ -10,7 +10,7 @@ import com.google.common.base.Preconditions;
  * <p>A wizard will typically subscribe and update in response to this event</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class WizardDeferredHideEvent implements ViewEvent {
 

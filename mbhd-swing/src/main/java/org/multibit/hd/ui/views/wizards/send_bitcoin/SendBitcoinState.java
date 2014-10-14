@@ -7,7 +7,7 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum SendBitcoinState {
 

@@ -1,7 +1,7 @@
 package org.multibit.hd.core.dto;
 
 /**
- *  <p>DTO describing success or failure of signing a message
+ * <p>DTO describing success or failure of signing a message
 
  */
 public class VerifyMessageResult {

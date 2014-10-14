@@ -8,6 +8,8 @@ import org.multibit.hd.core.dto.BitcoinNetworkSummary;
  * <li>Notification of a change to the Bitcoin network status</li>
  * </ul>
  *
+ * <p>This is an infrequent event</p>
+ *
  * @since 0.0.1
  *         
  */

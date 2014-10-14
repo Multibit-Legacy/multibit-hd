@@ -18,7 +18,7 @@ import java.util.Locale;
  * can be shown.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum BitcoinSymbol {
 

@@ -9,7 +9,7 @@ import org.multibit.hd.core.services.CoreServices;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public abstract class AbstractView {
 

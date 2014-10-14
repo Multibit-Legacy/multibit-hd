@@ -19,7 +19,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <p>Requires the "Bob" contact to be present</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EditBobContactUseCase extends AbstractFestUseCase {
 

@@ -7,7 +7,7 @@ package org.multibit.hd.ui.views.wizards.edit_wallet;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum EditWalletState {
 

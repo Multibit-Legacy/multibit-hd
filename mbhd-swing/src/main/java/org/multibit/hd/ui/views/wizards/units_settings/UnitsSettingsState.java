@@ -7,7 +7,7 @@ package org.multibit.hd.ui.views.wizards.units_settings;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum UnitsSettingsState {
 

@@ -17,7 +17,7 @@ import static org.fest.swing.timing.Timeout.timeout;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class RestoreWalletReportUseCase extends AbstractFestUseCase {
 
@@ -71,7 +71,7 @@ public class RestoreWalletReportUseCase extends AbstractFestUseCase {
       .requireNotEditable();
 
     String description =window
-      .label(MessageKey.DESCRIPTION.getKey())
+      .textBox(MessageKey.DESCRIPTION.getKey())
       .text();
 
     assertThat(description).startsWith("Wallet created");

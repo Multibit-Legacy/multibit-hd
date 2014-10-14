@@ -12,12 +12,12 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 
 /**
- *  <p>Listener to provide the following to WalletManager:</p>
- *  <ul>
- *  <li>Saving of rolling wallet backups and zip backups</li>
- *  </ul>
- *  </p>
- *  
+ * <p>Listener to provide the following to WalletManager:</p>
+ * <ul>
+ * <li>Saving of rolling wallet backups and zip backups</li>
+ * </ul>
+ * </p>
+ *
  */
 public class WalletAutoSaveListener implements WalletFiles.Listener {
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);

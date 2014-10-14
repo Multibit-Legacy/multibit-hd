@@ -16,7 +16,7 @@ import java.util.TimeZone;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *
  */
 @SuppressWarnings("UnusedDeclaration")
 public class LoggingConfiguration {

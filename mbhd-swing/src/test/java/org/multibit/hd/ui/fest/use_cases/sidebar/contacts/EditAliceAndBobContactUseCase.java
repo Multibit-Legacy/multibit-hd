@@ -19,7 +19,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <p>Requires "Alice" and "Bob Cratchit" to be created</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EditAliceAndBobContactUseCase extends AbstractFestUseCase {
 

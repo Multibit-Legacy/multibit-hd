@@ -17,7 +17,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class Popovers {
 

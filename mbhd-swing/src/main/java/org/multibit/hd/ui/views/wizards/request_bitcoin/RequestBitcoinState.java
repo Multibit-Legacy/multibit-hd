@@ -7,7 +7,7 @@ package org.multibit.hd.ui.views.wizards.request_bitcoin;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum RequestBitcoinState {
 

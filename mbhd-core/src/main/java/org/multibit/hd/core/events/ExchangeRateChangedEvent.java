@@ -14,7 +14,7 @@ import java.util.Currency;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ExchangeRateChangedEvent implements CoreEvent {
 

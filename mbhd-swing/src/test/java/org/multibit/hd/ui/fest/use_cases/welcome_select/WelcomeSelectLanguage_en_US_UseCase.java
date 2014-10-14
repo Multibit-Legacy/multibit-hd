@@ -15,7 +15,7 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class WelcomeSelectLanguage_en_US_UseCase extends AbstractFestUseCase {
 

@@ -7,7 +7,7 @@ package org.multibit.hd.ui.views.wizards.export_payments;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum ExportPaymentsWizardState {
 

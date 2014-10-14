@@ -16,7 +16,7 @@ import java.io.RandomAccessFile;
  * <p>Uses Java new I/O and Guava Files where possible</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class SecureFiles {
 

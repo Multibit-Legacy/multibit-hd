@@ -113,7 +113,7 @@ import java.util.List;
  * will handle all the work for you.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class Wizards {
 

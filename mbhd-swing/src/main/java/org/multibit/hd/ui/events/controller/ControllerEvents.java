@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * low level event (such as a mouse click) will initiate it.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ControllerEvents {
 

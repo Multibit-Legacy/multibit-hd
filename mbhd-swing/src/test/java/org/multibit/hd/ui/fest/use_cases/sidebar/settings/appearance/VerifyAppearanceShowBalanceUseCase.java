@@ -15,7 +15,7 @@ import java.util.Map;
  * <p>Requires the "settings" screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class VerifyAppearanceShowBalanceUseCase extends AbstractFestUseCase {
 

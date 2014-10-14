@@ -16,13 +16,13 @@ import java.security.PermissionCollection;
 import java.util.Map;
 
 /**
- *  <p>Manager to provide the following to other core classes:</p>
- *  <ul>
- *  <li>Location of the installation directory</li>
- *  <li>Access the configuration file</li>
+ * <p>Manager to provide the following to other core classes:</p>
+ * <ul>
+ * <li>Location of the installation directory</li>
+ * <li>Access the configuration file</li>
  * <li>Utility methods eg copying checkpoint files from installation directory</li>
- *  </ul>
- *  
+ * </ul>
+ *
  */
 public class InstallationManager {
 

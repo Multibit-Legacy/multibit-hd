@@ -17,7 +17,7 @@ import java.util.Stack;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ContactsScreenModel extends AbstractScreenModel {
 

@@ -15,7 +15,7 @@ import java.awt.geom.Rectangle2D;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public final class NamedTabbedPaneTabPainter extends AbstractNamedRegionPainter {
 

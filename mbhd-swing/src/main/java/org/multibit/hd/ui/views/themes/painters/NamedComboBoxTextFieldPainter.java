@@ -11,7 +11,7 @@ import java.awt.geom.Rectangle2D;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class NamedComboBoxTextFieldPainter extends AbstractNamedRegionPainter {
 

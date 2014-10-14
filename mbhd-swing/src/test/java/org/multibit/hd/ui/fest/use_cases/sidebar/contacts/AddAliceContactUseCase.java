@@ -18,7 +18,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <p>Requires the "contacts" screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class AddAliceContactUseCase extends AbstractFestUseCase {
 
@@ -76,10 +76,6 @@ public class AddAliceContactUseCase extends AbstractFestUseCase {
     // Set it to the MultiBit address
     verifyBitcoinAddressField("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty", true);
 
-    window
-      .textBox(MessageKey.EXTENDED_PUBLIC_KEY.getKey())
-      .setText("");
-
     // Ensure Add button is disabled without tag
     addTag("Poet", 0);
     addTag("Traveller", 1);
@@ -128,7 +124,7 @@ public class AddAliceContactUseCase extends AbstractFestUseCase {
 
     // Lose focus to trigger validation
     window
-      .textBox(MessageKey.EXTENDED_PUBLIC_KEY.getKey())
+      .textBox(MessageKey.TAGS.getKey())
       .focus();
 
     // Verify the focus change and background color

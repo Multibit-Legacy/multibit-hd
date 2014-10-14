@@ -31,7 +31,7 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, String> {
 

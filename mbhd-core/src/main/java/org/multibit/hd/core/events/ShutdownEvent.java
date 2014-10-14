@@ -7,7 +7,7 @@ package org.multibit.hd.core.events;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ShutdownEvent implements CoreEvent {
 

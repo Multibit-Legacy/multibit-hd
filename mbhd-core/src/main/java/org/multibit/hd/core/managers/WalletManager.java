@@ -57,13 +57,13 @@ import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SEPARATOR;
 import static org.multibit.hd.core.dto.WalletId.parseWalletFilename;
 
 /**
- *  <p>Manager to provide the following to core users:</p>
- *  <ul>
- *  <li>create wallet</li>
- *  <li>save wallet wallet</li>
- *  <li>load wallet wallet</li>
+ * <p>Manager to provide the following to core users:</p>
+ * <ul>
+ * <li>create wallet</li>
+ * <li>save wallet wallet</li>
+ * <li>load wallet wallet</li>
  * <li>tracks the current wallet and the list of wallet directories</li>
- *  </ul>
+ * </ul>
  * <p/>
  * TODO (GR) Consider renaming/restructuring this to Wallets since it provides tools for multiple wallets and allow for BitcoinNetwork injection
  */

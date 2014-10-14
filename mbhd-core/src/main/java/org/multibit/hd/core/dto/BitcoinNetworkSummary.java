@@ -9,7 +9,7 @@ import com.google.common.base.Optional;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class BitcoinNetworkSummary {
 

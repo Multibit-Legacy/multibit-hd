@@ -27,7 +27,7 @@ import java.awt.event.ActionListener;
  * <p>Deliberately ignores the Bitcoin address component to avoid false near addresses</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class RecipientComboBoxEditor implements ComboBoxEditor {
 

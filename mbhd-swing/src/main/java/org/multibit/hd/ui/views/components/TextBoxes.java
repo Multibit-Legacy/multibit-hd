@@ -26,7 +26,7 @@ import java.util.Collection;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class TextBoxes {
 

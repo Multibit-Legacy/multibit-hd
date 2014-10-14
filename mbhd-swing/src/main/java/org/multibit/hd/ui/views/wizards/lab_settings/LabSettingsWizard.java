@@ -13,7 +13,7 @@ import java.util.Map;
  * </ol>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class LabSettingsWizard extends AbstractWizard<LabSettingsWizardModel> {
 

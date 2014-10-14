@@ -16,7 +16,7 @@ import java.util.Map;
  * <p>Requires the "tools" screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ShowThenFinishVerifyMessageUseCase extends AbstractFestUseCase {
 

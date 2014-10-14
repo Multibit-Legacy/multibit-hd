@@ -7,7 +7,7 @@ package org.multibit.hd.core.config;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class WalletConfiguration {
 

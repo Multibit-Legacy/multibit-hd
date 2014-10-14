@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  * <p>Requires the "send/request" screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ShowRequestThenFinishUseCase extends AbstractFestUseCase {
 

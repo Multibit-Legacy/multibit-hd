@@ -30,7 +30,7 @@ import java.awt.event.ActionListener;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class Panels {
 

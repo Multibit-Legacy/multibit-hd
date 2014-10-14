@@ -13,7 +13,7 @@ import java.io.File;
  * <p>The backup summary allows the user to select wallet backups from a list.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class BackupSummary {
 

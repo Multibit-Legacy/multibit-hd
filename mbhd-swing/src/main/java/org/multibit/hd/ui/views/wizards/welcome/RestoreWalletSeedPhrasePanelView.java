@@ -29,7 +29,7 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 
 public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {

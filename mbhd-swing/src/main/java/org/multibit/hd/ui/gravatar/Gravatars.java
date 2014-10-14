@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class Gravatars {
 

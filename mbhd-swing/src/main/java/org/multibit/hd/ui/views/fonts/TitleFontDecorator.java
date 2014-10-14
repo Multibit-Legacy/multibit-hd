@@ -21,7 +21,7 @@ import java.util.Locale;
  * <p>More fonts can be sourced from Google Fonts and extracted from a ZIP file as a TTF</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class TitleFontDecorator {
 

@@ -18,11 +18,11 @@ import java.awt.*;
 import java.math.BigDecimal;
 
 /**
- *  <p>Renderer to provide the following to tables:</p>
- *  <ul>
- *  <li>Renderer of numeric amount field</li>
- *  </ul>
- *  
+ * <p>Renderer to provide the following to tables:</p>
+ * <ul>
+ * <li>Renderer of numeric amount field</li>
+ * </ul>
+ *
  */
 public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
   JLabel label;

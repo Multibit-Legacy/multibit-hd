@@ -6,15 +6,15 @@ import org.bitcoinj.core.TransactionConfidence;
 import org.bitcoinj.core.Wallet;
 
 /**
- *  <p>Class to provide the following to FeeService:<br>
- *  <ul>
- *  <li>Provide 'isSentByMe' information using the transaction confidence</li>
- *  </ul>
- *  Example:<br>
- *  <pre>
- *  </pre>
- *  </p>
- *  
+ * <p>Class to provide the following to FeeService:<br>
+ * <ul>
+ * <li>Provide 'isSentByMe' information using the transaction confidence</li>
+ * </ul>
+ * Example:<br>
+ * <pre>
+ * </pre>
+ * </p>
+ *
  */
 public class TransactionConfidenceSentBySelfProvider implements TransactionSentBySelfProvider {
   @Override

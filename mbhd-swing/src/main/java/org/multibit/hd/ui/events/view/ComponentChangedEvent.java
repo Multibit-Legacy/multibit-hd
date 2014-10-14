@@ -11,7 +11,7 @@ import com.google.common.base.Preconditions;
  * <p>A panel model will typically update in response to this event</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ComponentChangedEvent implements ViewEvent {
 

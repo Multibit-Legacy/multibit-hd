@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class CreateWalletReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
 

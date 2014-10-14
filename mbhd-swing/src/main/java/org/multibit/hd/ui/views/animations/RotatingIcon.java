@@ -15,7 +15,7 @@ import java.awt.geom.AffineTransform;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class RotatingIcon implements Icon {
 

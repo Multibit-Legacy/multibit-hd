@@ -18,7 +18,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class RestoreWalletTimestampUseCase extends AbstractFestUseCase {
 
