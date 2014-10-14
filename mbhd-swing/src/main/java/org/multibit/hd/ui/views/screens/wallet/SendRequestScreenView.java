@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.screens.wallet;
 
-import com.google.bitcoin.uri.BitcoinURI;
+import org.bitcoinj.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;

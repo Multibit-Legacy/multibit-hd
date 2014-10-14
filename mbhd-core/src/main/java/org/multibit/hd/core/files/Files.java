@@ -1,6 +1,6 @@
 package org.multibit.hd.core.files;
 
-import com.google.bitcoin.core.Utils;
+import org.bitcoinj.core.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

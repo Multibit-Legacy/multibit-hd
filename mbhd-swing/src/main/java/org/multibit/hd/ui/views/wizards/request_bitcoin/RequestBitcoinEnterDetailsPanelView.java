@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.request_bitcoin;
 
-import com.google.bitcoin.core.Coin;
-import com.google.bitcoin.uri.BitcoinURI;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;

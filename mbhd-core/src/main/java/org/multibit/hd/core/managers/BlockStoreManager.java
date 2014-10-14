@@ -1,10 +1,10 @@
 package org.multibit.hd.core.managers;
 
-import com.google.bitcoin.core.CheckpointManager;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.BlockStoreException;
-import com.google.bitcoin.store.SPVBlockStore;
+import org.bitcoinj.core.CheckpointManager;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.store.BlockStore;
+import org.bitcoinj.store.BlockStoreException;
+import org.bitcoinj.store.SPVBlockStore;
 import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,7 +1,7 @@
 package org.multibit.hd.installer;
 
-import com.google.bitcoin.uri.BitcoinURI;
-import com.google.bitcoin.uri.BitcoinURIParseException;
+import org.bitcoinj.uri.BitcoinURI;
+import org.bitcoinj.uri.BitcoinURIParseException;
 import com.google.common.base.Optional;
 import jwrapper.hidden.events.JWOSXEventListener;
 import jwrapper.jwutils.JWMacOS;

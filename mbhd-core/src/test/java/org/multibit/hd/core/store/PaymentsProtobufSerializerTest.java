@@ -1,6 +1,6 @@
 package org.multibit.hd.core.store;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;

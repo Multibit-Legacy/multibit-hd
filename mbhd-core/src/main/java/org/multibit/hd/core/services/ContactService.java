@@ -1,6 +1,6 @@
 package org.multibit.hd.core.services;
 
-import com.google.bitcoin.core.Address;
+import org.bitcoinj.core.Address;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.exceptions.ContactsLoadException;

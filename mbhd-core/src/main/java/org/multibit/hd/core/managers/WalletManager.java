@@ -1,11 +1,11 @@
 package org.multibit.hd.core.managers;
 
-import com.google.bitcoin.core.*;
-import com.google.bitcoin.crypto.*;
-import com.google.bitcoin.script.Script;
-import com.google.bitcoin.store.UnreadableWalletException;
-import com.google.bitcoin.store.WalletProtobufSerializer;
-import com.google.bitcoin.wallet.DeterministicSeed;
+import org.bitcoinj.core.*;
+import org.bitcoinj.crypto.*;
+import org.bitcoinj.script.Script;
+import org.bitcoinj.store.UnreadableWalletException;
+import org.bitcoinj.store.WalletProtobufSerializer;
+import org.bitcoinj.wallet.DeterministicSeed;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

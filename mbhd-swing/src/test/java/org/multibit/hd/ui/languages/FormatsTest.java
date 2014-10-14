@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.languages;
 
-import com.google.bitcoin.core.Coin;
-import com.google.bitcoin.uri.BitcoinURI;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.uri.BitcoinURI;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.config.BitcoinConfiguration;

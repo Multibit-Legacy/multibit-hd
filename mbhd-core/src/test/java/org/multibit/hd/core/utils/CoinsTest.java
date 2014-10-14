@@ -1,6 +1,6 @@
 package org.multibit.hd.core.utils;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import org.junit.Test;
 
 import java.math.BigDecimal;

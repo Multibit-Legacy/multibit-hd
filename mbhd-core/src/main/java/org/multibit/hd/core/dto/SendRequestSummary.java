@@ -1,8 +1,8 @@
 package org.multibit.hd.core.dto;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.Coin;
-import com.google.bitcoin.core.Wallet;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.Wallet;
 import com.google.common.base.Optional;
 import org.multibit.hd.brit.dto.FeeState;
 import org.spongycastle.crypto.params.KeyParameter;

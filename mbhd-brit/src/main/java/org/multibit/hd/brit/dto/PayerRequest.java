@@ -1,6 +1,6 @@
 package org.multibit.hd.brit.dto;
 
-import com.google.bitcoin.core.Utils;
+import org.bitcoinj.core.Utils;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import org.multibit.hd.brit.exceptions.PayerRequestException;

@@ -1,7 +1,7 @@
 package org.multibit.hd.core.dto;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import org.joda.time.DateTime;

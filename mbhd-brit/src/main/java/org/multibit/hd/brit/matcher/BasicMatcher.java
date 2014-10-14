@@ -1,6 +1,6 @@
 package org.multibit.hd.brit.matcher;
 
-import com.google.bitcoin.core.Address;
+import org.bitcoinj.core.Address;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

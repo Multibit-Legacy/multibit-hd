@@ -16,11 +16,11 @@ package org.multibit.hd.core.managers;
  * limitations under the License.
  */
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.DeterministicKey;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Wallet;
+import org.bitcoinj.crypto.DeterministicKey;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;

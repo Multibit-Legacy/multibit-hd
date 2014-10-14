@@ -16,8 +16,8 @@ package org.multibit.hd.brit.crypto;
  * limitations under the License.
  */
 
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.utils.BriefLogFormatter;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.utils.BriefLogFormatter;
 import com.google.common.base.Charsets;
 import org.junit.Before;
 import org.junit.Test;

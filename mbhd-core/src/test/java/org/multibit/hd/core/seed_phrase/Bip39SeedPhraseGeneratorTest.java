@@ -1,6 +1,6 @@
 package org.multibit.hd.core.seed_phrase;
 
-import com.google.bitcoin.core.Utils;
+import org.bitcoinj.core.Utils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,7 +1,7 @@
 package org.multibit.hd.brit.extensions;
 
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletExtension;
+import org.bitcoinj.core.Wallet;
+import org.bitcoinj.core.WalletExtension;
 import org.multibit.hd.brit.dto.MatcherResponse;
 
 /**

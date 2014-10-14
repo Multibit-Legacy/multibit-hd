@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.controllers;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;

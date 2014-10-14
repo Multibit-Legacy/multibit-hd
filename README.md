@@ -36,7 +36,12 @@ $ mvn --version
 
 #### We currently use a forked version of Bitcoinj
 
-The [MultiBit Staging repository](https://github.com/bitcoin-solutions/mbhd-maven) contains a `bitcoinj-0.12-SNAPSHOT` and supporting Orchid JAR for TOR that is aligned with the MultiBit HD `develop` branch. This should be used for development builds but is not yet suitable for production. As we make changes to our fork we update the staging repository. Wherever possible we will introduce our forked changes as a pull request into the upstream bitcoinj so that other projects can benefit but we must use a fork to ensure rapid updates are possible.
+The [MultiBit Staging repository](https://github.com/bitcoin-solutions/mbhd-maven) contains a `bitcoinj-0.12-alice` 
+and supporting Orchid JAR for TOR that is aligned with the MultiBit HD `develop` branch. This should be used for 
+development builds and is suitable for production. As we make changes to our fork we update the staging repository. 
+
+Wherever possible we will introduce our forked changes as a pull request into the upstream bitcoinj so that other 
+projects can benefit but we must use a fork to ensure rapid updates are possible during development.
 
 #### Start the application (from an IDE)
 

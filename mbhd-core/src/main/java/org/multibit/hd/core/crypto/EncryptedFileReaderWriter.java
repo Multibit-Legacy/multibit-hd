@@ -1,6 +1,6 @@
 package org.multibit.hd.core.crypto;
 
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import org.bitcoinj.crypto.KeyCrypterScrypt;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;

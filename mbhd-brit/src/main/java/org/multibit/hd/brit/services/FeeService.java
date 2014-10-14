@@ -1,7 +1,7 @@
 package org.multibit.hd.brit.services;
 
-import com.google.bitcoin.core.*;
-import com.google.bitcoin.params.MainNetParams;
+import org.bitcoinj.core.*;
+import org.bitcoinj.params.MainNetParams;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;

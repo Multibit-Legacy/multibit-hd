@@ -1,6 +1,6 @@
 package org.multibit.hd.core.network;
 
-import com.google.bitcoin.core.*;
+import org.bitcoinj.core.*;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.WalletSummary;

@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.text_fields;
 
-import com.google.bitcoin.core.NetworkParameters;
+import org.bitcoinj.core.NetworkParameters;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.themes.Themes;

@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.select_recipient;
 
-import com.google.bitcoin.core.NetworkParameters;
+import org.bitcoinj.core.NetworkParameters;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.dto.Recipient;

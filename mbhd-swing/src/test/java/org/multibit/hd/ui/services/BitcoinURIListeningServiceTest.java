@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.services;
 
-import com.google.bitcoin.core.Address;
+import org.bitcoinj.core.Address;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import org.junit.After;

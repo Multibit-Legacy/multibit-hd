@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.enter_amount;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;

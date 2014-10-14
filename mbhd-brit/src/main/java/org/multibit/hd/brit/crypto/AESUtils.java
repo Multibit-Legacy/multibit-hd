@@ -1,6 +1,6 @@
 package org.multibit.hd.brit.crypto;
 
-import com.google.bitcoin.crypto.KeyCrypterException;
+import org.bitcoinj.crypto.KeyCrypterException;
 import org.spongycastle.crypto.BufferedBlockCipher;
 import org.spongycastle.crypto.engines.AESFastEngine;
 import org.spongycastle.crypto.modes.CBCBlockCipher;

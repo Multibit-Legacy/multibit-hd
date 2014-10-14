@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
-import com.google.bitcoin.core.NetworkParameters;
+import org.bitcoinj.core.NetworkParameters;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.dto.BackupSummary;

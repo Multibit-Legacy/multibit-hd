@@ -1,9 +1,9 @@
 package org.multibit.hd.core.managers;
 
-import com.google.bitcoin.core.CheckpointManager;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.StoredBlock;
-import com.google.bitcoin.core.VerificationException;
+import org.bitcoinj.core.CheckpointManager;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.StoredBlock;
+import org.bitcoinj.core.VerificationException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class MultiBitCheckpointManager extends CheckpointManager {
    }
 
     /**
-     * Returns a {@link com.google.bitcoin.core.StoredBlock} representing the last managers before the given block height, for example, normally
+     * Returns a {@link org.bitcoinj.core.StoredBlock} representing the last managers before the given block height, for example, normally
      * you would want to know the managers before the last block the wallet had seen.
      */
     public StoredBlock getCheckpointBeforeOrAtHeight(int height) {

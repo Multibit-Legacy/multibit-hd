@@ -1,8 +1,8 @@
 package org.multibit.hd.ui.views.wizards.empty_wallet;
 
-import com.google.bitcoin.core.Coin;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.Wallet;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.dto.FeeState;

@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.events.view;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 
 import java.math.BigDecimal;

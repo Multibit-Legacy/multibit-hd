@@ -1,6 +1,6 @@
 package org.multibit.hd.core.services;
 
-import com.google.bitcoin.core.*;
+import org.bitcoinj.core.*;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;

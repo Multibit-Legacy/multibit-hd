@@ -16,16 +16,16 @@ package org.multibit.hd.brit.services;
  * limitations under the License.
  */
 
-import com.google.bitcoin.core.*;
-import com.google.bitcoin.params.MainNetParams;
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.MemoryBlockStore;
-import com.google.bitcoin.utils.Threading;
-import com.google.bitcoin.wallet.DeterministicSeed;
-import com.google.bitcoin.wallet.KeyChainGroup;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
+import org.bitcoinj.core.*;
+import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.store.BlockStore;
+import org.bitcoinj.store.MemoryBlockStore;
+import org.bitcoinj.utils.Threading;
+import org.bitcoinj.wallet.DeterministicSeed;
+import org.bitcoinj.wallet.KeyChainGroup;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -50,7 +50,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.bitcoin.core.Coin.parseCoin;
+import static org.bitcoinj.core.Coin.parseCoin;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class FeeServicesTest {
@@ -159,12 +159,13 @@ public class FeeServicesTest {
     checkFeeState(feeState, true, NUMBER_OF_NON_FEE_SENDS + 1, Coin.ZERO, FeeService.FEE_PER_SEND, possibleNextFeeAddresses);
   }
 
-  private void checkFeeState(FeeState feeState,
-                             boolean expectedIsUsingHardwiredBRITAddress,
-                             int expectedCurrentNumberOfSends,
-                             Coin expectedFeeOwed,
-                             Coin expectedFeePerSendSatoshi,
-                             Set<Address> possibleNextFeeAddresses) {
+  private void checkFeeState(
+    FeeState feeState,
+    boolean expectedIsUsingHardwiredBRITAddress,
+    int expectedCurrentNumberOfSends,
+    Coin expectedFeeOwed,
+    Coin expectedFeePerSendSatoshi,
+    Set<Address> possibleNextFeeAddresses) {
 
     assertThat(feeState.isUsingHardwiredBRITAddresses() == expectedIsUsingHardwiredBRITAddress).isTrue();
     assertThat(feeState.getCurrentNumberOfSends()).isEqualTo(expectedCurrentNumberOfSends);
@@ -179,7 +180,7 @@ public class FeeServicesTest {
   }
 
   private void createWallet(List<String> mnemonicCode) throws Exception {
-    DeterministicSeed deterministicSeed = new DeterministicSeed( mnemonicCode, "", DateTime.now().getMillis() / 1000);
+    DeterministicSeed deterministicSeed = new DeterministicSeed(mnemonicCode, null, "", DateTime.now().getMillis() / 1000);
     KeyChainGroup keyChainGroup = new KeyChainGroup(NETWORK_PARAMETERS, deterministicSeed);
 
     wallet1 = new Wallet(MainNetParams.get(), keyChainGroup);
@@ -212,7 +213,7 @@ public class FeeServicesTest {
 
     // If the next line isn't compiling you probably need to update your bitcoinj !
     // createFakeTx has been moved !
-    Transaction tx = com.google.bitcoin.testing.FakeTxBuilder.createFakeTx(NETWORK_PARAMETERS, value, toAddress);
+    Transaction tx = org.bitcoinj.testing.FakeTxBuilder.createFakeTx(NETWORK_PARAMETERS, value, toAddress);
     // Mark it as coming from self as then it can be spent when pending
     tx.getConfidence().setSource(TransactionConfidence.Source.SELF);
 
@@ -232,12 +233,13 @@ public class FeeServicesTest {
   private static void broadcastAndCommit(Wallet wallet, Transaction t) throws Exception {
 
     final LinkedList<Transaction> txns = Lists.newLinkedList();
-    wallet.addEventListener(new AbstractWalletEventListener() {
-      @Override
-      public void onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
-        txns.add(tx);
-      }
-    });
+    wallet.addEventListener(
+      new AbstractWalletEventListener() {
+        @Override
+        public void onCoinsSent(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
+          txns.add(tx);
+        }
+      });
 
     t.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{1, 2, 3, 4})));
     t.getConfidence().markBroadcastBy(new PeerAddress(InetAddress.getByAddress(new byte[]{10, 2, 3, 4})));

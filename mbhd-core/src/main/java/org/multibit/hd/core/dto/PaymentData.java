@@ -1,6 +1,6 @@
 package org.multibit.hd.core.dto;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import org.joda.time.DateTime;
 
 /**

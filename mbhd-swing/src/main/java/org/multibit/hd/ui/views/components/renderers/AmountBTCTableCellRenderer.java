@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.renderers;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;

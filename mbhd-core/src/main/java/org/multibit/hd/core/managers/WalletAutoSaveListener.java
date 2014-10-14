@@ -1,6 +1,6 @@
 package org.multibit.hd.core.managers;
 
-import com.google.bitcoin.wallet.WalletFiles;
+import org.bitcoinj.wallet.WalletFiles;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.WalletSummary;

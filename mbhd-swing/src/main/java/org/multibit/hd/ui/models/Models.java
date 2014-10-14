@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.models;
 
-import com.google.bitcoin.uri.BitcoinURI;
+import org.bitcoinj.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.TransactionSeenEvent;

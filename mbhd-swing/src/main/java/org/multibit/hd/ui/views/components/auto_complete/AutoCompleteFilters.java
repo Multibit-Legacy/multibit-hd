@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.auto_complete;
 
-import com.google.bitcoin.core.Address;
+import org.bitcoinj.core.Address;
 import com.google.common.base.Strings;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.Recipient;

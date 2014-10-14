@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
-import com.google.bitcoin.uri.BitcoinURI;
+import org.bitcoinj.uri.BitcoinURI;
 import com.google.common.base.Optional;
 
 /**

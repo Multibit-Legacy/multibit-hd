@@ -1,7 +1,7 @@
 package org.multibit.hd.core.services;
 
-import com.google.bitcoin.core.*;
-import com.google.bitcoin.store.BlockStoreException;
+import org.bitcoinj.core.*;
+import org.bitcoinj.store.BlockStoreException;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;

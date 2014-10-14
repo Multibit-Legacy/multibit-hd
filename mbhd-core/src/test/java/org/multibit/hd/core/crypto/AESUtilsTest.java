@@ -16,7 +16,7 @@ package org.multibit.hd.core.crypto;
  * limitations under the License.
  */
 
-import com.google.bitcoin.utils.BriefLogFormatter;
+import org.bitcoinj.utils.BriefLogFormatter;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;

@@ -1,10 +1,10 @@
 package org.multibit.hd.core.services;
 
-import com.google.bitcoin.core.Coin;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.MnemonicCode;
-import com.google.bitcoin.wallet.DeterministicSeed;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Wallet;
+import org.bitcoinj.crypto.MnemonicCode;
+import org.bitcoinj.wallet.DeterministicSeed;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -177,7 +177,7 @@ public class WalletServiceTest {
 
 
     // Test encrypt / decrypt with empty passphrase
-    DeterministicSeed seed1 = new DeterministicSeed(split, "", creationTimeSecs);
+    DeterministicSeed seed1 = new DeterministicSeed(split, null, "", creationTimeSecs);
 
     Wallet wallet1 = Wallet.fromSeed(networkParameters, seed1);
 

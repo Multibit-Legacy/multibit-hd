@@ -1,8 +1,8 @@
 package org.multibit.hd.core.events;
 
-import com.google.bitcoin.core.Coin;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionConfidence;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionConfidence;
 
 /**
  * <p>Event to provide the following to Core event subscribers</p>

@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.wizards.repair_wallet;
 
-import com.google.bitcoin.core.Wallet;
+import org.bitcoinj.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.*;
 import org.joda.time.DateTime;

@@ -1,11 +1,11 @@
 package org.multibit.hd.core.services;
 
-import com.google.bitcoin.core.*;
-import com.google.bitcoin.crypto.KeyCrypterException;
-import com.google.bitcoin.net.discovery.DnsDiscovery;
-import com.google.bitcoin.store.BlockStore;
-import com.google.bitcoin.store.BlockStoreException;
-import com.google.bitcoin.wallet.KeyChain;
+import org.bitcoinj.core.*;
+import org.bitcoinj.crypto.KeyCrypterException;
+import org.bitcoinj.net.discovery.DnsDiscovery;
+import org.bitcoinj.store.BlockStore;
+import org.bitcoinj.store.BlockStoreException;
+import org.bitcoinj.wallet.KeyChain;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;

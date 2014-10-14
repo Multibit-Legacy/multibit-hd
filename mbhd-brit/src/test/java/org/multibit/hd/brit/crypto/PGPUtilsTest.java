@@ -16,7 +16,7 @@ package org.multibit.hd.brit.crypto;
  * limitations under the License.
  */
 
-import com.google.bitcoin.core.Utils;
+import org.bitcoinj.core.Utils;
 import com.google.common.base.Charsets;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;

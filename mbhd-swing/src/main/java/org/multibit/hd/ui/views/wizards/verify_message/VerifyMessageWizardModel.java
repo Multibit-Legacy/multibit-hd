@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.wizards.verify_message;
 
-import com.google.bitcoin.core.Address;
+import org.bitcoinj.core.Address;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 
 /**

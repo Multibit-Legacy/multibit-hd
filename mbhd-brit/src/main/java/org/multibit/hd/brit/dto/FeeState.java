@@ -1,7 +1,7 @@
 package org.multibit.hd.brit.dto;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
 
 /**
  * <p>DTO to provide the following to BRIT Payers :</p>

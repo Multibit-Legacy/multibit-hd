@@ -1,6 +1,6 @@
 package org.multibit.hd.core.managers;
 
-import com.google.bitcoin.core.Wallet;
+import org.bitcoinj.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;

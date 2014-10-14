@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.display_amount;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.BitcoinConfiguration;

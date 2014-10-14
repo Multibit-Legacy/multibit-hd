@@ -1,7 +1,7 @@
 package org.multibit.hd.brit.services;
 
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.Wallet;
 
 /**
  *  <p>Interfeace to provide the following to FeeService:<br>

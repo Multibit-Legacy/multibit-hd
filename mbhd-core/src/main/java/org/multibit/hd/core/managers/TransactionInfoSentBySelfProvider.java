@@ -1,7 +1,7 @@
 package org.multibit.hd.core.managers;
 
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.Wallet;
 import org.multibit.hd.brit.services.TransactionConfidenceSentBySelfProvider;
 import org.multibit.hd.brit.services.TransactionSentBySelfProvider;
 import org.multibit.hd.core.dto.WalletId;

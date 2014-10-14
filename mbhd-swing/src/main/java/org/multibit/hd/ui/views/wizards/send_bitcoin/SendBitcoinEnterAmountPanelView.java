@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Recipient;

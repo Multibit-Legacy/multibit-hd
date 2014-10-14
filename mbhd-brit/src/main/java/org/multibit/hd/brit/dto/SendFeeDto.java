@@ -1,6 +1,6 @@
 package org.multibit.hd.brit.dto;
 
-import com.google.bitcoin.core.Address;
+import org.bitcoinj.core.Address;
 import com.google.common.base.Optional;
 
 /**

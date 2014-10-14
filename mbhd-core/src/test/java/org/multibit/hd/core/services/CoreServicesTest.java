@@ -1,6 +1,6 @@
 package org.multibit.hd.core.services;
 
-import com.google.bitcoin.core.Wallet;
+import org.bitcoinj.core.Wallet;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.multibit.hd.brit.dto.FeeState;

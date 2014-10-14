@@ -1,6 +1,6 @@
 package org.multibit.hd.brit.payer;
 
-import com.google.bitcoin.crypto.KeyCrypterException;
+import org.bitcoinj.crypto.KeyCrypterException;
 import com.google.common.base.Optional;
 import org.bouncycastle.openpgp.PGPException;
 import org.multibit.hd.brit.crypto.AESUtils;

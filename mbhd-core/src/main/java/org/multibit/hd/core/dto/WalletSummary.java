@@ -1,7 +1,7 @@
 package org.multibit.hd.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.bitcoin.core.Wallet;
+import org.bitcoinj.core.Wallet;
 import com.google.common.base.Preconditions;
 
 import javax.annotation.Nullable;
