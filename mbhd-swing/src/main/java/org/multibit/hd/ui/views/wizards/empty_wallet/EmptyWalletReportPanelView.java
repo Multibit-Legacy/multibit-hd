@@ -33,7 +33,6 @@ import javax.swing.*;
  * <p>Much of this code is lifted straight from SendBitcoinReportPanelView</p>
  *
  * @since 0.0.1
- *
  */
 public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, EmptyWalletReportPanelModel> {
 
@@ -81,11 +80,12 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
-    contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[][][]", // Column constraints
-      "10[][][][][]10" // Row constraints
-    ));
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[][][]", // Column constraints
+        "10[][][][][]10" // Row constraints
+      ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -125,21 +125,22 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        getFinishButton().requestFocusInWindow();
-        if (lastTransactionCreationEvent != null) {
-          onTransactionCreationEvent(lastTransactionCreationEvent);
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          getFinishButton().requestFocusInWindow();
+          if (lastTransactionCreationEvent != null) {
+            onTransactionCreationEvent(lastTransactionCreationEvent);
+          }
+          if (lastBitcoinSentEvent != null) {
+            onBitcoinSentEvent(lastBitcoinSentEvent);
+          }
+          if (lastTransactionSeenEvent != null) {
+            onTransactionSeenEvent(lastTransactionSeenEvent);
+          }
         }
-        if (lastBitcoinSentEvent != null) {
-          onBitcoinSentEvent(lastBitcoinSentEvent);
-        }
-        if (lastTransactionSeenEvent != null) {
-          onTransactionSeenEvent(lastTransactionSeenEvent);
-        }
-      }
-    });
+      });
 
   }
 
@@ -201,8 +202,11 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     }
   }
 
+  /**
+   * @param transactionSeenEvent The event (very high frequency during synchronisation)
+   */
   @Subscribe
-  public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
+  public void onTransactionSeenEvent(final TransactionSeenEvent transactionSeenEvent) {
 
     lastTransactionSeenEvent = transactionSeenEvent;
     // The event may be fired before the UI has initialised
@@ -213,21 +217,38 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     // Is this an event about the transaction that was just sent ?
     // If so, update the UI
     if (getPanelModel().get() != null) {
+
       String currentTransactionId = getPanelModel().get().getTransactionId();
+
       if (transactionSeenEvent.getTransactionId().equals(currentTransactionId)) {
-        PaymentStatus paymentStatus = WalletService.calculateStatus(
+        final PaymentStatus paymentStatus = WalletService.calculateStatus(
           transactionSeenEvent.getConfidenceType(),
           transactionSeenEvent.getDepthInBlocks(),
           transactionSeenEvent.getNumberOfPeers()
         );
-        transactionConfirmationStatus.setText(
-          Languages.safeText(
-            paymentStatus.getStatusKey(),
-            transactionSeenEvent.getNumberOfPeers()
-          )
-        );
 
-        LabelDecorator.applyPaymentStatusIconAndColor(paymentStatus, transactionConfirmationStatus, transactionSeenEvent.isCoinbase(), MultiBitUI.NORMAL_ICON_SIZE);
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+
+              transactionConfirmationStatus.setText(
+                Languages.safeText(
+                  paymentStatus.getStatusKey(),
+                  transactionSeenEvent.getNumberOfPeers()
+                )
+              );
+
+              LabelDecorator.applyPaymentStatusIconAndColor(
+                paymentStatus,
+                transactionConfirmationStatus,
+                transactionSeenEvent.isCoinbase(),
+                MultiBitUI.NORMAL_ICON_SIZE
+              );
+
+            }
+          });
+
       }
     }
   }
