@@ -1,6 +1,5 @@
 package org.multibit.hd.core.services;
 
-import org.bitcoinj.core.*;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
@@ -10,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
+import org.bitcoinj.core.*;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -482,7 +482,7 @@ public class WalletService {
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           if (transactionOutput.isMine(wallet)) {
-            String receivingAddress = transactionOutput.getScriptPubKey().getToAddress(networkParameters).toString();
+            Address receivingAddress = transactionOutput.getScriptPubKey().getToAddress(networkParameters);
             addresses = addresses + " " + receivingAddress;
 
             // Check if this output funds any payment requests;
@@ -646,7 +646,8 @@ public class WalletService {
 
       log.debug("Reading payments from '{}'", backingStoreFile.getAbsolutePath());
 
-      ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
+      ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
+        backingStoreFile,
         WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
         WalletManager.SCRYPT_SALT,
         WalletManager.AES_INITIALISATION_VECTOR);
@@ -812,13 +813,14 @@ public class WalletService {
    * @param transactionFileStem    The stem of the export file for the transactions (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
    * @param paymentRequestFileStem The stem of the export file for the payment requests (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
    */
-  public void exportPayments(File exportDirectory,
-                             String transactionFileStem,
-                             String paymentRequestFileStem,
-                             CSVEntryConverter<PaymentRequestData> paymentRequestHeaderConverter,
-                             CSVEntryConverter<PaymentRequestData> paymentRequestConverter,
-                             CSVEntryConverter<TransactionData> transactionHeaderConverter,
-                             CSVEntryConverter<TransactionData> transactionConverter
+  public void exportPayments(
+    File exportDirectory,
+    String transactionFileStem,
+    String paymentRequestFileStem,
+    CSVEntryConverter<PaymentRequestData> paymentRequestHeaderConverter,
+    CSVEntryConverter<PaymentRequestData> paymentRequestConverter,
+    CSVEntryConverter<TransactionData> transactionHeaderConverter,
+    CSVEntryConverter<TransactionData> transactionConverter
   ) {
     // Refresh all payments
     List<PaymentData> paymentDataList = getPaymentDataList();
@@ -849,12 +851,13 @@ public class WalletService {
       executorService = SafeExecutors.newSingleThreadExecutor("wallet-service");
     }
 
-    executorService.submit(new Runnable() {
-      @Override
-      public void run() {
-        WalletService.changeWalletPasswordInternal(walletSummary, oldPassword, newPassword);
-      }
-    });
+    executorService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          WalletService.changeWalletPasswordInternal(walletSummary, oldPassword, newPassword);
+        }
+      });
   }
 
   static void changeWalletPasswordInternal(final WalletSummary walletSummary, final String oldPassword, final String newPassword) {
@@ -875,13 +878,22 @@ public class WalletService {
         byte[] encryptedOldBackupAESKey = walletSummary.getEncryptedBackupKey();
 
         KeyParameter oldWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(oldPassword.getBytes(Charsets.UTF_8), WalletManager.SCRYPT_SALT);
-        byte[] decryptedOldBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(encryptedOldBackupAESKey, oldWalletPasswordDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+        byte[] decryptedOldBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+          encryptedOldBackupAESKey,
+          oldWalletPasswordDerivedAESKey,
+          WalletManager.AES_INITIALISATION_VECTOR);
 
         KeyParameter newWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(newPassword.getBytes(Charsets.UTF_8), WalletManager.SCRYPT_SALT);
-        byte[] encryptedNewBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(decryptedOldBackupAESKey, newWalletPasswordDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+        byte[] encryptedNewBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(
+          decryptedOldBackupAESKey,
+          newWalletPasswordDerivedAESKey,
+          WalletManager.AES_INITIALISATION_VECTOR);
 
         // Check the encryption is reversible
-        byte[] decryptedRebornBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(encryptedNewBackupAESKey, newWalletPasswordDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+        byte[] decryptedRebornBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+          encryptedNewBackupAESKey,
+          newWalletPasswordDerivedAESKey,
+          WalletManager.AES_INITIALISATION_VECTOR);
 
         if (!Arrays.equals(decryptedOldBackupAESKey, decryptedRebornBackupAESKey)) {
           throw new IllegalStateException("The encryption of the backup AES key was not reversible. Aborting change of wallet credentials");
@@ -891,10 +903,16 @@ public class WalletService {
         // Pad the new credentials
         byte[] newPasswordBytes = newPassword.getBytes(Charsets.UTF_8);
         byte[] paddedNewPassword = WalletManager.padPasswordBytes(newPasswordBytes);
-        byte[] encryptedPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(paddedNewPassword, new KeyParameter(decryptedOldBackupAESKey), WalletManager.AES_INITIALISATION_VECTOR);
+        byte[] encryptedPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(
+          paddedNewPassword,
+          new KeyParameter(decryptedOldBackupAESKey),
+          WalletManager.AES_INITIALISATION_VECTOR);
 
         // Check the encryption is reversible
-        byte[] decryptedRebornPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.decrypt(encryptedPaddedNewPassword, new KeyParameter(decryptedOldBackupAESKey), WalletManager.AES_INITIALISATION_VECTOR);
+        byte[] decryptedRebornPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+          encryptedPaddedNewPassword,
+          new KeyParameter(decryptedOldBackupAESKey),
+          WalletManager.AES_INITIALISATION_VECTOR);
 
         if (!Arrays.equals(newPasswordBytes, WalletManager.unpadPasswordBytes(decryptedRebornPaddedNewPassword))) {
           throw new IllegalStateException("The encryption of the new credentials was not reversible. Aborting change of wallet credentials");
@@ -937,17 +955,17 @@ public class WalletService {
 
 
   /**
-   * When a transaction is seen by the network, ensure there is a transaction info available storing the exchange rate
+   * <p>When a transaction is seen by the network, ensure there is a transaction info available storing the exchange rate</p>
+   * <p>This is a high frequency event during synchronisation</p>
    */
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent event) {
 
-    // Get/ Create a transactionInfo to match the event
-    TransactionInfo transactionInfo = transactionInfoMap.get(event.getTransactionId());
-    if (transactionInfo == null) {
+    // Close out this method as soon as possible
+    if (transactionInfoMap.containsKey(event.getTransactionId())) {
 
       // Create a new one
-      transactionInfo = new TransactionInfo();
+      TransactionInfo transactionInfo = new TransactionInfo();
       transactionInfo.setHash(event.getTransactionId());
 
       // Create the fiat payment
@@ -978,10 +996,8 @@ public class WalletService {
 
       transactionInfo.setAmountFiat(amountFiat);
 
-      log.debug("Created TransactionInfo: " + transactionInfo.toString());
+      log.trace("Created TransactionInfo: {}", transactionInfo.toString());
       transactionInfoMap.put(event.getTransactionId(), transactionInfo);
-    } else {
-      log.trace("There was already a TransactionInfo: for " + event.getTransactionId() + ", value = " + transactionInfo.toString());
     }
   }
 
