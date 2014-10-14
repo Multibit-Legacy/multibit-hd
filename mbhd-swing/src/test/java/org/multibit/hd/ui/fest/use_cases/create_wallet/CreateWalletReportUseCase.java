@@ -82,8 +82,7 @@ public class CreateWalletReportUseCase extends AbstractFestUseCase {
       .textBox(MessageKey.DESCRIPTION.getKey())
       .text();
 
-    assertThat(description).startsWith("Wallet created");
-
+    assertThat(description).startsWith("Portofel creat");
 
   }
 
