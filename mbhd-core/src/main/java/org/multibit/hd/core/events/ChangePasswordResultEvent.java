@@ -9,6 +9,7 @@ import java.util.Arrays;
  * <ul>
  * <li>Success or failure of change of a wallet credentials</li>
  * </ul>
+ * <p>This is an infrequent event</p>
  */
 public class ChangePasswordResultEvent implements CoreEvent {
 

@@ -7,6 +7,8 @@ package org.multibit.hd.core.events;
  * </ul>
  * <p>All UI components must refresh their view to reflect potential changes that affect them.</p>
  *
+ * <p>This is an infrequent event</p>
+
  * @since 0.0.1
  *
  */

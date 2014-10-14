@@ -6,8 +6,9 @@ package org.multibit.hd.core.events;
  * <li>Notification of a shutdown event</li>
  * </ul>
  *
- * @since 0.0.1
+ * <p>This is an infrequent event</p>
  *
+ * @since 0.0.1
  */
 public class ShutdownEvent implements CoreEvent {
 
