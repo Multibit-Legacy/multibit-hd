@@ -956,17 +956,18 @@ public class WalletService {
 
   /**
    * <p>When a transaction is seen by the network, ensure there is a transaction info available storing the exchange rate</p>
-   * <p>This is a high frequency event during synchronisation</p>
+   *
+   * @param transactionSeenEvent The event (very high frequency during synchronisation)
    */
   @Subscribe
-  public void onTransactionSeenEvent(TransactionSeenEvent event) {
+  public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
 
     // Close out this method as soon as possible
-    if (transactionInfoMap.containsKey(event.getTransactionId())) {
+    if (transactionInfoMap.containsKey(transactionSeenEvent.getTransactionId())) {
 
       // Create a new one
       TransactionInfo transactionInfo = new TransactionInfo();
-      transactionInfo.setHash(event.getTransactionId());
+      transactionInfo.setHash(transactionSeenEvent.getTransactionId());
 
       // Create the fiat payment
       FiatPayment amountFiat = new FiatPayment();
@@ -976,7 +977,10 @@ public class WalletService {
       if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
 
         amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-        BigDecimal localAmount = Coins.toLocalAmount(event.getAmount(), exchangeRateChangedEvent.get().getRate());
+        BigDecimal localAmount = Coins.toLocalAmount(
+          transactionSeenEvent.getAmount(),
+          exchangeRateChangedEvent.get().getRate()
+        );
 
         if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
           amountFiat.setAmount(Optional.of(localAmount));
@@ -997,7 +1001,7 @@ public class WalletService {
       transactionInfo.setAmountFiat(amountFiat);
 
       log.trace("Created TransactionInfo: {}", transactionInfo.toString());
-      transactionInfoMap.put(event.getTransactionId(), transactionInfo);
+      transactionInfoMap.put(transactionSeenEvent.getTransactionId(), transactionInfo);
     }
   }
 
