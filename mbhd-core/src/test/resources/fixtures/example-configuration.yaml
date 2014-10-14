@@ -1,0 +1,38 @@
+---
+configurationVersion: "1"
+language:
+  locale: "en_US"
+appearance:
+  currentScreen: "TOOLS"
+  restoreApplicationLayoutOnStartup: false
+  bitcoinUriHandling: "FILL"
+  applicationDirectory: "."
+  showBalance: true
+  currentTheme: "LIGHT"
+  version: "0.0.0 (alpha)"
+  lastFrameBounds: "0,0,1000,560"
+  sidebarWidth: "180"
+  cloudBackupLocation: ""
+bitcoin:
+  bitcoinSymbol: "MICON"
+  bitcoinNetwork: "MAIN_NET"
+  decimalSeparator: "."
+  groupingSeparator: ","
+  localDecimalPlaces: 2
+  currencySymbolLeading: true
+  localCurrencySymbol: "$"
+  localCurrencyCode: "USD"
+  currentExchange: "BITSTAMP"
+  exchangeApiKeys: {}
+sound:
+  alertSound: true
+  receiveSound: true
+wallet:
+  currentWalletRoot: null
+licenceAccepted: false
+tor: false
+wibble:
+  aardvark: 42
+  xray: "hello"
+stuff:
+  moreStuff: "hello"

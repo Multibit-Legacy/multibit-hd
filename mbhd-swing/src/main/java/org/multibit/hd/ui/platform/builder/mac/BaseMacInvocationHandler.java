@@ -38,6 +38,7 @@ import java.lang.reflect.Proxy;
  * @since 0.3.0
  */
 public abstract class BaseMacInvocationHandler<H extends GenericHandler, E extends GenericEvent> implements InvocationHandler {
+
   private static final Logger log = LoggerFactory.getLogger(BaseMacInvocationHandler.class);
 
   private final H genericHandler;
@@ -68,7 +69,7 @@ public abstract class BaseMacInvocationHandler<H extends GenericHandler, E exten
     // Create a uni-directional generic event based on a single parameter (the native event)
     // Require an unchecked cast here to avoid this issue:
     // http://blog.sarathonline.com/2010/08/maven-only-type-parameters-of-x-cannot.html
-    E event = (E) createGenericEvent(objects[0]);
+    E event = createGenericEvent(objects[0]);
     try {
       log.debug("Created event {}", genericEventClass.getSimpleName());
 
@@ -76,7 +77,7 @@ public abstract class BaseMacInvocationHandler<H extends GenericHandler, E exten
       Method method = genericHandler.getClass().getMethod(nativeMethod.getName(), new Class[]{genericEventClass});
 
       // Invoke the method passing in the event (e.g. GenericURIEvent)
-      log.debug("Invoking {}.{}({}) ", new Object[]{genericHandler.getClass().getSimpleName(), method.getName(), method.getParameterTypes()[0].getSimpleName()});
+      log.debug("Invoking {}.{}({}) ", genericHandler.getClass().getSimpleName(), method.getName(), method.getParameterTypes()[0].getSimpleName());
       return method.invoke(genericHandler, event);
     } catch (NoSuchMethodException e) {
       log.warn("Got a NoSuchMethodException");
@@ -96,8 +97,10 @@ public abstract class BaseMacInvocationHandler<H extends GenericHandler, E exten
    * @return The generic event acting as a proxy to the native underlying event
    */
   @SuppressWarnings("unchecked")
-  private <E> E createGenericEvent(final Object nativeEvent) {
+  private E createGenericEvent(final Object nativeEvent) {
+
     log.debug("Building invocation handler. Native {} -> {}", nativeEvent.getClass().getSimpleName(), genericEventClass.getSimpleName());
+
     // The invocation handler manages all method calls against the proxy
     // Relies on the proxy having the same method signatures
     InvocationHandler invocationHandler = new InvocationHandler() {

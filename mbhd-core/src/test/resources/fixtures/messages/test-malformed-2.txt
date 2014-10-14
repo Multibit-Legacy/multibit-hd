@@ -1,0 +1,8 @@
+-----BEGIN BITCOIN SIGNED MESSAGE-----
+Hello World
+-----BEGIN BITCOIN SIGNATURE-----
+Version:
+Unknown-Field: https://multibit.org
+
+H0b22gIQIfutUzm7Z9qchdfhUtaO52alhNPK3emrkGOfbOzGHVPuWD9rMIphxniwBNgF/YN4c5C/dMwXz3yJz5k=
+-----END BITCOIN SIGNATURE-----

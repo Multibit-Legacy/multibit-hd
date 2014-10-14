@@ -15,7 +15,7 @@
  */
 package org.multibit.hd.ui.platform.handler;
 
-import org.multibit.hd.ui.platform.listener.GenericQuitEvent;
+import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.platform.listener.GenericEventListener;
 import org.multibit.hd.ui.platform.listener.GenericQuitEvent;
 import org.multibit.hd.ui.platform.listener.GenericQuitEventListener;
@@ -63,6 +63,7 @@ public class DefaultQuitHandler implements GenericQuitHandler, GenericEventListe
     log.debug("Event class is {}", event.getClass().getSimpleName());
     log.debug("Broadcasting to {} listener(s)", listeners.size());
     for (GenericQuitEventListener listener : listeners) {
+      Preconditions.checkNotNull(listener,"'listener must be present'");
       listener.onQuitEvent(event, response);
     }
   }

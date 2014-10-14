@@ -1,0 +1,7 @@
+-----BEGIN BITCOIN SIGNATURE-----
+Version: MultiBit HD (0.0.1b-2)
+Comment: https://multibit.org
+Address: 16R2kAxaUNM4xj6ykKbxEugpJdYyJzTP13
+
+H0b22gIQIfutUzm7Z9qchdfhUtaO52alhNPK3emrkGOfbOzGHVPuWD9rMIphxniwBNgF/YN4c5C/dMwXz3yJz5k=
+-----END BITCOIN SIGNATURE-----

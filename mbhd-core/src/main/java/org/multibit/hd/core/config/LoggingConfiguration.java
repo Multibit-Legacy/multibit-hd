@@ -2,7 +2,7 @@ package org.multibit.hd.core.config;
 
 import ch.qos.logback.classic.Level;
 import com.google.common.collect.Maps;
-import org.multibit.hd.core.utils.MultiBitFiles;
+import org.multibit.hd.core.managers.InstallationManager;
 
 import java.util.Locale;
 import java.util.Map;
@@ -23,7 +23,7 @@ public class LoggingConfiguration {
 
   static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
-  private Level level = Level.INFO;
+  private Level level = Level.WARN;
 
   private Map<String, Level> loggers = Maps.newHashMap();
 
@@ -36,8 +36,8 @@ public class LoggingConfiguration {
   public LoggingConfiguration() {
 
     loggers.put("org.multibit", Level.DEBUG);
-    loggers.put("com.xeiam", Level.DEBUG);
-    loggers.put("com.google.bitcoinj", Level.DEBUG);
+    loggers.put("com.xeiam", Level.WARN);
+    loggers.put("com.google.bitcoinj", Level.WARN);
   }
 
   public Level getLevel() {
@@ -147,11 +147,11 @@ public class LoggingConfiguration {
 
     private Level threshold = Level.ALL;
 
-    private String currentLogFilename = MultiBitFiles.MBHD_PREFIX;
+    private String currentLogFilename = InstallationManager.MBHD_PREFIX;
 
     private boolean archive = true;
 
-    private String archivedLogFilenamePattern;
+    private String archivedLogFilenamePattern="log/multibit-hd-%d.log.gz";
 
     private int archivedFileCount = 5;
 

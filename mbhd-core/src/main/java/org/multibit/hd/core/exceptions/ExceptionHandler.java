@@ -1,5 +1,9 @@
 package org.multibit.hd.core.exceptions;
 
+import com.google.common.eventbus.SubscriberExceptionContext;
+import com.google.common.eventbus.SubscriberExceptionHandler;
+import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,16 +11,13 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * <p>[Pattern] to provide the following to {@link Object}:</p>
+ * <p>Exception handler to provide the following to application:</p>
  * <ul>
- * <li></li>
+ * <li>Displays a critical failure dialog to the user and handles process of bug reporting</li>
  * </ul>
- * <p>Example:</p>
- * <pre>
- * </pre>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class ExceptionHandler extends EventQueue implements Thread.UncaughtExceptionHandler {
 
@@ -41,14 +42,24 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
 
     log.error("Uncaught exception", t);
 
-    String message = t.getMessage();
-
-    if (message == null || message.length() == 0) {
+    final String message;
+    if (t.getMessage() == null || t.getMessage().length() == 0) {
       message = "Fatal: " + t.getClass();
+    } else {
+      message = t.getMessage();
     }
 
     // TODO Replace this with a full-on reporting system
-    JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+
+        // Safest option at this point is to shut down
+        CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
+      }
+    });
+
   }
 
   @Override
@@ -65,5 +76,19 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
     handleThrowable(e);
   }
 
+  /**
+   * @return A subscriber exception handler for the Guava event bus
+   */
+  public static SubscriberExceptionHandler newSubscriberExceptionHandler() {
+
+    return new SubscriberExceptionHandler() {
+      @Override
+      public void handleException(Throwable exception, SubscriberExceptionContext context) {
+
+        log.error(exception.getMessage(), exception);
+
+      }
+    };
+  }
 }
 

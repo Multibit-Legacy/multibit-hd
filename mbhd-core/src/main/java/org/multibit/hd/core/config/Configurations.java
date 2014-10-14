@@ -1,19 +1,19 @@
 package org.multibit.hd.core.config;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Preconditions;
-import com.google.common.io.Files;
-import org.multibit.hd.core.exceptions.CoreException;
-import org.multibit.hd.core.utils.MultiBitFiles;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.common.base.Optional;
+import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Writer;
-import java.util.Map;
-import java.util.Properties;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Locale;
 
 /**
  * <p>Utility to provide the following to configuration:</p>
@@ -24,30 +24,11 @@ import java.util.Properties;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class Configurations {
 
   private static final Logger log = LoggerFactory.getLogger(Configurations.class);
-
-  // Application
-  public static final String APP_VERSION = "app.version";
-
-  // Bitcoin
-  public static final String BITCOIN_SYMBOL = "bitcoin.symbol";
-
-  // Internationalisation (i18n)
-  public static final String I18N_LOCALE = "i18n.locale";
-  public static final String I18N_DECIMAL_SEPARATOR = "i18n.decimal-separator";
-  public static final String I18N_GROUPING_SEPARATOR = "i18n.grouping-separator";
-  public static final String I18N_IS_CURRENCY_PREFIXED = "i18n.is-prefixed";
-
-  // Logging
-  public static final String LOGGING = "logging";
-  public static final String LOGGING_LEVEL = LOGGING + ".level";
-  public static final String LOGGING_FILE = LOGGING + ".file";
-  public static final String LOGGING_ARCHIVE = LOGGING + ".archive";
-  public static final String LOGGING_PACKAGE_PREFIX = LOGGING + ".package.";
 
   /**
    * The current runtime configuration (preserved across soft restarts)
@@ -66,152 +47,106 @@ public class Configurations {
   }
 
   /**
-   * @return A new default configuration based on the default locale
+   * @return A new default configuration based on the UK locale
    */
   public static Configuration newDefaultConfiguration() {
 
-    Properties properties = new Properties();
-
-    // Application
-    properties.put(APP_VERSION, "0.0.1");
-
-    // Bitcoin
-    properties.put(BITCOIN_SYMBOL, "ICON");
-
-    // Localisation
-    properties.put(I18N_LOCALE, "en_gb");
-    properties.put(I18N_DECIMAL_SEPARATOR, ".");
-    properties.put(I18N_GROUPING_SEPARATOR, ",");
-    properties.put(I18N_IS_CURRENCY_PREFIXED, "true");
-
-    // Logging
-    properties.put(LOGGING_LEVEL, "warn");
-    properties.put(LOGGING_FILE, "log/multibit-hd.log");
-    properties.put(LOGGING_ARCHIVE, "log/multibit-hd-%d.log.gz");
-    properties.put(LOGGING_PACKAGE_PREFIX + "com.google.bitcoinj", "warn");
-    properties.put(LOGGING_PACKAGE_PREFIX + "org.multibit", "debug");
-
-    return new ConfigurationReadAdapter(properties).adapt();
+    return new Configuration();
 
   }
 
   /**
-   * @return The persisted configuration
-   */
-  public static Configuration readConfiguration() {
-
-    File configurationFile = MultiBitFiles.getConfigurationFile();
-
-    Properties properties = readProperties(configurationFile);
-    if (!properties.isEmpty()) {
-      return new ConfigurationReadAdapter(properties).adapt();
-    } else {
-      log.warn("Configuration file is missing. Using defaults.");
-      return newDefaultConfiguration();
-    }
-
-  }
-
-  /**
-   * <p>Loads a properties file from the given location</p>
+   * <p>Handle the process of switching to a new configuration</p>
    *
-   * @param propertiesFile The location of the properties file
+   * <p>Provides locale and event notification of the change</p>
    *
-   * @return The raw properties file used for storing the configuration, or empty if not found
+   * @param newConfiguration The new configuration
    */
-  /* package for testing */
-  static Properties readProperties(File propertiesFile) {
+  public static synchronized void switchConfiguration(Configuration newConfiguration) {
 
-    Preconditions.checkNotNull(propertiesFile, "'propertiesFile' must be present");
+    // Keep track of the previous configuration
+    previousConfiguration = currentConfiguration;
 
-    // Create an empty set of properties
-    Properties properties = new Properties();
+    // Ensure the new configuration has the same frame bounds since MainView won't have updated it
+    newConfiguration.getAppearance().setLastFrameBounds(currentConfiguration.getAppearance().getLastFrameBounds());
 
-    if (propertiesFile.exists()) {
-      log.debug("Loading properties from '{}'", propertiesFile.getAbsolutePath());
-      try (FileInputStream fis = new FileInputStream(propertiesFile)) {
-        properties.load(fis);
-        log.debug("Properties loaded");
-      } catch (IOException e) {
-        throw new CoreException(e);
-      }
-    }
+    // Set the replacement
+    currentConfiguration = newConfiguration;
 
-    return properties;
-  }
+    // Persist the changes
+    persistCurrentConfiguration();
 
-  /**
-   * <p>Writes the current configuration to the application directory</p>
-   */
-  /* package for testing */
-  static void writeCurrentConfiguration() {
+    // Update any JVM classes
+    Locale.setDefault(currentConfiguration.getLocale());
 
-    File configurationFile = MultiBitFiles.getConfigurationFile();
-
-    // Read in the existing properties in case we are legacy running
-    // in a more recent version's environment
-    Properties existingProperties = readProperties(configurationFile);
-
-    // Create a properties file representation
-    Properties newProperties = new ConfigurationWriteAdapter(currentConfiguration).adapt();
-
-    // Merge the new into the existing, preserving the existing
-    mergeProperties(newProperties, existingProperties);
-
-    // Write the properties
-    writeProperties(configurationFile, newProperties);
+    // Notify interested parties
+    CoreEvents.fireConfigurationChangedEvent();
 
   }
 
   /**
-   * <p>Writes the given properties to the given file location, deleting any existing file.</p>
+   * <p>Persist the current configuration</p>
    *
-   * @param propertiesFile The file for writing the properties
-   * @param properties     The properties that will replace
+   * <p>No locale change or event takes place (see {@link #switchConfiguration(Configuration)})</p>
    */
-  /* package for testing */
-  static void writeProperties(File propertiesFile, Properties properties) {
+  public static synchronized void persistCurrentConfiguration() {
 
-    Preconditions.checkNotNull(propertiesFile, "'propertiesFile' must be present");
-    Preconditions.checkNotNull(properties, "'properties' must be present");
+    // Persist the new configuration
+    try (FileOutputStream fos = new FileOutputStream(InstallationManager.getConfigurationFile())) {
 
-    // Remove the old properties file to make way for the new
-    if (propertiesFile.exists()) {
-      if (!propertiesFile.delete()) {
-        throw new CoreException("Unable to delete '" + propertiesFile.getAbsolutePath() + "'");
-      }
-    }
+      Configurations.writeYaml(fos, Configurations.currentConfiguration);
 
-    try (Writer writer = Files.newWriter(propertiesFile, Charsets.UTF_8)) {
-      properties.store(writer, "MultiBit HD Information");
-      writer.flush();
     } catch (IOException e) {
-      throw new CoreException(e);
+      ExceptionHandler.handleThrowable(e);
     }
   }
 
   /**
-   * <p>Merge the subset into the existing superset. The subset will overwrite the superset.
-   * Items in the superset and not in the subset will be preserved.</p>
+   * <p>Reads the YAML from the given input stream</p>
    *
-   * @param subset   The subset contains the items that will overwrite those in the superset
-   * @param superset The superset contains any items not in the subset that will be preserved
+   * @param is    The input stream to use (not closed)
+   * @param clazz The expected root class from the YAML
+   *
+   * @return The configuration data (<code>Configuration</code>, <code>Wallet Summary</code> etc) if present
    */
-  /* package for testing */
-  static void mergeProperties(Properties subset, Properties superset) {
+  public static synchronized <T> Optional<T> readYaml(InputStream is, Class<T> clazz) {
 
-    Preconditions.checkNotNull(subset, "'subset' must be present");
-    Preconditions.checkNotNull(superset, "'superset' must be present");
+    log.debug("Reading configuration data...");
 
-    // Drive the merge from the subset
-    for (Map.Entry<Object, Object> entry : subset.entrySet()) {
+    Optional<T> configuration;
 
-      String key = (String) entry.getKey();
-      String value = (String) entry.getValue();
+    // Read the external configuration
+    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-      superset.put(key, value);
-
+    try {
+      configuration = Optional.fromNullable(mapper.readValue(is, clazz));
+    } catch (IOException e) {
+      log.warn(e.getMessage());
+      configuration = Optional.absent();
     }
+    if (configuration == null) {
+      log.warn("YAML was not read.");
+    }
+
+    return configuration;
+
+  }
+
+  /**
+   * <p>Writes the YAML to the application directory</p>
+   *
+   * @param os            The output stream to use (not closed)
+   * @param configuration The configuration to write as YAML
+   */
+  public static synchronized <T> void writeYaml(OutputStream os, T configuration) {
+
+    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    try {
+      mapper.writeValue(os, configuration);
+    } catch (IOException e) {
+      ExceptionHandler.handleThrowable(e);
+    }
+
   }
 
 }

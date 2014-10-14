@@ -1,38 +1,41 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
-import com.google.common.collect.Maps;
+import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.Map;
 
+
 /**
- * <p>Wizard to provide the following to UI:</p>
- * <ul>
- * <li>Send bitcoin sequence</li>
- * </ul>
+ * <p>Wizard to provide the following to UI for "Send Bitcoin":</p>
+ * <ol>
+ * <li>Enter amount (or empty entirely)</li>
+ * <li>Confirm details</li>
+ * <li>Report progress</li>
+ * </ol>
  *
  * @since 0.0.1
  *         
  */
-public class SendBitcoinWizard extends AbstractWizard {
+public class SendBitcoinWizard extends AbstractWizard<SendBitcoinWizardModel> {
 
-  private CardLayout cardLayout = new CardLayout();
-  private final JPanel contentPanel = new JPanel(cardLayout);
-
-  public SendBitcoinWizard() {
-
-    contentPanel.setSize(400, 400);
-
-    Map<String,Action> actionMap = Maps.newHashMap();
-    contentPanel.add(new SendBitcoinEnterAmountPanel(), "Send Bitcoin");
-    contentPanel.add(new SendBitcoinConfirmSendPanel(), "Confirm Send");
+  public SendBitcoinWizard(SendBitcoinWizardModel model) {
+    super(model, false, Optional.absent());
   }
 
-  public JPanel getContentPanel() {
+  @Override
+  protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
-    return contentPanel;
+    wizardViewMap.put(
+      SendBitcoinState.SEND_ENTER_AMOUNT.name(),
+      new SendBitcoinEnterAmountPanelView(this, SendBitcoinState.SEND_ENTER_AMOUNT.name()));
+    wizardViewMap.put(
+      SendBitcoinState.SEND_CONFIRM_AMOUNT.name(),
+      new SendBitcoinConfirmPanelView(this, SendBitcoinState.SEND_CONFIRM_AMOUNT.name()));
+    wizardViewMap.put(
+      SendBitcoinState.SEND_REPORT.name(),
+      new SendBitcoinReportPanelView(this, SendBitcoinState.SEND_REPORT.name()));
 
   }
 

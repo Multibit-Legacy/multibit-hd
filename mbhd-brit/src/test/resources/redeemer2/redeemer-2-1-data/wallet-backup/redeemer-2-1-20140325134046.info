@@ -1,0 +1,9 @@
+multiBit.info,1
+walletVersion,3
+receive,1PzNcxAsz4UXf7rCzN7yfhaMVPJejJyvCK,
+receive,1Fxqax7Ck7Bj8dmYMRDSFE6E9twcsrVB6q,redeemer2.1
+property,walletDescription,redeemer2
+property,receiveAmount,
+property,receiveLabel,redeemer2.1
+property,receiveAddress,1Fxqax7Ck7Bj8dmYMRDSFE6E9twcsrVB6q
+property,walletBackupFile,%2FUsers%2Fjim%2FIdeaProjects%2Fmultibit-hd%2Fmbhd-brit%2Fsrc%2Ftest%2Fresources%2Fredeemer2%2Fredeemer-data%2Frolling-backup%2Fredeemer-20140325134040.wallet

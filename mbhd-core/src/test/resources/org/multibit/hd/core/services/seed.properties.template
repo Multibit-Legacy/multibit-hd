@@ -1,0 +1,6 @@
+# Specify the seeds for two wallets and then fund at least one.
+# This bitcoin is then sent from one to the other repeatedly
+walletSeed1=THE SEED FOR THE FIRST WALLET
+walletTimestamp1= THE TIMESTAMP FOR THE FIRST WALLET
+walletSeed2=THE SEED FOR THE SECOND WALLET
+walletTimestamp2= THE TIMESTAMP FOR THE SECOND WALLET

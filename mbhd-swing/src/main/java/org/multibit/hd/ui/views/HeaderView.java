@@ -1,20 +1,26 @@
 package org.multibit.hd.ui.views;
 
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.config.I18NConfiguration;
-import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.events.BalanceChangeEvent;
-import org.multibit.hd.ui.i18n.BitcoinSymbol;
-import org.multibit.hd.ui.i18n.Formats;
-import org.multibit.hd.ui.i18n.Languages;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
-import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
+import org.multibit.hd.ui.events.view.AlertAddedEvent;
+import org.multibit.hd.ui.events.view.BalanceChangedEvent;
+import org.multibit.hd.ui.events.view.ViewChangedEvent;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.models.AlertModel;
+import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
+import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
+import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
+import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.themes.NimbusDecorator;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -23,38 +29,54 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
-public class HeaderView {
+public class HeaderView extends AbstractView {
 
-  private JLabel balanceLHSLabel;
-  private JLabel balanceRHSLabel;
-  private JLabel balanceRHSSymbolLabel;
-  private JLabel exchangeLabel;
+  private final ModelAndView<DisplayAmountModel, DisplayAmountView> balanceDisplayMaV;
 
-  private BalanceChangeEvent latestBalanceChangeEvent;
+  private JLabel alertMessageLabel;
+  private JLabel alertRemainingLabel;
+
+  private JButton alertButton;
+  private JButton closeButton;
 
   private final JPanel contentPanel;
+  private final JPanel alertPanel;
 
   public HeaderView() {
 
-    CoreServices.uiEventBus.register(this);
+    super();
 
-    MigLayout layout = new MigLayout("fillx");
-    contentPanel = new JPanel(layout);
+    contentPanel = Panels.newPanel(new MigLayout(
+      Panels.migLayout("fillx,insets 10 10 5 10,hidemode 3"), // Layout insets ensure border is tight to sidebar
+      "[][]", // Columns
+      "[][shrink]" // Rows
+    ));
 
-    // Create the balance labels
-    JLabel[] balanceLabels = Labels.newBalanceLabels();
-    balanceLHSLabel = balanceLabels[0];
-    balanceRHSLabel = balanceLabels[1];
-    balanceRHSSymbolLabel = balanceLabels[2];
-    exchangeLabel = balanceLabels[3];
+    // Create the alert panel
+    alertPanel = Panels.newPanel(new MigLayout(
+      Panels.migXLayout(),
+      "[grow][][][]", // Columns
+      "[]" // Rows
+    ));
 
-    contentPanel.add(balanceLHSLabel, "baseline grow");
-    contentPanel.add(balanceRHSLabel, "gap 0");
-    contentPanel.add(balanceRHSSymbolLabel, "gap 0");
-    contentPanel.add(exchangeLabel, "gap unrelated");
-    contentPanel.add(new JLabel(), "push");
+    // Start off in hiding
+    alertPanel.setVisible(false);
+
+    // Apply the theme
+    contentPanel.setBackground(Themes.currentTheme.headerPanelBackground());
+    contentPanel.setOpaque(true);
+
+    // Create the balance display hiding it initially
+    balanceDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER, true, "header.balance");
+    balanceDisplayMaV.getView().setVisible(false);
+
+    // Provide a fixed height to avoid an annoying "slide down" during unlock
+    contentPanel.add(balanceDisplayMaV.getView().newComponentPanel(), "growx,push,hmin 50,wrap");
+    contentPanel.add(alertPanel, "growx,aligny top,push");
+
+    populateAlertPanel();
 
   }
 
@@ -65,94 +87,201 @@ public class HeaderView {
     return contentPanel;
   }
 
+
   /**
    * <p>Handles the representation of the balance based on the current configuration</p>
    *
    * @param event The balance change event
    */
   @Subscribe
-  public void onBalanceChangeEvent(BalanceChangeEvent event) {
+  public void onBalanceChangedEvent(final BalanceChangedEvent event) {
 
-    // Keep track of the latest balance
-    this.latestBalanceChangeEvent = event;
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
 
-    // Handle the update
-    handleBalanceChange();
+        // Handle the update
+        balanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
+        balanceDisplayMaV.getModel().setCoinAmount(event.getCoinBalance());
+        balanceDisplayMaV.getModel().setRateProvider(event.getRateProvider());
+        if (event.getRateProvider().isPresent()) {
+          balanceDisplayMaV.getModel().setLocalAmountVisible(true);
+        }
+
+        // Do not set the visibility here, use the ViewChangedEvent
+
+        balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
+      }
+    });
+
   }
 
   /**
-   * <p>Reflect the current balance on the UI</p>
-   */
-  private void handleBalanceChange() {
-
-    BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoinConfiguration();
-    I18NConfiguration i18nConfiguration = Configurations.currentConfiguration.getI18NConfiguration();
-
-    String[] balance = Formats.formatBitcoinBalance(latestBalanceChangeEvent.getBtcBalance().getAmount());
-    String localBalance = Formats.formatLocalBalance(latestBalanceChangeEvent.getLocalBalance().getAmount());
-
-    BitcoinSymbol symbol = BitcoinSymbol.valueOf(bitcoinConfiguration.getBitcoinSymbol());
-
-    if (i18nConfiguration.isCurrencySymbolPrefixed()) {
-      handlePrefixedSymbol(balance, symbol);
-    } else {
-      handleSuffixSymbol(symbol);
-    }
-
-    balanceLHSLabel.setText(balance[0]);
-    balanceRHSLabel.setText(balance[1]);
-
-    // TODO Add this to resource bundles
-    String exchangeText = "~ ${0} ({1})";
-    exchangeLabel.setText(
-      Languages.safeText(
-        exchangeText,
-        localBalance,
-        latestBalanceChangeEvent.getRateProvider()
-      ));
-  }
-
-
-  /**
-   * <p>Place currency symbol before the number</p>
+   * <p>Handles the presentation of a new alert</p>
    *
-   * @param symbol The symbol to use
+   * @param event The show alert event
    */
-  private void handlePrefixedSymbol(String[] balance, BitcoinSymbol symbol) {
+  @Subscribe
+  public void onAlertAddedEvent(final AlertAddedEvent event) {
 
-    // Place currency symbol before the number
-    if (BitcoinSymbol.ICON.equals(symbol)) {
-      // Add icon to LHS, remove from elsewhere
-      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, balanceLHSLabel);
-      AwesomeDecorator.removeIcon(balanceRHSSymbolLabel);
-      balanceRHSSymbolLabel.setText("");
-    } else {
-      // Add symbol to LHS, remove from elsewhere
-      balance[0] = symbol.getSymbol() + " " + balance[0];
-      AwesomeDecorator.removeIcon(balanceLHSLabel);
+
+    Preconditions.checkNotNull(event, "'event' must be present");
+
+    final AlertModel alertModel = event.getAlertModel();
+
+    Preconditions.checkNotNull(alertModel, "'alertModel' must be present");
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+
+        // Update the text according to the model
+        alertMessageLabel.setText(alertModel.getLocalisedMessage());
+        alertRemainingLabel.setText(alertModel.getRemainingText());
+
+        if (alertModel.getButton().isPresent()) {
+
+          JButton button = alertModel.getButton().get();
+          alertButton.setAction(button.getAction());
+          alertButton.setText(button.getText());
+          alertButton.setIcon(button.getIcon());
+          alertButton.setName(button.getName());
+          alertButton.setToolTipText(button.getToolTipText());
+
+          alertButton.setVisible(true);
+        } else {
+          alertButton.setVisible(false);
+        }
+
+        // Don't play sounds here since this will be called each time an alert is dismissed
+        switch (alertModel.getSeverity()) {
+          case RED:
+            PanelDecorator.applyDangerTheme(alertPanel);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), alertButton);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), closeButton);
+            break;
+          case AMBER:
+            PanelDecorator.applyWarningTheme(alertPanel);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), alertButton);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), closeButton);
+            break;
+          case GREEN:
+            PanelDecorator.applySuccessTheme(alertPanel);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), alertButton);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), closeButton);
+            break;
+          case PINK:
+            PanelDecorator.applyPendingTheme(alertPanel);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.pendingAlertBackground(), alertButton);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.pendingAlertBackground(), closeButton);
+            break;
+          default:
+            throw new IllegalStateException("Unknown severity: " + alertModel.getSeverity().name());
+        }
+
+        alertPanel.setVisible(true);
+
+      }
+    });
+
+  }
+
+  /**
+   * <p>Remove any existing alert</p>
+   *
+   * @param event The remove alert event
+   */
+  @Subscribe
+  public void onAlertRemovedEvent(RemoveAlertEvent event) {
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Hide the alert panel
+        alertPanel.setVisible(false);
+      }
+    });
+
+  }
+
+  /**
+   * <p>Called when the view should be should be changed</p>
+   *
+   * @param event The view changed event
+   */
+  @Subscribe
+  public void onViewChangedEvent(final ViewChangedEvent event) {
+
+    if (event.getViewKey().equals(ViewKey.HEADER)) {
+
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+
+          balanceDisplayMaV.getView().setVisible(event.isVisible());
+          if (alertMessageLabel.getText().length() != 0 && event.isVisible()) {
+            alertPanel.setVisible(event.isVisible());
+          }
+        }
+      });
+
     }
 
   }
 
   /**
-   * <p>Place currency symbol after the number</p>
-   *
-   * @param symbol The symbol to use
+   * <p>Populate the alert panel in preparation for any alerts</p>
    */
-  private void handleSuffixSymbol(BitcoinSymbol symbol) {
+  private void populateAlertPanel() {
 
-    if (BitcoinSymbol.ICON.equals(symbol)) {
-      // Add icon to RHS, remove from elsewhere
-      AwesomeDecorator.applyIcon(AwesomeIcon.BITCOIN, balanceRHSSymbolLabel);
-      AwesomeDecorator.removeIcon(balanceLHSLabel);
-      balanceRHSSymbolLabel.setText("");
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
+
+    alertPanel.removeAll();
+
+    alertMessageLabel = Labels.newBlankLabel();
+    alertMessageLabel.setName("alert_message_label");
+
+    alertRemainingLabel = Labels.newBlankLabel();
+    alertRemainingLabel.setName("alert_remaining_label");
+
+    // Placeholder button that gets overwritten
+    alertButton = new JButton();
+    alertButton.setName("alert_button");
+    alertButton.setVisible(false);
+
+    closeButton = Buttons.newPanelCloseButton(getCloseAlertAction());
+
+    // Determine how to add them back into the panel
+    if (Languages.isLeftToRight()) {
+      alertPanel.add(alertMessageLabel, "push");
+      alertPanel.add(alertRemainingLabel, "shrink,right");
+      alertPanel.add(alertButton, "shrink,right");
+      alertPanel.add(closeButton);
     } else {
-      // Add symbol to RHS, remove from elsewhere
-      balanceRHSSymbolLabel.setText(symbol.getSymbol());
-      AwesomeDecorator.removeIcon(balanceLHSLabel);
-      AwesomeDecorator.removeIcon(balanceRHSSymbolLabel);
+      alertPanel.add(closeButton);
+      alertPanel.add(alertButton, "shrink,left");
+      alertPanel.add(alertRemainingLabel, "shrink,left");
+      alertPanel.add(alertMessageLabel, "push");
     }
 
   }
+
+  /**
+   * @return A new action for closing the alert panel
+   */
+  private Action getCloseAlertAction() {
+
+    return new AbstractAction() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        ControllerEvents.fireRemoveAlertEvent();
+
+      }
+
+    };
+  }
+
 
 }

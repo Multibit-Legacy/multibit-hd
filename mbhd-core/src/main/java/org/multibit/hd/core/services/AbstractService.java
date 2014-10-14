@@ -1,9 +1,13 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.events.ShutdownEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract base class to provide the following to application services:</p>
@@ -16,6 +20,8 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
  */
 public abstract class AbstractService implements ManagedService {
 
+  protected static final Logger log = LoggerFactory.getLogger(AbstractService.class);
+
   /**
    * The optional scheduled executor service running this service's activity
    */
@@ -26,39 +32,55 @@ public abstract class AbstractService implements ManagedService {
    */
   private Optional<ListeningExecutorService> service = Optional.absent();
 
-  @Override
-  public void initialise() {
-    // Do nothing
+  protected AbstractService() {
+    CoreServices.uiEventBus.register(this);
   }
 
   @Override
-  public void start() {
-    // Do nothing
+  public boolean start() {
+
+    return true;
+
   }
 
   @Override
   public void stopAndWait() {
-    if (scheduledService.isPresent()) {
 
+    log.debug("Service {} stopping...",this.getClass().getSimpleName());
+
+    if (scheduledService.isPresent()) {
       scheduledService.get().shutdownNow();
     }
+
     if (service.isPresent()) {
       service.get().shutdownNow();
     }
+
   }
 
   /**
    * <p>Provide a single thread scheduled executor</p>
+   * @param poolName The thread pool name (use lowercase hyphenated)
    */
-  protected void requireSingleThreadScheduledExecutor() {
-    scheduledService = Optional.of(SafeExecutors.newSingleThreadScheduledExecutor());
+  protected void requireSingleThreadScheduledExecutor(String poolName) {
+    scheduledService = Optional.of(SafeExecutors.newSingleThreadScheduledExecutor(poolName));
   }
 
   /**
    * <p>Provide a single thread executor</p>
+   * @param poolName The thread pool name (use lowercase hyphenated)
    */
-  protected void requireSingleThreadExecutor() {
-    service = Optional.of(SafeExecutors.newSingleThreadExecutor());
+  protected void requireSingleThreadExecutor(String poolName) {
+    service = Optional.of(SafeExecutors.newSingleThreadExecutor(poolName));
+  }
+
+  /**
+   * <p>Provide a fixed thread pool executor</p>
+   * @param threadCount The number of threads
+   * @param poolName The thread pool name (use lowercase hyphenated)
+   */
+  protected void requireFixedThreadPoolExecutor(int threadCount, String poolName) {
+    service = Optional.of(SafeExecutors.newFixedThreadPool(threadCount, poolName));
   }
 
   /**
@@ -69,10 +91,24 @@ public abstract class AbstractService implements ManagedService {
   }
 
   /**
+    * @return The executor service optional
+    */
+   protected Optional<ListeningExecutorService> getExecutorServiceOptional() {
+     return service;
+   }
+
+   /**
    * @return The executor service
    */
   protected ListeningScheduledExecutorService getScheduledExecutorService() {
     return scheduledService.get();
   }
 
+  @Override
+  @Subscribe
+  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+
+    stopAndWait();
+
+  }
 }

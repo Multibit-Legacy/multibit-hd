@@ -1,5 +1,9 @@
 package org.multibit.hd.core.config;
 
+import com.google.common.collect.Maps;
+
+import java.util.Map;
+
 /**
  * <p>Configuration to provide the following to application:</p>
  * <ul>
@@ -7,15 +11,74 @@ package org.multibit.hd.core.config;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class BitcoinConfiguration {
 
-  private String bitcoinSymbol = "ICON";
-  private String exchangeClassName;
+  /**
+   * Start with MICON since it provides pleasing amounts and iconography
+   */
+  private String bitcoinSymbol = "MICON";
 
   /**
-   * @return The Bitcoin symbol to use
+   * Always use MainNet unless specified otherwise
+   * Support for other networks requires a code change in BitcoinNetwork
+   */
+  private String bitcoinNetwork = "MAIN_NET";
+
+  private String decimalSeparator = ".";
+  private String groupingSeparator = ",";
+  private int localDecimalPlaces = 2;
+
+  private boolean currencySymbolLeading = true;
+
+  private String localCurrencySymbol = "$";
+  private String localCurrencyCode = "USD";
+
+  /**
+   * Start with "Bitstamp" since it provides USD (the global reserve currency)
+   * Did consider "None" but users generally change settings for editing not discovering
+   */
+  private String currentExchange = "BITSTAMP";
+
+  /**
+   * The exchange API keys (required for OER and some rate-limited exchanges)
+   */
+  private Map<String, String> exchangeApiKeys = Maps.newHashMap();
+
+  /**
+   * <p>Default constructor uses the default locale</p>
+   */
+  public BitcoinConfiguration() {
+  }
+
+  /**
+   * @return A deep copy of this object
+   */
+  public BitcoinConfiguration deepCopy() {
+
+    BitcoinConfiguration configuration = new BitcoinConfiguration();
+
+    configuration.setBitcoinSymbol(getBitcoinSymbol());
+    configuration.setCurrencySymbolLeading(isCurrencySymbolLeading());
+
+    configuration.setDecimalSeparator(getDecimalSeparator());
+    configuration.setGroupingSeparator(getGroupingSeparator());
+    configuration.setLocalDecimalPlaces(getLocalDecimalPlaces());
+
+    configuration.setLocalCurrencySymbol(getLocalCurrencySymbol());
+    configuration.setLocalCurrencyCode(getLocalCurrencyCode());
+
+    configuration.setBitcoinNetwork(getBitcoinNetwork());
+
+    configuration.setCurrentExchange(getCurrentExchange());
+    configuration.setExchangeApiKeys(getExchangeApiKeys());
+
+    return configuration;
+  }
+
+  /**
+   * @return The Bitcoin symbol to use (compatible with BitcoinSymbol)
    */
   public String getBitcoinSymbol() {
     return bitcoinSymbol;
@@ -26,22 +89,105 @@ public class BitcoinConfiguration {
   }
 
   /**
-   * @return A deep copy of this object
+   * @return The Bitcoin network to use (compatible with BitcoinNetwork)
    */
-  public BitcoinConfiguration deepCopy() {
-
-    BitcoinConfiguration bitcoin = new BitcoinConfiguration();
-
-    bitcoin.setBitcoinSymbol(getBitcoinSymbol());
-
-    return bitcoin;
+  public String getBitcoinNetwork() {
+    return bitcoinNetwork;
   }
 
-  public String getExchangeClassName() {
-    return exchangeClassName;
+  public void setBitcoinNetwork(String bitcoinNetwork) {
+    this.bitcoinNetwork = bitcoinNetwork;
   }
 
-  public void setExchangeClassName(String exchangeClassName) {
-    this.exchangeClassName = exchangeClassName;
+  /**
+   * @return The current exchange (e.g. "BITSTAMP" from <code>ExchangeKey</code>) providing access to the current exchange rate provider
+   */
+  public String getCurrentExchange() {
+    return currentExchange;
+  }
+
+  public void setCurrentExchange(String currentExchange) {
+    this.currentExchange = currentExchange;
+  }
+
+  /**
+   * @return The decimal separator
+   */
+  public String getDecimalSeparator() {
+    return decimalSeparator;
+  }
+
+  public void setDecimalSeparator(String separator) {
+    this.decimalSeparator = separator;
+  }
+
+  /**
+   * @return The grouping separator
+   */
+  public String getGroupingSeparator() {
+    return groupingSeparator;
+  }
+
+  public void setGroupingSeparator(String groupingSeparator) {
+    this.groupingSeparator = groupingSeparator;
+  }
+
+
+  public void setCurrencySymbolLeading(boolean currencySymbolLeading) {
+    this.currencySymbolLeading = currencySymbolLeading;
+  }
+
+  /**
+   * @return True if the currency symbol should lead the numerical element which is always read left to right
+   */
+  public boolean isCurrencySymbolLeading() {
+    return currencySymbolLeading;
+  }
+
+  /**
+   * @return The number of decimal places to show for the local currency
+   */
+  public int getLocalDecimalPlaces() {
+    return localDecimalPlaces;
+  }
+
+  public void setLocalDecimalPlaces(int localDecimalPlaces) {
+    this.localDecimalPlaces = localDecimalPlaces;
+  }
+
+  /**
+   * @return The local currency symbol (e.g. "$", "£" etc)
+   */
+  public String getLocalCurrencySymbol() {
+    return localCurrencySymbol;
+  }
+
+  /**
+   * @param localCurrencySymbol The local currency symbol
+   */
+  public void setLocalCurrencySymbol(String localCurrencySymbol) {
+    this.localCurrencySymbol = localCurrencySymbol;
+  }
+
+  /**
+   * @return The local currency code (e.g. "USD", "GBP" etc)
+   */
+  public String getLocalCurrencyCode() {
+    return localCurrencyCode;
+  }
+
+  public void setLocalCurrencyCode(String localCurrencyCode) {
+    this.localCurrencyCode = localCurrencyCode;
+  }
+
+  /**
+   * @return The exchange API keys (only OER at present, but others could be added using a "key | value" approach)
+   */
+  public Map<String, String> getExchangeApiKeys() {
+    return exchangeApiKeys;
+  }
+
+  public void setExchangeApiKeys(Map<String, String> exchangeApiKeys) {
+    this.exchangeApiKeys = exchangeApiKeys;
   }
 }

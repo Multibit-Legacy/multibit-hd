@@ -1,10 +1,11 @@
 package org.multibit.hd.ui.views.fonts;
 
+import org.multibit.hd.ui.views.components.ImageDecorator;
+
 import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Map;
 
 /**
  * <p>Icon to provide the following to UI:</p>
@@ -29,7 +30,7 @@ public class AwesomeSwingIcon implements Icon, PropertyChangeListener {
   private int iconHeight;
 
   /**
-   * <p>Create an icon matching the component font</p>
+   * <p>Create an "enabled" icon matching the component font</p>
    *
    * @param component The component to which the icon will be added
    * @param text      The text to be rendered on the Icon
@@ -41,7 +42,20 @@ public class AwesomeSwingIcon implements Icon, PropertyChangeListener {
   }
 
   /**
-   * <p>Create an icon matching the component font with specified size</p>
+   * <p>Create an "enabled" icon matching the component font with specified size</p>
+   *
+   * @param component The component to which the icon will be added
+   * @param text      The text to be rendered on the Icon
+   * @param enabled   True if the icon should be enabled, false for a more faded style
+   */
+  public AwesomeSwingIcon(JComponent component, Character text, boolean enabled) {
+
+    this(component, text, component.getFont().getSize(), enabled);
+
+  }
+
+  /**
+   * <p>Create an "enabled" icon matching the component font with specified size</p>
    *
    * @param component The component to which the icon will be added
    * @param text      The text to be rendered on the Icon
@@ -49,10 +63,28 @@ public class AwesomeSwingIcon implements Icon, PropertyChangeListener {
    */
   public AwesomeSwingIcon(JComponent component, Character text, int size) {
 
+    this(component, text, size, true);
+
+  }
+
+  /**
+   * <p>Create an icon matching the component font with specified size</p>
+   *
+   * @param component The component to which the icon will be added
+   * @param text      The text to be rendered on the Icon
+   * @param size      The font size to use
+   * @param enabled   True if the icon should be enabled, false for a more faded style
+   */
+  public AwesomeSwingIcon(JComponent component, Character text, int size, boolean enabled) {
+
     this.component = component;
 
-    font = font.deriveFont( (float) size);
+    font = font.deriveFont((float) size);
     setText(String.valueOf(text));
+
+    if (!enabled) {
+      setForeground(UIManager.getColor("textInactiveText"));
+    }
 
     component.addPropertyChangeListener("font", this);
 
@@ -102,7 +134,7 @@ public class AwesomeSwingIcon implements Icon, PropertyChangeListener {
 
     FontMetrics fm = component.getFontMetrics(font);
 
-    iconWidth = fm.stringWidth(text) + 2;
+    iconWidth = fm.stringWidth(text);
     iconHeight = fm.getHeight();
 
     component.revalidate();
@@ -121,28 +153,21 @@ public class AwesomeSwingIcon implements Icon, PropertyChangeListener {
   @Override
   public void paintIcon(Component c, Graphics g, int x, int y) {
 
-    Graphics2D iconGraphics = (Graphics2D) g.create();
+    Graphics2D g2 = (Graphics2D) g.create();
 
-    Toolkit toolkit = Toolkit.getDefaultToolkit();
-    Map map = (Map) (toolkit.getDesktopProperty("awt.font.desktophints"));
+    g2.setRenderingHints(ImageDecorator.smoothRenderingHints());
 
-    if (map != null) {
-      iconGraphics.addRenderingHints(map);
-    } else {
-      iconGraphics.setRenderingHint(
-        RenderingHints.KEY_TEXT_ANTIALIASING,
-        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    }
+    g2.setFont(font);
+    g2.setColor(getForeground());
 
-    iconGraphics.setFont(font);
-    iconGraphics.setColor(getForeground());
+    // Align the icon vertically
+    FontMetrics fm = g2.getFontMetrics();
+    g2.translate(x, y + fm.getAscent());
 
-    FontMetrics fm = iconGraphics.getFontMetrics();
+    // Draw the Font Awesome character without any offset to allow rotation if required
+    g2.drawString(text, 0, 0);
 
-    iconGraphics.translate(x, y + fm.getAscent());
-    iconGraphics.drawString(text, 2, 0);
-
-    iconGraphics.dispose();
+    g2.dispose();
   }
 
   @Override

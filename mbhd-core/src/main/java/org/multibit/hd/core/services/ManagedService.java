@@ -1,5 +1,8 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.events.ShutdownEvent;
+
 /**
  * <p>Interface to provide the following to application API services:</p>
  * <ul>
@@ -7,23 +10,26 @@ package org.multibit.hd.core.services;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public interface ManagedService {
 
   /**
-   * Initialise any processes (no events should be fired)
-   */
-  void initialise();
-
-  /**
    * Start the service (events are fired)
+   *
+   * @return True if the service started sufficiently for the application to run, false if a shutdown is required
    */
-  void start();
+  boolean start();
 
   /**
-   * Stop the service blocking until terminated
+   * Stop the service (blocking until terminated)
    */
   void stopAndWait();
+
+  /**
+   * Subscribe to a "shutdown" event
+   */
+  @Subscribe
+  void onShutdownEvent(ShutdownEvent shutdownEvent);
 
 }

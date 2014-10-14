@@ -1,12 +1,15 @@
 # Eclipse
+.settings/
 .classpath
 .project
-.settings/
 
 # Intellij
 .idea/
 *.iml
 *.iws
+
+# NetBeans
+nb*.xml
 
 # Sublime
 *.sublime-project
@@ -18,9 +21,23 @@
 # Maven
 target/
 
-# JavaFx
-target-mac
+# JWrapper
+# Folders
+mbhd-install/JRE-1.7/
+mbhd-install/jwrapper/
+mbhd-install/jwrapperlib/
+mbhd-install/wrappers/
+mbhd-install/utils/
+# Files
+mbhd-install/jwrapper-*.jar
+mbhd-install/gu_version
+mbhd-install/LastExtractedJWrapperVersion
+mbhd-install/JWrapperLaunchTemp
+mbhd-install/build
+mbhd-install/build
+
+# Shade plugin
+mbhd-install/dependency-reduced-pom.xml
 
 # MultiBit HD
-
-
+mbhd-install/src/main/resources/trademark-logo.png

@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.multibit.hd</groupId>
     <artifactId>mbhd-parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -14,65 +14,321 @@
   <name>MultiBit HD Core</name>
   <description>This module contains the core classes required by a HD SPV wallet. It is independent of user interface or persistence implementations.</description>
 
-  <properties>
-    <xchange.version>1.10.0</xchange.version>
-  </properties>
+  <!-- Set properties in the Parent POM -->
+
+  <profiles>
+
+    <profile>
+
+      <!-- To activate this use 'mvn -DupdateProtobuf=true clean compile' -->
+      <id>update-protobuf</id>
+      <activation>
+        <property>
+          <name>updateProtobuf</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>compile-protoc</id>
+                <phase>generate-sources</phase>
+                <configuration>
+                  <tasks>
+                    <path id="proto.path">
+                      <!-- Include all MBHD protobuf files -->
+                      <fileset dir="src/main/protobuf">
+                        <include name="**/*.proto"/>
+                      </fileset>
+                    </path>
+                    <pathconvert pathsep=" " property="proto.files" refid="proto.path"/>
+                    <exec executable="/usr/local/bin/protoc" failonerror="true">
+                      <arg value="--java_out=${project.basedir}/src/main/java"/>
+                      <arg value="-I=${project.basedir}/src"/>
+                      <!-- This "error" can be ignored in IDEs -->
+                      <arg line="${proto.files}"/>
+                    </exec>
+                  </tasks>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <!-- Common build -->
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <!-- Step 1: Set all timestamps to same value -->
+          <execution>
+            <id>1-touch-classes</id>
+            <phase>prepare-package</phase>
+            <configuration>
+              <target>
+                <!-- The deterministic date is arbitrary so Bitcoin genesis seems appropriate -->
+                <touch millis="1231006500000">
+                  <fileset dir="target/classes" erroronmissingdir="false"/>
+                </touch>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+
+          <!-- Step 3: Rename ZIP as JAR and set timestamp to same value -->
+          <execution>
+            <id>3-rename-assembly</id>
+            <phase>package</phase>
+            <configuration>
+              <target>
+                <!-- Move the deterministic ZIP into a JAR ignoring absence since we may be in a parent POM -->
+                <!-- If Ant 1.8.3+ can be guaranteed on all build+dev environments then the quiet="true" attribute can be added -->
+                <move file="target/${project.artifactId}-${project.version}-deterministic.zip"
+                      tofile="target/${project.artifactId}-${project.version}.jar"
+                      failonerror="false"
+                  />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Step 2: Assemble as a ZIP to avoid MANIFEST.MF timestamp -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
+          <descriptors>
+            <descriptor>src/main/assembly/zip.xml</descriptor>
+          </descriptors>
+          <attach>false</attach>
+        </configuration>
+        <executions>
+          <execution>
+            <id>2-make-assembly</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+
+  </build>
 
   <dependencies>
-    <!-- XChange for accessing Bitcoin exchanges -->
+
+    <!-- BRIT for receiving payments -->
+    <dependency>
+      <groupId>org.multibit.hd</groupId>
+      <artifactId>mbhd-brit</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+
+    <!-- XChange for accessing Bitcoin exchanges
+         See https://github.com/timmolter/XChange/wiki/Exchange-Support
+    -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
       <artifactId>xchange-core</artifactId>
       <version>${xchange.version}</version>
     </dependency>
-    <!-- XChange MtGox exchange support -->
+
+    <!-- List exchanges in alphabetical order -->
+
+    <!-- XChange ANX exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-mtgox</artifactId>
+      <artifactId>xchange-anx</artifactId>
       <version>${xchange.version}</version>
     </dependency>
-    <!-- XChange VirtEx exchange support -->
+
+    <!-- XChange Bitcoin Average exchange support -->
+    <!-- Causes problems during ExchangeKey enum creation -->
+    <!--<dependency>-->
+    <!--<groupId>com.xeiam.xchange</groupId>-->
+    <!--<artifactId>xchange-bitcoinaverage</artifactId>-->
+    <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
+
+    <!-- XChange Bitcoin Charts exchange support -->
+    <!-- Not an exchange but an aggregator of market data -->
+    <!--<dependency>-->
+      <!--<groupId>com.xeiam.xchange</groupId>-->
+      <!--<artifactId>xchange-bitcoincharts</artifactId>-->
+      <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
+
+    <!-- XChange Bitcoinium exchange support -->
+    <!--<dependency>-->
+    <!--<groupId>com.xeiam.xchange</groupId>-->
+    <!--<artifactId>xchange-bitcoinium</artifactId>-->
+    <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
+
+    <!-- XChange BitCurex exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-cavirtex</artifactId>
+      <artifactId>xchange-bitcurex</artifactId>
       <version>${xchange.version}</version>
     </dependency>
-    <!-- XChange Open Exchange Rates exchange support -->
+
+    <!-- XChange BitFinex exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-openexchangerates</artifactId>
+      <artifactId>xchange-bitfinex</artifactId>
       <version>${xchange.version}</version>
     </dependency>
-    <!-- XChange BTC-E exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-btce</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
+
     <!-- XChange Bitstamp exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
       <artifactId>xchange-bitstamp</artifactId>
       <version>${xchange.version}</version>
     </dependency>
-    <!-- XChange CampBX exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-campbx</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
+
+    <!-- XChange Blockchain exchange support -->
+    <!-- This is not a rate provider -->
+    <!--<dependency>-->
+    <!--<groupId>com.xeiam.xchange</groupId>-->
+    <!--<artifactId>xchange-blockchain</artifactId>-->
+    <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
+
     <!-- XChange BTCChina exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
       <artifactId>xchange-btcchina</artifactId>
       <version>${xchange.version}</version>
     </dependency>
+
+    <!-- XChange BTC-E exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-btce</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange BTER exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-bter</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange Cavirtex exchange support -->
+    <!--<dependency>-->
+      <!--<groupId>com.xeiam.xchange</groupId>-->
+      <!--<artifactId>xchange-cavirtex</artifactId>-->
+      <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
+
+    <!-- XChange CampBX exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-campbx</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange CEXIO exchange support -->
+    <!--<dependency>-->
+      <!--<groupId>com.xeiam.xchange</groupId>-->
+      <!--<artifactId>xchange-cexio</artifactId>-->
+      <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
+
+    <!-- XChange Coinbase exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-coinbase</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange Coinfloor exchange support -->
+    <!-- Requires non-trivial registration -->
+    <!--<dependency>-->
+      <!--<groupId>com.xeiam.xchange</groupId>-->
+      <!--<artifactId>xchange-coinfloor</artifactId>-->
+      <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
+
+    <!-- XChange Cryptotrade exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-cryptotrade</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange JustCoin exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-justcoin</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
     <!-- XChange Kraken exchange support -->
     <dependency>
       <groupId>com.xeiam.xchange</groupId>
       <artifactId>xchange-kraken</artifactId>
       <version>${xchange.version}</version>
     </dependency>
+
+    <!-- XChange Open Exchange Rates support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-openexchangerates</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange Vault of Satoshi exchange support -->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-vaultofsatoshi</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
+
+    <!-- XChange Vircurex exchange support -->
+    <!--<dependency>-->
+      <!--<groupId>com.xeiam.xchange</groupId>-->
+      <!--<artifactId>xchange-vircurex</artifactId>-->
+      <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
+
+    <!-- Java CSV for exporting data -->
+    <dependency>
+      <groupId>com.googlecode.jcsv</groupId>
+      <artifactId>jcsv</artifactId>
+      <version>1.4.0</version>
+    </dependency>
+
+    <!-- Jackson for JSON/YAML representation -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+
   </dependencies>
 
 </project>

@@ -44,6 +44,7 @@ public enum GenericApplicationFactory {
    * @return A {@link GenericApplication} appropriate for the current execution platform
    */
   public synchronized GenericApplication buildGenericApplication(GenericApplicationSpecification specification) {
+
     // Determine the current platform
     if (OSUtils.isMac()) {
       return buildMacApplication(specification);

@@ -1,0 +1,13 @@
+-BEGIN BITCOIN SIGNED MESSAGE-
+Mary
+had
+a
+little
+lamb
+!!BEGIN BITCOIN SIGNATURE!!
+Version: MultiBit HD (0.0.1b-2)
+Comment: https://multibit.org
+Address: 16R2kAxaUNM4xj6ykKbxEugpJdYyJzTP13
+
+ICt2ZS5hSnKuJtLTx3GImH611PgMK/cWKKuBktsMwxNmboa9ph3f1ypZ+Ti5GggEyhm1v7mc6B2H2ZSByhOWIr0=
+-----END BITCOIN SIGNATURE-----
