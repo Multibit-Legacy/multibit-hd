@@ -1,7 +1,7 @@
 package org.multibit.hd.core.managers;
 
-import org.bitcoinj.wallet.WalletFiles;
 import com.google.common.base.Optional;
+import org.bitcoinj.wallet.WalletFiles;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.services.BackupService;
@@ -17,22 +17,25 @@ import java.io.File;
  * <li>Saving of rolling wallet backups and zip backups</li>
  * </ul>
  * </p>
- *
  */
 public class WalletAutoSaveListener implements WalletFiles.Listener {
-  private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
+
+  private static final Logger log = LoggerFactory.getLogger(WalletAutoSaveListener.class);
 
   @Override
   public void onBeforeAutoSave(File tempFile) {
-    log.debug("Just about to save wallet to tempFile '" + tempFile.getAbsolutePath() +"'");
+    log.debug("Just about to save wallet to tempFile '{}'", tempFile.getAbsolutePath());
   }
 
   @Override
   public void onAfterAutoSave(File newlySavedFile) {
-    log.debug("Have just saved wallet to newlySavedFile '" + newlySavedFile.getAbsolutePath() + "'");
+
+    log.debug("Have just saved wallet to newlySavedFile: '{}'", newlySavedFile.getAbsolutePath());
 
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+
     if (walletSummary.isPresent()) {
+
       // Save an encrypted copy of the wallet
       CharSequence password = walletSummary.get().getPassword();
       File encryptedWalletFile = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(newlySavedFile, password);
@@ -47,8 +50,10 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
       backupService.rememberWalletSummaryAndPasswordForRollingBackup(walletSummary.get(), password);
       backupService.rememberWalletIdAndPasswordForLocalZipBackup(walletSummary.get().getWalletId(), password);
       backupService.rememberWalletIdAndPasswordForCloudZipBackup(walletSummary.get().getWalletId(), password);
+
     } else {
       log.error("No AES wallet encryption nor backups created as there was no wallet data to backup.");
     }
+
   }
 }
