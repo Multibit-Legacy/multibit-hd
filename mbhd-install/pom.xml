@@ -5,7 +5,7 @@
   <parent>
     <artifactId>mbhd-parent</artifactId>
     <groupId>org.multibit.hd</groupId>
-    <version>develop-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -211,7 +211,7 @@
     <dependency>
       <groupId>org.multibit.hd</groupId>
       <artifactId>mbhd-swing</artifactId>
-      <version>develop-SNAPSHOT</version>
+      <version>0.0.4-SNAPSHOT</version>
     </dependency>
 
     <!-- JWrapper contains jwrapper_utils.jar that will need to be expanded
