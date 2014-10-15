@@ -60,6 +60,11 @@ public class ShowSettingsScreenUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
+    window
+      .button(MessageKey.SHOW_LABS_WIZARD.getKey())
+      .requireVisible()
+      .requireEnabled();
+
   }
 
 }

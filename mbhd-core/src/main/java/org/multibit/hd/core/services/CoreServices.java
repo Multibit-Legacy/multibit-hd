@@ -12,7 +12,6 @@ import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
-import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
@@ -25,6 +24,7 @@ import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.hardware.core.HardwareWalletClient;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.wallets.HardwareWallets;
@@ -38,6 +38,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -48,7 +49,6 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class CoreServices {
 
@@ -178,50 +178,52 @@ public class CoreServices {
 
     switch (shutdownType) {
       case HARD:
-        SafeExecutors.newFixedThreadPool(1, "hard-shutdown").execute(new Runnable() {
-          @Override
-          public void run() {
+        SafeExecutors.newFixedThreadPool(1, "hard-shutdown").execute(
+          new Runnable() {
+            @Override
+            public void run() {
 
-            log.info("Applying hard shutdown. Waiting for processes to clean up...");
+              log.info("Applying hard shutdown. Waiting for processes to clean up...");
 
-            // Provide a short delay while modules deal with the ShutdownEvent
-            Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+              // Provide a short delay while modules deal with the ShutdownEvent
+              Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
 
-            log.info("Issuing system exit");
-            System.exit(0);
-          }
-        });
+              log.info("Issuing system exit");
+              System.exit(0);
+            }
+          });
         break;
       case SOFT:
-        SafeExecutors.newFixedThreadPool(1, "soft-shutdown").execute(new Runnable() {
-          @Override
-          public void run() {
+        SafeExecutors.newFixedThreadPool(1, "soft-shutdown").execute(
+          new Runnable() {
+            @Override
+            public void run() {
 
-            log.info("Applying soft shutdown. Waiting for processes to clean up...");
+              log.info("Applying soft shutdown. Waiting for processes to clean up...");
 
-            if (hardwareWalletService.isPresent()) {
-              hardwareWalletService.get().stopAndWait();
+              if (hardwareWalletService.isPresent()) {
+                hardwareWalletService.get().stopAndWait();
+              }
+
+              // Provide a short delay while modules deal with the ShutdownEvent
+              Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+
+              log.info("Resetting services and events");
+
+              // Reset the existing services
+              bitcoinNetworkService = null;
+              hardwareWalletService = Optional.absent();
+              contactServiceMap = Maps.newHashMap();
+              walletServiceMap = Maps.newHashMap();
+              historyServiceMap = Maps.newHashMap();
+
+              // Reset the event handler
+              uiEventBus = new EventBus();
+
+              // Suggest a garbage collection
+              System.gc();
             }
-
-            // Provide a short delay while modules deal with the ShutdownEvent
-            Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
-
-            log.info("Resetting services and events");
-
-            // Reset the existing services
-            bitcoinNetworkService = null;
-            hardwareWalletService = Optional.absent();
-            contactServiceMap = Maps.newHashMap();
-            walletServiceMap = Maps.newHashMap();
-            historyServiceMap = Maps.newHashMap();
-
-            // Reset the event handler
-            uiEventBus = new EventBus();
-
-            // Suggest a garbage collection
-            System.gc();
-          }
-        });
+          });
         break;
       case STANDBY:
         break;
@@ -249,27 +251,47 @@ public class CoreServices {
     log.trace("Get hardware wallet service");
     if (!hardwareWalletService.isPresent()) {
 
-      try {
-        // Use factory to statically bind a specific hardware wallet
-        TrezorV1HidHardwareWallet wallet = HardwareWallets.newUsbInstance(
-          TrezorV1HidHardwareWallet.class,
-          Optional.<Integer>absent(),
-          Optional.<Integer>absent(),
-          Optional.<String>absent()
-        );
-        // Wrap the hardware wallet in a suitable client to simplify message API
-        HardwareWalletClient client = new TrezorHardwareWalletClient(wallet);
+      // Attempt Trezor support
+      if (Configurations.currentConfiguration.isTrezor()) {
 
-        // Wrap the client in a service for high level API suitable for downstream applications
-        hardwareWalletService = Optional.of(new HardwareWalletService(client));
+        try {
+          // Use factory to statically bind a specific hardware wallet
+          TrezorV1HidHardwareWallet wallet = HardwareWallets.newUsbInstance(
+            TrezorV1HidHardwareWallet.class,
+            Optional.<Integer>absent(),
+            Optional.<Integer>absent(),
+            Optional.<String>absent()
+          );
+          // Wrap the hardware wallet in a suitable client to simplify message API
+          HardwareWalletClient client = new TrezorHardwareWalletClient(wallet);
 
-      } catch (Throwable throwable) {
-        log.warn("Could not create the hardware wallet.", throwable);
+          // Wrap the client in a service for high level API suitable for downstream applications
+          hardwareWalletService = Optional.of(new HardwareWalletService(client));
+
+        } catch (Throwable throwable) {
+          log.warn("Could not create the hardware wallet.", throwable);
+          hardwareWalletService = Optional.absent();
+        }
+      } else {
         hardwareWalletService = Optional.absent();
       }
+
     }
 
     return hardwareWalletService;
+
+  }
+
+  /**
+   * @param listeners Any listeners of hardware events that are known about
+   */
+  public static void stopHardwareWalletService(Collection<Object> listeners) {
+
+    hardwareWalletService.get().stopAndWait();
+    for (Object listener : listeners) {
+      HardwareWalletService.hardwareWalletEventBus.unregister(listener);
+    }
+    hardwareWalletService = Optional.absent();
 
   }
 
@@ -390,6 +412,7 @@ public class CoreServices {
     return getOrCreateHistoryService(walletId);
   }
 
+
   /**
    * @return The wallet service for a wallet (single soft, multiple hard)
    */
@@ -412,7 +435,6 @@ public class CoreServices {
     return walletServiceMap.get(walletId);
 
   }
-
 
   /**
    * @return The history service for a wallet (single soft, multiple hard)
@@ -472,5 +494,4 @@ public class CoreServices {
       throw new CoreException(e);
     }
   }
-
 }

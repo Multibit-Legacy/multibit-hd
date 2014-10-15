@@ -17,7 +17,6 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Configuration {
@@ -42,10 +41,19 @@ public class Configuration {
    */
   private boolean licenceAccepted = false;
 
+  //////////////// Labs properties are added to the top configuration before being allocated to a sub-section ///////////////////////
+
   /**
    * True if TOR should be used for Bitcoin connections
    */
   private boolean tor = false;
+
+  /**
+   * True if Trezor hardware wallet should be supported
+   */
+  private boolean trezor = true;
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Any unknown objects in the configuration go here (preserve order of insertion)
@@ -183,10 +191,8 @@ public class Configuration {
     this.licenceAccepted = licenceAccepted;
   }
 
-  //////////////// Labs properties are added to the top configuration before being allocated to a sub-section ///////////////////////
-
   /**
-   * TODO Move out of "labs"
+   * TODO Move out of "labs" in Release 0.1
    *
    * @return True if TOR should be used for communications
    */
@@ -196,6 +202,19 @@ public class Configuration {
 
   public void setTor(boolean tor) {
     this.tor = tor;
+  }
+
+  /**
+   * TODO Move out of "labs" in Release 0.1
+   *
+   * @return True if Trezor should be included in hardware wallet support
+   */
+  public boolean isTrezor() {
+    return trezor;
+  }
+
+  public void setTrezor(boolean trezor) {
+    this.trezor = trezor;
   }
 
   /**
@@ -226,6 +245,7 @@ public class Configuration {
 
     // Labs properties
     configuration.setTor(isTor());
+    configuration.setTrezor(isTrezor());
 
     return configuration;
   }

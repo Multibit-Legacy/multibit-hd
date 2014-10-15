@@ -256,6 +256,9 @@ public enum MessageKey {
   SELECT_TOR("select_tor"),
   SELECT_TOR_TOOLTIP("select_tor_tooltip"),
 
+  SELECT_TREZOR("select_trezor"),
+  SELECT_TREZOR_TOOLTIP("select_trezor_tooltip"),
+
   // Sidebar
 
   SIDEBAR_TREE("sidebar_tree"),
@@ -287,8 +290,9 @@ public enum MessageKey {
   PAYMENT_SENT_ALERT("payment_sent_label"),
 
   // Trezor alerts
-  TREZOR_CONNECTED_ALERT("trezor_connected_alert"),
-  TREZOR_DISCONNECTED_ALERT("trezor_disconnected_alert"),
+  TREZOR_ATTACHED_ALERT("trezor_attached_alert"),
+  TREZOR_DETACHED_ALERT("trezor_detached_alert"),
+  TREZOR_STOPPED_ALERT("trezor_stopped_alert"),
   TREZOR_FAILURE_ALERT("trezor_failure_alert"),
 
   PEER_COUNT("peer_count"),
@@ -373,6 +377,7 @@ public enum MessageKey {
   APPEARANCE_SETTINGS_TITLE("appearance_settings_title"),
   SOUNDS_SETTINGS_TITLE("sounds_settings_title"),
   FEES_SETTINGS_TITLE("fees_settings_title"),
+  LABS_SETTINGS_TITLE("labs_settings_title"),
 
   // Tools titles
 
@@ -455,8 +460,8 @@ public enum MessageKey {
   SHOW_SOUNDS_WIZARD("show_sounds_wizard"),
   SHOW_SOUNDS_WIZARD_TOOLTIP("show_sounds_wizard_tooltip"),
 
-  SHOW_LAB_WIZARD("show_lab_wizard"),
-  SHOW_LAB_WIZARD_TOOLTIP("show_lab_wizard_tooltip"),
+  SHOW_LABS_WIZARD("show_labs_wizard"),
+  SHOW_LABS_WIZARD_TOOLTIP("show_labs_wizard_tooltip"),
 
   SHOW_UNITS_WIZARD("show_units_wizard"),
   SHOW_UNITS_WIZARD_TOOLTIP("show_units_wizard_tooltip"),

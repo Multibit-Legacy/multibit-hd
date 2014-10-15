@@ -887,7 +887,7 @@ public class Buttons {
    */
   public static JButton newShowLabSettingsWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_LAB_WIZARD, MessageKey.SHOW_LAB_WIZARD_TOOLTIP);
+    JButton button = newLargeButton(action, MessageKey.SHOW_LABS_WIZARD, MessageKey.SHOW_LABS_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.FLASK,

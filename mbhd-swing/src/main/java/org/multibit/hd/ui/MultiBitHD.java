@@ -252,6 +252,9 @@ public class MultiBitHD {
     // Pre-loadContacts sound library
     Sounds.initialise();
 
+    // Start the hardware wallet support to allow credentials screen to be selected
+    mainController.handleHardwareWallets();
+
   }
 
   /**

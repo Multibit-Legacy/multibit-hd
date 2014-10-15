@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar.settings.units;
+package org.multibit.hd.ui.fest.use_cases.sidebar.settings.labs;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -9,29 +9,29 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "settings" screen units wizard shows</li>
+ * <li>Verify the "settings" screen labs wizard shows</li>
  * </ul>
  * <p>Requires the "settings" screen to be showing</p>
  *
  * @since 0.0.1
  *
  */
-public class ShowThenCancelUnitsUseCase extends AbstractFestUseCase {
+public class ShowThenCancelLabsUseCase extends AbstractFestUseCase {
 
-  public ShowThenCancelUnitsUseCase(FrameFixture window) {
+  public ShowThenCancelLabsUseCase(FrameFixture window) {
     super(window);
   }
 
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on "units"
+    // Click on "exchange"
     window
-      .button(MessageKey.SHOW_UNITS_WIZARD.getKey())
+      .button(MessageKey.SHOW_LABS_WIZARD.getKey())
       .click();
 
-    // Verify the "units" wizard appears
-    assertLabelText(MessageKey.UNITS_SETTINGS_TITLE);
+    // Verify the "labs" wizard appears
+    assertLabelText(MessageKey.LABS_SETTINGS_TITLE);
 
     // Verify cancel is present
     window
