@@ -15,7 +15,9 @@ import org.multibit.hd.ui.views.wizards.appearance_settings.AppearanceSettingsWi
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordState;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizard;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizardModel;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsState;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizardModel;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizard;
@@ -46,8 +48,6 @@ import org.multibit.hd.ui.views.wizards.lab_settings.LabSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsState;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizard;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizardModel;
-import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
-import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsState;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsWizard;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsWizardModel;
@@ -70,6 +70,9 @@ import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsState;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsWizard;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsWizardModel;
+import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorState;
+import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorWizard;
+import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorWizardModel;
 import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageState;
 import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageWizard;
 import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageWizardModel;
@@ -246,15 +249,16 @@ public class Wizards {
 
   /**
     * @return A new "credentials" wizard for a warm start
+    * @param credentialsRequestType whether the user enters a password or PIN
     */
    public static CredentialsWizard newExitingCredentialsWizard(CredentialsRequestType credentialsRequestType) {
 
      log.debug("New 'Credentials wizard' with credentialsRequestType = " + credentialsRequestType);
      switch (credentialsRequestType) {
        case NO_TREZOR_PIN:
-         throw new UnsupportedOperationException("TODO: No Trezor PIN support in Credentials Wizard");
+         throw new UnsupportedOperationException("No Trezor PIN support in Credentials Wizard");
        case TREZOR_PIN:
-         return new CredentialsWizard(new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PIN, credentialsRequestType), true);
+         throw new UnsupportedOperationException("Trezor PIN support in Credentials Wizard");
        case PASSWORD:
        default:
          return new CredentialsWizard(new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD, credentialsRequestType), true);
@@ -262,6 +266,14 @@ public class Wizards {
    }
 
   /**
+     * @return A new "use trezor" wizard for a warm start
+     */
+    public static UseTrezorWizard newExitingUseTrezorWizard() {
+
+      return new UseTrezorWizard(new UseTrezorWizardModel(UseTrezorState.ENTER_PIN), true);
+    }
+
+   /**
    * @return A new "change credentials" wizard
    */
   public static ChangePasswordWizard newChangePasswordWizard() {

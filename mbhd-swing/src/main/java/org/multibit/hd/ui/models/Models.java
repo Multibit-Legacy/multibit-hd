@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.models;
 
-import org.bitcoinj.uri.BitcoinURI;
 import com.google.common.base.Optional;
+import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
@@ -14,7 +14,6 @@ import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.Wizards;
-import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
 
 import javax.swing.*;
@@ -169,7 +168,8 @@ public class Models {
           @Override
           public void actionPerformed(ActionEvent e) {
             // Open the Credentials wizard, asking for a Trezor PIN entry screen
-            Panels.showLightBox(Wizards.newExitingCredentialsWizard(CredentialsRequestType.TREZOR_PIN).getWizardScreenHolder());
+            ControllerEvents.fireRemoveAlertEvent();
+            Panels.showLightBox(Wizards.newExitingUseTrezorWizard().getWizardScreenHolder());
           }
         }, MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);
 

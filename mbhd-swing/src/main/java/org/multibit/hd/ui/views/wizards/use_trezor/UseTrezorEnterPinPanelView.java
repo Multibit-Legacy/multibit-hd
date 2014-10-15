@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.credentials;
+package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -43,9 +43,9 @@ import java.util.concurrent.TimeUnit;
  * @since 0.0.1
  *  
  */
-public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<CredentialsWizardModel, CredentialsEnterPinPanelModel> {
+public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorEnterPinPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(CredentialsEnterPinPanelView.class);
+  private static final Logger log = LoggerFactory.getLogger(UseTrezorEnterPinPanelView.class);
 
   // Panel specific components
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
@@ -72,7 +72,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   /**
    * @param wizard The wizard managing the states
    */
-  public CredentialsEnterPinPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
+  public UseTrezorEnterPinPanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.PIN_TITLE, AwesomeIcon.LOCK);
 
@@ -85,7 +85,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
     enterPinMaV = Components.newEnterPinMaV(getPanelName());
 
     // Configure the panel model
-    final CredentialsEnterPinPanelModel panelModel = new CredentialsEnterPinPanelModel(
+    final UseTrezorEnterPinPanelModel panelModel = new UseTrezorEnterPinPanelModel(
       getPanelName(),
       enterPinMaV.getModel()
     );
@@ -136,7 +136,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
 
     PanelDecorator.addExitCancelRestoreUnlock(this, wizard);
 

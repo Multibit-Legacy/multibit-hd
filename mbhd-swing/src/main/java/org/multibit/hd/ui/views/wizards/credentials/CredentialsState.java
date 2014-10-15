@@ -16,16 +16,6 @@ public enum CredentialsState {
    */
   CREDENTIALS_ENTER_PASSWORD,
 
-  /**
-   * Enter a Trezor PIN
-   */
-   CREDENTIALS_ENTER_PIN,
-
-  /**
-   * No Trezor PIN required
-   */
-   CREDENTIALS_NO_PIN_REQUIRED,
-
    /**
    * Special case state used by the restore button action to trigger
    * a handover to the welcome wizard
