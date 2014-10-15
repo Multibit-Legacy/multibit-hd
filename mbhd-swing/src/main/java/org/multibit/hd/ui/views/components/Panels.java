@@ -329,20 +329,17 @@ public class Panels {
    *
    * @param listener               The action listener
    * @param createCommand          The create command name
-   * @param restorePasswordCommand The restore credentials command name
-   * @param restoreWalletCommand   The restore wallet command name
-   * @param hardwareWalletCommand  The hardware wallet command name
    * @param existingWalletCommand  The existing wallet command name
    *
+   * @param restorePasswordCommand The restore credentials command name
+   * @param restoreWalletCommand   The restore wallet command name
    * @return A new "wallet selector" panel
    */
   public static JPanel newWalletSelector(
     ActionListener listener,
     String createCommand,
-    String restorePasswordCommand,
-    String restoreWalletCommand,
-    String hardwareWalletCommand,
-    String existingWalletCommand
+    String existingWalletCommand, String restorePasswordCommand,
+    String restoreWalletCommand
   ) {
 
     JPanel panel = Panels.newPanel();
@@ -357,18 +354,13 @@ public class Panels {
     JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_WALLET);
     radio3.setActionCommand(restoreWalletCommand);
 
-    JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.USE_HARDWARE_WALLET);
-    radio4.setActionCommand(hardwareWalletCommand);
-    radio4.setEnabled(false);
-    radio4.setForeground(UIManager.getColor("RadioButton.disabledText"));
-
-    JRadioButton radio5 = RadioButtons.newRadioButton(listener, MessageKey.USE_EXISTING_WALLET);
-    radio5.setActionCommand(existingWalletCommand);
+    JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.USE_EXISTING_WALLET);
+    radio4.setActionCommand(existingWalletCommand);
 
     // Check for existing wallets
     if (WalletManager.getWalletSummaries().isEmpty()) {
-      radio5.setEnabled(false);
-      radio5.setForeground(UIManager.getColor("RadioButton.disabledText"));
+      radio4.setEnabled(false);
+      radio4.setForeground(UIManager.getColor("RadioButton.disabledText"));
     }
 
     // Wallet selection is mutually exclusive
@@ -377,14 +369,12 @@ public class Panels {
     group.add(radio2);
     group.add(radio3);
     group.add(radio4);
-    group.add(radio5);
 
     // Add to the panel
     panel.add(radio1, "wrap");
     panel.add(radio2, "wrap");
     panel.add(radio3, "wrap");
     panel.add(radio4, "wrap");
-    panel.add(radio5, "wrap");
 
     return panel;
   }
