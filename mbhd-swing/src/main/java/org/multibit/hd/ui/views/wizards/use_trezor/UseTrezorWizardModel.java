@@ -35,4 +35,22 @@ public class UseTrezorWizardModel extends AbstractWizardModel<UseTrezorState> {
   public void setEnterPinPanelModel(UseTrezorEnterPinPanelModel enterPinPanelModel) {
     this.enterPinPanelModel = enterPinPanelModel;
   }
+
+  @Override
+   public void showNext() {
+
+     switch (state) {
+       case ENTER_PIN:
+         state = UseTrezorState.PRESS_OK_FOR_UNLOCK;
+         break;
+       case NO_PIN_REQUIRED:
+         state = UseTrezorState.PRESS_OK_FOR_UNLOCK;
+         break;
+       case PRESS_OK_FOR_UNLOCK:
+         // Should be catered for by finish
+         break;
+       default:
+         throw new IllegalStateException("Unknown state: " + state.name());
+     }
+   }
 }

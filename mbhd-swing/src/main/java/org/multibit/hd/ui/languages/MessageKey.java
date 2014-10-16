@@ -369,6 +369,9 @@ public enum MessageKey {
   PIN_INTRODUCTION("pin_introduction"),
   PIN_FAILURE("pin_failure"),
 
+  PRESS_CONFIRM_ON_TREZOR("press_confirm_on_trezor"),
+  PRESS_CONFIRM_ON_TREZOR_TITLE("press_confirm_on_trezor_title"),
+
   // Settings titles
 
   LANGUAGE_SETTINGS_TITLE("language_settings_title"),

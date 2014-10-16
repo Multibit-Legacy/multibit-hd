@@ -3,7 +3,6 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
-import org.multibit.hd.ui.views.wizards.credentials.*;
 
 import java.util.Map;
 
@@ -32,7 +31,11 @@ public class UseTrezorWizard extends AbstractWizard<UseTrezorWizardModel> {
 
     // TODO - no Trezor PIN panel
 
-    // TODO - ask user to confirm 'Encrypt MultiBit HD unlock text'
+    // Ask user to confirm 'Encrypt MultiBit HD unlock text'
+    wizardViewMap.put(
+            UseTrezorState.PRESS_OK_FOR_UNLOCK.name(),
+            new UseTrezorPressOkForEncryptCodePanelView(this, UseTrezorState.PRESS_OK_FOR_UNLOCK.name()));
+
   }
 
 }

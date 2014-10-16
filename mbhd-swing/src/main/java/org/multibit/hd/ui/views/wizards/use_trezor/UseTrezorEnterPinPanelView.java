@@ -2,13 +2,18 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.*;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.wallet.KeyChain;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.messages.Success;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -156,6 +161,14 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
 
   @Override
   public boolean beforeShow() {
+    HardwareWalletService.hardwareWalletEventBus.register(this);
+
+    // Before this panel is shown a request is made to the Trezor to encrypt a standard phrase.
+    // The result of this is used as the cloud backup encryption key.
+    // When protected information is requested to the Trezor it shows a PINrequest screen, which this panel deals with
+    // Once the pin is entered the Wizard traverses to the next screen, where the user is requested to press the OK button
+    // on the Trezor to encrypt the standard phrase
+    requestCipherKey();
 
     return true;
   }
@@ -292,41 +305,54 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
   }
 
   /**
+    * Request a cipher key from the Trezor - this will trigger a PIN request
+    */
+   private void requestCipherKey() {
+
+     log.debug("Performing a request cipher key to Trezor");
+
+     // A 'requestCipherKey' is performed in which the user presses the OK button to encrypt a set text (the result of which will be used
+     // to decrypt a wallet)
+     Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+
+
+     if (hardwareWalletService.isPresent()) {
+
+       log.debug("Wallet is present. Request cipher key");
+
+       byte[] key = "MultiBit HD     Unlock".getBytes();
+       byte[] keyValue = "0123456789abcdef".getBytes();
+
+       // Request a cipher key
+       hardwareWalletService.get().requestCipherKey(
+         0,
+         KeyChain.KeyPurpose.RECEIVE_FUNDS,
+         0,
+         key,
+         keyValue,
+         true,
+         true,
+         true
+       );
+
+     } else {
+       log.info("You need to have created a wallet before running this example");
+     }
+   }
+
+  /**
    * @return True if the Trezor states that the PIN is correct
    */
   private boolean checkPin() {
 
     log.debug("Performing a PIN check");
-    CharSequence pin = enterPinMaV.getModel().getValue();
+    String pin = enterPinMaV.getModel().getValue();
 
-    // Talk to the Trezor and check the PIN
-    // A 'requestCipherKey' is performed in which the user presses the OK button to encrypt a set text (the result of which will be used
-    // to decrypt a wallet)
+    // Talk to the Trezor and get it to check the PIN
     Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    hardwareWalletService.get().providePIN(pin);
 
-
-//    if (hardwareWalletService.isWalletPresent()) {
-//
-//      log.debug("Wallet is present. Request cipher key");
-//
-//      byte[] key = "MultiBit HD     Wallet ID".getBytes();
-//      byte[] keyValue = "0123456789abcdef".getBytes();
-//
-//      // Request an address from the device using BIP-44 chain code:
-//      hardwareWalletService.requestCipherKey(
-//        0,
-//        KeyChain.KeyPurpose.RECEIVE_FUNDS,
-//        0,
-//        key,
-//        keyValue,
-//        true,
-//        true,
-//        true
-//      );
-//
-//    } else {
-//      log.info("You need to have created a wallet before running this example");
-//    }
+    // This call to the Trezor wil (sometime later) fire a HardwareWalletEvent containing the encrypted text (or a PIN failure)
 
     return true;
   }
@@ -367,4 +393,50 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
 
   }
 
+  /**
+   * <p>Downstream consumer applications should respond to hardware wallet events</p>
+   *
+   * @param event The hardware wallet event indicating a state change
+   */
+  @Subscribe
+  public void onHardwareWalletEvent(HardwareWalletEvent event) {
+
+    log.debug("Received hardware event: '{}'.{}", event.getEventType().name(), event.getMessage());
+
+    switch (event.getEventType()) {
+      case SHOW_DEVICE_FAILED:
+        break;
+      case SHOW_DEVICE_DETACHED:
+        break;
+      case SHOW_DEVICE_READY:
+        break;
+      case SHOW_PIN_ENTRY:
+        break;
+      case SHOW_OPERATION_SUCCEEDED:
+        byte[] payload = ((Success) event.getMessage().get()).getPayload();
+        String message = ((Success) event.getMessage().get()).getMessage();
+
+        log.info(
+                "Message:'{}'\nPayload: {} (requestCipherKey (success): {})",
+                message,
+                Utils.HEX.encode(payload)
+        );
+
+        break;
+      case SHOW_OPERATION_FAILED:
+        // Could be caused by wrong pin
+        byte[] payloadFail = ((Success) event.getMessage().get()).getPayload();
+               String messageFail = ((Success) event.getMessage().get()).getMessage();
+
+               log.info(
+                       "Message:'{}'\nPayload: {} (requestCipherKey (fail): {})",
+                       messageFail,
+                       Utils.HEX.encode(payloadFail)
+               );
+
+        break;
+      default:
+        // Ignore
+    }
+  }
 }

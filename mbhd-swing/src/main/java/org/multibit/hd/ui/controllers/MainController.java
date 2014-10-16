@@ -553,12 +553,6 @@ public class MainController extends AbstractController implements
     log.debug("Received hardware event: '{}'", event.getEventType().name());
 
     switch (event.getEventType()) {
-      case SHOW_DEVICE_FAILED:
-        // Treat as end of example
-        break;
-      case SHOW_DEVICE_DETACHED:
-        // Can simply wait for another device to be connected again
-        break;
       case SHOW_DEVICE_READY:
         // Get some information about the device
         Features features = hardwareWalletService.get().getContext().getFeatures().get();
@@ -583,6 +577,9 @@ public class MainController extends AbstractController implements
         // Now that we've been attached we want to trap detach later
         isDetachRelevant = true;
         break;
+      case SHOW_OPERATION_SUCCEEDED:
+        // A previous operation has succeeded - no  need for an alert
+        return;
     }
 
     // Ensure we return from this event quickly

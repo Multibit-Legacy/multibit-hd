@@ -37,12 +37,14 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
     ));
 
     // Create an array of buttons - the pin matrix buttons
+    // buttons are numbered from the bottom left 1,2,3, centre row LTR, 4,5,6, top row LTR, 7, 8, 9
     int NUMBER_OF_PIN_BUTTONS = 9;
-    JButton[] pinButtons = new JButton[NUMBER_OF_PIN_BUTTONS];
+    JButton[] pinButtons = new JButton[NUMBER_OF_PIN_BUTTONS + 1];
+    // THe zeroth button is not used
 
     final EnterPinModel finalModel = getModel().get();
 
-    for (int i = 0; i < NUMBER_OF_PIN_BUTTONS; i++) {
+    for (int i = 1; i <= NUMBER_OF_PIN_BUTTONS; i++) {
       final int finalButtonNumber = i;
 
       Action buttonAction = new AbstractAction() {
@@ -62,15 +64,15 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
       pinButtons[i].getAccessibleContext().setAccessibleName("pin " + i);
     }
 
-    panel.add(pinButtons[0], MultiBitUI.MEDIUM_BUTTON_MIG);
-    panel.add(pinButtons[1], MultiBitUI.MEDIUM_BUTTON_MIG);
-    panel.add(pinButtons[2], MultiBitUI.MEDIUM_BUTTON_MIG + ", wrap");
-    panel.add(pinButtons[3], MultiBitUI.MEDIUM_BUTTON_MIG);
-    panel.add(pinButtons[4], MultiBitUI.MEDIUM_BUTTON_MIG);
-    panel.add(pinButtons[5], MultiBitUI.MEDIUM_BUTTON_MIG + ", wrap");
-    panel.add(pinButtons[6], MultiBitUI.MEDIUM_BUTTON_MIG);
     panel.add(pinButtons[7], MultiBitUI.MEDIUM_BUTTON_MIG);
-    panel.add(pinButtons[8], MultiBitUI.MEDIUM_BUTTON_MIG + ", wrap");
+    panel.add(pinButtons[8], MultiBitUI.MEDIUM_BUTTON_MIG);
+    panel.add(pinButtons[9], MultiBitUI.MEDIUM_BUTTON_MIG + ", wrap");
+    panel.add(pinButtons[4], MultiBitUI.MEDIUM_BUTTON_MIG);
+    panel.add(pinButtons[5], MultiBitUI.MEDIUM_BUTTON_MIG);
+    panel.add(pinButtons[6], MultiBitUI.MEDIUM_BUTTON_MIG + ", wrap");
+    panel.add(pinButtons[1], MultiBitUI.MEDIUM_BUTTON_MIG);
+    panel.add(pinButtons[2], MultiBitUI.MEDIUM_BUTTON_MIG);
+    panel.add(pinButtons[3], MultiBitUI.MEDIUM_BUTTON_MIG + ", wrap");
 
     return panel;
 

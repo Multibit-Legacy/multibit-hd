@@ -978,6 +978,17 @@ public class Labels {
   }
 
   /**
+     * @return A new "press ok on Trezor" note
+     */
+    public static JLabel newPressOkOnTrezorNote() {
+
+      return newNoteLabel(new MessageKey[]{
+        MessageKey.PRESS_CONFIRM_ON_TREZOR
+      }, new Object[][]{});
+
+    }
+
+  /**
    * @return A new "debugger warning" note
    */
   public static JLabel newDebuggerWarningNote() {
