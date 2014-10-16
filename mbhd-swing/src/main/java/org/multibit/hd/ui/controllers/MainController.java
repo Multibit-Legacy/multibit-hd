@@ -1,12 +1,13 @@
 package org.multibit.hd.ui.controllers;
 
-import org.bitcoinj.uri.BitcoinURI;
-import org.bitcoinj.uri.BitcoinURIParseException;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.bitcoinj.uri.BitcoinURI;
+import org.bitcoinj.uri.BitcoinURIParseException;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
@@ -123,16 +124,6 @@ public class MainController extends AbstractController implements
     this.headerController = headerController;
     this.sidebarController = sidebarController;
 
-    // Subscribe to hardware wallet events
-    HardwareWalletService.hardwareWalletEventBus.register(this);
-
-    // Initialise the HardwareWalletService
-    hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-
-    if (hardwareWalletService.isPresent()) {
-      // Start the service
-      hardwareWalletService.get().start();
-    }
   }
 
   /**
@@ -301,6 +292,9 @@ public class MainController extends AbstractController implements
 
       // Restart the Bitcoin network (may have switched parameters)
       handleBitcoinNetwork();
+
+      // Restart the hardware wallet service (devices may have changed)
+      handleHardwareWallets();
     }
 
   }
@@ -576,6 +570,7 @@ public class MainController extends AbstractController implements
 
     // Quick check for relevancy
     switch (event.getEventType()) {
+      case SHOW_DEVICE_STOPPED:
       case SHOW_DEVICE_DETACHED:
         if (!isDetachRelevant) {
           // Ignore the detach since we've never been attached
@@ -752,6 +747,45 @@ public class MainController extends AbstractController implements
 
     if (bitcoinNetworkService.get().isStartedOk()) {
       bitcoinNetworkService.get().downloadBlockChainInBackground();
+    }
+
+  }
+
+  /**
+   * <p>Restart the hardware wallet service if necessary</p>
+   */
+  public void handleHardwareWallets() {
+
+    boolean isServiceAllowed = false;
+
+    // Determine if at least one hardware wallet is selected
+    if (Configurations.currentConfiguration.isTrezor()) {
+      isServiceAllowed = true;
+    }
+
+    // Check if the service is running and is allowed
+    if (hardwareWalletService.isPresent() && !isServiceAllowed) {
+      // Stop the service, all listeners and clear the CoreServices reference
+      CoreServices.stopHardwareWalletService(Lists.<Object>newArrayList(this));
+      // Clear our reference
+      hardwareWalletService = Optional.absent();
+      return;
+    }
+
+    // Service is allowed and may need to be started
+    // If it is present then it is already started
+    if (!hardwareWalletService.isPresent()) {
+
+      hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+
+      if (hardwareWalletService.isPresent()) {
+        // Subscribe to hardware wallet events
+        HardwareWalletService.hardwareWalletEventBus.register(this);
+
+        // Start the service
+        hardwareWalletService.get().start();
+      }
+
     }
 
   }

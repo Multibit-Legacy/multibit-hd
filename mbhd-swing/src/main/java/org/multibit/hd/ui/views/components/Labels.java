@@ -885,6 +885,13 @@ public class Labels {
   }
 
   /**
+   * @return a new "select Trezor" for lab settings
+   */
+  public static JLabel newSelectTrezor() {
+    return newLabel(MessageKey.SELECT_TREZOR);
+  }
+
+  /**
    * @return a new "peer count" for verifying network
    */
   public static JLabel newPeerCount() {

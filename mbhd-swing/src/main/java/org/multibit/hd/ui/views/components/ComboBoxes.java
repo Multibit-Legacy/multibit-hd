@@ -101,6 +101,10 @@ public class ComboBoxes {
    * The "Tor" combo box action command
    */
   public static final String TOR_COMMAND = "tor";
+  /**
+   * The "Trezor" combo box action command
+   */
+  public static final String TREZOR_COMMAND = "trezor";
 
   /**
    * Utilities have no public constructor
@@ -251,6 +255,24 @@ public class ComboBoxes {
     AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_TOR, MessageKey.SELECT_TOR_TOOLTIP);
 
     comboBox.setActionCommand(TOR_COMMAND);
+
+    return comboBox;
+  }
+
+  /**
+   * @param listener The action listener to alert when the selection is made
+   * @param useTor   True if the "yes" option should be pre-selected
+   *
+   * @return A new "yes/no" combo box
+   */
+  public static JComboBox<String> newTrezorYesNoComboBox(ActionListener listener, boolean useTor) {
+
+    JComboBox<String> comboBox = newYesNoComboBox(listener, useTor);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_TREZOR, MessageKey.SELECT_TREZOR_TOOLTIP);
+
+    comboBox.setActionCommand(TREZOR_COMMAND);
 
     return comboBox;
   }

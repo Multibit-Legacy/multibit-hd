@@ -174,13 +174,18 @@ public class Models {
         }, MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);
 
         return Models.newAlertModel(
-          Languages.safeText(MessageKey.TREZOR_CONNECTED_ALERT, label),
+          Languages.safeText(MessageKey.TREZOR_ATTACHED_ALERT, label),
           RAGStatus.GREEN,
           button
         );
+      case SHOW_DEVICE_STOPPED:
+        return Models.newAlertModel(
+          Languages.safeText(MessageKey.TREZOR_STOPPED_ALERT),
+          RAGStatus.AMBER
+        );
       case SHOW_DEVICE_DETACHED:
         return Models.newAlertModel(
-          Languages.safeText(MessageKey.TREZOR_DISCONNECTED_ALERT),
+          Languages.safeText(MessageKey.TREZOR_DETACHED_ALERT),
           RAGStatus.AMBER
         );
       case SHOW_DEVICE_FAILED:

@@ -31,6 +31,7 @@ wallet:
   currentWalletRoot: null
 licenceAccepted: false
 tor: false
+trezor: true
 wibble:
   aardvark: 42
   xray: "hello"
