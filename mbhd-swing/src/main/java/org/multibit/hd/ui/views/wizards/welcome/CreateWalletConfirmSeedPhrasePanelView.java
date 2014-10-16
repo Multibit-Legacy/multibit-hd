@@ -27,7 +27,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CREATE
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 
 public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {

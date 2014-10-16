@@ -30,7 +30,7 @@ import java.awt.event.ActionEvent;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessageWizardModel, String> {
 

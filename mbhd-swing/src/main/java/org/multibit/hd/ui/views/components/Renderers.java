@@ -6,14 +6,14 @@ import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
- *  <p>Factory to provide renderers to
+ * <p>Factory to provide renderers to
  * <br>
- *  <ul>
- *  <li>Tables</li>
- *  </ul>
+ * <ul>
+ * <li>Tables</li>
+ * </ul>
  *
- *  </p>
- *  
+ * </p>
+ *
  */
 public class Renderers {
   /**

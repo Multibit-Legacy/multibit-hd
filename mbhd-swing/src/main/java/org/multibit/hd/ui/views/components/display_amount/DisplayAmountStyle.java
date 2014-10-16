@@ -7,7 +7,7 @@ package org.multibit.hd.ui.views.components.display_amount;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum DisplayAmountStyle {
 

@@ -16,7 +16,7 @@
 package org.multibit.hd.ui.platform.handler;
 
 /**
- *  <p>Signature interface for handlers:</p>
+ * <p>Signature interface for handlers:</p>
  *
  * @since 0.3.0
  *         

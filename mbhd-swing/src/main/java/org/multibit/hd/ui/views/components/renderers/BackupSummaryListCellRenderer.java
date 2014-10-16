@@ -13,7 +13,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class BackupSummaryListCellRenderer extends JLabel implements ListCellRenderer<BackupSummary> {
 

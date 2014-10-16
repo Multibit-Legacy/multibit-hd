@@ -1,16 +1,19 @@
 package org.multibit.hd.core.events;
 
+import com.google.common.base.Optional;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
-import com.google.common.base.Optional;
 
 import java.util.Arrays;
 
 /**
- *  <p>Event to provide the following to UIEventbus subscribers
- *  <ul>
- *  <li>Success/ failure of send bitcoins</li>
- *  </ul>
+ * <p>Event to provide the following to UIEventbus subscribers:</p>
+ * <ul>
+ * <li>Success/ failure of send bitcoins</li>
+ * </ul>
+ * <p>This is an infrequent event</p>
+ *
+ * @since 0.0.1
  */
 public class BitcoinSentEvent implements CoreEvent {
 
@@ -86,14 +89,14 @@ public class BitcoinSentEvent implements CoreEvent {
   @Override
   public String toString() {
     return "BitcoinSentEvent{" +
-            "amount=" + amount +
-            ", miningFeePaid=" + miningFeePaid +
-            ", clientFeePaid=" + clientFeePaid +
-            ", destinationAddress='" + destinationAddress + '\'' +
-            ", changeAddress='" + changeAddress + '\'' +
-            ", sendWasSuccessful=" + sendWasSuccessful +
-            ", sendFailureReasonKey='" + sendFailureReasonKey + '\'' +
-            ", sendFailureReasonData=" + Arrays.toString(sendFailureReasonData) +
-            '}';
+      "amount=" + amount +
+      ", miningFeePaid=" + miningFeePaid +
+      ", clientFeePaid=" + clientFeePaid +
+      ", destinationAddress='" + destinationAddress + '\'' +
+      ", changeAddress='" + changeAddress + '\'' +
+      ", sendWasSuccessful=" + sendWasSuccessful +
+      ", sendFailureReasonKey='" + sendFailureReasonKey + '\'' +
+      ", sendFailureReasonData=" + Arrays.toString(sendFailureReasonData) +
+      '}';
   }
 }

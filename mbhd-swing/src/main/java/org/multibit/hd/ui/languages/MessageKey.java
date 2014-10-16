@@ -14,7 +14,7 @@ package org.multibit.hd.ui.languages;
  * <p>Resource keys are simply the message key enum name in lower case.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum MessageKey {
 
@@ -501,7 +501,6 @@ public enum MessageKey {
   CREATE_WALLET("create_wallet"),
   RESTORE_PASSWORD("restore_password"),
   RESTORE_WALLET("restore_wallet"),
-  USE_HARDWARE_WALLET("use_hardware_wallet"),
   USE_EXISTING_WALLET("use_existing_wallet"),
 
   RESTORE_FROM_SEED_PHRASE("restore_from_seed_phrase"),

@@ -15,10 +15,10 @@ import java.io.IOException;
 import java.util.Date;
 
 /**
- *  <p>Manager to provide the following to BitcoinNetworkService:</p>
- *  <ul>
- *  <li>Create a blockstore</li>
- *  </ul>
+ * <p>Manager to provide the following to BitcoinNetworkService:</p>
+ * <ul>
+ * <li>Create a blockstore</li>
+ * </ul>
  */
 public class BlockStoreManager {
 

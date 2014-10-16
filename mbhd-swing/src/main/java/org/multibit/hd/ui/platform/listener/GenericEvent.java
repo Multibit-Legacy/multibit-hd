@@ -16,7 +16,7 @@
 package org.multibit.hd.ui.platform.listener;
 
 /**
- *  <p>Signature interface for generic events:</p>
+ * <p>Signature interface for generic events:</p>
  *
  * @since 0.3.0
  *         

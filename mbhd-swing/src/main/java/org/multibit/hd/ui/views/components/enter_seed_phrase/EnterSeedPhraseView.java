@@ -19,7 +19,7 @@ import java.awt.event.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseModel> {
 

@@ -30,7 +30,7 @@ import static org.multibit.hd.ui.views.wizards.edit_history.EnterHistoryDetailsM
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 
 public class EditHistoryEnterDetailsPanelView extends AbstractWizardPanelView<EditHistoryWizardModel, EditHistoryEnterDetailsPanelModel> {

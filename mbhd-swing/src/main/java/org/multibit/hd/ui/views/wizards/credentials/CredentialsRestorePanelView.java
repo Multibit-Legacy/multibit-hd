@@ -17,7 +17,7 @@ import javax.swing.*;
  * <p>This view is a transition view to ease the hand over process</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class CredentialsRestorePanelView extends AbstractWizardPanelView<CredentialsWizardModel, String> {
 

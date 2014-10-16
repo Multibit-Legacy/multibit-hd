@@ -14,7 +14,7 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class WelcomeSelectExistingWalletUseCase extends AbstractFestUseCase {
 
@@ -35,6 +35,11 @@ public class WelcomeSelectExistingWalletUseCase extends AbstractFestUseCase {
       .requireVisible();
 
     window
+      .radioButton(MessageKey.USE_EXISTING_WALLET.getKey())
+      .requireNotSelected()
+      .requireVisible();
+
+    window
       .radioButton(MessageKey.RESTORE_PASSWORD.getKey())
       .requireNotSelected()
       .requireEnabled()
@@ -44,17 +49,6 @@ public class WelcomeSelectExistingWalletUseCase extends AbstractFestUseCase {
       .radioButton(MessageKey.RESTORE_WALLET.getKey())
       .requireNotSelected()
       .requireEnabled()
-      .requireVisible();
-
-    window
-      .radioButton(MessageKey.USE_HARDWARE_WALLET.getKey())
-      .requireNotSelected()
-      .requireDisabled()
-      .requireVisible();
-
-    window
-      .radioButton(MessageKey.USE_EXISTING_WALLET.getKey())
-      .requireNotSelected()
       .requireVisible();
 
     // Select "use existing wallet"

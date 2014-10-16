@@ -10,7 +10,7 @@ import org.multibit.hd.ui.views.screens.Screen;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class PaymentsScreenModel extends AbstractScreenModel {
 

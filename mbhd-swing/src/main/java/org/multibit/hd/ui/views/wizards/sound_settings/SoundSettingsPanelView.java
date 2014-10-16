@@ -29,7 +29,7 @@ import java.awt.event.ActionListener;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 
 public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSettingsWizardModel, SoundSettingsPanelModel> implements ActionListener {

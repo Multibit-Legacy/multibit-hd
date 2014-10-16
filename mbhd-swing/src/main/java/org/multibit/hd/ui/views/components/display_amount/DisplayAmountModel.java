@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class DisplayAmountModel implements Model<DisplayAmountModel> {
 

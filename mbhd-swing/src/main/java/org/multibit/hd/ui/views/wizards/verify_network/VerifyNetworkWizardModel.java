@@ -14,7 +14,7 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class VerifyNetworkWizardModel extends AbstractWizardModel<VerifyNetworkState> {
 

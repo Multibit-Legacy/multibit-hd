@@ -18,7 +18,7 @@ import java.awt.*;
  * populated.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class StripedTable extends JTable {
 

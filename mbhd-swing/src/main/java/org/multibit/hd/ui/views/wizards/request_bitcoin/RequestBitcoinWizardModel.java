@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class RequestBitcoinWizardModel extends AbstractWizardModel<RequestBitcoinState> {
 

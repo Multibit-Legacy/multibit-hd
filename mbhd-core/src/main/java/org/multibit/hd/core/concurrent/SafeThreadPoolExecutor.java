@@ -6,7 +6,7 @@ import java.util.concurrent.*;
  * <p>Wrapper to provide standard exception handling</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class SafeThreadPoolExecutor extends ThreadPoolExecutor {
 

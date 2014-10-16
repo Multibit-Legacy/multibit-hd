@@ -17,7 +17,7 @@ import javax.swing.*;
  * <p>For UI consistency the cancel button must lead the action button (exit)</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ExitPanelView extends AbstractWizardPanelView<ExitWizardModel, String> {
 

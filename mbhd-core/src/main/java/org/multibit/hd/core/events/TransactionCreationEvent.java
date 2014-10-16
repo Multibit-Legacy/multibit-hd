@@ -8,10 +8,10 @@ import org.multibit.hd.core.dto.FiatPayment;
 import java.util.Arrays;
 
 /**
- *  <p>Event to provide the following to UI event subscribers:</p>
- *  <ul>
- *  <li>Success or failure of creation of transaction sending bitcoins</li>
- *  </ul>
+ * <p>Event to provide the following to UI event subscribers:</p>
+ * <ul>
+ * <li>Success or failure of creation of transaction sending bitcoins</li>
+ * </ul>
  *
  * <p>Success guarantees that the wallet contains the underlying transaction.</p>
  */

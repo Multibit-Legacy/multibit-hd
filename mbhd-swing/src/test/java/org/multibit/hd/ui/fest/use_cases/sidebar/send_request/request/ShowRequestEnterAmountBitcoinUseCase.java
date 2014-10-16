@@ -19,7 +19,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <p>Requires the "send/request" screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ShowRequestEnterAmountBitcoinUseCase extends AbstractFestUseCase {
 

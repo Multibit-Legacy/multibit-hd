@@ -12,7 +12,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class LanguageListCellRenderer extends JLabel implements ListCellRenderer<String> {
 

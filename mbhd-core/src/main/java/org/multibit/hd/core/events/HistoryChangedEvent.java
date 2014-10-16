@@ -9,8 +9,10 @@ import org.multibit.hd.core.dto.HistoryEntry;
  * </ul>
  * <p>This event occurs after the history service has updated its persistent store</p>
  *
+ * <p>This is an infrequent event</p>
+
  * @since 0.0.1
- *  
+ *
  */
 public class HistoryChangedEvent implements CoreEvent {
 

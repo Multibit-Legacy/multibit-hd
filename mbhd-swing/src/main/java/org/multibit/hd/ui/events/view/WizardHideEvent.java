@@ -11,7 +11,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
  * <p>A detail screen model will typically subscribe and update in response to this event</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class WizardHideEvent implements ViewEvent {
 

@@ -14,7 +14,7 @@ import java.awt.geom.RoundRectangle2D;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public abstract class AbstractNamedRegionPainter extends AbstractRegionPainter {
 

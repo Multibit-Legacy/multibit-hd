@@ -37,7 +37,7 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> implements ActionListener {
 

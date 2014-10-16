@@ -35,7 +35,7 @@ import java.awt.event.MouseEvent;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class SidebarView extends AbstractView {
 

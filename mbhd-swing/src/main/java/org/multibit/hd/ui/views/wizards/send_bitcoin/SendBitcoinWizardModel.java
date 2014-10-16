@@ -31,7 +31,7 @@ import static org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState> {
 

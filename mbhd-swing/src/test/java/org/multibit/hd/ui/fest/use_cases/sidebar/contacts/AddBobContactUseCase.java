@@ -17,7 +17,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <p>Requires the "contacts" screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class AddBobContactUseCase extends AbstractFestUseCase {
 
@@ -65,7 +65,7 @@ public class AddBobContactUseCase extends AbstractFestUseCase {
       .setText("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
 
     window
-      .textBox(MessageKey.EXTENDED_PUBLIC_KEY.getKey())
+      .textBox(MessageKey.TAGS.getKey())
       .setText("");
 
     // Add some tags (testing empty and duplicates)

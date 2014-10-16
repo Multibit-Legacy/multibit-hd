@@ -20,7 +20,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <p>Requires the "settings" screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class VerifyAppearanceThemeUseCase extends AbstractFestUseCase {
 

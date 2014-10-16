@@ -23,7 +23,7 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class WelcomeWizardRestoreWallet_en_US_Requirements {
 

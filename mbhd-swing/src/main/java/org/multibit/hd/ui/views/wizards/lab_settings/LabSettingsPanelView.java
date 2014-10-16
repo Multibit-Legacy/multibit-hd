@@ -26,7 +26,7 @@ import java.awt.event.ActionListener;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 
 public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWizardModel, LabSettingsPanelModel> implements ActionListener {

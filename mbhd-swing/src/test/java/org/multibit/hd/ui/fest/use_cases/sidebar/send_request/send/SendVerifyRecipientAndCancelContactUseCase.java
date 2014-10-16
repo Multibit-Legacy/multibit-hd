@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * <p>Requires the "send/receive" screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class SendVerifyRecipientAndCancelContactUseCase extends AbstractFestUseCase {
 

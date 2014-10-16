@@ -22,7 +22,7 @@ import java.awt.event.ActionEvent;
  * with No meaning stop and take me back to safety with no changes.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
 

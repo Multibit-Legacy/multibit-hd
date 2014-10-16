@@ -8,9 +8,9 @@ import org.bitcoinj.core.Wallet;
  *  <ul>
  *  <li>Given a transaction, return a boolean to indicate whether it has been sent by the active wallet (true) or not (false)</li>
  *  </ul>
-This is an interface because the Core implementation of it depends on various Core classes that BRIT does not know about
- *  </p>
- *  
+ * This is an interface because the Core implementation of it depends on various Core classes that BRIT does not know about
+ * </p>
+ *
  */
 public interface TransactionSentBySelfProvider {
 

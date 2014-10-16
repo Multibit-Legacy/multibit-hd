@@ -48,7 +48,7 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class CoreServices {
 
@@ -210,7 +210,7 @@ public class CoreServices {
 
             // Reset the existing services
             bitcoinNetworkService = null;
-            hardwareWalletService = null;
+            hardwareWalletService = Optional.absent();
             contactServiceMap = Maps.newHashMap();
             walletServiceMap = Maps.newHashMap();
             historyServiceMap = Maps.newHashMap();

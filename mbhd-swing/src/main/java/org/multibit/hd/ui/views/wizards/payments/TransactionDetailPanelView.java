@@ -30,7 +30,7 @@ import java.net.URI;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class TransactionDetailPanelView extends AbstractWizardPanelView<PaymentsWizardModel, TransactionDetailPanelModel> {
 

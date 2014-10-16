@@ -23,7 +23,7 @@ import static org.multibit.hd.ui.views.fonts.TitleFontDecorator.*;
  * <p>Eac languages has a preferred title font for presentation</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum LanguageKey {
 

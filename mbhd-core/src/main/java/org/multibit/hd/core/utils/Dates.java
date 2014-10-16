@@ -23,7 +23,7 @@ import java.util.Locale;
  * <p>All times use the UTC time zone unless otherwise specified</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class Dates {
 

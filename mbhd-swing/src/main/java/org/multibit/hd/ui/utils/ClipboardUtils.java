@@ -15,7 +15,7 @@ import java.io.IOException;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ClipboardUtils {
 

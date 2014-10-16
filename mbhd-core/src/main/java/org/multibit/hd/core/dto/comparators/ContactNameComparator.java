@@ -11,7 +11,7 @@ import java.util.Comparator;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ContactNameComparator implements Comparator<Contact> {
 

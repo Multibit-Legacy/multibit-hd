@@ -26,7 +26,7 @@ import org.multibit.hd.core.config.Configurations;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum ExchangeKey {
 

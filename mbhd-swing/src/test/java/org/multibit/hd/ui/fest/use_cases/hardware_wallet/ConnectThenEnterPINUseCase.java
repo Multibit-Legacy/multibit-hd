@@ -1,11 +1,9 @@
 package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
-import com.google.common.base.Optional;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.multibit.hd.hardware.core.messages.Features;
-import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -18,7 +16,6 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class ConnectThenEnterPINUseCase extends AbstractFestUseCase {
 
@@ -35,7 +32,8 @@ public class ConnectThenEnterPINUseCase extends AbstractFestUseCase {
     // Simulate the insertion of a device
     HardwareWalletEvents.fireHardwareWalletEvent(
       HardwareWalletEventType.SHOW_DEVICE_READY,
-      (HardwareWalletMessage) Optional.of(features));
+      features
+    );
 
     // Allow time for the view to react
     pauseForViewReset();
@@ -45,38 +43,38 @@ public class ConnectThenEnterPINUseCase extends AbstractFestUseCase {
 
     // Check the 'Yes' button on the alert is present
     window
-            .button(MessageKey.YES.getKey())
-            .requireVisible()
-            .requireEnabled();
+      .button(MessageKey.YES.getKey())
+      .requireVisible()
+      .requireEnabled();
 
     // Click on the 'Yes' button
     window
-            .button(MessageKey.YES.getKey())
-            .click();
+      .button(MessageKey.YES.getKey())
+      .click();
 
     // Verify the "Unlock screen" ("Enter PIN") appears by checking there is an exit button
     window
-            .button(MessageKey.EXIT.getKey())
-            .requireVisible()
-            .requireEnabled();
+      .button(MessageKey.EXIT.getKey())
+      .requireVisible()
+      .requireEnabled();
 
     // Allow time for the view to react
     pauseForViewReset();
 
     // Initially the 'Unlock' button should be disabled
     window
-            .button(MessageKey.PASSWORD_UNLOCK.getKey())
-            .requireVisible()
-            .requireDisabled();
+      .button(MessageKey.PASSWORD_UNLOCK.getKey())
+      .requireVisible()
+      .requireDisabled();
 
     // Click on each pin button 0
     window.button("pin 0").click();
 
     // Unlock should be enabled after some PIN entry
     window
-            .button(MessageKey.PASSWORD_UNLOCK.getKey())
-            .requireVisible()
-            .requireEnabled();
+      .button(MessageKey.PASSWORD_UNLOCK.getKey())
+      .requireVisible()
+      .requireEnabled();
 
     // Click on each pin button 1 to 8 in turn
     for (int i = 1; i < 8; i++) {

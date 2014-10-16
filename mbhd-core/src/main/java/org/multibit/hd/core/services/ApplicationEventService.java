@@ -12,7 +12,7 @@ import org.multibit.hd.core.events.*;
  * <p>Having this service allows the UI to catch up with previous events after a locale change or slow startup</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ApplicationEventService {
 

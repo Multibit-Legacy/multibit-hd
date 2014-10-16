@@ -9,7 +9,7 @@ import org.multibit.hd.ui.views.ViewKey;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ViewChangedEvent implements ViewEvent {
 

@@ -10,12 +10,12 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *  <p>Interface to provide the following to Contact API:</p>
- *  <ul>
- *  <li>Common methods for contact data access</li>
- *  </ul>
- *  </p>
- *  
+ * <p>Interface to provide the following to Contact API:</p>
+ * <ul>
+ * <li>Common methods for contact data access</li>
+ * </ul>
+ * </p>
+ *
  */
 public interface ContactService {
   /**

@@ -17,7 +17,7 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class WelcomeWizardCreateWallet_ro_RO_Requirements {
 

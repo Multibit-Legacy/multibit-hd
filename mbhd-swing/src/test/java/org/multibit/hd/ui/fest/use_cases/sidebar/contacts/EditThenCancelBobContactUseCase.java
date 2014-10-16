@@ -18,7 +18,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <p>Requires the "Bob Cratchit" contact to be present</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EditThenCancelBobContactUseCase extends AbstractFestUseCase {
 

@@ -16,7 +16,7 @@ import java.awt.event.ActionEvent;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EnterPinView extends AbstractComponentView<EnterPinModel> {
 

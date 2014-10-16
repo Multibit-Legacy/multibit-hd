@@ -4,11 +4,11 @@ import org.bitcoinj.core.Coin;
 import org.joda.time.DateTime;
 
 /**
- *  <p>Interface to provide the following to payments view:</p>
- *  <ul>
- *  <li>Unified common interface for TransactionData and PaymentRequestData </li>
- *  </ul>
- *  
+ * <p>Interface to provide the following to payments view:</p>
+ * <ul>
+ * <li>Unified common interface for TransactionData and PaymentRequestData </li>
+ * </ul>
+ *
  */
 public interface PaymentData {
 

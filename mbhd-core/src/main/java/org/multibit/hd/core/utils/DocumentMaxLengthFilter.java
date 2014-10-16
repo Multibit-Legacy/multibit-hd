@@ -11,7 +11,7 @@ import javax.swing.text.DocumentFilter;
  * </ul>
 
  * @since 0.0.1
- *  
+ *
  */
 public class DocumentMaxLengthFilter extends DocumentFilter {
 

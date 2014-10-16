@@ -1,15 +1,15 @@
 package org.multibit.hd.ui.utils;
 
 /**
- *  <p>Class to provide the following to signing class:<br>
- *  <ul>
- *  <li>white space trimming</li>
- *  </ul>
- *  Example:<br>
- *  <pre>
- *  </pre>
- *  </p>
- *  
+ * <p>Class to provide the following to signing class:<br>
+ * <ul>
+ * <li>white space trimming</li>
+ * </ul>
+ * Example:<br>
+ * <pre>
+ * </pre>
+ * </p>
+ *
  */
 /**
  * Copyright 2011 multibit.org

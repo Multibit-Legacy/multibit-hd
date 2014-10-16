@@ -30,7 +30,7 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ChangePasswordReportPanelView extends AbstractWizardPanelView<ChangePasswordWizardModel, String> {
 

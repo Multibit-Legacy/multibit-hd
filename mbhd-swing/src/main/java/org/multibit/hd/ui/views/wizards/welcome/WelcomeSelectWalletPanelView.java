@@ -24,7 +24,6 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 
 public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<WelcomeWizardModel, WelcomeWizardState> implements ActionListener {
@@ -58,20 +57,21 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
-    contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[]", // Column constraints
-      "[]" // Row constraints
-    ));
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[]", // Column constraints
+        "[]" // Row constraints
+      ));
 
-    contentPanel.add(Panels.newWalletSelector(
-      this,
-      CREATE_WALLET_SELECT_BACKUP_LOCATION.name(),
-      RESTORE_PASSWORD_SEED_PHRASE.name(),
-      RESTORE_WALLET_SEED_PHRASE.name(),
-      SELECT_WALLET_HARDWARE.name(),
-      SELECT_EXISTING_WALLET.name()
-    ), "wrap");
+    contentPanel.add(
+      Panels.newWalletSelector(
+        this,
+        CREATE_WALLET_SELECT_BACKUP_LOCATION.name(),
+        SELECT_EXISTING_WALLET.name(),
+        RESTORE_PASSWORD_SEED_PHRASE.name(),
+        RESTORE_WALLET_SEED_PHRASE.name()
+      ), "wrap");
 
   }
 

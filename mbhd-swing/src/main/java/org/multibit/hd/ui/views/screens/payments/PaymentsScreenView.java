@@ -48,7 +48,7 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> {
 
@@ -123,6 +123,9 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     return contentPanel;
   }
 
+  /**
+   * @param transactionSeenEvent The event (very high frequency during synchronisation)
+   */
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
 

@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class Languages {
 

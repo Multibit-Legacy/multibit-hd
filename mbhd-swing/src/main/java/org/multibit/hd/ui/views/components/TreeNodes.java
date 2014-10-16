@@ -13,7 +13,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class TreeNodes {
 

@@ -22,7 +22,7 @@ import javax.swing.*;
  * @param <M> The screen model
  *
  * @since 0.0.1
- *  
+ *
  */
 public abstract class AbstractScreenView<M extends ScreenModel> {
 

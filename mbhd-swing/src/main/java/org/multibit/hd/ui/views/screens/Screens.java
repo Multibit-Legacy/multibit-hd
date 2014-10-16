@@ -49,7 +49,7 @@ import org.multibit.hd.ui.views.screens.wallet.SendRequestScreenView;
  * will handle all the work for you.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class Screens {
 

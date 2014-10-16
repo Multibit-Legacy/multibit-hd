@@ -38,7 +38,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> {
 

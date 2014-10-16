@@ -15,7 +15,7 @@ import javax.swing.event.DocumentListener;
  * @param <S> The state object type
  *
  * @since 0.0.1
- *  
+ *
  */
 public abstract class AbstractWizardModel<S> implements DocumentListener {
 

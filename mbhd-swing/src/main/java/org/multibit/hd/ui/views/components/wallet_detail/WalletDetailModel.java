@@ -22,7 +22,7 @@ import java.io.File;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class WalletDetailModel implements Model<WalletDetail> {
 

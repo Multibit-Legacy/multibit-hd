@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * </pre>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ExportPaymentsWizardModel extends AbstractWizardModel<ExportPaymentsWizardState> {
 

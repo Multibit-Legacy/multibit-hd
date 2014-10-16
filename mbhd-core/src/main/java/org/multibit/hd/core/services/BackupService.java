@@ -55,7 +55,7 @@ import java.util.concurrent.TimeUnit;
  * is not worth the bother of writing a wallet extension to track it.
  *
  * @since 0.0.1
- *  
+ *
  */
 public class BackupService extends AbstractService {
 

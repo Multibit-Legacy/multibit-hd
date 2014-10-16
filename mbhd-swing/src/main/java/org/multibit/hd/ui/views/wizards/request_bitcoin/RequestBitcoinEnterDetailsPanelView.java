@@ -49,7 +49,7 @@ import java.util.Currency;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 
 public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView<RequestBitcoinWizardModel, RequestBitcoinEnterDetailsPanelModel> {

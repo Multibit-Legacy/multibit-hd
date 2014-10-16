@@ -37,7 +37,7 @@ import static org.fest.swing.timing.Pause.pause;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 @Ignore
 public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {

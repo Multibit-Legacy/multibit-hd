@@ -17,7 +17,7 @@ import java.io.InputStream;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class AwesomeDecorator {
 

@@ -13,8 +13,10 @@ import java.util.Currency;
  * <li>Notification of an exchange rate change</li>
  * </ul>
  *
+ * <p>This is an infrequent event</p>
+
  * @since 0.0.1
- *  
+ *
  */
 public class ExchangeRateChangedEvent implements CoreEvent {
 

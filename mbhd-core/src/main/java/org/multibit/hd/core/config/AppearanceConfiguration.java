@@ -9,7 +9,7 @@ package org.multibit.hd.core.config;
  * <p>This configuration is for general appearance parameters</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class AppearanceConfiguration {
 

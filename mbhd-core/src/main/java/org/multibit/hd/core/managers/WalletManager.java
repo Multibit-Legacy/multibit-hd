@@ -1,11 +1,5 @@
 package org.multibit.hd.core.managers;
 
-import org.bitcoinj.core.*;
-import org.bitcoinj.crypto.*;
-import org.bitcoinj.script.Script;
-import org.bitcoinj.store.UnreadableWalletException;
-import org.bitcoinj.store.WalletProtobufSerializer;
-import org.bitcoinj.wallet.DeterministicSeed;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -16,6 +10,12 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import org.bitcoinj.core.*;
+import org.bitcoinj.crypto.*;
+import org.bitcoinj.script.Script;
+import org.bitcoinj.store.UnreadableWalletException;
+import org.bitcoinj.store.WalletProtobufSerializer;
+import org.bitcoinj.wallet.DeterministicSeed;
 import org.bitcoinj.wallet.Protos;
 import org.joda.time.DateTime;
 import org.multibit.hd.brit.crypto.AESUtils;
@@ -23,10 +23,8 @@ import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.extensions.MatcherResponseWalletExtension;
 import org.multibit.hd.brit.extensions.SendFeeDtoWalletExtension;
 import org.multibit.hd.brit.services.FeeService;
-import org.multibit.hd.brit.services.TransactionConfidenceSentBySelfProvider;
 import org.multibit.hd.brit.services.TransactionSentBySelfProvider;
 import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
@@ -39,6 +37,7 @@ import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -57,13 +56,13 @@ import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SEPARATOR;
 import static org.multibit.hd.core.dto.WalletId.parseWalletFilename;
 
 /**
- *  <p>Manager to provide the following to core users:</p>
- *  <ul>
- *  <li>create wallet</li>
- *  <li>save wallet wallet</li>
- *  <li>load wallet wallet</li>
+ * <p>Manager to provide the following to core users:</p>
+ * <ul>
+ * <li>create wallet</li>
+ * <li>save wallet wallet</li>
+ * <li>load wallet wallet</li>
  * <li>tracks the current wallet and the list of wallet directories</li>
- *  </ul>
+ * </ul>
  * <p/>
  * TODO (GR) Consider renaming/restructuring this to Wallets since it provides tools for multiple wallets and allow for BitcoinNetwork injection
  */
@@ -121,7 +120,7 @@ public enum WalletManager implements WalletEventListener {
 
   public static final String WALLET_DIRECTORY_PREFIX = "mbhd";
   // The format of the wallet directories is WALLET_DIRECTORY_PREFIX + a wallet id.
-  // A walletid is 5 groups of 4 bytes in lowercase hex, with a "-' separator e.g. mbhd-11111111-22222222-33333333-44444444-55555555
+  // A wallet id is 5 groups of 4 bytes in lowercase hex, with a "-' separator e.g. mbhd-11111111-22222222-33333333-44444444-55555555
   private static final String REGEX_FOR_WALLET_DIRECTORY = "^"
     + WALLET_DIRECTORY_PREFIX
     + WALLET_ID_SEPARATOR
@@ -168,8 +167,6 @@ public enum WalletManager implements WalletEventListener {
   public static final byte[] SCRYPT_SALT = new byte[]{(byte) 0x35, (byte) 0x51, (byte) 0x03, (byte) 0x80, (byte) 0x75, (byte) 0xa3, (byte) 0xb0, (byte) 0xc5};
 
   private FeeService feeService;
-
-  private TransactionConfidenceSentBySelfProvider transactionConfidenceSentBySelfProvider;
 
   /**
    * Open the given wallet
@@ -222,6 +219,7 @@ public enum WalletManager implements WalletEventListener {
    */
   public void onShutdownEvent(ShutdownEvent shutdownEvent) {
 
+    log.debug("Received shutdown event: {}", shutdownEvent.getShutdownType().name());
     currentWalletSummary = Optional.absent();
 
   }
@@ -516,7 +514,9 @@ public enum WalletManager implements WalletEventListener {
     Wallet wallet = new WalletProtobufSerializer().readWallet(BitcoinNetwork.current().get(), walletExtensions, walletProto);
     wallet.setKeychainLookaheadSize(WalletManager.LOOK_AHEAD_SIZE);
 
-    log.debug("Just loaded wallet:\n" + wallet.toString());
+    // Too much information is revealed for debug
+    log.trace("Just loaded wallet:\n{}", wallet.toString());
+
     return wallet;
   }
 

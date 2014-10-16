@@ -25,7 +25,7 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, SelectFileModel> {
 

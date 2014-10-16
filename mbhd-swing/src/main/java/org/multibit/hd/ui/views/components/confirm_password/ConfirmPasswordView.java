@@ -23,7 +23,7 @@ import java.awt.event.KeyEvent;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordModel> {
 

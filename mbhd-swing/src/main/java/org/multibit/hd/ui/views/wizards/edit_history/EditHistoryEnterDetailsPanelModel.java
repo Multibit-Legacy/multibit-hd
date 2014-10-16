@@ -9,7 +9,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EditHistoryEnterDetailsPanelModel extends AbstractWizardPanelModel {
 

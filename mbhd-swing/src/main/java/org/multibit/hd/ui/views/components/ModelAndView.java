@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * <p>All ModelAndView components are registered for UI events by default (both model and view)</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ModelAndView<M extends Model, V extends View> {
 
