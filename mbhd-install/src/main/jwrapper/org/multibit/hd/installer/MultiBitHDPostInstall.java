@@ -21,16 +21,17 @@ public class MultiBitHDPostInstall {
 
     // Initialise as the Bitcoin protocol handler
     if (OS.isMacOS()) {
+      // TODO Verify on OS X
       JWMacOS.registerURLSchemeForVirtualApp("bitcoin", JWSystem.getMyAppName());
+      JWInstallApp.addAppShortcut(
+        "MultiBit HD",
+        "MultiBit HD"
+      );
     }
     if (OS.isWindows()) {
       JWWindowsOS.registerURLSchemeForVirtualApp("bitcoin",JWSystem.getMyAppName());
     }
 
-    JWInstallApp.addAppShortcut(
-      "MultiBit HD",
-      "MultiBit HD"
-    );
   }
 
 }

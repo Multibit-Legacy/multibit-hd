@@ -33,11 +33,11 @@
   </JvmOptions>
 
   <!-- The JREs JWrapper should use (follow the unzipped paths of the JRE-1.7 pack) -->
-  <Windows32JRE>JRE-1.7/win32/jre1.7.0_05</Windows32JRE>
-  <Windows64JRE>JRE-1.7/win32/jre1.7.0_05</Windows64JRE>
-  <Linux32JRE>JRE-1.7/linux/jre1.7.0_13</Linux32JRE>
-  <Linux64JRE>JRE-1.7/linuxx64/jre1.7.0_13</Linux64JRE>
-  <Mac64JRE>JRE-1.7/macos64/jre1.7.0_45.jre</Mac64JRE>
+  <Windows32JRE>JRE-1.7/win32/jre1.7.0_72</Windows32JRE>
+  <Windows64JRE>JRE-1.7/win64/jre1.7.0_72</Windows64JRE>
+  <Linux32JRE>JRE-1.7/linux/jre1.7.0_72</Linux32JRE>
+  <Linux64JRE>JRE-1.7/linuxx64/jre1.7.0_72</Linux64JRE>
+  <Mac64JRE>JRE-1.7/macos64/jre1.7.0_72.jre</Mac64JRE>
 
   <!-- The final executable JAR -->
   <File classpath='yes'>target/multibit-hd.jar</File>
