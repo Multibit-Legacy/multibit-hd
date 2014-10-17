@@ -402,6 +402,8 @@ public enum MessageKey {
   EMPTY_WALLET_CONFIRM_TITLE("empty_wallet_confirm_title"),
   EMPTY_WALLET_PROGRESS_TITLE("empty_wallet_progress_title"),
 
+  TREZOR_TOOLS_TITLE("trezor_tools_title"),
+
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),
 

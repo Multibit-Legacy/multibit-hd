@@ -33,7 +33,7 @@ public class TrezorToolsPanelView extends AbstractWizardPanelView<TrezorToolsWiz
    */
   public TrezorToolsPanelView(AbstractWizard<TrezorToolsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.REPAIR_WALLET_TITLE, AwesomeIcon.MEDKIT);
+    super(wizard, panelName, MessageKey.REPAIR_WALLET_TITLE, AwesomeIcon.SHIELD);
 
   }
 
