@@ -92,6 +92,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
     contentPanel.add(Buttons.newLargeShowSignMessageWizardButton(getShowSignMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowVerifyMessageWizardButton(getShowVerifyMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowTrezorToolsWizardButton(getShowTrezorToolsWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
 
     setInitialised(true);
     return contentPanel;
@@ -151,6 +152,20 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
   }
 
   /**
+    * @return An action to show the "Trezor tools" wizard
+    */
+   private AbstractAction getShowTrezorToolsWizardAction() {
+     return new AbstractAction() {
+       @Override
+       public void actionPerformed(ActionEvent e) {
+
+         // Show the Trezor Tools screen
+         Panels.showLightBox(Wizards.newTrezorToolsWizard().getWizardScreenHolder());
+       }
+     };
+   }
+
+   /**
    * @return An action to show the "sign message" wizard
    */
   private AbstractAction getShowSignMessageWizardAction() {

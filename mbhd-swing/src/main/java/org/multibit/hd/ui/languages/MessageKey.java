@@ -372,6 +372,11 @@ public enum MessageKey {
   PRESS_CONFIRM_ON_TREZOR("press_confirm_on_trezor"),
   PRESS_CONFIRM_ON_TREZOR_TITLE("press_confirm_on_trezor_title"),
 
+  VERIFY_DEVICE("verify_device"),
+  WIPE_DEVICE("wipe_device"),
+
+  TREZOR_BUTTON_TITLE("trezor_button_title"),
+
   // Settings titles
 
   LANGUAGE_SETTINGS_TITLE("language_settings_title"),

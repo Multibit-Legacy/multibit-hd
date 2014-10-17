@@ -380,6 +380,42 @@ public class Panels {
   }
 
   /**
+    * <p>A "Trezor tool selector" panel provides a means of choosing which Trezor tool to run</p>
+    *
+    * @param listener               The action listener
+    * @param verifyDeviceCommand    The verify device command name
+    * @param wipeDeviceCommand      The wipe device command name
+
+    * @return A new "Trezor tool selector" panel
+    */
+   public static JPanel newTrezorToolSelector(
+     ActionListener listener,
+     String verifyDeviceCommand,
+     String wipeDeviceCommand
+   ) {
+
+     JPanel panel = Panels.newPanel();
+
+     JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.VERIFY_DEVICE);
+     radio1.setSelected(true);
+     radio1.setActionCommand(verifyDeviceCommand);
+
+     JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.WIPE_DEVICE);
+     radio2.setActionCommand(wipeDeviceCommand);
+
+     // Wallet selection is mutually exclusive
+     ButtonGroup group = new ButtonGroup();
+     group.add(radio1);
+     group.add(radio2);
+
+     // Add to the panel
+     panel.add(radio1, "wrap");
+     panel.add(radio2, "wrap");
+
+     return panel;
+   }
+
+  /**
    * <p>A "confirm seed phrase" panel displays the instructions to enter the seed phrase from a piece of paper</p>
    *
    * @return A new "confirm seed phrase" panel
