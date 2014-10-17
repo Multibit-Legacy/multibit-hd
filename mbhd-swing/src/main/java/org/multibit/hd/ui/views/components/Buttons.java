@@ -233,7 +233,7 @@ public class Buttons {
 
     JButton button = newButton(action, MessageKey.DELETE_PAYMENT_REQUEST, MessageKey.DELETE_PAYMENT_REQUEST_TOOLTIP);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_O, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -248,7 +248,7 @@ public class Buttons {
 
     JButton button = newButton(action, MessageKey.DELETE, MessageKey.DELETE_TOOLTIP);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_O, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
   }
@@ -790,7 +790,9 @@ public class Buttons {
       JButton button = newLargeButton(action, MessageKey.TREZOR_BUTTON_TITLE, MessageKey.TREZOR_BUTTON_TITLE);
 
       AwesomeDecorator.applyIcon(
-        AwesomeIcon.LOCK,
+        // Cannot use LOCK even though it is the closest icon to the Trezor logo
+        // since it affects the established iconography throughout the application
+        AwesomeIcon.SHIELD,
         button,
         true,
         JLabel.BOTTOM,
