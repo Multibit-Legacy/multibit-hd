@@ -12,6 +12,11 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
 public enum UseTrezorState {
 
   /**
+   * Ask for a cipher key value from the device (may trigger a PIN request)
+   */
+  REQUEST_CIPHER_KEY,
+
+  /**
    * Enter a Trezor PIN
    */
    ENTER_PIN,

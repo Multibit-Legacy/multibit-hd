@@ -32,7 +32,7 @@ public class UseTrezorPressOkForEncryptCodePanelView extends AbstractWizardPanel
    */
   public UseTrezorPressOkForEncryptCodePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.PRESS_CONFIRM_ON_TREZOR_TITLE, AwesomeIcon.KEY);
+    super(wizard, panelName, MessageKey.PRESS_CONFIRM_ON_TREZOR_TITLE, AwesomeIcon.SHIELD);
 
   }
 

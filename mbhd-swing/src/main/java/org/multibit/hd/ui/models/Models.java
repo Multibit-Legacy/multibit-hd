@@ -167,9 +167,13 @@ public class Models {
         JButton button = Buttons.newAlertPanelButton(new AbstractAction() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            // Open the Credentials wizard, asking for a Trezor PIN entry screen
+
+            // Remove the alert since it's been dealt with
             ControllerEvents.fireRemoveAlertEvent();
+
+            // Open the Credentials wizard, asking for a Trezor PIN entry screen
             Panels.showLightBox(Wizards.newExitingUseTrezorWizard().getWizardScreenHolder());
+
           }
         }, MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);
 

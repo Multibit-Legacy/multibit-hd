@@ -23,7 +23,6 @@ import org.multibit.hd.core.services.*;
 import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
-import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
@@ -83,7 +82,7 @@ public class MainController extends AbstractController implements
 
   private final BitcoinURIListeningService bitcoinURIListeningService;
 
-  final ListeningExecutorService handoverExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-handover");
+  private final ListeningExecutorService handoverExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-handover");
 
   // Keep track of other controllers for use after a preferences change
   private final HeaderController headerController;
@@ -552,16 +551,6 @@ public class MainController extends AbstractController implements
 
     log.debug("Received hardware event: '{}'", event.getEventType().name());
 
-    switch (event.getEventType()) {
-      case SHOW_DEVICE_READY:
-        // Get some information about the device
-        Features features = hardwareWalletService.get().getContext().getFeatures().get();
-        log.info("Features: {}", features);
-
-      default:
-        // Ignore
-    }
-
     // Quick check for relevancy
     switch (event.getEventType()) {
       case SHOW_DEVICE_STOPPED:
@@ -577,12 +566,12 @@ public class MainController extends AbstractController implements
         // Now that we've been attached we want to trap detach later
         isDetachRelevant = true;
         break;
-      case SHOW_OPERATION_SUCCEEDED:
-        // A previous operation has succeeded - no  need for an alert
+      default:
+        // The AbstractHardwareWalletWizard handles specific cases
         return;
     }
 
-    // Ensure we return from this event quickly
+    // Ensure we return from this event quickly and that UI happens on the EDT
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override

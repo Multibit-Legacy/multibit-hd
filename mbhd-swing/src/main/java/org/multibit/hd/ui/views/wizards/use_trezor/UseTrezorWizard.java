@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
-import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import java.util.Map;
@@ -16,7 +16,7 @@ import java.util.Map;
  * @since 0.0.1
  *  
  */
-public class UseTrezorWizard extends AbstractWizard<UseTrezorWizardModel> {
+public class UseTrezorWizard extends AbstractHardwareWalletWizard<UseTrezorWizardModel> {
 
   public UseTrezorWizard(UseTrezorWizardModel model, boolean isExiting) {
     super(model, isExiting, Optional.absent());
@@ -25,16 +25,21 @@ public class UseTrezorWizard extends AbstractWizard<UseTrezorWizardModel> {
   @Override
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
+    // Transitional view to kick off the process
     wizardViewMap.put(
-            UseTrezorState.ENTER_PIN.name(),
-            new UseTrezorEnterPinPanelView(this, UseTrezorState.ENTER_PIN.name()));
+      UseTrezorState.REQUEST_CIPHER_KEY.name(),
+      new UseTrezorRequestCipherKeyPanelView(this, UseTrezorState.REQUEST_CIPHER_KEY.name()));
 
-    // TODO - no Trezor PIN panel
+    wizardViewMap.put(
+      UseTrezorState.ENTER_PIN.name(),
+      new UseTrezorEnterPinPanelView(this, UseTrezorState.ENTER_PIN.name()));
+
+    // TODO - "no PIN" panel
 
     // Ask user to confirm 'Encrypt MultiBit HD unlock text'
     wizardViewMap.put(
-            UseTrezorState.PRESS_OK_FOR_UNLOCK.name(),
-            new UseTrezorPressOkForEncryptCodePanelView(this, UseTrezorState.PRESS_OK_FOR_UNLOCK.name()));
+      UseTrezorState.PRESS_OK_FOR_UNLOCK.name(),
+      new UseTrezorPressOkForEncryptCodePanelView(this, UseTrezorState.PRESS_OK_FOR_UNLOCK.name()));
 
   }
 

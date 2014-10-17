@@ -192,6 +192,13 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   }
 
   /**
+   * @return The wizard panel view associated with the given panel name
+   */
+  public AbstractWizardPanelView getWizardPanelView(String panelName) {
+    return wizardViewMap.get(panelName);
+  }
+
+  /**
    * @return True if the wizard should trigger an "exit" event rather than a "close"
    */
   public boolean isExiting() {
@@ -415,69 +422,71 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     ViewEvents.fireWizardHideEvent(panelName, wizardModel, isExitCancel);
 
     // Required to run on a new thread since this may take some time to complete
-    wizardHideExecutorService.submit(new Runnable() {
-      @Override
-      public void run() {
+    wizardHideExecutorService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
 
-        log.trace("Handle hide background cleanup: '{}'", panelName);
+          log.trace("Handle hide background cleanup: '{}'", panelName);
 
-        // Require some extra time to get the rest of the UI started for credentials wizard
-        if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(panelName)) {
+          // Require some extra time to get the rest of the UI started for credentials wizard
+          if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(panelName)) {
 
-          log.trace("Blocking to allow UI startup to complete");
-          Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
-        }
+            log.trace("Blocking to allow UI startup to complete");
+            Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
+          }
 
-        // Work through the view map ensuring all components are deregistered from UI events
-        log.trace("Deregister {} views and their component(s)", wizardViewMap.size());
-        for (Map.Entry<String, AbstractWizardPanelView> entry : wizardViewMap.entrySet()) {
+          // Work through the view map ensuring all components are deregistered from UI events
+          log.trace("Deregister {} views and their component(s)", wizardViewMap.size());
+          for (Map.Entry<String, AbstractWizardPanelView> entry : wizardViewMap.entrySet()) {
 
-          AbstractWizardPanelView panelView = entry.getValue();
+            AbstractWizardPanelView panelView = entry.getValue();
 
-          // Ensure we deregister the wizard panel view (and model if present) for events
-          try {
-            CoreServices.uiEventBus.unregister(panelView);
-            log.trace("Deregistered wizard panel view '{}' from UI events", panelView.getPanelName());
-            if (panelView.getPanelModel().isPresent()) {
-              Object panelModel = panelView.getPanelModel().get();
-              CoreServices.uiEventBus.unregister(panelModel);
-              log.trace("Deregistered wizard panel model '{}' from UI events", panelView.getPanelName());
+            // Ensure we deregister the wizard panel view (and model if present) for events
+            try {
+              CoreServices.uiEventBus.unregister(panelView);
+              log.trace("Deregistered wizard panel view '{}' from UI events", panelView.getPanelName());
+              if (panelView.getPanelModel().isPresent()) {
+                Object panelModel = panelView.getPanelModel().get();
+                CoreServices.uiEventBus.unregister(panelModel);
+                log.trace("Deregistered wizard panel model '{}' from UI events", panelView.getPanelName());
+              }
+            } catch (NullPointerException | IllegalArgumentException e) {
+              log.warn("Wizard panel model/view '{}' was not registered", panelView.getPanelName(), e);
             }
-          } catch (NullPointerException | IllegalArgumentException e) {
-            log.warn("Wizard panel model/view '{}' was not registered", panelView.getPanelName(), e);
+
+            // Deregister all components
+            @SuppressWarnings("unchecked")
+            List<ModelAndView> mavs = panelView.getComponents();
+            for (ModelAndView mav : mavs) {
+              mav.close();
+            }
+            log.trace("Closed {} registered component(s) from wizard panel view '{}'", mavs.size(), panelView.getPanelName());
+
+            // Remove the references
+            mavs.clear();
+
           }
 
-          // Deregister all components
-          @SuppressWarnings("unchecked")
-          List<ModelAndView> mavs = panelView.getComponents();
-          for (ModelAndView mav : mavs) {
-            mav.close();
-          }
-          log.trace("Closed {} registered component(s) from wizard panel view '{}'", mavs.size(), panelView.getPanelName());
+          // Depopulate the map to ensure non-AWT references are removed
+          wizardViewMap.clear();
 
-          // Remove the references
-          mavs.clear();
+          // Hiding the light box must be on the EDT
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+
+                log.trace("Handle hide remove light box: '{}'", panelName);
+
+                // This removes the reference to the wizard allowing for garbage collection
+                Panels.hideLightBoxIfPresent();
+
+              }
+            });
 
         }
-
-        // Depopulate the map to ensure non-AWT references are removed
-        wizardViewMap.clear();
-
-        // Hiding the light box must be on the EDT
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-
-            log.trace("Handle hide remove light box: '{}'", panelName);
-
-            // This removes the reference to the wizard allowing for garbage collection
-            Panels.hideLightBoxIfPresent();
-
-          }
-        });
-
-      }
-    });
+      });
 
   }
 
