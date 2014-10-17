@@ -149,7 +149,7 @@ public class Wizards {
    public static TrezorToolsWizard newTrezorToolsWizard() {
 
      log.debug("New 'Trezor tools wizard'");
-     return new TrezorToolsWizard(new TrezorToolsWizardModel(TrezorToolsState.SELECT_TREZOR_ACTION), true);
+     return new TrezorToolsWizard(new TrezorToolsWizardModel(TrezorToolsState.SELECT_TREZOR_ACTION), false);
    }
 
    /**
