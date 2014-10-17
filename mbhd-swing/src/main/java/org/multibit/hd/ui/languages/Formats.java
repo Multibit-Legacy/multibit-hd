@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.languages;
 
+import com.google.common.base.Strings;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.uri.BitcoinURI;
@@ -325,8 +326,15 @@ public class Formats {
     // Decode the Bitcoin URI
     Optional<Address> address = Optional.fromNullable(bitcoinURI.getAddress());
     Optional<Coin> amount = Optional.fromNullable(bitcoinURI.getAmount());
-    Optional<String> label = Optional.fromNullable(bitcoinURI.getLabel());
-
+    // Truncate the label field to avoid overrun on the display
+    // (35+ overruns label + address + amount in mB + alert count at min width)
+    // Send Bitcoin confirm wizard will fill in the complete details later
+    Optional<String> label;
+    if (Strings.isNullOrEmpty(bitcoinURI.getLabel())) {
+      label = Optional.absent();
+    } else {
+      label = Optional.of(Languages.truncatedList(Lists.newArrayList(bitcoinURI.getLabel()), 35));
+    }
     // Only proceed if we have an address
     if (address.isPresent()) {
 

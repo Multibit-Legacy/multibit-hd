@@ -1,10 +1,11 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
-import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.Wallet;
+import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
@@ -33,7 +34,6 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, SendBitcoinConfirmPanelModel> {
 
@@ -113,11 +113,32 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     // User entered text
     notesTextArea = TextBoxes.newEnterPrivateNotes(getWizardModel());
 
-    contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[][]", // Column constraints
-      "[]10[]10[][][]10[][]" // Row constraints
-    ));
+    // Apply any Bitcoin URI parameters
+    if (getWizardModel().getBitcoinURI().isPresent()) {
+
+      BitcoinURI uri = getWizardModel().getBitcoinURI().get();
+      String notes = "";
+      if (!Strings.isNullOrEmpty(uri.getLabel())) {
+        // We have a label
+        notes += uri.getLabel();
+      }
+      if (!Strings.isNullOrEmpty(uri.getMessage())) {
+        // We have a message
+        if (!Strings.isNullOrEmpty(notes)) {
+          notes += "\n";
+        }
+        notes += uri.getMessage();
+      }
+      notesTextArea.setText(notes);
+
+    }
+
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[][]", // Column constraints
+        "[]10[]10[][][]10[][]" // Row constraints
+      ));
 
     clientFeeInfoLabel = Labels.newBlankLabel();
     AccessibilityDecorator.apply(clientFeeInfoLabel, MessageKey.CLIENT_FEE);
@@ -220,7 +241,8 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     clientFeeInfoLabel.setText(feeText);
 
     // Update the model and view for the recipient
-    recipientSummaryLabel.setText(getWizardModel()
+    recipientSummaryLabel.setText(
+      getWizardModel()
         .getRecipient()
         .getSummary()
     );
@@ -231,12 +253,13 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        notesTextArea.requestFocusInWindow();
-      }
-    });
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          notesTextArea.requestFocusInWindow();
+        }
+      });
 
   }
 

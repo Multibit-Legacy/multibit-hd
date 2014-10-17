@@ -202,7 +202,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
   /**
    * @return Any Bitcoin URI used to initiate this wizard
    */
-  public Optional getBitcoinURI() {
+  public Optional<BitcoinURI> getBitcoinURI() {
     return bitcoinURI;
   }
 
