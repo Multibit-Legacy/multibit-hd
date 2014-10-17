@@ -2,7 +2,8 @@
 echo Move into position...
 mkdir /opt/multibit-hd
 cp mbhd-$1-linux /opt/multibit-hd/multibit-hd
-cp trademark-logo.png /opt/multibit-hd/multibit-hd.png
+cp trademark-logo.png /usr/share/icons/hicolor/128x128/apps/multibit-hd.png
+chmod +x /opt/multibit-hd/multibit-hd
 
 echo Create symlink...
 ln -s /opt/multibit-hd/multibit-hd /usr/bin/multibit-hd
@@ -19,8 +20,8 @@ cat << _EOF_ > multibit-hd.desktop
 Version=1.0
 Type=Application
 Terminal=false
-Exec=/opt/multibit-hd %U
-Icon=/opt/multibit-hd.png
+Exec=/opt/multibit-hd/multibit-hd %U
+Icon=/usr/share/icons/hicolor/128x128/apps/multibit-hd.png
 Name[en_US]=MultiBit HD
 Comment=Secure lightweight international Bitcoin wallet
 Comment[en_US]=Secure lightweight international Bitcoin wallet
