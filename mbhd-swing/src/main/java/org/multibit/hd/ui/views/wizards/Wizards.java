@@ -67,6 +67,9 @@ import org.multibit.hd.ui.views.wizards.sign_message.SignMessageWizardModel;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsState;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizard;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizardModel;
+import org.multibit.hd.ui.views.wizards.trezor_tools.TrezorToolsState;
+import org.multibit.hd.ui.views.wizards.trezor_tools.TrezorToolsWizard;
+import org.multibit.hd.ui.views.wizards.trezor_tools.TrezorToolsWizardModel;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsState;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsWizard;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsWizardModel;
@@ -141,6 +144,15 @@ public class Wizards {
   }
 
   /**
+    * @return A new "Trezor tools" wizard
+    */
+   public static TrezorToolsWizard newTrezorToolsWizard() {
+
+     log.debug("New 'Trezor tools wizard'");
+     return new TrezorToolsWizard(new TrezorToolsWizardModel(TrezorToolsState.SELECT_TREZOR_ACTION), true);
+   }
+
+   /**
    * @param parameter Providing information about how the send should be performed
    *
    * @return A new "send bitcoin" wizard

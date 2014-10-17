@@ -781,6 +781,26 @@ public class Buttons {
   }
 
   /**
+     * @param action The click action
+     *
+     * @return A new "Trezor tools" wizard button with icon
+     */
+    public static JButton newShowTrezorToolsWizardButton(Action action) {
+
+      JButton button = newLargeButton(action, MessageKey.TREZOR_BUTTON_TITLE, MessageKey.TREZOR_BUTTON_TITLE);
+
+      AwesomeDecorator.applyIcon(
+        AwesomeIcon.LOCK,
+        button,
+        true,
+        JLabel.BOTTOM,
+        MultiBitUI.LARGE_ICON_SIZE
+      );
+
+      return button;
+    }
+
+  /**
    * @param action The click action
    *
    * @return A new "language settings" wizard button with icon
