@@ -25,7 +25,7 @@ public class AwesomeDecorator {
 
   static {
 
-    try (InputStream in = AwesomeDecorator.class.getResourceAsStream("/assets/fonts/FontAwesome-4.1.0.ttf")) {
+    try (InputStream in = AwesomeDecorator.class.getResourceAsStream("/assets/fonts/FontAwesome-4.2.0.ttf")) {
 
       AWESOME_FONT = Font.createFont(Font.TRUETYPE_FONT, in);
 
