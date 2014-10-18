@@ -6,7 +6,7 @@ import org.multibit.hd.ui.fest.use_cases.sidebar.SidebarAccessibilityUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.contacts.ShowContactsScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.exit.ShowExitScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.help.ShowHelpScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.sidebar.history.ShowHistoryScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.ShowManageWalletScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.payments.ShowPaymentsScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.send_request.ShowSendRequestScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.settings.ShowSettingsScreenUseCase;
@@ -36,8 +36,8 @@ public class SidebarTreeScreensRequirements {
     new ShowPaymentsScreenUseCase(window).execute(parameters);
     new ShowContactsScreenUseCase(window).execute(parameters);
     new ShowHelpScreenUseCase(window).execute(parameters);
-    new ShowHistoryScreenUseCase(window).execute(parameters);
     new ShowSettingsScreenUseCase(window).execute(parameters);
+    new ShowManageWalletScreenUseCase(window).execute(parameters);
     new ShowToolsScreenUseCase(window).execute(parameters);
     new ShowExitScreenUseCase(window).execute(parameters);
   }

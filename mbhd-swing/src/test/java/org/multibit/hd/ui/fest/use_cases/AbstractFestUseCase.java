@@ -37,11 +37,10 @@ public abstract class AbstractFestUseCase {
   protected static final int PAYMENTS_ROW = 1;
   protected static final int CONTACTS_ROW = 2;
   protected static final int HELP_ROW = 3;
-  protected static final int HISTORY_ROW = 4;
-  protected static final int SETTINGS_ROW = 5;
+  protected static final int SETTINGS_ROW = 4;
+  protected static final int MANAGE_WALLET_ROW = 5;
   protected static final int TOOLS_ROW = 6;
   protected static final int EXIT_ROW = 7;
-
 
   protected final FrameFixture window;
 

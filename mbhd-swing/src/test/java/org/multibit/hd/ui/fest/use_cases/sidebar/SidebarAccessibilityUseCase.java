@@ -66,14 +66,6 @@ public class SidebarAccessibilityUseCase extends AbstractFestUseCase {
       .button(MessageKey.VIEW_IN_EXTERNAL_BROWSER.getKey())
       .requireVisible();
 
-    // Down to History
-    window
-      .tree(MessageKey.SIDEBAR_TREE.getKey())
-      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_DOWN));
-    window
-      .table(MessageKey.HISTORY.getKey())
-      .requireVisible();
-
     // Down to Settings
     window
       .tree(MessageKey.SIDEBAR_TREE.getKey())
@@ -82,12 +74,20 @@ public class SidebarAccessibilityUseCase extends AbstractFestUseCase {
       .button(MessageKey.SHOW_LANGUAGE_WIZARD.getKey())
       .requireVisible();
 
-    // Down to Tools
+    // Down to Manage Wallet
     window
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_DOWN));
     window
       .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
+      .requireVisible();
+
+    // Down to Tools
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_DOWN));
+    window
+      .button(MessageKey.SHOW_SIGN_WIZARD.getKey())
       .requireVisible();
 
     // Down to Exit
@@ -104,6 +104,14 @@ public class SidebarAccessibilityUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_UP));
     window
+      .button(MessageKey.SHOW_SIGN_WIZARD.getKey())
+      .requireVisible();
+
+    // Up to Manage Wallet
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_UP));
+    window
       .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
       .requireVisible();
 
@@ -113,14 +121,6 @@ public class SidebarAccessibilityUseCase extends AbstractFestUseCase {
       .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_UP));
     window
       .button(MessageKey.SHOW_LANGUAGE_WIZARD.getKey())
-      .requireVisible();
-
-    // Up to History
-    window
-      .tree(MessageKey.SIDEBAR_TREE.getKey())
-      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_UP));
-    window
-      .table(MessageKey.HISTORY.getKey())
       .requireVisible();
 
     // Up to Help

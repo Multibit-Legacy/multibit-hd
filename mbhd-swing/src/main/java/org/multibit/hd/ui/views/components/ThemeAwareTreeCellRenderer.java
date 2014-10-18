@@ -99,12 +99,12 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 10));
           setIconTextGap(9);
           break;
-        case HISTORY:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.HISTORY, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
-          setIconTextGap(9);
-          break;
         case SETTINGS:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 1));
+          setIconTextGap(6);
+          break;
+        case MANAGE_WALLET:
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.EDIT, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
           setIconTextGap(6);
           break;
         case TOOLS:

@@ -1,10 +1,9 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar.history;
+package org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.history;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.tables.ContactTableModel;
 import org.multibit.hd.ui.views.components.tables.HistoryTableModel;
 
 import java.util.Map;
@@ -14,18 +13,17 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "history" screen edit Bob contact then cancel changes</li>
+ * <li>Verify the "history" screen edit Bob history</li>
  * </ul>
  * <p>Requires the "history" screen to be showing</p>
- * <p>Requires the "credentials verified" entry to be present</p>
- * <p>Requires the "wallet opened" entry to be present</p>
+ * <p>Requires the "create wallet" and "credentials verified" entries to be present</p>
  *
  * @since 0.0.1
  *
  */
-public class EditThenCancelPasswordEntryUseCase extends AbstractFestUseCase {
+public class EditPasswordEntryUseCase extends AbstractFestUseCase {
 
-  public EditThenCancelPasswordEntryUseCase(FrameFixture window) {
+  public EditPasswordEntryUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -37,14 +35,14 @@ public class EditThenCancelPasswordEntryUseCase extends AbstractFestUseCase {
       .table(MessageKey.HISTORY.getKey())
       .rowCount();
 
-    // Find the credentials verified row
+    // Find "Password verified" row
     int pvRow = window
       .table(MessageKey.HISTORY.getKey())
       .cell(Languages.safeText(MessageKey.PASSWORD_VERIFIED))
       .row;
 
-    // Get table contents
-    String[][] history =  window
+    // Get the history
+    String[][] history = window
       .table(MessageKey.HISTORY.getKey())
       .contents();
 
@@ -55,7 +53,7 @@ public class EditThenCancelPasswordEntryUseCase extends AbstractFestUseCase {
       .button(MessageKey.EDIT.getKey())
       .click();
 
-    // Verify the single entry edit wizard appears
+    // Verify the single history edit wizard appears
     assertLabelText(MessageKey.EDIT_HISTORY_ENTRY_TITLE);
 
     window
@@ -63,32 +61,22 @@ public class EditThenCancelPasswordEntryUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-    // Update credentials entry details
+    // Update credentials entry private notes
+    window
+      .textBox(MessageKey.DESCRIPTION_READ_ONLY.getKey())
+      .requireText(Languages.safeText(MessageKey.PASSWORD_VERIFIED))
+      .requireNotEditable();
+
+    // Private notes
     window
       .textBox(MessageKey.PRIVATE_NOTES.getKey())
-      .setText("Updated information");
+      .setText("First login to wallet");
 
-    // Click Cancel
-    window
-      .button(MessageKey.CANCEL.getKey())
-      .click();
+    verifyCancel();
 
-    // Expect Yes/No popover
+    // Click Apply
     window
-      .button(MessageKey.YES.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .button("popover_"+MessageKey.CLOSE.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    // Click Yes
-    window
-      .button(MessageKey.YES.getKey())
-      .requireVisible()
-      .requireEnabled()
+      .button(MessageKey.APPLY.getKey())
       .click();
 
     // Verify the underlying screen is back
@@ -105,13 +93,39 @@ public class EditThenCancelPasswordEntryUseCase extends AbstractFestUseCase {
     // Verify that no new row has been added
     assertThat(rowCount2).isEqualTo(rowCount1);
 
-    // Get updated table contents
-    history =  window
+    // Verify that the private notes are visible
+    window
       .table(MessageKey.HISTORY.getKey())
-      .contents();
+      .cell("First login to wallet");
+  }
 
-    assertThat(history[pvRow][ContactTableModel.NAME_COLUMN_INDEX].contains("Updated")).isFalse();
+  /**
+   * Verifies that clicking cancel with data present gives a Yes/No popover
+   */
+  private void verifyCancel() {
 
+    // Click Cancel
+    window
+      .button(MessageKey.CANCEL.getKey())
+      .click();
+
+    // Expect Yes/No popup)
+    window
+      .button(MessageKey.YES.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .button("popover_"+MessageKey.CLOSE.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    // Click Cancel
+    window
+      .button(MessageKey.NO.getKey())
+      .requireVisible()
+      .requireEnabled()
+      .click();
   }
 
 }

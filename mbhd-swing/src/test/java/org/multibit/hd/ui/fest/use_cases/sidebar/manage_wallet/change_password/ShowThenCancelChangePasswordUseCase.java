@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar.tools.change_password;
+package org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.change_password;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;

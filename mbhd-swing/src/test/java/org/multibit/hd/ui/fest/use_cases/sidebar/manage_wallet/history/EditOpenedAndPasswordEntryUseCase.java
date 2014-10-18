@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar.history;
+package org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.history;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -7,23 +7,24 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.tables.HistoryTableModel;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "history" screen edit Bob history</li>
+ * <li>Verify the "history" screen edit Opened and Password entry history</li>
  * </ul>
  * <p>Requires the "history" screen to be showing</p>
- * <p>Requires the "create wallet" and "credentials verified" entries to be present</p>
+ * <p>Requires "Opened" and "Password Verified" to be created</p>
  *
  * @since 0.0.1
  *
  */
-public class EditPasswordEntryUseCase extends AbstractFestUseCase {
+public class EditOpenedAndPasswordEntryUseCase extends AbstractFestUseCase {
 
-  public EditPasswordEntryUseCase(FrameFixture window) {
+  public EditOpenedAndPasswordEntryUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -35,17 +36,19 @@ public class EditPasswordEntryUseCase extends AbstractFestUseCase {
       .table(MessageKey.HISTORY.getKey())
       .rowCount();
 
-    // Find "Password verified" row
+    // Find the Opened row
+    int openedRow = window
+      .table(MessageKey.HISTORY.getKey())
+      .cell(Pattern.compile("^Opened*.*"))
+      .row;
+
+    // Find the Password verified row
     int pvRow = window
       .table(MessageKey.HISTORY.getKey())
       .cell(Languages.safeText(MessageKey.PASSWORD_VERIFIED))
       .row;
 
-    // Get the history
-    String[][] history = window
-      .table(MessageKey.HISTORY.getKey())
-      .contents();
-
+    ensureCheckboxIsSelected(MessageKey.HISTORY, openedRow, HistoryTableModel.CHECKBOX_COLUMN_INDEX);
     ensureCheckboxIsSelected(MessageKey.HISTORY, pvRow, HistoryTableModel.CHECKBOX_COLUMN_INDEX);
 
     // Click on Edit
@@ -53,24 +56,18 @@ public class EditPasswordEntryUseCase extends AbstractFestUseCase {
       .button(MessageKey.EDIT.getKey())
       .click();
 
-    // Verify the single history edit wizard appears
-    assertLabelText(MessageKey.EDIT_HISTORY_ENTRY_TITLE);
+    // Verify the multiple history edit wizard appears
+    assertLabelText(MessageKey.EDIT_HISTORY_ENTRIES_TITLE);
 
     window
       .button(MessageKey.CANCEL.getKey())
       .requireVisible()
       .requireEnabled();
 
-    // Update credentials entry private notes
-    window
-      .textBox(MessageKey.DESCRIPTION_READ_ONLY.getKey())
-      .requireText(Languages.safeText(MessageKey.PASSWORD_VERIFIED))
-      .requireNotEditable();
-
     // Private notes
     window
       .textBox(MessageKey.PRIVATE_NOTES.getKey())
-      .setText("First login to wallet");
+      .setText("Preparing Scrooge's trezor");
 
     verifyCancel();
 
@@ -93,10 +90,14 @@ public class EditPasswordEntryUseCase extends AbstractFestUseCase {
     // Verify that no new row has been added
     assertThat(rowCount2).isEqualTo(rowCount1);
 
-    // Verify that the private notes are visible
-    window
+    // Update the contents
+    String[][] history = window
       .table(MessageKey.HISTORY.getKey())
-      .cell("First login to wallet");
+      .contents();
+
+    assertThat(history[openedRow][HistoryTableModel.NOTES_COLUMN_INDEX]).contains("Scrooge");
+    assertThat(history[pvRow][HistoryTableModel.NOTES_COLUMN_INDEX]).contains("Scrooge");
+
   }
 
   /**
@@ -109,18 +110,18 @@ public class EditPasswordEntryUseCase extends AbstractFestUseCase {
       .button(MessageKey.CANCEL.getKey())
       .click();
 
-    // Expect Yes/No popup)
+    // Expect Yes/No popover
     window
       .button(MessageKey.YES.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button("popover_"+MessageKey.CLOSE.getKey())
+      .button("popover_" + MessageKey.CLOSE.getKey())
       .requireVisible()
       .requireEnabled();
 
-    // Click Cancel
+    // Click No
     window
       .button(MessageKey.NO.getKey())
       .requireVisible()

@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar.tools.repair_wallet;
+package org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.wallet_details;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -9,45 +9,48 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "tools" screen repair wallet wizard shows</li>
+ * <li>Verify the "tools" screen about wizard shows</li>
  * </ul>
  * <p>Requires the "tools" screen to be showing</p>
  *
  * @since 0.0.1
- *
+ * TODO Implement this
  */
-public class ShowThenCancelRepairWalletUseCase extends AbstractFestUseCase {
+public class ShowThenCancelWalletDetailsUseCase extends AbstractFestUseCase {
 
-  public ShowThenCancelRepairWalletUseCase(FrameFixture window) {
+  public ShowThenCancelWalletDetailsUseCase(FrameFixture window) {
     super(window);
   }
 
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on "repair wallet"
+    // Click on "about"
     window
-      .button(MessageKey.SHOW_REPAIR_WALLET_WIZARD.getKey())
+      .button(MessageKey.SHOW_ABOUT_WIZARD.getKey())
       .click();
 
-    // Verify the "repair wallet" wizard appears
-    assertLabelText(MessageKey.REPAIR_WALLET_TITLE);
+    // Verify the "about" wizard appears
+    assertLabelText(MessageKey.ABOUT_TITLE);
 
-    // Verify cancel is present
+    // Verify the note appears
+    assertLabelText(MessageKey.ABOUT_NOTE_1);
+
+    // Verify "visit website" is present
     window
-      .button(MessageKey.CANCEL.getKey())
+      .button(MessageKey.VISIT_WEBSITE.getKey())
       .requireVisible()
       .requireEnabled();
 
-    // Verify next is present
+    // Verify Finish is present
     window
-      .button(MessageKey.NEXT.getKey())
+      .button(MessageKey.FINISH.getKey())
       .requireVisible()
       .requireEnabled();
 
-    // Click Cancel
+    // Click Finish
     window
-      .button(MessageKey.CANCEL.getKey())
+      .button(MessageKey.FINISH.getKey())
       .click();
 
     // Verify the underlying screen is back

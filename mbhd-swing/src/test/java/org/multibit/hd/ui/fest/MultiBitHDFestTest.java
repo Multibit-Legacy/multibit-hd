@@ -282,11 +282,11 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <ul>
    * <li>Start with empty wallet fixture</li>
    * <li>Unlock wallet</li>
-   * <li>Exercise the History screen</li>
+   * <li>Exercise the Manage Wallet screen</li>
    * </ul>
    */
   @Test
-  public void verifyHistoryScreen() throws Exception {
+  public void verifyManageWalletScreen() throws Exception {
 
     // Start with the empty wallet fixture
     arrangeEmpty();
@@ -294,8 +294,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
-    // Examine the history after unlocking
-    HistoryScreenRequirements.verifyUsing(window);
+    // Verify
+    ManageWalletScreenRequirements.verifyUsing(window);
 
   }
 

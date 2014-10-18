@@ -270,11 +270,13 @@ public enum MessageKey {
 
   PAYMENTS("payments"),
 
+  PREFERENCES("preferences"),
+  MANAGE_WALLET("manage_wallet"),
+  TOOLS("tools"),
+
+  // Tools
   HISTORY("history"),
   HISTORY_TOOLTIP("history_tooltip"),
-
-  PREFERENCES("preferences"),
-  TOOLS("tools"),
 
   // Placeholders
   APPROXIMATELY("approximately"),
@@ -374,8 +376,6 @@ public enum MessageKey {
 
   VERIFY_DEVICE("verify_device"),
   WIPE_DEVICE("wipe_device"),
-
-  TREZOR_BUTTON_TITLE("trezor_button_title"),
 
   // Settings titles
 
@@ -497,6 +497,9 @@ public enum MessageKey {
   SHOW_REPAIR_WALLET_WIZARD("show_repair_wallet_wizard"),
   SHOW_REPAIR_WALLET_WIZARD_TOOLTIP("show_repair_wallet_wizard_tooltip"),
 
+  SHOW_WALLET_DETAILS_WIZARD("show_wallet_details_wizard"),
+  SHOW_WALLET_DETAILS_WIZARD_TOOLTIP("show_wallet_details_wizard_tooltip"),
+
   SHOW_EMPTY_WALLET_WIZARD("show_empty_wallet_wizard"),
   SHOW_EMPTY_WALLET_WIZARD_TOOLTIP("show_empty_wallet_wizard_tooltip"),
 
@@ -508,6 +511,10 @@ public enum MessageKey {
 
   SHOW_ABOUT_WIZARD("show_about_wizard"),
   SHOW_ABOUT_WIZARD_TOOLTIP("show_about_wizard_tooltip"),
+
+  SHOW_TREZOR_TOOLS_WIZARD("show_trezor_tools_wizard"),
+  SHOW_TREZOR_TOOLS_WIZARD_TOOLTIP("show_trezor_tools_wizard_tooltip"),
+
 
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),

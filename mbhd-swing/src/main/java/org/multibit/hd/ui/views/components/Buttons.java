@@ -787,7 +787,7 @@ public class Buttons {
      */
     public static JButton newShowTrezorToolsWizardButton(Action action) {
 
-      JButton button = newLargeButton(action, MessageKey.TREZOR_BUTTON_TITLE, MessageKey.TREZOR_BUTTON_TITLE);
+      JButton button = newLargeButton(action, MessageKey.SHOW_TREZOR_TOOLS_WIZARD, MessageKey.SHOW_TREZOR_TOOLS_WIZARD_TOOLTIP);
 
       AwesomeDecorator.applyIcon(
         // Cannot use LOCK even though it is the closest icon to the Trezor logo
@@ -985,6 +985,26 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "history" button with icon
+   */
+  public static JButton newShowHistoryScreenButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.HISTORY, MessageKey.HISTORY_TOOLTIP);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.HISTORY,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "about" button with icon
    */
   public static JButton newShowAboutButton(Action action) {
@@ -1013,6 +1033,26 @@ public class Buttons {
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.MEDKIT,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "wallet details" button with icon
+   */
+  public static JButton newShowWalletDetailsButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_WALLET_DETAILS_WIZARD, MessageKey.SHOW_WALLET_DETAILS_WIZARD_TOOLTIP);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.DASHBOARD,
       button,
       true,
       JLabel.BOTTOM,

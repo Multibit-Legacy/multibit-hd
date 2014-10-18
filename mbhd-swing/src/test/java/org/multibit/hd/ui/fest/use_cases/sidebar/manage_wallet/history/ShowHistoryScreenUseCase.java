@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar.history;
+package org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.history;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -34,7 +34,7 @@ public class ShowHistoryScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(HISTORY_ROW);
+      .selectRow(MANAGE_WALLET_ROW);
 
     // Expect the History screen to show
     window

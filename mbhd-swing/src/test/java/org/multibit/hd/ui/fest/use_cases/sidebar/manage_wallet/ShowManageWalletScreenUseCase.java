@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar.tools;
+package org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -11,15 +11,15 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "tools" sidebar screen</li>
+ * <li>Verify the "manage wallet" sidebar screen</li>
  * </ul>
  *
  * @since 0.0.1
  *
  */
-public class ShowToolsScreenUseCase extends AbstractFestUseCase {
+public class ShowManageWalletScreenUseCase extends AbstractFestUseCase {
 
-  public ShowToolsScreenUseCase(FrameFixture window) {
+  public ShowManageWalletScreenUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -32,34 +32,39 @@ public class ShowToolsScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(TOOLS_ROW);
+      .selectRow(MANAGE_WALLET_ROW);
 
-    // Expect the Tools screen to show
+    // Expect the Manage Wallet screen to show
 
     // Row 1
     window
-      .button(MessageKey.SHOW_SIGN_WIZARD.getKey())
+      .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.SHOW_VERIFY_WIZARD.getKey())
+      .button(MessageKey.SHOW_WALLET_DETAILS_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
+
+    window
+      .button(MessageKey.SHOW_EMPTY_WALLET_WIZARD.getKey())
+      .requireVisible();
 
     // Row 2
+
     window
-      .button(MessageKey.SHOW_VERIFY_NETWORK_WIZARD.getKey())
+      .button(MessageKey.HISTORY.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.SHOW_ABOUT_WIZARD.getKey())
+      .button(MessageKey.SHOW_CHANGE_PASSWORD_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
     window
-      .button(MessageKey.SHOW_TREZOR_TOOLS_WIZARD.getKey())
+      .button(MessageKey.SHOW_REPAIR_WALLET_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 

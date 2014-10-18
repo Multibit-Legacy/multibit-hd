@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar.history;
+package org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.history;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;

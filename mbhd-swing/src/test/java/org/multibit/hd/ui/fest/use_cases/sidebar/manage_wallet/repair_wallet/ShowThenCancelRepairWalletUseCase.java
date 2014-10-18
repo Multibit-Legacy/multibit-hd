@@ -1,45 +1,47 @@
-package org.multibit.hd.ui.fest.use_cases.sidebar.tools.empty_wallet;
+package org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.repair_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
-import org.fest.swing.timing.Timeout;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "tools" screen verify message wizard shows</li>
+ * <li>Verify the "tools" screen repair wallet wizard shows</li>
  * </ul>
  * <p>Requires the "tools" screen to be showing</p>
  *
  * @since 0.0.1
  *
  */
-public class ShowThenCancelEmptyWalletUseCase extends AbstractFestUseCase {
+public class ShowThenCancelRepairWalletUseCase extends AbstractFestUseCase {
 
-  public ShowThenCancelEmptyWalletUseCase(FrameFixture window) {
+  public ShowThenCancelRepairWalletUseCase(FrameFixture window) {
     super(window);
   }
 
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on "empty wallet"
+    // Click on "repair wallet"
     window
-      .button(MessageKey.SHOW_EMPTY_WALLET_WIZARD.getKey())
-      // Allow time for the sync to complete
-      .requireEnabled(Timeout.timeout(10, TimeUnit.SECONDS))
+      .button(MessageKey.SHOW_REPAIR_WALLET_WIZARD.getKey())
       .click();
 
-    // Verify the "empty wallet" wizard appears
-    assertLabelText(MessageKey.EMPTY_WALLET_TITLE);
+    // Verify the "repair wallet" wizard appears
+    assertLabelText(MessageKey.REPAIR_WALLET_TITLE);
 
     // Verify cancel is present
     window
       .button(MessageKey.CANCEL.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    // Verify next is present
+    window
+      .button(MessageKey.NEXT.getKey())
       .requireVisible()
       .requireEnabled();
 

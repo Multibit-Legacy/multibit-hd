@@ -97,6 +97,9 @@ public class DetailView extends AbstractView {
       public void run() {
 
         Screen screen = event.getScreen();
+
+        Preconditions.checkState(screenViewMap.containsKey(screen), "Screen '"+ screen.name() +"' has not been added to screenViewMap.");
+
         AbstractScreenView view = screenViewMap.get(screen);
 
         if (!view.isInitialised()) {
