@@ -2,15 +2,18 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.crypto.AESUtils;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.AccessibilityDecorator;
@@ -22,6 +25,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import javax.swing.*;
@@ -36,11 +40,12 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class RestorePasswordReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, Boolean> {
 
   private JLabel passwordRecoveryStatus;
+
+  private ListeningExecutorService listeningExecutorService;
 
   /**
    * @param wizard The wizard managing the states
@@ -61,11 +66,12 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
-    contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[][][]", // Column constraints
-      "[]10[]10[]" // Row constraints
-    ));
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[][][]", // Column constraints
+        "[]10[]10[]" // Row constraints
+      ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -74,7 +80,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
 
     contentPanel.add(passwordRecoveryStatus, "wrap");
 
-    recoverPassword();
+    listeningExecutorService = SafeExecutors.newSingleThreadExecutor("restore-password");
 
   }
 
@@ -88,12 +94,19 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        getFinishButton().requestFocusInWindow();
-      }
-    });
+    // Run the decryption on a different thread
+    listeningExecutorService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+
+          recoverPassword();
+
+          // Enable the Finish button
+          ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+
+        }
+      });
 
   }
 
@@ -125,19 +138,31 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     if (walletDirectory.isDirectory()) {
       walletSummary = WalletManager.getOrCreateWalletSummary(walletDirectory, walletId);
     } else {
-      // Failed
-      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
-      AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
-      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            // Failed
+            passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
+            AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
+            AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+          }
+        });
       return;
     }
 
     // Check for present but empty wallet directory
     if (walletSummary.getEncryptedPassword() == null) {
-      // Failed
-      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
-      AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
-      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            // Failed
+            passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
+            AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
+            AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+          }
+        });
       return;
     }
 
@@ -145,12 +170,19 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     KeyParameter backupAESKey;
     try {
       backupAESKey = AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
-    } catch (NoSuchAlgorithmException e) {
-      // Failed
-      log.error(e.getMessage(), e);
-      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
-      AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
-      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+    } catch (final NoSuchAlgorithmException e) {
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            // Failed
+            log.error(e.getMessage(), e);
+            passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
+            AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
+            AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+          }
+        });
       return;
     }
 
@@ -162,29 +194,46 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     );
 
     try {
-      byte[] decryptedWalletPasswordBytes = WalletManager.unpadPasswordBytes(decryptedPaddedWalletPasswordBytes);
+      final byte[] decryptedWalletPasswordBytes = WalletManager.unpadPasswordBytes(decryptedPaddedWalletPasswordBytes);
 
       // Check the result
       if (decryptedWalletPasswordBytes == null || decryptedWalletPasswordBytes.length == 0) {
-        // Failed
-        passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
-        AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
-        AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              // Failed
+              passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
+              AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
+              AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+            }
+          });
         return;
       }
 
       // Must be OK to be here
-      String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, Charsets.UTF_8);
-      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, decryptedWalletPassword));
-      AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS);
-      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, Charsets.UTF_8);
+            passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, decryptedWalletPassword));
+            AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS);
+            AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+          }
+        });
 
     } catch (IllegalStateException ise) {
       // Probably the unpad failed
-      passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
-      AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
-      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
-      return;
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
+            AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
+            AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+          }
+        });
     }
   }
 
