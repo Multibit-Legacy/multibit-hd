@@ -43,7 +43,6 @@ import java.util.concurrent.TimeUnit;
  * @since 0.0.1
  *
  */
-
 public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePasswordWizardModel, ChangePasswordPanelModel> {
 
   // Panel specific components
@@ -108,18 +107,6 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
   protected void initialiseButtons(AbstractWizard<ChangePasswordWizardModel> wizard) {
 
     PanelDecorator.addCancelNext(this, wizard);
-
-  }
-
-  @Override
-  public void fireInitialStateViewEvents() {
-
-    // Determine any events
-    ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.NEXT,
-      true
-    );
 
   }
 

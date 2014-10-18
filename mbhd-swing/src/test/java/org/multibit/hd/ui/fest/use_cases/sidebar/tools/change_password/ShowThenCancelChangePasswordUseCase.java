@@ -41,7 +41,7 @@ public class ShowThenCancelChangePasswordUseCase extends AbstractFestUseCase {
     window
       .button(MessageKey.NEXT.getKey())
       .requireVisible()
-      .requireEnabled();
+      .requireDisabled();
 
    // Click Cancel
     window

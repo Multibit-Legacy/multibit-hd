@@ -46,7 +46,7 @@ public class VerifyChangePasswordUseCase extends AbstractFestUseCase {
     window
       .button(MessageKey.NEXT.getKey())
       .requireVisible()
-      .requireEnabled();
+      .requireDisabled();
 
     // Fill in the original credentials
     window
