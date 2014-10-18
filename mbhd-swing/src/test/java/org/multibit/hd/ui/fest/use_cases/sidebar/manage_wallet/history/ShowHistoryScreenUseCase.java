@@ -13,11 +13,11 @@ import static org.fest.swing.timing.Timeout.timeout;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "history" sidebar screen</li>
+ * <li>Verify the "history" detail screen</li>
  * </ul>
+ * <p>Requires the "manage wallet" screen to be showing first</p>
  *
  * @since 0.0.1
- *
  */
 public class ShowHistoryScreenUseCase extends AbstractFestUseCase {
 
@@ -31,17 +31,14 @@ public class ShowHistoryScreenUseCase extends AbstractFestUseCase {
     assertThat(parameters).isNotNull();
 
     window
-      .tree(MessageKey.SIDEBAR_TREE.getKey())
-      .requireVisible()
-      .requireEnabled()
-      .selectRow(MANAGE_WALLET_ROW);
+      .button(MessageKey.HISTORY.getKey())
+      .click();
 
     // Expect the History screen to show
     window
       .button(MessageKey.SEARCH.getKey())
       .requireVisible()
       .requireEnabled(timeout(1, TimeUnit.SECONDS));
-
 
     window
       .textBox(MessageKey.SEARCH.getKey())

@@ -82,6 +82,9 @@ import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageWizardModel;
 import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkState;
 import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkWizard;
 import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkWizardModel;
+import org.multibit.hd.ui.views.wizards.wallet_details.WalletDetailsState;
+import org.multibit.hd.ui.views.wizards.wallet_details.WalletDetailsWizard;
+import org.multibit.hd.ui.views.wizards.wallet_details.WalletDetailsWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
@@ -450,6 +453,19 @@ public class Wizards {
     Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present");
 
     return new EditWalletWizard(new EditWalletWizardModel(EditWalletState.EDIT_WALLET, currentWalletSummary.get()), false);
+  }
+
+  /**
+   * @return A new "wallet details" wizard for reviewing wallet capabilities
+   */
+  public static WalletDetailsWizard newWalletDetailsWizard() {
+
+    log.debug("New 'Wallet details wizard'");
+
+    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present");
+
+    return new WalletDetailsWizard(new WalletDetailsWizardModel(WalletDetailsState.WALLET_DETAILS, currentWalletSummary.get()), false);
   }
 
 }

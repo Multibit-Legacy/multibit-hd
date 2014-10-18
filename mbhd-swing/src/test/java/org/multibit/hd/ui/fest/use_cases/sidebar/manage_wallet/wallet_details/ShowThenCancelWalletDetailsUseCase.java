@@ -9,12 +9,11 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "tools" screen about wizard shows</li>
+ * <li>Verify the "manage wallet" screen wallet details wizard shows</li>
  * </ul>
- * <p>Requires the "tools" screen to be showing</p>
+ * <p>Requires the "manage wallet" screen to be showing</p>
  *
  * @since 0.0.1
- * TODO Implement this
  */
 public class ShowThenCancelWalletDetailsUseCase extends AbstractFestUseCase {
 
@@ -25,22 +24,22 @@ public class ShowThenCancelWalletDetailsUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on "about"
+    // Click on "wallet details"
     window
-      .button(MessageKey.SHOW_ABOUT_WIZARD.getKey())
+      .button(MessageKey.SHOW_WALLET_DETAILS_WIZARD.getKey())
       .click();
 
-    // Verify the "about" wizard appears
-    assertLabelText(MessageKey.ABOUT_TITLE);
+    // Verify the "wallet details" wizard appears
+    assertLabelText(MessageKey.WALLET_DETAILS_TITLE);
 
-    // Verify the note appears
-    assertLabelText(MessageKey.ABOUT_NOTE_1);
-
-    // Verify "visit website" is present
-    window
-      .button(MessageKey.VISIT_WEBSITE.getKey())
-      .requireVisible()
-      .requireEnabled();
+//    // Verify the note appears
+//    assertLabelText(MessageKey.ABOUT_NOTE_1);
+//
+//    // Verify "visit website" is present
+//    window
+//      .button(MessageKey.VISIT_WEBSITE.getKey())
+//      .requireVisible()
+//      .requireEnabled();
 
     // Verify Finish is present
     window

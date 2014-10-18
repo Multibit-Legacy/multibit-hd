@@ -157,8 +157,7 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        // TODO Implement this
-        // Panels.showLightBox(Wizards.newWalletDetailsWizard().getWizardScreenHolder());
+        Panels.showLightBox(Wizards.newWalletDetailsWizard().getWizardScreenHolder());
       }
     };
   }

@@ -9,12 +9,11 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "tools" screen about wizard shows</li>
+ * <li>Verify the "manage wallet" screen edit wallet wizard shows</li>
  * </ul>
- * <p>Requires the "tools" screen to be showing</p>
+ * <p>Requires the "manage wallet" screen to be showing</p>
  *
  * @since 0.0.1
- * TODO Implement this
  */
 public class ShowThenCancelEditWalletUseCase extends AbstractFestUseCase {
 
@@ -25,32 +24,32 @@ public class ShowThenCancelEditWalletUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on "about"
+    // Click on "edit wallet"
     window
-      .button(MessageKey.SHOW_ABOUT_WIZARD.getKey())
+      .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
       .click();
 
-    // Verify the "about" wizard appears
-    assertLabelText(MessageKey.ABOUT_TITLE);
+    // Verify the "edit wallet" wizard appears
+    assertLabelText(MessageKey.EDIT_WALLET_TITLE);
 
-    // Verify the note appears
-    assertLabelText(MessageKey.ABOUT_NOTE_1);
+    // Verify the "name" field is present
+    assertLabelText(MessageKey.NAME);
 
-    // Verify "visit website" is present
+    // Verify "notes" field is present
     window
-      .button(MessageKey.VISIT_WEBSITE.getKey())
+      .textBox(MessageKey.NOTES.getKey())
       .requireVisible()
       .requireEnabled();
 
-    // Verify Finish is present
+    // Verify Apply is present
     window
-      .button(MessageKey.FINISH.getKey())
+      .button(MessageKey.APPLY.getKey())
       .requireVisible()
       .requireEnabled();
 
-    // Click Finish
+    // Click Cancel
     window
-      .button(MessageKey.FINISH.getKey())
+      .button(MessageKey.CANCEL.getKey())
       .click();
 
     // Verify the underlying screen is back

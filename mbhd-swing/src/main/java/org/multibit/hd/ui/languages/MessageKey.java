@@ -387,13 +387,11 @@ public enum MessageKey {
   FEES_SETTINGS_TITLE("fees_settings_title"),
   LABS_SETTINGS_TITLE("labs_settings_title"),
 
-  // Tools titles
+  // Manage wallet titles
 
-  SIGN_MESSAGE_TITLE("sign_message_title"),
-  VERIFY_MESSAGE_TITLE("verify_message_title"),
   EDIT_WALLET_TITLE("edit_wallet_title"),
+  WALLET_DETAILS_TITLE("wallet_details_title"),
   CHANGE_PASSWORD_TITLE("change_password_title"),
-  VERIFY_NETWORK_TITLE("verify_network_title"),
 
   REPAIR_WALLET_TITLE("repair_wallet_title"),
   REPAIR_WALLET_PROGRESS_TITLE("repair_wallet_progress_title"),
@@ -402,6 +400,12 @@ public enum MessageKey {
   EMPTY_WALLET_CONFIRM_TITLE("empty_wallet_confirm_title"),
   EMPTY_WALLET_PROGRESS_TITLE("empty_wallet_progress_title"),
 
+  // Tools titles
+
+  SIGN_MESSAGE_TITLE("sign_message_title"),
+  VERIFY_MESSAGE_TITLE("verify_message_title"),
+
+  VERIFY_NETWORK_TITLE("verify_network_title"),
   TREZOR_TOOLS_TITLE("trezor_tools_title"),
 
   // Labels

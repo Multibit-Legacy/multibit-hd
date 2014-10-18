@@ -3,8 +3,6 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.ShowManageWalletScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.change_password.ShowThenCancelChangePasswordUseCase;
-import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.change_password.VerifyChangePasswordUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.edit_wallet.ShowThenCancelEditWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.empty_wallet.ShowThenCancelEmptyWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.history.*;
@@ -20,7 +18,6 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class ManageWalletScreenRequirements {
 
@@ -44,13 +41,19 @@ public class ManageWalletScreenRequirements {
     // Verifying the repair will take too long
     new ShowThenCancelRepairWalletUseCase(window).execute(parameters);
 
-    // Verify the "change credentials" wizard
-    new ShowThenCancelChangePasswordUseCase(window).execute(parameters);
-    new VerifyChangePasswordUseCase(window).execute(parameters);
-
     // Verify the "history" screen change
-    new ShowHistoryScreenUseCase(window).execute(parameters);
-    // Select the history screen
+    verifyHistoryScreen(window, parameters);
+
+  }
+
+  /**
+   * The history screen is a special case of a screen initiated from a button
+   *
+   * @param window     The frame fixture window
+   * @param parameters Any parameters
+   */
+  private static void verifyHistoryScreen(FrameFixture window, Map<String, Object> parameters) {
+
     new ShowHistoryScreenUseCase(window).execute(parameters);
 
     // Click Edit and update credentials verified
@@ -66,4 +69,5 @@ public class ManageWalletScreenRequirements {
     new SearchHistoryUseCase(window).execute(parameters);
 
   }
+
 }
