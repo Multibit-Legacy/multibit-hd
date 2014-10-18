@@ -37,7 +37,7 @@ public class TrezorToolsSelectPanelView extends AbstractWizardPanelView<TrezorTo
    */
   public TrezorToolsSelectPanelView(AbstractWizard<TrezorToolsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SELECT_WALLET_TITLE, AwesomeIcon.MAGIC);
+    super(wizard, panelName, MessageKey.TREZOR_TOOLS_TITLE, AwesomeIcon.SHIELD);
 
   }
 

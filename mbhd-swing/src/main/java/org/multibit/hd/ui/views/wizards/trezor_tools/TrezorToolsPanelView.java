@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -33,7 +32,7 @@ public class TrezorToolsPanelView extends AbstractWizardPanelView<TrezorToolsWiz
    */
   public TrezorToolsPanelView(AbstractWizard<TrezorToolsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.REPAIR_WALLET_TITLE, AwesomeIcon.SHIELD);
+    super(wizard, panelName, MessageKey.TREZOR_TOOLS_TITLE, AwesomeIcon.SHIELD);
 
   }
 
@@ -55,8 +54,6 @@ public class TrezorToolsPanelView extends AbstractWizardPanelView<TrezorToolsWiz
       "[]", // Column constraints
       "[]" // Row constraints
     ));
-
-    contentPanel.add(Labels.newRepairWalletNote());
 
   }
 

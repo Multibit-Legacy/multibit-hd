@@ -2,14 +2,12 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.change_password.ShowThenCancelChangePasswordUseCase;
-import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.change_password.VerifyChangePasswordUseCase;
-import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.empty_wallet.ShowThenCancelEmptyWalletUseCase;
-import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.repair_wallet.ShowThenCancelRepairWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.tools.ShowToolsScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.tools.about.ShowThenCancelAboutUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.tools.sign_message.ShowThenFinishSignMessageUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.tools.trezor_tools.ShowThenCancelTrezorToolsUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.tools.verify_message.ShowThenFinishVerifyMessageUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.tools.verify_network.ShowThenFinishVerifyNetworkUseCase;
 
 import java.util.Map;
 
@@ -31,25 +29,21 @@ public class ToolsScreenRequirements {
     // Show the tools screen
     new ShowToolsScreenUseCase(window).execute(parameters);
 
-    // Show then cancel the "repair wallet" wizard
-    // Verifying the repair will take too long
-    new ShowThenCancelRepairWalletUseCase(window).execute(parameters);
+    // Show the "sign message" wizard
+    new ShowThenFinishSignMessageUseCase(window).execute(parameters);
 
     // Show the "verify message" wizard
     new ShowThenFinishVerifyMessageUseCase(window).execute(parameters);
 
-    // Show then cancel the "empty wallet" wizard
-    new ShowThenCancelEmptyWalletUseCase(window).execute(parameters);
-
-    // Show the "sign message" wizard
-    new ShowThenFinishSignMessageUseCase(window).execute(parameters);
+    // Show the "verify network" wizard
+    new ShowThenFinishVerifyNetworkUseCase(window).execute(parameters);
 
     // Show then cancel the "about" wizard
     new ShowThenCancelAboutUseCase(window).execute(parameters);
 
-    // Verify the "change credentials" wizard
-    new ShowThenCancelChangePasswordUseCase(window).execute(parameters);
-    new VerifyChangePasswordUseCase(window).execute(parameters);
+    // Show the "Trezor tools" wizard
+    new ShowThenCancelTrezorToolsUseCase(window).execute(parameters);
+
 
   }
 }

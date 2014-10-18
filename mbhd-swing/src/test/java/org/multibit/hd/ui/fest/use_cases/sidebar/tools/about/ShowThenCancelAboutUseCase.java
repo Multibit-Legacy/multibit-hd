@@ -55,7 +55,7 @@ public class ShowThenCancelAboutUseCase extends AbstractFestUseCase {
 
     // Verify the underlying screen is back
     window
-      .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
+      .button(MessageKey.SHOW_SIGN_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 
