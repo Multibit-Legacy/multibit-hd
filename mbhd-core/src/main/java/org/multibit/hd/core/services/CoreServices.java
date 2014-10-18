@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.bitcoinj.utils.Threading;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
@@ -165,6 +166,9 @@ public class CoreServices {
 
     // Start security checking service
     securityCheckingService.start();
+
+    // Configure Bitcoinj
+    Threading.UserThread.WARNING_THRESHOLD = Integer.MAX_VALUE;
 
   }
 
