@@ -31,7 +31,7 @@ public class AppearanceConfiguration {
   /**
    * The version field cannot contain "/" or "(" or ")" since it is used in the PeerGroup of Bitcoinj
    */
-  private String version = "0.0.3";
+  private String version = "0.0.4";
 
   /**
    * Good default width and height for centered initial screen and balance displayed
