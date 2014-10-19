@@ -2,8 +2,10 @@ package org.multibit.hd.ui.views.wizards.trezor_tools;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -12,8 +14,12 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -25,6 +31,10 @@ import java.awt.event.ActionListener;
  */
 
 public class TrezorToolsSelectPanelView extends AbstractWizardPanelView<TrezorToolsWizardModel, TrezorToolsState> implements ActionListener {
+
+  // TODO replace with affiliate link
+
+  private static String BUY_TREZOR_URL = "https://www.buytrezor.com";
 
   // Model
   private TrezorToolsState currentSelection;
@@ -59,6 +69,8 @@ public class TrezorToolsSelectPanelView extends AbstractWizardPanelView<TrezorTo
         "[]" // Row constraints
       ));
 
+    JButton launchBrowserButton = Buttons.newLaunchBrowserButton(getLaunchBrowserAction(), MessageKey.BUY_TREZOR, MessageKey.BUY_TREZOR_TOOLTIP);
+    contentPanel.add(launchBrowserButton, "wrap");
     contentPanel.add(
       Panels.newTrezorToolSelector(
         this,
@@ -70,7 +82,7 @@ public class TrezorToolsSelectPanelView extends AbstractWizardPanelView<TrezorTo
 
   @Override
   protected void initialiseButtons(AbstractWizard<TrezorToolsWizardModel> wizard) {
-    PanelDecorator.addExitCancelPreviousNext(this, wizard);
+    PanelDecorator.addExitCancelNext(this, wizard);
   }
 
   @Override
@@ -95,10 +107,7 @@ public class TrezorToolsSelectPanelView extends AbstractWizardPanelView<TrezorTo
     setPanelModel(currentSelection);
 
     // Bind this to the wizard model
-    //getWizardModel().setSelectWalletChoice(currentSelection);
-
-    // The welcome wizard overrides the Next button behaviour to simulate a Finish
-    // if this is a "use existing wallet" selection
+    getWizardModel().setCurrentSelection(currentSelection);
 
   }
 
@@ -115,4 +124,23 @@ public class TrezorToolsSelectPanelView extends AbstractWizardPanelView<TrezorTo
     currentSelection = TrezorToolsState.valueOf(source.getActionCommand());
 
   }
+
+  /**
+    * @return The "launch browser" action
+    */
+   private Action getLaunchBrowserAction() {
+
+     return new AbstractAction() {
+       @Override
+       public void actionPerformed(ActionEvent e) {
+
+         try {
+           Desktop.getDesktop().browse(new URI(BUY_TREZOR_URL));
+         } catch (IOException | URISyntaxException e1) {
+           ExceptionHandler.handleThrowable(e1);
+         }
+
+       }
+     };
+   }
 }

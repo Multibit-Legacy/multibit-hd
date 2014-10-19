@@ -378,9 +378,13 @@ public enum MessageKey {
   USE_TREZOR_REPORT_MESSAGE_SUCCESS("use_trezor_report_message_success"),
   USE_TREZOR_REPORT_MESSAGE_FAILURE("use_trezor_report_message_failure"),
 
-
   VERIFY_DEVICE("verify_device"),
+  VERIFY_DEVICE_TITLE("verify_device_title"),
   WIPE_DEVICE("wipe_device"),
+  WIPE_DEVICE_TITLE("wipe_device_title"),
+
+  BUY_TREZOR("buy_trezor"),
+  BUY_TREZOR_TOOLTIP("buy_trezor_tooltip"),
 
   // Settings titles
 
@@ -523,7 +527,6 @@ public enum MessageKey {
 
   SHOW_TREZOR_TOOLS_WIZARD("show_trezor_tools_wizard"),
   SHOW_TREZOR_TOOLS_WIZARD_TOOLTIP("show_trezor_tools_wizard_tooltip"),
-
 
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),

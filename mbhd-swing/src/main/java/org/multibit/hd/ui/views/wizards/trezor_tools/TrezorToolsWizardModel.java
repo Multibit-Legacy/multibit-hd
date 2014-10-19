@@ -36,6 +36,11 @@ public class TrezorToolsWizardModel extends AbstractWizardModel<TrezorToolsState
   private Optional<Boolean> walletRepaired = Optional.absent();
 
   /**
+   * The current selection option as a state
+   */
+  private TrezorToolsState currentSelection = TrezorToolsState.VERIFY_DEVICE;
+
+  /**
    * @param state The state object
    */
   public TrezorToolsWizardModel(TrezorToolsState state) {
@@ -46,8 +51,15 @@ public class TrezorToolsWizardModel extends AbstractWizardModel<TrezorToolsState
   public void showNext() {
     switch (state) {
       case SELECT_TREZOR_ACTION:
-        state = TrezorToolsState.VERIFY_DEVICE;
-        break;
+        if (TrezorToolsState.VERIFY_DEVICE.equals(getCurrentSelection())) {
+          state = TrezorToolsState.VERIFY_DEVICE;
+          break;
+        } else if (TrezorToolsState.WIPE_DEVICE.equals(getCurrentSelection())) {
+          state = TrezorToolsState.WIPE_DEVICE;
+          break;
+        } else {
+          throw new IllegalStateException("Cannot showNext with a state of SELECT_TREZOR_ACTION and a selection of " + getCurrentSelection());
+        }
       case VERIFY_DEVICE:
         state = TrezorToolsState.TREZOR_ACTION_REPORT;
         break;
@@ -124,7 +136,14 @@ public class TrezorToolsWizardModel extends AbstractWizardModel<TrezorToolsState
 
         }
       });
-
     }
+  }
+
+  public TrezorToolsState getCurrentSelection() {
+    return currentSelection;
+  }
+
+  public void setCurrentSelection(TrezorToolsState currentSelection) {
+    this.currentSelection = currentSelection;
   }
 }

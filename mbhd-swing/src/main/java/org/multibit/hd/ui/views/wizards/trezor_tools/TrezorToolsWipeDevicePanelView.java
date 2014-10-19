@@ -26,7 +26,7 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Show report wallet progress report</li>
+ * <li>Panel telling the user to press the continue button to wupe their Trezor</li>
  * </ul>
  *
  * @since 0.0.1
@@ -48,7 +48,7 @@ public class TrezorToolsWipeDevicePanelView extends AbstractWizardPanelView<Trez
    */
   public TrezorToolsWipeDevicePanelView(AbstractWizard<TrezorToolsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.REPAIR_WALLET_PROGRESS_TITLE, AwesomeIcon.MEDKIT);
+    super(wizard, panelName, MessageKey.WIPE_DEVICE_TITLE, AwesomeIcon.MEDKIT);
 
   }
 

@@ -48,7 +48,7 @@ public class TrezorToolsVerifyDevicePanelView extends AbstractWizardPanelView<Tr
    */
   public TrezorToolsVerifyDevicePanelView(AbstractWizard<TrezorToolsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.REPAIR_WALLET_PROGRESS_TITLE, AwesomeIcon.MEDKIT);
+    super(wizard, panelName, MessageKey.VERIFY_DEVICE_TITLE, AwesomeIcon.MEDKIT);
 
   }
 
