@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
-import org.imgscalr.Scalr;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
@@ -65,6 +64,8 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
   private JButton backButton;
   private JButton forwardButton;
+  private JButton refreshButton;
+  private JButton homeButton;
   private JButton launchBrowserButton;
 
   /**
@@ -115,6 +116,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
       "verify-message.png\n" +
       "verify-network.png"
   );
+  private URL homeUrl;
 
   // View components
 
@@ -137,7 +139,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
     MigLayout layout = new MigLayout(
       Panels.migXYDetailLayout(),
-      "[][][]push[]", // Column constraints
+      "[][][][][]push[]", // Column constraints
       "[shrink]10[grow]" // Row constraints
     );
 
@@ -146,6 +148,10 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
     backButton = Buttons.newBackButton(getBackAction());
     forwardButton = Buttons.newForwardButton(getForwardAction());
+
+    refreshButton = Buttons.newRefreshButton(getRefreshAction());
+    homeButton = Buttons.newHomeButton(getHomeAction());
+
     launchBrowserButton = Buttons.newLaunchBrowserButton(getLaunchBrowserAction(), MessageKey.VIEW_IN_EXTERNAL_BROWSER, MessageKey.VIEW_IN_EXTERNAL_BROWSER_TOOLTIP);
 
     // Control visibility and availability
@@ -168,9 +174,11 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     // Add to the panel
     contentPanel.add(backButton, "shrink");
     contentPanel.add(forwardButton, "shrink");
+    contentPanel.add(refreshButton, "shrink");
+    contentPanel.add(homeButton, "shrink");
     contentPanel.add(launchBrowserButton, "shrink");
     contentPanel.add(Labels.newBlankLabel(), "grow,push,wrap"); // Empty label to pack buttons
-    contentPanel.add(scrollPane, "span 4,grow,push");
+    contentPanel.add(scrollPane, "span 6,grow,push");
 
     return contentPanel;
   }
@@ -200,12 +208,12 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
     // Test the main website help is available
     // Look up the standard MultiBit help (via HTTPS)
-    URL helpBaseUrl = null;
     try {
-      // TODO Change contents.html to index.html
-      helpBaseUrl = URI.create(InstallationManager.MBHD_WEBSITE_HELP_BASE + "/contents.html").toURL();
+      // Create the starting page
+      homeUrl = URI.create(InstallationManager.MBHD_WEBSITE_HELP_BASE + "/contents.html").toURL();
+      addPage(homeUrl);
 
-      String content = Resources.toString(helpBaseUrl, Charsets.UTF_8);
+      String content = Resources.toString(homeUrl, Charsets.UTF_8);
       if (!content.contains("<li>")) {
         // Something is wrong at the server end so switch to internal mode
         useInternalHelp = true;
@@ -225,55 +233,46 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
       populateImageCache();
     }
 
-    try {
-      // Create an editor pane to wrap the HTML editor kit
-      editorPane = new JEditorPane() {
+    // Create an editor pane to wrap the HTML editor kit
+    editorPane = new JEditorPane() {
 
-        @Override
-        protected InputStream getStream(URL page) throws IOException {
+      @Override
+      protected InputStream getStream(URL page) throws IOException {
 
-          // This method only works for pages, not elements within pages
+        // This method only works for pages, not elements within pages
 
-          if (useInternalHelp) {
+        if (useInternalHelp) {
 
-            // Remove the host
-            String replacedPath = page.getPath().replace(InstallationManager.MBHD_WEBSITE_HELP_DOMAIN, "");
+          // Remove the host
+          String replacedPath = page.getPath().replace(InstallationManager.MBHD_WEBSITE_HELP_DOMAIN, "");
 
-            // Replace with a classpath
-            replacedPath = "/assets/html/en/help" + replacedPath;
+          // Replace with a classpath
+          replacedPath = "/assets/html/en/help" + replacedPath;
 
-            // Read from the classpath
-            return HelpScreenView.class.getResourceAsStream(replacedPath);
-          }
-
-          // Fall back to standard reader
-          return Resources.asByteSource(page).openBufferedStream();
+          // Read from the classpath
+          return HelpScreenView.class.getResourceAsStream(replacedPath);
         }
 
-      };
+        // Fall back to standard reader
+        return Resources.asByteSource(page).openBufferedStream();
+      }
 
-      // Make it read-only to allow links to be followed
-      editorPane.setEditable(false);
+    };
 
-      // Apply theme
-      editorPane.setBackground(Themes.currentTheme.detailPanelBackground());
+    // Make it read-only to allow links to be followed
+    editorPane.setEditable(false);
 
-      // Create the HTML editor kit (contains style rules etc)
-      HTMLEditorKit kit = createEditorKit();
-      editorPane.setEditorKit(kit);
+    // Apply theme
+    editorPane.setBackground(Themes.currentTheme.detailPanelBackground());
 
-      // Create a default document to manage HTML
-      HTMLDocument htmlDocument = (HTMLDocument) kit.createDefaultDocument();
-      htmlDocument.setBase(helpBaseUrl);
-      editorPane.setDocument(htmlDocument);
+    // Create the HTML editor kit (contains style rules etc)
+    HTMLEditorKit kit = createEditorKit();
+    editorPane.setEditorKit(kit);
 
-      // Create the starting page
-      addPage(URI.create(InstallationManager.MBHD_WEBSITE_HELP_BASE + "/contents.html").toURL());
-
-    } catch (IOException e) {
-      log.error(e.getMessage(), e);
-      return null;
-    }
+    // Create a default document to manage HTML
+    HTMLDocument htmlDocument = (HTMLDocument) kit.createDefaultDocument();
+    htmlDocument.setBase(homeUrl);
+    editorPane.setDocument(htmlDocument);
 
     editorPane.addHyperlinkListener(
       new HyperlinkListener() {
@@ -370,16 +369,8 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
               // Resize it if necessary
               final int MAX_WIDTH = 670;
               if (image.getWidth(null) > MAX_WIDTH) {
-                // Assume a screen shot and calculate the appropriate ratio
-                // for minimum UI width
-                double ratio = image.getWidth(null) / MAX_WIDTH;
-                int height = (int) (image.getHeight(null) / ratio);
-                image = Scalr.resize(
-                  image,
-                  Scalr.Method.ULTRA_QUALITY,
-                  MAX_WIDTH, height,
-                  Scalr.OP_ANTIALIAS
-                );
+
+                image = ImageDecorator.resizeSharp(image, MAX_WIDTH);
 
               }
 
@@ -426,8 +417,8 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     // Define some color entries
     Color linkColor = Themes.currentTheme.sidebarSelectedText();
 
-    String linkCss = String.format("#%02x%02x%02x", linkColor.getRed(), linkColor.getGreen(), linkColor.getBlue());
-    String headingCss = "#973131";
+    String linkHexColor = String.format("#%02x%02x%02x", linkColor.getRed(), linkColor.getGreen(), linkColor.getBlue());
+    String headingHexColor = "#973131";
 
     // Set a basic style sheet
     StyleSheet styleSheet = kit.getStyleSheet();
@@ -435,13 +426,13 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     // Avoid setting the background here since it can bleed through the look and feel
     styleSheet.addRule("body{font-family:\"Helvetica Neue\",\"Liberation Sans\",Arial,sans-serif;margin:0;padding:0;}");
     styleSheet.addRule("h1,h2{font-family:\"Helvetica Neue\",\"Liberation Sans\",Arial,sans-serif;font-weight:normal;}");
-    styleSheet.addRule("h1{color:" + headingCss + ";font-size:200%;}");
-    styleSheet.addRule("h2{color:" + headingCss + ";font-size:180%;}");
-    styleSheet.addRule("h3{color:" + headingCss + ";font-size:150%;}");
-    styleSheet.addRule("h4{color:" + headingCss + ";font-size:120%;}");
+    styleSheet.addRule("h1{color:" + headingHexColor + ";font-size:200%;}");
+    styleSheet.addRule("h2{color:" + headingHexColor + ";font-size:180%;}");
+    styleSheet.addRule("h3{color:" + headingHexColor + ";font-size:150%;}");
+    styleSheet.addRule("h4{color:" + headingHexColor + ";font-size:120%;}");
     styleSheet.addRule("h1 img,h2 img,h3 img{vertical-align:middle;margin-right:5px;}");
-    styleSheet.addRule("a:link,a:visited,a:active{color:" + linkCss + ";}");
-    styleSheet.addRule("a:link:hover,a:visited:hover,a:active:hover{color:" + linkCss + ";}");
+    styleSheet.addRule("a:link,a:visited,a:active{color:" + linkHexColor + ";}");
+    styleSheet.addRule("a:link:hover,a:visited:hover,a:active:hover{color:" + linkHexColor + ";}");
     styleSheet.addRule("a img{border:0;}");
 
     return kit;
@@ -590,6 +581,37 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
       public void actionPerformed(ActionEvent e) {
 
         browse(previousPage());
+
+      }
+    };
+  }
+
+  /**
+   * @return The "refresh" action
+   */
+  private Action getRefreshAction() {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        browse(currentPage());
+
+      }
+    };
+  }
+
+  /**
+   * @return The "home" action
+   */
+  private Action getHomeAction() {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        addPage(homeUrl);
+        browse(homeUrl);
 
       }
     };

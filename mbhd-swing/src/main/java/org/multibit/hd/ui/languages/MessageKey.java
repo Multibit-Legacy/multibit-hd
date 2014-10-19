@@ -40,6 +40,9 @@ public enum MessageKey {
   REFRESH("refresh"),
   REFRESH_TOOLTIP("refresh_tooltip"),
 
+  HOME("home"),
+  HOME_TOOLTIP("home_tooltip"),
+
   FINISH("finish"),
   FINISH_TOOLTIP("finish_tooltip"),
 

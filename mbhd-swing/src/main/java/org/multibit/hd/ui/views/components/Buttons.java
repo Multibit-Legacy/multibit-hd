@@ -403,6 +403,24 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "Home" button with icon
+   */
+  public static JButton newHomeButton(Action action) {
+
+    JButton button = newButton(action);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.HOME, MessageKey.HOME_TOOLTIP);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.HOME, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "show" button with icon
    */
   public static JButton newShowButton(Action action) {
