@@ -1,0 +1,18 @@
+<project name="MBHD Maven" default="update-help" basedir=".">
+
+  <description>Updates help from adjacent MultiBit Website repo clone</description>
+
+  <target name="update-help" description="Copy the help files from adjacent MultiBit Website project" >
+
+    <!-- MultiBit HD help files for "en" -->
+    <!-- Requires MultiBit branch release-4.0.0 or later to access the files -->
+    <copy todir="${basedir}/mbhd-swing/src/main/resources/assets/html/en/help/hd0.1" overwrite="true" failonerror="false">
+      <fileset dir="${basedir}/../multibit-website/src/main/resources/views/html/en/help/hd0.1"/>
+    </copy>
+    <copy todir="${basedir}/mbhd-swing/src/main/resources/assets/images/en/screenshots/mbhd-01" overwrite="true" failonerror="false">
+      <fileset dir="${basedir}/../multibit-website/src/main/resources/assets/images/en/screenshots/mbhd-0.1"/>
+    </copy>
+
+  </target>
+
+</project>

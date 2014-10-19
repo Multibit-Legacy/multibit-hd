@@ -1,0 +1,72 @@
+<h3>How to install</h3>
+<p>This article describes the installation process for MultiBit HD.</p>
+<h4>Windows</h4>
+<p>Download the <a href="https://multibit.org/releases/multibit-downloadVersion/multibit-downloadVersion-windows-setup.exe">Windows installer</a>.</p>
+<p>To run the installer, double click it and follow the instructions.</p>
+<p>Once installed, you can start MultiBit with the 'MultiBit HD' shortcut in your 'All Programs | MultiBit HD' menu or with your desktop 'MultiBit HD' shortcut.</p>
+<p>You should now read the <a href="help_gettingStarted.html">Getting Started</a> guide.</p>
+<h4>Common gotchas</h4>
+<p>On Windows 7 64-bit you may find that the Java Virtual Machine (JVM) is not correctly located, or "Failed to create a selector" is shown in the messages.</p>
+<p>A known workaround is to change the compatibility settings:</p>
+<ol>
+  <li>Select the compatibility dialog (right click on icon | Properties... | Compatibility)</li>
+  <li>Choose: "Run this program in compatibility mode for Windows XP SP3"</li>
+  <li>Check the box: "Run this program as an administrator"</li>
+</ol>
+<p>As an alternative, consider uninstalling Java and then reinstalling. This has been known to clear out problems.</p>
+<hr/>
+
+<h4>Mac OS X</h4>
+<p>Download the <a href="https://multibit.org/releases/multibit-downloadVersion/multibit-downloadVersion.dmg">Mac OS X installer</a>.</p>
+<p>After you have downloaded the disk image file, double click it and a folder window opens.</p>
+<p>In the open folder window, drag the <code>MultiBit.app</code> application to the Applications link. MultiBit will then be copied to your Applications folder</p>
+<p>You can then open MultiBit by double clicking on this app in your Applications folder.</p>
+<p>You should now read the <a href="help_gettingStarted.html">Getting Started</a> guide.</p>
+<hr/>
+
+<h4>Linux</h4>
+<p>Download the <a href="https://multibit.org/releases/multibit-downloadVersion/multibit-downloadVersion-linux.jar">Linux / Unix installer</a>.</p>
+<p>Open a terminal window and make the installer executable with:</p>
+<pre>chmod +x multibit-downloadVersion-linux.jar</pre>
+<p>Run the installer with:</p>
+<pre>java -jar multibit-downloadVersion-linux.jar</pre>
+<p>Follow the instructions in the installer.</p>
+<p>After installation, you will have a shortcut to start MultiBit in your "Applications | Other" menu.</p>
+<p>You should now read the <a href="help_gettingStarted.html">Getting Started</a> guide.</p>
+
+<h4>Common gotchas</h4>
+<p>If you get an error like
+  <code>"No command 'java' found"</code> or the installer window does not appear you probably need to install an up-to-date version of Java. See the section 'How to install Java on Linux' below.
+</p>
+<p>If you see an error
+  <code>"***.desktop (No such file or directory)"</code> this is a glitch in installing the MultiBit shortcuts. If you run the installer again with the same settings it normally fixes it.
+</p>
+<p>If no MultiBit shortcut is created, you can run MultiBit manually as follows:</p>
+<ol>
+  <li>open a terminal window and 'cd' to your installation directory</li>
+  <li>type <code>java -jar multibit-exe.jar</code></li>
+</ol>
+
+<h4>How to install Java on Linux</h4>
+<p>MultiBit recommends Java 7. To install Java on a recent copy of <strong>Ubuntu</strong> open a terminal window and type:</p>
+<pre>sudo apt-get install openjdk-7-jdk</pre>
+<p>You will be prompted for your system password and then it will install the required packages.</p>
+<p>If you are running an older version of Ubuntu (e.g. something like Ubuntu 10.4 LTS) you will have to use the following:</p>
+<pre>sudo apt-get install openjdk-<b>6</b>-jdk</pre>
+
+<p>For <b>RedHat / CentOS</b> the installation command is:</p>
+<pre>yum install java</pre>
+
+<h4>OpenJDK doesn't work for me...</h4>
+<p>Some people have had issues using MultiBit with OpenJDK on Arch Linux and OpenSuse distributions. The error manifests when trying
+to add a password to a wallet and occurs deep within the platform-specific parts of the JVM. If this affects you the error will be like this:</p>
+<pre>
+SIGSEGV (0xb) at pc=0x00007f97ec7d06a0, pid=588, tid=140289289742080
+</pre>
+<p>After some research <a href="https://github.com/jim618/multibit/issues/325" target="_blank">members of the MultiBit community</a> found that
+  installing the Oracle Java 7 JVM fixed the problem.</p>
+<h4>Related articles</h4>
+<p>Here are some related articles:</p>
+<ul>
+  <li><a href="help_upgrading.html">How to upgrade</a></li>
+</ul>
