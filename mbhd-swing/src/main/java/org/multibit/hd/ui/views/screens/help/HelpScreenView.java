@@ -4,8 +4,10 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
 import org.imgscalr.Scalr;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -69,6 +71,11 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
    * True if relative and MultiBit URLs should be modified to point to the internal help
    */
   private boolean useInternalHelp = false;
+
+  /**
+   * Handles the loading of the internal images
+   */
+  private ListeningExecutorService listeningExecutorService;
 
   /**
    * We have to use a Hashtable here because of Swing internal handling
@@ -218,7 +225,6 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
       populateImageCache();
     }
 
-    // TODO More robust error handling required
     try {
       // Create an editor pane to wrap the HTML editor kit
       editorPane = new JEditorPane() {
@@ -327,59 +333,71 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
     internalImageCache = new Hashtable();
 
-    try {
+    // This can take a while so keep it off the EDT
+    listeningExecutorService = SafeExecutors.newSingleThreadExecutor("load-internal-help");
 
-      for (String imageName : imageNames) {
+    // Run the decryption on a different thread
+    listeningExecutorService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
 
-        // Only interested in /assets/images
-        // Images are directly under the domain so we build a suitable
-        // absolute URL to fool the JEditorPane
-        // Note that we have "mbhd-0.1" in the URL but not the resource path
-        URL mockUrl = new URL(
-          InstallationManager.MBHD_WEBSITE_HELP_DOMAIN +
-            "/images/en/screenshots/mbhd-0.1/" +
-            imageName
-        );
+          try {
 
-        // Load the image from the classpath (no "mbhd-0.1")
-        InputStream is = HelpScreenView.class.getResourceAsStream(
-          "/assets/images/en/screenshots/mbhd-01/" +
-            imageName
-        );
-        if (is == null) {
-          throw new IOException("Could not locate: '" + imageName + "' on the /assets classpath");
+            for (String imageName : imageNames) {
+
+              // Only interested in /assets/images
+              // Images are directly under the domain so we build a suitable
+              // absolute URL to fool the JEditorPane
+              // Note that we have "mbhd-0.1" in the URL but not the resource path
+              URL mockUrl = new URL(
+                InstallationManager.MBHD_WEBSITE_HELP_DOMAIN +
+                  "/images/en/screenshots/mbhd-0.1/" +
+                  imageName
+              );
+
+              // Load the image from the classpath (no "mbhd-0.1")
+              InputStream is = HelpScreenView.class.getResourceAsStream(
+                "/assets/images/en/screenshots/mbhd-01/" +
+                  imageName
+              );
+              if (is == null) {
+                throw new IOException("Could not locate: '" + imageName + "' on the /assets classpath");
+              }
+              BufferedImage image = ImageIO.read(is);
+              image.flush();
+
+              // Resize it if necessary
+              final int MAX_WIDTH = 670;
+              if (image.getWidth(null) > MAX_WIDTH) {
+                // Assume a screen shot and calculate the appropriate ratio
+                // for minimum UI width
+                double ratio = image.getWidth(null) / MAX_WIDTH;
+                int height = (int) (image.getHeight(null) / ratio);
+                image = Scalr.resize(
+                  image,
+                  Scalr.Method.ULTRA_QUALITY,
+                  MAX_WIDTH, height,
+                  Scalr.OP_ANTIALIAS
+                );
+
+              }
+
+              // Cache it for later
+              internalImageCache.put(mockUrl, image);
+
+              log.debug("Cached /asset '{}'", imageName);
+
+            }
+
+
+          } catch (IOException e) {
+            // This is a coding error
+            log.error("Problem with the internal image assets.", e);
+          }
+
         }
-        BufferedImage image = ImageIO.read(is);
-        image.flush();
-
-        // Resize it if necessary
-        final int MAX_WIDTH = 670;
-        if (image.getWidth(null) > MAX_WIDTH) {
-          // Assume a screen shot and calculate the appropriate ratio
-          // for minimum UI width
-          double ratio = image.getWidth(null) / MAX_WIDTH;
-          int height = (int) (image.getHeight(null) / ratio);
-          image = Scalr.resize(
-            image,
-            Scalr.Method.ULTRA_QUALITY,
-            MAX_WIDTH, height,
-            Scalr.OP_ANTIALIAS
-          );
-
-        }
-
-        // Cache it for later
-        internalImageCache.put(mockUrl, image);
-
-        log.debug("Cached /asset '{}'", imageName);
-
-      }
-
-
-    } catch (IOException e) {
-      // This is a coding error
-      log.error("Problem with the internal image assets.", e);
-    }
+      });
 
   }
 
