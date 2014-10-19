@@ -285,7 +285,7 @@ public class Wizards {
      */
     public static UseTrezorWizard newExitingUseTrezorWizard() {
 
-      return new UseTrezorWizard(new UseTrezorWizardModel(UseTrezorState.REQUEST_CIPHER_KEY), true);
+      return new UseTrezorWizard(new UseTrezorWizardModel(UseTrezorState.REQUEST_CIPHER_KEY), false);
     }
 
    /**

@@ -978,12 +978,13 @@ public class Labels {
   }
 
   /**
-     * @return A new "press ok on Trezor" note
+     * @return A new "press Confirm on Trezor for MultiBit HD unlock" note
      */
-    public static JLabel newPressOkOnTrezorNote() {
+    public static JLabel newPressConfirmOnTrezorNote() {
 
       return newNoteLabel(new MessageKey[]{
-        MessageKey.PRESS_CONFIRM_ON_TREZOR
+        MessageKey.PRESS_CONFIRM_ON_TREZOR,
+        MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT
       }, new Object[][]{});
 
     }

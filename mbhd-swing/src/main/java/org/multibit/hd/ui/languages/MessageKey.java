@@ -373,6 +373,11 @@ public enum MessageKey {
 
   PRESS_CONFIRM_ON_TREZOR("press_confirm_on_trezor"),
   PRESS_CONFIRM_ON_TREZOR_TITLE("press_confirm_on_trezor_title"),
+  TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT("trezor_encrypt_multibit_hd_unlock_text"),
+  USE_TREZOR_REPORT_TITLE("use_trezor_report_title"),
+  USE_TREZOR_REPORT_MESSAGE_SUCCESS("use_trezor_report_message_success"),
+  USE_TREZOR_REPORT_MESSAGE_FAILURE("use_trezor_report_message_failure"),
+
 
   VERIFY_DEVICE("verify_device"),
   WIPE_DEVICE("wipe_device"),

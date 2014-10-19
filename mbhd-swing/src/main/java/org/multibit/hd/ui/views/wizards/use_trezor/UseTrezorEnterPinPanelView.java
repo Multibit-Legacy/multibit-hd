@@ -196,7 +196,7 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
 
         // Ensure the view disables components
         getFinishButton().setEnabled(false);
-        getExitButton().setEnabled(false);
+        getCancelButton().setEnabled(false);
         getRestoreButton().setEnabled(false);
 
       }
@@ -244,7 +244,7 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
               public void run() {
 
                 getFinishButton().setEnabled(true);
-                getExitButton().setEnabled(true);
+                getCancelButton().setEnabled(true);
                 getRestoreButton().setEnabled(true);
 
                 enterPinMaV.getView().requestInitialFocus();
@@ -268,7 +268,7 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
             public void run() {
 
               getFinishButton().setEnabled(true);
-              getExitButton().setEnabled(true);
+              getCancelButton().setEnabled(true);
               getRestoreButton().setEnabled(true);
 
               enterPinMaV.getView().requestInitialFocus();
