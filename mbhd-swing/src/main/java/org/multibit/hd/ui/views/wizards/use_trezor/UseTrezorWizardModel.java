@@ -46,6 +46,24 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   }
 
   @Override
+   public void showNext() {
+     switch (state) {
+       case ENTER_PIN:
+         state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
+         break;
+       case NO_PIN_REQUIRED:
+         state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
+         break;
+       case PRESS_CONFIRM_FOR_UNLOCK:
+         state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
+         break;
+       default:
+         throw new IllegalStateException("Cannot showNext with a state of " + state);
+     }
+   }
+
+
+  @Override
   public void showPINEntry(HardwareWalletEvent event) {
 
     // Device is PIN protected
@@ -67,9 +85,9 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       case REQUEST_CIPHER_KEY:
       case ENTER_PIN:
       case NO_PIN_REQUIRED:
-        state = UseTrezorState.PRESS_OK_FOR_UNLOCK;
+        state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
         break;
-      case PRESS_OK_FOR_UNLOCK:
+      case PRESS_CONFIRM_FOR_UNLOCK:
         // Should be catered for by finish
         break;
       default:

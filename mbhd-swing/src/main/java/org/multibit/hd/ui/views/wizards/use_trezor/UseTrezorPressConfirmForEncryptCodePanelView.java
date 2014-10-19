@@ -24,13 +24,13 @@ import javax.swing.*;
  *         
  */
 
-public class UseTrezorPressOkForEncryptCodePanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorPressOkForEncryptCodePanelModel> {
+public class UseTrezorPressConfirmForEncryptCodePanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorPressConfirmForEncryptCodePanelModel> {
 
   /**
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public UseTrezorPressOkForEncryptCodePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
+  public UseTrezorPressConfirmForEncryptCodePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.PRESS_CONFIRM_ON_TREZOR_TITLE, AwesomeIcon.SHIELD);
 
@@ -50,7 +50,7 @@ public class UseTrezorPressOkForEncryptCodePanelView extends AbstractWizardPanel
       "[]10[]" // Row constraints
     ));
 
-    contentPanel.add(Labels.newPressOkOnTrezorNote(), "wrap");
+    contentPanel.add(Labels.newPressConfirmOnTrezorNote(), "wrap");
 
   }
 
@@ -71,13 +71,14 @@ public class UseTrezorPressOkForEncryptCodePanelView extends AbstractWizardPanel
 
     // No need to update the wizard it has the references
 
-    // Determine any events
+    // A Trezor button click will call this method
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
       WizardButton.NEXT,
       true
     );
 
+    getWizardModel().showNext();
   }
 
 

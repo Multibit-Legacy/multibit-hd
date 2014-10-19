@@ -38,8 +38,13 @@ public class UseTrezorWizard extends AbstractHardwareWalletWizard<UseTrezorWizar
 
     // Ask user to confirm 'Encrypt MultiBit HD unlock text'
     wizardViewMap.put(
-      UseTrezorState.PRESS_OK_FOR_UNLOCK.name(),
-      new UseTrezorPressOkForEncryptCodePanelView(this, UseTrezorState.PRESS_OK_FOR_UNLOCK.name()));
+      UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK.name(),
+      new UseTrezorPressConfirmForEncryptCodePanelView(this, UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK.name()));
+
+    // Trezor report panel
+    wizardViewMap.put(
+       UseTrezorState.USE_TREZOR_REPORT_PANEL.name(),
+       new UseTrezorReportPanelView(this, UseTrezorState.USE_TREZOR_REPORT_PANEL.name()));
 
   }
 

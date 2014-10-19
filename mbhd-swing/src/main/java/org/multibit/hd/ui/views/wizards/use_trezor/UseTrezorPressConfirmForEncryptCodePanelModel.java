@@ -12,7 +12,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
  * @since 0.0.1
  *  
  */
-public class UseTrezorPressOkForEncryptCodePanelModel extends AbstractWizardPanelModel {
+public class UseTrezorPressConfirmForEncryptCodePanelModel extends AbstractWizardPanelModel {
 
   private final EnterPinModel enterPinModel;
 
@@ -20,7 +20,7 @@ public class UseTrezorPressOkForEncryptCodePanelModel extends AbstractWizardPane
    * @param panelName          The panel name
    * @param enterPinModel The "enter pin" component model
    */
-  public UseTrezorPressOkForEncryptCodePanelModel(
+  public UseTrezorPressConfirmForEncryptCodePanelModel(
           String panelName,
           EnterPinModel enterPinModel
   ) {

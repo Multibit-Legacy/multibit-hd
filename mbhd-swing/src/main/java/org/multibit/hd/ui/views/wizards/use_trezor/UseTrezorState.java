@@ -12,7 +12,7 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
 public enum UseTrezorState {
 
   /**
-   * Ask for a cipher key value from the device (may trigger a PIN request)
+   * Request a cipher key form the Trezor (most likely triggers a PIN request)
    */
   REQUEST_CIPHER_KEY,
 
@@ -27,9 +27,14 @@ public enum UseTrezorState {
    NO_PIN_REQUIRED,
 
   /**
-   * Information panel asking user to press the Trezor OK button to the comment 'Encrypt MultiBit HD unlock'
+   * Information panel asking user to press the Trezor Confirm button to the comment 'Encrypt MultiBit HD unlock'
    */
-   PRESS_OK_FOR_UNLOCK,
+   PRESS_CONFIRM_FOR_UNLOCK,
+
+  /**
+   * Report panel
+   */
+   USE_TREZOR_REPORT_PANEL,
 
   // End of enum
   ;
