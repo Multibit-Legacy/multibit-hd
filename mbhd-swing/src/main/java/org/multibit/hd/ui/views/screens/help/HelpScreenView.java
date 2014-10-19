@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
-import org.imgscalr.Scalr;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
@@ -370,16 +369,8 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
               // Resize it if necessary
               final int MAX_WIDTH = 670;
               if (image.getWidth(null) > MAX_WIDTH) {
-                // Assume a screen shot and calculate the appropriate ratio
-                // for minimum UI width
-                double ratio = image.getWidth(null) / MAX_WIDTH;
-                int height = (int) (image.getHeight(null) / ratio);
-                image = Scalr.resize(
-                  image,
-                  Scalr.Method.ULTRA_QUALITY,
-                  MAX_WIDTH, height,
-                  Scalr.OP_ANTIALIAS
-                );
+
+                image = ImageDecorator.resizeSharp(image, MAX_WIDTH);
 
               }
 
