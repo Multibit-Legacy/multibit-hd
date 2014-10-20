@@ -213,8 +213,7 @@ public class WalletManagerTest {
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     long nowInSeconds = Dates.nowInSeconds();
 
-    WalletSummary walletSummary = walletManager
-            .getOrCreateWalletSummary(
+    WalletSummary walletSummary = walletManager.getOrCreateWalletSummary(
                     applicationDirectory,
                     seed,
                     nowInSeconds,

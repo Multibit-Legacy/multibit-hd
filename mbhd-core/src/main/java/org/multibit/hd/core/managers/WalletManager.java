@@ -310,7 +310,7 @@ public enum WalletManager implements WalletEventListener {
       final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
       checkWalletDirectory(walletDirectory);
-      log.debug("walletDirectory = " + walletDirectory.toString());
+      log.debug("Wallet directory: '{}'", walletDirectory.toString());
 
       final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
       final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
@@ -497,9 +497,14 @@ public enum WalletManager implements WalletEventListener {
   }
 
   public static Wallet loadWalletFromFile(File walletFile, CharSequence password) throws IOException, UnreadableWalletException {
+
     // Read the encrypted file in and decrypt it.
     byte[] encryptedWalletBytes = org.multibit.hd.brit.utils.FileUtils.readFile(walletFile);
-    log.trace("Encrypted wallet bytes after load:\n" + Utils.HEX.encode(encryptedWalletBytes));
+
+    Preconditions.checkNotNull(encryptedWalletBytes,"'encryptedWalletBytes' must be present");
+
+    log.trace("Encrypted wallet bytes after load:\n{}", Utils.HEX.encode(encryptedWalletBytes));
+    log.debug("Loaded {} encrypted bytes: {}", encryptedWalletBytes.length);
 
     KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
@@ -519,6 +524,7 @@ public enum WalletManager implements WalletEventListener {
     log.trace("Just loaded wallet:\n{}", wallet.toString());
 
     return wallet;
+
   }
 
   /**
