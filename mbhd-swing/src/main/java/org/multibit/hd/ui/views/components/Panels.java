@@ -386,31 +386,43 @@ public class Panels {
     * @param verifyDeviceCommand    The verify device command name
     * @param wipeDeviceCommand      The wipe device command name
 
-    * @return A new "Trezor tool selector" panel
+    * @return A new "use Trezor selector" panel
     */
-   public static JPanel newTrezorToolSelector(
-     ActionListener listener,
-     String verifyDeviceCommand,
-     String wipeDeviceCommand
+   public static JPanel newUseTrezorSelector(
+           ActionListener listener,
+           String useTrezorWalletCommand,
+           String buyTrezorCommand,
+           String verifyDeviceCommand,
+           String wipeDeviceCommand
    ) {
 
      JPanel panel = Panels.newPanel();
 
-     JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.VERIFY_DEVICE);
+     JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.USE_TREZOR_WALLET);
+     radio1.setActionCommand(useTrezorWalletCommand);
      radio1.setSelected(true);
-     radio1.setActionCommand(verifyDeviceCommand);
 
-     JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.WIPE_DEVICE);
-     radio2.setActionCommand(wipeDeviceCommand);
+     JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.BUY_TREZOR);
+     radio2.setActionCommand(buyTrezorCommand);
 
-     // Wallet selection is mutually exclusive
+     JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.VERIFY_DEVICE);
+     radio3.setActionCommand(verifyDeviceCommand);
+
+     JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.WIPE_DEVICE);
+     radio4.setActionCommand(wipeDeviceCommand);
+
+     // Action selection is mutually exclusive
      ButtonGroup group = new ButtonGroup();
      group.add(radio1);
      group.add(radio2);
+     group.add(radio3);
+     group.add(radio4);
 
      // Add to the panel
      panel.add(radio1, "wrap");
      panel.add(radio2, "wrap");
+     panel.add(radio3, "wrap");
+     panel.add(radio4, "wrap");
 
      return panel;
    }

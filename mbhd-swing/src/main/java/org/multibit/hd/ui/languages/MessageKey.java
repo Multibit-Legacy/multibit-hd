@@ -381,6 +381,8 @@ public enum MessageKey {
   USE_TREZOR_REPORT_MESSAGE_SUCCESS("use_trezor_report_message_success"),
   USE_TREZOR_REPORT_MESSAGE_FAILURE("use_trezor_report_message_failure"),
 
+  USE_TREZOR_WALLET("use_trezor_wallet"),
+
   VERIFY_DEVICE("verify_device"),
   VERIFY_DEVICE_TITLE("verify_device_title"),
   WIPE_DEVICE("wipe_device"),
@@ -391,6 +393,7 @@ public enum MessageKey {
   BUY_TREZOR_TOOLTIP("buy_trezor_tooltip"),
 
   SEARCHING_FOR_A_CONNECTED_TREZOR("searching_for_a_connected_trezor"),
+  COMMUNICATING_WITH_TREZOR("communicating_with_trezor"),
   TREZOR_FOUND("trezor_found"),
   NO_TREZOR_FOUND("no_trezor_found"),
 
@@ -423,7 +426,7 @@ public enum MessageKey {
   VERIFY_MESSAGE_TITLE("verify_message_title"),
 
   VERIFY_NETWORK_TITLE("verify_network_title"),
-  TREZOR_TOOLS_TITLE("trezor_tools_title"),
+  USE_TREZOR_TITLE("use_trezor_title"),
 
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),

@@ -25,10 +25,20 @@ public class UseTrezorWizard extends AbstractHardwareWalletWizard<UseTrezorWizar
   @Override
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
-    // Transitional view to kick off the process
+    wizardViewMap.put(
+      UseTrezorState.SELECT_TREZOR_ACTION.name(),
+      new UseTrezorSelectPanelView(this, UseTrezorState.SELECT_TREZOR_ACTION.name()));
+
+    // Transitional view to kick off the process of authenticating to Trrezor
     wizardViewMap.put(
       UseTrezorState.REQUEST_CIPHER_KEY.name(),
       new UseTrezorRequestCipherKeyPanelView(this, UseTrezorState.REQUEST_CIPHER_KEY.name()));
+
+    wizardViewMap.put(UseTrezorState.BUY_TREZOR.name(), new UseTrezorBuyTrezorPanelView(this, UseTrezorState.BUY_TREZOR.name()));
+
+    wizardViewMap.put(UseTrezorState.VERIFY_TREZOR.name(), new UseTrezorVerifyDevicePanelView(this, UseTrezorState.VERIFY_TREZOR.name()));
+
+    wizardViewMap.put(UseTrezorState.WIPE_TREZOR.name(), new UseTrezorWipeDevicePanelView(this, UseTrezorState.WIPE_TREZOR.name()));
 
     wizardViewMap.put(
       UseTrezorState.ENTER_PIN.name(),

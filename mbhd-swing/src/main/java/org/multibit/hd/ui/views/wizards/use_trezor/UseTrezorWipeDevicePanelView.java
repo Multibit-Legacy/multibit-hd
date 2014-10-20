@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.trezor_tools;
+package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
@@ -26,13 +26,13 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Show report wallet progress report</li>
+ * <li>Panel telling the user to press the continue button to wupe their Trezor</li>
  * </ul>
  *
  * @since 0.0.1
  *
  */
-public class TrezorToolsVerifyDevicePanelView extends AbstractWizardPanelView<TrezorToolsWizardModel, TrezorToolsVerifyDevicePanelModel> {
+public class UseTrezorWipeDevicePanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorWipeDevicePanelModel> {
 
   private JLabel cacertsRepairedStatusLabel;
 
@@ -46,9 +46,9 @@ public class TrezorToolsVerifyDevicePanelView extends AbstractWizardPanelView<Tr
   /**
    * @param wizard The wizard managing the states
    */
-  public TrezorToolsVerifyDevicePanelView(AbstractWizard<TrezorToolsWizardModel> wizard, String panelName) {
+  public UseTrezorWipeDevicePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.VERIFY_DEVICE_TITLE, AwesomeIcon.MEDKIT);
+    super(wizard, panelName, MessageKey.WIPE_DEVICE_TITLE, AwesomeIcon.MEDKIT);
 
   }
 
@@ -56,7 +56,7 @@ public class TrezorToolsVerifyDevicePanelView extends AbstractWizardPanelView<Tr
   public void newPanelModel() {
 
     // Configure the panel model
-    TrezorToolsVerifyDevicePanelModel panelModel = new TrezorToolsVerifyDevicePanelModel(
+    UseTrezorWipeDevicePanelModel panelModel = new UseTrezorWipeDevicePanelModel(
       getPanelName()
     );
     setPanelModel(panelModel);
@@ -109,7 +109,7 @@ public class TrezorToolsVerifyDevicePanelView extends AbstractWizardPanelView<Tr
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<TrezorToolsWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
 
     PanelDecorator.addFinish(this, wizard);
 

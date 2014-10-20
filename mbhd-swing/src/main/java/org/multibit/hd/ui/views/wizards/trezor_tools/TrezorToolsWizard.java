@@ -26,11 +26,7 @@ public class TrezorToolsWizard extends AbstractWizard<TrezorToolsWizardModel> {
 
   @Override
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
-
-    wizardViewMap.put(TrezorToolsState.SELECT_TREZOR_ACTION.name(), new TrezorToolsSelectPanelView(this, TrezorToolsState.SELECT_TREZOR_ACTION.name()));
-    wizardViewMap.put(TrezorToolsState.VERIFY_DEVICE.name(), new TrezorToolsVerifyDevicePanelView(this, TrezorToolsState.VERIFY_DEVICE.name()));
-    wizardViewMap.put(TrezorToolsState.WIPE_DEVICE.name(), new TrezorToolsWipeDevicePanelView(this, TrezorToolsState.WIPE_DEVICE.name()));
-    wizardViewMap.put(TrezorToolsState.TREZOR_ACTION_REPORT.name(), new TrezorToolsReportPanelView(this, TrezorToolsState.WIPE_DEVICE.name()));
+     wizardViewMap.put(TrezorToolsState.TREZOR_ACTION_REPORT.name(), new TrezorToolsReportPanelView(this, TrezorToolsState.WIPE_DEVICE.name()));
 
   }
 
