@@ -62,6 +62,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
     // Allow unrestricted operation
+    // This will force the use of a temporary directory for application configuration
+    // ensuring that existing configurations and wallets are untouched
     InstallationManager.unrestricted = true;
 
   }

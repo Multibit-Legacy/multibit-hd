@@ -27,6 +27,7 @@ import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.utils.Dates;
 
 import java.io.File;
@@ -41,6 +42,8 @@ public class BackupManagerTest {
   @Before
   public void setUp() throws Exception {
 
+    InstallationManager.unrestricted = true;
+
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
   }
@@ -48,16 +51,16 @@ public class BackupManagerTest {
   @Test
   public void testBackupWallet() throws IOException {
 
-    // Create a random temporary directory to act as the application directory containing wallets
-    File temporaryApplicationDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+    // Get the application directory (will be temporary for unit tests)
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Create a random temporary directory in which to story the cloudBackups
-    File temporaryBackupDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+    File temporaryBackupDirectory = SecureFiles.createTemporaryDirectory();
 
     BackupManager backupManager = BackupManager.INSTANCE;
 
     // Initialise the backupManager to point at the temporaryBackupDirectory
-    backupManager.initialise(temporaryApplicationDirectory, Optional.of(temporaryBackupDirectory));
+    backupManager.initialise(applicationDirectory, Optional.of(temporaryBackupDirectory));
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
@@ -66,7 +69,7 @@ public class BackupManagerTest {
     WalletSummary walletSummary = WalletManager
       .INSTANCE
       .getOrCreateWalletSummary(
-        temporaryApplicationDirectory,
+        applicationDirectory,
         seed,
         nowInSeconds,
         password,
@@ -113,7 +116,7 @@ public class BackupManagerTest {
 
     // Open
     String walletRoot = WalletManager.createWalletRoot(recreatedWalletId);
-    File walletDirectory = WalletManager.getOrCreateWalletDirectory(temporaryApplicationDirectory, walletRoot);
+    File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDirectory, walletRoot);
     WalletSummary recreatedWalletSummary = WalletManager.INSTANCE.loadFromWalletDirectory(walletDirectory, password);
     assertThat(recreatedWalletSummary).isNotNull();
     assertThat(recreatedWalletSummary.getWallet()).isNotNull();

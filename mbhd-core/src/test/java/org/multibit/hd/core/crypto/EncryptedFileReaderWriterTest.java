@@ -23,8 +23,8 @@ import org.junit.Test;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.utils.FileUtils;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.managers.WalletManagerTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -75,7 +75,7 @@ public class EncryptedFileReaderWriterTest {
   @Test
   public void testEncryptDecryptSuccess() throws Exception {
     // Create a random temporary directory
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
     File outputFile = new File(temporaryDirectory + File.separator + "outputFile.aes");
 

@@ -7,9 +7,9 @@ import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.WalletIdTest;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.managers.WalletManagerTest;
 import org.multibit.hd.core.utils.Dates;
 
 import java.io.File;
@@ -26,7 +26,7 @@ public class PersistentHistoryServiceTest {
   public void setUp() throws Exception {
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
     // Create a wallet from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();

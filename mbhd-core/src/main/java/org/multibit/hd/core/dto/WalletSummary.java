@@ -156,7 +156,7 @@ public class WalletSummary {
             "wallet=" + wallet +
             ", walletId=" + walletId +
             ", walletType=" + walletType +
-            ", credentials=" + password +
+            ", credentials=***" +
             ", name='" + name + '\'' +
             ", notes='" + notes + '\'' +
             ", encryptedPassword=" + Arrays.toString(encryptedPassword) +

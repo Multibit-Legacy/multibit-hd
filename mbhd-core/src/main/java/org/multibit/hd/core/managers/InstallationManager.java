@@ -22,7 +22,6 @@ import java.util.Map;
  * <li>Access the configuration file</li>
  * <li>Utility methods eg copying checkpoint files from installation directory</li>
  * </ul>
- *
  */
 public class InstallationManager {
 
@@ -78,11 +77,33 @@ public class InstallationManager {
   /**
    * <p>Get the directory for the user's application data, creating if not present</p>
    * <p>Checks a few OS-dependent locations first</p>
+   *
+   * @return A suitable application directory for the OS and if running unit tests (unrestricted mode)
    */
   public static File getOrCreateApplicationDataDirectory() {
 
     if (currentApplicationDataDirectory != null) {
       return currentApplicationDataDirectory;
+    }
+
+    if (unrestricted) {
+      try {
+        log.debug("Unrestricted mode requires a temporary application directory");
+        return SecureFiles.createTemporaryDirectory();
+      } catch (IOException e) {
+        log.error("Failed to create temporary directory", e);
+        return null;
+      }
+    } else {
+
+      // Fail safe check for unit tests to avoid overwriting existing configuration file
+      try {
+        Class.forName("org.multibit.hd.core.managers.InstallationManagerTest");
+        throw new IllegalStateException("Cannot run without unrestricted when unit tests are present. You may overwrite live configuration.");
+      } catch (ClassNotFoundException e) {
+        // We have passed the fail safe check
+      }
+
     }
 
     // Check the current working directory for the configuration file

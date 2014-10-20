@@ -16,20 +16,21 @@ package org.multibit.hd.core.managers;
  * limitations under the License.
  */
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Wallet;
 import org.bitcoinj.crypto.DeterministicKey;
-import com.google.common.base.Charsets;
-import com.google.common.base.Optional;
-import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
@@ -37,14 +38,13 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class WalletManagerTest {
+
   private static final Logger log = LoggerFactory.getLogger(WalletManagerTest.class);
 
   private final static String WALLET_DIRECTORY_1 = "mbhd-11111111-22222222-33333333-44444444-55555555";
@@ -67,6 +67,9 @@ public class WalletManagerTest {
   private final static String LONGEST_PASSWORD = "abcefghijklmnopqrstuvwxyzabcefghijklmnopqrstuvwxyz"; // 52
   @Before
   public void setUp() throws Exception {
+
+    InstallationManager.unrestricted = true;
+
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
     // Start the core services
@@ -75,11 +78,12 @@ public class WalletManagerTest {
 
   @Test
   public void testCreateWallet() throws Exception {
-    // Create a random temporary directory
-    File temporaryDirectory1 = makeRandomTemporaryApplicationDirectory();
+
+    // Get the application directory (will be temporary for unit tests)
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     WalletManager walletManager = WalletManager.INSTANCE;
-    BackupManager.INSTANCE.initialise(temporaryDirectory1, null);
+    BackupManager.INSTANCE.initialise(applicationDirectory, null);
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
@@ -87,7 +91,7 @@ public class WalletManagerTest {
 
     WalletSummary walletSummary1 = walletManager
             .getOrCreateWalletSummary(
-                    temporaryDirectory1,
+                    applicationDirectory,
                     seed,
                     nowInSeconds,
                     "credentials",
@@ -101,12 +105,12 @@ public class WalletManagerTest {
     assertThat(walletSummary1).isNotNull();
 
     // Create another wallet - it should have the same wallet id and the private key should be the same
-    File temporaryDirectory2 = makeRandomTemporaryApplicationDirectory();
-    BackupManager.INSTANCE.initialise(temporaryDirectory2, null);
+    File applicationDirectory2 = SecureFiles.createTemporaryDirectory();
+    BackupManager.INSTANCE.initialise(applicationDirectory2, null);
 
     WalletSummary walletSummary2 = walletManager
             .getOrCreateWalletSummary(
-                    temporaryDirectory2,
+                    applicationDirectory2,
                     seed,
                     nowInSeconds,
                     "credentials",
@@ -122,7 +126,7 @@ public class WalletManagerTest {
     assertThat(key1).isEqualTo(key2);
 
     File expectedFile = new File(
-            temporaryDirectory2.getAbsolutePath()
+            applicationDirectory2.getAbsolutePath()
                     + File.separator
                     + "mbhd-"
                     + walletSummary2.getWalletId().toFormattedString()
@@ -136,8 +140,9 @@ public class WalletManagerTest {
 
   @Test
   public void testFindWalletDirectories() throws Exception {
+
     // Create a random temporary directory
-    File temporaryDirectory = makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
     String walletPath1 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_1);
     String walletPath2 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_2);
@@ -163,8 +168,9 @@ public class WalletManagerTest {
 
   @Test
   public void testFindWallets() throws Exception {
+
     // Create a random temporary directory
-    File temporaryDirectory = makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
     String walletPath1 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_1);
     String walletPath2 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_2);
@@ -196,11 +202,12 @@ public class WalletManagerTest {
 
   @Test
   public void testSignAndVerifyMessage() throws Exception {
-    // Create a random temporary directory
-    File temporaryDirectory1 = makeRandomTemporaryApplicationDirectory();
+
+    // Get the application directory (will be temporary for unit tests)
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     WalletManager walletManager = WalletManager.INSTANCE;
-    BackupManager.INSTANCE.initialise(temporaryDirectory1, null);
+    BackupManager.INSTANCE.initialise(applicationDirectory, null);
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
@@ -208,7 +215,7 @@ public class WalletManagerTest {
 
     WalletSummary walletSummary = walletManager
             .getOrCreateWalletSummary(
-                    temporaryDirectory1,
+                    applicationDirectory,
                     seed,
                     nowInSeconds,
                     SIGNING_PASSWORD,
@@ -274,7 +281,8 @@ public class WalletManagerTest {
 
   @Test
   public void testWriteOfEncryptedPasswordAndSeed() throws Exception {
-    List<String> passwordList = new ArrayList();
+
+    List<String> passwordList = Lists.newArrayList();
     passwordList.add(SHORT_PASSWORD);
     passwordList.add(MEDIUM_PASSWORD);
     passwordList.add(LONG_PASSWORD);
@@ -282,11 +290,11 @@ public class WalletManagerTest {
     passwordList.add(LONGEST_PASSWORD);
 
     for (String passwordToCheck : passwordList) {
-      // Create a random temporary directory
-      File temporaryDirectory1 = makeRandomTemporaryApplicationDirectory();
+      // Get the application directory (will be temporary for unit tests)
+      File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
       WalletManager walletManager = WalletManager.INSTANCE;
-      BackupManager.INSTANCE.initialise(temporaryDirectory1, null);
+      BackupManager.INSTANCE.initialise(applicationDirectory, null);
 
       SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
       byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
@@ -295,7 +303,7 @@ public class WalletManagerTest {
 
       WalletSummary walletSummary = walletManager
               .getOrCreateWalletSummary(
-                      temporaryDirectory1,
+                      applicationDirectory,
                       seed,
                       nowInSeconds,
                       passwordToCheck,
@@ -333,16 +341,5 @@ public class WalletManagerTest {
     return directory.getAbsolutePath();
   }
 
-  /**
-   * @return A random temporary directory suitable for use as an application directory
-   * @throws IOException If something goes wrong
-   */
-  public static File makeRandomTemporaryApplicationDirectory() throws IOException {
-
-    File temporaryDirectory = Files.createTempDir();
-    temporaryDirectory.deleteOnExit();
-
-    return temporaryDirectory;
-  }
 }
 

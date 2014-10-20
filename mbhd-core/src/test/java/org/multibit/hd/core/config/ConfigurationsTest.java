@@ -37,6 +37,7 @@ public class ConfigurationsTest {
 
     assertThat(configuration.get().any().isEmpty()).isFalse();
 
+    // Write to a byte array to prevent overwriting the local settings
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     Configurations.writeYaml(baos, configuration.get());
 
