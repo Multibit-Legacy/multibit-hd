@@ -16,7 +16,6 @@ import java.io.RandomAccessFile;
  * <p>Uses Java new I/O and Guava Files where possible</p>
  *
  * @since 0.0.1
- *
  */
 public class SecureFiles {
 
@@ -166,5 +165,21 @@ public class SecureFiles {
 
     return file;
 
+  }
+
+  /**
+   * <p>Atomically create a temporary directory that will be removed when the JVM exits</p>
+   *
+   * @return A random temporary directory
+   *
+   * @throws java.io.IOException If something goes wrong
+   */
+  public static File createTemporaryDirectory() throws IOException {
+
+    // Use Guava's atomic temporary file creation for a more secure operation
+    File temporaryDirectory = com.google.common.io.Files.createTempDir();
+    temporaryDirectory.deleteOnExit();
+
+    return temporaryDirectory;
   }
 }

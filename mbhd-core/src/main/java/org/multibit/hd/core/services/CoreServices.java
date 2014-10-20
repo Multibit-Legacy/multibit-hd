@@ -15,6 +15,7 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.Yaml;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
@@ -148,7 +149,7 @@ public class CoreServices {
     Optional<Configuration> configuration;
     try (InputStream is = new FileInputStream(InstallationManager.getConfigurationFile())) {
       // Load configuration (providing a default if none exists)
-      configuration = Configurations.readYaml(is, Configuration.class);
+      configuration = Yaml.readYaml(is, Configuration.class);
     } catch (IOException e) {
       configuration = Optional.absent();
     }

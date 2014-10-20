@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -23,7 +24,6 @@ import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.managers.WalletManagerTest;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
@@ -135,7 +135,7 @@ public class TrezorWalletTest {
     networkParameters = BitcoinNetwork.current().get();
 
     // Create a random temporary directory where the wallet directory will be written
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
     // Create a wallet from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();

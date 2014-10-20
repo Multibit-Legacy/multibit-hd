@@ -10,6 +10,7 @@ import org.fest.swing.testing.FestSwingTestCaseTemplate;
 import org.junit.*;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.Yaml;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
@@ -62,6 +63,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
     // Allow unrestricted operation
+    // This will force the use of a temporary directory for application configuration
+    // ensuring that existing configurations and wallets are untouched
     InstallationManager.unrestricted = true;
 
   }
@@ -464,7 +467,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     // Persist the new configuration ready for reading later
     try (FileOutputStream fos = new FileOutputStream(InstallationManager.getConfigurationFile())) {
-      Configurations.writeYaml(fos, configuration);
+      Yaml.writeYaml(fos, configuration);
     } catch (IOException e) {
       ExceptionHandler.handleThrowable(e);
     }

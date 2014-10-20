@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
@@ -20,7 +21,6 @@ import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.managers.WalletManagerTest;
 import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +99,7 @@ public class BitcoinNetworkServiceFunctionalTest {
   public void testSyncSingleWallet() throws Exception {
 
     // Create a random temporary directory and use it for wallet storage
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
 
@@ -137,7 +137,7 @@ public class BitcoinNetworkServiceFunctionalTest {
   public void testSendBetweenTwoRealWallets() throws Exception {
 
     // Create a random temporary directory to writeContacts the wallets
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
 
     // Create two wallets from the two seeds

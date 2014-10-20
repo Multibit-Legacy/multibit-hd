@@ -16,7 +16,7 @@ public class ConfigurationsTest {
 
     InputStream is = ConfigurationsTest.class.getResourceAsStream("/fixtures/example-configuration.yaml");
 
-    Optional<Configuration> configuration = Configurations.readYaml(is, Configuration.class);
+    Optional<Configuration> configuration = Yaml.readYaml(is, Configuration.class);
 
     assertThat(configuration.isPresent()).isTrue();
     assertThat(configuration.get().getAppearance().getCurrentScreen()).isEqualTo("TOOLS");
@@ -29,7 +29,7 @@ public class ConfigurationsTest {
 
     InputStream is = ConfigurationsTest.class.getResourceAsStream("/fixtures/example-configuration.yaml");
 
-    Optional<Configuration> configuration = Configurations.readYaml(is, Configuration.class);
+    Optional<Configuration> configuration = Yaml.readYaml(is, Configuration.class);
 
     assertThat(configuration.isPresent()).isTrue();
     assertThat(configuration.get().getAppearance().getCurrentScreen()).isEqualTo("TOOLS");
@@ -37,8 +37,9 @@ public class ConfigurationsTest {
 
     assertThat(configuration.get().any().isEmpty()).isFalse();
 
+    // Write to a byte array to prevent overwriting the local settings
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    Configurations.writeYaml(baos, configuration.get());
+    Yaml.writeYaml(baos, configuration.get());
 
     FixtureAsserts.assertStringMatchesNormalisedStringFixture(
       "Writing out fields does not match original fixture",

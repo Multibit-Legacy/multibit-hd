@@ -15,10 +15,10 @@ import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.managers.WalletManagerTest;
 import org.multibit.hd.core.utils.Addresses;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.utils.Dates;
@@ -61,7 +61,7 @@ public class WalletServiceTest {
     networkParameters = BitcoinNetwork.current().get();
 
     // Create a random temporary directory where the wallet directory will be written
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
     // Create a wallet from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();

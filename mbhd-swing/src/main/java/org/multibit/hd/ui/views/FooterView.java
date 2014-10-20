@@ -10,6 +10,8 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ProgressChangedEvent;
 import org.multibit.hd.ui.events.view.SystemStatusChangedEvent;
+import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.AccessibilityDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
@@ -44,7 +46,6 @@ public class FooterView extends AbstractView {
   private final JLabel messageLabel;
   private final JLabel statusLabel;
   private final JLabel statusIcon;
-  private final JLabel torIcon;
 
   private final ListeningScheduledExecutorService scheduledExecutorService = SafeExecutors.newScheduledThreadPool(3, "hide-progress");
   private final List<Future> hideProgressFutures = Lists.newArrayList();
@@ -82,8 +83,9 @@ public class FooterView extends AbstractView {
     AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, statusIcon, false, MultiBitUI.SMALL_ICON_SIZE);
 
     // Create a TOR icon - don't use green or amber colouring it is visually confusing
-    torIcon = Labels.newBlankLabel();
+    JLabel torIcon = Labels.newBlankLabel();
     AwesomeDecorator.bindIcon(AwesomeIcon.LOCK, torIcon, false, MultiBitUI.SMALL_ICON_SIZE);
+    AccessibilityDecorator.apply(torIcon, MessageKey.SELECT_TOR, MessageKey.SELECT_TOR_TOOLTIP);
     torIcon.setVisible(Configurations.currentConfiguration.isTor());
 
     // Start with no knowledge so assume the worst
@@ -121,6 +123,7 @@ public class FooterView extends AbstractView {
       public void run() {
 
         statusLabel.setText(event.getLocalisedMessage());
+        statusIcon.setToolTipText(event.getLocalisedMessage());
         switch (event.getSeverity()) {
           case RED:
             statusIcon.setForeground(Themes.currentTheme.statusRed());

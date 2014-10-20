@@ -26,6 +26,7 @@ import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.brit.services.TransactionSentBySelfProvider;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.Yaml;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.CoreEvents;
@@ -309,7 +310,7 @@ public enum WalletManager implements WalletEventListener {
       final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
       checkWalletDirectory(walletDirectory);
-      log.debug("walletDirectory = " + walletDirectory.toString());
+      log.debug("Wallet directory: '{}'", walletDirectory.toString());
 
       final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
       final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
@@ -496,9 +497,14 @@ public enum WalletManager implements WalletEventListener {
   }
 
   public static Wallet loadWalletFromFile(File walletFile, CharSequence password) throws IOException, UnreadableWalletException {
+
     // Read the encrypted file in and decrypt it.
     byte[] encryptedWalletBytes = org.multibit.hd.brit.utils.FileUtils.readFile(walletFile);
-    log.trace("Encrypted wallet bytes after load:\n" + Utils.HEX.encode(encryptedWalletBytes));
+
+    Preconditions.checkNotNull(encryptedWalletBytes,"'encryptedWalletBytes' must be present");
+
+    log.trace("Encrypted wallet bytes after load:\n{}", Utils.HEX.encode(encryptedWalletBytes));
+    log.debug("Loaded {} encrypted bytes: {}", encryptedWalletBytes.length);
 
     KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
@@ -518,6 +524,7 @@ public enum WalletManager implements WalletEventListener {
     log.trace("Just loaded wallet:\n{}", wallet.toString());
 
     return wallet;
+
   }
 
   /**
@@ -935,7 +942,7 @@ public enum WalletManager implements WalletEventListener {
     // Persist the new configuration
     try (FileOutputStream fos = new FileOutputStream(walletSummaryFile)) {
 
-      Configurations.writeYaml(fos, walletSummary);
+      Yaml.writeYaml(fos, walletSummary);
 
     } catch (IOException e) {
       ExceptionHandler.handleThrowable(e);
@@ -957,7 +964,7 @@ public enum WalletManager implements WalletEventListener {
     if (walletSummaryFile.exists()) {
       try (InputStream is = new FileInputStream(walletSummaryFile)) {
         // Load configuration (providing a default if none exists)
-        walletSummaryOptional = Configurations.readYaml(is, WalletSummary.class);
+        walletSummaryOptional = Yaml.readYaml(is, WalletSummary.class);
       } catch (IOException e) {
         log.warn("Could not read wallet summary in '{}': {}. Creating default.", walletDirectory.getAbsolutePath(), e.getMessage());
       }
