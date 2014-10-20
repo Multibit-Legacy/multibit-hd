@@ -26,6 +26,7 @@ import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.brit.services.TransactionSentBySelfProvider;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.Yaml;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.CoreEvents;
@@ -935,7 +936,7 @@ public enum WalletManager implements WalletEventListener {
     // Persist the new configuration
     try (FileOutputStream fos = new FileOutputStream(walletSummaryFile)) {
 
-      Configurations.writeYaml(fos, walletSummary);
+      Yaml.writeYaml(fos, walletSummary);
 
     } catch (IOException e) {
       ExceptionHandler.handleThrowable(e);
@@ -957,7 +958,7 @@ public enum WalletManager implements WalletEventListener {
     if (walletSummaryFile.exists()) {
       try (InputStream is = new FileInputStream(walletSummaryFile)) {
         // Load configuration (providing a default if none exists)
-        walletSummaryOptional = Configurations.readYaml(is, WalletSummary.class);
+        walletSummaryOptional = Yaml.readYaml(is, WalletSummary.class);
       } catch (IOException e) {
         log.warn("Could not read wallet summary in '{}': {}. Creating default.", walletDirectory.getAbsolutePath(), e.getMessage());
       }
