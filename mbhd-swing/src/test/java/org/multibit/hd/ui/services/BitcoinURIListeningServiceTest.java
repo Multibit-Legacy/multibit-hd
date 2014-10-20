@@ -1,12 +1,14 @@
 package org.multibit.hd.ui.services;
 
-import org.bitcoinj.core.Address;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
+import org.bitcoinj.core.Address;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.managers.InstallationManager;
 
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -24,6 +26,14 @@ public class BitcoinURIListeningServiceTest {
   private ServerSocket serverSocket = null;
 
   private BitcoinURIListeningService testObject;
+
+  @Before
+  public void setUp() throws Exception {
+
+    // Ensure the shutdown event doesn't overwrite existing configuration
+    InstallationManager.unrestricted = true;
+
+  }
 
   @After
   public void tearDown() throws Exception {
