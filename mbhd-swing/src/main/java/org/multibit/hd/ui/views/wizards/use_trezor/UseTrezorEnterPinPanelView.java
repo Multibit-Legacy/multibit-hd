@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.*;
 import net.miginfocom.swing.MigLayout;
-import org.bitcoinj.wallet.KeyChain;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
@@ -284,42 +283,6 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
     // Defer the hide operation
     return false;
   }
-
-  /**
-    * Request a cipher key from the Trezor - this may trigger SHOW_PIN_ENTRY
-    */
-   private void requestCipherKey() {
-
-     log.debug("Performing a request cipher key to Trezor");
-
-     // A 'requestCipherKey' is performed in which the user presses the OK button to encrypt a set text (the result of which will be used
-     // to decrypt a wallet)
-     Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-
-     // Check if there is a wallet present
-     if (hardwareWalletService.isPresent()) {
-
-       byte[] key = "MultiBit HD     Unlock".getBytes();
-       byte[] keyValue = "0123456789abcdef".getBytes();
-
-       // Request a cipher key against 0'/0/0
-       // Main wizard model will deal with the response
-       hardwareWalletService.get().requestCipherKey(
-         0,
-         KeyChain.KeyPurpose.RECEIVE_FUNDS,
-         0,
-         key,
-         keyValue,
-         true,
-         true,
-         true
-       );
-
-     } else {
-       // TODO Transition to a report panel indicating failure
-       log.warn("No wallet is present");
-     }
-   }
 
   /**
    * @return True if the Trezor states that the PIN is correct

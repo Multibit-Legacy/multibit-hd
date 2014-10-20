@@ -1,11 +1,17 @@
 package org.multibit.hd.ui.views.wizards.trezor_tools;
 
 import com.google.common.base.Optional;
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.hardware.core.HardwareWalletService;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.AccessibilityDecorator;
 import org.multibit.hd.ui.views.components.Buttons;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -40,6 +46,7 @@ public class TrezorToolsSelectPanelView extends AbstractWizardPanelView<TrezorTo
   private TrezorToolsState currentSelection;
 
   // View components
+  private JLabel trezorConnectedStatusLabel;
 
   /**
    * @param wizard    The wizard managing the states
@@ -69,14 +76,26 @@ public class TrezorToolsSelectPanelView extends AbstractWizardPanelView<TrezorTo
         "[]" // Row constraints
       ));
 
-    JButton launchBrowserButton = Buttons.newLaunchBrowserButton(getLaunchBrowserAction(), MessageKey.BUY_TREZOR, MessageKey.BUY_TREZOR_TOOLTIP);
-    contentPanel.add(launchBrowserButton, "wrap");
+    MessageKey trezorStatusKey = isTrezorPresent() ? MessageKey.TREZOR_FOUND : MessageKey.NO_TREZOR_FOUND;
+    trezorConnectedStatusLabel = Labels.newStatusLabel(
+      Optional.of(trezorStatusKey),
+      null,
+      Optional.<Boolean>absent());
+    AccessibilityDecorator.apply(trezorConnectedStatusLabel, trezorStatusKey);
+
+    contentPanel.add(trezorConnectedStatusLabel, "span 2, wrap");
+
     contentPanel.add(
       Panels.newTrezorToolSelector(
         this,
         TrezorToolsState.VERIFY_DEVICE.name(),
         TrezorToolsState.WIPE_DEVICE.name()
-      ), "wrap");
+      ), "span 2, wrap");
+
+    JButton launchBrowserButton = Buttons.newLaunchBrowserButton(getLaunchBrowserAction(), MessageKey.BUY_TREZOR, MessageKey.BUY_TREZOR_TOOLTIP);
+       contentPanel.add(Labels.newBuyTrezorCommentNote());
+       contentPanel.add(launchBrowserButton, "align right, wrap");
+
 
   }
 
@@ -88,8 +107,7 @@ public class TrezorToolsSelectPanelView extends AbstractWizardPanelView<TrezorTo
   @Override
   public void fireInitialStateViewEvents() {
 
-    // Enable the "next" button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, isTrezorPresent());
 
   }
 
@@ -142,5 +160,52 @@ public class TrezorToolsSelectPanelView extends AbstractWizardPanelView<TrezorTo
 
        }
      };
+   }
+
+  /**
+    * See if the Trezor wallet is present
+    */
+   public boolean isTrezorPresent() {
+
+     Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+     if (hardwareWalletService.isPresent()) {
+       try {
+         return hardwareWalletService.get().isWalletPresent();
+       } catch (IllegalStateException ise) {
+         // Device is not ready
+         return false;
+       }
+     } else {
+       return false;
+     }
+   }
+
+   /**
+    * <p>Downstream consumer applications should respond to hardware wallet events</p>
+    *
+    * @param event The hardware wallet event indicating a state change
+    */
+   @Subscribe
+   public void onHardwareWalletEvent(HardwareWalletEvent event) {
+
+     log.debug("Received hardware event: '{}'", event.getEventType().name());
+
+     switch (event.getEventType()) {
+       case SHOW_DEVICE_FAILED:
+         // Treat as end of example
+         System.exit(0);
+         break;
+       case SHOW_DEVICE_DETACHED:
+         // Can simply wait for another device to be connected again
+         break;
+       case SHOW_DEVICE_READY:
+         // Get some information about the device
+         //Features features = hardwareWalletService.getContext().getFeatures().get();
+         //log.info("Features: {}", features);
+
+       default:
+         // Ignore
+     }
+
    }
 }
