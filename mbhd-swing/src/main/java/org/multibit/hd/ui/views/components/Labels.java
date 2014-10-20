@@ -990,6 +990,17 @@ public class Labels {
     }
 
   /**
+   * @return A new "language change" note
+   */
+  public static JLabel newBuyTrezorCommentNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.BUY_TREZOR_COMMENT
+    }, new Object[][]{});
+
+  }
+
+  /**
    * @return A new "debugger warning" note
    */
   public static JLabel newDebuggerWarningNote() {

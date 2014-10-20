@@ -386,8 +386,13 @@ public enum MessageKey {
   WIPE_DEVICE("wipe_device"),
   WIPE_DEVICE_TITLE("wipe_device_title"),
 
+  BUY_TREZOR_COMMENT("buy_trezor_comment"),
   BUY_TREZOR("buy_trezor"),
   BUY_TREZOR_TOOLTIP("buy_trezor_tooltip"),
+
+  SEARCHING_FOR_A_CONNECTED_TREZOR("searching_for_a_connected_trezor"),
+  TREZOR_FOUND("trezor_found"),
+  NO_TREZOR_FOUND("no_trezor_found"),
 
   // Settings titles
 
