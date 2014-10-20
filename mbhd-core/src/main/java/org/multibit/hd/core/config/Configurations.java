@@ -47,7 +47,13 @@ public class Configurations {
   }
 
   /**
-   * @return A new default configuration based on the UK locale
+   * <p>The default configuration has the following characteristics:</p>
+   * <ul>
+   *   <li>Based on Locale.US since it is the dominant locale on the Internet</li>
+   *   <li>Licence not accepted</li>
+   *   <li>Licence not accepted</li>
+   * </ul>
+   * @return A new default configuration
    */
   public static Configuration newDefaultConfiguration() {
 
