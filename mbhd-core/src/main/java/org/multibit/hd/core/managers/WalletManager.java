@@ -498,7 +498,8 @@ public enum WalletManager implements WalletEventListener {
 
     Preconditions.checkNotNull(encryptedWalletBytes,"'encryptedWalletBytes' must be present");
 
-    log.debug("Encrypted wallet bytes after load:\n{}", Utils.HEX.encode(encryptedWalletBytes));
+    // This will flood the logs if left at debug
+    log.trace("Encrypted wallet bytes after load:\n{}", Utils.HEX.encode(encryptedWalletBytes));
     log.debug("Loaded bytes: {}", encryptedWalletBytes.length);
 
     KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));
