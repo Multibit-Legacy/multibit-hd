@@ -67,9 +67,6 @@ import org.multibit.hd.ui.views.wizards.sign_message.SignMessageWizardModel;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsState;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizard;
 import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizardModel;
-import org.multibit.hd.ui.views.wizards.trezor_tools.TrezorToolsState;
-import org.multibit.hd.ui.views.wizards.trezor_tools.TrezorToolsWizard;
-import org.multibit.hd.ui.views.wizards.trezor_tools.TrezorToolsWizardModel;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsState;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsWizard;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsWizardModel;
@@ -145,15 +142,6 @@ public class Wizards {
     log.debug("New 'About wizard'");
     return new AboutWizard(new AboutWizardModel(AboutState.ABOUT_DETAILS), true);
   }
-
-  /**
-    * @return A new "Trezor tools" wizard
-    */
-   public static TrezorToolsWizard newTrezorToolsWizard() {
-
-     log.debug("New 'Trezor tools wizard'");
-     return new TrezorToolsWizard(new TrezorToolsWizardModel(TrezorToolsState.SELECT_TREZOR_ACTION), false);
-   }
 
    /**
    * @param parameter Providing information about how the send should be performed
@@ -281,11 +269,11 @@ public class Wizards {
    }
 
   /**
-     * @return A new "use trezor" wizard for a warm start
+     * @return A new "use trezor" wizard
      */
-    public static UseTrezorWizard newExitingUseTrezorWizard() {
+    public static UseTrezorWizard newUseTrezorWizard() {
 
-      return new UseTrezorWizard(new UseTrezorWizardModel(UseTrezorState.REQUEST_CIPHER_KEY), false);
+      return new UseTrezorWizard(new UseTrezorWizardModel(UseTrezorState.SELECT_TREZOR_ACTION), false);
     }
 
    /**

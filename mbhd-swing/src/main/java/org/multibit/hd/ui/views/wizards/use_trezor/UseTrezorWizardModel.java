@@ -24,6 +24,11 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   private static final Logger log = LoggerFactory.getLogger(UseTrezorWizardModel.class);
 
   /**
+   * The current selection option as a state
+   */
+  private UseTrezorState currentSelection = UseTrezorState.VERIFY_TREZOR;
+
+  /**
    * The "enter pin" panel model
    */
   private UseTrezorEnterPinPanelModel enterPinPanelModel;
@@ -46,21 +51,46 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   }
 
   @Override
-   public void showNext() {
-     switch (state) {
-       case ENTER_PIN:
-         state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
-         break;
-       case NO_PIN_REQUIRED:
-         state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
-         break;
-       case PRESS_CONFIRM_FOR_UNLOCK:
-         state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
-         break;
-       default:
-         throw new IllegalStateException("Cannot showNext with a state of " + state);
-     }
-   }
+  public void showNext() {
+    switch (state) {
+      case SELECT_TREZOR_ACTION:
+        if (UseTrezorState.USE_TREZOR_WALLET.equals(getCurrentSelection())) {
+          state = UseTrezorState.USE_TREZOR_WALLET;
+          break;
+        } else if (UseTrezorState.BUY_TREZOR.equals(getCurrentSelection())) {
+          state = UseTrezorState.BUY_TREZOR;
+          break;
+        } else if (UseTrezorState.WIPE_TREZOR.equals(getCurrentSelection())) {
+          state = UseTrezorState.WIPE_TREZOR;
+          break;
+        } else if (UseTrezorState.VERIFY_TREZOR.equals(getCurrentSelection())) {
+          state = UseTrezorState.VERIFY_TREZOR;
+          break;
+        } else {
+          throw new IllegalStateException("Cannot showNext with a state of SELECT_TREZOR_ACTION and a selection of " + getCurrentSelection());
+        }
+      case BUY_TREZOR:
+        state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
+        break;
+      case VERIFY_TREZOR:
+        state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
+        break;
+      case WIPE_TREZOR:
+        state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
+        break;
+      case ENTER_PIN:
+        state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
+        break;
+      case NO_PIN_REQUIRED:
+        state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
+        break;
+      case PRESS_CONFIRM_FOR_UNLOCK:
+        state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
+        break;
+      default:
+        throw new IllegalStateException("Cannot showNext with a state of " + state);
+    }
+  }
 
 
   @Override
@@ -104,9 +134,9 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     String message = ((Success) event.getMessage().get()).getMessage();
 
     log.info(
-      "Message:'{}'\nPayload: {}",
-      message,
-      Utils.HEX.encode(payload)
+            "Message:'{}'\nPayload: {}",
+            message,
+            Utils.HEX.encode(payload)
     );
   }
 
@@ -116,8 +146,16 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     FailureType failureType = ((Failure) event.getMessage().get()).getType();
 
     log.info(
-      "Message:'Failure'\nFailure type: {}",
-      failureType.name()
+            "Message:'Failure'\nFailure type: {}",
+            failureType.name()
     );
+  }
+
+  public UseTrezorState getCurrentSelection() {
+    return currentSelection;
+  }
+
+  public void setCurrentSelection(UseTrezorState currentSelection) {
+    this.currentSelection = currentSelection;
   }
 }

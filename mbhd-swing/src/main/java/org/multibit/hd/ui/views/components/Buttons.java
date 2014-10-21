@@ -803,7 +803,7 @@ public class Buttons {
      *
      * @return A new "Trezor tools" wizard button with icon
      */
-    public static JButton newShowTrezorToolsWizardButton(Action action) {
+    public static JButton newShowUseTrezorWizardButton(Action action) {
 
       JButton button = newLargeButton(action, MessageKey.SHOW_TREZOR_TOOLS_WIZARD, MessageKey.SHOW_TREZOR_TOOLS_WIZARD_TOOLTIP);
 

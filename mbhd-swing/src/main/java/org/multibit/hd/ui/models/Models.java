@@ -172,7 +172,7 @@ public class Models {
             ControllerEvents.fireRemoveAlertEvent();
 
             // Open the Credentials wizard, asking for a Trezor PIN entry screen
-            Panels.showLightBox(Wizards.newExitingUseTrezorWizard().getWizardScreenHolder());
+            Panels.showLightBox(Wizards.newUseTrezorWizard().getWizardScreenHolder());
 
           }
         }, MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);

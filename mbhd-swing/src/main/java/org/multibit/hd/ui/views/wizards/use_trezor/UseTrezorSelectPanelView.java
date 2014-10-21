@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.trezor_tools;
+package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
@@ -9,9 +9,6 @@ import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.AccessibilityDecorator;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -36,14 +33,14 @@ import java.net.URISyntaxException;
  * @since 0.0.1
  */
 
-public class TrezorToolsSelectPanelView extends AbstractWizardPanelView<TrezorToolsWizardModel, TrezorToolsState> implements ActionListener {
+public class UseTrezorSelectPanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorState> implements ActionListener {
 
   // TODO replace with affiliate link
 
   private static String BUY_TREZOR_URL = "https://www.buytrezor.com";
 
   // Model
-  private TrezorToolsState currentSelection;
+  private UseTrezorState currentSelection;
 
   // View components
   private JLabel trezorConnectedStatusLabel;
@@ -52,16 +49,16 @@ public class TrezorToolsSelectPanelView extends AbstractWizardPanelView<TrezorTo
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public TrezorToolsSelectPanelView(AbstractWizard<TrezorToolsWizardModel> wizard, String panelName) {
+  public UseTrezorSelectPanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_TOOLS_TITLE, AwesomeIcon.SHIELD);
+    super(wizard, panelName, MessageKey.USE_TREZOR_TITLE, AwesomeIcon.SHIELD);
 
   }
 
   @Override
   public void newPanelModel() {
 
-    currentSelection = TrezorToolsState.VERIFY_DEVICE;
+    currentSelection = UseTrezorState.VERIFY_TREZOR;
     setPanelModel(currentSelection);
 
   }
@@ -76,38 +73,38 @@ public class TrezorToolsSelectPanelView extends AbstractWizardPanelView<TrezorTo
         "[]" // Row constraints
       ));
 
-    MessageKey trezorStatusKey = isTrezorPresent() ? MessageKey.TREZOR_FOUND : MessageKey.NO_TREZOR_FOUND;
-    trezorConnectedStatusLabel = Labels.newStatusLabel(
-      Optional.of(trezorStatusKey),
-      null,
-      Optional.<Boolean>absent());
-    AccessibilityDecorator.apply(trezorConnectedStatusLabel, trezorStatusKey);
-
-    contentPanel.add(trezorConnectedStatusLabel, "span 2, wrap");
+//    MessageKey trezorStatusKey = isTrezorPresent() ? MessageKey.TREZOR_FOUND : MessageKey.NO_TREZOR_FOUND;
+//    trezorConnectedStatusLabel = Labels.newStatusLabel(
+//      Optional.of(trezorStatusKey),
+//      null,
+//      Optional.<Boolean>absent());
+//    AccessibilityDecorator.apply(trezorConnectedStatusLabel, trezorStatusKey);
+//
+//    contentPanel.add(trezorConnectedStatusLabel, "span 2, wrap");
 
     contentPanel.add(
-      Panels.newTrezorToolSelector(
-        this,
-        TrezorToolsState.VERIFY_DEVICE.name(),
-        TrezorToolsState.WIPE_DEVICE.name()
+      Panels.newUseTrezorSelector(
+              this,
+              UseTrezorState.USE_TREZOR_WALLET.name(),
+              UseTrezorState.BUY_TREZOR.name(),
+              UseTrezorState.VERIFY_TREZOR.name(),
+              UseTrezorState.WIPE_TREZOR.name()
       ), "span 2, wrap");
 
-    JButton launchBrowserButton = Buttons.newLaunchBrowserButton(getLaunchBrowserAction(), MessageKey.BUY_TREZOR, MessageKey.BUY_TREZOR_TOOLTIP);
-       contentPanel.add(Labels.newBuyTrezorCommentNote());
-       contentPanel.add(launchBrowserButton, "align right, wrap");
-
-
+//    JButton launchBrowserButton = Buttons.newLaunchBrowserButton(getLaunchBrowserAction(), MessageKey.BUY_TREZOR, MessageKey.BUY_TREZOR_TOOLTIP);
+//       contentPanel.add(Labels.newBuyTrezorCommentNote());
+//       contentPanel.add(launchBrowserButton, "align right, wrap");
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<TrezorToolsWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
     PanelDecorator.addExitCancelNext(this, wizard);
   }
 
   @Override
   public void fireInitialStateViewEvents() {
 
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, isTrezorPresent());
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT,true);
 
   }
 
@@ -139,7 +136,7 @@ public class TrezorToolsSelectPanelView extends AbstractWizardPanelView<TrezorTo
 
     JRadioButton source = (JRadioButton) e.getSource();
 
-    currentSelection = TrezorToolsState.valueOf(source.getActionCommand());
+    currentSelection = UseTrezorState.valueOf(source.getActionCommand());
 
   }
 

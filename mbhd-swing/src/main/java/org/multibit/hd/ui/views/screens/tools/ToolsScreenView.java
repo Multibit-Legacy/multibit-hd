@@ -55,7 +55,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     contentPanel.add(Buttons.newShowVerifyNetworkButton(getShowVerifyNetworkAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowAboutButton(getShowAboutAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     // Trezor tool is in bottom right for fastest visibility
-    contentPanel.add(Buttons.newShowTrezorToolsWizardButton(getShowTrezorToolsWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowUseTrezorWizardButton(getShowUseTrezorWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
 
     setInitialised(true);
     return contentPanel;
@@ -77,15 +77,15 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
   }
 
   /**
-   * @return An action to show the "Trezor tools" wizard
+   * @return An action to show the "Use Trezor" wizard
    */
-  private AbstractAction getShowTrezorToolsWizardAction() {
+  private AbstractAction getShowUseTrezorWizardAction() {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        // Show the Trezor Tools screen
-        Panels.showLightBox(Wizards.newTrezorToolsWizard().getWizardScreenHolder());
+        // Show the Use Trezor screen
+        Panels.showLightBox(Wizards.newUseTrezorWizard().getWizardScreenHolder());
       }
     };
   }
