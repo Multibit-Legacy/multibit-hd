@@ -16,12 +16,13 @@ package org.multibit.hd.brit.crypto;
  * limitations under the License.
  */
 
-import org.bitcoinj.core.Utils;
 import com.google.common.base.Charsets;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
+import org.bitcoinj.core.Utils;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.brit.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,12 +65,12 @@ public class PGPUtilsTest {
     assertThat(encryptionKey).isNotNull();
 
     // Make a temporary random directory
-    File testDir = FileUtils.makeRandomTemporaryDirectory();
+    File testDir = Files.createTempDir();
 
     // Write some text to the plain text.
     File inputFile = new File(testDir.getAbsolutePath() + File.separator + "plain.txt");
     try (FileOutputStream fileOutputStream = new FileOutputStream(inputFile)) {
-      FileUtils.writeFile(new ByteArrayInputStream(EXAMPLE_TEXT.getBytes(Charsets.UTF_8)), fileOutputStream);
+      ByteStreams.copy(new ByteArrayInputStream(EXAMPLE_TEXT.getBytes(Charsets.UTF_8)), fileOutputStream);
     }
     assertThat(inputFile.length()).isGreaterThanOrEqualTo(EXAMPLE_TEXT.length());
 
@@ -95,7 +96,7 @@ public class PGPUtilsTest {
     PGPUtils.decryptFile(encryptedInputStream, rebornPlainTextOutputStream, secretKeyRingInputStream, TEST_DATA_PASSWORD);
     assertThat(inputFile.length()).isEqualTo(rebornPlainTextFile.length());
 
-    byte[] rebornBytes = FileUtils.readFile(rebornPlainTextFile);
+    byte[] rebornBytes = Files.toByteArray(rebornPlainTextFile);
     assertThat(Arrays.equals( EXAMPLE_TEXT.getBytes(Charsets.UTF_8), rebornBytes)).isTrue();
   }
 

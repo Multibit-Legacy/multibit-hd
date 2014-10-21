@@ -24,6 +24,7 @@ import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Wallet;
 import org.bitcoinj.crypto.DeterministicKey;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
@@ -74,6 +75,14 @@ public class WalletManagerTest {
 
     // Start the core services
     CoreServices.main(null);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+
+    InstallationManager.unrestricted = false;
+    InstallationManager.currentApplicationDataDirectory = null;
+
   }
 
   @Test
@@ -144,25 +153,25 @@ public class WalletManagerTest {
     // Create a random temporary directory
     File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
-    String walletPath1 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_1);
-    String walletPath2 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_2);
-    makeDirectory(temporaryDirectory, INVALID_WALLET_DIRECTORY_1);
-    makeDirectory(temporaryDirectory, INVALID_WALLET_DIRECTORY_2);
-    makeDirectory(temporaryDirectory, INVALID_WALLET_DIRECTORY_3);
+    File walletDirectory1 = SecureFiles.verifyOrCreateDirectory(temporaryDirectory, WALLET_DIRECTORY_1);
+    File walletDirectory2 = SecureFiles.verifyOrCreateDirectory(temporaryDirectory, WALLET_DIRECTORY_2);
+    SecureFiles.verifyOrCreateDirectory(temporaryDirectory, INVALID_WALLET_DIRECTORY_1);
+    SecureFiles.verifyOrCreateDirectory(temporaryDirectory, INVALID_WALLET_DIRECTORY_2);
+    SecureFiles.verifyOrCreateDirectory(temporaryDirectory, INVALID_WALLET_DIRECTORY_3);
 
     List<File> walletDirectories = WalletManager.findWalletDirectories(temporaryDirectory);
     assertThat(walletDirectories).isNotNull();
     assertThat(walletDirectories.size()).isEqualTo(2);
 
     // Order of discovery is not guaranteed
-    boolean foundWalletPath1First = walletDirectories.get(0).getAbsolutePath().equals(walletPath1);
+    boolean foundWalletPath1First = walletDirectories.get(0).getAbsolutePath().equals(walletDirectory1.getAbsolutePath());
 
     if (foundWalletPath1First) {
-      assertThat(walletDirectories.get(0).getAbsolutePath()).isEqualTo(walletPath1);
-      assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletPath2);
+      assertThat(walletDirectories.get(0).getAbsolutePath()).isEqualTo(walletDirectory1.getAbsolutePath());
+      assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletDirectory2.getAbsolutePath());
     } else {
-      assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletPath1);
-      assertThat(walletDirectories.get(0).getAbsolutePath()).isEqualTo(walletPath2);
+      assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletDirectory1.getAbsolutePath());
+      assertThat(walletDirectories.get(0).getAbsolutePath()).isEqualTo(walletDirectory2.getAbsolutePath());
     }
   }
 
@@ -172,22 +181,22 @@ public class WalletManagerTest {
     // Create a random temporary directory
     File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
-    String walletPath1 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_1);
-    String walletPath2 = makeDirectory(temporaryDirectory, WALLET_DIRECTORY_2);
+    File walletDirectory1 = SecureFiles.verifyOrCreateDirectory(temporaryDirectory, WALLET_DIRECTORY_1);
+    File walletDirectory2 = SecureFiles.verifyOrCreateDirectory(temporaryDirectory, WALLET_DIRECTORY_2);
 
     List<File> walletDirectories = WalletManager.findWalletDirectories(temporaryDirectory);
     assertThat(walletDirectories).isNotNull();
     assertThat(walletDirectories.size()).isEqualTo(2);
 
     // Order of discovery is not guaranteed
-    boolean foundWalletPath1First = walletDirectories.get(0).getAbsolutePath().equals(walletPath1);
+    boolean foundWalletPath1First = walletDirectories.get(0).getAbsolutePath().equals(walletDirectory1.getAbsolutePath());
 
     if (foundWalletPath1First) {
-      assertThat(walletDirectories.get(0).getAbsolutePath()).isEqualTo(walletPath1);
-      assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletPath2);
+      assertThat(walletDirectories.get(0).getAbsolutePath()).isEqualTo(walletDirectory1.getAbsolutePath());
+      assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletDirectory2.getAbsolutePath());
     } else {
-      assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletPath1);
-      assertThat(walletDirectories.get(0).getAbsolutePath()).isEqualTo(walletPath2);
+      assertThat(walletDirectories.get(1).getAbsolutePath()).isEqualTo(walletDirectory1.getAbsolutePath());
+      assertThat(walletDirectories.get(0).getAbsolutePath()).isEqualTo(walletDirectory2.getAbsolutePath());
     }
 
     // Attempt to retrieve the wallet summary
@@ -203,6 +212,8 @@ public class WalletManagerTest {
   @Test
   public void testSignAndVerifyMessage() throws Exception {
 
+    log.debug("/////////////////////////////////////////////////////////////////////////////////////////");
+
     // Get the application directory (will be temporary for unit tests)
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -213,6 +224,7 @@ public class WalletManagerTest {
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     long nowInSeconds = Dates.nowInSeconds();
 
+    log.debug("");
     WalletSummary walletSummary = walletManager.getOrCreateWalletSummary(
                     applicationDirectory,
                     seed,
@@ -233,6 +245,7 @@ public class WalletManagerTest {
     Address signingAddress = key.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
 
     // Successfully sign the address
+    log.debug("Expect successful signature");
     SignMessageResult signMessageResult = walletManager.signMessage(signingAddress.toString(), MESSAGE_TO_SIGN, SIGNING_PASSWORD);
     assertThat(signMessageResult.isSigningWasSuccessful()).isTrue();
     assertThat(signMessageResult.getSignatureKey()).isEqualTo(CoreMessageKey.SIGN_MESSAGE_SUCCESS);
@@ -241,36 +254,43 @@ public class WalletManagerTest {
     assertThat(signMessageResult.getSignature().get()).isNotNull();
 
     // Successfully verify the message
+    log.debug("Expect successful verification");
     VerifyMessageResult verifyMessageResult = walletManager.verifyMessage(signingAddress.toString(), MESSAGE_TO_SIGN, signMessageResult.getSignature().get());
     assertThat(verifyMessageResult.isVerifyWasSuccessful()).isTrue();
     assertThat(verifyMessageResult.getVerifyKey()).isEqualTo(CoreMessageKey.VERIFY_MESSAGE_VERIFY_SUCCESS);
     assertThat(verifyMessageResult.getVerifyData()).isNull();
 
     // Incorrect verify of the message - wrong message
+    log.debug("Expect wrong message");
     verifyMessageResult = walletManager.verifyMessage(signingAddress.toString(), MESSAGE_TO_SIGN + "a", signMessageResult.getSignature().get());
     assertThat(verifyMessageResult.isVerifyWasSuccessful()).isFalse();
     assertThat(verifyMessageResult.getVerifyKey()).isEqualTo(CoreMessageKey.VERIFY_MESSAGE_VERIFY_FAILURE);
     assertThat(verifyMessageResult.getVerifyData()).isNull();
 
     // Incorrect verify of the message - wrong address
+    log.debug("Expect wrong address");
     verifyMessageResult = walletManager.verifyMessage(addressNotInWalletString, MESSAGE_TO_SIGN, signMessageResult.getSignature().get());
     assertThat(verifyMessageResult.isVerifyWasSuccessful()).isFalse();
     assertThat(verifyMessageResult.getVerifyKey()).isEqualTo(CoreMessageKey.VERIFY_MESSAGE_VERIFY_FAILURE);
     assertThat(verifyMessageResult.getVerifyData()).isNull();
 
     // Incorrect verify of the message - wrong signature
+    log.debug("Expect bad signature");
     verifyMessageResult = walletManager.verifyMessage(signingAddress.toString(), MESSAGE_TO_SIGN, signMessageResult.getSignature().get() + "b");
     assertThat(verifyMessageResult.isVerifyWasSuccessful()).isFalse();
     assertThat(verifyMessageResult.getVerifyKey()).isEqualTo(CoreMessageKey.VERIFY_MESSAGE_FAILURE);
     assertThat(verifyMessageResult.getVerifyData()).isNull();
 
     // Bad signing credentials
+    log.debug("Expect bad credentials");
     signMessageResult = walletManager.signMessage(signingAddress.toString(), MESSAGE_TO_SIGN, "badPassword");
     assertThat(signMessageResult.isSigningWasSuccessful()).isFalse();
     assertThat(signMessageResult.getSignatureKey()).isEqualTo(CoreMessageKey.SIGN_MESSAGE_NO_PASSWORD);
     assertThat(signMessageResult.getSignatureData()).isNull();
     assertThat(signMessageResult.getSignature().isPresent()).isFalse();
 
+    // Signed with address not in wallet
+    log.debug("Expect bad address (not in wallet)");
     signMessageResult = walletManager.signMessage(addressNotInWalletString, MESSAGE_TO_SIGN, SIGNING_PASSWORD);
     assertThat(signMessageResult.isSigningWasSuccessful()).isFalse();
     assertThat(signMessageResult.getSignatureKey()).isEqualTo(CoreMessageKey.SIGN_MESSAGE_NO_SIGNING_KEY);
@@ -280,6 +300,8 @@ public class WalletManagerTest {
 
   @Test
   public void testWriteOfEncryptedPasswordAndSeed() throws Exception {
+
+    log.debug("/////////////////////////////////////////////////////////////////////////////////////////");
 
     List<String> passwordList = Lists.newArrayList();
     passwordList.add(SHORT_PASSWORD);
@@ -330,14 +352,6 @@ public class WalletManagerTest {
       byte[] decryptedFoundBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(foundEncryptedBackupKey, walletPasswordDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
       assertThat(Arrays.equals(seedDerivedAESKey.getKey(), decryptedFoundBackupAESKey)).isTrue();
     }
-  }
-
-  private String makeDirectory(File parentDirectory, String directoryName) {
-    File directory = new File(parentDirectory, directoryName);
-    assertThat(directory.mkdir()).isTrue();
-    directory.deleteOnExit();
-
-    return directory.getAbsolutePath();
   }
 
 }

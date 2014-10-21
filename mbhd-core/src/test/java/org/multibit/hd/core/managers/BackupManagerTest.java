@@ -15,9 +15,10 @@
  */
 package org.multibit.hd.core.managers;
 
-import org.bitcoinj.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.bitcoinj.core.Wallet;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
@@ -43,8 +44,17 @@ public class BackupManagerTest {
   public void setUp() throws Exception {
 
     InstallationManager.unrestricted = true;
+    InstallationManager.currentApplicationDataDirectory = null;
 
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+
+  }
+
+  @After
+  public void tearDown() throws Exception {
+
+    InstallationManager.unrestricted = false;
+    InstallationManager.currentApplicationDataDirectory = null;
 
   }
 
@@ -54,18 +64,20 @@ public class BackupManagerTest {
     // Get the application directory (will be temporary for unit tests)
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
-    // Create a random temporary directory in which to story the cloudBackups
+    // Create a random temporary directory in which to store the cloud backups
     File temporaryBackupDirectory = SecureFiles.createTemporaryDirectory();
 
     BackupManager backupManager = BackupManager.INSTANCE;
 
-    // Initialise the backupManager to point at the temporaryBackupDirectory
+    // Initialise the backup manager to point at the temporary backup directory
     backupManager.initialise(applicationDirectory, Optional.of(temporaryBackupDirectory));
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     long nowInSeconds = Dates.nowInSeconds();
     String password = "credentials";
+
+    // Create a wallet summary
     WalletSummary walletSummary = WalletManager
       .INSTANCE
       .getOrCreateWalletSummary(

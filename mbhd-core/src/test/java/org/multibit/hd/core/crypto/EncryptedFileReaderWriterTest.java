@@ -21,12 +21,9 @@ import org.bitcoinj.utils.BriefLogFormatter;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.crypto.AESUtils;
-import org.multibit.hd.brit.utils.FileUtils;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.WalletManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.ByteArrayOutputStream;
@@ -37,11 +34,6 @@ import java.security.SecureRandom;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class EncryptedFileReaderWriterTest {
-
-  private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
-
-
-  private static final String EXAMPLE_TEXT = "The quick brown fox jumps over the lazy dog. 01234567890. !@#$%^&*(). ,.;:[]-_=+";
 
   // Nonsense bytes for encryption test.
   private static final byte[] TEST_BYTES1 = {0, -101, 2, 103, -4, 105, 6, 107, 8, -109, 10, 111, -12, 113, 14, -115, 16, 117, -18, 119, 20, 121, 22, 123, -24, 125, 26, 127, -28, 29, -30, 31};

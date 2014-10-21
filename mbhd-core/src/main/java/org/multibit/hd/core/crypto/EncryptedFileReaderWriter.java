@@ -1,13 +1,14 @@
 package org.multibit.hd.core.crypto;
 
-import org.bitcoinj.crypto.KeyCrypterScrypt;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
 import com.google.protobuf.ByteString;
+import org.bitcoinj.crypto.KeyCrypterScrypt;
 import org.bitcoinj.wallet.Protos;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
-import org.multibit.hd.core.files.Files;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.WalletManager;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public class EncryptedFileReaderWriter {
     Preconditions.checkNotNull(password);
     try {
       // Read the encrypted file in and decrypt it.
-      byte[] encryptedWalletBytes = org.multibit.hd.brit.utils.FileUtils.readFile(encryptedProtobufFile);
+      byte[] encryptedWalletBytes = Files.toByteArray(encryptedProtobufFile);
       //log.debug("Encrypted wallet bytes after load:\n" + Utils.HEX.encode(encryptedWalletBytes));
 
       KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(salt));
@@ -80,7 +81,7 @@ public class EncryptedFileReaderWriter {
 
         ByteArrayInputStream encryptedWalletByteArrayInputStream = new ByteArrayInputStream(encryptedBytes);
         File temporaryFile = new File(outputFile.getAbsolutePath() + TEMPORARY_FILE_EXTENSION);
-        Files.writeFile(encryptedWalletByteArrayInputStream, temporaryFile, outputFile);
+        SecureFiles.writeFile(encryptedWalletByteArrayInputStream, temporaryFile, outputFile);
       } else {
         throw new EncryptedFileReaderWriterException("The encryption was not reversible so aborting.");
       }
@@ -132,7 +133,7 @@ public class EncryptedFileReaderWriter {
   private static File encryptAndDeleteOriginal(File fileToEncrypt, KeyParameter keyParameter, byte[] initialisationVector) throws EncryptedFileReaderWriterException {
     try {
       // Read in the file
-      byte[] unencryptedBytes = org.multibit.hd.brit.utils.FileUtils.readFile(fileToEncrypt);
+      byte[] unencryptedBytes = Files.toByteArray(fileToEncrypt);
 
       // Create an AES encoded version of the fileToEncrypt, using the KeyParameter supplied
       byte[] encryptedBytes = AESUtils.encrypt(unencryptedBytes, keyParameter, initialisationVector);
@@ -147,7 +148,7 @@ public class EncryptedFileReaderWriter {
         File encryptedFilename = new File(fileToEncrypt.getAbsoluteFile() + WalletManager.MBHD_AES_SUFFIX);
         ByteArrayInputStream encryptedWalletByteArrayInputStream = new ByteArrayInputStream(encryptedBytes);
         FileOutputStream encryptedWalletOutputStream = new FileOutputStream(encryptedFilename);
-        Files.writeFile(encryptedWalletByteArrayInputStream, encryptedWalletOutputStream);
+        ByteStreams.copy(encryptedWalletByteArrayInputStream, encryptedWalletOutputStream);
 
         if (encryptedFilename.length() == encryptedBytes.length) {
           SecureFiles.secureDelete(fileToEncrypt);

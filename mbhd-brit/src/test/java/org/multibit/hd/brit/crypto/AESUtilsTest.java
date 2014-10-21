@@ -21,7 +21,6 @@ import org.bitcoinj.utils.BriefLogFormatter;
 import com.google.common.base.Charsets;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.brit.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -32,8 +31,7 @@ import static org.junit.Assert.assertEquals;
 
 public class AESUtilsTest {
 
-  private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
-
+  private static final Logger log = LoggerFactory.getLogger(AESUtilsTest.class);
 
   private static final String EXAMPLE_TEXT = "The quick brown fox jumps over the lazy dog. 01234567890. !@#$%^&*(). ,.;:[]-_=+";
 

@@ -1,20 +1,21 @@
 package org.multibit.hd.brit.matcher;
 
-import org.bitcoinj.core.Address;
-import org.bitcoinj.core.AddressFormatException;
-import org.bitcoinj.params.MainNetParams;
 import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.AddressFormatException;
+import org.bitcoinj.params.MainNetParams;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.multibit.hd.brit.dto.BRITWalletId;
 import org.multibit.hd.brit.dto.WalletToEncounterDateLink;
-import org.multibit.hd.brit.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +93,22 @@ public class BasicMatcherStore implements MatcherStore {
   }
 
   /**
+   * Work out the file part of a filename
+   *
+   * @param name of file
+   *
+   * @return file part of filename
+   */
+  public static String filePart(String name) {
+    int s = name.lastIndexOf(File.separatorChar);
+    if (s == -1) {
+      return name;
+    } else {
+      return name.substring(s + 1);
+    }
+  }
+
+  /**
    * Initialise the Bitcoin addresses
    */
   private void initialiseAddresses() {
@@ -114,7 +131,7 @@ public class BasicMatcherStore implements MatcherStore {
       }
     }
 
-    byte[] walletToEncounterDatesAsBytes = FileUtils.readFile(walletToEncounterDateFile); // Will scale better if streaming
+    byte[] walletToEncounterDatesAsBytes = Files.toByteArray(walletToEncounterDateFile);
     String walletToEncounterDates = new String(walletToEncounterDatesAsBytes, Charsets.UTF_8);
 
     // Split into lines - each line contains a serialised WalletToEncounterDateLink
@@ -140,7 +157,7 @@ public class BasicMatcherStore implements MatcherStore {
 
     if (linksFiles != null) {
       for (File linkFile : linksFiles) {
-        String filePart = FileUtils.filePart(linkFile.getAbsolutePath());
+        String filePart = filePart(linkFile.getAbsolutePath());
         // Remove any .txt
         filePart = filePart.replace(LINKS_FILENAME_SUFFIX, "");
 
@@ -204,8 +221,11 @@ public class BasicMatcherStore implements MatcherStore {
     encounterDateToBitcoinAddressesMap.put(convertToMidnight(encounterDate), bitcoinAddresses);
 
     // Also write to a file in the by-date directory
-    String linksDirectory = backingStoreDirectory + File.separator + NAME_OF_DIRECTORY_CONTAINING_BITCOIN_ADDRESSES_BY_DATE;
-    FileUtils.createDirectoryIfNecessary(new File(linksDirectory));
+    File linksDirectory = new File(backingStoreDirectory + File.separator + NAME_OF_DIRECTORY_CONTAINING_BITCOIN_ADDRESSES_BY_DATE);
+    if (!linksDirectory.exists()) {
+      Preconditions.checkState(linksDirectory.mkdir(), "Could not create the directory of '" + linksDirectory+ "'");
+    }
+    Preconditions.checkState(linksDirectory.isDirectory(), "Incorrectly identified the directory of '" + linksDirectory + " as a file");
 
     String filename = linksDirectory + File.separator
       + utcShortDateWithHyphensFormatter.print(new DateTime(encounterDate, DateTimeZone.UTC)) + LINKS_FILENAME_SUFFIX;
@@ -263,7 +283,7 @@ public class BasicMatcherStore implements MatcherStore {
     byte[] bitcoinAddressesAsBytes = builder.toString().getBytes(Charsets.UTF_8);
 
     FileOutputStream bitcoinAddressesFileOutputStream = new FileOutputStream(filename);
-    FileUtils.writeFile(new ByteArrayInputStream(bitcoinAddressesAsBytes), bitcoinAddressesFileOutputStream);
+    ByteStreams.copy(new ByteArrayInputStream(bitcoinAddressesAsBytes), bitcoinAddressesFileOutputStream);
 
   }
 

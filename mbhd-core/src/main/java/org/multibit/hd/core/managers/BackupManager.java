@@ -1,16 +1,17 @@
 package org.multibit.hd.core.managers;
 
-import org.bitcoinj.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
+import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.brit.utils.FileUtils;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.BackupSummary;
@@ -476,20 +477,17 @@ public enum BackupManager {
     File temporaryFile = null;
     try {
       // Read the encrypted file in.
-      byte[] encryptedBytes = org.multibit.hd.brit.utils.FileUtils.readFile(new File(backupFileToLoad.getAbsolutePath()));
+      byte[] encryptedBytes = Files.toByteArray(new File(backupFileToLoad.getAbsolutePath()));
 
       KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
 
       // Decrypt the backup bytes
       byte[] decryptedBytes = AESUtils.decrypt(encryptedBytes, seedDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
 
-      File tempDirectory = FileUtils.makeRandomTemporaryDirectory();
+      File tempDirectory = Files.createTempDir();
       temporaryFile = File.createTempFile("backup", "zip", tempDirectory);
-      FileOutputStream outputFileStream = new FileOutputStream(temporaryFile);
-      try {
-        FileUtils.writeFile(new ByteArrayInputStream(decryptedBytes), outputFileStream);
-      } finally {
-        outputFileStream.close();
+      try (FileOutputStream outputFileStream = new FileOutputStream(temporaryFile)) {
+        ByteStreams.copy(new ByteArrayInputStream(decryptedBytes), outputFileStream);
       }
 
       // Unzip the backup into the wallet root directory - this overwrites files if already present (hence the backup just done)

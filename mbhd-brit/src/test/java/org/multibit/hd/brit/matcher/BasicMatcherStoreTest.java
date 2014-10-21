@@ -16,11 +16,12 @@ package org.multibit.hd.brit.matcher;
  * limitations under the License.
  */
 
-import org.bitcoinj.core.Address;
-import org.bitcoinj.params.MainNetParams;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.io.Files;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.params.MainNetParams;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -30,7 +31,6 @@ import org.multibit.hd.brit.dto.BRITWalletIdTest;
 import org.multibit.hd.brit.dto.WalletToEncounterDateLink;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.brit.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +74,7 @@ public class BasicMatcherStoreTest {
   @Before
   public void setUp() throws Exception {
     // Create a random temporary directory in which to create the Matcher store
-    matcherStoreDirectory = FileUtils.makeRandomTemporaryDirectory();
+    matcherStoreDirectory = Files.createTempDir();
 
     log.debug("Creating a Matcher store in the directory '" + matcherStoreDirectory + "'");
 

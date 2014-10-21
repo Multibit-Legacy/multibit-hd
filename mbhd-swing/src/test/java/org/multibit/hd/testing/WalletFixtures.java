@@ -1,8 +1,8 @@
 package org.multibit.hd.testing;
 
+import com.google.common.io.ByteStreams;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.core.dto.WalletSummary;
-import org.multibit.hd.core.files.Files;
 import org.multibit.hd.core.files.ZipFiles;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -78,11 +78,10 @@ public class WalletFixtures {
          FileOutputStream fos = new FileOutputStream(zipFileName)) {
 
       // Extract the ZIP of the standard wallet
-      Files.writeFile(is, fos);
+      ByteStreams.copy(is, fos);
       ZipFiles.unzip(zipFileName, applicationDirectoryName);
 
     }
-
 
   }
 

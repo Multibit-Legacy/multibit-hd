@@ -1,14 +1,14 @@
 package org.multibit.hd.brit.payer;
 
-import org.bitcoinj.crypto.KeyCrypterException;
 import com.google.common.base.Optional;
+import com.google.common.io.ByteStreams;
+import org.bitcoinj.crypto.KeyCrypterException;
 import org.bouncycastle.openpgp.PGPException;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.dto.*;
 import org.multibit.hd.brit.exceptions.MatcherResponseException;
 import org.multibit.hd.brit.exceptions.PayerRequestException;
-import org.multibit.hd.brit.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -68,7 +68,7 @@ public class BasicPayer implements Payer {
       File tempFile = File.createTempFile("req", "tmp");
 
       // Write serialised payerRequest to the temporary file
-      FileUtils.writeFile(new ByteArrayInputStream(serialisedPayerRequest), new FileOutputStream(tempFile));
+      ByteStreams.copy(new ByteArrayInputStream(serialisedPayerRequest), new FileOutputStream(tempFile));
 
       // PGP encrypt the file
       PGPUtils.encryptFile(encryptedBytesOutputStream, tempFile, payerConfig.getMatcherPublicKey());

@@ -5,6 +5,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.io.Files;
 import com.google.common.primitives.Bytes;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -197,7 +198,7 @@ public enum WalletManager implements WalletEventListener {
       // Match the wallet directory to the wallet data
       for (File walletDirectory : walletDirectories) {
 
-        checkWalletDirectory(walletDirectory);
+        verifyWalletDirectory(walletDirectory);
 
         String walletDirectoryPath = walletDirectory.getAbsolutePath();
         if (walletDirectoryPath.contains(walletIdPath)) {
@@ -308,13 +309,13 @@ public enum WalletManager implements WalletEventListener {
       String walletRoot = createWalletRoot(walletId);
 
       final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
-
-      checkWalletDirectory(walletDirectory);
-      log.debug("Wallet directory: '{}'", walletDirectory.toString());
+      log.debug("Wallet directory: '{}'", walletDirectory.getAbsolutePath());
 
       final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
       final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
       if (walletFileWithAES.exists()) {
+
+        log.debug("Discovered AES encrypted wallet file. Loading...");
 
         // There is already a wallet created with this root - if so load it and return that
         walletSummary = loadFromWalletDirectory(walletDirectory, password);
@@ -327,16 +328,10 @@ public enum WalletManager implements WalletEventListener {
         return walletSummary;
       }
 
-      // Wallet file does not exist so create it
+      // Wallet file does not exist so create it below the known good wallet directory
+      log.debug("Creating new wallet file...");
 
-      // Create the containing directory if it does not exist
-      if (!walletDirectory.exists()) {
-        if (!walletDirectory.mkdir()) {
-          throw new IllegalStateException("The directory for the wallet '" + walletDirectory.getAbsoluteFile() + "' could not be created");
-        }
-      }
-
-      // Create a wallet using the seed and credentials
+      // Create a wallet using the seed (no salt passphrase)
       DeterministicSeed deterministicSeed = new DeterministicSeed(seed, "", creationTimeInSeconds);
       Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
       walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
@@ -419,7 +414,7 @@ public enum WalletManager implements WalletEventListener {
 
       final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
-      checkWalletDirectory(walletDirectory);
+      verifyWalletDirectory(walletDirectory);
       log.debug("walletDirectory = " + walletDirectory.toString());
 
       final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
@@ -499,12 +494,12 @@ public enum WalletManager implements WalletEventListener {
   public static Wallet loadWalletFromFile(File walletFile, CharSequence password) throws IOException, UnreadableWalletException {
 
     // Read the encrypted file in and decrypt it.
-    byte[] encryptedWalletBytes = org.multibit.hd.brit.utils.FileUtils.readFile(walletFile);
+    byte[] encryptedWalletBytes = Files.toByteArray(walletFile);
 
     Preconditions.checkNotNull(encryptedWalletBytes,"'encryptedWalletBytes' must be present");
 
-    log.trace("Encrypted wallet bytes after load:\n{}", Utils.HEX.encode(encryptedWalletBytes));
-    log.debug("Loaded {} encrypted bytes: {}", encryptedWalletBytes.length);
+    log.debug("Encrypted wallet bytes after load:\n{}", Utils.HEX.encode(encryptedWalletBytes));
+    log.debug("Loaded bytes: {}", encryptedWalletBytes.length);
 
     KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
@@ -543,7 +538,7 @@ public enum WalletManager implements WalletEventListener {
 
     Preconditions.checkNotNull(walletDirectory, "'walletDirectory' must be present");
     Preconditions.checkNotNull(password, "'credentials' must be present");
-    checkWalletDirectory(walletDirectory);
+    verifyWalletDirectory(walletDirectory);
 
     try {
 
@@ -705,16 +700,11 @@ public enum WalletManager implements WalletEventListener {
   // TODO (GR) Refactor this to take a WalletId and infer the prefix to avoid info leak
   public static File getOrCreateWalletDirectory(File applicationDataDirectory, String walletRoot) {
 
+    // Create wallet directory under application directory
     File walletDirectory = SecureFiles.verifyOrCreateDirectory(applicationDataDirectory, walletRoot);
 
-    checkWalletDirectory(walletDirectory);
-
-    if (!walletDirectory.exists()) {
-      // Create the wallet directory
-      Preconditions.checkState(walletDirectory.mkdir(), "Could not create missing wallet directory '" + walletRoot + "'");
-    }
-
-    Preconditions.checkState(walletDirectory.isDirectory(), "'walletDirectory' must be a directory");
+    // Sanity check the wallet directory name and existence
+    verifyWalletDirectory(walletDirectory);
 
     return walletDirectory;
   }
@@ -956,7 +946,7 @@ public enum WalletManager implements WalletEventListener {
    */
   public static WalletSummary getOrCreateWalletSummary(File walletDirectory, WalletId walletId) {
 
-    checkWalletDirectory(walletDirectory);
+    verifyWalletDirectory(walletDirectory);
 
     Optional<WalletSummary> walletSummaryOptional = Optional.absent();
 
@@ -1010,7 +1000,9 @@ public enum WalletManager implements WalletEventListener {
    *
    * @throws IllegalStateException If the wallet directory is malformed
    */
-  private static void checkWalletDirectory(File walletDirectory) {
+  private static void verifyWalletDirectory(File walletDirectory) {
+
+    log.debug("Verifying wallet directory: '{}'", walletDirectory.getAbsolutePath());
 
     Preconditions.checkState(walletDirectory.isDirectory(), "'walletDirectory' must be a directory: '" + walletDirectory.getAbsolutePath() + "'");
 
