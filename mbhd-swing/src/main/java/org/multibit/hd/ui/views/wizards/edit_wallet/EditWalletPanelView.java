@@ -62,17 +62,19 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][]", // Column constraints
-      "[]" // Row constraints
+      "[]5[]5[]10[]" // Row constraints
     ));
 
     // Name
     contentPanel.add(Labels.newLabel(MessageKey.NAME));
     name = TextBoxes.newEnterName(getWizardModel(), false);
     contentPanel.add(name, "push,wrap");
+    name.setText(getWizardModel().getWalletSummary().getName());
 
     // Public notes
     contentPanel.add(Labels.newLabel(MessageKey.NOTES));
     notes = TextBoxes.newEnterNotes(getWizardModel());
+    notes.setText(getWizardModel().getWalletSummary().getNotes());
     contentPanel.add(notes, "push,wrap");
 
     contentPanel.add(Labels.newLabel(MessageKey.CLOUD_BACKUP_LOCATION));
