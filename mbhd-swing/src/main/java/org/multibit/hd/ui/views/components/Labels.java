@@ -62,6 +62,26 @@ public class Labels {
   }
 
   /**
+   * @param key    The resource key for the language message text
+   * @param values The data values for token replacement in the message text
+   *
+   * @return A new label with default styling
+   */
+  public static JLabel newLabel(CoreMessageKey key, Object... values) {
+
+    JLabel label = new JLabel(Languages.safeText(key, values));
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(label, key);
+
+    // Apply theme
+    label.setForeground(Themes.currentTheme.text());
+
+    return label;
+
+  }
+
+  /**
    * @return A new blank label with default styling
    */
   public static JLabel newBlankLabel() {

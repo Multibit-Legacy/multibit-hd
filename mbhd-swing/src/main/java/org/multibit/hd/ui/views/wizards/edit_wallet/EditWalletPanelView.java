@@ -10,8 +10,6 @@ import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
-import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailModel;
-import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -33,8 +31,6 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
   // View components
   JTextField name;
   JTextArea notes;
-
-  private ModelAndView<WalletDetailModel, WalletDetailView> walletDetailMaV;
 
   private ModelAndView<SelectFileModel, SelectFileView> selectFileMaV;
 
@@ -82,15 +78,8 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
     contentPanel.add(Labels.newLabel(MessageKey.CLOUD_BACKUP_LOCATION));
     contentPanel.add(selectFileMaV.getView().newComponentPanel(), "span 2,wrap");
 
-    // Details
-    walletDetailMaV = Components.newWalletDetailMaV(getPanelName());
-    contentPanel.add(walletDetailMaV.getView().newComponentPanel(), "grow,push,span 2");
-
-    name.setText(getWizardModel().getWalletSummary().getName());
-    notes.setText(getWizardModel().getWalletSummary().getNotes());
-
     // Register components
-    registerComponents(walletDetailMaV);
+    registerComponents(selectFileMaV);
   }
 
   @Override

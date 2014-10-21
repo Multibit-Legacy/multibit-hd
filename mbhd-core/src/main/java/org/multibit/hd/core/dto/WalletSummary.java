@@ -33,7 +33,7 @@ public class WalletSummary {
 
   private String notes;
 
-  private WalletType walletType;
+  private WalletType walletType = WalletType.MBHD_SOFT_WALLET;
 
   /**
    * The wallet credentials, encrypted with an AES key derived from the wallet seed

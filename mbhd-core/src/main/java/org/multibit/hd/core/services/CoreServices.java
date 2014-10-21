@@ -191,7 +191,8 @@ public class CoreServices {
               log.info("Applying hard shutdown. Waiting for processes to clean up...");
 
               // Provide a short delay while modules deal with the ShutdownEvent
-              Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+              // Safe executors will trigger on the System.exit() itself
+              Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
               log.info("Issuing system exit");
               System.exit(0);
@@ -211,7 +212,8 @@ public class CoreServices {
               }
 
               // Provide a short delay while modules deal with the ShutdownEvent
-              Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+              // Safe executors will trigger on the System.exit() itself
+              Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
               log.info("Resetting services and events");
 

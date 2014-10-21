@@ -293,6 +293,7 @@ public enum WalletManager implements WalletEventListener {
      * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
      * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
      */
+  // TODO Rename this to reflect target or consider a dedicated WalletSummaries factory
     public WalletSummary getOrCreateWalletSummary(
       File applicationDataDirectory,
       byte[] seed,
@@ -397,6 +398,7 @@ public enum WalletManager implements WalletEventListener {
      * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
      * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
      */
+  // TODO Rename this to reflect target or consider a dedicated WalletSummaries factory
     public WalletSummary getOrCreateWalletSummary(
       File applicationDataDirectory,
       DeterministicKey rootNode,
@@ -543,6 +545,7 @@ public enum WalletManager implements WalletEventListener {
 
     try {
 
+      // TODO Implement Trezor naming?
       String walletFilenameNoAESSuffix = walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME;
       File walletFile = new File(walletFilenameNoAESSuffix + MBHD_AES_SUFFIX);
       WalletId walletId = parseWalletFilename(walletFile.getAbsolutePath());
@@ -945,6 +948,7 @@ public enum WalletManager implements WalletEventListener {
    *
    * @return The wallet summary if present, or a default if not
    */
+  // TODO Rename this to reflect target or consider a dedicated WalletSummaries factory
   public static WalletSummary getOrCreateWalletSummary(File walletDirectory, WalletId walletId) {
 
     verifyWalletDirectory(walletDirectory);
@@ -972,6 +976,18 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setNotes("");
     }
     walletSummary.setWalletId(walletId);
+    if (walletSummary.getWalletType() == null) {
+      // Infer the wallet type from the prefix
+      if (walletDirectory.getName().startsWith(WalletType.MBHD_SOFT_WALLET.getPrefix())) {
+        walletSummary.setWalletType(WalletType.MBHD_SOFT_WALLET);
+      }
+      if (walletDirectory.getName().startsWith(WalletType.TREZOR_HARD_WALLET.getPrefix())) {
+        walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
+      }
+      if (walletDirectory.getName().startsWith(WalletType.TREZOR_SOFT_WALLET.getPrefix())) {
+        walletSummary.setWalletType(WalletType.TREZOR_SOFT_WALLET);
+      }
+    }
 
     return walletSummary;
 

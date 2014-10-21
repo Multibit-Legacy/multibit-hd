@@ -2,11 +2,16 @@ package org.multibit.hd.ui.views.components.wallet_detail;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.TextBoxes;
 
 import javax.swing.*;
 
@@ -26,6 +31,7 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
   JLabel walletDirectoryLabel;
   JLabel numberOfContactsLabel;
   JLabel numberOfTransactionsLabel;
+  JTextArea walletCapabilitiesTextArea;
 
   /**
    * @param model The model backing this view
@@ -37,14 +43,17 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
   @Override
   public JPanel newComponentPanel() {
 
-    WalletDetailModel model = getModel().get();
-    WalletDetail walletDetail = model.getValue();
-
     panel = Panels.newPanel(new MigLayout(
       Panels.migXLayout(),
       "[]10[grow]", // Columns
-      "[][][][]5"  // Rows
+      "[][][][][]"  // Rows
     ));
+
+    WalletDetailModel model = getModel().get();
+    WalletDetail walletDetail = model.getValue();
+
+    // This should be present
+    WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
 
     // Application directory
     panel.add(Labels.newLabel(MessageKey.APPLICATION_DIRECTORY));
@@ -52,7 +61,6 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
     panel.add(applicationDirectoryLabel, "push,wrap");
 
     // Wallet directory
-    // TODO (GR) Consider a button with Desktop.open(new File()) to open the directory
     panel.add(Labels.newLabel(MessageKey.WALLET_DIRECTORY));
     walletDirectoryLabel = Labels.newValueLabel(walletDetail.getWalletDirectory());
     panel.add(walletDirectoryLabel, "push,wrap");
@@ -66,6 +74,12 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
     panel.add(Labels.newLabel(MessageKey.PAYMENTS));
     numberOfTransactionsLabel = Labels.newValueLabel(String.valueOf(walletDetail.getNumberOfPayments()));
     panel.add(numberOfTransactionsLabel, "push,wrap");
+
+    // Capabilities
+    panel.add(Labels.newLabel(CoreMessageKey.WALLET_CAPABILITIES),"wrap");
+    walletCapabilitiesTextArea = TextBoxes.newReadOnlyTextArea(4,50);
+    walletCapabilitiesTextArea.setText(Languages.safeText(walletSummary.getWalletType().getKey()));
+    panel.add(walletCapabilitiesTextArea, "span 2,wrap");
 
     return panel;
 

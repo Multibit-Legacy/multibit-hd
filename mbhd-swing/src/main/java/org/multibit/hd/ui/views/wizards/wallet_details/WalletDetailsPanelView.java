@@ -4,12 +4,12 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
-import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailModel;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -30,12 +30,9 @@ import javax.swing.*;
 public class WalletDetailsPanelView extends AbstractWizardPanelView<WalletDetailsWizardModel, SelectFileModel> {
 
   // View components
-  JTextField name;
-  JTextArea notes;
+  private JTextArea notes;
 
   private ModelAndView<WalletDetailModel, WalletDetailView> walletDetailMaV;
-
-  private ModelAndView<SelectFileModel, SelectFileView> selectFileMaV;
 
   /**
    * @param wizard    The wizard managing the states
@@ -49,14 +46,8 @@ public class WalletDetailsPanelView extends AbstractWizardPanelView<WalletDetail
   @Override
   public void newPanelModel() {
 
-    selectFileMaV = Components.newSelectFileMaV(getPanelName());
-    setPanelModel(selectFileMaV.getModel());
-    if (Configurations.currentConfiguration != null) {
-      selectFileMaV.getModel().setValue(Configurations.currentConfiguration.getAppearance().getCloudBackupLocation());
-    }
+    // No model we are read only
 
-    // Register components
-    registerComponents(selectFileMaV);
   }
 
   @Override
@@ -66,37 +57,44 @@ public class WalletDetailsPanelView extends AbstractWizardPanelView<WalletDetail
       new MigLayout(
         Panels.migXYLayout(),
         "[][]", // Column constraints
-        "[]" // Row constraints
+        "[][][][]" // Row constraints
       ));
+
+    // This should always be present
+    WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
 
     // Name
     contentPanel.add(Labels.newLabel(MessageKey.NAME));
-    name = TextBoxes.newEnterName(getWizardModel(), false);
-    contentPanel.add(name, "push,wrap");
+    contentPanel.add(Labels.newValueLabel(walletSummary.getName()), "push,wrap");
 
     // Public notes
-    contentPanel.add(Labels.newLabel(MessageKey.NOTES));
-    notes = TextBoxes.newEnterNotes(getWizardModel());
-    contentPanel.add(notes, "push,wrap");
+    notes = TextBoxes.newReadOnlyTextArea(2, 50);
+    notes.setText(walletSummary.getNotes());
+    contentPanel.add(Labels.newLabel(MessageKey.NOTES),"wrap");
+    contentPanel.add(notes, "span2,wrap");
 
     contentPanel.add(Labels.newLabel(MessageKey.CLOUD_BACKUP_LOCATION));
-    contentPanel.add(selectFileMaV.getView().newComponentPanel(), "span 2,wrap");
+    contentPanel.add(
+      Labels.newValueLabel(
+        Configurations
+          .currentConfiguration
+          .getAppearance()
+          .getCloudBackupLocation()
+      ), "span 2,wrap");
 
     // Details
     walletDetailMaV = Components.newWalletDetailMaV(getPanelName());
-    contentPanel.add(walletDetailMaV.getView().newComponentPanel(), "grow,push,span 2");
-
-    name.setText(getWizardModel().getWalletSummary().getName());
-    notes.setText(getWizardModel().getWalletSummary().getNotes());
+    contentPanel.add(walletDetailMaV.getView().newComponentPanel(), "grow,span 2");
 
     // Register components
     registerComponents(walletDetailMaV);
+
   }
 
   @Override
   protected void initialiseButtons(AbstractWizard<WalletDetailsWizardModel> wizard) {
 
-    PanelDecorator.addCancelFinish(this, wizard);
+    PanelDecorator.addFinish(this, wizard);
   }
 
   @Override
@@ -107,55 +105,8 @@ public class WalletDetailsPanelView extends AbstractWizardPanelView<WalletDetail
   }
 
   @Override
-  public void afterShow() {
-
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-
-          name.requestFocusInWindow();
-          name.selectAll();
-
-        }
-      });
-  }
-
-  @Override
-  public boolean beforeHide(boolean isExitCancel) {
-
-    if (!isExitCancel) {
-
-      // Ensure the wizard model correctly reflects the contents of the components
-      updateFromComponentModels(Optional.absent());
-
-    }
-
-    // Must be OK to proceed
-    return true;
-  }
-
-
-  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    WalletSummary walletSummary = getWizardModel().getWalletSummary();
-
-    if (walletSummary != null) {
-      if (name != null) {
-        walletSummary.setName(name.getText());
-      }
-      if (notes != null) {
-        walletSummary.setNotes(notes.getText());
-      }
-    }
-
-    log.debug("selectFileMaV.getModel().getValue() = '" + selectFileMaV.getModel().getValue() + "', isSelected = " + selectFileMaV.getModel().isSelected());
-    if (Configurations.currentConfiguration != null) {
-      if (selectFileMaV.getModel().isSelected()) {
-        Configurations.currentConfiguration.getAppearance().setCloudBackupLocation(selectFileMaV.getModel().getValue());
-      }
-    }
-    log.debug("Cloud backup location = '" + Configurations.currentConfiguration.getAppearance().getCloudBackupLocation() + "'");
+    // Do nothing (read only)
   }
 }

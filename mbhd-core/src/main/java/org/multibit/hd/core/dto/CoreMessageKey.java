@@ -1,4 +1,4 @@
-package org.multibit.hd.core.dto;
+  package org.multibit.hd.core.dto;
 
 /**
  * <p>Enum to provide the following to application:</p>
@@ -99,6 +99,11 @@ public enum CoreMessageKey {
   VERIFY_MESSAGE_FAILURE("core_verify_message_failure"),
   VERIFY_MESSAGE_VERIFY_SUCCESS("core_verify_message_verify_success"),
   VERIFY_MESSAGE_VERIFY_FAILURE("core_verify_message_verify_failure"),
+
+  WALLET_CAPABILITIES("core_wallet_capabilities"),
+  WALLET_CAPABILITY_MBHD_SOFT("core_wallet_capability_mbhd_soft"),
+  WALLET_CAPABILITY_TREZOR_HARD("core_wallet_capability_trezor_hard"),
+  WALLET_CAPABILITY_TREZOR_SOFT("core_wallet_capability_trezor_soft"),
 
   // End of enum
   ;
