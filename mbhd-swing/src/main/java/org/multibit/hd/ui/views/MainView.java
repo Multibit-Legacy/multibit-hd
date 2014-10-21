@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
@@ -22,6 +24,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -34,7 +37,6 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class MainView extends JFrame {
 
@@ -63,33 +65,39 @@ public class MainView extends JFrame {
 
     // Provide all panels with a reference to the main frame
     Panels.applicationFrame = this;
+    addWindowListener(
+      new WindowAdapter() {
+        @Override
+        public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+          CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
+        }
+      });
 
-    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    addComponentListener(
+      new ComponentAdapter() {
 
-    addComponentListener(new ComponentAdapter() {
+        @Override
+        public void componentMoved(ComponentEvent e) {
+          updateConfiguration();
+        }
 
-      @Override
-      public void componentMoved(ComponentEvent e) {
-        updateConfiguration();
-      }
+        @Override
+        public void componentResized(ComponentEvent e) {
+          updateConfiguration();
+        }
 
-      @Override
-      public void componentResized(ComponentEvent e) {
-        updateConfiguration();
-      }
+        /**
+         * Keep the current configuration updated
+         */
+        private void updateConfiguration() {
 
-      /**
-       * Keep the current configuration updated
-       */
-      private void updateConfiguration() {
+          Rectangle bounds = getBounds();
+          String lastFrameBounds = String.format("%d,%d,%d,%d", bounds.x, bounds.y, bounds.width, bounds.height);
 
-        Rectangle bounds = getBounds();
-        String lastFrameBounds = String.format("%d,%d,%d,%d", bounds.x, bounds.y, bounds.width, bounds.height);
+          Configurations.currentConfiguration.getAppearance().setLastFrameBounds(lastFrameBounds);
 
-        Configurations.currentConfiguration.getAppearance().setLastFrameBounds(lastFrameBounds);
-
-      }
-    });
+        }
+      });
 
   }
 
@@ -317,14 +325,16 @@ public class MainView extends JFrame {
 
     // Sets the colouring for divider and borders
     splitPane.setBackground(Themes.currentTheme.text());
-    splitPane.setBorder(BorderFactory.createMatteBorder(
-      1, 0, 1, 0,
-      Themes.currentTheme.text()
-    ));
+    splitPane.setBorder(
+      BorderFactory.createMatteBorder(
+        1, 0, 1, 0,
+        Themes.currentTheme.text()
+      ));
 
     splitPane.applyComponentOrientation(Languages.currentComponentOrientation());
 
-    splitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
+    splitPane.addPropertyChangeListener(
+      JSplitPane.DIVIDER_LOCATION_PROPERTY,
       new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent pce) {

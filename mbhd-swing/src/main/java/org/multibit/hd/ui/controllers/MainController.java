@@ -454,9 +454,12 @@ public class MainController extends AbstractController implements
   @Override
   public void onAboutEvent(GenericAboutEvent event) {
 
-    // Show the About screen
-    Panels.showLightBox(Wizards.newAboutWizard().getWizardScreenHolder());
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
 
+      // Show the About screen
+      Panels.showLightBox(Wizards.newAboutWizard().getWizardScreenHolder());
+
+    }
   }
 
   @Subscribe
@@ -486,13 +489,17 @@ public class MainController extends AbstractController implements
   @Override
   public void onPreferencesEvent(GenericPreferencesEvent event) {
 
-    // Show the Preferences screen
-    ControllerEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+      // Show the Preferences screen
+      ControllerEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
+    }
 
   }
 
   @Override
   public void onQuitEvent(GenericQuitEvent event, GenericQuitResponse response) {
+
+    log.debug("Received quit event (close button). Initiating hard shutdown...");
 
     // Immediately shutdown without requesting confirmation
     CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);

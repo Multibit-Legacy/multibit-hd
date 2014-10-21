@@ -839,7 +839,7 @@ public enum WalletManager implements WalletEventListener {
   /**
    * TODO (GR) Consider moving this to the same model as Configurations and Themes
    *
-   * @return The current wallet data
+   * @return The current wallet summary (present only if a wallet has been unlocked)
    */
   public Optional<WalletSummary> getCurrentWalletSummary() {
     return currentWalletSummary;
