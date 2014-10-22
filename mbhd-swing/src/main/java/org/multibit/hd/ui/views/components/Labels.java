@@ -434,8 +434,6 @@ public class Labels {
     ), label);
 
     label.setIcon(rotatingIcon);
-    label.setHorizontalAlignment(SwingConstants.CENTER);
-    label.setVerticalAlignment(SwingConstants.CENTER);
 
     return label;
   }

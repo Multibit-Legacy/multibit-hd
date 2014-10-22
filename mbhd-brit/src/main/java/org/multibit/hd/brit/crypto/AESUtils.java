@@ -109,7 +109,8 @@ public class AESUtils {
 
       return decryptedBytes;
     } catch (Exception e) {
-      throw new KeyCrypterException("Could not decrypt bytes", e);
+      // Most likely a bad password
+      throw new KeyCrypterException("Could not decrypt: "+e.getMessage());
     }
   }
 
