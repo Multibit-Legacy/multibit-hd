@@ -181,38 +181,31 @@ public class SecureFiles {
     File temporaryDirectory = Files.createTempDir();
     temporaryDirectory.deleteOnExit();
 
+    log.debug("Created temporary directory: '{}'", temporaryDirectory.getAbsolutePath());
+
     return temporaryDirectory;
   }
 
   /**
-   * Saves the input stream first to the given temp file, then renames to the destFile.
+   * Securely write a file to the file system using temporary file then renaming to the destination
    */
-  public static void writeFile(InputStream inputStream, File temp, File destFile) throws IOException {
-    FileOutputStream tempStream = null;
+  public static void writeFile(InputStream inputStream, File tempFile, File destFile) throws IOException {
 
-    try {
-      tempStream = new FileOutputStream(temp);
+    try (OutputStream tempStream = new FileOutputStream(tempFile)) {
+      //tempStream = new FileOutputStream(temp);
       ByteStreams.copy(inputStream, tempStream);
       // Attempt to force the bits to hit the disk. In reality the OS or hard disk itself may still decide
       // to not write through to physical media for at least a few seconds, but this is the best we can do.
-      tempStream = null;
       if (Utils.isWindows()) {
         // Work around an issue on Windows whereby you can't rename over existing files.
         File canonical = destFile.getCanonicalFile();
         if (canonical.exists() && !canonical.delete()) {
-          throw new IOException("Failed to delete canonical wallet file for replacement with autosave");
+          throw new IOException("Failed to delete canonical wallet file for replacement with auto save");
         }
-        if (temp.renameTo(canonical)) return; // else fall through.
-        throw new IOException("Failed to rename " + temp + " to " + canonical);
-      } else if (!temp.renameTo(destFile)) {
-        throw new IOException("Failed to rename " + temp + " to " + destFile);
-      }
-    } catch (RuntimeException e) {
-      log.error("Failed whilst saving wallet", e);
-      throw e;
-    } finally {
-      if (tempStream != null) {
-        tempStream.close();
+        if (tempFile.renameTo(canonical)) return; // else fall through.
+        throw new IOException("Failed to rename '" + tempFile + "' to " + canonical);
+      } else if (!tempFile.renameTo(destFile)) {
+        throw new IOException("Failed to rename '" + tempFile + "' to " + destFile);
       }
     }
   }
