@@ -205,7 +205,8 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       // Display in the system timezone
       String notes = Languages.safeText(
         MessageKey.WALLET_DEFAULT_NOTES,
-        Dates.formatDeliveryDateLocal(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
+        // Provide a precise local creation time
+        Dates.formatTransactionDateLocal(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
       );
       walletSummary = walletManager.createWalletSummary(seed, Dates.nowInSeconds(), password, name, notes, false);
 
