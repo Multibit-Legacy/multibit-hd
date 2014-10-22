@@ -65,7 +65,6 @@ public class WalletFixtures {
    */
   public static void createStandardWalletFixture() throws IOException {
 
-
     String zipFileName = InstallationManager
       .getOrCreateApplicationDataDirectory()
       .getAbsolutePath() + "/mbhd-" + STANDARD_WALLET_ID + ".zip";

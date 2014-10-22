@@ -61,7 +61,20 @@ public class InstallationManager {
    */
   public static void onShutdownEvent(ShutdownEvent shutdownEvent) {
 
+    reset();
+
+  }
+
+  /**
+   * Resets the installation manager back to its starting state
+   * Use this during shutdown events and for integration tests involving the filesystem
+   */
+  public static synchronized void reset() {
+
+    log.debug("Installation manager reset");
+
     currentApplicationDataDirectory = null;
+    unrestricted = false;
 
   }
 

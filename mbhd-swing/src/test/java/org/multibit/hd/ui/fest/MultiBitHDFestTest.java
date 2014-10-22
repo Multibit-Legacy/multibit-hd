@@ -59,6 +59,9 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Before
   public void setUp() {
 
+    // Ensure we clear any starting state
+    InstallationManager.reset();
+
     // Reset the configuration
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
@@ -83,6 +86,9 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     log.debug("FEST: Application cleanup should have finished. Performing final cleanup.");
 
     window.cleanUp();
+
+    // Reset the installation manager
+    InstallationManager.reset();
 
   }
 

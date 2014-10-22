@@ -69,6 +69,7 @@ public class WalletManagerTest {
   @Before
   public void setUp() throws Exception {
 
+    InstallationManager.reset();
     InstallationManager.unrestricted = true;
 
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
@@ -80,8 +81,7 @@ public class WalletManagerTest {
   @After
   public void tearDown() throws Exception {
 
-    InstallationManager.unrestricted = false;
-    InstallationManager.currentApplicationDataDirectory = null;
+    InstallationManager.reset();
 
   }
 
@@ -212,8 +212,6 @@ public class WalletManagerTest {
   @Test
   public void testSignAndVerifyMessage() throws Exception {
 
-    log.debug("/////////////////////////////////////////////////////////////////////////////////////////");
-
     // Get the application directory (will be temporary for unit tests)
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -300,8 +298,6 @@ public class WalletManagerTest {
 
   @Test
   public void testWriteOfEncryptedPasswordAndSeed() throws Exception {
-
-    log.debug("/////////////////////////////////////////////////////////////////////////////////////////");
 
     List<String> passwordList = Lists.newArrayList();
     passwordList.add(SHORT_PASSWORD);

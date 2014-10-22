@@ -43,8 +43,8 @@ public class BackupManagerTest {
   @Before
   public void setUp() throws Exception {
 
+    InstallationManager.reset();
     InstallationManager.unrestricted = true;
-    InstallationManager.currentApplicationDataDirectory = null;
 
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
@@ -53,8 +53,7 @@ public class BackupManagerTest {
   @After
   public void tearDown() throws Exception {
 
-    InstallationManager.unrestricted = false;
-    InstallationManager.currentApplicationDataDirectory = null;
+    InstallationManager.reset();
 
   }
 
