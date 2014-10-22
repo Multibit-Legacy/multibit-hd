@@ -19,6 +19,7 @@ import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.MultiBitUI;
@@ -51,7 +52,6 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class RestoreWalletReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
 
@@ -90,11 +90,12 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     // Postpone the creation of the executor service to the last moment
     restoreWalletExecutorService = SafeExecutors.newSingleThreadExecutor("restore-wallet");
 
-    contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
-    ));
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[][][]", // Column constraints
+        "[]10[]10[]10[]" // Row constraints
+      ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -145,14 +146,15 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
     getFinishButton().requestFocusInWindow();
 
-    restoreWalletExecutorService.submit(new Runnable() {
-      @Override
-      public void run() {
+    restoreWalletExecutorService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
 
-        handleRestoreWallet();
+          handleRestoreWallet();
 
-      }
-    });
+        }
+      });
   }
 
   /**
@@ -193,22 +195,23 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     // Test for a change in condition
     if (currentEnabled != newEnabled) {
 
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          getFinishButton().setEnabled(newEnabled);
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            getFinishButton().setEnabled(newEnabled);
 
-          if (newEnabled) {
+            if (newEnabled) {
 
-            // Stop the Bitcoin network to release resources
-            CoreServices.getOrCreateBitcoinNetworkService().stopAndWait();
+              // Stop the Bitcoin network to release resources
+              CoreServices.getOrCreateBitcoinNetworkService().stopAndWait();
 
-            // We're done
-            spinner.setVisible(false);
+              // We're done
+              spinner.setVisible(false);
 
+            }
           }
-        }
-      });
+        });
 
     }
 
@@ -252,6 +255,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
 
       // Determine if the create wallet status is valid
+      // Starts the wallet synchronization if OK
       walletCreatedStatus = createWalletFromSeedPhrase(restoreWalletEnterSeedPhraseModel.getSeedPhrase());
 
     } else if (WelcomeWizardState.RESTORE_WALLET_TIMESTAMP.equals(model.getRestoreMethod())) {
@@ -263,6 +267,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       ConfirmPasswordModel confirmPasswordModel = model.getRestoreWalletConfirmPasswordModel();
       log.debug("Timestamp: {}", restoreEnterTimestampModel.getSeedTimestamp());
 
+      // Start the wallet replay if successful
       walletCreatedStatus = createWalletFromSeedPhraseAndTimestamp(
         restoreEnterSeedPhraseModel.getSeedPhrase(),
         restoreEnterSeedPhraseModel.isRestoreAsTrezor(),
@@ -275,14 +280,15 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
     ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
 
-    // Seed phrase always OK
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        Labels.decorateStatusLabel(walletCreatedStatusLabel, Optional.of(walletCreatedStatus));
-        walletCreatedStatusLabel.setVisible(true);
-      }
-    });
+    // Create wallet from seed phrase should always be OK
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          Labels.decorateStatusLabel(walletCreatedStatusLabel, Optional.of(walletCreatedStatus));
+          walletCreatedStatusLabel.setVisible(true);
+        }
+      });
 
     // Give the user the impression of work being done
     Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
@@ -295,16 +301,17 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       false);
 
     // Update the UI after the BRIT exchange completes
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
 
-        // No errors so assume they are OK
-        AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, cacertsInstalledStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-        cacertsInstalledStatusLabel.setVisible(true);
+          // No errors so assume they are OK
+          AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, cacertsInstalledStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+          cacertsInstalledStatusLabel.setVisible(true);
 
-      }
-    });
+        }
+      });
 
     // Give the user the impression of work being done
     Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
@@ -312,15 +319,16 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     final boolean synchronizationStatus = CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
 
     // Let the user know that they're waiting for synchronization to complete
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
 
-        Labels.decorateStatusLabel(synchronizationStatusLabel, Optional.of(synchronizationStatus));
-        synchronizationStatusLabel.setVisible(true);
+          Labels.decorateStatusLabel(synchronizationStatusLabel, Optional.of(synchronizationStatus));
+          synchronizationStatusLabel.setVisible(true);
 
-      }
-    });
+        }
+      });
 
   }
 
@@ -329,7 +337,9 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
    */
   private boolean createWalletFromSeedPhraseAndTimestamp(List<String> seedPhrase, boolean isRestoreTrezor, String timestamp, String password) {
 
-    if (!verifySeedPhrase(seedPhrase)) return false;
+    if (!verifySeedPhrase(seedPhrase)) {
+      return false;
+    }
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(seedPhrase);
@@ -391,14 +401,16 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
    */
   private boolean createWalletFromSeedPhrase(List<String> seedPhrase) {
 
-    if (!verifySeedPhrase(seedPhrase)) return false;
+    if (!verifySeedPhrase(seedPhrase)) {
+      return false;
+    }
 
     // Get the model that contains the selected wallet backup to use
     SelectBackupSummaryModel selectedBackupSummaryModel = getWizardModel().getSelectBackupSummaryModel();
 
     if (selectedBackupSummaryModel == null || selectedBackupSummaryModel.getValue() == null ||
       selectedBackupSummaryModel.getValue().getFile() == null) {
-      log.debug("No wallet backup to loadContacts from the model");
+      log.debug("No wallet backup to use from the model");
       return false;
     }
 
@@ -418,7 +430,10 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       WalletSummary walletSummary = WalletManager.getOrCreateWalletSummary(new File(walletRoot), loadedWalletId);
 
       KeyParameter backupAESKey = AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
-      byte[] decryptedPaddedWalletPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(walletSummary.getEncryptedPassword(), backupAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+      byte[] decryptedPaddedWalletPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+        walletSummary.getEncryptedPassword(),
+        backupAESKey,
+        WalletManager.AES_INITIALISATION_VECTOR);
       byte[] decryptedWalletPasswordBytes = WalletManager.unpadPasswordBytes(decryptedPaddedWalletPasswordBytes);
       String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, "UTF8");
 
@@ -428,10 +443,19 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         loadedWalletId,
         decryptedWalletPassword);
 
-      // Synchronize wallet
-      CoreServices.getOrCreateBitcoinNetworkService().start();
+      // Start the Bitcoin network to synchronize the wallet
+      BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
+      bitcoinNetworkService.start();
+      if (bitcoinNetworkService.isStartedOk()) {
+        bitcoinNetworkService.downloadBlockChainInBackground();
+      } else {
+        log.error("Could not start the Bitcoin network service");
+        return false;
+      }
 
+      // Must be OK to be here
       return true;
+
     } catch (Exception e) {
       log.error("Failed to restore wallet. Error was '" + e.getMessage() + "'.");
       return false;
