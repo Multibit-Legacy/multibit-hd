@@ -327,7 +327,7 @@ public class Dates {
    * @param when   The instant
    * @param locale The required locale
    *
-   * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01) in UTC
+   * @return The instant formatted as "dd MMM yyyy HH:mm" (01 Jan 2000 23:59) in UTC
    */
   public static String formatTransactionDate(ReadableInstant when, Locale locale) {
     if (when == null) {
