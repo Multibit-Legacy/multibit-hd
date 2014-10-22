@@ -1,13 +1,26 @@
 package org.multibit.hd.ui.views.wizards.use_trezor;
 
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import org.bitcoinj.core.Utils;
+import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.Failure;
 import org.multibit.hd.hardware.core.messages.FailureType;
+import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.Success;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nullable;
+import java.util.concurrent.Callable;
 
 /**
  * <p>Model object to provide the following to "use Trezor wizard":</p>
@@ -24,9 +37,19 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   private static final Logger log = LoggerFactory.getLogger(UseTrezorWizardModel.class);
 
   /**
+   * Request features requires a separate executor
+   */
+  private final ListeningExecutorService requestFeaturesService = SafeExecutors.newSingleThreadExecutor("request-features");
+
+  /**
    * The current selection option as a state
    */
   private UseTrezorState currentSelection = UseTrezorState.VERIFY_TREZOR;
+
+  /**
+   * The features of the attached Trezor
+   */
+  Optional<Features> featuresOptional;
 
   /**
    * The "enter pin" panel model
@@ -52,6 +75,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
   @Override
   public void showNext() {
+    log.debug("Current selection : {}", getCurrentSelection());
     switch (state) {
       case SELECT_TREZOR_ACTION:
         if (UseTrezorState.USE_TREZOR_WALLET.equals(getCurrentSelection())) {
@@ -157,5 +181,59 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
   public void setCurrentSelection(UseTrezorState currentSelection) {
     this.currentSelection = currentSelection;
+  }
+
+  public Optional<Features> getFeaturesOptional() {
+    return featuresOptional;
+  }
+
+  /**
+   * <p>Reset the transactions of the current wallet and resynchronize with the block chain</p>
+   * <p>Reduced visibility for panel view</p>
+   */
+  void requestFeatures() {
+
+    // Start the features request
+    ListenableFuture future = requestFeaturesService.submit(new Callable<Boolean>() {
+
+      @Override
+      public Boolean call() throws Exception {
+
+        Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
+        if (hardwareWalletServiceOptional.isPresent()) {
+          HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
+          featuresOptional = hardwareWalletService.getContext().getFeatures();
+          log.debug("Features : {}", featuresOptional);
+//             SwingUtilities.invokeLater(new Runnable() {
+//               @Override
+//               public void run() {
+//
+//               }
+//             });
+        } else {
+          log.error("No hardware wallet service");
+        }
+        return true;
+
+      }
+
+    });
+    Futures.addCallback(future, new FutureCallback() {
+      @Override
+      public void onSuccess(@Nullable Object result) {
+
+        // We now have the features so throw a ComponentChangedEvent for the UI to update
+        ViewEvents.fireComponentChangedEvent(UseTrezorState.VERIFY_TREZOR.name(), Optional.absent());
+
+      }
+
+      @Override
+      public void onFailure(Throwable t) {
+
+        // Have a failure - add failure text to the text area
+
+      }
+    });
+
   }
 }

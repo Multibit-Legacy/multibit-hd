@@ -29,7 +29,7 @@ public class UseTrezorWizard extends AbstractHardwareWalletWizard<UseTrezorWizar
       UseTrezorState.SELECT_TREZOR_ACTION.name(),
       new UseTrezorSelectPanelView(this, UseTrezorState.SELECT_TREZOR_ACTION.name()));
 
-    // Transitional view to kick off the process of authenticating to Trrezor
+    // Transitional view to kick off the process of authenticating to Trezor
     wizardViewMap.put(
       UseTrezorState.REQUEST_CIPHER_KEY.name(),
       new UseTrezorRequestCipherKeyPanelView(this, UseTrezorState.REQUEST_CIPHER_KEY.name()));
@@ -57,5 +57,4 @@ public class UseTrezorWizard extends AbstractHardwareWalletWizard<UseTrezorWizar
        new UseTrezorReportPanelView(this, UseTrezorState.USE_TREZOR_REPORT_PANEL.name()));
 
   }
-
 }

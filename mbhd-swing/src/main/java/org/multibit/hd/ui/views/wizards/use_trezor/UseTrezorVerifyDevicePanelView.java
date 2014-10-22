@@ -3,13 +3,12 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
-import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.*;
@@ -31,17 +30,12 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorVerifyDevicePanelModel> {
 
   private JLabel trezorCommunicationsStatusLabel;
 
   private JTextArea featuresTextArea;
-
-  private Optional<Features> featuresOptional = Optional.absent();
-
-  private Optional<HardwareWalletService> hardwareWalletServiceOptional = Optional.absent();
 
   /**
    * @param wizard The wizard managing the states
@@ -57,7 +51,7 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
 
     // Configure the panel model
     UseTrezorVerifyDevicePanelModel panelModel = new UseTrezorVerifyDevicePanelModel(
-      getPanelName()
+            getPanelName()
     );
     setPanelModel(panelModel);
 
@@ -66,23 +60,24 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
-    hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
+    // Register for the high level hardware wallet events
+    HardwareWalletService.hardwareWalletEventBus.register(this);
 
     contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
+            Panels.migXYLayout(),
+            "[][][]", // Column constraints
+            "[]10[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-        // Trezor communications status label
+    // Trezor communications status label
     trezorCommunicationsStatusLabel = Labels.newStatusLabel(
-      Optional.of(MessageKey.COMMUNICATING_WITH_TREZOR),
-      null,
-      Optional.<Boolean>absent());
-    AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.CACERTS_INSTALLED_STATUS);
+            Optional.of(MessageKey.COMMUNICATING_WITH_TREZOR),
+            null,
+            Optional.<Boolean>absent());
+    AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.COMMUNICATING_WITH_TREZOR);
 
     contentPanel.add(trezorCommunicationsStatusLabel, "wrap");
     // The Trezor features is a wall of text so needs scroll bars
@@ -120,40 +115,37 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
   @Override
   public void afterShow() {
 
-    // Ensure the Finish button is disabled to avoid complex side effects during repair
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
+    // Ensure the Finish button is enabled - user can dismiss the Verify screen at will
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
 
     // Hide the header balance
     ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
 
-    // Start the CA certs update process in a new thread
-    //getWizardModel().installCACertificates();
-
-    // Start the repair wallet process in a new thread
-    //getWizardModel().repairWallet();
+    // Ask the Trezor for features
+    getWizardModel().requestFeatures();
 
   }
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-      // Put the report screen into a finished state
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
+    // Put the report screen into a finished state
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
 
-          // Wallet replayed without errors so it must be repaired
-          trezorCommunicationsStatusLabel.setVisible(true);
-          AwesomeDecorator.bindIcon(
-            AwesomeIcon.CHECK,
-            trezorCommunicationsStatusLabel,
-            true,
-            MultiBitUI.NORMAL_ICON_SIZE
-          );
+        // Wallet replayed without errors so it must be repaired
+        trezorCommunicationsStatusLabel.setVisible(true);
+        AwesomeDecorator.bindIcon(
+                AwesomeIcon.CHECK,
+                trezorCommunicationsStatusLabel,
+                true,
+                MultiBitUI.NORMAL_ICON_SIZE
+        );
 
-        }
-      });
-    }
+      }
+    });
+  }
 
 
   @Subscribe
@@ -164,19 +156,19 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
+          // Put the features into the text area if available
+          Optional<Features> optionalFeatures = getWizardModel().getFeaturesOptional();
+          if (optionalFeatures.isPresent()) {
+            // Got features ok
+            trezorCommunicationsStatusLabel.setText(Languages.safeText(MessageKey.TREZOR_FOUND));
+            AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.TREZOR_FOUND);
 
-//          Optional<Boolean> walletRepaired = getWizardModel().isWalletRepaired();
-//
-//
-//          if (walletRepaired.isPresent()) {
-//            walletRepairedStatusLabel.setVisible(true);
-//            AwesomeDecorator.bindIcon(
-//              walletRepaired.get() ? AwesomeIcon.CHECK : AwesomeIcon.TIMES,
-//              walletRepairedStatusLabel,
-//              true,
-//              MultiBitUI.NORMAL_ICON_SIZE
-//            );
-//          }
+            featuresTextArea.setText(optionalFeatures.get().toString());
+          } else {
+            // No features
+            trezorCommunicationsStatusLabel.setText(Languages.safeText(MessageKey.NO_TREZOR_FOUND));
+            AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.NO_TREZOR_FOUND);
+          }
 
         }
       });
@@ -184,42 +176,4 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
     }
 
   }
-
-  /**
-    * <p>Downstream consumer applications should respond to hardware wallet events</p>
-    *
-    * @param event The hardware wallet event indicating a state change
-    */
-   @Subscribe
-   public void onHardwareWalletEvent(HardwareWalletEvent event) {
-
-     log.debug("Received hardware event: '{}'", event.getEventType().name());
-
-     switch (event.getEventType()) {
-       case SHOW_DEVICE_FAILED:
-         // Treat as end of example
-         System.exit(0);
-         break;
-       case SHOW_DEVICE_DETACHED:
-         // Can simply wait for another device to be connected again
-         break;
-       case SHOW_DEVICE_READY:
-         // Get some information about the device
-         if (hardwareWalletServiceOptional.isPresent()) {
-           featuresOptional = Optional.of(hardwareWalletServiceOptional.get().getContext().getFeatures().get());
-           log.info("Features: {}", featuresOptional.get());
-           SwingUtilities.invokeLater(new Runnable() {
-             @Override
-             public void run() {
-               featuresTextArea.setText(featuresOptional.get().toString());
-             }
-           });
-         }
-
-       default:
-         // Ignore
-     }
-
-   }
-
 }
