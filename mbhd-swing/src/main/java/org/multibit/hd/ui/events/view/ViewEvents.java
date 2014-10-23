@@ -4,6 +4,7 @@ import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
@@ -66,6 +67,16 @@ public class ViewEvents {
   public static void fireSystemStatusChangedEvent(String localisedMessage, RAGStatus severity) {
     log.trace("Firing 'system status changed' event");
     CoreServices.uiEventBus.post(new SystemStatusChangedEvent(localisedMessage, severity));
+  }
+
+  /**
+   * <p>Broadcast a new "hardware wallet status changed" event</p>
+   *
+   * @param eventType The event type
+   */
+  public static void fireHardwareWalletStatusChangedEvent(HardwareWalletEventType eventType) {
+    log.trace("Firing 'hardware wallet status changed' event");
+    CoreServices.uiEventBus.post(new HardwareWalletStatusChangedEvent(eventType));
   }
 
   /**

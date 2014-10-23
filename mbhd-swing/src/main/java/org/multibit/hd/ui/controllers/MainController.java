@@ -94,9 +94,6 @@ public class MainController extends AbstractController implements
   // Start with the assumption that it is fine to avoid annoying "everything is OK" alert
   private RAGStatus lastExchangeSeverity = RAGStatus.GREEN;
 
-  // Start with the assumption that it is fine to avoid annoying "device is detached" alert
-  private boolean isDetachRelevant = false;
-
   // Keep a thread pool for transaction status checking
   private static final ListeningExecutorService transactionCheckingExecutorService = SafeExecutors.newFixedThreadPool(10, "transaction-checking");
 
@@ -558,36 +555,34 @@ public class MainController extends AbstractController implements
 
     log.debug("Received hardware event: '{}'", event.getEventType().name());
 
-    // Quick check for relevancy
-    switch (event.getEventType()) {
-      case SHOW_DEVICE_STOPPED:
-      case SHOW_DEVICE_DETACHED:
-        if (!isDetachRelevant) {
-          // Ignore the detach since we've never been attached
-          return;
-        }
-        // Ensure we ignore the detach in the future
-        isDetachRelevant = false;
-        break;
-      case SHOW_DEVICE_READY:
-        // Now that we've been attached we want to trap detach later
-        isDetachRelevant = true;
-        break;
-      default:
-        // The AbstractHardwareWalletWizard handles specific cases
-        return;
-    }
-
     // Ensure we return from this event quickly and that UI happens on the EDT
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
         public void run() {
 
-          // Attempt to create a suitable alert model
-          AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+          // Quick check for relevancy
+          switch (event.getEventType()) {
+            case SHOW_DEVICE_STOPPED:
+            case SHOW_DEVICE_DETACHED:
+              // Rely on the view status event to inform the user
+              // An alert tends to stack and gets messy/irrelevant
+              break;
+            case SHOW_DEVICE_FAILED:
+            case SHOW_DEVICE_READY:
+              // Attempt to create a suitable alert model in addition to view event
+              AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+              ControllerEvents.fireAddAlertEvent(alertModel);
+              break;
+            default:
+              // The AbstractHardwareWalletWizard handles specific cases
+              // No view event
+              return;
+          }
 
-          ControllerEvents.fireAddAlertEvent(alertModel);
+          // Must have a view event (device ready/not ready) to be here
+          ViewEvents.fireHardwareWalletStatusChangedEvent(event.getEventType());
+
         }
       });
 
@@ -961,6 +956,7 @@ public class MainController extends AbstractController implements
    * @param transactionCreationEvent The transaction creation event from the EventBus
    */
   private void initiateDelayedTransactionStatusCheck(final TransactionCreationEvent transactionCreationEvent) {
+
     transactionCheckingExecutorService.submit(
       new Runnable() {
 
@@ -991,5 +987,6 @@ public class MainController extends AbstractController implements
           }
         }
       });
+
   }
 }

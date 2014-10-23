@@ -1,10 +1,10 @@
 package org.multibit.hd.ui.controllers;
 
-import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.managers.WalletManager;
@@ -96,19 +96,32 @@ public class HeaderController extends AbstractController {
   @Subscribe
   public synchronized void onAddAlertEvent(AddAlertEvent event) {
 
-    // Add this to the list
-    alertModels.add(event.getAlertModel());
-
-    // Play a beep on the first alert
-    switch (event.getAlertModel().getSeverity()) {
-      case RED:
-      case AMBER:
-        Sounds.playBeep();
+    boolean ignoreRepeated = false;
+    // Check for repeated text
+    for (AlertModel alertModel : alertModels) {
+      if (alertModel.getLocalisedMessage().equals(event.getAlertModel().getLocalisedMessage())) {
+        // Ignore duplicated message
+        ignoreRepeated = true;
         break;
+      }
     }
 
-    // Adjust the models to reflect the new M of N values
-    updateRemaining();
+    if (!ignoreRepeated) {
+
+      // Add this to the list
+      alertModels.add(event.getAlertModel());
+
+      // Play a beep on the first alert
+      switch (event.getAlertModel().getSeverity()) {
+        case RED:
+        case AMBER:
+          Sounds.playBeep();
+          break;
+      }
+
+      // Adjust the models to reflect the new M of N values
+      updateRemaining();
+    }
 
     // The alert structure has changed so inform the view
     ViewEvents.fireAlertAddedEvent(alertModels.get(0));

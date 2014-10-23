@@ -175,22 +175,15 @@ public class Models {
             Panels.showLightBox(Wizards.newUseTrezorWizard().getWizardScreenHolder());
 
           }
-        }, MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);
+        },
+          // Considered using Shield + Trezor tools wizard message but screen
+          // gets cluttered with shields everywhere and looks confused
+          MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);
 
         return Models.newAlertModel(
           Languages.safeText(MessageKey.TREZOR_ATTACHED_ALERT, label),
           RAGStatus.GREEN,
           button
-        );
-      case SHOW_DEVICE_STOPPED:
-        return Models.newAlertModel(
-          Languages.safeText(MessageKey.TREZOR_STOPPED_ALERT),
-          RAGStatus.AMBER
-        );
-      case SHOW_DEVICE_DETACHED:
-        return Models.newAlertModel(
-          Languages.safeText(MessageKey.TREZOR_DETACHED_ALERT),
-          RAGStatus.AMBER
         );
       case SHOW_DEVICE_FAILED:
         return Models.newAlertModel(

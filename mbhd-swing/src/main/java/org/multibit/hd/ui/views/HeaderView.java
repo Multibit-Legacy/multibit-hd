@@ -124,7 +124,6 @@ public class HeaderView extends AbstractView {
   @Subscribe
   public void onAlertAddedEvent(final AlertAddedEvent event) {
 
-
     Preconditions.checkNotNull(event, "'event' must be present");
 
     final AlertModel alertModel = event.getAlertModel();

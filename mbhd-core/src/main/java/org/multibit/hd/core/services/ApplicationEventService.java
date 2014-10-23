@@ -3,6 +3,9 @@ package org.multibit.hd.core.services;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.*;
+import org.multibit.hd.hardware.core.HardwareWalletService;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 
 /**
  * <p>Service to provide the following to application:</p>
@@ -12,19 +15,22 @@ import org.multibit.hd.core.events.*;
  * <p>Having this service allows the UI to catch up with previous events after a locale change or slow startup</p>
  *
  * @since 0.0.1
- *
  */
 public class ApplicationEventService {
 
   private Optional<ExchangeRateChangedEvent> latestExchangeRateChangedEvent = Optional.absent();
   private Optional<SecurityEvent> latestSecurityEvent = Optional.absent();
   private Optional<BitcoinNetworkChangedEvent> latestBitcoinNetworkChangedEvent = Optional.absent();
+  private Optional<HardwareWalletEvent> latestHardwareWalletEvent = Optional.absent();
 
   /**
    * Reduced visibility constructor to prevent accidental instance creation outside of CoreServices
    */
   ApplicationEventService() {
+
     CoreServices.uiEventBus.register(this);
+    HardwareWalletService.hardwareWalletEventBus.register(this);
+
   }
 
   /**
@@ -49,6 +55,13 @@ public class ApplicationEventService {
   }
 
   /**
+   * @return The latest "hardware wallet" event
+   */
+  public Optional<HardwareWalletEvent> getLatestHardwareWalletEvent() {
+    return latestHardwareWalletEvent;
+  }
+
+  /**
    * <p>Repeats the latest events since the UI has become out of synch due to a restart of some kind</p>
    */
   public void repeatLatestEvents() {
@@ -66,6 +79,19 @@ public class ApplicationEventService {
       );
     }
 
+    if (latestHardwareWalletEvent.isPresent()) {
+      if (latestHardwareWalletEvent.get().getMessage().isPresent()) {
+        HardwareWalletEvents.fireHardwareWalletEvent(
+          latestHardwareWalletEvent.get().getEventType(),
+          latestHardwareWalletEvent.get().getMessage().get()
+        );
+      } else {
+        HardwareWalletEvents.fireHardwareWalletEvent(
+          latestHardwareWalletEvent.get().getEventType()
+        );
+      }
+    }
+
   }
 
   /**
@@ -78,6 +104,7 @@ public class ApplicationEventService {
     if (ShutdownEvent.ShutdownType.SOFT.equals(event.getShutdownType())) {
       latestBitcoinNetworkChangedEvent = Optional.absent();
       latestExchangeRateChangedEvent = Optional.absent();
+      latestHardwareWalletEvent = Optional.absent();
     }
 
   }
@@ -104,6 +131,14 @@ public class ApplicationEventService {
   @Subscribe
   public void onBitcoinNetworkChangedEvent(BitcoinNetworkChangedEvent event) {
     latestBitcoinNetworkChangedEvent = Optional.of(event);
+  }
+
+  /**
+   * @param event The "hardware wallet" event
+   */
+  @Subscribe
+  public void onHardwareWalletEvent(HardwareWalletEvent event) {
+    latestHardwareWalletEvent = Optional.of(event);
   }
 
 }
