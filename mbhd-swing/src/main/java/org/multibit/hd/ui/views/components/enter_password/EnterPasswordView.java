@@ -3,13 +3,14 @@ package org.multibit.hd.ui.views.components.enter_password;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -22,6 +23,8 @@ import java.awt.event.KeyEvent;
  *
  */
 public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(EnterPasswordView.class);
 
   // View components
   private JPasswordField password;
@@ -55,7 +58,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
 
     // Configure the actions
     Action toggleDisplayAction = getToggleDisplayAction();
-
+   // abc123
     // Bind a key listener to allow instant update of UI to matched passwords
     password.addKeyListener(new KeyAdapter() {
 
@@ -70,6 +73,28 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
       }
 
     });
+    password.addMouseListener(
+      new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+
+          log.debug("Mouse event. Button: {} Modifier: {} ", e.getButton(), e.getModifiersEx());
+
+          switch (e.getButton()) {
+            case MouseEvent.BUTTON2:
+              int onmask = MouseEvent.ALT_DOWN_MASK;
+              if ((e.getModifiersEx() & onmask) == onmask)
+              // Support paste from middle click
+              {
+                String append = String.valueOf(password.getPassword()) + ClipboardUtils.pasteStringFromClipboard().or("");
+                password.setText(append);
+                getModel().get().setPassword(password.getPassword());
+              }
+
+          }
+        }
+      });
+
 
     showButton = Buttons.newShowButton(toggleDisplayAction);
 
