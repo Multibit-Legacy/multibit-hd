@@ -397,6 +397,8 @@ public enum MessageKey {
   TREZOR_FOUND("trezor_found"),
   NO_TREZOR_FOUND("no_trezor_found"),
 
+  WIPE_TREZOR_MESSAGE("wipe_trezor_message"),
+
   // Settings titles
 
   LANGUAGE_SETTINGS_TITLE("language_settings_title"),

@@ -74,7 +74,9 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
         @Override
         public void run() {
           // Ensure the panel updates its model (the button is outside of the panel itself)
-          getWizardPanelView(getWizardModel().getPanelName()).updateFromComponentModels(Optional.absent());
+          if (getWizardModel().getPanelName() != null) {
+            getWizardPanelView(getWizardModel().getPanelName()).updateFromComponentModels(Optional.absent());
+          }
 
           // Move to the "button press" state
           getWizardModel().showButtonPress(event);

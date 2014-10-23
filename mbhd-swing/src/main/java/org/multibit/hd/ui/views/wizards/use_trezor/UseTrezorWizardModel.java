@@ -42,6 +42,11 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   private final ListeningExecutorService requestFeaturesService = SafeExecutors.newSingleThreadExecutor("request-features");
 
   /**
+    * Wipe Trezor requires a separate executor
+    */
+   private final ListeningExecutorService wipeTrezorService = SafeExecutors.newSingleThreadExecutor("wipe-trezor");
+
+   /**
    * The current selection option as a state
    */
   private UseTrezorState currentSelection = UseTrezorState.VERIFY_TREZOR;
@@ -144,6 +149,9 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       case PRESS_CONFIRM_FOR_UNLOCK:
         // Should be catered for by finish
         break;
+      case WIPE_TREZOR:
+        // Should be catered for by finish on Wipe Trezor panel
+        break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
     }
@@ -188,7 +196,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   }
 
   /**
-   * <p>Reset the transactions of the current wallet and resynchronize with the block chain</p>
+   * <p>Request the Trezor features</p>
    * <p>Reduced visibility for panel view</p>
    */
   void requestFeatures() {
@@ -204,12 +212,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
           HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
           featuresOptional = hardwareWalletService.getContext().getFeatures();
           log.debug("Features : {}", featuresOptional);
-//             SwingUtilities.invokeLater(new Runnable() {
-//               @Override
-//               public void run() {
-//
-//               }
-//             });
         } else {
           log.error("No hardware wallet service");
         }
@@ -232,6 +234,54 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
         // Have a failure - add failure text to the text area
 
+      }
+    });
+
+  }
+
+  /**
+   * <p>Wipe the Trezor device</p>
+   * <p>Reduced visibility for panel view</p>
+   */
+  void wipeTrezor() {
+
+    // Start the wipe Trezor
+    ListenableFuture future = wipeTrezorService.submit(new Callable<Boolean>() {
+
+      @Override
+      public Boolean call() throws Exception {
+
+        Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
+        if (hardwareWalletServiceOptional.isPresent()) {
+          HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
+          if (hardwareWalletService.isWalletPresent()) {
+            hardwareWalletService.wipeDevice();
+            log.debug("Wipe device request has been performed");
+          } else {
+            log.debug("No wallet present so no need to wipe the device");
+          }
+        } else {
+          log.error("No hardware wallet service");
+        }
+        return true;
+
+      }
+
+    });
+    Futures.addCallback(future, new FutureCallback() {
+      @Override
+      public void onSuccess(@Nullable Object result) {
+
+        // We now wiped the device so throw a ComponentChangedEvent for the UI to update
+        ViewEvents.fireComponentChangedEvent(UseTrezorState.WIPE_TREZOR.name(), Optional.absent());
+
+      }
+
+      @Override
+      public void onFailure(Throwable t) {
+
+        // Have a failure
+        t.printStackTrace();
       }
     });
 

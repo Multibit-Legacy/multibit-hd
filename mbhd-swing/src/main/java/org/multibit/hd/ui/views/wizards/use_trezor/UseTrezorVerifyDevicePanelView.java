@@ -14,7 +14,6 @@ import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
-import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -129,22 +128,6 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    // Put the report screen into a finished state
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        // Wallet replayed without errors so it must be repaired
-        trezorCommunicationsStatusLabel.setVisible(true);
-        AwesomeDecorator.bindIcon(
-                AwesomeIcon.CHECK,
-                trezorCommunicationsStatusLabel,
-                true,
-                MultiBitUI.NORMAL_ICON_SIZE
-        );
-
-      }
-    });
   }
 
 
