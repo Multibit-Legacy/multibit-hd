@@ -408,6 +408,15 @@ public class Labels {
   }
 
   /**
+    * @param status True if the status is "good"
+    *
+    * @return A new "wipe Trezor message" status label
+    */
+   public static JLabel newWipeTrezorLabel() {
+     return newLabel(MessageKey.WIPE_TREZOR_MESSAGE);
+   }
+
+   /**
    * @param status True if the status is "good"
    *
    * @return A new "synchronizing" status label
