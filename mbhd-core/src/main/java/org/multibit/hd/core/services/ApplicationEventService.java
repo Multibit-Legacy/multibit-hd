@@ -66,6 +66,10 @@ public class ApplicationEventService {
    */
   public void repeatLatestEvents() {
 
+    if (latestSecurityEvent.isPresent()) {
+      CoreEvents.fireSecurityEvent(latestSecurityEvent.get().getSummary());
+    }
+
     if (latestBitcoinNetworkChangedEvent.isPresent()) {
       CoreEvents.fireBitcoinNetworkChangedEvent(latestBitcoinNetworkChangedEvent.get().getSummary());
     }

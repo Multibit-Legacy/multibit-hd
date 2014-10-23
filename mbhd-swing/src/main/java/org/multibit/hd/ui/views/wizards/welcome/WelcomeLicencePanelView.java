@@ -5,6 +5,7 @@ import com.google.common.base.Optional;
 import com.google.common.io.Resources;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
@@ -134,7 +135,7 @@ public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWiza
 
         // Check for any security alerts
         Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
-        if (securityEvent.isPresent()) {
+        if (securityEvent.isPresent() && securityEvent.get().is(SecuritySummary.AlertType.DEBUGGER_ATTACHED)) {
 
           displaySecurityPopoverMaV.getModel().setValue(securityEvent.get());
 

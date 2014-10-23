@@ -431,6 +431,14 @@ public class MainController extends AbstractController implements
             summary.getSeverity())
         );
         break;
+      case SYSTEM_TIME_DRIFT:
+        // Present the localised message
+        ControllerEvents.fireAddAlertEvent(
+          Models.newAlertModel(
+            localisedMessage,
+            summary.getSeverity())
+        );
+        break;
       case CERTIFICATE_FAILED:
         // Create a button to the repair wallet tool
         JButton button = Buttons.newAlertPanelButton(getShowRepairWalletAction(), MessageKey.REPAIR, MessageKey.REPAIR_TOOLTIP, AwesomeIcon.MEDKIT);

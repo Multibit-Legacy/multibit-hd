@@ -1,5 +1,8 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.events.CoreEvents;
@@ -8,6 +11,7 @@ import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -17,7 +21,6 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class SecurityCheckingService extends AbstractService {
 
@@ -26,9 +29,14 @@ public class SecurityCheckingService extends AbstractService {
   public static final int ENVIRONMENT_REFRESH_SECONDS = 2;
 
   /**
-   * Initialise to allow single security alert
+   * Initialise to allow single security alert for debugger attachment
    */
-  private DateTime nextAlert = Dates.nowUtc().minusSeconds(1);
+  private DateTime nextDebuggerAlert = Dates.nowUtc().minusSeconds(1);
+
+  /**
+   * Initialise to allow single security alert for system time drift
+   */
+  private DateTime nextSystemTimeDriftAlert = Dates.nowUtc().minusSeconds(1);
 
   public SecurityCheckingService() {
     CoreServices.uiEventBus.register(this);
@@ -43,32 +51,70 @@ public class SecurityCheckingService extends AbstractService {
     requireSingleThreadScheduledExecutor("security");
 
     // Use the provided executor service management
-    getScheduledExecutorService().scheduleAtFixedRate(new Runnable() {
+    getScheduledExecutorService().scheduleAtFixedRate(
+      new Runnable() {
 
-      public void run() {
+        public void run() {
 
-        // Check for a Java debugger being attached
-        if (OSUtils.isDebuggerAttached()) {
-          handleDebuggerAttached();
+          // Check frequently for a Java debugger being attached
+          // to get immediate detection
+          if (OSUtils.isDebuggerAttached()) {
+            handleDebuggerAttached();
+          }
+
+          // Only check drift time infrequently
+          if (Dates.nowUtc().isAfter(nextSystemTimeDriftAlert)) {
+
+            // Prevent lots of repeat alerts
+            nextSystemTimeDriftAlert = Dates.nowUtc().plusMinutes(5);
+
+            // Check time is not more than 60 min off (60 x 60 x 1000)
+            // in either direction
+            final ListenableFuture<Integer> driftFuture = Dates.calculateDriftInMillis("pool.ntp.org");
+            Futures.addCallback(
+              driftFuture, new FutureCallback<Integer>() {
+                @Override
+                public void onSuccess(@Nullable Integer result) {
+
+                  if (result != null && Math.abs(result) > 3_600_000) {
+                    log.warn("System time is adrift by: {} min(s)", result / 60_000);
+                    // Issue the alert
+                    CoreEvents.fireSecurityEvent(SecuritySummary.newSystemTimeDrift());
+                  } else {
+                    log.debug("System time drift is within limits");
+                  }
+
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+
+                  // Timed out
+                  log.warn("System drift check timed out. Trying again at: {} (local)", Dates.formatShortTimeLocal(nextSystemTimeDriftAlert));
+
+                }
+              });
+
+          }
+
         }
 
-      }
+        private void handleDebuggerAttached() {
 
-      private void handleDebuggerAttached() {
+          if (Dates.nowUtc().isAfter(nextDebuggerAlert)) {
 
-        if (Dates.nowUtc().isAfter(nextAlert)) {
+            // Prevent lots of repeat alerts
+            nextDebuggerAlert = Dates.nowUtc().plusMinutes(5);
 
-          // Prevent lots of repeat alerts
-          nextAlert = Dates.nowUtc().plusMinutes(5);
+            // Issue the alert
+            CoreEvents.fireSecurityEvent(SecuritySummary.newDebuggerAttached());
 
-          // Issue the alert
-          CoreEvents.fireSecurityEvent(SecuritySummary.newDebuggerAttached());
+          }
 
         }
 
-      }
 
-    }, 0, ENVIRONMENT_REFRESH_SECONDS, TimeUnit.SECONDS);
+      }, 0, ENVIRONMENT_REFRESH_SECONDS, TimeUnit.SECONDS);
 
     return true;
 

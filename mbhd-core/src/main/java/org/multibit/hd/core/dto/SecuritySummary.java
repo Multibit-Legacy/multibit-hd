@@ -16,6 +16,7 @@ public class SecuritySummary {
   public enum AlertType {
 
     DEBUGGER_ATTACHED,
+    SYSTEM_TIME_DRIFT,
     BACKUP_FAILED,
     CERTIFICATE_FAILED
 
@@ -39,6 +40,20 @@ public class SecuritySummary {
       Optional.of(CoreMessageKey.DEBUGGER_ATTACHED),
       Optional.<Object[]>absent(),
       AlertType.DEBUGGER_ATTACHED
+    );
+  }
+
+  /**
+   * <p>The system time has drifted - could cause transaction problems</p>
+   *
+   * @return A new "system time drift" summary
+   */
+  public static SecuritySummary newSystemTimeDrift() {
+    return new SecuritySummary(
+      RAGStatus.AMBER,
+      Optional.of(CoreMessageKey.SYSTEM_TIME_DRIFT),
+      Optional.<Object[]>absent(),
+      AlertType.SYSTEM_TIME_DRIFT
     );
   }
 

@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.*;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.SecurityEvent;
@@ -153,7 +154,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
 
         // Check for any security alerts
         Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
-        if (securityEvent.isPresent()) {
+        if (securityEvent.isPresent() && securityEvent.get().is(SecuritySummary.AlertType.DEBUGGER_ATTACHED)) {
 
           displaySecurityPopoverMaV.getModel().setValue(securityEvent.get());
 
