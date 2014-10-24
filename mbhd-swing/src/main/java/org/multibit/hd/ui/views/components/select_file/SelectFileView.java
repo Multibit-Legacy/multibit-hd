@@ -52,6 +52,7 @@ public class SelectFileView extends AbstractComponentView<SelectFileModel> {
     selectedFileTextField.setText(model.getValue());
 
     // Bind a key listener to allow instant update of UI to entered data
+    // TODO Convert this to DocumentListener
     selectedFileTextField.addKeyListener(new KeyAdapter() {
 
       @Override

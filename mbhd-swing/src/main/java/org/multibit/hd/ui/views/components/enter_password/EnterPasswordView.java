@@ -3,14 +3,15 @@ package org.multibit.hd.ui.views.components.enter_password;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.event.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.event.ActionEvent;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -20,7 +21,6 @@ import java.awt.event.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel> {
 
@@ -43,11 +43,12 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
   @Override
   public JPanel newComponentPanel() {
 
-    panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(), // Layout
-      "[][][][]", // Columns
-      "[]" // Rows
-    ));
+    panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(), // Layout
+        "[][][][]", // Columns
+        "[]" // Rows
+      ));
 
     // Keep track of the credentials fields
     password = TextBoxes.newPassword();
@@ -58,43 +59,37 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
 
     // Configure the actions
     Action toggleDisplayAction = getToggleDisplayAction();
-   // abc123
-    // Bind a key listener to allow instant update of UI to matched passwords
-    password.addKeyListener(new KeyAdapter() {
 
-      @Override
-      public void keyReleased(KeyEvent e) {
+    // Bind a document listener to allow instant update of UI to matched passwords
+    password.getDocument().addDocumentListener(
+      new DocumentListener() {
 
-        // Reset the credentials background
-        password.setBackground(Themes.currentTheme.dataEntryBackground());
-
-        getModel().get().setPassword(password.getPassword());
-
-      }
-
-    });
-    password.addMouseListener(
-      new MouseAdapter() {
         @Override
-        public void mouseClicked(MouseEvent e) {
-
-          log.debug("Mouse event. Button: {} Modifier: {} ", e.getButton(), e.getModifiersEx());
-
-          switch (e.getButton()) {
-            case MouseEvent.BUTTON2:
-              int onmask = MouseEvent.ALT_DOWN_MASK;
-              if ((e.getModifiersEx() & onmask) == onmask)
-              // Support paste from middle click
-              {
-                String append = String.valueOf(password.getPassword()) + ClipboardUtils.pasteStringFromClipboard().or("");
-                password.setText(append);
-                getModel().get().setPassword(password.getPassword());
-              }
-
-          }
+        public void insertUpdate(DocumentEvent e) {
+          updateModel();
         }
-      });
 
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+          updateModel();
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+          updateModel();
+        }
+
+        /**
+         * Trigger any UI updates
+         */
+        private void updateModel() {
+          // Reset the credentials background
+          password.setBackground(Themes.currentTheme.dataEntryBackground());
+
+          getModel().get().setPassword(password.getPassword());
+        }
+
+      });
 
     showButton = Buttons.newShowButton(toggleDisplayAction);
 
@@ -106,7 +101,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
     panel.add(showButton, "shrink");
 
     // Ensure the icon label is a size suitable for rotation
-    panel.add(spinner, "grow,"+ MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG+",wrap");
+    panel.add(spinner, "grow," + MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG + ",wrap");
 
     return panel;
 
@@ -181,7 +176,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
    */
   public void incorrectPassword() {
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(),"Must execute on EDT.");
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must execute on EDT.");
 
     password.setBackground(Themes.currentTheme.invalidDataEntryBackground());
 

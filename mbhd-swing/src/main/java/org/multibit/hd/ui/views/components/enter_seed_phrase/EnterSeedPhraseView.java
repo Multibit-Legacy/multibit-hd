@@ -81,6 +81,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     seedPhraseTextArea.setText(model.displaySeedPhrase());
 
     // Bind key and focus listeners to allow instant update of UI to mismatched seed phrase
+    // TODO Convert this to DocumentListener
     seedPhraseTextArea.addKeyListener(new KeyAdapter() {
 
       @Override
@@ -97,6 +98,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     });
 
     // Bind a key and focus listeners to allow instant update of UI to invalid date
+    // TODO Convert this to DocumentListener
     seedTimestampText.addKeyListener(new KeyAdapter() {
 
       @Override

@@ -311,11 +311,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
        public void mousePressed(MouseEvent e) {
 
-         log.debug("Mouse click");
-
          if (e.getClickCount() == 2) {
-
-           log.debug("Mouse click 2");
 
            detailsButton.doClick();
          }
