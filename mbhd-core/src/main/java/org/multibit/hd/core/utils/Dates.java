@@ -11,6 +11,8 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.sntp.NtpMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -28,6 +30,8 @@ import java.util.concurrent.Callable;
  * @since 0.0.1
  */
 public class Dates {
+
+  private static final Logger log = LoggerFactory.getLogger(Dates.class);
 
   public static final int CHECKSUM_MODULUS = 97;
 
@@ -591,10 +595,17 @@ public class Dates {
       new Callable<Integer>() {
         @Override
         public Integer call() throws Exception {
+
+          log.debug("Checking system time drift against '{}'", sntpHost);
+
           // Send request
           DatagramSocket socket = new DatagramSocket();
-          // 30s seems about right for domestic networks
-          socket.setSoTimeout(30_000);
+          // Typical response time for SNTP on domestic broadband is around 40ms
+          // This very high setting allows for
+          // * firewall negotiation where the user manually allows the connection
+          // * DNS and UPnP issues at the router
+          // * very poor network performance
+          socket.setSoTimeout(60_000);
           InetAddress address = InetAddress.getByName(sntpHost);
           byte[] buf = new NtpMessage().toByteArray();
 

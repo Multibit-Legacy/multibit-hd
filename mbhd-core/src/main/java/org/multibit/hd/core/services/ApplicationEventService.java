@@ -66,6 +66,7 @@ public class ApplicationEventService {
    */
   public void repeatLatestEvents() {
 
+    // Don't replay security events - it gives a false positive
     if (latestSecurityEvent.isPresent()) {
       CoreEvents.fireSecurityEvent(latestSecurityEvent.get().getSummary());
     }
