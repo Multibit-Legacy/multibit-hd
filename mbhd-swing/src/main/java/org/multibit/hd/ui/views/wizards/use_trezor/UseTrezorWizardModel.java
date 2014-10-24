@@ -49,7 +49,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
    /**
    * The current selection option as a state
    */
-  private UseTrezorState currentSelection = UseTrezorState.VERIFY_TREZOR;
+  private UseTrezorState currentSelection = UseTrezorState.USE_TREZOR_WALLET;
 
   /**
    * The features of the attached Trezor
@@ -84,7 +84,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     switch (state) {
       case SELECT_TREZOR_ACTION:
         if (UseTrezorState.USE_TREZOR_WALLET.equals(getCurrentSelection())) {
-          state = UseTrezorState.USE_TREZOR_WALLET;
+          state = UseTrezorState.REQUEST_CIPHER_KEY;
           break;
         } else if (UseTrezorState.BUY_TREZOR.equals(getCurrentSelection())) {
           state = UseTrezorState.BUY_TREZOR;
@@ -152,12 +152,16 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   @Override
   public void showButtonPress(HardwareWalletEvent event) {
 
-    // Require a button press to encrypt the message
+    log.debug("Received hardwareWalletEvent {}", event);
+
     switch (state) {
       case REQUEST_CIPHER_KEY:
+        state = UseTrezorState.ENTER_PIN;
+        break;
       case ENTER_PIN:
       case NO_PIN_REQUIRED:
-        state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
+        // Require a button press to encrypt the message
+        //    state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
         break;
       case PRESS_CONFIRM_FOR_UNLOCK:
         // Should be catered for by finish
@@ -238,7 +242,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       public void onSuccess(@Nullable Object result) {
 
         // We now have the features so throw a ComponentChangedEvent for the UI to update
-        ViewEvents.fireComponentChangedEvent(UseTrezorState.VERIFY_TREZOR.name(), Optional.absent());
+        ViewEvents.fireComponentChangedEvent(UseTrezorState.USE_TREZOR_WALLET.name(), Optional.absent());
 
       }
 

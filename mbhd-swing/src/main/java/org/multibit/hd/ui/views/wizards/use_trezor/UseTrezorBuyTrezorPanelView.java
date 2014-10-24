@@ -37,9 +37,6 @@ public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrez
 
   private static String BUY_TREZOR_URL = "https://www.buytrezor.com";
 
-  // Model
-  private UseTrezorState currentSelection;
-
   // View components
   private JLabel trezorConnectedStatusLabel;
 
@@ -55,9 +52,6 @@ public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrez
 
   @Override
   public void newPanelModel() {
-
-    currentSelection = UseTrezorState.VERIFY_TREZOR;
-    setPanelModel(currentSelection);
 
   }
 

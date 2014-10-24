@@ -401,15 +401,13 @@ public class Labels {
   /**
    * @param status True if the status is "good"
    *
-   * @return A new "backup location" status label
+   * @return A new "CA certs installed" status label
    */
   public static JLabel newCACertsInstalledStatus(boolean status) {
     return newStatusLabel(MessageKey.CACERTS_INSTALLED_STATUS, null, status);
   }
 
   /**
-    * @param status True if the status is "good"
-    *
     * @return A new "wipe Trezor message" status label
     */
    public static JLabel newWipeTrezorLabel() {

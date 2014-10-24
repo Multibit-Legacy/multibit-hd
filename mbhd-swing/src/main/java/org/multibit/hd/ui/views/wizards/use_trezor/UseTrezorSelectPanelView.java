@@ -42,7 +42,7 @@ public class UseTrezorSelectPanelView extends AbstractWizardPanelView<UseTrezorW
   @Override
   public void newPanelModel() {
 
-    currentSelection = UseTrezorState.VERIFY_TREZOR;
+    currentSelection = UseTrezorState.USE_TREZOR_WALLET;
     setPanelModel(currentSelection);
 
   }
