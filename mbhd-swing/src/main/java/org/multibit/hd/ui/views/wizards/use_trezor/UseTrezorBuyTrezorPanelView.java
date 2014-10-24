@@ -1,14 +1,12 @@
 package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
-import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
-import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.hardware.core.HardwareWalletService;
-import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.Buttons;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -39,9 +37,6 @@ public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrez
 
   private static String BUY_TREZOR_URL = "https://www.buytrezor.com";
 
-  // Model
-  private UseTrezorState currentSelection;
-
   // View components
   private JLabel trezorConnectedStatusLabel;
 
@@ -51,15 +46,12 @@ public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrez
    */
   public UseTrezorBuyTrezorPanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.USE_TREZOR_TITLE, AwesomeIcon.SHIELD);
+    super(wizard, panelName, MessageKey.BUY_TREZOR_TITLE, AwesomeIcon.SHIELD);
 
   }
 
   @Override
   public void newPanelModel() {
-
-    currentSelection = UseTrezorState.VERIFY_TREZOR;
-    setPanelModel(currentSelection);
 
   }
 
@@ -73,32 +65,14 @@ public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrez
         "[]" // Row constraints
       ));
 
-//    MessageKey trezorStatusKey = isTrezorPresent() ? MessageKey.TREZOR_FOUND : MessageKey.NO_TREZOR_FOUND;
-//    trezorConnectedStatusLabel = Labels.newStatusLabel(
-//      Optional.of(trezorStatusKey),
-//      null,
-//      Optional.<Boolean>absent());
-//    AccessibilityDecorator.apply(trezorConnectedStatusLabel, trezorStatusKey);
-//
-//    contentPanel.add(trezorConnectedStatusLabel, "span 2, wrap");
-
-    contentPanel.add(
-      Panels.newUseTrezorSelector(
-              this,
-              UseTrezorState.USE_TREZOR_WALLET.name(),
-              UseTrezorState.BUY_TREZOR.name(),
-              UseTrezorState.VERIFY_TREZOR.name(),
-              UseTrezorState.WIPE_TREZOR.name()
-      ), "span 2, wrap");
-
-//    JButton launchBrowserButton = Buttons.newLaunchBrowserButton(getLaunchBrowserAction(), MessageKey.BUY_TREZOR, MessageKey.BUY_TREZOR_TOOLTIP);
-//       contentPanel.add(Labels.newBuyTrezorCommentNote());
-//       contentPanel.add(launchBrowserButton, "align right, wrap");
+    JButton launchBrowserButton = Buttons.newLaunchBrowserButton(getLaunchBrowserAction(), MessageKey.BUY_TREZOR, MessageKey.BUY_TREZOR_TOOLTIP);
+       contentPanel.add(Labels.newBuyTrezorCommentNote(), "wrap");
+       contentPanel.add(launchBrowserButton, "wrap");
   }
 
   @Override
   protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
-    PanelDecorator.addExitCancelNext(this, wizard);
+    PanelDecorator.addExitCancelPreviousFinish(this, wizard);
   }
 
   @Override
@@ -119,10 +93,6 @@ public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrez
 
     // Next has been clicked
 
-    setPanelModel(currentSelection);
-
-    // Bind this to the wizard model
-    getWizardModel().setCurrentSelection(currentSelection);
 
   }
 
@@ -133,10 +103,6 @@ public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrez
    */
   @Override
   public void actionPerformed(ActionEvent e) {
-
-    JRadioButton source = (JRadioButton) e.getSource();
-
-    currentSelection = UseTrezorState.valueOf(source.getActionCommand());
 
   }
 
@@ -157,52 +123,5 @@ public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrez
 
        }
      };
-   }
-
-  /**
-    * See if the Trezor wallet is present
-    */
-   public boolean isTrezorPresent() {
-
-     Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-     if (hardwareWalletService.isPresent()) {
-       try {
-         return hardwareWalletService.get().isWalletPresent();
-       } catch (IllegalStateException ise) {
-         // Device is not ready
-         return false;
-       }
-     } else {
-       return false;
-     }
-   }
-
-   /**
-    * <p>Downstream consumer applications should respond to hardware wallet events</p>
-    *
-    * @param event The hardware wallet event indicating a state change
-    */
-   @Subscribe
-   public void onHardwareWalletEvent(HardwareWalletEvent event) {
-
-     log.debug("Received hardware event: '{}'", event.getEventType().name());
-
-     switch (event.getEventType()) {
-       case SHOW_DEVICE_FAILED:
-         // Treat as end of example
-         System.exit(0);
-         break;
-       case SHOW_DEVICE_DETACHED:
-         // Can simply wait for another device to be connected again
-         break;
-       case SHOW_DEVICE_READY:
-         // Get some information about the device
-         //Features features = hardwareWalletService.getContext().getFeatures().get();
-         //log.info("Features: {}", features);
-
-       default:
-         // Ignore
-     }
-
    }
 }
