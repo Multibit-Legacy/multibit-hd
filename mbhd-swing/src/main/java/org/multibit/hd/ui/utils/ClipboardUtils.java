@@ -4,6 +4,8 @@ import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.io.IOException;
@@ -15,7 +17,6 @@ import java.io.IOException;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class ClipboardUtils {
 
@@ -101,6 +102,31 @@ public class ClipboardUtils {
       }
     }
     return Optional.absent();
+
+  }
+
+  /**
+   * <p>Paste a string into the given text compoent using the standard TransferHandler mechanism</p>
+   *
+   * @param component The text component into which this paste is occurring
+   *
+   * @return True if the paste was successful
+   */
+  public static boolean pasteStringFromClipboard(JTextComponent component) {
+
+    Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+
+    if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+
+      // Add the transferable to the handler using the support
+      TransferHandler.TransferSupport transferSupport = new TransferHandler.TransferSupport(component, transferable);
+
+      // Attempt to import
+      return component.getTransferHandler().importData(transferSupport);
+    }
+
+    // Must have failed to be here
+    return false;
 
   }
 

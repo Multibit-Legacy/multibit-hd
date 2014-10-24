@@ -51,6 +51,7 @@ public class EnterSearchView extends AbstractComponentView<EnterSearchModel> {
     enterSearchTextField.setText(model.getValue());
 
     // Bind a key listener to allow instant update of UI to entered data
+    // TODO Convert this to DocumentListener
     enterSearchTextField.addKeyListener(new KeyAdapter() {
 
       @Override

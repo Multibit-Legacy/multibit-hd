@@ -101,6 +101,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     // Bind a key listener to allow instant update of UI to amount changes
     // Do not use a focus listener because it will move the value according to
     // the inexact fiat value leading to 10mB becoming 10.00635mB
+    // TODO Convert this to DocumentListener
     bitcoinAmountText.addKeyListener(new KeyAdapter() {
 
       @Override
@@ -119,6 +120,7 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     // Bind a key listener to allow instant update of UI to amount changes
     // Do not use a focus listener because it will move the value according to
     // the inexact fiat value leading to 10mB becoming 10.00635mB
+    // TODO Convert this to DocumentListener
     localAmountText.addKeyListener(new KeyAdapter() {
       @Override
       public void keyReleased(KeyEvent e) {
