@@ -121,6 +121,19 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     }
   }
 
+  @Override
+    public void showPrevious() {
+
+      switch (state) {
+        case BUY_TREZOR:
+          state = UseTrezorState.SELECT_TREZOR_ACTION;
+          break;
+
+        default:
+          throw new IllegalStateException("Unknown state: " + state.name());
+      }
+    }
+
 
   @Override
   public void showPINEntry(HardwareWalletEvent event) {
