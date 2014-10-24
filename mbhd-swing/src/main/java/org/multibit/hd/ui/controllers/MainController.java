@@ -4,8 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.Uninterruptibles;
+import com.google.common.util.concurrent.*;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -21,6 +20,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.*;
 import org.multibit.hd.core.store.TransactionInfo;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
@@ -51,6 +51,7 @@ import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -291,6 +292,9 @@ public class MainController extends AbstractController implements
 
       // Restart the hardware wallet service (devices may have changed)
       handleHardwareWallets();
+
+      // Check for system time drift (runs in the background)
+      handleSystemTimeDrift();
     }
 
   }
@@ -786,6 +790,42 @@ public class MainController extends AbstractController implements
 
   }
 
+  /**
+   * <p>Performs a system time check against an internet time source over NTP
+   * If the system time has drifted then blocks will be rejected and the
+   * balance will be wrong</p>
+   */
+  private void handleSystemTimeDrift() {
+
+    // Check time is not more than 60 min off (60 x 60 x 1000)
+    // in either direction
+    final ListenableFuture<Integer> driftFuture = Dates.calculateDriftInMillis("pool.ntp.org");
+    Futures.addCallback(
+      driftFuture, new FutureCallback<Integer>() {
+        @Override
+        public void onSuccess(@Nullable Integer result) {
+
+          if (result != null && Math.abs(result) > 3_600_000) {
+            log.warn("System time is adrift by: {} min(s)", result / 60_000);
+            // Issue the alert
+            CoreEvents.fireSecurityEvent(SecuritySummary.newSystemTimeDrift());
+          } else {
+            log.debug("System time drift is within limits");
+          }
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          // Problem encountered - user won't be able to fix it
+          log.warn("System drift check timed out: '{}'", t.getMessage());
+
+        }
+      });
+
+  }
+
   private void hideAsExitCancel(String panelName) {
 
     // The exit dialog has no detail screen so focus defers to the sidebar
@@ -941,6 +981,10 @@ public class MainController extends AbstractController implements
             // Get a ticker going
             log.debug("Starting exchange...");
             handleExchange();
+
+            // Check for system time drift (runs in the background)
+            log.debug("Check for system time drift...");
+            handleSystemTimeDrift();
 
             // Check for Bitcoin URIs
             log.debug("Check for Bitcoin URIs...");
