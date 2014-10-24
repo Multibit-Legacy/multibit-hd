@@ -5,7 +5,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import org.bitcoinj.core.Utils;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -54,7 +53,12 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   /**
    * The features of the attached Trezor
    */
-  Optional<Features> featuresOptional;
+  Optional<Features> featuresOptional = Optional.absent();
+
+  /**
+   * The entropy to be used for the wallet id (result of encryption by the Trezor of fixed text)
+   */
+  Optional<byte[]> entropyOptional = Optional.absent();
 
   /**
    * The "enter pin" panel model
@@ -161,7 +165,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       case ENTER_PIN:
       case NO_PIN_REQUIRED:
         // Require a button press to encrypt the message
-        //    state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
+        state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
         break;
       case PRESS_CONFIRM_FOR_UNLOCK:
         // Should be catered for by finish
@@ -183,10 +187,16 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     String message = ((Success) event.getMessage().get()).getMessage();
 
     log.info(
-            "Message:'{}'\nPayload: {}",
+            "Message:'{}'\nPayload length: {}",
             message,
-            Utils.HEX.encode(payload)
+            payload == null ? 0 : payload.length
     );
+
+    // TODO be more specific on payload/ entropy selection
+    if (message.length() == 0) {
+      entropyOptional = Optional.of(payload);
+      log.debug("Using the payload as entropy");
+    }
   }
 
   @Override
@@ -197,6 +207,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     log.info(
             "Message:'Failure'\nFailure type: {}",
             failureType.name()
+    // TODO feed back to user if Failure type = PIN_INVALID
     );
   }
 
@@ -210,6 +221,10 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
   public Optional<Features> getFeaturesOptional() {
     return featuresOptional;
+  }
+
+  public Optional<byte[]> getEntropyOptional() {
+    return entropyOptional;
   }
 
   /**

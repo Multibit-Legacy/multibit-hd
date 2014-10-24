@@ -4,6 +4,10 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -20,6 +24,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
+import java.io.File;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -75,7 +80,7 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
   @Override
   protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelPreviousFinish(this, wizard);
+    PanelDecorator.addCancelFinish(this, wizard);
 
   }
 
@@ -108,36 +113,29 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
    */
   private void decryptTrezorWallet() {
 
-//    WelcomeWizardModel model = getWizardModel();
-//
-//    // Locate the installation directory
-//    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-//
-//    // Work out the seed, wallet id and wallet directory
-//    List<String> seedPhrase = model.getRestorePasswordEnterSeedPhraseModel().getSeedPhrase();
-//    SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
-//    byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
-//    WalletId walletId = new WalletId(seed);
-//
-//    String walletRoot = applicationDataDirectory.getAbsolutePath() + File.separator + WalletManager.createWalletRoot(walletId);
-//    File walletDirectory = new File(walletRoot);
-//
-//    WalletSummary walletSummary;
-//    if (walletDirectory.isDirectory()) {
-//      walletSummary = WalletManager.getOrCreateWalletSummary(walletDirectory, walletId);
-//    } else {
-//      SwingUtilities.invokeLater(
-//        new Runnable() {
-//          @Override
-//          public void run() {
-//            // Failed
-//            trezorWalletStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
-//            AccessibilityDecorator.apply(trezorWalletStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
-//            AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, trezorWalletStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
-//          }
-//        });
-//      return;
-//    }
+    UseTrezorWizardModel model = getWizardModel();
+
+    if (!model.getEntropyOptional().isPresent()) {
+      log.debug("No entropy - no wallet to load");
+      // TODO Notify user
+      return;
+    }
+
+    log.debug("Running decrypt of Trezor wallet with entropy of length {}", model.getEntropyOptional().get().length);
+
+    // Locate the installation directory
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+    // Using the entropy as the seed, work out the wallet id and wallet directory
+
+    WalletId walletId = new WalletId(model.getEntropyOptional().get());
+
+    String walletRoot = applicationDataDirectory.getAbsolutePath() + File.separator + WalletManager.createWalletRoot(walletId);
+    File walletDirectory = new File(walletRoot);
+
+    WalletSummary walletSummary = WalletManager.getOrCreateWalletSummary(walletDirectory, walletId);
+
+    log.debug("Wallet summary {}", walletSummary);
 //
 //    // Check for present but empty wallet directory
 //    if (walletSummary.getEncryptedPassword() == null) {
@@ -204,7 +202,6 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
         new Runnable() {
           @Override
           public void run() {
-            //String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, Charsets.UTF_8);
             trezorWalletStatus.setText(Languages.safeText(MessageKey.USE_TREZOR_REPORT_MESSAGE_SUCCESS, true));
             AccessibilityDecorator.apply(trezorWalletStatus, MessageKey.USE_TREZOR_REPORT_MESSAGE_SUCCESS);
             AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, trezorWalletStatus, true, MultiBitUI.NORMAL_ICON_SIZE);

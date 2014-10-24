@@ -46,6 +46,7 @@ public class UseTrezorWizard extends AbstractHardwareWalletWizard<UseTrezorWizar
 
     // TODO - "no PIN" panel
 
+
     // Ask user to confirm 'Encrypt MultiBit HD unlock text'
     wizardViewMap.put(
       UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK.name(),
