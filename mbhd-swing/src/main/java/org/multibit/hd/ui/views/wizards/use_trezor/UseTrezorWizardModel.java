@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import org.bitcoinj.wallet.KeyChain;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -43,7 +44,12 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   /**
     * Wipe Trezor requires a separate executor
     */
-   private final ListeningExecutorService wipeTrezorService = SafeExecutors.newSingleThreadExecutor("wipe-trezor");
+  private final ListeningExecutorService wipeTrezorService = SafeExecutors.newSingleThreadExecutor("wipe-trezor");
+
+  /**
+    * Request root node for Trezor requires a separate executor
+    */
+  private final ListeningExecutorService requestRootNodeService = SafeExecutors.newSingleThreadExecutor("request-root-node");
 
    /**
    * The current selection option as a state
@@ -229,7 +235,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
   /**
    * <p>Request the Trezor features</p>
-   * <p>Reduced visibility for panel view</p>
    */
   void requestFeatures() {
 
@@ -273,7 +278,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
   /**
    * <p>Wipe the Trezor device</p>
-   * <p>Reduced visibility for panel view</p>
    */
   void wipeTrezor() {
 
@@ -318,4 +322,50 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     });
 
   }
+
+  /**
+    * Request the root node for the Trezor HD wallet
+    */
+   public void requestRootNode() {
+     // Start the requestRootNode
+     ListenableFuture future = requestRootNodeService.submit(new Callable<Boolean>() {
+
+       @Override
+       public Boolean call() throws Exception {
+
+         Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
+         if (hardwareWalletServiceOptional.isPresent()) {
+           HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
+           if (hardwareWalletService.isWalletPresent()) {
+             log.debug("Request valid receiving address (chain 0)...");
+             hardwareWalletService.requestPublicKey(0, KeyChain.KeyPurpose.RECEIVE_FUNDS, 0);
+             log.debug("Request public key request has been performed");
+           } else {
+             log.debug("No wallet present");
+           }
+         } else {
+           log.error("No hardware wallet service");
+         }
+         return true;
+
+       }
+
+     });
+     Futures.addCallback(future, new FutureCallback() {
+       @Override
+       public void onSuccess(@Nullable Object result) {
+
+         // We now requested the address so throw a ComponentChangedEvent for the UI to update
+         ViewEvents.fireComponentChangedEvent(UseTrezorState.USE_TREZOR_REPORT_PANEL.name(), Optional.absent());
+
+       }
+
+       @Override
+       public void onFailure(Throwable t) {
+
+         // Have a failure
+         t.printStackTrace();
+       }
+     });
+   }
 }

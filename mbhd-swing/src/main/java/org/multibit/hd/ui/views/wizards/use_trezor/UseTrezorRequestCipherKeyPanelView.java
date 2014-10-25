@@ -127,7 +127,7 @@ public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<
           log.debug("Performing a request cipher key to Trezor");
 
           // A 'requestCipherKey' is performed in which the user presses the OK button to encrypt a set text
-          // (the result of which will be used to decrypt a wallet)
+          // (the result of which will be used to decrypt the wallet)
           Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
           // Check if there is a wallet present
