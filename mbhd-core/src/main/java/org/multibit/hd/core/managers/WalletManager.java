@@ -419,25 +419,25 @@ public enum WalletManager implements WalletEventListener {
 
     final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
-    verifyWalletDirectory(walletDirectory);
     log.debug("walletDirectory = " + walletDirectory.toString());
 
     final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
     final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
     if (walletFileWithAES.exists()) {
+      log.debug("A wallet with name {} exists, opening", walletFileWithAES.getAbsolutePath());
 
       // There is already a wallet created with this root - if so load it and return that
       walletSummary = loadFromWalletDirectory(walletDirectory, password);
       if (Configurations.currentConfiguration != null) {
         Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
       }
-      walletSummary.setWalletType(WalletType.TREZOR_SOFT_WALLET);
+      walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
       setCurrentWalletSummary(walletSummary);
 
       return walletSummary;
     }
 
-    // Wallet file does not exist so create it
+    log.debug("Wallet file does not exist so create it . . .");
 
     // Create the containing directory if it does not exist
     if (!walletDirectory.exists()) {
@@ -446,9 +446,7 @@ public enum WalletManager implements WalletEventListener {
       }
     }
 
-    // Create a wallet using the seed and credentials
-    //DeterministicSeed deterministicSeed = new DeterministicSeed(seed, "", creationTimeInSeconds);
-    //Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
+    // Create a wallet using the root node
     DeterministicKey rootNodePubOnly = rootNode.getPubOnly();
     log.debug("rootNodePubOnly = " + rootNodePubOnly);
     Wallet walletToReturn = Wallet.fromWatchingKey(networkParameters, rootNodePubOnly, creationTimeInSeconds, rootNodePubOnly.getPath());
@@ -981,18 +979,8 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setNotes("");
     }
     walletSummary.setWalletId(walletId);
-    if (walletSummary.getWalletType() == null) {
-      // Infer the wallet type from the prefix
-      if (walletDirectory.getName().startsWith(WalletType.MBHD_SOFT_WALLET.getPrefix())) {
-        walletSummary.setWalletType(WalletType.MBHD_SOFT_WALLET);
-      }
-      if (walletDirectory.getName().startsWith(WalletType.TREZOR_HARD_WALLET.getPrefix())) {
-        walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
-      }
-      if (walletDirectory.getName().startsWith(WalletType.TREZOR_SOFT_WALLET.getPrefix())) {
-        walletSummary.setWalletType(WalletType.TREZOR_SOFT_WALLET);
-      }
-    }
+    // TODO Wallet type should be worked out from the internals of the loaded wallet for safety
+    // walletSummary.setWalletType(walletType);
 
     return walletSummary;
 
@@ -1032,6 +1020,8 @@ public enum WalletManager implements WalletEventListener {
     boolean result = walletDirectoryPattern.matcher(walletDirectory.getName()).matches();
 
     Preconditions.checkState(result, "'walletDirectory' is not named correctly: '" + walletDirectory.getAbsolutePath() + "'");
+
+    log.debug("Wallet directory verified ok");
 
   }
 
@@ -1217,9 +1207,9 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Generate the public only DeterministicKey form the private master key
+   * Generate the public only DeterministicKey from the private master key
    * <p/>
-   * For a real Trezor device this will be the result of a GetPublicKey od the M/44'/0'/0' path, received as an xpob and then converted to a DeterministicKey
+   * For a real Trezor device this will be the result of a GetPublicKey of the M/44'/0'/0' path, received as an xpub and then converted to a DeterministicKey
    *
    * @param privateMasterKey the private master key derived from the wallet seed
    *
@@ -1232,7 +1222,6 @@ public enum WalletManager implements WalletEventListener {
     DeterministicKey key_m_44h_0h = HDKeyDerivation.deriveChildKey(key_m_44h, ChildNumber.ZERO_HARDENED);
     log.debug("key_m_44h_0h deterministic key = " + key_m_44h_0h);
 
-    //DeterministicKey key_m_44h_0h_0h = deterministicHierarchy.deriveChild(key_m_44h_0h.getPath(), false, false, new ChildNumber(0, true));
     DeterministicKey key_m_44h_0h_0h = HDKeyDerivation.deriveChildKey(key_m_44h_0h, ChildNumber.ZERO_HARDENED);
     log.debug("key_m_44h_0h_0h = " + key_m_44h_0h_0h);
 
