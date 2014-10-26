@@ -297,7 +297,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
       try {
         WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
       } catch (WalletLoadException wle) {
-        // Mostly this will be from a bad 
+        // Mostly this will be from a bad password
         log.error(wle.getMessage());
         // Assume bad credentials
         return false;

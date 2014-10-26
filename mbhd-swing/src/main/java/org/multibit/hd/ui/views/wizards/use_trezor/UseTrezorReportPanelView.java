@@ -8,6 +8,7 @@ import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.utils.Dates;
@@ -122,6 +123,15 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
 
   }
 
+  public boolean beforeHide(boolean isExitCancel) {
+
+    // Update everything
+    // TODO- make more specific
+    CoreEvents.fireConfigurationChangedEvent();
+    return true;
+
+  }
+
   @Override
   public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
@@ -202,6 +212,7 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
                           trezorWalletStatus.setText(Languages.safeText(MessageKey.USE_TREZOR_REPORT_MESSAGE_SUCCESS, true));
                           AccessibilityDecorator.apply(trezorWalletStatus, MessageKey.USE_TREZOR_REPORT_MESSAGE_SUCCESS);
                           AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, trezorWalletStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+
                         } catch (IOException ioe) {
                           ioe.printStackTrace();
                         }
