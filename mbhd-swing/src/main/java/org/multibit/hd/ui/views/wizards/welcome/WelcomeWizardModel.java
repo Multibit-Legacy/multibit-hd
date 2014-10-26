@@ -90,8 +90,6 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
   private EnterSeedPhraseModel restoreWalletEnterTimestampModel;
   private ConfirmPasswordModel restoreWalletConfirmPasswordModel;
 
-  private List<WalletSummary> walletList = Lists.newArrayList();
-
   /**
    * @param state The state object
    */
@@ -118,8 +116,10 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case WELCOME_SELECT_WALLET:
         state = selectWalletChoice;
         break;
+      case CREATE_WALLET_PREPARATION:
+        state = CREATE_WALLET_SELECT_BACKUP_LOCATION;
+        break;
       case CREATE_WALLET_SELECT_BACKUP_LOCATION:
-        log.debug("Cloud backup location = " + getCloudBackupLocation());
         state = CREATE_WALLET_SEED_PHRASE;
         break;
       case CREATE_WALLET_SEED_PHRASE:
@@ -185,14 +185,17 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case WELCOME_SELECT_WALLET:
         state = WELCOME_SELECT_LANGUAGE;
         break;
-      case CREATE_WALLET_SELECT_BACKUP_LOCATION:
+      case CREATE_WALLET_PREPARATION:
         state = WELCOME_SELECT_WALLET;
+        break;
+      case CREATE_WALLET_SELECT_BACKUP_LOCATION:
+        state = CREATE_WALLET_PREPARATION;
         break;
       case CREATE_WALLET_SEED_PHRASE:
         state = CREATE_WALLET_SELECT_BACKUP_LOCATION;
         break;
       case CREATE_WALLET_REPORT:
-        throw new IllegalStateException("'Previous' is not permitted here");
+        state = CREATE_WALLET_SEED_PHRASE;
       case RESTORE_PASSWORD_SEED_PHRASE:
         state = WELCOME_SELECT_WALLET;
         break;

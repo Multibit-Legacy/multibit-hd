@@ -338,7 +338,8 @@ public class Panels {
   public static JPanel newWalletSelector(
     ActionListener listener,
     String createCommand,
-    String existingWalletCommand, String restorePasswordCommand,
+    String existingWalletCommand,
+    String restorePasswordCommand,
     String restoreWalletCommand
   ) {
 
@@ -348,19 +349,19 @@ public class Panels {
     radio1.setSelected(true);
     radio1.setActionCommand(createCommand);
 
-    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_PASSWORD);
-    radio2.setActionCommand(restorePasswordCommand);
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.USE_EXISTING_WALLET);
+    radio2.setActionCommand(existingWalletCommand);
 
-    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_WALLET);
-    radio3.setActionCommand(restoreWalletCommand);
+    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_PASSWORD);
+    radio3.setActionCommand(restorePasswordCommand);
 
-    JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.USE_EXISTING_WALLET);
-    radio4.setActionCommand(existingWalletCommand);
+    JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_WALLET);
+    radio4.setActionCommand(restoreWalletCommand);
 
     // Check for existing wallets
     if (WalletManager.getWalletSummaries().isEmpty()) {
-      radio4.setEnabled(false);
-      radio4.setForeground(UIManager.getColor("RadioButton.disabledText"));
+      radio2.setEnabled(false);
+      radio2.setForeground(UIManager.getColor("RadioButton.disabledText"));
     }
 
     // Wallet selection is mutually exclusive

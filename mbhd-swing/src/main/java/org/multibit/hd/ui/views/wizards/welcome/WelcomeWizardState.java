@@ -24,6 +24,10 @@ public enum WelcomeWizardState {
    */
   WELCOME_SELECT_WALLET,
   /**
+   * Create wallet: Preparation instructions
+   */
+  CREATE_WALLET_PREPARATION,
+  /**
    * Create wallet: Select backup location
    */
   CREATE_WALLET_SELECT_BACKUP_LOCATION,

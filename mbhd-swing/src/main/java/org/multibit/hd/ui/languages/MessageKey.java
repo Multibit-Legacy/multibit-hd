@@ -337,10 +337,12 @@ public enum MessageKey {
   WELCOME_TITLE("welcome_title"),
   SELECT_LANGUAGE_TITLE("select_language_title"),
   SELECT_WALLET_TITLE("select_wallet_title"),
+
+  CREATE_WALLET_PREPARATION_TITLE("create_wallet_preparation_title"),
+  SELECT_BACKUP_LOCATION_TITLE("select_backup_location_title"),
   CREATE_WALLET_SEED_PHRASE_TITLE("create_wallet_seed_phrase_title"),
   CONFIRM_WALLET_SEED_PHRASE_TITLE("confirm_wallet_seed_phrase_title"),
   CREATE_WALLET_PASSWORD_TITLE("create_wallet_password_title"),
-  SELECT_BACKUP_LOCATION_TITLE("select_backup_location_title"),
   CREATE_WALLET_REPORT_TITLE("create_wallet_report_title"),
 
   RESTORE_PASSWORD_SEED_PHRASE_TITLE("restore_password_seed_phrase_title"),
