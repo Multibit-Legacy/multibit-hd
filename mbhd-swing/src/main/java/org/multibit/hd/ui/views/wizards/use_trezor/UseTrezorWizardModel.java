@@ -262,7 +262,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       public void onSuccess(@Nullable Object result) {
 
         // We now have the features so throw a ComponentChangedEvent for the UI to update
-        ViewEvents.fireComponentChangedEvent(UseTrezorState.USE_TREZOR_WALLET.name(), Optional.absent());
+        ViewEvents.fireComponentChangedEvent(UseTrezorState.VERIFY_TREZOR.name(), Optional.absent());
 
       }
 

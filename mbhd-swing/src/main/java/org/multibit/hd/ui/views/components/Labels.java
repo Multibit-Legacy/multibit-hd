@@ -243,6 +243,30 @@ public class Labels {
   }
 
   /**
+    * <p>A "status" label sets a label with no icon, a check or cross icon</p>
+    *
+    * @param key    The message key - if not present then empty text is put on the label
+    * @param values The substitution values
+    * @param status True if a check icon is required, false for a cross
+    *
+    * @return A new label with icon binding to allow the AwesomeDecorator to update it
+    */
+   public static JLabel newCoreStatusLabel(Optional<CoreMessageKey> key, Object[] values, Optional<Boolean> status) {
+
+     JLabel label;
+
+     if (key.isPresent()) {
+       label = newLabel(key.get(), values);
+     } else {
+       label = newBlankLabel();
+     }
+
+     decorateStatusLabel(label, status);
+
+     return label;
+   }
+
+  /**
    * <p>Decorate a label with HTML-wrapped text respecting LTR/RTL to ensure line breaks occur predictably</p>
    *
    * @param label The label to decorate

@@ -1,12 +1,15 @@
 package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
-import org.bitcoinj.crypto.HDKeyDerivation;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -83,7 +86,7 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    trezorWalletStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    trezorWalletStatus = Labels.newCoreStatusLabel(Optional.of(CoreMessageKey.CHANGE_PASSWORD_WORKING), null, Optional.<Boolean>absent());
 
     contentPanel.add(trezorWalletStatus, "wrap");
 
@@ -126,7 +129,7 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
   public boolean beforeHide(boolean isExitCancel) {
 
     // Update everything
-    // TODO- make more specific
+    // TODO- make more specific to only fire when new wallet has been switched to
     CoreEvents.fireConfigurationChangedEvent();
     return true;
 
@@ -174,12 +177,13 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
         try {
           Optional<HDNodeType> hdNodeType = ((PublicKey) event.getMessage().get()).getHdNodeType();
           if (hdNodeType.isPresent()) {
+            // Get the pubkey and chain code for the Trezor root node
             byte[] receivingPubKey = hdNodeType.get().getPublicKey().get();
             byte[] chainCode = hdNodeType.get().getChainCode().get();
 
-            final DeterministicKey rootNodeTop = HDKeyDerivation.createMasterPubKeyFromBytes(receivingPubKey, chainCode);
-            final DeterministicKey rootNode = HDKeyDerivation.deriveChildKey(rootNodeTop, 1);
-
+            // The path of the Trezor wallet root node  M/44'/0'/0'
+            ImmutableList<ChildNumber> path = ImmutableList.of(new ChildNumber(44 | ChildNumber.HARDENED_BIT), ChildNumber.ZERO_HARDENED, ChildNumber.ZERO_HARDENED);
+            final DeterministicKey rootNode = new DeterministicKey(path, chainCode, ECKey.CURVE.getCurve().decodePoint(receivingPubKey), null, null);
             log.debug("Attempting to load/ create with wallet rootNode {}", rootNode);
 
             final UseTrezorWizardModel model = getWizardModel();
