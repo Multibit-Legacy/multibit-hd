@@ -163,7 +163,6 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case RESTORE_WALLET_REPORT:
         throw new IllegalStateException("'Next' is not permitted here");
       case SELECT_WALLET_HARDWARE:
-        // TODO Requires implementation
         state = selectWalletChoice;
         break;
       default:

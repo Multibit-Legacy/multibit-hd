@@ -46,7 +46,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public void newPanelModel() {
 
-    currentSelection = CREATE_WALLET_SELECT_BACKUP_LOCATION;
+    currentSelection = CREATE_WALLET_PREPARATION;
     setPanelModel(currentSelection);
 
     // Bind this to the wizard model

@@ -30,7 +30,6 @@ import java.io.IOException;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class Labels {
 
@@ -250,7 +249,7 @@ public class Labels {
    */
   public static void decorateWrappingLabel(JLabel label, String value) {
 
-    Preconditions.checkNotNull(value,"'value' must be present");
+    Preconditions.checkNotNull(value, "'value' must be present");
 
     String htmlText = HtmlUtils.localiseWithLineBreaks(value.split("\n"));
 
@@ -273,6 +272,27 @@ public class Labels {
     }
 
   }
+
+  /**
+   * <p>An "icon" label sets a label with an icon in the leading position. Useful for lists of notes.</p>
+   *
+   * @param icon   The icon to place in the leading position
+   * @param key    The message key - if not present then empty text is put on the label
+   * @param values The substitution values
+   *
+   * @return A new label with icon binding to allow the AwesomeDecorator to update it
+   */
+  public static JLabel newIconLabel(AwesomeIcon icon, MessageKey key, Object[] values) {
+
+    JLabel label;
+
+    label = newLabel(key, values);
+
+    AwesomeDecorator.bindIcon(icon, label, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return label;
+  }
+
 
   /**
    * @param image The optional image
@@ -355,12 +375,13 @@ public class Labels {
   public static JLabel newSeedPhraseCreatedStatus(boolean status) {
     return newStatusLabel(MessageKey.SEED_PHRASE_CREATED_STATUS, null, status);
   }
+
   /**
    * @param status True if the address is acceptable (i.e. not mine)
    *
    * @return A new "address is mine" status label
    */
-  public static JLabel newAddressIsMineStatusLabel (boolean status) {
+  public static JLabel newAddressIsMineStatusLabel(boolean status) {
     return newStatusLabel(MessageKey.ADDRESS_IS_MINE_STATUS, null, status);
   }
 
@@ -408,13 +429,13 @@ public class Labels {
   }
 
   /**
-    * @return A new "wipe Trezor message" status label
-    */
-   public static JLabel newWipeTrezorLabel() {
-     return newLabel(MessageKey.WIPE_TREZOR_MESSAGE);
-   }
+   * @return A new "wipe Trezor message" status label
+   */
+  public static JLabel newWipeTrezorLabel() {
+    return newLabel(MessageKey.WIPE_TREZOR_MESSAGE);
+  }
 
-   /**
+  /**
    * @param status True if the status is "good"
    *
    * @return A new "synchronizing" status label
@@ -1005,16 +1026,16 @@ public class Labels {
   }
 
   /**
-     * @return A new "press Confirm on Trezor for MultiBit HD unlock" note
-     */
-    public static JLabel newPressConfirmOnTrezorNote() {
+   * @return A new "press Confirm on Trezor for MultiBit HD unlock" note
+   */
+  public static JLabel newPressConfirmOnTrezorNote() {
 
-      return newNoteLabel(new MessageKey[]{
-        MessageKey.PRESS_CONFIRM_ON_TREZOR,
-        MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT
-      }, new Object[][]{});
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.PRESS_CONFIRM_ON_TREZOR,
+      MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT
+    }, new Object[][]{});
 
-    }
+  }
 
   /**
    * @return A new "language change" note
