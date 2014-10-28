@@ -75,7 +75,10 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
         public void run() {
           // Ensure the panel updates its model (the button is outside of the panel itself)
           if (getWizardModel().getPanelName() != null) {
-            getWizardPanelView(getWizardModel().getPanelName()).updateFromComponentModels(Optional.absent());
+            log.debug("Wizard panel name {}", getWizardModel().getPanelName());
+            if (getWizardPanelView(getWizardModel().getPanelName()) != null) {
+              getWizardPanelView(getWizardModel().getPanelName()).updateFromComponentModels(Optional.absent());
+            }
           }
 
           // Move to the "button press" state
@@ -202,7 +205,9 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
         public void run() {
           // Ensure the panel updates its model (the button is outside of the panel itself)
           if (getWizardModel().getPanelName() != null) {
-            getWizardPanelView(getWizardModel().getPanelName()).updateFromComponentModels(Optional.absent());
+            if (getWizardPanelView(getWizardModel().getPanelName()) != null) {
+              getWizardPanelView(getWizardModel().getPanelName()).updateFromComponentModels(Optional.absent());
+            }
           }
 
           // Move to the "received public key" state
