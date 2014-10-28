@@ -916,6 +916,13 @@ public class Labels {
   }
 
   /**
+   * @return A new "seed phrase" message
+   */
+  public static JLabel newSeedPhrase() {
+    return newLabel(MessageKey.SEED_PHRASE);
+  }
+
+  /**
    * @return A new "description" label
    */
   public static JLabel newDescription() {

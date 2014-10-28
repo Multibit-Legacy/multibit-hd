@@ -74,7 +74,7 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
   @Override
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelNext(this, wizard);
+    PanelDecorator.addExitCancelPreviousNext(this, wizard);
 
   }
 

@@ -53,13 +53,16 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
 
     // Add to the panel
     panel.add(Labels.newTimestamp());
-    panel.add(seedTimestamp, "grow");
-    panel.add(Labels.newSeedSize(), "span 2,grow");
-    panel.add(seedSize, "grow,push,wrap");
+    panel.add(seedTimestamp, "grow,wrap");
 
-    panel.add(seedPhrase, "span 2,grow");
+    panel.add(Labels.newSeedPhrase());
+    panel.add(seedPhrase, "grow");
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink");
-    panel.add(Buttons.newRefreshButton(refreshAction), "shrink");
+    panel.add(Buttons.newRefreshButton(refreshAction), "shrink,wrap");
+
+    // Advanced controls are placed at the end
+    panel.add(Labels.newSeedSize(), "grow");
+    panel.add(seedSize, "grow,push,wrap");
 
     // Allowing printing of seed phrase is fraught with security hazards
     // Could use BIP38 encrypted QR code once webcam scanning is introduced

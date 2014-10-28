@@ -34,6 +34,8 @@ public class WelcomeWizardCreateWallet_en_US_Requirements {
 
     new WelcomeSelectCreateWalletUseCase(window).execute(parameters);
 
+    new CreateWalletPreparationUseCase(window).execute(parameters);
+
     new CreateWalletSelectBackupLocationWalletUseCase(window).execute(parameters);
 
     new CreateWalletSeedPhraseUseCase(window).execute(parameters);

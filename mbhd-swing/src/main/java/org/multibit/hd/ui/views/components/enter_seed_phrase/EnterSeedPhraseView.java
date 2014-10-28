@@ -136,7 +136,8 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
       panel.add(seedTimestampText, "growx,wrap");
     }
     if (showSeedPhrase) {
-      panel.add(seedPhraseTextArea, "span 2,growx,push");
+      panel.add(Labels.newSeedPhrase());
+      panel.add(seedPhraseTextArea, "growx,push");
       panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink,wrap");
     }
 

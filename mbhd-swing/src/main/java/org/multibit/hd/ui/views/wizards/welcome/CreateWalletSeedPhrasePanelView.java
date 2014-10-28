@@ -7,6 +7,7 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
@@ -67,6 +68,14 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
       "[]", // Column constraints
       "[][]" // Row constraints
     ));
+
+    // Warning notes
+    contentPanel.add(Labels.newNoteLabel(MessageKey.SEED_WARNING_NOTE_1, null), MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(Labels.newNoteLabel(MessageKey.SEED_WARNING_NOTE_2, null), MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(Labels.newNoteLabel(MessageKey.SEED_WARNING_NOTE_3, null), MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(Labels.newNoteLabel(MessageKey.SEED_WARNING_NOTE_4, null), MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+
+
 
     contentPanel.add(displaySeedPhraseMaV.getView().newComponentPanel(), MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
