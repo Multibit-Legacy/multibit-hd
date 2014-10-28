@@ -571,14 +571,21 @@ public enum MessageKey {
   ABOUT_NOTE_2("about_note_2"),
   ABOUT_NOTE_3("about_note_3"),
 
+  SELECT_BACKUP_NOTE_1("select_backup_note_1"),
+  SELECT_BACKUP_NOTE_1_TOOLTIP("select_backup_note_1_tooltip"),
+  SELECT_BACKUP_NOTE_2("select_backup_note_2"),
+
+  PREPARATION_NOTE_1("preparation_note_1"),
+  PREPARATION_NOTE_2("preparation_note_2"),
+  PREPARATION_NOTE_3("preparation_note_3"),
+  PREPARATION_NOTE_4("preparation_note_4"),
+  PREPARATION_NOTE_5("preparation_note_5"),
+  PREPARATION_NOTE_6("preparation_note_6"),
+
   SELECT_BACKUP_LOCATION_NOTE_1("select_backup_location_note_1"),
   SELECT_BACKUP_LOCATION_NOTE_2("select_backup_location_note_2"),
   SELECT_BACKUP_LOCATION_NOTE_3("select_backup_location_note_3"),
   SELECT_BACKUP_LOCATION_NOTE_4("select_backup_location_note_4"),
-
-  SELECT_BACKUP_NOTE_1("select_backup_note_1"),
-  SELECT_BACKUP_NOTE_1_TOOLTIP("select_backup_note_1_tooltip"),
-  SELECT_BACKUP_NOTE_2("select_backup_note_2"),
 
   SEED_WARNING_NOTE_1("seed_warning_note_1"),
   SEED_WARNING_NOTE_2("seed_warning_note_2"),

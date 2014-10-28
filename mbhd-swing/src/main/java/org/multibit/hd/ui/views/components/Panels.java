@@ -460,10 +460,8 @@ public class Panels {
       "[]" // Rows
     ));
 
-    PanelDecorator.applyDangerFadedTheme(panel);
-
     // Add to the panel
-    panel.add(Labels.newSeedWarningNote(), "grow,push");
+    panel.add(Labels.newCreateWalletPreparationNote(), "grow,push");
 
     return panel;
   }

@@ -173,12 +173,44 @@ public class Labels {
   /**
    * <p>Create a new label with appropriate font/theme for a note. Interpret the contents of the text as Markdown for HTML translation.</p>
    *
+   * @param key    The message key referencing simple HTML (standard wrapping/breaking elements like {@literal <html></html>} and {@literal <br/>} will be provided)
+   * @param values The substitution values if applicable
+   *
+   * @return A new label with HTML formatting to correctly render the line break and contents
+   */
+  public static JLabel newNoteLabel(MessageKey key, Object[] values) {
+
+    String line;
+    if (values != null && values.length > 0) {
+      // Substitution is required
+      line = Languages.safeText(key, values);
+    } else {
+      // Key only
+      line = Languages.safeText(key);
+    }
+
+    // Wrap in HTML to ensure LTR/RTL and line breaks are respected
+    JLabel label = new JLabel(HtmlUtils.localiseWithLineBreaks(new String[] {line}));
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(label, key);
+
+    // Theme
+    label.setForeground(Themes.currentTheme.text());
+
+    return label;
+
+  }
+
+  /**
+   * <p>Create a new label with appropriate font/theme for a note. Interpret the contents of the text as Markdown for HTML translation.</p>
+   *
    * @param keys   The message keys for each line referencing simple HTML (standard wrapping/breaking elements like {@literal <html></html>} and {@literal <br/>} will be provided)
    * @param values The substitution values for each line if applicable
    *
    * @return A new label with HTML formatting to correctly render the line break and contents
    */
-  static public JLabel newNoteLabel(MessageKey[] keys, Object[][] values) {
+  public static JLabel newNoteLabel(MessageKey[] keys, Object[][] values) {
 
     String[] lines = new String[keys.length];
     for (int i = 0; i < keys.length; i++) {
@@ -213,7 +245,7 @@ public class Labels {
    *
    * @return A new label with icon binding to allow the AwesomeDecorator to update it
    */
-  static JLabel newStatusLabel(MessageKey key, Object[] values, boolean status) {
+  public static JLabel newStatusLabel(MessageKey key, Object[] values, boolean status) {
     return newStatusLabel(Optional.of(key), values, Optional.of(status));
   }
 
@@ -242,28 +274,28 @@ public class Labels {
   }
 
   /**
-    * <p>A "status" label sets a label with no icon, a check or cross icon</p>
-    *
-    * @param key    The message key - if not present then empty text is put on the label
-    * @param values The substitution values
-    * @param status True if a check icon is required, false for a cross
-    *
-    * @return A new label with icon binding to allow the AwesomeDecorator to update it
-    */
-   public static JLabel newCoreStatusLabel(Optional<CoreMessageKey> key, Object[] values, Optional<Boolean> status) {
+   * <p>A "status" label sets a label with no icon, a check or cross icon</p>
+   *
+   * @param key    The message key - if not present then empty text is put on the label
+   * @param values The substitution values
+   * @param status True if a check icon is required, false for a cross
+   *
+   * @return A new label with icon binding to allow the AwesomeDecorator to update it
+   */
+  public static JLabel newCoreStatusLabel(Optional<CoreMessageKey> key, Object[] values, Optional<Boolean> status) {
 
-     JLabel label;
+    JLabel label;
 
-     if (key.isPresent()) {
-       label = newLabel(key.get(), values);
-     } else {
-       label = newBlankLabel();
-     }
+    if (key.isPresent()) {
+      label = newLabel(key.get(), values);
+    } else {
+      label = newBlankLabel();
+    }
 
-     decorateStatusLabel(label, status);
+    decorateStatusLabel(label, status);
 
-     return label;
-   }
+    return label;
+  }
 
   /**
    * <p>Decorate a label with HTML-wrapped text respecting LTR/RTL to ensure line breaks occur predictably</p>
@@ -306,13 +338,17 @@ public class Labels {
    *
    * @return A new label with icon binding to allow the AwesomeDecorator to update it
    */
-  public static JLabel newIconLabel(AwesomeIcon icon, MessageKey key, Object[] values) {
+  public static JLabel newIconLabel(AwesomeIcon icon, Optional<MessageKey> key, Object[] values) {
 
     JLabel label;
 
-    label = newLabel(key, values);
+    if (key.isPresent()) {
+      label = newLabel(key.get(), values);
+    } else {
+      label = newBlankLabel();
+    }
 
-    AwesomeDecorator.bindIcon(icon, label, true, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.bindIcon(icon, label, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return label;
   }
@@ -1134,20 +1170,20 @@ public class Labels {
   }
 
   /**
-   * @return A new "seed warning" note
+   * @return A new "create wallet preparation" note
    */
-  public static JLabel newSeedWarningNote() {
+  public static JLabel newCreateWalletPreparationNote() {
 
     JLabel label = newNoteLabel(new MessageKey[]{
-      MessageKey.SEED_WARNING_NOTE_1,
-      MessageKey.SEED_WARNING_NOTE_2,
-      MessageKey.SEED_WARNING_NOTE_3,
-      MessageKey.SEED_WARNING_NOTE_4,
-      MessageKey.SEED_WARNING_NOTE_5,
+      MessageKey.PREPARATION_NOTE_1,
+      MessageKey.PREPARATION_NOTE_2,
+      MessageKey.PREPARATION_NOTE_3,
+      MessageKey.PREPARATION_NOTE_4,
+      MessageKey.PREPARATION_NOTE_5,
     }, new Object[][]{});
 
     // Allow FEST to find this
-    label.setName(MessageKey.SEED_WARNING_NOTE_1.getKey());
+    label.setName(MessageKey.PREPARATION_NOTE_1.getKey());
 
     // Allow for danger theme
     label.setForeground(Themes.currentTheme.dangerAlertText());

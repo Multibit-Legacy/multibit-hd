@@ -32,7 +32,7 @@ public class CreateWalletSeedPhraseUseCase extends AbstractFestUseCase {
     assertLabelText(MessageKey.CREATE_WALLET_SEED_PHRASE_TITLE);
 
     window
-      .label(MessageKey.SEED_WARNING_NOTE_1.getKey())
+      .label(MessageKey.PREPARATION_NOTE_1.getKey())
       .requireVisible();
 
     window

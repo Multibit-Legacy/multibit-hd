@@ -31,10 +31,6 @@ public interface MultiBitUI {
    * The minimum height for a standard wizard panel (450 is tight) allowing for popovers
    */
   int WIZARD_MIN_HEIGHT = 450;
-  /**
-   * The minimum height for a welcome wizard panel (500 is minimum for 24 word seed and padding) allowing for popovers
-   */
-  int WELCOME_WIZARD_MIN_HEIGHT = 500;
 
   /**
    * The minimum width for a wizard popover (must be less than the PREF defined below)
