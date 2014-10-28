@@ -13,6 +13,7 @@ public enum SendBitcoinState {
 
   SEND_ENTER_AMOUNT,
   SEND_CONFIRM_AMOUNT,
+  SEND_CONFIRM_TREZOR,
   SEND_REPORT,
 
   // End of enum

@@ -105,10 +105,27 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
       case SEND_CONFIRM_AMOUNT:
 
         // The user has confirmed the send details and pressed the next button
-        sendBitcoin();
+        // For a non-Trezor wallet navigate directly to the send screen
+              // Get the current wallet
+        Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+        if (currentWalletSummary.isPresent()) {
+          if (WalletType.TREZOR_HARD_WALLET.equals(currentWalletSummary.get().getWalletType())) {
+            log.debug("Sending using a Trezor hard wallet");
+            state = SEND_CONFIRM_TREZOR;
+          } else {
+            log.debug("Not sending from a Trezor hard wallet - send directly");
+            sendBitcoin();
 
-        state = SEND_REPORT;
+            state = SEND_REPORT;          }
+        } else {
+          log.debug("No wallet summary - cannot send");
+        }
+
         break;
+
+      case SEND_CONFIRM_TREZOR:
+        // Stay on the SEND_CONFIRM_TREZOR panel until the panel model moves it off this state
+        state = SEND_CONFIRM_TREZOR;
     }
   }
 
@@ -121,6 +138,9 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
         break;
       case SEND_CONFIRM_AMOUNT:
         state = SEND_ENTER_AMOUNT;
+        break;
+      case SEND_CONFIRM_TREZOR:
+        state = SEND_CONFIRM_AMOUNT;
         break;
     }
 
