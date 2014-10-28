@@ -78,7 +78,10 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
     // Capabilities
     panel.add(Labels.newLabel(CoreMessageKey.WALLET_CAPABILITIES),"wrap");
     walletCapabilitiesTextArea = TextBoxes.newReadOnlyTextArea(4,50);
-    walletCapabilitiesTextArea.setText(Languages.safeText(walletSummary.getWalletType().getKey()));
+    // Can only provide capabilities for known wallet types and we can't make assumptions
+    if (walletSummary.getWalletType() != null) {
+      walletCapabilitiesTextArea.setText(Languages.safeText(walletSummary.getWalletType().getKey()));
+    }
     panel.add(walletCapabilitiesTextArea, "span 2,wrap");
 
     return panel;
