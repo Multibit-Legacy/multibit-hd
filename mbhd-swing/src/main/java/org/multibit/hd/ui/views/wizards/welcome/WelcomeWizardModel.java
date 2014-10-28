@@ -193,6 +193,9 @@ public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> 
       case CREATE_WALLET_SEED_PHRASE:
         state = CREATE_WALLET_SELECT_BACKUP_LOCATION;
         break;
+      case CREATE_WALLET_CONFIRM_SEED_PHRASE:
+        state = CREATE_WALLET_SEED_PHRASE;
+        break;
       case CREATE_WALLET_REPORT:
         state = CREATE_WALLET_SEED_PHRASE;
       case RESTORE_PASSWORD_SEED_PHRASE:

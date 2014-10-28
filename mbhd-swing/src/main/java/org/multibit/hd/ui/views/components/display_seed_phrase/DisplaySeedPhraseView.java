@@ -16,7 +16,6 @@ import java.awt.event.ActionListener;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhraseModel> implements ActionListener {
 
@@ -85,6 +84,27 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
   }
 
   /**
+   * <p>Trigger a new seed phrase</p>
+   *
+   * @param size The size to use (provided by the model)
+   */
+  public void newSeedPhrase(SeedPhraseSize size) {
+
+    final DisplaySeedPhraseModel model = getModel().get();
+
+    model.newSeedPhrase(size);
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        seedPhrase.setText(model.displaySeedPhrase());
+
+      }
+    });
+
+  }
+
+  /**
    * <p>Handle the "change seed phrase size" action event</p>
    *
    * @param e The action event
@@ -94,11 +114,22 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
 
     JComboBox source = (JComboBox) e.getSource();
 
-    DisplaySeedPhraseModel model = getModel().get();
+    newSeedPhrase(SeedPhraseSize.fromOrdinal(source.getSelectedIndex()));
 
-    model.newSeedPhrase(SeedPhraseSize.fromOrdinal(source.getSelectedIndex()));
-    seedPhrase.setText(model.displaySeedPhrase());
+  }
 
+  /**
+   * @return A new action for generating a new seed phrase
+   */
+  private Action getRefreshAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        newSeedPhrase(getModel().get().getCurrentSeedSize());
+
+      }
+    };
   }
 
   /**
@@ -135,23 +166,6 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
 
       }
 
-    };
-  }
-
-  /**
-   * @return A new action for generating a new seed phrase
-   */
-  private Action getRefreshAction() {
-    return new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-
-        final DisplaySeedPhraseModel model = getModel().get();
-
-        model.newSeedPhrase(model.getCurrentSeedSize());
-        seedPhrase.setText(model.displaySeedPhrase());
-
-      }
     };
   }
 }
