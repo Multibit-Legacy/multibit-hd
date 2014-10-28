@@ -5,7 +5,7 @@ import org.bitcoinj.core.WalletExtension;
 import org.multibit.hd.brit.dto.MatcherResponse;
 
 /**
- * <p>Walet Extension to provide the following to Wallet:</p>
+ * <p>Wallet Extension to provide the following to Wallet:</p>
  * <ul>
  * <li>Persistence of a MatcherResponse</li>
  * </ul>
