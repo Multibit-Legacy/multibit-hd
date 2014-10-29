@@ -346,4 +346,11 @@ public abstract class AbstractFestUseCase {
     Pause.pause(1, TimeUnit.SECONDS);
   }
 
+  /**
+   * The standard length of time for a user to respond to something (e.g. hardware wallet button press)
+   */
+  protected void pauseForUserInput() {
+    Pause.pause(1, TimeUnit.SECONDS);
+  }
+
 }

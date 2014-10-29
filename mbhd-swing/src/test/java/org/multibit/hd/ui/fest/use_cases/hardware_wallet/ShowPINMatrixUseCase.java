@@ -1,9 +1,13 @@
 package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
+import org.bitcoinj.core.Utils;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
+import org.multibit.hd.hardware.core.events.MessageEventType;
+import org.multibit.hd.hardware.core.events.MessageEvents;
 import org.multibit.hd.hardware.core.messages.Features;
+import org.multibit.hd.hardware.core.messages.MessageSignature;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -53,7 +57,7 @@ public class ShowPINMatrixUseCase extends AbstractFestUseCase {
     // Verify that the title appears
     assertLabelText(MessageKey.USE_TREZOR_TITLE);
 
-    // Cick Next
+    // Click Next (use is the default)
     window
       .button(MessageKey.NEXT.getKey())
       .click();
@@ -61,11 +65,27 @@ public class ShowPINMatrixUseCase extends AbstractFestUseCase {
     // Allow time for the view to react
     pauseForViewReset();
 
-    // Initially the 'Unlock' button should be disabled
+    // Request cipher key
     window
-      .button(MessageKey.PASSWORD_UNLOCK.getKey())
+      .button(MessageKey.PIN_TITLE.getKey())
       .requireVisible()
       .requireDisabled();
+
+    // Simulate a deterministic response to the request
+    MessageEvents.fireMessageEvent(MessageEventType.BUTTON_REQUEST);
+
+    // Allow time for the "user" to react to the button request
+    pauseForUserInput();
+
+    // Simulate the response after the button was pressed
+    MessageSignature messageSignature = new MessageSignature(
+      "1KqYyzL53R8oA1LdYvyv7m6JUryFfGJDpa",
+      Utils.HEX.decode("be3c43189407284bb3fd1ac0040db1e0")
+    );
+    HardwareWalletEvents.fireHardwareWalletEvent(HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED, messageSignature);
+
+    // Allow time for the UI to react
+    pauseForComponentReset();
 
     // Click on each pin button 0
     window.button("pin 0").click();
