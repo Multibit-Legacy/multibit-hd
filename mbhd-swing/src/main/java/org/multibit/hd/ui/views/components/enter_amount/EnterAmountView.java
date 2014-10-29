@@ -1,9 +1,9 @@
 package org.multibit.hd.ui.views.components.enter_amount;
 
-import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
@@ -23,9 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 
 /**
@@ -98,39 +98,40 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     // Use the current Bitcoin configuration
     LabelDecorator.applyBitcoinSymbolLabel(bitcoinSymbolLabel);
 
-    // Bind a key listener to allow instant update of UI to amount changes
-    // Do not use a focus listener because it will move the value according to
-    // the inexact fiat value leading to 10mB becoming 10.00635mB
-    // TODO Convert this to DocumentListener
-    bitcoinAmountText.addKeyListener(new KeyAdapter() {
+    // Bind a document listener to respond to UI updates
+    bitcoinAmountText.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        updateLocalAmount();
+      }
 
       @Override
-      public void keyReleased(KeyEvent e) {
-
-        if (e.isActionKey() || e.getKeyCode() == KeyEvent.VK_TAB || e.getKeyCode() == KeyEvent.VK_SHIFT) {
-          // Ignore
-          return;
-        }
-
+      public void removeUpdate(DocumentEvent e) {
         updateLocalAmount();
-
       }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        updateLocalAmount();
+      }
+
     });
 
-    // Bind a key listener to allow instant update of UI to amount changes
-    // Do not use a focus listener because it will move the value according to
-    // the inexact fiat value leading to 10mB becoming 10.00635mB
-    // TODO Convert this to DocumentListener
-    localAmountText.addKeyListener(new KeyAdapter() {
+    // Bind a document listener to respond to UI updates
+    localAmountText.getDocument().addDocumentListener(new DocumentListener() {
       @Override
-      public void keyReleased(KeyEvent e) {
+      public void insertUpdate(DocumentEvent e) {
+        updateLocalAmount();
+      }
 
-        if (e.isActionKey() || e.getKeyCode() == KeyEvent.VK_TAB || e.getKeyCode() == KeyEvent.VK_SHIFT) {
-          // Ignore
-          return;
-        }
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        updateLocalAmount();
+      }
 
-     updateBitcoinAmount();
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        updateLocalAmount();
       }
 
     });

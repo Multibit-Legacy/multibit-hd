@@ -9,9 +9,9 @@ import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -50,15 +50,22 @@ public class EnterSearchView extends AbstractComponentView<EnterSearchModel> {
     // Provide an initial search
     enterSearchTextField.setText(model.getValue());
 
-    // Bind a key listener to allow instant update of UI to entered data
-    // TODO Convert this to DocumentListener
-    enterSearchTextField.addKeyListener(new KeyAdapter() {
-
+    // Bind a document listener to allow instant update of UI to entered data
+    enterSearchTextField.getDocument().addDocumentListener(new DocumentListener() {
       @Override
-      public void keyReleased(KeyEvent e) {
+      public void insertUpdate(DocumentEvent e) {
         updateModelFromView();
       }
 
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        updateModelFromView();
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        updateModelFromView();
+      }
     });
 
     // Add to the panel
