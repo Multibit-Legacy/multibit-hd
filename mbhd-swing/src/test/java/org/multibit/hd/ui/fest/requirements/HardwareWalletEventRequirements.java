@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.hardware_wallet.ConnectThenEnterPINUseCase;
+import org.multibit.hd.ui.fest.use_cases.hardware_wallet.ShowUseHardwareWalletUseCase;
 
 import java.util.Map;
 
@@ -22,7 +22,7 @@ public class HardwareWalletEventRequirements {
     Map<String, Object> parameters = Maps.newHashMap();
 
     // Verify the "device connected" alert
-    new ConnectThenEnterPINUseCase(window).execute(parameters);
+    new ShowUseHardwareWalletUseCase(window).execute(parameters);
 
   }
 }

@@ -12,14 +12,16 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify an alert is shown when a hardware wallet is connected</li>
+ * <li>Verify a hardware wallet PIN matrix appears</li>
  * </ul>
+ *
+ * TODO Requires implementation
  *
  * @since 0.0.1
  */
-public class ConnectThenEnterPINUseCase extends AbstractFestUseCase {
+public class ShowPINMatrixUseCase extends AbstractFestUseCase {
 
-  public ConnectThenEnterPINUseCase(FrameFixture window) {
+  public ShowPINMatrixUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -41,20 +43,14 @@ public class ConnectThenEnterPINUseCase extends AbstractFestUseCase {
     // Check that an alert message is present
     assertLabelContainsValue("alert_message_label", "Aardvark");
 
-    // Check the 'Yes' button on the alert is present
-    window
-      .button(MessageKey.YES.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    // Click on the 'Yes' button
+    // Check the 'Yes' button on the alert is present and click it
     window
       .button(MessageKey.YES.getKey())
       .click();
 
-    // Verify the "Unlock screen" ("Enter PIN") appears by checking there is an exit button
+    // Verify the "use hardware wallet" wizard appears
     window
-      .button(MessageKey.EXIT.getKey())
+      .button(MessageKey.CANCEL.getKey())
       .requireVisible()
       .requireEnabled();
 
