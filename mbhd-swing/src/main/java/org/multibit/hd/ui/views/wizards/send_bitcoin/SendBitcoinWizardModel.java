@@ -1,11 +1,11 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.uri.BitcoinURI;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
@@ -31,7 +31,6 @@ import static org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState> {
 
@@ -106,7 +105,7 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
         // The user has confirmed the send details and pressed the next button
         // For a non-Trezor wallet navigate directly to the send screen
-              // Get the current wallet
+        // Get the current wallet
         Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
         if (currentWalletSummary.isPresent()) {
           if (WalletType.TREZOR_HARD_WALLET.equals(currentWalletSummary.get().getWalletType())) {
@@ -116,7 +115,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
             log.debug("Not sending from a Trezor hard wallet - send directly");
             sendBitcoin();
 
-            state = SEND_REPORT;          }
+            state = SEND_REPORT;
+          }
         } else {
           log.debug("No wallet summary - cannot send");
         }
@@ -235,6 +235,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
 
   /**
    * Prepare the Bitcoin transaction that will be sent after user confirmation
+   *
+   * @return True if the transaction was prepared OK
    */
   private boolean prepareTransaction() {
     Preconditions.checkNotNull(enterAmountPanelModel);

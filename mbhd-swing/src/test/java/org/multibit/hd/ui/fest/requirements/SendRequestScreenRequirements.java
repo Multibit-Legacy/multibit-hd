@@ -51,7 +51,7 @@ public class SendRequestScreenRequirements {
     new SendNoFundsAmountScreenUseCase(window).execute(parameters);
 
     // Click Next and fill in the confirm panel
-    new SendNoFundsConfirmScreenUseCase(window).execute(parameters);
+    new SendNoFundsReportScreenUseCase(window).execute(parameters);
   }
 
   private static void verifyRequest(FrameFixture window, Map<String, Object> parameters) {
