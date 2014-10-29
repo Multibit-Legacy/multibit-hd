@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components.enter_seed_phrase;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.views.components.*;
 import org.slf4j.Logger;
@@ -133,11 +134,11 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     // Add to the panel
     if (showTimestamp) {
       panel.add(Labels.newTimestamp());
-      panel.add(seedTimestampText, "growx,wrap");
+      panel.add(seedTimestampText, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",growx,wrap");
     }
     if (showSeedPhrase) {
       panel.add(Labels.newSeedPhrase());
-      panel.add(seedPhraseTextArea, "growx,push");
+      panel.add(seedPhraseTextArea, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",growx,push");
       panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink,wrap");
     }
 
