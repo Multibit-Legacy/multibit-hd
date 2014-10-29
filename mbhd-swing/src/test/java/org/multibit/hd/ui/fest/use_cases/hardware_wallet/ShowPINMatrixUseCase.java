@@ -15,7 +15,7 @@ import java.util.Map;
  * <li>Verify a hardware wallet PIN matrix appears</li>
  * </ul>
  *
- * TODO Requires implementation
+ * <p>Requires the "use device" screen to be showing</p>
  *
  * @since 0.0.1
  */
@@ -49,10 +49,14 @@ public class ShowPINMatrixUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the "use hardware wallet" wizard appears
+
+    // Verify that the title appears
+    assertLabelText(MessageKey.USE_TREZOR_TITLE);
+
+    // Cick Next
     window
-      .button(MessageKey.CANCEL.getKey())
-      .requireVisible()
-      .requireEnabled();
+      .button(MessageKey.NEXT.getKey())
+      .click();
 
     // Allow time for the view to react
     pauseForViewReset();

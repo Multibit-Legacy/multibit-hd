@@ -18,9 +18,9 @@ import java.util.Map;
  *
  * @since 0.0.1
  */
-public class ShowUseHardwareWalletUseCase extends AbstractFestUseCase {
+public class ShowThenCancelUseHardwareWalletUseCase extends AbstractFestUseCase {
 
-  public ShowUseHardwareWalletUseCase(FrameFixture window) {
+  public ShowThenCancelUseHardwareWalletUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -76,9 +76,9 @@ public class ShowUseHardwareWalletUseCase extends AbstractFestUseCase {
       .requireEnabled()
       .requireVisible();
 
-    // OK to proceed
+    // Cancel
     window
-      .button(MessageKey.NEXT.getKey())
+      .button(MessageKey.CANCEL.getKey())
       .click();
 
   }
