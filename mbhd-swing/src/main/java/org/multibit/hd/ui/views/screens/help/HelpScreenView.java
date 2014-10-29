@@ -157,6 +157,11 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     // Control visibility and availability
     launchBrowserButton.setEnabled(Desktop.isDesktopSupported());
 
+    // Note adding search facility is more complex than it first appears
+    // You will need a corresponding service on the website and
+    // a mechanism of caching all words in the help corpus along
+    // with the article titles
+
     // Create the browser
     editorPane = createBrowser();
 
