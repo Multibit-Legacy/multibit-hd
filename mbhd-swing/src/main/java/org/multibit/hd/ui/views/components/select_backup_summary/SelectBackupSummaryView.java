@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.components.select_backup_summary;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.BackupSummary;
-import org.multibit.hd.core.dto.comparators.BackupSummaryComparator;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.components.AbstractComponentView;
 import org.multibit.hd.ui.views.components.ComboBoxes;
@@ -12,7 +11,6 @@ import org.multibit.hd.ui.views.components.Panels;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -85,9 +83,6 @@ public class SelectBackupSummaryView extends AbstractComponentView<SelectBackupS
     List<BackupSummary> backupSummaries = getModel().get().getBackupSummaries();
 
     if (backupSummaries != null) {
-
-      // Sort into descending date order (newest first)
-      Collections.sort(backupSummaries, new BackupSummaryComparator());
 
       // Add in reverse order to preserve sorting
       for (int i = backupSummaries.size() - 1; i >= 0; i--) {
