@@ -59,7 +59,7 @@ public enum UseTrezorState {
   /**
    * Report panel
    */
-  USE_TREZOR_REPORT_PANEL,
+  USE_TREZOR_REPORT_PANEL
 
   // End of enum
   ;

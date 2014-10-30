@@ -125,8 +125,8 @@ public class SendBitcoinWizardModel extends AbstractWizardModel<SendBitcoinState
         break;
 
       case SEND_CONFIRM_TREZOR:
-        // Stay on the SEND_CONFIRM_TREZOR panel until the onHardwareWalletEvent handler moves it off this state
-        state = SEND_CONFIRM_TREZOR;
+        // Move to send report
+        state = SEND_REPORT;
     }
   }
 
