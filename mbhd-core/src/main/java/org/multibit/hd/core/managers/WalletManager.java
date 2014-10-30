@@ -520,7 +520,7 @@ public enum WalletManager implements WalletEventListener {
     wallet.setKeychainLookaheadSize(WalletManager.LOOK_AHEAD_SIZE);
 
     // Too much information is revealed for debug
-    //log.trace("Just loaded wallet:\n{}", wallet.toString());
+    log.trace("Just loaded wallet:\n{}", wallet.toString());
 
     return wallet;
 

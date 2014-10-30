@@ -1,15 +1,16 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.subgraph.orchid.TorClient;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.KeyCrypterException;
 import org.bitcoinj.net.discovery.DnsDiscovery;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.wallet.KeyChain;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.subgraph.orchid.TorClient;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -22,6 +23,8 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.network.MultiBitPeerEventListener;
 import org.multibit.hd.core.utils.Coins;
+import org.multibit.hd.hardware.core.HardwareWalletService;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +88,8 @@ public class BitcoinNetworkService extends AbstractService {
     this.networkParameters = networkParameters;
 
     requireFixedThreadPoolExecutor(5, "bitcoin-network");
+
+    HardwareWalletService.hardwareWalletEventBus.register(this);
 
   }
 
@@ -238,7 +243,6 @@ public class BitcoinNetworkService extends AbstractService {
    * <p/>
    * <p>In the future will also need:</p>
    * <ul>
-   * <li>the wallet to send from - when Trezor comes onstream</li>
    * <li>a CoinSelector - when HD subnodes are supported</li>
    * </ul>
    * <p>The result of the operation is sent to the CoreEventBus as a TransactionCreationEvent and, if the tx is sent ok, a BitcoinSentEvent</p>
@@ -270,18 +274,31 @@ public class BitcoinNetworkService extends AbstractService {
     }
 
     // Get the current wallet
-    Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+    WalletSummary currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
+    Wallet wallet = currentWalletSummary.getWallet();
 
     // Derive and append the key parameter to unlock the wallet
     if (!appendKeyParameter(sendRequestSummary, wallet)) {
       return false;
     }
 
-    // Attempt to sign the transaction and signAndCommit it
-    if (!signAndCommit(sendRequestSummary, wallet)) {
-      return false;
+    if (WalletType.TREZOR_HARD_WALLET.equals(currentWalletSummary.getWalletType())) {
+      // Attempt to sign the transaction using the Trezor wallet
+      if (!signUsingTrezor(sendRequestSummary, wallet)) {
+        // This will fire HardwareWalletEvents as the signing progresses which are dealt with in the onHardwareWalletEvent method below
+        return false;
+      }
+    } else {
+      // Attempt to sign the transaction directly
+      if (!signDirectly(sendRequestSummary, wallet)) {
+        return false;
+      }
     }
 
+    // Attempt to commit the signed transaction to the wallet
+    if (!commit(sendRequestSummary, wallet)) {
+      return false;
+    }
     // Attempt to broadcast it
     if (!broadcast(sendRequestSummary, wallet)) {
       return false;
@@ -695,7 +712,7 @@ public class BitcoinNetworkService extends AbstractService {
    * Complete the transaction to work out the fees but DO NOT sign it yet
    * @param sendRequestSummary The information required to send bitcoin
    * @param wallet             The wallet
-   * @return True if the completeWithoutSigning and signAndCommit operations were successful
+   * @return True if the completeWithoutSigning and signDirectly operations were successful
    */
   private boolean completeWithoutSigning(SendRequestSummary sendRequestSummary, Wallet wallet) {
 
@@ -739,13 +756,44 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
+   * Sign the transaction using a Trezor
+   *
+   * TODO Refactor out o the BitcoinNetworkServie
+   *
    * @param sendRequestSummary The information required to send bitcoin
    * @param wallet             The wallet
-   * @return True if the completeWithoutSigning and signAndCommit operations were successful
+   * @return True if the signDirectly operation was successful
    */
-  private boolean signAndCommit(SendRequestSummary sendRequestSummary, Wallet wallet) {
+  private boolean signUsingTrezor(SendRequestSummary sendRequestSummary, Wallet wallet) {
+    log.debug("Signing the send request using a Trezor ...");
 
-    log.debug("Signing and committing send request...");
+    Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
+
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+
+     // Check if there is a wallet present
+     if (hardwareWalletService.isPresent()) {
+
+       // Sign the transaction using the Trezor device
+       hardwareWalletService.get().signTx(sendRequest.tx);
+       // Must be ok to reach here
+       return true;
+     } else {
+       log.debug("HardwareWalletService not present so cannot sign transaction");
+       return false;
+     }
+  }
+
+  /**
+   * Sign the transaction directly
+   *
+   * @param sendRequestSummary The information required to send bitcoin
+   * @param wallet             The wallet
+   * @return True if the signDirectly operation was successful
+   */
+  private boolean signDirectly(SendRequestSummary sendRequestSummary, Wallet wallet) {
+
+    log.debug("Signing the send request directly...");
 
     Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 
@@ -757,26 +805,6 @@ public class BitcoinNetworkService extends AbstractService {
       sendRequest.signInputs=true;
       log.debug("sendRequest just before signing " + sendRequest);
       wallet.signTransaction(sendRequest);
-      // sendRequest.tx.signInputs(Transaction.SigHash.ALL, wallet, sendRequestSummary.getKeyParameter().get());
-
-      // Commit to the wallet (informs the wallet of the transaction)
-      wallet.commitTx(sendRequest.tx);
-
-      // Fire a successful transaction creation event (not yet broadcast)
-      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
-              sendRequest.tx.getHashAsString(),
-              sendRequestSummary.getTotalAmount(),
-              sendRequestSummary.getFiatPayment(),
-              Optional.of(sendRequest.fee) /* the actual mining fee paid */,
-              sendRequestSummary.getClientFeeAdded(),
-              sendRequestSummary.getDestinationAddress(),
-              sendRequestSummary.getChangeAddress(),
-              true,
-              null,
-              null,
-              sendRequestSummary.getNotes(),
-              true
-      ));
 
     } catch (Exception e) {
 
@@ -799,13 +827,75 @@ public class BitcoinNetworkService extends AbstractService {
               sendRequestSummary.getNotes(),
               false));
 
-      // We cannot proceed to broadcast
+      // We cannot proceed to commit
       return false;
     }
 
     // Must be OK to be here
     return true;
   }
+
+  /**
+    * Commit the (signed)transaction to the wallet
+    *
+    * @param sendRequestSummary The information required to send bitcoin
+    * @param wallet             The wallet
+    * @return True if the commit operation was successful
+    */
+   private boolean commit(SendRequestSummary sendRequestSummary, Wallet wallet) {
+
+     log.debug("Committing send request...");
+
+     Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
+
+     try {
+       // Commit to the wallet (informs the wallet of the transaction)
+       wallet.commitTx(sendRequest.tx);
+
+       // Fire a successful transaction creation event (not yet broadcast)
+       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
+               sendRequest.tx.getHashAsString(),
+               sendRequestSummary.getTotalAmount(),
+               sendRequestSummary.getFiatPayment(),
+               Optional.of(sendRequest.fee) /* the actual mining fee paid */,
+               sendRequestSummary.getClientFeeAdded(),
+               sendRequestSummary.getDestinationAddress(),
+               sendRequestSummary.getChangeAddress(),
+               true,
+               null,
+               null,
+               sendRequestSummary.getNotes(),
+               true
+       ));
+
+     } catch (Exception e) {
+
+       log.error(e.getMessage(), e);
+
+       String transactionId = sendRequest.tx != null ? sendRequest.tx.getHashAsString() : "?";
+
+       // Fire a failed transaction creation event
+       CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
+               transactionId,
+               sendRequestSummary.getTotalAmount(),
+               Optional.<FiatPayment>absent(),
+               Optional.<Coin>absent(),
+               Optional.<Coin>absent(),
+               sendRequestSummary.getDestinationAddress(),
+               sendRequestSummary.getChangeAddress(),
+               false,
+               CoreMessageKey.THE_ERROR_WAS.getKey(),
+               new String[]{e.getMessage()},
+               sendRequestSummary.getNotes(),
+               false));
+
+       // We cannot proceed to broadcast
+       return false;
+     }
+
+     // Must be OK to be here
+     return true;
+   }
 
   /**
    * <p>Attempt to broadcast the transaction in the Bitcoinj send request</p>
@@ -1118,4 +1208,28 @@ public class BitcoinNetworkService extends AbstractService {
     transaction.bitcoinSerialize(byteOutputStream);
     return byteOutputStream.size();
   }
+
+  /**
+    * <p>Handle the hardware wallet events </p>
+    *
+    * @param event The hardware wallet event indicating a state change
+    */
+   @Subscribe
+   public void onHardwareWalletEvent(HardwareWalletEvent event) {
+
+     log.debug("Received hardware event: '{}'.{}", event.getEventType().name(), event.getMessage());
+
+     switch (event.getEventType()) {
+       case SHOW_DEVICE_FAILED:
+       case SHOW_DEVICE_DETACHED:
+       case SHOW_DEVICE_READY:
+       case ADDRESS:
+       case SHOW_PIN_ENTRY:
+       case SHOW_OPERATION_SUCCEEDED:
+       case SHOW_OPERATION_FAILED:
+       case PUBLIC_KEY:
+         // Do nothing
+         break;
+     }
+   }
 }
