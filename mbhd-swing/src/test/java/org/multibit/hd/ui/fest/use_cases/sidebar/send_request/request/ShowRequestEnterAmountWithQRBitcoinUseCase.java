@@ -50,7 +50,7 @@ public class ShowRequestEnterAmountWithQRBitcoinUseCase extends AbstractFestUseC
 
     // Enter a transaction label
     window
-      .textBox(MessageKey.TRANSACTION_LABEL.getKey())
+      .textBox(MessageKey.QR_CODE_LABEL.getKey())
       .requireVisible()
       .requireEnabled()
       .requireEmpty()

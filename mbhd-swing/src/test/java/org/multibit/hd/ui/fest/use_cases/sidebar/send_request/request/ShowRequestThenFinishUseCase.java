@@ -67,7 +67,7 @@ public class ShowRequestThenFinishUseCase extends AbstractFestUseCase {
       .requireNotEditable();
 
     window
-      .textBox(MessageKey.TRANSACTION_LABEL.getKey())
+      .textBox(MessageKey.QR_CODE_LABEL.getKey())
       .requireVisible()
       .requireEnabled()
       .requireEmpty();

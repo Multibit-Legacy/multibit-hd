@@ -48,9 +48,9 @@ public class ShowRequestEnterAmountBitcoinUseCase extends AbstractFestUseCase {
       .requireEmpty()
       .enterText("31.23");
 
-    // Enter a transaction label
+    // Enter a QR code label label
     window
-      .textBox(MessageKey.TRANSACTION_LABEL.getKey())
+      .textBox(MessageKey.QR_CODE_LABEL.getKey())
       .requireVisible()
       .requireEnabled()
       .requireEmpty()
