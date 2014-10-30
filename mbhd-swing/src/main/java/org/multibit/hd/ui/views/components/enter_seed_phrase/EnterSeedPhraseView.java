@@ -3,12 +3,15 @@ package org.multibit.hd.ui.views.components.enter_seed_phrase;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.views.components.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.event.*;
 
 /**
@@ -80,36 +83,38 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     // Fill the text area with appropriate content
     seedPhraseTextArea.setText(model.displaySeedPhrase());
 
-    // Bind key and focus listeners to allow instant update of UI to mismatched seed phrase
-    // TODO Convert this to DocumentListener
-    seedPhraseTextArea.addKeyListener(new KeyAdapter() {
-
+    // Bind document listener to allow instant update of UI to mismatched seed phrase
+    seedPhraseTextArea.getDocument().addDocumentListener(new DocumentListener() {
       @Override
-      public void keyReleased(KeyEvent e) {
+      public void insertUpdate(DocumentEvent e) {
         updateModelFromView();
       }
 
-    });
-    seedPhraseTextArea.addFocusListener(new FocusAdapter() {
       @Override
-      public void focusLost(FocusEvent e) {
+      public void removeUpdate(DocumentEvent e) {
+        updateModelFromView();
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
         updateModelFromView();
       }
     });
 
-    // Bind a key and focus listeners to allow instant update of UI to invalid date
-    // TODO Convert this to DocumentListener
-    seedTimestampText.addKeyListener(new KeyAdapter() {
-
+    // Bind document listener to allow instant update of UI to invalid date
+    seedTimestampText.getDocument().addDocumentListener(new DocumentListener() {
       @Override
-      public void keyReleased(KeyEvent e) {
+      public void insertUpdate(DocumentEvent e) {
         updateModelFromView();
       }
 
-    });
-    seedTimestampText.addFocusListener(new FocusAdapter() {
       @Override
-      public void focusLost(FocusEvent e) {
+      public void removeUpdate(DocumentEvent e) {
+        updateModelFromView();
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
         updateModelFromView();
       }
     });
@@ -133,11 +138,11 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     // Add to the panel
     if (showTimestamp) {
       panel.add(Labels.newTimestamp());
-      panel.add(seedTimestampText, "growx,wrap");
+      panel.add(seedTimestampText, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",growx,wrap");
     }
     if (showSeedPhrase) {
       panel.add(Labels.newSeedPhrase());
-      panel.add(seedPhraseTextArea, "growx,push");
+      panel.add(seedPhraseTextArea, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",growx,push");
       panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink,wrap");
     }
 
@@ -159,7 +164,9 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
   @Override
   public void updateModelFromView() {
 
-    if (showSeedPhrase) {
+    boolean asClearText = getModel().get().asClearText();
+
+    if (showSeedPhrase && asClearText) {
       getModel().get().setSeedPhrase(seedPhraseTextArea.getText());
     }
 

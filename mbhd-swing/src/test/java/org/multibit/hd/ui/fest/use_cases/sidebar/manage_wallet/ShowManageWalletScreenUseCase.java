@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -47,9 +48,11 @@ public class ShowManageWalletScreenUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-    window
-      .button(MessageKey.SHOW_EMPTY_WALLET_WIZARD.getKey())
-      .requireVisible();
+    if (CoreServices.getOrCreateBitcoinNetworkService().isStartedOk()) {
+      window
+        .button(MessageKey.SHOW_EMPTY_WALLET_WIZARD.getKey())
+        .requireVisible();
+    }
 
     // Row 2
 

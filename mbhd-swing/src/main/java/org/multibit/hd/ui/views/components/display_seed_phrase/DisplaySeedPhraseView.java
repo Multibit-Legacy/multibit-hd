@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.display_seed_phrase;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.components.*;
 
 import javax.swing.*;
@@ -52,10 +53,10 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
 
     // Add to the panel
     panel.add(Labels.newTimestamp());
-    panel.add(seedTimestamp, "grow,wrap");
+    panel.add(seedTimestamp, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",grow,wrap");
 
     panel.add(Labels.newSeedPhrase());
-    panel.add(seedPhrase, "grow");
+    panel.add(seedPhrase, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",grow");
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink");
     panel.add(Buttons.newRefreshButton(refreshAction), "shrink,wrap");
 

@@ -1,9 +1,13 @@
 package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
+import org.bitcoinj.core.Utils;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
+import org.multibit.hd.hardware.core.events.MessageEventType;
+import org.multibit.hd.hardware.core.events.MessageEvents;
 import org.multibit.hd.hardware.core.messages.Features;
+import org.multibit.hd.hardware.core.messages.MessageSignature;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -12,14 +16,16 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify an alert is shown when a hardware wallet is connected</li>
+ * <li>Verify a hardware wallet PIN matrix appears</li>
  * </ul>
+ *
+ * <p>Requires the "use device" screen to be showing</p>
  *
  * @since 0.0.1
  */
-public class ConnectThenEnterPINUseCase extends AbstractFestUseCase {
+public class ShowPINMatrixUseCase extends AbstractFestUseCase {
 
-  public ConnectThenEnterPINUseCase(FrameFixture window) {
+  public ShowPINMatrixUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -41,31 +47,45 @@ public class ConnectThenEnterPINUseCase extends AbstractFestUseCase {
     // Check that an alert message is present
     assertLabelContainsValue("alert_message_label", "Aardvark");
 
-    // Check the 'Yes' button on the alert is present
-    window
-      .button(MessageKey.YES.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    // Click on the 'Yes' button
+    // Check the 'Yes' button on the alert is present and click it
     window
       .button(MessageKey.YES.getKey())
       .click();
 
-    // Verify the "Unlock screen" ("Enter PIN") appears by checking there is an exit button
+    // Verify the "use hardware wallet" wizard appears
+
+    // Verify that the title appears
+    assertLabelText(MessageKey.USE_TREZOR_TITLE);
+
+    // Click Next (use is the default)
     window
-      .button(MessageKey.EXIT.getKey())
-      .requireVisible()
-      .requireEnabled();
+      .button(MessageKey.NEXT.getKey())
+      .click();
 
     // Allow time for the view to react
     pauseForViewReset();
 
-    // Initially the 'Unlock' button should be disabled
+    // Request cipher key
     window
-      .button(MessageKey.PASSWORD_UNLOCK.getKey())
+      .button(MessageKey.PIN_TITLE.getKey())
       .requireVisible()
       .requireDisabled();
+
+    // Simulate a deterministic response to the request
+    MessageEvents.fireMessageEvent(MessageEventType.BUTTON_REQUEST);
+
+    // Allow time for the "user" to react to the button request
+    pauseForUserInput();
+
+    // Simulate the response after the button was pressed
+    MessageSignature messageSignature = new MessageSignature(
+      "1KqYyzL53R8oA1LdYvyv7m6JUryFfGJDpa",
+      Utils.HEX.decode("be3c43189407284bb3fd1ac0040db1e0")
+    );
+    HardwareWalletEvents.fireHardwareWalletEvent(HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED, messageSignature);
+
+    // Allow time for the UI to react
+    pauseForComponentReset();
 
     // Click on each pin button 0
     window.button("pin 0").click();

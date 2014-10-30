@@ -2,6 +2,7 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.ShowManageWalletScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.edit_wallet.ShowThenCancelEditWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.empty_wallet.ShowThenCancelEmptyWalletUseCase;
@@ -34,8 +35,10 @@ public class ManageWalletScreenRequirements {
     // Show then cancel the "wallet details" wizard
     new ShowThenCancelWalletDetailsUseCase(window).execute(parameters);
 
-    // Show then cancel the "empty wallet" wizard
-    new ShowThenCancelEmptyWalletUseCase(window).execute(parameters);
+    if (CoreServices.getOrCreateBitcoinNetworkService().isStartedOk()) {
+      // Show then cancel the "empty wallet" wizard
+      new ShowThenCancelEmptyWalletUseCase(window).execute(parameters);
+    }
 
     // Show then cancel the "repair wallet" wizard
     // Verifying the repair will take too long
