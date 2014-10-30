@@ -23,9 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 
 /**
@@ -98,40 +98,37 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     // Use the current Bitcoin configuration
     LabelDecorator.applyBitcoinSymbolLabel(bitcoinSymbolLabel);
 
-    // Bind a document listener to respond to UI updates
-    bitcoinAmountText.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        updateLocalAmount();
-      }
+    // Bind a key listener to allow instant update of UI to amount changes
+    // Do not use a focus listener because it will move the value according to
+    // the inexact fiat value leading to 10mB becoming 10.00635mB
+    bitcoinAmountText.addKeyListener(new KeyAdapter() {
 
       @Override
-      public void removeUpdate(DocumentEvent e) {
-        updateLocalAmount();
-      }
+      public void keyReleased(KeyEvent e) {
 
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        updateLocalAmount();
-      }
+        if (e.isActionKey() || e.getKeyCode() == KeyEvent.VK_TAB || e.getKeyCode() == KeyEvent.VK_SHIFT) {
+          // Ignore
+          return;
+        }
 
+        updateLocalAmount();
+
+      }
     });
 
-    // Bind a document listener to respond to UI updates
-    localAmountText.getDocument().addDocumentListener(new DocumentListener() {
+    // Bind a key listener to allow instant update of UI to amount changes
+    // Do not use a focus listener because it will move the value according to
+    // the inexact fiat value leading to 10mB becoming 10.00635mB
+    localAmountText.addKeyListener(new KeyAdapter() {
       @Override
-      public void insertUpdate(DocumentEvent e) {
-        updateLocalAmount();
-      }
+      public void keyReleased(KeyEvent e) {
 
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        updateLocalAmount();
-      }
+        if (e.isActionKey() || e.getKeyCode() == KeyEvent.VK_TAB || e.getKeyCode() == KeyEvent.VK_SHIFT) {
+          // Ignore
+          return;
+        }
 
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        updateLocalAmount();
+     updateBitcoinAmount();
       }
 
     });
@@ -276,57 +273,64 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
    */
   private void updateBitcoinAmount() {
 
-    // Build the value directly from the string
-    Optional<BigDecimal> value = Numbers.parseBigDecimal(localAmountText.getText());
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Build the value directly from the string
+        Optional<BigDecimal> value = Numbers.parseBigDecimal(localAmountText.getText());
 
-    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
+        BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
 
-    if (latestExchangeRateChangedEvent.isPresent()) {
+        if (latestExchangeRateChangedEvent.isPresent()) {
 
-      if (value.isPresent()) {
+          if (value.isPresent()) {
 
-        BigDecimal localAmount = value.get();
+            BigDecimal localAmount = value.get();
 
-        BigDecimal exchangeRate = latestExchangeRateChangedEvent.get().getRate();
+            BigDecimal exchangeRate = latestExchangeRateChangedEvent.get().getRate();
 
-        try {
-          // Apply the exchange rate
-          Coin coin = Coins.fromLocalAmount(localAmount, exchangeRate);
+            try {
+              // Apply the exchange rate
+              Coin coin = Coins.fromLocalAmount(localAmount, exchangeRate);
 
-          // Update the model with the plain value
-          getModel().get().setCoinAmount(coin);
-          getModel().get().setLocalAmount(value);
+              // Update the model with the plain value
+              getModel().get().setCoinAmount(coin);
+              getModel().get().setLocalAmount(value);
 
-          // Use the symbolic amount in setValue() for display formatting
-          BigDecimal symbolicAmount = Coins.toSymbolicAmount(coin, bitcoinSymbol);
-          bitcoinAmountText.setValue(symbolicAmount);
+              // Use the symbolic amount in setValue() for display formatting
+              BigDecimal symbolicAmount = Coins.toSymbolicAmount(coin, bitcoinSymbol);
+              bitcoinAmountText.setValue(symbolicAmount);
 
-          // Give feedback to the user
-          localAmountText.setBackground(Themes.currentTheme.dataEntryBackground());
+              // Give feedback to the user
+              localAmountText.setBackground(Themes.currentTheme.dataEntryBackground());
 
-        } catch (ArithmeticException e) {
+            } catch (ArithmeticException | IllegalArgumentException e) {
 
-          // Give feedback to the user
-          localAmountText.setBackground(Themes.currentTheme.invalidDataEntryBackground());
+              // Give feedback to the user
+              localAmountText.setBackground(Themes.currentTheme.invalidDataEntryBackground());
+
+            }
+
+          } else {
+            bitcoinAmountText.setText("");
+
+            // Update the model
+            getModel().get().setCoinAmount(Coin.ZERO);
+            getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
+          }
+
+        } else {
+
+          // No exchange rate so no local amount
+          getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
 
         }
 
-      } else {
-        bitcoinAmountText.setText("");
+        setLocalAmountVisibility();
 
-        // Update the model
-        getModel().get().setCoinAmount(Coin.ZERO);
-        getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
       }
+    });
 
-    } else {
-
-      // No exchange rate so no local amount
-      getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
-
-    }
-
-    setLocalAmountVisibility();
   }
 
   /**
@@ -334,81 +338,87 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
    */
   private void updateLocalAmount() {
 
-    // Build the value directly from the string
-    Optional<BigDecimal> value = Numbers.parseBigDecimal(bitcoinAmountText.getText());
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Build the value directly from the string
+        Optional<BigDecimal> value = Numbers.parseBigDecimal(bitcoinAmountText.getText());
 
-    BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
+        BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
 
-    if (latestExchangeRateChangedEvent.isPresent()) {
+        if (latestExchangeRateChangedEvent.isPresent()) {
 
-      if (value.isPresent()) {
+          if (value.isPresent()) {
 
-        try {
+            try {
 
-          Coin coin = Coins.fromSymbolicAmount(value.get(), bitcoinSymbol);
+              Coin coin = Coins.fromSymbolicAmount(value.get(), bitcoinSymbol);
 
-          // Apply the exchange rate
-          BigDecimal localAmount = Coins.toLocalAmount(coin, latestExchangeRateChangedEvent.get().getRate());
+              // Apply the exchange rate
+              BigDecimal localAmount = Coins.toLocalAmount(coin, latestExchangeRateChangedEvent.get().getRate());
 
-          // Update the model
-          getModel().get().setCoinAmount(coin);
-          if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
-            getModel().get().setLocalAmount(Optional.of(localAmount));
+              // Update the model
+              getModel().get().setCoinAmount(coin);
+              if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
+                getModel().get().setLocalAmount(Optional.of(localAmount));
+              } else {
+                getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
+              }
+              // Use setValue for the local amount so that the display formatter
+              // will match the currency requirements
+              localAmountText.setValue(localAmount);
+
+              // Give feedback to the user
+              bitcoinAmountText.setBackground(Themes.currentTheme.dataEntryBackground());
+
+            } catch (ArithmeticException | IllegalArgumentException e) {
+
+              // Give feedback to the user
+              bitcoinAmountText.setBackground(Themes.currentTheme.invalidDataEntryBackground());
+            }
+
           } else {
+            localAmountText.setText("");
+
+            // Update the model
+            getModel().get().setCoinAmount(Coin.ZERO);
             getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
           }
-          // Use setValue for the local amount so that the display formatter
-          // will match the currency requirements
-          localAmountText.setValue(localAmount);
+        } else {
 
-          // Give feedback to the user
-          bitcoinAmountText.setBackground(Themes.currentTheme.dataEntryBackground());
+          // No exchange rate so no local amount
+          if (value.isPresent()) {
 
-        } catch (ArithmeticException e) {
+            try {
+              // Use the value directly
+              Coin coin = Coins.fromSymbolicAmount(value.get(), bitcoinSymbol);
 
-          // Give feedback to the user
-          bitcoinAmountText.setBackground(Themes.currentTheme.invalidDataEntryBackground());
+              // Update the model
+              getModel().get().setCoinAmount(coin);
+              getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
+
+              // Give feedback to the user
+              localAmountText.setBackground(Themes.currentTheme.dataEntryBackground());
+
+            } catch (ArithmeticException | IllegalArgumentException e) {
+
+              // Give feedback to the user
+              localAmountText.setBackground(Themes.currentTheme.invalidDataEntryBackground());
+
+            }
+
+          } else {
+
+            // Update the model
+            getModel().get().setCoinAmount(Coin.ZERO);
+            getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
+          }
         }
 
-      } else {
-        localAmountText.setText("");
+        setLocalAmountVisibility();
 
-        // Update the model
-        getModel().get().setCoinAmount(Coin.ZERO);
-        getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
       }
-    } else {
-
-      // No exchange rate so no local amount
-      if (value.isPresent()) {
-
-        try {
-          // Use the value directly
-          Coin coin = Coins.fromSymbolicAmount(value.get(), bitcoinSymbol);
-
-          // Update the model
-          getModel().get().setCoinAmount(coin);
-          getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
-
-          // Give feedback to the user
-          localAmountText.setBackground(Themes.currentTheme.dataEntryBackground());
-
-        } catch (ArithmeticException e) {
-
-          // Give feedback to the user
-          localAmountText.setBackground(Themes.currentTheme.invalidDataEntryBackground());
-
-        }
-
-      } else {
-
-        // Update the model
-        getModel().get().setCoinAmount(Coin.ZERO);
-        getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
-      }
-    }
-
-    setLocalAmountVisibility();
+    });
 
   }
 
