@@ -13,7 +13,7 @@ import java.util.Comparator;
  * @since 0.0.5
  *
  */
-public class BackupSummaryComparator implements Comparator<BackupSummary> {
+public class BackupSummaryDescendingComparator implements Comparator<BackupSummary> {
 
 
   @Override
@@ -35,6 +35,7 @@ public class BackupSummaryComparator implements Comparator<BackupSummary> {
       return 1;
     }
 
-    return o1.getCreated().compareTo(o2.getCreated());
+    // DateTime uses ascending order for comparisons so we invert
+    return -o1.getCreated().compareTo(o2.getCreated());
   }
 }

@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.components.select_backup_summary;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.multibit.hd.core.dto.BackupSummary;
-import org.multibit.hd.core.dto.comparators.BackupSummaryComparator;
+import org.multibit.hd.core.dto.comparators.BackupSummaryDescendingComparator;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -62,9 +62,9 @@ public class SelectBackupSummaryModel implements Model<BackupSummary> {
     if (backupSummaries != null) {
 
       // Sort into descending date order (newest first)
-      Collections.sort(backupSummaries, new BackupSummaryComparator());
+      Collections.sort(backupSummaries, new BackupSummaryDescendingComparator());
 
-      // Initialise the selected value to the first backupSummary
+      // Initialise the selected value to the first backup summary
       if (!backupSummaries.isEmpty()) {
         selectedBackup = backupSummaries.get(0);
       }

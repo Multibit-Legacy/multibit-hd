@@ -84,9 +84,9 @@ public class SelectBackupSummaryView extends AbstractComponentView<SelectBackupS
 
     if (backupSummaries != null) {
 
-      // Add in reverse order to preserve sorting
-      for (int i = backupSummaries.size() - 1; i >= 0; i--) {
-        selectedBackupComboBox.addItem(backupSummaries.get(i));
+      // The combo box provides the sorting
+      for (BackupSummary backupSummary : backupSummaries) {
+       selectedBackupComboBox.addItem(backupSummary);
       }
 
     }

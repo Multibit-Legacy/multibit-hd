@@ -12,6 +12,7 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.AESUtils;
 import org.multibit.hd.core.dto.BitcoinNetworkStatus;
+import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
@@ -60,6 +61,9 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   private JLabel cacertsInstalledStatusLabel;
   private JLabel synchronizationStatusLabel;
 
+  private JLabel blocksLeftLabel;
+  private JLabel blocksLeftStatusLabel;
+
   private JLabel spinner;
 
   private ListeningExecutorService restoreWalletExecutorService;
@@ -94,7 +98,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       new MigLayout(
         Panels.migXYLayout(),
         "[][][]", // Column constraints
-        "[]10[]10[]10[]" // Row constraints
+        "[]10[]10[]10[]10[]" // Row constraints
       ));
 
     // Apply the theme
@@ -105,6 +109,10 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     cacertsInstalledStatusLabel = Labels.newCACertsInstalledStatus(false);
     synchronizationStatusLabel = Labels.newSynchronizingStatus(false);
 
+    // Start invisible (activates after CA certs completes)
+    blocksLeftLabel = Labels.newValueLabel("0");
+    blocksLeftStatusLabel = Labels.newBlocksLeft();
+
     // Provide a spinner
     spinner = Labels.newSpinner(Themes.currentTheme.text(), MultiBitUI.NORMAL_PLUS_ICON_SIZE);
 
@@ -112,12 +120,16 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     walletCreatedStatusLabel.setVisible(false);
     cacertsInstalledStatusLabel.setVisible(false);
     synchronizationStatusLabel.setVisible(false);
+    blocksLeftLabel.setVisible(false);
+    blocksLeftStatusLabel.setVisible(false);
 
     contentPanel.add(spinner, "span 3,align right," + MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG + ",wrap");
     contentPanel.add(walletCreatedStatusLabel, "wrap");
     contentPanel.add(cacertsInstalledStatusLabel, "wrap");
     contentPanel.add(synchronizationStatusLabel, "wrap");
 
+    contentPanel.add(blocksLeftStatusLabel, "");
+    contentPanel.add(blocksLeftLabel, "wrap");
 
   }
 
@@ -167,7 +179,40 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       return;
     }
 
-    log.trace("Received 'Bitcoin network changed' event: {}", event.getSummary());
+    BitcoinNetworkSummary summary = event.getSummary();
+
+    // Blocks left
+    int blocksLeft = event.getSummary().getBlocksLeft();
+    if (blocksLeft < 0) {
+      blocksLeftLabel.setVisible(false);
+      blocksLeftStatusLabel.setVisible(false);
+    } else {
+      // Synchronizing
+      blocksLeftLabel.setVisible(true);
+      blocksLeftStatusLabel.setVisible(true);
+      AwesomeDecorator.applyIcon(
+        AwesomeIcon.EXCHANGE,
+        blocksLeftStatusLabel,
+        true,
+        MultiBitUI.NORMAL_ICON_SIZE
+      );
+      blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
+    }
+
+    if (blocksLeft == 0) {
+
+      // Completed
+
+      // Update the status
+      AwesomeDecorator.applyIcon(
+        AwesomeIcon.CHECK,
+        blocksLeftStatusLabel,
+        true,
+        MultiBitUI.NORMAL_ICON_SIZE
+      );
+      // Looks ugly but is semantically correct
+      blocksLeftLabel.setText("0");
+    }
 
     boolean currentEnabled = getFinishButton().isEnabled();
 

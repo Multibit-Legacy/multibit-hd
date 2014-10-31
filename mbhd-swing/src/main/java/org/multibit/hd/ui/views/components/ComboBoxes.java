@@ -7,6 +7,7 @@ import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.comparators.BackupSummaryDescendingComparator;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.utils.BitcoinSymbol;
@@ -629,6 +630,9 @@ public class ComboBoxes {
     // Use a backup summary list cell renderer to ensure the correct fields are displayed
     ListCellRenderer<BackupSummary> renderer = new BackupSummaryListCellRenderer();
     comboBox.setRenderer(renderer);
+
+    // Use a sorted model for maximum compatibility across platforms
+    comboBox.setModel(new SortedComboBoxModel<>(new BackupSummaryDescendingComparator()));
 
     // Ensure we start with nothing selected
     comboBox.setSelectedIndex(-1);
