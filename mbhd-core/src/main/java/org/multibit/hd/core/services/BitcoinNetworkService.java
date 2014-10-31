@@ -2,7 +2,6 @@ package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.subgraph.orchid.TorClient;
 import org.bitcoinj.core.*;
@@ -24,7 +23,6 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.network.MultiBitPeerEventListener;
 import org.multibit.hd.core.utils.Coins;
 import org.multibit.hd.hardware.core.HardwareWalletService;
-import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +74,9 @@ public class BitcoinNetworkService extends AbstractService {
 
   private boolean startedOk = false;
 
+  private Optional<SendRequestSummary> lastSendRequestSummaryOptional = Optional.absent();
+  private Optional<Wallet> lastWalletOptional = Optional.absent();
+
   /**
    * @param networkParameters The Bitcoin network parameters
    */
@@ -88,8 +89,6 @@ public class BitcoinNetworkService extends AbstractService {
     this.networkParameters = networkParameters;
 
     requireFixedThreadPoolExecutor(5, "bitcoin-network");
-
-    HardwareWalletService.hardwareWalletEventBus.register(this);
 
   }
 
@@ -250,6 +249,9 @@ public class BitcoinNetworkService extends AbstractService {
    * @param sendRequestSummary The information required to send bitcoin
    */
   public void send(final SendRequestSummary sendRequestSummary) {
+    lastSendRequestSummaryOptional = Optional.absent();
+    lastWalletOptional = Optional.absent();
+
     getExecutorService().submit(new Runnable() {
       @Override
       public void run() {
@@ -277,38 +279,64 @@ public class BitcoinNetworkService extends AbstractService {
     WalletSummary currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
     Wallet wallet = currentWalletSummary.getWallet();
 
-    // Derive and append the key parameter to unlock the wallet
-    if (!appendKeyParameter(sendRequestSummary, wallet)) {
-      return false;
-    }
-
     if (WalletType.TREZOR_HARD_WALLET.equals(currentWalletSummary.getWalletType())) {
       // Attempt to sign the transaction using the Trezor wallet
+      // This will fire HardwareWalletEvents as the signing progresses which are dealt by the onHardwareWalletEvent method in the SendBitcoinConfirmTrezorPanelView
+
+      // Remember the last sendRequestSummary and Wallet for callback
+      lastSendRequestSummaryOptional = Optional.of(sendRequestSummary);
+      lastWalletOptional = Optional.of(wallet);
+
       if (!signUsingTrezor(sendRequestSummary, wallet)) {
-        // This will fire HardwareWalletEvents as the signing progresses which are dealt with in the onHardwareWalletEvent method below
         return false;
       }
     } else {
+      // Regular non Trezor signing
+      // Derive and append the key parameter to unlock the wallet
+      if (!appendKeyParameter(sendRequestSummary, wallet)) {
+        return false;
+      }
+
       // Attempt to sign the transaction directly
       if (!signDirectly(sendRequestSummary, wallet)) {
         return false;
       }
+
+      performCommitAndBroadcast(sendRequestSummary, wallet);
     }
 
+    return true;
+
+  }
+
+  public void commitAndBroadcast(final SendRequestSummary sendRequestSummary, final Wallet wallet) {
+     getExecutorService().submit(new Runnable() {
+       @Override
+       public void run() {
+
+         performCommitAndBroadcast(sendRequestSummary, wallet);
+       }
+
+     });
+   }
+
+  private boolean performCommitAndBroadcast(SendRequestSummary sendRequestSummary, Wallet wallet) {
     // Attempt to commit the signed transaction to the wallet
     if (!commit(sendRequestSummary, wallet)) {
       return false;
     }
+
     // Attempt to broadcast it
     if (!broadcast(sendRequestSummary, wallet)) {
       return false;
     }
 
     // Must be OK to be here
-    log.debug("Send coins has completed");
+    log.debug("Commit and broadcast of coins has completed");
+    lastSendRequestSummaryOptional = Optional.absent();
+    lastWalletOptional = Optional.absent();
 
     return true;
-
   }
 
   /**
@@ -1209,27 +1237,19 @@ public class BitcoinNetworkService extends AbstractService {
     return byteOutputStream.size();
   }
 
-  /**
-    * <p>Handle the hardware wallet events </p>
-    *
-    * @param event The hardware wallet event indicating a state change
-    */
-   @Subscribe
-   public void onHardwareWalletEvent(HardwareWalletEvent event) {
+  public Optional<SendRequestSummary> getLastSendRequestSummaryOptional() {
+    return lastSendRequestSummaryOptional;
+  }
 
-     log.debug("Received hardware event: '{}'.{}", event.getEventType().name(), event.getMessage());
+  public Optional<Wallet> getLastWalletOptional() {
+    return lastWalletOptional;
+  }
 
-     switch (event.getEventType()) {
-       case SHOW_DEVICE_FAILED:
-       case SHOW_DEVICE_DETACHED:
-       case SHOW_DEVICE_READY:
-       case ADDRESS:
-       case SHOW_PIN_ENTRY:
-       case SHOW_OPERATION_SUCCEEDED:
-       case SHOW_OPERATION_FAILED:
-       case PUBLIC_KEY:
-         // Do nothing
-         break;
-     }
-   }
+  public void setLastSendRequestSummaryOptional(Optional<SendRequestSummary> lastSendRequestSummaryOptional) {
+    this.lastSendRequestSummaryOptional = lastSendRequestSummaryOptional;
+  }
+
+  public void setLastWalletOptional(Optional<Wallet> lastWalletOptional) {
+    this.lastWalletOptional = lastWalletOptional;
+  }
 }

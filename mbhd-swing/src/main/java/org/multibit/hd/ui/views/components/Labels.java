@@ -1093,17 +1093,27 @@ public class Labels {
   }
 
   /**
-   * @return A new "press Confirm on Trezor for MultiBit HD unlock" note
+   * @return A new "press Confirm on Trezor" note
    */
-  public static JLabel newPressConfirmOnTrezorNote() {
+  public static JLabel newPressConfirmOnTrezorNoteShort() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.PRESS_CONFIRM_ON_TREZOR,
-      MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT
+      MessageKey.PRESS_CONFIRM_ON_TREZOR
     }, new Object[][]{});
 
   }
 
+  /**
+    * @return A new "press Confirm on Trezor for MultiBit HD unlock" note
+    */
+   public static JLabel newPressConfirmOnTrezorNote() {
+
+     return newNoteLabel(new MessageKey[]{
+       MessageKey.PRESS_CONFIRM_ON_TREZOR,
+       MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT
+     }, new Object[][]{});
+
+   }
   /**
    * @return A new "language change" note
    */

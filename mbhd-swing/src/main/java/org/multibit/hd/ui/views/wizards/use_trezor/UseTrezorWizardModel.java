@@ -10,10 +10,7 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
-import org.multibit.hd.hardware.core.messages.Failure;
-import org.multibit.hd.hardware.core.messages.FailureType;
-import org.multibit.hd.hardware.core.messages.Features;
-import org.multibit.hd.hardware.core.messages.Success;
+import org.multibit.hd.hardware.core.messages.*;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.slf4j.Logger;
@@ -189,20 +186,26 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   public void showOperationSucceeded(HardwareWalletEvent event) {
 
     // Typically the response to a correct PIN leading to a cipher key payload
-    byte[] payload = ((Success) event.getMessage().get()).getPayload();
-    String message = ((Success) event.getMessage().get()).getMessage();
+    if (event.getMessage().get() instanceof  Success) {
+      byte[] payload = ((Success) event.getMessage().get()).getPayload();
+      String message = ((Success) event.getMessage().get()).getMessage();
 
-    log.info(
-            "Message:'{}'\nPayload length: {}",
-            message,
-            payload == null ? 0 : payload.length
-    );
+      log.info(
+                  "Message:'{}'\nPayload length: {}",
+                  message,
+                  payload == null ? 0 : payload.length
+          );
 
-    // TODO be more specific on payload/ entropy selection
-    if (message.length() == 0) {
-      entropyOptional = Optional.of(payload);
-      log.debug("Using the payload as entropy");
+          // TODO be more specific on payload/ entropy selection
+          if (message.length() == 0) {
+            entropyOptional = Optional.of(payload);
+            log.debug("Using the payload as entropy");
+          }
+    } else if (event.getMessage().get() instanceof TxRequest) {
+      log.info("TxRequest:'{}'", (event.getMessage().get()).toString());
     }
+
+
   }
 
   @Override
