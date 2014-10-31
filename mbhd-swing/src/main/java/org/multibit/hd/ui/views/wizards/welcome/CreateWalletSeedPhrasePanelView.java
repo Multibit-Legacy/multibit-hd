@@ -75,8 +75,6 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
     contentPanel.add(Labels.newNoteLabel(MessageKey.SEED_WARNING_NOTE_3, null), MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     contentPanel.add(Labels.newNoteLabel(MessageKey.SEED_WARNING_NOTE_4, null), MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
-
-
     contentPanel.add(displaySeedPhraseMaV.getView().newComponentPanel(), MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
   }

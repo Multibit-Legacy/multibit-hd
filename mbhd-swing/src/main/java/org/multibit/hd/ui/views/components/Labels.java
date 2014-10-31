@@ -1207,8 +1207,7 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.CONFIRM_SEED_PHRASE_NOTE_1,
       MessageKey.CONFIRM_SEED_PHRASE_NOTE_2,
-      MessageKey.CONFIRM_SEED_PHRASE_NOTE_3,
-      MessageKey.CONFIRM_SEED_PHRASE_NOTE_4
+      MessageKey.CONFIRM_SEED_PHRASE_NOTE_3
     }, new Object[][]{});
   }
 

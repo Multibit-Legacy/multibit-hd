@@ -596,7 +596,6 @@ public enum MessageKey {
   CONFIRM_SEED_PHRASE_NOTE_1("confirm_seed_phrase_note_1"),
   CONFIRM_SEED_PHRASE_NOTE_2("confirm_seed_phrase_note_2"),
   CONFIRM_SEED_PHRASE_NOTE_3("confirm_seed_phrase_note_3"),
-  CONFIRM_SEED_PHRASE_NOTE_4("confirm_seed_phrase_note_4"),
 
   WALLET_PASSWORD_NOTE_1("wallet_password_note_1"),
   WALLET_PASSWORD_NOTE_2("wallet_password_note_2"),

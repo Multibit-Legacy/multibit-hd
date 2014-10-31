@@ -138,11 +138,11 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     // Add to the panel
     if (showTimestamp) {
       panel.add(Labels.newTimestamp());
-      panel.add(seedTimestampText, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",growx,wrap");
+      panel.add(seedTimestampText, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     }
     if (showSeedPhrase) {
       panel.add(Labels.newSeedPhrase());
-      panel.add(seedPhraseTextArea, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",growx,push");
+      panel.add(seedPhraseTextArea, MultiBitUI.WIZARD_MAX_WIDTH_MIG);
       panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink,wrap");
     }
 
