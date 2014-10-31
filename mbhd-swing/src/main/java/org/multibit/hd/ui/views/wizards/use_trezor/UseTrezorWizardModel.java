@@ -176,6 +176,9 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       case WIPE_TREZOR:
         // Should be catered for by finish on Wipe Trezor panel
         break;
+      case VERIFY_TREZOR:
+        // Should be catered for by finish on Verify Trezor panel
+        break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
     }

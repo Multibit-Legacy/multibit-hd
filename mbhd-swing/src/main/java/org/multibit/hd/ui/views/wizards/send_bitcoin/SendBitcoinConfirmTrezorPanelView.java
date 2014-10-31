@@ -106,7 +106,7 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<S
       case SHOW_BUTTON_PRESS:
         // Update label
         ButtonRequest buttonRequest = (ButtonRequest)event.getMessage().get();
-        updateDetailsLabel(buttonRequest.getButtonRequestType().name() + ": " + buttonRequest.getButtonMessage());
+        updateDetailsLabel(buttonRequest.getButtonRequestType().name() + ": " + buttonRequest.getButtonMessage() + " " + buttonRequest.toString());
 
         break;
 
