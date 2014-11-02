@@ -179,71 +179,74 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       return;
     }
 
-    BitcoinNetworkSummary summary = event.getSummary();
+    final BitcoinNetworkSummary summary = event.getSummary();
 
-    // Blocks left
-    int blocksLeft = event.getSummary().getBlocksLeft();
-    if (blocksLeft < 0) {
-      blocksLeftLabel.setVisible(false);
-      blocksLeftStatusLabel.setVisible(false);
-    } else {
-      // Synchronizing
-      blocksLeftLabel.setVisible(true);
-      blocksLeftStatusLabel.setVisible(true);
-      AwesomeDecorator.applyIcon(
-        AwesomeIcon.EXCHANGE,
-        blocksLeftStatusLabel,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
-      );
-      blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
-    }
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
 
-    if (blocksLeft == 0) {
+          // Blocks left
+          int blocksLeft = event.getSummary().getBlocksLeft();
+          if (blocksLeft < 0) {
+            blocksLeftLabel.setVisible(false);
+            blocksLeftStatusLabel.setVisible(false);
+          } else {
+            // Synchronizing
+            blocksLeftLabel.setVisible(true);
+            blocksLeftStatusLabel.setVisible(true);
+            AwesomeDecorator.applyIcon(
+              AwesomeIcon.EXCHANGE,
+              blocksLeftStatusLabel,
+              true,
+              MultiBitUI.NORMAL_ICON_SIZE
+            );
+            blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
+          }
 
-      // Completed
+          if (blocksLeft == 0) {
 
-      // Update the status
-      AwesomeDecorator.applyIcon(
-        AwesomeIcon.CHECK,
-        blocksLeftStatusLabel,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
-      );
-      // Looks ugly but is semantically correct
-      blocksLeftLabel.setText("0");
-    }
+            // Completed
 
-    boolean currentEnabled = getFinishButton().isEnabled();
+            // Update the status
+            AwesomeDecorator.applyIcon(
+              AwesomeIcon.CHECK,
+              blocksLeftStatusLabel,
+              true,
+              MultiBitUI.NORMAL_ICON_SIZE
+            );
 
-    final boolean newEnabled;
+            // Looks ugly but is semantically correct
+            blocksLeftLabel.setText("0");
 
-    // NOTE: Finish is kept disabled until fully synchronized
-    switch (event.getSummary().getSeverity()) {
-      case RED:
-        // Always disabled on RED
-        newEnabled = false;
-        break;
-      case AMBER:
-        // Enable on AMBER only if unrestricted
-        newEnabled = InstallationManager.unrestricted;
-        break;
-      case GREEN:
-        // Enable on GREEN only if synchronized or unrestricted
-        newEnabled = BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus()) || InstallationManager.unrestricted;
-        break;
-      default:
-        // Unknown status
-        throw new IllegalStateException("Unknown event severity " + event.getSummary().getStatus());
-    }
+          }
 
-    // Test for a change in condition
-    if (currentEnabled != newEnabled) {
+          boolean currentEnabled = getFinishButton().isEnabled();
 
-      SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
+          final boolean newEnabled;
+
+          // NOTE: Finish is kept disabled until fully synchronized
+          switch (event.getSummary().getSeverity()) {
+            case RED:
+              // Always disabled on RED
+              newEnabled = false;
+              break;
+            case AMBER:
+              // Enable on AMBER only if unrestricted
+              newEnabled = InstallationManager.unrestricted;
+              break;
+            case GREEN:
+              // Enable on GREEN only if synchronized or unrestricted (to speed up FEST tests)
+              newEnabled = BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus()) || InstallationManager.unrestricted || blocksLeft == 0;
+              break;
+            default:
+              // Unknown status
+              throw new IllegalStateException("Unknown event severity " + event.getSummary().getStatus());
+          }
+
+          // Test for a change in condition
+          if (currentEnabled != newEnabled) {
+
             getFinishButton().setEnabled(newEnabled);
 
             if (newEnabled) {
@@ -255,10 +258,11 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
               spinner.setVisible(false);
 
             }
-          }
-        });
 
-    }
+          }
+
+        }
+      });
 
   }
 
