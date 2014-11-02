@@ -349,7 +349,8 @@ public class WalletService {
     String description = calculateDescriptionAndUpdatePaymentRequests(wallet, transaction, transactionHashAsString, paymentType, amountBTC);
     // Also works out outputAddresses
 
-    String rawTransaction = transaction.toString();
+    // Include the raw serialized form of the transaction for lowest level viewing
+    String rawTransaction = transaction.toString()+"\n"+Utils.HEX.encode(transaction.bitcoinSerialize())+"\n";
 
     int size = -1;
     ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
