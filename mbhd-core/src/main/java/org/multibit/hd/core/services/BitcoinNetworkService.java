@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.subgraph.orchid.TorClient;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.KeyCrypterException;
+import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.net.discovery.DnsDiscovery;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
@@ -830,10 +831,17 @@ public class BitcoinNetworkService extends AbstractService {
       sendRequest.aesKey = wallet.getKeyCrypter().deriveKey(sendRequestSummary.getPassword());
 
       // Sign the transaction
-      sendRequest.signInputs=true;
+      sendRequest.signInputs = true;
       log.debug("sendRequest just before signing " + sendRequest);
       wallet.signTransaction(sendRequest);
 
+      for (TransactionInput txInput : sendRequest.tx.getInputs()) {
+        byte[] signature = txInput.getScriptSig().getChunks().get(0).data;
+        log.debug("Is signature canonical test result '{}' for txInput '{}', signature '{}'", TransactionSignature.isEncodingCanonical(signature), txInput.toString(), Utils.HEX.encode(signature));
+
+        // Check the signatures are canonical - non-canonical signatures are not relayed
+
+      }
     } catch (Exception e) {
 
       log.error(e.getMessage(), e);
@@ -864,7 +872,7 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
-    * Commit the (signed)transaction to the wallet
+    * Commit the (signed) transaction to the wallet
     *
     * @param sendRequestSummary The information required to send bitcoin
     * @param wallet             The wallet

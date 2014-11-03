@@ -4,8 +4,10 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionInput;
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.core.Wallet;
+import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.params.MainNetParams;
 import org.multibit.hd.core.dto.SendRequestSummary;
 import org.multibit.hd.core.services.BitcoinNetworkService;
@@ -144,20 +146,29 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<S
 
                     log.info("deviceTx:\n{}", deviceTx.toString());
 
+                    // Check the signatures are canonical
+                    for (TransactionInput txInput : deviceTx.getInputs()) {
+                      byte[] signature = txInput.getScriptSig().getChunks().get(0).data;
+                      log.debug("Is signature canonical test result '{}' for txInput '{}', signature '{}'",  TransactionSignature.isEncodingCanonical(signature), txInput.toString(),  Utils.HEX.encode(signature));
+                     }
+
                     log.debug("Committing and broadcasting the last tx");
-                    updateDetailsLabel("Success - transaction is signed"); // TODO localise
+                    //updateDetailsLabel("Success - transaction is signed"); // TODO localise
                     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
                     if (bitcoinNetworkService.getLastSendRequestSummaryOptional().isPresent() && bitcoinNetworkService.getLastWalletOptional().isPresent()) {
                       SendRequestSummary sendRequestSummary = bitcoinNetworkService.getLastSendRequestSummaryOptional().get();
                       // Substitute the signed tx from the trezor
-                      log.debug("Substituting the Trezor signed tx for the unsigned version '{}'", deviceTx.toString());
+                      log.debug("Substituting the Trezor signed tx '{}' for the unsigned version {}", deviceTx.toString(), sendRequestSummary.getSendRequest().get().tx.toString());
                       sendRequestSummary.getSendRequest().get().tx = deviceTx;
                       Wallet wallet = bitcoinNetworkService.getLastWalletOptional().get();
 
                       // Clear the previous remembered tx so that it is not committed twice
                       bitcoinNetworkService.setLastSendRequestSummaryOptional(Optional.<SendRequestSummary>absent());
                       bitcoinNetworkService.setLastWalletOptional(Optional.<Wallet>absent());
-                      bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet);
+
+                      updateDetailsLabel("Transaction created but I'm not committing and broadcasting as the signatures are wrong"); // TODO remove when signatures are working
+                      //bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet);
+
                     } else {
                       log.debug("Cannot commit and broadcast the last send as it is not present in bitcoinNetworkService");
                     }
