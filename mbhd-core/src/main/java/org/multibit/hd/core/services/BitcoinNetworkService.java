@@ -2,9 +2,14 @@ package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.subgraph.orchid.TorClient;
 import org.bitcoinj.core.*;
+import org.bitcoinj.crypto.ChildNumber;
+import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.KeyCrypterException;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.net.discovery.DnsDiscovery;
@@ -35,6 +40,7 @@ import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -787,7 +793,7 @@ public class BitcoinNetworkService extends AbstractService {
   /**
    * Sign the transaction using a Trezor
    *
-   * TODO Refactor out o the BitcoinNetworkServie
+   * TODO Refactor out of the BitcoinNetworkService
    *
    * @param sendRequestSummary The information required to send bitcoin
    * @param wallet             The wallet
@@ -796,21 +802,59 @@ public class BitcoinNetworkService extends AbstractService {
   private boolean signUsingTrezor(SendRequestSummary sendRequestSummary, Wallet wallet) {
     log.debug("Signing the send request using a Trezor ...");
 
+
     Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 
     Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
-     // Check if there is a wallet present
-     if (hardwareWalletService.isPresent()) {
+    // Check if there is a wallet present
+    if (hardwareWalletService.isPresent()) {
+      try {
+      // Provide a mapping of address used on each input to the HD path
+      // (Called chain code map by Gary)
+      Map<Integer, List<Integer>> addressChainCodeMap = Maps.newHashMap();
 
-       // Sign the transaction using the Trezor device
-       hardwareWalletService.get().signTx(sendRequest.tx);
-       // Must be ok to reach here
-       return true;
-     } else {
-       log.debug("HardwareWalletService not present so cannot sign transaction");
-       return false;
-     }
+      int count = 0;
+      for (TransactionInput txInput : sendRequest.tx.getInputs()) {
+        // Get the pubKey on the input
+        log.debug("Examining txInput {}", txInput);
+        TransactionOutput connectedTransactionOutput = txInput.getConnectedOutput();
+        log.debug("Connected txOutput {}", connectedTransactionOutput);
+        if (connectedTransactionOutput == null) {
+          log.debug("Cannot get pubKey for txInput {} as there is no connected output", count);
+        } else {
+          byte[] pubKeyHash = connectedTransactionOutput.getScriptPubKey().getPubKeyHash();
+
+          DeterministicKey key = (DeterministicKey) wallet.findKeyFromPubHash(pubKeyHash);
+          if (key == null) {
+            log.error("No key in wallet to match pubkeyHash {}", Utils.HEX.encode(pubKeyHash));
+          } else {
+            ImmutableList<ChildNumber> path = key.getPath();
+            List<Integer> pathList = Lists.newArrayList();
+            for (int i = 0; i < path.size(); i++) {
+              pathList.add(path.get(i).getI());
+            }
+            log.debug("path list for txInput number {} is {}", count, pathList);
+            addressChainCodeMap.put(count, pathList);
+          }
+        }
+
+          count++;
+      }
+      hardwareWalletService.get().getContext().setAddressChainCodeMap(addressChainCodeMap);
+
+      // Sign the transaction using the Trezor device
+      hardwareWalletService.get().signTx(sendRequest.tx);
+      // Must be ok to reach here
+      return true;
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+      }
+    } else {
+      log.debug("HardwareWalletService not present so cannot sign transaction");
+      return false;
+    }
   }
 
   /**
@@ -835,12 +879,10 @@ public class BitcoinNetworkService extends AbstractService {
       log.debug("sendRequest just before signing " + sendRequest);
       wallet.signTransaction(sendRequest);
 
+      // Check the signatures are canonical - non-canonical signatures are not relayed
       for (TransactionInput txInput : sendRequest.tx.getInputs()) {
         byte[] signature = txInput.getScriptSig().getChunks().get(0).data;
         log.debug("Is signature canonical test result '{}' for txInput '{}', signature '{}'", TransactionSignature.isEncodingCanonical(signature), txInput.toString(), Utils.HEX.encode(signature));
-
-        // Check the signatures are canonical - non-canonical signatures are not relayed
-
       }
     } catch (Exception e) {
 

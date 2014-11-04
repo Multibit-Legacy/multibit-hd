@@ -103,12 +103,39 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<S
 
     log.debug("Received hardware event: '{}'.{}", event.getEventType().name(), event.getMessage());
 
+    BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
 
     switch (event.getEventType()) {
       case SHOW_BUTTON_PRESS:
-        // Update label
-        ButtonRequest buttonRequest = (ButtonRequest)event.getMessage().get();
-        updateDetailsLabel(buttonRequest.getButtonRequestType().name() + ": " + buttonRequest.getButtonMessage() + " " + buttonRequest.toString());
+        // Update label with descriptive text matching what the Trezor is showing
+        ButtonRequest buttonRequest = (ButtonRequest) event.getMessage().get();
+        String labelText = buttonRequest.getButtonRequestType().name() + ": " + buttonRequest.getButtonMessage() + " " + buttonRequest.toString();
+
+        if (bitcoinNetworkService.getLastSendRequestSummaryOptional().isPresent() && bitcoinNetworkService.getLastWalletOptional().isPresent()) {
+          Wallet wallet = bitcoinNetworkService.getLastWalletOptional().get();
+          SendRequestSummary sendRequestSummary = bitcoinNetworkService.getLastSendRequestSummaryOptional().get();
+
+          Optional<Transaction> currentTransactionOptional = CoreServices.getOrCreateHardwareWalletService().get().getContext().getTransaction();
+                if (currentTransactionOptional.isPresent()) {
+                  Transaction currentTransaction = currentTransactionOptional.get();
+                  switch (buttonRequest.getButtonRequestType()) {
+                            case CONFIRM_OUTPUT:
+                              // TODO increment the output index
+                              // TODO localise
+                              labelText = "Confirm sending " + currentTransaction.getOutput(0).getValue().toString() + " BTC to " + currentTransaction.getOutput(0).getAddressFromP2PKHScript(MainNetParams.get());
+                              break;
+                            case SIGN_TX:
+                              labelText = "Really send " + currentTransaction.getValue(wallet) + " BTC to " + sendRequestSummary.getDestinationAddress().toString() + ". Fee will be " + currentTransaction.getFee().toString() + " BTC";
+                              break;
+                            default:
+
+                          }
+                }
+
+        }
+
+
+        updateDetailsLabel(labelText);
 
         break;
 
@@ -149,12 +176,13 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<S
                     // Check the signatures are canonical
                     for (TransactionInput txInput : deviceTx.getInputs()) {
                       byte[] signature = txInput.getScriptSig().getChunks().get(0).data;
-                      log.debug("Is signature canonical test result '{}' for txInput '{}', signature '{}'",  TransactionSignature.isEncodingCanonical(signature), txInput.toString(),  Utils.HEX.encode(signature));
-                     }
+                      log.debug("Is signature canonical test result '{}' for txInput '{}', signature '{}'", TransactionSignature.isEncodingCanonical(signature), txInput.toString(), Utils.HEX.encode(signature));
+                    }
 
                     log.debug("Committing and broadcasting the last tx");
-                    //updateDetailsLabel("Success - transaction is signed"); // TODO localise
+
                     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
+
                     if (bitcoinNetworkService.getLastSendRequestSummaryOptional().isPresent() && bitcoinNetworkService.getLastWalletOptional().isPresent()) {
                       SendRequestSummary sendRequestSummary = bitcoinNetworkService.getLastSendRequestSummaryOptional().get();
                       // Substitute the signed tx from the trezor
@@ -166,8 +194,8 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<S
                       bitcoinNetworkService.setLastSendRequestSummaryOptional(Optional.<SendRequestSummary>absent());
                       bitcoinNetworkService.setLastWalletOptional(Optional.<Wallet>absent());
 
-                      updateDetailsLabel("Transaction created but I'm not committing and broadcasting as the signatures are wrong"); // TODO remove when signatures are working
-                      //bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet);
+                      updateDetailsLabel("Transaction created");
+                      bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet);
 
                     } else {
                       log.debug("Cannot commit and broadcast the last send as it is not present in bitcoinNetworkService");
