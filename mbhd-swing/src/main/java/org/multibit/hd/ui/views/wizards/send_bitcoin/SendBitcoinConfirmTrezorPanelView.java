@@ -107,6 +107,16 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<S
 
     switch (event.getEventType()) {
       case SHOW_BUTTON_PRESS:
+        // Update the transaction output count in the hardwareWalletService context
+        Optional<Integer> transactionOutputCountOptional = CoreServices.getOrCreateHardwareWalletService().get().getContext().getTransactionOutputCount();
+        int transactionOutputCount;
+        if (transactionOutputCountOptional.isPresent()) {
+          transactionOutputCount = transactionOutputCountOptional.get() + 1;
+        } else {
+          transactionOutputCount = 0;
+        }
+        CoreServices.getOrCreateHardwareWalletService().get().getContext().setTransactionOutputCount(Optional.of(transactionOutputCount));
+
         // Update label with descriptive text matching what the Trezor is showing
         ButtonRequest buttonRequest = (ButtonRequest) event.getMessage().get();
         String labelText = buttonRequest.getButtonRequestType().name() + ": " + buttonRequest.getButtonMessage() + " " + buttonRequest.toString();
@@ -116,24 +126,26 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<S
           SendRequestSummary sendRequestSummary = bitcoinNetworkService.getLastSendRequestSummaryOptional().get();
 
           Optional<Transaction> currentTransactionOptional = CoreServices.getOrCreateHardwareWalletService().get().getContext().getTransaction();
-                if (currentTransactionOptional.isPresent()) {
-                  Transaction currentTransaction = currentTransactionOptional.get();
-                  switch (buttonRequest.getButtonRequestType()) {
-                            case CONFIRM_OUTPUT:
-                              // TODO increment the output index
-                              // TODO localise
-                              labelText = "Confirm sending " + currentTransaction.getOutput(0).getValue().toString() + " BTC to " + currentTransaction.getOutput(0).getAddressFromP2PKHScript(MainNetParams.get());
-                              break;
-                            case SIGN_TX:
-                              labelText = "Really send " + currentTransaction.getValue(wallet) + " BTC to " + sendRequestSummary.getDestinationAddress().toString() + ". Fee will be " + currentTransaction.getFee().toString() + " BTC";
-                              break;
-                            default:
+          if (currentTransactionOptional.isPresent()) {
+            Transaction currentTransaction = currentTransactionOptional.get();
+            switch (buttonRequest.getButtonRequestType()) {
+              case CONFIRM_OUTPUT:
 
-                          }
+                // TODO localise
+                if (transactionOutputCount >= currentTransaction.getOutputs().size()) {
+                  log.debug("Seeing more button presses than there are tx outputs - using a general message");
+                } else {
+                  labelText = "Confirm sending " + currentTransaction.getOutput(transactionOutputCount).getValue().toString() + " BTC to " + currentTransaction.getOutput(transactionOutputCount).getAddressFromP2PKHScript(MainNetParams.get());
                 }
+                break;
+              case SIGN_TX:
+                labelText = "Really send " + currentTransaction.getValue(wallet) + " BTC from your wallet ? Fee will be " + currentTransaction.getFee().toString() + " BTC";
+                break;
+              default:
 
+            }
+          }
         }
-
 
         updateDetailsLabel(labelText);
 
