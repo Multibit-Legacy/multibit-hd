@@ -68,6 +68,15 @@ public interface MultiBitUI {
   String WIZARD_MAX_WIDTH_MIG = "wmax " + (MultiBitUI.WIZARD_MIN_WIDTH - 30);
 
   /**
+   * A width constraint to avoid seed phrase text area overflow in wizards
+   * In particular this affects some Linux variants perhaps due to an issue
+   * within MiG Layout.
+   *
+   * See <a href="https://github.com/bitcoin-solutions/multibit-hd/issues/230">Issue #230</a> for details.
+   */
+  String WIZARD_MAX_WIDTH_SEED_PHRASE_MIG = "width 300:300:" + (MultiBitUI.WIZARD_MIN_WIDTH - 30);
+
+  /**
    * A width constraint to avoid text overflow in wizards
    */
   String COMBO_BOX_WIDTH_MIG = "w min:350:";
