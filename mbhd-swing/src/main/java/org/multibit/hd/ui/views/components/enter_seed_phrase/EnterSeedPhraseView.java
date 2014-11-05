@@ -142,7 +142,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     }
     if (showSeedPhrase) {
       panel.add(Labels.newSeedPhrase());
-      panel.add(seedPhraseTextArea, MultiBitUI.WIZARD_MAX_WIDTH_MIG);
+      panel.add(seedPhraseTextArea, MultiBitUI.WIZARD_MAX_WIDTH_SEED_PHRASE_MIG);
       panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink,wrap");
     }
 

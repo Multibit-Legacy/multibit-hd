@@ -56,8 +56,7 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
     panel.add(seedTimestamp, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     panel.add(Labels.newSeedPhrase());
-    // TODO formalise this under #230
-    panel.add(seedPhrase, "width 300:300:570");
+    panel.add(seedPhrase, MultiBitUI.WIZARD_MAX_WIDTH_SEED_PHRASE_MIG);
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink");
     panel.add(Buttons.newRefreshButton(refreshAction), "shrink,wrap");
 
