@@ -12,11 +12,13 @@ import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.SendRequestSummary;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Formats;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -134,24 +136,31 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<S
           Optional<Transaction> currentTransactionOptional = CoreServices.getOrCreateHardwareWalletService().get().getContext().getTransaction();
           if (currentTransactionOptional.isPresent()) {
             Transaction currentTransaction = currentTransactionOptional.get();
+            // Substitute mBTC for MICON
+            String bitcoinSymbolText = bitcoinConfiguration.getBitcoinSymbol();
+            if (BitcoinSymbol.MICON.toString().equals(bitcoinSymbolText)) {
+              bitcoinSymbolText = BitcoinSymbol.MBTC.getSymbol();
+            }
             switch (buttonRequest.getButtonRequestType()) {
               case CONFIRM_OUTPUT:
-
-                // TODO localise
                 if (transactionOutputCount >= currentTransaction.getOutputs().size()) {
                   log.debug("Seeing more button presses than there are tx outputs - using the general message");
                 } else {
                   String[] transactionOutputAmount = Formats.formatCoinAsSymbolic(currentTransaction.getOutput(transactionOutputCount).getValue(), languageConfiguration, bitcoinConfiguration);
 
-                  labelText = "Confirm sending " + transactionOutputAmount[0] + transactionOutputAmount[1] + bitcoinConfiguration.getBitcoinSymbol() + " to " + currentTransaction.getOutput(transactionOutputCount).getAddressFromP2PKHScript(MainNetParams.get());
+                  Address transactionOutputAddress = currentTransaction.getOutput(transactionOutputCount).getAddressFromP2PKHScript(MainNetParams.get());
+                  labelText = Languages.safeText(MessageKey.TREZOR_TRANSACTION_OUTPUT_CONFIRM, new String[]{ transactionOutputAmount[0] + transactionOutputAmount[1] + " " + bitcoinSymbolText, transactionOutputAddress == null ? "" : transactionOutputAddress.toString()});
                 }
                 break;
               case SIGN_TX:
-                String[] transactionAmount = Formats.formatCoinAsSymbolic(currentTransaction.getValue(wallet), languageConfiguration, bitcoinConfiguration);
+                // The Trezor device shows the amount including fee so work that out
+                Coin transactionAmount = currentTransaction.getValue(wallet).negate().add(currentTransaction.getFee());
+                String[] transactionAmountFormatted = Formats.formatCoinAsSymbolic(transactionAmount, languageConfiguration, bitcoinConfiguration);
 
                 String[] feeAmount = Formats.formatCoinAsSymbolic(currentTransaction.getFee(), languageConfiguration, bitcoinConfiguration);
-                labelText = "Really send " + transactionAmount[0] +  transactionAmount[1] + " " + bitcoinConfiguration.getBitcoinSymbol() + " from your wallet ? Fee will be " + feeAmount[0] + feeAmount[1] + " " + bitcoinConfiguration.getBitcoinSymbol();
-                break;
+
+                labelText = Languages.safeText(MessageKey.TREZOR_SIGN_CONFIRM, new String[]{ transactionAmountFormatted[0] + transactionAmountFormatted[1] + " " + bitcoinSymbolText, feeAmount[0] + feeAmount[1] + " " + bitcoinSymbolText});
+                    break;
               default:
 
             }

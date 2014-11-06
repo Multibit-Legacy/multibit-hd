@@ -118,7 +118,12 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
           getWizardModel().showOperationSucceeded(event);
 
           // Show the panel
-          show(getWizardModel().getPanelName());
+          try {
+            show(getWizardModel().getPanelName());
+          } catch (IllegalStateException ise) {
+            // Carry on
+            log.debug(ise.getMessage());
+          }
 
         }
       });
