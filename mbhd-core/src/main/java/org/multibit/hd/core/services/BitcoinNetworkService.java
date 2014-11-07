@@ -832,6 +832,7 @@ public class BitcoinNetworkService extends AbstractService {
           if (key == null) {
             log.error("No key in wallet to match pubkeyHash {}", Utils.HEX.encode(pubKeyHash));
           } else {
+            log.debug("Found the key {} for the matching txOutput to this input", key);
             ImmutableList<ChildNumber> path = key.getPath();
             List<Integer> pathList = Lists.newArrayList();
             for (int i = 0; i < path.size(); i++) {
@@ -842,7 +843,7 @@ public class BitcoinNetworkService extends AbstractService {
           }
         }
 
-          count++;
+        count++;
       }
       hardwareWalletService.get().getContext().setAddressChainCodeMap(addressChainCodeMap);
 

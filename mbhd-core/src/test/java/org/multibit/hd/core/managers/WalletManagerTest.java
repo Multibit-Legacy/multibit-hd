@@ -24,6 +24,7 @@ import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Wallet;
 import org.bitcoinj.crypto.DeterministicKey;
+import org.bitcoinj.wallet.KeyChain;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,6 +67,22 @@ public class WalletManagerTest {
   private final static String LONG_PASSWORD = "abcefghijklmnopqrstuvwxyz"; // 26
   private final static String LONGER_PASSWORD = "abcefghijklmnopqrstuvwxyz1234567890"; // 36
   private final static String LONGEST_PASSWORD = "abcefghijklmnopqrstuvwxyzabcefghijklmnopqrstuvwxyz"; // 52
+
+  /**
+   * The seed phrase for the Trezor 'Insecure' wallet
+   */
+  private final static String TREZOR_SEED_PHRASE = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+
+  // The generated Trezor addresses for the 'Abandon' wallet
+  private final static String TREZOR_ADDRESS_M_44H_0H_0H_0_0 = "1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA";  // Receiving funds
+  private final static String TREZOR_ADDRESS_M_44H_0H_0H_1_0 = "1J3J6EvPrv8q6AC3VCjWV45Uf3nssNMRtH";  // Change
+  private final static String TREZOR_ADDRESS_M_44H_0H_0H_0_1 = "1Ak8PffB2meyfYnbXZR9EGfLfFZVpzJvQP";
+  private final static String TREZOR_ADDRESS_M_44H_0H_0H_1_1 = "13vKxXzHXXd8HquAYdpkJoi9ULVXUgfpS5";
+  private final static String TREZOR_ADDRESS_M_44H_0H_0H_0_2 = "1MNF5RSaabFwcbtJirJwKnDytsXXEsVsNb";
+  private final static String TREZOR_ADDRESS_M_44H_0H_0H_1_2 = "1M21Wx1nGrHMPaz52N2En7c624nzL4MYTk";
+  private final static String TREZOR_ADDRESS_M_44H_0H_0H_0_3 = "1MVGa13XFvvpKGZdX389iU8b3qwtmAyrsJ";
+  private final static String TREZOR_ADDRESS_M_44H_0H_0H_1_3 = "1DzVLMA4HzjXPAr6aZoaacDPHXXntsZ2zL";
+
   @Before
   public void setUp() throws Exception {
 
@@ -145,6 +162,64 @@ public class WalletManagerTest {
     );
 
     assertThat(expectedFile.exists()).isTrue();
+    assertThat(WalletType.MBHD_SOFT_WALLET.equals(walletSummary1.getWalletType()));
+    assertThat(WalletType.MBHD_SOFT_WALLET.equals(walletSummary2.getWalletType()));
+  }
+
+  @Test
+  /**
+   * Test creation of a Trezor (soft) wallet.
+   * This matches the 'Insecure' wallet used in the multibit-hardware project TrezorV1WipeAndLoadWalletExample test
+   */
+  public void testCreateTrezorWallet() throws Exception {
+
+    // Get the application directory (will be temporary for unit tests)
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+    WalletManager walletManager = WalletManager.INSTANCE;
+    BackupManager.INSTANCE.initialise(applicationDirectory, null);
+
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(TREZOR_SEED_PHRASE));
+    long nowInSeconds = Dates.nowInSeconds();
+
+    WalletSummary walletSummary = walletManager.createWalletSummary(
+      seed,
+      nowInSeconds,
+      "aPassword",
+      "Abandon",
+      "Abandon",
+      true);
+
+    assertThat(walletSummary).isNotNull();
+    assertThat(WalletType.TREZOR_SOFT_WALLET.equals(walletSummary.getWalletType()));
+
+    // Check that the generated addresses match the list of addresses you get directly from the Trezor
+    // (Either from myTrezor.com or from the multibit-hardware test TrezorV1GetAddressExample)
+
+    Wallet trezorWallet = walletSummary.getWallet();
+
+    log.debug("TrezorWallet : {}", trezorWallet.toString());
+
+    Address trezorAddressM44H_0H_0H_0_0 = trezorWallet.freshAddress(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    Address trezorAddressM44H_0H_0H_1_0 = trezorWallet.freshAddress(KeyChain.KeyPurpose.CHANGE);
+    assertThat(TREZOR_ADDRESS_M_44H_0H_0H_0_0.equals(trezorAddressM44H_0H_0H_0_0.toString())).isTrue();
+    assertThat(TREZOR_ADDRESS_M_44H_0H_0H_1_0.equals(trezorAddressM44H_0H_0H_1_0.toString())).isTrue();
+
+    Address trezorAddressM44H_0H_0H_0_1 = trezorWallet.freshAddress(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    Address trezorAddressM44H_0H_0H_1_1 = trezorWallet.freshAddress(KeyChain.KeyPurpose.CHANGE);
+    assertThat(TREZOR_ADDRESS_M_44H_0H_0H_0_1.equals(trezorAddressM44H_0H_0H_0_1.toString())).isTrue();
+    assertThat(TREZOR_ADDRESS_M_44H_0H_0H_1_1.equals(trezorAddressM44H_0H_0H_1_1.toString())).isTrue();
+
+    Address trezorAddressM44H_0H_0H_0_2 = trezorWallet.freshAddress(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    Address trezorAddressM44H_0H_0H_1_2 = trezorWallet.freshAddress(KeyChain.KeyPurpose.CHANGE);
+    assertThat(TREZOR_ADDRESS_M_44H_0H_0H_0_2.equals(trezorAddressM44H_0H_0H_0_2.toString())).isTrue();
+    assertThat(TREZOR_ADDRESS_M_44H_0H_0H_1_2.equals(trezorAddressM44H_0H_0H_1_2.toString())).isTrue();
+
+    Address trezorAddressM44H_0H_0H_0_3 = trezorWallet.freshAddress(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    Address trezorAddressM44H_0H_0H_1_3 = trezorWallet.freshAddress(KeyChain.KeyPurpose.CHANGE);
+    assertThat(TREZOR_ADDRESS_M_44H_0H_0H_0_3.equals(trezorAddressM44H_0H_0H_0_3.toString())).isTrue();
+    assertThat(TREZOR_ADDRESS_M_44H_0H_0H_1_3.equals(trezorAddressM44H_0H_0H_1_3.toString())).isTrue();
   }
 
   @Test
@@ -224,13 +299,13 @@ public class WalletManagerTest {
 
     log.debug("");
     WalletSummary walletSummary = walletManager.getOrCreateWalletSummary(
-                    applicationDirectory,
-                    seed,
-                    nowInSeconds,
-                    SIGNING_PASSWORD,
-                    "Signing Example",
-                    "Signing Example"
-            );
+            applicationDirectory,
+            seed,
+            nowInSeconds,
+            SIGNING_PASSWORD,
+            "Signing Example",
+            "Signing Example"
+    );
 
     // Address not in wallet
     ECKey ecKey = new ECKey();
