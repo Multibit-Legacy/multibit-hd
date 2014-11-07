@@ -62,9 +62,9 @@ public class BackupSummaryDescendingComparatorTest {
 
     Collections.sort(backupSummaryList, testObject);
 
-    assertThat(backupSummaryList.get(0).getCreated().getSecondOfDay()).isEqualTo(2);
-    assertThat(backupSummaryList.get(1).getCreated().getSecondOfDay()).isEqualTo(1);
-    assertThat(backupSummaryList.get(2).getCreated().getSecondOfDay()).isEqualTo(0);
+    assertThat(backupSummaryList.get(0).getCreated().getSecondOfMinute()).isEqualTo(2);
+    assertThat(backupSummaryList.get(1).getCreated().getSecondOfMinute()).isEqualTo(1);
+    assertThat(backupSummaryList.get(2).getCreated().getSecondOfMinute()).isEqualTo(0);
 
   }
 
