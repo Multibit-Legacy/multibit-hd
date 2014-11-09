@@ -523,6 +523,9 @@ public enum MessageKey {
   SHOW_CHANGE_PASSWORD_WIZARD("show_change_password_wizard"),
   SHOW_CHANGE_PASSWORD_WIZARD_TOOLTIP("show_change_password_wizard_tooltip"),
 
+  SHOW_CHANGE_PIN_WIZARD("show_change_pin_wizard"),
+  SHOW_CHANGE_PIN_WIZARD_TOOLTIP("show_change_pin_wizard_tooltip"),
+
   SHOW_VERIFY_NETWORK_WIZARD("show_verify_network_wizard"),
   SHOW_VERIFY_NETWORK_WIZARD_TOOLTIP("show_verify_network_wizard_tooltip"),
 

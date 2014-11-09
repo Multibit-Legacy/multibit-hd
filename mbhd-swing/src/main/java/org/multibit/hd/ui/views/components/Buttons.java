@@ -983,6 +983,26 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "change PIN" button with icon
+   */
+  public static JButton newShowChangePinButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_CHANGE_PIN_WIZARD, MessageKey.SHOW_CHANGE_PIN_WIZARD_TOOLTIP);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.TH,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "verify network" button with icon
    */
   public static JButton newShowVerifyNetworkButton(Action action) {
