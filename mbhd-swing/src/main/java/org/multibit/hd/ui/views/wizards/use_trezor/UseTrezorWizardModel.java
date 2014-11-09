@@ -1,11 +1,12 @@
 package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import org.bitcoinj.wallet.KeyChain;
+import org.bitcoinj.crypto.ChildNumber;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -347,9 +348,15 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
          if (hardwareWalletServiceOptional.isPresent()) {
            HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
            if (hardwareWalletService.isWalletPresent()) {
-             log.debug("Request valid receiving address (chain 0)...");
-             hardwareWalletService.requestPublicKey(0, KeyChain.KeyPurpose.RECEIVE_FUNDS, 0);
+            log.debug("Request the extended public key for the Trezor account");
+            hardwareWalletService.requestDeterministicHierarchy(
+            Lists.newArrayList(
+                    new ChildNumber(44 | ChildNumber.HARDENED_BIT),
+                    ChildNumber.ZERO_HARDENED,
+                    ChildNumber.ZERO_HARDENED
+            ));
              log.debug("Request public key request has been performed");
+             // The onHardwareWalletEvent response is dealt with in UseTrezorReportPanelView
            } else {
              log.debug("No wallet present");
            }

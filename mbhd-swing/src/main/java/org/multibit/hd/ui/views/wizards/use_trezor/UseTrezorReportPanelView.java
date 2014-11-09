@@ -1,24 +1,28 @@
 package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.crypto.ChildNumber;
+import org.bitcoinj.crypto.DeterministicHierarchy;
 import org.bitcoinj.crypto.DeterministicKey;
+import org.bitcoinj.params.MainNetParams;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
-import org.multibit.hd.hardware.core.messages.HDNodeType;
-import org.multibit.hd.hardware.core.messages.PublicKey;
+import org.multibit.hd.hardware.core.fsm.HardwareWalletContext;
+import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -170,67 +174,98 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
       case SHOW_PIN_ENTRY:
       case SHOW_OPERATION_SUCCEEDED:
       case SHOW_OPERATION_FAILED:
-        // Do nothing
-        break;
       case PUBLIC_KEY:
 
-        try {
-          Optional<HDNodeType> hdNodeType = ((PublicKey) event.getMessage().get()).getHdNodeType();
-          if (hdNodeType.isPresent()) {
-            // Get the pubkey and chain code for the Trezor root node
-            byte[] receivingPubKey = hdNodeType.get().getPublicKey().get();
-            byte[] chainCode = hdNodeType.get().getChainCode().get();
+        // Do nothing
+        break;
 
-            // The path of the Trezor wallet root node  M/44'/0'/0'
-            ImmutableList<ChildNumber> path = ImmutableList.of(new ChildNumber(44 | ChildNumber.HARDENED_BIT), ChildNumber.ZERO_HARDENED, ChildNumber.ZERO_HARDENED);
-            final DeterministicKey rootNode = new DeterministicKey(path, chainCode, ECKey.CURVE.getCurve().decodePoint(receivingPubKey), null, null);
-            log.debug("Attempting to load/ create with wallet rootNode {}", rootNode);
+      case DETERMINISTIC_HIERARCHY:
 
-            final UseTrezorWizardModel model = getWizardModel();
-            if (!model.getEntropyOptional().isPresent()) {
-              log.debug("No entropy - no wallet to load");
-              // TODO Notify user
-              return;
+        Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
+        if (hardwareWalletServiceOptional.isPresent()) {
+          HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
+          if (hardwareWalletService.isWalletPresent()) {
+            HardwareWalletContext hardwareWalletContext = hardwareWalletService.getContext();
+            // Parent key should be M/44'/0'/0'
+            final DeterministicKey parentKey = hardwareWalletContext.getDeterministicKey().get();
+            log.info("Parent key path: {}", parentKey.getPathAsString());
+
+            // Verify the deterministic hierarchy can derive child keys
+            // In this case 0/0 from a parent of M/44'/0'/0'
+            DeterministicHierarchy hierarchy = hardwareWalletContext.getDeterministicHierarchy().get();
+            DeterministicKey childKey = hierarchy.deriveChild(
+                    Lists.newArrayList(
+                            ChildNumber.ZERO
+                    ),
+                    true,
+                    true,
+                    ChildNumber.ZERO
+            );
+
+            // Calculate the address
+            ECKey seedKey = ECKey.fromPublicOnly(childKey.getPubKey());
+            Address walletKeyAddress = new Address(MainNetParams.get(), seedKey.getPubKeyHash());
+
+            log.info("Path {}/0/0 has address: '{}'", parentKey.getPathAsString(), walletKeyAddress.toString());
+
+            // Get the label of the Trezor from the features to use as the wallet name
+            Optional<Features> features = hardwareWalletContext.getFeatures();
+            final String label;
+            if (features.isPresent()) {
+              label = features.get().getLabel();
+            } else {
+              label = "";
             }
 
-            // The entropy is used as the password of the Trezor wallet (so the user does not need to remember it
-            log.debug("Running decrypt of Trezor wallet with entropy of length {}", model.getEntropyOptional().get().length);
+            try {
+              final UseTrezorWizardModel model = getWizardModel();
+              if (!model.getEntropyOptional().isPresent()) {
+                log.debug("No entropy - no wallet to load");
+                // TODO Notify user
+                return;
+              }
 
-            // Locate the installation directory
-            final File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+              // The entropy is used as the password of the Trezor wallet (so the user does not need to remember it
+              log.debug("Running decrypt of Trezor wallet with entropy of length {}", model.getEntropyOptional().get().length);
 
-            // Must be OK to be here - run wallet creation off the hardware event thread
-            SwingUtilities.invokeLater(
-                    new Runnable() {
-                      @Override
-                      public void run() {
+              // Locate the installation directory
+              final File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
-                        try {
-                          WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(applicationDataDirectory,
-                                  rootNode, Dates.nowInSeconds(), Hex.toHexString(model.getEntropyOptional().get()),
-                                  "TODO - name from features",
-                                  "TODO - notes");
+              // Must be OK to be here - run wallet creation off the hardware event thread
+              SwingUtilities.invokeLater(
+                      new Runnable() {
+                        @Override
+                        public void run() {
 
-                          log.debug("Wallet summary {}", walletSummary);
+                          try {
+                            WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(applicationDataDirectory,
+                                    parentKey, Dates.nowInSeconds(), Hex.toHexString(model.getEntropyOptional().get()),
+                                    label, "");
 
-                          trezorWalletStatus.setText(Languages.safeText(MessageKey.USE_TREZOR_REPORT_MESSAGE_SUCCESS, true));
-                          AccessibilityDecorator.apply(trezorWalletStatus, MessageKey.USE_TREZOR_REPORT_MESSAGE_SUCCESS);
-                          AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, trezorWalletStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+                            log.debug("Wallet summary {}", walletSummary);
 
-                        } catch (IOException ioe) {
-                          ioe.printStackTrace();
+                            trezorWalletStatus.setText(Languages.safeText(MessageKey.USE_TREZOR_REPORT_MESSAGE_SUCCESS, true));
+                            AccessibilityDecorator.apply(trezorWalletStatus, MessageKey.USE_TREZOR_REPORT_MESSAGE_SUCCESS);
+                            AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, trezorWalletStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+                          } catch (IOException ioe) {
+                            ioe.printStackTrace();
+                          }
                         }
-                      }
-                    });
+                      });
+
+
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
+
 
           } else {
-            log.error("Expected a node type in message from Trezor");
+            log.debug("No wallet present");
           }
-        } catch (Exception e) {
-          e.printStackTrace();
+        } else {
+          log.error("No hardware wallet service");
         }
-
-        break;
     }
   }
 }
