@@ -781,6 +781,42 @@ public class Labels {
   }
 
   /**
+   * @return A new "enter current PIN"
+   */
+  public static JLabel newEnterCurrentPin() {
+
+    return newLabel(MessageKey.ENTER_CURRENT_PIN);
+
+  }
+
+  /**
+   * @return A new "enter new PIN"
+   */
+  public static JLabel newEnterNewPin() {
+
+    return newLabel(MessageKey.ENTER_NEW_PIN);
+
+  }
+
+  /**
+   * @return A new "confirm new PIN"
+   */
+  public static JLabel newConfirmNewPin() {
+
+    return newLabel(MessageKey.CONFIRM_NEW_PIN);
+
+  }
+
+  /**
+   * @return A new "enter PIN look at device"
+   */
+  public static JLabel newEnterPinLookAtDevice() {
+
+    return newLabel(MessageKey.ENTER_PIN_LOOK_AT_DEVICE);
+
+  }
+
+  /**
    * @return A new "Enter credentials" label
    */
   public static JLabel newEnterPassword() {

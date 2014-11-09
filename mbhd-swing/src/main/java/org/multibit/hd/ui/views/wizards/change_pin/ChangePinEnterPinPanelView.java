@@ -19,12 +19,10 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
-import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
 import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
 import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
+import org.multibit.hd.ui.views.components.enter_pin.EnterPinModel;
+import org.multibit.hd.ui.views.components.enter_pin.EnterPinView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -38,7 +36,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Send bitcoin: Enter amount</li>
+ * <li>Enter current PIN</li>
+ * <li>Enter new PIN</li>
+ * <li>Enter confirmation of new PIN</li>
  * </ul>
  *
  * @since 0.0.1
@@ -49,16 +49,18 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
   // Panel specific components
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
 
-  private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
-  private ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> confirmPasswordMaV;
+  private ModelAndView<EnterPinModel, EnterPinView> enterPinMaV;
   private ListeningExecutorService executorService;
+
+  private JLabel enterPinNote;
 
   /**
    * @param wizard The wizard managing the states
    */
   public ChangePinEnterPinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.CHANGE_PASSWORD_TITLE, AwesomeIcon.LOCK);
+    // Need to use the LOCK icon here because TH is visually confusing
+    super(wizard, panelName, MessageKey.CHANGE_PIN_TITLE, AwesomeIcon.LOCK);
 
   }
 
@@ -66,22 +68,20 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
   public void newPanelModel() {
 
     displaySecurityPopoverMaV = Popovers.newDisplaySecurityPopoverMaV(getPanelName());
-    enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
-    confirmPasswordMaV = Components.newConfirmPasswordMaV(getPanelName());
+    enterPinMaV = Components.newEnterPinMaV(getPanelName());
 
     // Configure the panel model
     final ChangePinEnterPinPanelModel panelModel = new ChangePinEnterPinPanelModel(
       getPanelName(),
-      enterPasswordMaV.getModel(),
-      confirmPasswordMaV.getModel()
+      enterPinMaV.getModel()
     );
     setPanelModel(panelModel);
 
     // Bind it to the wizard model
-    getWizardModel().setChangePasswordPanelModel(panelModel);
+    getWizardModel().setChangePinPanelModel(panelModel);
 
     // Register components
-    registerComponents(enterPasswordMaV, confirmPasswordMaV, displaySecurityPopoverMaV);
+    registerComponents(enterPinMaV, displaySecurityPopoverMaV);
 
   }
 
@@ -94,13 +94,15 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[]", // Column constraints
-      "[]10[]" // Row constraints
+      "[][]10[]" // Row constraints
     ));
 
-    contentPanel.add(Labels.newChangePasswordNote1(), "wrap");
-    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "wrap");
-    contentPanel.add(Labels.newChangePasswordNote2(), "wrap");
-    contentPanel.add(confirmPasswordMaV.getView().newComponentPanel(), "wrap");
+    // Use the initial state to set this
+    enterPinNote = Labels.newEnterCurrentPin();
+
+    contentPanel.add(enterPinNote, "align center,wrap");
+    contentPanel.add(Labels.newEnterPinLookAtDevice(), "align center,wrap");
+    contentPanel.add(enterPinMaV.getView().newComponentPanel(), "align center,wrap");
 
   }
 
@@ -118,7 +120,7 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
       @Override
       public void run() {
 
-        enterPasswordMaV.getView().requestInitialFocus();
+        enterPinMaV.getView().requestInitialFocus();
 
         // Check for any security alerts
         Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
@@ -154,7 +156,6 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
         // Ensure the view shows the spinner and disables components
         getNextButton().setEnabled(false);
         getCancelButton().setEnabled(false);
-        enterPasswordMaV.getView().setSpinnerVisibility(true);
 
       }
     });
@@ -182,8 +183,7 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
           if (result) {
 
             // Manually deregister the MaVs
-            CoreServices.uiEventBus.unregister(enterPasswordMaV);
-            CoreServices.uiEventBus.unregister(confirmPasswordMaV);
+            CoreServices.uiEventBus.unregister(enterPinMaV);
             CoreServices.uiEventBus.unregister(displaySecurityPopoverMaV);
 
             // Trigger the deferred hide
@@ -217,9 +217,8 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
                   getNextButton().setEnabled(true);
                 }
                 getCancelButton().setEnabled(true);
-                enterPasswordMaV.getView().setSpinnerVisibility(false);
 
-                enterPasswordMaV.getView().requestInitialFocus();
+                enterPinMaV.getView().requestInitialFocus();
 
               }
             });
@@ -238,9 +237,8 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
                 getNextButton().setEnabled(true);
               }
               getCancelButton().setEnabled(true);
-              enterPasswordMaV.getView().setSpinnerVisibility(false);
 
-              enterPasswordMaV.getView().requestInitialFocus();
+              enterPinMaV.getView().requestInitialFocus();
             }
           });
 
@@ -259,7 +257,7 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
    */
   private boolean checkPassword() {
 
-    CharSequence password = enterPasswordMaV.getModel().getValue();
+    CharSequence password = enterPinMaV.getModel().getValue();
 
     if (!"".equals(password)) {
 
@@ -315,13 +313,13 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
 
     boolean isPasswordCorrect = !Strings.isNullOrEmpty(
       getPanelModel().get()
-        .getEnterPasswordModel()
+        .getEnterPinModel()
         .getValue()
     );
 
-    boolean isNewPasswordConfirmed = confirmPasswordMaV.getModel().comparePasswords();
 
-    return isPasswordCorrect && isNewPasswordConfirmed;
+    // TODO Implement this
+    return true;
 
   }
 

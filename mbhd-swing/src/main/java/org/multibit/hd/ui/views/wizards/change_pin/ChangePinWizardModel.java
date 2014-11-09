@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>Model object to provide the following to "credentials wizard":</p>
+ * <p>Model object to provide the following to "change PIN wizard":</p>
  * <ul>
  * <li>Storage of panel data</li>
  * <li>State transition management</li>
@@ -23,9 +23,9 @@ public class ChangePinWizardModel extends AbstractWizardModel<ChangePinState> {
   private static final Logger log = LoggerFactory.getLogger(ChangePinWizardModel.class);
 
   /**
-   * The "change credentials" panel model
+   * The "change PIN" panel model
    */
-  private ChangePinEnterPinPanelModel changePasswordPanelModel;
+  private ChangePinEnterPinPanelModel changePinPanelModel;
 
   /**
    * @param state The state object
@@ -40,26 +40,33 @@ public class ChangePinWizardModel extends AbstractWizardModel<ChangePinState> {
   }
 
   /**
-   * @return The credentials the user entered (must be able to unlock the current wallet)
+   * @return The PIN the user entered (must be able to unlock the current device)
    */
-  public String getEnteredPassword() {
-    return changePasswordPanelModel.getEnterPasswordModel().getValue();
+  public String getCurrentPin() {
+    return changePinPanelModel.getEnterPinModel().getValue();
   }
 
   /**
-   * @return The confirmed credentials (use this to lock up the current wallet)
+   * @return The new PIN
    */
-  public String getConfirmedPassword() {
-    return changePasswordPanelModel.getConfirmPasswordModel().getValue();
+  public String getNewPin() {
+    return changePinPanelModel.getEnterPinModel().getValue();
+  }
+
+  /**
+   * @return The confirmed PIN
+   */
+  public String getConfirmedPin() {
+    return changePinPanelModel.getEnterPinModel().getValue();
   }
 
   /**
    * <p>Reduced visibility for panel models only</p>
    *
-   * @param changePasswordPanelModel The "enter credentials" panel model
+   * @param changePinPanelModel The "enter PIN" panel model
    */
-  void setChangePasswordPanelModel(ChangePinEnterPinPanelModel changePasswordPanelModel) {
-    this.changePasswordPanelModel = changePasswordPanelModel;
+  void setChangePinPanelModel(ChangePinEnterPinPanelModel changePinPanelModel) {
+    this.changePinPanelModel = changePinPanelModel;
   }
 
   @Subscribe
@@ -76,7 +83,7 @@ public class ChangePinWizardModel extends AbstractWizardModel<ChangePinState> {
 
     switch (state) {
       case CHANGE_PIN_ENTER_CURRENT_PIN:
-        state = ChangePinState.CHANGE_PIN_REPORT;
+        state = ChangePinState.CHANGE_PIN_ENTER_NEW_PIN;
         break;
       case CHANGE_PIN_REPORT:
          state = ChangePinState.CHANGE_PIN_REPORT;

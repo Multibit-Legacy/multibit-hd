@@ -99,8 +99,8 @@ public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinW
   public boolean beforeShow() {
 
     ChangePinWizardModel model = getWizardModel();
-    String oldPassword = model.getEnteredPassword();
-    String newPassword = model.getConfirmedPassword();
+    String oldPassword = model.getCurrentPin();
+    String newPassword = model.getNewPin();
 
     Optional<WalletSummary> walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
 
