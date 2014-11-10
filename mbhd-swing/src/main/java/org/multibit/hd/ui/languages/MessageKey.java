@@ -424,7 +424,12 @@ public enum MessageKey {
 
   CHANGE_PASSWORD_TITLE("change_password_title"),
 
-  CHANGE_PIN_TITLE("change_pin_title"),
+  CHANGE_PIN_SELECT_OPTION_TITLE("change_pin_select_option_title"),
+  CHANGE_PIN_OPTION("change_pin_option"),
+  REMOVE_PIN_OPTION("remove_pin_option"),
+  CHANGE_PIN_ENTER_CURRENT_PIN_TITLE("change_pin_enter_current_pin_title"),
+  CHANGE_PIN_ENTER_NEW_PIN_TITLE("change_pin_enter_new_pin_title"),
+  CHANGE_PIN_CONFIRM_NEW_PIN_TITLE("change_pin_confirm_new_pin_title"),
 
   REPAIR_WALLET_TITLE("repair_wallet_title"),
   REPAIR_WALLET_PROGRESS_TITLE("repair_wallet_progress_title"),

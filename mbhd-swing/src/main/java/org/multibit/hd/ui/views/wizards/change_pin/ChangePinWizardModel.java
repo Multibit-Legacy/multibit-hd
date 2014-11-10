@@ -1,16 +1,27 @@
 package org.multibit.hd.ui.views.wizards.change_pin;
 
+import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.PinMatrixRequest;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nullable;
+import java.util.concurrent.Callable;
 
 /**
  * <p>Model object to provide the following to "change PIN wizard":</p>
@@ -20,7 +31,6 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<ChangePinState> {
 
@@ -34,7 +44,17 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
   /**
    * Change PIN requires a separate executor
    */
-  private final ListeningExecutorService changePinService = SafeExecutors.newSingleThreadExecutor("change-pin");
+  private final ListeningExecutorService trezorRequestService = SafeExecutors.newSingleThreadExecutor("trezor-requests-change-pin");
+
+  /**
+   * True if the PIN should be removed
+   */
+  private boolean removePin = false;
+
+  /**
+   * The request change PIN view
+   */
+  private ChangePinRequestPinChangePanelView requestChangePinPanelView;
 
   /**
    * @param state The state object
@@ -70,6 +90,25 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
   }
 
   /**
+   * @return True if the PIN is to be removed
+   */
+  public boolean isRemovePin() {
+    return removePin;
+  }
+
+  public void setRemovePin(boolean removePin) {
+    this.removePin = removePin;
+  }
+
+  public void setRequestChangePinPanelView(ChangePinRequestPinChangePanelView requestChangePinPanelView) {
+    this.requestChangePinPanelView = requestChangePinPanelView;
+  }
+
+  public ChangePinRequestPinChangePanelView getRequestChangePinPanelView() {
+    return requestChangePinPanelView;
+  }
+
+  /**
    * <p>Reduced visibility for panel models only</p>
    *
    * @param changePinPanelModel The "enter PIN" panel model
@@ -85,6 +124,31 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
       ViewEvents.fireWizardButtonEnabledEvent(event.getPanelName(), WizardButton.NEXT, event.isOK());
     }
 
+  }
+
+  @Override
+  public void showNext() {
+
+    switch (state) {
+      case CHANGE_PIN_SELECT_OPTION:
+        state=ChangePinState.CHANGE_PIN_REQUEST_PIN_CHANGE;
+        break;
+      case CHANGE_PIN_REQUEST_PIN_CHANGE:
+
+        break;
+      case CHANGE_PIN_ENTER_CURRENT_PIN:
+        state = ChangePinState.CHANGE_PIN_ENTER_NEW_PIN;
+        break;
+      case CHANGE_PIN_ENTER_NEW_PIN:
+        break;
+      case CHANGE_PIN_CONFIRM_NEW_PIN:
+        break;
+      case CHANGE_PIN_REPORT:
+        state = ChangePinState.CHANGE_PIN_REPORT;
+        break;
+      default:
+        throw new IllegalStateException("Unknown state: " + state.name());
+    }
   }
 
   @Override
@@ -104,18 +168,95 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
 
   }
 
-  @Override
-  public void showNext() {
 
-    switch (state) {
-      case CHANGE_PIN_ENTER_CURRENT_PIN:
-        state = ChangePinState.CHANGE_PIN_ENTER_NEW_PIN;
-        break;
-      case CHANGE_PIN_REPORT:
-         state = ChangePinState.CHANGE_PIN_REPORT;
-         break;
-       default:
-        throw new IllegalStateException("Unknown state: " + state.name());
-    }
+  /**
+   * Request a change or removal of the device PIN
+   */
+  public void requestChangeOrRemovePin() {
+
+    // Communicate with the device off the EDT
+    trezorRequestService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.debug("Performing a request PIN to Trezor");
+
+          // A 'requestPin' is performed in which the user provides a new PIN
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+
+          // Check if there is a wallet present
+          if (hardwareWalletService.isPresent()) {
+
+            // Request a PIN
+            // AbstractHardwareWalletWizard will deal with the responses
+            hardwareWalletService.get().changePIN(isRemovePin());
+
+          } else {
+            // TODO Require MessageKey
+            getRequestChangePinPanelView().setMessage("No wallet is present on the device");
+          }
+
+        }
+      });
+
   }
+
+  /**
+   * @param pinPositions The PIN positions providing some obfuscation
+   */
+  public void providePin(final String pinPositions) {
+
+    // Start the requestRootNode
+    ListenableFuture future = trezorRequestService.submit(
+      new Callable<Boolean>() {
+
+        @Override
+        public Boolean call() throws Exception {
+
+          Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
+
+          if (hardwareWalletServiceOptional.isPresent()) {
+
+            HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
+
+            if (hardwareWalletService.isWalletPresent()) {
+
+              log.debug("Provide a PIN");
+              hardwareWalletService.providePIN(pinPositions);
+
+            } else {
+              log.debug("No wallet present");
+            }
+
+          } else {
+            log.error("No hardware wallet service");
+          }
+
+          // Must have successfully sent the message to be here
+          return true;
+
+        }
+
+      });
+    Futures.addCallback(
+      future, new FutureCallback() {
+        @Override
+        public void onSuccess(@Nullable Object result) {
+
+          // We successfully requested the deterministic hierarchy so throw a ComponentChangedEvent for the UI to update
+          ViewEvents.fireComponentChangedEvent(UseTrezorState.USE_TREZOR_REPORT_PANEL.name(), Optional.absent());
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          // Have a failure
+          ExceptionHandler.handleThrowable(t);
+        }
+
+      });
+
+  }
+
 }

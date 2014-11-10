@@ -30,7 +30,6 @@ import java.awt.event.ActionListener;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class Panels {
 
@@ -232,7 +231,6 @@ public class Panels {
 
   /**
    * <p>Hides the currently showing light box panel (and any popover)</p>
-   *
    */
   public synchronized static void hideLightBoxIfPresent() {
 
@@ -330,9 +328,9 @@ public class Panels {
    * @param listener               The action listener
    * @param createCommand          The create command name
    * @param existingWalletCommand  The existing wallet command name
-   *
    * @param restorePasswordCommand The restore credentials command name
    * @param restoreWalletCommand   The restore wallet command name
+   *
    * @return A new "wallet selector" panel
    */
   public static JPanel newWalletSelector(
@@ -381,52 +379,88 @@ public class Panels {
   }
 
   /**
-    * <p>A "Trezor tool selector" panel provides a means of choosing which Trezor tool to run</p>
-    *
-    * @param listener               The action listener
-    * @param verifyDeviceCommand    The verify device command name
-    * @param wipeDeviceCommand      The wipe device command name
+   * <p>A "Trezor select PIN" panel provides a means of choosing how a device PIN is to be changed/removed</p>
+   *
+   * @param listener      The action listener
+   * @param changeCommand The change PIN command name
+   * @param removeCommand The remove PIN command name
+   *
+   * @return A new "wallet selector" panel
+   */
+  public static JPanel newChangePinSelector(
+    ActionListener listener,
+    String changeCommand,
+    String removeCommand
+  ) {
 
-    * @return A new "use Trezor selector" panel
-    */
-   public static JPanel newUseTrezorSelector(
-           ActionListener listener,
-           String useTrezorWalletCommand,
-           String buyTrezorCommand,
-           String verifyDeviceCommand,
-           String wipeDeviceCommand
-   ) {
+    JPanel panel = Panels.newPanel();
 
-     JPanel panel = Panels.newPanel();
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.CHANGE_PIN_OPTION);
+    radio1.setSelected(true);
+    radio1.setActionCommand(changeCommand);
 
-     JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.USE_TREZOR_WALLET);
-     radio1.setActionCommand(useTrezorWalletCommand);
-     radio1.setSelected(true);
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.REMOVE_PIN_OPTION);
+    radio2.setActionCommand(removeCommand);
 
-     JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.BUY_TREZOR);
-     radio2.setActionCommand(buyTrezorCommand);
+    // Wallet selection is mutually exclusive
+    ButtonGroup group = new ButtonGroup();
+    group.add(radio1);
+    group.add(radio2);
 
-     JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.VERIFY_DEVICE);
-     radio3.setActionCommand(verifyDeviceCommand);
+    // Add to the panel
+    panel.add(radio1, "wrap");
+    panel.add(radio2, "wrap");
 
-     JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.WIPE_DEVICE);
-     radio4.setActionCommand(wipeDeviceCommand);
+    return panel;
+  }
 
-     // Action selection is mutually exclusive
-     ButtonGroup group = new ButtonGroup();
-     group.add(radio1);
-     group.add(radio2);
-     group.add(radio3);
-     group.add(radio4);
+  /**
+   * <p>A "Trezor tool selector" panel provides a means of choosing which Trezor tool to run</p>
+   *
+   * @param listener            The action listener
+   * @param verifyDeviceCommand The verify device command name
+   * @param wipeDeviceCommand   The wipe device command name
+   *
+   * @return A new "use Trezor selector" panel
+   */
+  public static JPanel newUseTrezorSelector(
+    ActionListener listener,
+    String useTrezorWalletCommand,
+    String buyTrezorCommand,
+    String verifyDeviceCommand,
+    String wipeDeviceCommand
+  ) {
 
-     // Add to the panel
-     panel.add(radio1, "wrap");
-     panel.add(radio2, "wrap");
-     panel.add(radio3, "wrap");
-     panel.add(radio4, "wrap");
+    JPanel panel = Panels.newPanel();
 
-     return panel;
-   }
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.USE_TREZOR_WALLET);
+    radio1.setActionCommand(useTrezorWalletCommand);
+    radio1.setSelected(true);
+
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.BUY_TREZOR);
+    radio2.setActionCommand(buyTrezorCommand);
+
+    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.VERIFY_DEVICE);
+    radio3.setActionCommand(verifyDeviceCommand);
+
+    JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.WIPE_DEVICE);
+    radio4.setActionCommand(wipeDeviceCommand);
+
+    // Action selection is mutually exclusive
+    ButtonGroup group = new ButtonGroup();
+    group.add(radio1);
+    group.add(radio2);
+    group.add(radio3);
+    group.add(radio4);
+
+    // Add to the panel
+    panel.add(radio1, "wrap");
+    panel.add(radio2, "wrap");
+    panel.add(radio3, "wrap");
+    panel.add(radio4, "wrap");
+
+    return panel;
+  }
 
   /**
    * <p>A "confirm seed phrase" panel displays the instructions to enter the seed phrase from a piece of paper</p>

@@ -26,6 +26,12 @@ public class ChangePinWizard extends AbstractHardwareWalletWizard<ChangePinWizar
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
     wizardViewMap.put(
+      ChangePinState.CHANGE_PIN_SELECT_OPTION.name(),
+      new ChangePinSelectOptionPanelView(this, ChangePinState.CHANGE_PIN_SELECT_OPTION.name()));
+    wizardViewMap.put(
+      ChangePinState.CHANGE_PIN_REQUEST_PIN_CHANGE.name(),
+      new ChangePinRequestPinChangePanelView(this, ChangePinState.CHANGE_PIN_REQUEST_PIN_CHANGE.name()));
+    wizardViewMap.put(
       ChangePinState.CHANGE_PIN_ENTER_CURRENT_PIN.name(),
       new ChangePinEnterPinPanelView(this, ChangePinState.CHANGE_PIN_ENTER_CURRENT_PIN.name()));
     wizardViewMap.put(

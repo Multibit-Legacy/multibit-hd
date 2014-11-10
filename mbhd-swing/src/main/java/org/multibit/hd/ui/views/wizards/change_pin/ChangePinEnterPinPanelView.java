@@ -52,15 +52,13 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
   private ModelAndView<EnterPinModel, EnterPinView> enterPinMaV;
   private ListeningExecutorService executorService;
 
-  private JLabel enterPinNote;
-
   /**
    * @param wizard The wizard managing the states
    */
   public ChangePinEnterPinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
     // Need to use the LOCK icon here because TH is visually confusing
-    super(wizard, panelName, MessageKey.CHANGE_PIN_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, MessageKey.CHANGE_PIN_ENTER_CURRENT_PIN_TITLE, AwesomeIcon.LOCK);
 
   }
 
@@ -98,9 +96,8 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
     ));
 
     // Use the initial state to set this
-    enterPinNote = Labels.newEnterCurrentPin();
 
-    contentPanel.add(enterPinNote, "align center,wrap");
+    contentPanel.add(Labels.newEnterCurrentPin(), "align center,wrap");
     contentPanel.add(Labels.newEnterPinLookAtDevice(), "align center,wrap");
     contentPanel.add(enterPinMaV.getView().newComponentPanel(), "align center,wrap");
 
