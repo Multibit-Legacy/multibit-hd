@@ -748,10 +748,12 @@ public class WalletService {
       // No wallet is present
       throw new IllegalStateException("Trying to add a key to a non-existent wallet");
     } else {
-      // If there is no credentials then recycle the first address in the wallet
+      // Create a new address
       if (walletPasswordOptional.isPresent()) {
         ECKey newKey = currentWalletSummary.get().getWallet().freshReceiveKey();
-        return newKey.toAddress(networkParameters).toString();
+        String address = newKey.toAddress(networkParameters).toString();
+        log.debug("Generated fresh receiving address {}", address);
+        return address;
       } else {
         // A credentials is required as all wallets are encrypted
         throw new IllegalStateException("No credentials specified");
