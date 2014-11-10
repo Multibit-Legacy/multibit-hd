@@ -3,10 +3,7 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
-import org.bitcoinj.wallet.KeyChain;
 import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
@@ -38,7 +35,8 @@ public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<
   private final ListeningExecutorService cipherKeyExecutorService = SafeExecutors.newSingleThreadExecutor("cipher-key");
 
   // TODO Add language support
-  private JLabel message=Labels.newValueLabel("Talking to device...");
+  private JLabel message = Labels.newValueLabel("Talking to device...");
+  private String status;
 
   /**
    * @param wizard The wizard managing the states
@@ -52,7 +50,8 @@ public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<
   @Override
   public void newPanelModel() {
 
-    // Do nothing this is a transitional page with no UI
+    // Bind it to the wizard model in case of failure
+    getWizardModel().setRequestCipherKeyPanelView(this);
 
   }
 
@@ -102,7 +101,7 @@ public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<
     // This is done as a transitional panel to allow for a device
     // failure at each stage with the user having the option to
     // easily escape
-    requestCipherKey();
+    getWizardModel().requestCipherKey();
 
   }
 
@@ -114,50 +113,10 @@ public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<
   }
 
   /**
-   * Request a cipher key from the device
-   * This will trigger events from the device
+   * @param message The message text
    */
-  private void requestCipherKey() {
-
-    // Communicate with the device off the EDT
-    cipherKeyExecutorService.submit(
-      new Runnable() {
-        @Override
-        public void run() {
-          log.debug("Performing a request cipher key to Trezor");
-
-          // A 'requestCipherKey' is performed in which the user presses the OK button to encrypt a set text
-          // (the result of which will be used to decrypt the wallet)
-          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-
-          // Check if there is a wallet present
-          if (hardwareWalletService.isPresent()) {
-
-            // Use this layout to ensure line wrapping occurs on a V1 Trezor
-            byte[] key = "MultiBit HD     Unlock".getBytes();
-            byte[] keyValue = "0123456789abcdef".getBytes();
-
-            // Request a cipher key against 0'/0/0
-            // AbstractHardwareWalletWizard will deal with the responses
-            hardwareWalletService.get().requestCipherKey(
-              0,
-              KeyChain.KeyPurpose.RECEIVE_FUNDS,
-              0,
-              key,
-              keyValue,
-              true,
-              true,
-              true
-            );
-
-          } else {
-            // TODO Add language support
-            message.setText("No wallet is present on the device");
-          }
-
-        }
-      });
-
+  public void setMessage(String message) {
+    this.message.setText(message);
   }
 
 }

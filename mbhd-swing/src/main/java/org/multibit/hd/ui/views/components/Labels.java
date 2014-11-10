@@ -781,6 +781,15 @@ public class Labels {
   }
 
   /**
+   * @return A new "Press Confirm on device" label
+   */
+  public static JLabel newPressConfirmOnDevice() {
+
+    return newLabel(MessageKey.PRESS_CONFIRM_ON_TREZOR);
+
+  }
+
+  /**
    * @return A new "enter current PIN"
    */
   public static JLabel newEnterCurrentPin() {
@@ -1139,17 +1148,6 @@ public class Labels {
 
   }
 
-  /**
-    * @return A new "press Confirm on Trezor for MultiBit HD unlock" note
-    */
-   public static JLabel newPressConfirmOnTrezorNote() {
-
-     return newNoteLabel(new MessageKey[]{
-       MessageKey.PRESS_CONFIRM_ON_TREZOR,
-       MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT
-     }, new Object[][]{});
-
-   }
   /**
    * @return A new "language change" note
    */

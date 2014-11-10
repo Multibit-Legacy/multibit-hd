@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.change_pin;
 
 import com.google.common.base.Optional;
-import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import java.util.Map;
@@ -16,7 +16,7 @@ import java.util.Map;
  * @since 0.0.1
  *
  */
-public class ChangePinWizard extends AbstractWizard<ChangePinWizardModel> {
+public class ChangePinWizard extends AbstractHardwareWalletWizard<ChangePinWizardModel> {
 
   public ChangePinWizard(ChangePinWizardModel model, boolean isExiting) {
     super(model, isExiting, Optional.absent());

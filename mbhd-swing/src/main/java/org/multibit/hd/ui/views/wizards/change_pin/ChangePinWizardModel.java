@@ -1,9 +1,13 @@
 package org.multibit.hd.ui.views.wizards.change_pin;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.messages.PinMatrixRequest;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @since 0.0.1
  *
  */
-public class ChangePinWizardModel extends AbstractWizardModel<ChangePinState> {
+public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<ChangePinState> {
 
   private static final Logger log = LoggerFactory.getLogger(ChangePinWizardModel.class);
 
@@ -26,6 +30,11 @@ public class ChangePinWizardModel extends AbstractWizardModel<ChangePinState> {
    * The "change PIN" panel model
    */
   private ChangePinEnterPinPanelModel changePinPanelModel;
+
+  /**
+   * Change PIN requires a separate executor
+   */
+  private final ListeningExecutorService changePinService = SafeExecutors.newSingleThreadExecutor("change-pin");
 
   /**
    * @param state The state object
@@ -74,6 +83,23 @@ public class ChangePinWizardModel extends AbstractWizardModel<ChangePinState> {
 
     if (ChangePinState.CHANGE_PIN_ENTER_CURRENT_PIN.name().equals(event.getPanelName())) {
       ViewEvents.fireWizardButtonEnabledEvent(event.getPanelName(), WizardButton.NEXT, event.isOK());
+    }
+
+  }
+
+  @Override
+  public void showPINEntry(HardwareWalletEvent event) {
+
+    // Determine if this is the first or second PIN entry
+    PinMatrixRequest request = (PinMatrixRequest) event.getMessage().get();
+    String pin;
+    switch (request.getPinMatrixRequestType()) {
+      case CURRENT:
+        break;
+      case NEW_FIRST:
+        break;
+      case NEW_SECOND:
+        break;
     }
 
   }

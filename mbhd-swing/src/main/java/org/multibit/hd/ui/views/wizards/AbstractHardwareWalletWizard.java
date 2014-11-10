@@ -238,6 +238,35 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
   }
 
   /**
+   * <p>Inform the wizard model of a "received deterministic hierarchy"</p>
+   *
+   * @param event The originating event containing payload and context
+   */
+  public void handleReceivedDeterministicHierarchy(final HardwareWalletEvent event) {
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          // Ensure the panel updates its model (the button is outside of the panel itself)
+          if (getWizardModel().getPanelName() != null) {
+            if (getWizardPanelView(getWizardModel().getPanelName()) != null) {
+              getWizardPanelView(getWizardModel().getPanelName()).updateFromComponentModels(Optional.absent());
+            }
+          }
+
+          // Move to the "received deterministic hierarchy" state
+          getWizardModel().receivedDeterministicHierarchy(event);
+
+          // Show the panel
+          show(getWizardModel().getPanelName());
+
+        }
+      });
+
+  }
+
+  /**
    * <p>Inform the wizard model of a "received message signature"</p>
    *
    * @param event The originating event containing payload and context
@@ -295,6 +324,9 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
         break;
       case PUBLIC_KEY:
         handleReceivedPublicKey(event);
+        break;
+      case DETERMINISTIC_HIERARCHY:
+        handleReceivedDeterministicHierarchy(event);
         break;
       case MESSAGE_SIGNATURE:
         handleReceivedMessageSignature(event);

@@ -9,11 +9,8 @@ import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.hardware.core.HardwareWalletService;
-import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
@@ -21,9 +18,7 @@ import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurit
 import org.multibit.hd.ui.views.components.enter_pin.EnterPinModel;
 import org.multibit.hd.ui.views.components.enter_pin.EnterPinView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
-import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
-import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -31,14 +26,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Credentials: Enter pin</li>
+ * <li>Credentials: Enter PIN</li>
  * </ul>
  *
  * @since 0.0.1
@@ -51,22 +45,6 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   // Panel specific components
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
   private ModelAndView<EnterPinModel, EnterPinView> enterPinMaV;
-
-  /**
-   * A visual indicator of the number of pin characters entered
-   */
-  private JLabel pinIndicator;
-
-  /**
-   * A status indicator used to tell the user if PIN is incorrect
-   */
-  private JLabel statusIndicator;
-
-  /**
-   * A button that removes the last pin character entered
-   */
-  private JButton removeLast;
-
 
   final ListeningExecutorService checkPinExecutorService = SafeExecutors.newSingleThreadExecutor("check-pin");
 
@@ -109,19 +87,6 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
       "[]12[][][30]" // Row constraints
     ));
 
-    pinIndicator = Labels.newBlankLabel();
-    TitleFontDecorator.apply(pinIndicator, (float)(MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE * 0.6));
-
-    statusIndicator = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
-
-    removeLast = Buttons.newDeleteButton(new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        enterPinMaV.getModel().removeLastButtonPressed();
-      }
-    });
-
-
     contentPanel.add(Labels.newBlankLabel());
     contentPanel.add(Labels.newPinIntroductionNote(), "align left,span 2,wrap");
 
@@ -129,11 +94,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
     contentPanel.add(enterPinMaV.getView().newComponentPanel(), "align left,span 2, wrap");
 
     contentPanel.add(Labels.newBlankLabel());
-    contentPanel.add(pinIndicator, "align left, growx");
-    contentPanel.add(removeLast, "align right");
-    contentPanel.add(Labels.newBlankLabel(), "wrap");
 
-    contentPanel.add(statusIndicator, "span 4, wrap");
   }
 
   @Override
@@ -234,6 +195,9 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
             CoreServices.uiEventBus.unregister(displaySecurityPopoverMaV);
             CoreServices.uiEventBus.unregister(enterPinMaV);
 
+            // Tell the user that the PIN check succeeded
+            enterPinMaV.getView().setPinStatus(true, true);
+
             // Trigger the deferred hide
             ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
 
@@ -257,8 +221,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
                 enterPinMaV.getView().requestInitialFocus();
 
                 // Tell the user that the PIN check failed
-                statusIndicator.setText(Languages.safeText(MessageKey.PIN_FAILURE));
-                AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, statusIndicator, true, MultiBitUI.NORMAL_ICON_SIZE);
+                enterPinMaV.getView().setPinStatus(false, true);
               }
             });
 
@@ -279,6 +242,10 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
               getRestoreButton().setEnabled(true);
 
               enterPinMaV.getView().requestInitialFocus();
+
+              // Tell the user that the PIN check failed
+              enterPinMaV.getView().setPinStatus(false, true);
+
             }
           });
 
@@ -298,53 +265,12 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   private boolean checkPin() {
 
     log.debug("Performing a PIN check");
-    CharSequence pin = enterPinMaV.getModel().getValue();
-
-    // Talk to the Trezor and check the PIN
-    // A 'requestCipherKey' is performed in which the user presses the OK button to encrypt a set text (the result of which will be used
-    // to decrypt a wallet)
-    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-
-
-//    if (hardwareWalletService.isWalletPresent()) {
-//
-//      log.debug("Wallet is present. Request cipher key");
-//
-//      byte[] key = "MultiBit HD     Wallet ID".getBytes();
-//      byte[] keyValue = "0123456789abcdef".getBytes();
-//
-//      // Request an address from the device using BIP-44 chain code:
-//      hardwareWalletService.requestCipherKey(
-//        0,
-//        KeyChain.KeyPurpose.RECEIVE_FUNDS,
-//        0,
-//        key,
-//        keyValue,
-//        true,
-//        true,
-//        true
-//      );
-//
-//    } else {
-//      log.info("You need to have created a wallet before running this example");
-//    }
 
     return true;
   }
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
-    // Update the pinIndicator with the length of the entered pin
-    CharSequence pin = enterPinMaV.getModel().getValue();
-    StringBuilder builder = new StringBuilder();
-    for (int i = 0; i <pin.length(); i++) {
-      builder.append("*");
-    }
-    pinIndicator.setText(builder.toString());
-
-    // Clear the PIN check status indicator
-    statusIndicator.setText("");
-    statusIndicator.setIcon(null);
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(

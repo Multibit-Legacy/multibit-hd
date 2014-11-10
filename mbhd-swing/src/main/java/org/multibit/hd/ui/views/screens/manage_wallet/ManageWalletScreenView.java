@@ -38,7 +38,6 @@ import java.io.File;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScreenModel> {
 
@@ -89,13 +88,11 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
     contentPanel.add(Buttons.newShowHistoryScreenButton(getShowHistoryAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     WalletType walletType = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType();
 
-    // TODO Re-instate these checks
-//    if (WalletType.TREZOR_HARD_WALLET.equals(walletType) ||) {
+    if (WalletType.TREZOR_HARD_WALLET.equals(walletType)) {
       contentPanel.add(Buttons.newShowChangePinButton(getShowChangePinAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-//    } else {
-//      contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-//    }
-
+    } else {
+      contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    }
 
     // Repair is in bottom right for fastest visibility
     contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
@@ -304,14 +301,15 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
     // Test for a change in condition
     if (currentEnabled != newEnabled) {
 
-      SwingUtilities.invokeLater(new Runnable() {
-                                   @Override
-                                   public void run() {
-                                     log.trace("Changing button enable state, newEnabled = " + newEnabled);
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            log.trace("Changing button enable state, newEnabled = " + newEnabled);
 
-                                     showEmptyWalletButton.setEnabled(newEnabled);
-                                   }
-                                 });
+            showEmptyWalletButton.setEnabled(newEnabled);
+          }
+        });
 
     }
 
