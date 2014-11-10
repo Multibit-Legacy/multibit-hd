@@ -15,6 +15,9 @@ import org.multibit.hd.ui.views.wizards.appearance_settings.AppearanceSettingsWi
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordState;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizard;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizardModel;
+import org.multibit.hd.ui.views.wizards.change_pin.ChangePinState;
+import org.multibit.hd.ui.views.wizards.change_pin.ChangePinWizard;
+import org.multibit.hd.ui.views.wizards.change_pin.ChangePinWizardModel;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsState;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
@@ -284,6 +287,17 @@ public class Wizards {
     log.debug("New 'Change credentials wizard'");
 
     return new ChangePasswordWizard(new ChangePasswordWizardModel(ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD), false);
+
+  }
+
+  /**
+   * @return A new "change PIN" wizard
+   */
+  public static ChangePinWizard newChangePinWizard() {
+
+    log.debug("New 'Change PIN wizard'");
+
+    return new ChangePinWizard(new ChangePinWizardModel(ChangePinState.CHANGE_PIN_ENTER_CURRENT_PIN), false);
 
   }
 

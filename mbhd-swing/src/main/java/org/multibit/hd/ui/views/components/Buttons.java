@@ -256,6 +256,21 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "backspace delete" button with icon
+   */
+  public static JButton newBackspaceDeleteButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ARROW_CIRCLE_O_LEFT, AwesomeIcon.ARROW_CIRCLE_O_RIGHT);
+    AwesomeDecorator.applyIcon(icon, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "Cancel" button with icon
    */
   public static JButton newCancelButton(Action action) {
@@ -983,6 +998,26 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "change PIN" button with icon
+   */
+  public static JButton newShowChangePinButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_CHANGE_PIN_WIZARD, MessageKey.SHOW_CHANGE_PIN_WIZARD_TOOLTIP);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.TH,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "verify network" button with icon
    */
   public static JButton newShowVerifyNetworkButton(Action action) {
@@ -1099,5 +1134,27 @@ public class Buttons {
 
     return button;
   }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "PIN matrix" button with icon
+   */
+  public static JButton newPinMatixButton(Action action) {
+
+    JButton button = newButton(action);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.QUESTION,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.NORMAL_ICON_SIZE
+    );
+
+    return button;
+  }
+
+
 
 }

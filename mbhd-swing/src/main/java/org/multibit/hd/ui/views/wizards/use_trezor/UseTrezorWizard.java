@@ -44,8 +44,7 @@ public class UseTrezorWizard extends AbstractHardwareWalletWizard<UseTrezorWizar
       UseTrezorState.ENTER_PIN.name(),
       new UseTrezorEnterPinPanelView(this, UseTrezorState.ENTER_PIN.name()));
 
-    // TODO - "no PIN" panel
-
+    // TODO - "when there is no PIN" panel
 
     // Ask user to confirm 'Encrypt MultiBit HD unlock text'
     wizardViewMap.put(

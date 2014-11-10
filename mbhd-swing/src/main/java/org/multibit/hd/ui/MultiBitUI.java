@@ -7,7 +7,6 @@ package org.multibit.hd.ui;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public interface MultiBitUI {
 
@@ -168,11 +167,16 @@ public interface MultiBitUI {
   String LARGE_BUTTON_MIG = "wmin 150,hmin 120";
 
   /**
-    * Provides the MiG layout information for a medium button (used for PIN entry)
-    */
-   String MEDIUM_BUTTON_MIG = "wmin 75,hmin 60";
+   * Provides the MiG layout information for a medium button
+   */
+  String MEDIUM_BUTTON_MIG = "wmin 75,hmin 60";
 
-   /**
+  /**
+   * Provides the MiG layout information for a small button
+   */
+  String SMALL_BUTTON_MIG = "wmin 50,hmin 40";
+
+  /**
    * Provides the MiG layout information for a normal icon
    */
   String NORMAL_ICON_SIZE_MIG = "w " + NORMAL_ICON_SIZE + ",h " + NORMAL_ICON_SIZE;

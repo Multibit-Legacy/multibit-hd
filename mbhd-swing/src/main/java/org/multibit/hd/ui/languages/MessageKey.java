@@ -374,7 +374,9 @@ public enum MessageKey {
 
   PIN_TITLE("pin_title"),
   PIN_INTRODUCTION("pin_introduction"),
+
   PIN_FAILURE("pin_failure"),
+  PIN_SUCCESS("pin_success"),
 
   PRESS_CONFIRM_ON_TREZOR("press_confirm_on_trezor"),
   PRESS_CONFIRM_ON_TREZOR_TITLE("press_confirm_on_trezor_title"),
@@ -419,7 +421,10 @@ public enum MessageKey {
 
   EDIT_WALLET_TITLE("edit_wallet_title"),
   WALLET_DETAILS_TITLE("wallet_details_title"),
+
   CHANGE_PASSWORD_TITLE("change_password_title"),
+
+  CHANGE_PIN_TITLE("change_pin_title"),
 
   REPAIR_WALLET_TITLE("repair_wallet_title"),
   REPAIR_WALLET_PROGRESS_TITLE("repair_wallet_progress_title"),
@@ -522,6 +527,9 @@ public enum MessageKey {
 
   SHOW_CHANGE_PASSWORD_WIZARD("show_change_password_wizard"),
   SHOW_CHANGE_PASSWORD_WIZARD_TOOLTIP("show_change_password_wizard_tooltip"),
+
+  SHOW_CHANGE_PIN_WIZARD("show_change_pin_wizard"),
+  SHOW_CHANGE_PIN_WIZARD_TOOLTIP("show_change_pin_wizard_tooltip"),
 
   SHOW_VERIFY_NETWORK_WIZARD("show_verify_network_wizard"),
   SHOW_VERIFY_NETWORK_WIZARD_TOOLTIP("show_verify_network_wizard_tooltip"),
@@ -630,6 +638,11 @@ public enum MessageKey {
 
   CHANGE_PASSWORD_NOTE_1("change_password_note_1"),
   CHANGE_PASSWORD_NOTE_2("change_password_note_2"),
+
+  ENTER_CURRENT_PIN("enter_current_pin"),
+  ENTER_NEW_PIN("enter_new_pin"),
+  CONFIRM_NEW_PIN("confirm_new_pin"),
+  ENTER_PIN_LOOK_AT_DEVICE("enter_pin_look_at_device"),
 
   VERIFY_NETWORK_NOTE_1("verify_network_note_1"),
   VERIFY_NETWORK_NOTE_2("verify_network_note_2"),

@@ -2,15 +2,15 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
-import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 
@@ -25,6 +25,8 @@ import javax.swing.*;
  */
 
 public class UseTrezorPressConfirmForEncryptCodePanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorPressConfirmForEncryptCodePanelModel> {
+
+  private JTextArea deviceDisplayTextArea;
 
   /**
    * @param wizard The wizard managing the states
@@ -50,7 +52,11 @@ public class UseTrezorPressConfirmForEncryptCodePanelView extends AbstractWizard
       "[]10[]" // Row constraints
     ));
 
-    contentPanel.add(Labels.newPressConfirmOnTrezorNote(), "wrap");
+    deviceDisplayTextArea = TextBoxes.newReadOnlyTextArea(5,50);
+    deviceDisplayTextArea.setText(Languages.safeText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT));
+
+    contentPanel.add(Labels.newPressConfirmOnDevice(), "wrap");
+    contentPanel.add(deviceDisplayTextArea,"aligny top,wrap");
 
   }
 
@@ -71,15 +77,6 @@ public class UseTrezorPressConfirmForEncryptCodePanelView extends AbstractWizard
 
     // No need to update the wizard it has the references
 
-    // A Trezor button click will call this method
-    ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.NEXT,
-      true
-    );
-
-    getWizardModel().showNext();
   }
-
 
 }

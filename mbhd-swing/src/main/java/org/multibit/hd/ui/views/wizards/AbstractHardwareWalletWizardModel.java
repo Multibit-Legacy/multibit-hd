@@ -93,6 +93,15 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   }
 
   /**
+   * Handles provision of a deterministic hierarchy from the device
+   *
+   * @param event The hardware wallet event containing payload and context
+   */
+  public void receivedDeterministicHierarchy(HardwareWalletEvent event) {
+    // Do nothing
+  }
+
+  /**
    * Handles provision of a message signature from the device
    *
    * @param event The hardware wallet event containing payload and context
