@@ -149,17 +149,17 @@ public class MainView extends JFrame {
 
       // This section must come after a deferred hide has completed
 
-      log.debug("Showing exiting password wizard");
+      log.debug("Showing exiting credentials wizard");
 
       // Force an exit if the user can't get through
-      Panels.showLightBox(Wizards.newExitingPasswordWizard().getWizardScreenHolder());
+      Panels.showLightBox(Wizards.newExitingCredentialsWizard().getWizardScreenHolder());
 
     } else {
 
       log.debug("Showing detail view");
 
       // No wizards so this reset is a wallet unlock or settings change
-      // The AbstractWizard.handleHide password unlock thread will close the wizard later
+      // The AbstractWizard.handleHide credentials unlock thread will close the wizard later
       // to get the effect of everything happening behind the wizard
       detailViewAfterWalletOpened();
 
@@ -214,14 +214,14 @@ public class MainView extends JFrame {
 
 
   /**
-   * @return True if the exiting password wizard will be shown on a reset
+   * @return True if the exiting credentials wizard will be shown on a reset
    */
   public boolean isShowExitingPasswordWizard() {
     return showExitingPasswordWizard;
   }
 
   /**
-   * @param show True if the exiting password wizard should be shown during the next refresh
+   * @param show True if the exiting credentials wizard should be shown during the next refresh
    */
   public void setShowExitingPasswordWizard(boolean show) {
 

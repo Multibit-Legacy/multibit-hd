@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.core.config.BitcoinNetwork;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.DocumentMaxLengthFilter;
@@ -108,37 +108,37 @@ public class TextBoxes {
   }
 
   /**
-    * @param rows    The number of rows (normally 6)
-    * @param columns The number of columns (normally 60)
-    *
-    * @return A new read only text field with default theme
-    */
-   public static JTextArea newTextArea(int rows, int columns) {
+   * @param rows    The number of rows (normally 6)
+   * @param columns The number of columns (normally 60)
+   *
+   * @return A new read only text field with default theme
+   */
+  public static JTextArea newTextArea(int rows, int columns) {
 
-     JTextArea textArea = new JTextArea(rows, columns);
+    JTextArea textArea = new JTextArea(rows, columns);
 
-     // Set the theme
-     textArea.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
-     textArea.setBackground(Themes.currentTheme.dataEntryBackground());
+    // Set the theme
+    textArea.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
+    textArea.setBackground(Themes.currentTheme.dataEntryBackground());
 
-     textArea.setOpaque(false);
+    textArea.setOpaque(false);
 
-     // Ensure line wrapping occurs correctly
-     textArea.setLineWrap(true);
-     textArea.setWrapStyleWord(true);
+    // Ensure line wrapping occurs correctly
+    textArea.setLineWrap(true);
+    textArea.setWrapStyleWord(true);
 
-     // Ensure TAB transfers focus
-     AbstractAction transferFocus = new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         ((Component) e.getSource()).transferFocus();
-       }
-     };
-     textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
-     textArea.getActionMap().put("transferFocus", transferFocus);
+    // Ensure TAB transfers focus
+    AbstractAction transferFocus = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        ((Component) e.getSource()).transferFocus();
+      }
+    };
+    textArea.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "transferFocus");
+    textArea.getActionMap().put("transferFocus", transferFocus);
 
-     return textArea;
+    return textArea;
 
-   }
+  }
 
   /**
    * @param listener The document listener for detecting changes to the content
@@ -171,7 +171,25 @@ public class TextBoxes {
     JTextField textField = newTextField(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.TRANSACTION_LABEL);
+    AccessibilityDecorator.apply(textField, MessageKey.TRANSACTION_LABEL, MessageKey.TRANSACTION_LABEL_TOOLTIP);
+
+    // Limit the length of the underlying document
+    DefaultStyledDocument doc = new DefaultStyledDocument();
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH));
+    textField.setDocument(doc);
+
+    return textField;
+  }
+
+  /**
+   * @return A new "enter QR code label" text field
+   */
+  public static JTextField newEnterQRCodeLabel() {
+
+    JTextField textField = newTextField(MultiBitUI.RECEIVE_ADDRESS_LABEL_LENGTH);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.QR_CODE_LABEL, MessageKey.QR_CODE_LABEL_TOOLTIP);
 
     // Limit the length of the underlying document
     DefaultStyledDocument doc = new DefaultStyledDocument();
@@ -189,7 +207,7 @@ public class TextBoxes {
     JTextField textField = newTextField(20);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.TAGS);
+    AccessibilityDecorator.apply(textField, MessageKey.TAGS, MessageKey.TAGS_TOOLTIP);
 
     return textField;
   }
@@ -202,7 +220,7 @@ public class TextBoxes {
     JTextField textField = newTextField(60);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.SEARCH);
+    AccessibilityDecorator.apply(textField, MessageKey.SEARCH, MessageKey.SEARCH_TOOLTIP);
 
     return textField;
   }
@@ -215,7 +233,7 @@ public class TextBoxes {
     JTextField textField = newTextField(60);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.SELECT_FILE);
+    AccessibilityDecorator.apply(textField, MessageKey.SELECT_FILE, MessageKey.SELECT_FILE_TOOLTIP);
 
     return textField;
   }
@@ -230,7 +248,7 @@ public class TextBoxes {
     JTextField textField = newReadOnlyTextField(20);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.TIMESTAMP);
+    AccessibilityDecorator.apply(textField, MessageKey.TIMESTAMP, MessageKey.TIMESTAMP_TOOLTIP);
 
     textField.setText(seedTimestamp);
 
@@ -245,7 +263,7 @@ public class TextBoxes {
     JTextField textField = newTextField(20);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.TIMESTAMP);
+    AccessibilityDecorator.apply(textField, MessageKey.TIMESTAMP, MessageKey.TIMESTAMP_TOOLTIP);
 
     return textField;
 
@@ -262,7 +280,7 @@ public class TextBoxes {
     JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.NAME);
+    AccessibilityDecorator.apply(textField, MessageKey.NAME, MessageKey.NAME_TOOLTIP);
 
     textField.getDocument().addDocumentListener(listener);
 
@@ -281,7 +299,7 @@ public class TextBoxes {
     JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.EMAIL_ADDRESS);
+    AccessibilityDecorator.apply(textField, MessageKey.EMAIL_ADDRESS, MessageKey.EMAIL_ADDRESS_TOOLTIP);
 
     // Detect changes
     textField.getDocument().addDocumentListener(listener);
@@ -301,7 +319,7 @@ public class TextBoxes {
     FormattedBitcoinAddressField textField = new FormattedBitcoinAddressField(BitcoinNetwork.current().get(), readOnly);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS);
+    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS, MessageKey.BITCOIN_ADDRESS_TOOLTIP);
 
     // Detect changes
     textField.getDocument().addDocumentListener(listener);
@@ -320,11 +338,25 @@ public class TextBoxes {
     JTextField textField = newReadOnlyTextField(34);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS);
+    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS, MessageKey.BITCOIN_ADDRESS_TOOLTIP);
 
     textField.setText(bitcoinAddress);
 
     return textField;
+  }
+
+  /**
+   * @return A new "display recipient Bitcoin addresses" multi-line text field
+   */
+  public static JTextArea newDisplayRecipientBitcoinAddresses() {
+
+    // 3 rows should be sufficient to cover all transactions from us
+    JTextArea textArea = newReadOnlyTextArea(3, 34);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textArea, MessageKey.RECIPIENT, MessageKey.RECIPIENT_TOOLTIP);
+
+    return textArea;
   }
 
   /**
@@ -338,10 +370,13 @@ public class TextBoxes {
     JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.EXTENDED_PUBLIC_KEY);
+    AccessibilityDecorator.apply(textField, MessageKey.EXTENDED_PUBLIC_KEY, MessageKey.EXTENDED_PUBLIC_KEY_TOOLTIP);
 
     // Detect changes
     textField.getDocument().addDocumentListener(listener);
+
+    // Currently the extended public field does nothing so disable
+    textField.setEnabled(false);
 
     return textField;
 
@@ -363,7 +398,7 @@ public class TextBoxes {
     FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces, maxEditLength);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_AMOUNT);
+    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_AMOUNT, MessageKey.BITCOIN_AMOUNT_TOOLTIP);
 
     Font font = textField.getFont().deriveFont((float) MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -398,7 +433,7 @@ public class TextBoxes {
     FormattedDecimalField textField = new FormattedDecimalField(0, maximum, decimalPlaces, maxEditLength);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.LOCAL_AMOUNT);
+    AccessibilityDecorator.apply(textField, MessageKey.LOCAL_AMOUNT, MessageKey.LOCAL_AMOUNT_TOOLTIP);
 
     Font font = textField.getFont().deriveFont((float) MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -574,7 +609,7 @@ public class TextBoxes {
     JTextArea textArea = newEnterSeedPhrase();
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textArea, MessageKey.SEED_PHRASE);
+    AccessibilityDecorator.apply(textArea, MessageKey.SEED_PHRASE, MessageKey.SEED_PHRASE_TOOLTIP);
 
     // Prevent copy/paste operations
     textArea.setTransferHandler(null);
@@ -601,7 +636,7 @@ public class TextBoxes {
     JTextArea textArea = new JTextArea(doc, "", 6, MultiBitUI.PASSWORD_LENGTH);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textArea, MessageKey.SEED_PHRASE);
+    AccessibilityDecorator.apply(textArea, MessageKey.SEED_PHRASE, MessageKey.SEED_PHRASE_TOOLTIP);
 
     // Ensure TAB transfers focus
     AbstractAction transferFocus = new AbstractAction() {
@@ -635,7 +670,7 @@ public class TextBoxes {
     JTextField textField = newTextField(40);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.ENTER_ACCESS_CODE);
+    AccessibilityDecorator.apply(textField, MessageKey.ENTER_ACCESS_CODE, MessageKey.ENTER_ACCESS_CODE_TOOLTIP);
 
     textField.getDocument().addDocumentListener(listener);
 
@@ -644,7 +679,7 @@ public class TextBoxes {
   }
 
   /**
-   * @return The themed echo character for password fields
+   * @return The themed echo character for credentials fields
    */
   public static char getPasswordEchoChar() {
     return '\u2022';

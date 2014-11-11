@@ -9,8 +9,8 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the welcome wizard "select password" panel view</li>
- * <li>Proceed with "restore password" selection</li>
+ * <li>Verify the welcome wizard "select credentials" panel view</li>
+ * <li>Proceed with "restore credentials" selection</li>
  * </ul>
  *
  * @since 0.0.1
@@ -57,7 +57,7 @@ public class WelcomeSelectRestorePasswordUseCase extends AbstractFestUseCase {
       .requireNotSelected()
       .requireVisible();
 
-    // Select "restore password"
+    // Select "restore credentials"
     window
       .radioButton(MessageKey.RESTORE_PASSWORD.getKey())
       .click();

@@ -29,7 +29,6 @@ sound:
   receiveSound: true
 wallet:
   currentWalletRoot: null
-  wallets: {}
 licenceAccepted: false
 tor: false
 wibble:

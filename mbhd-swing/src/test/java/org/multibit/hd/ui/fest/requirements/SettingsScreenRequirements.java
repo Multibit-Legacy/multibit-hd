@@ -2,16 +2,16 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.settings.ShowSettingsScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.settings.appearance.ShowThenCancelAppearanceUseCase;
-import org.multibit.hd.ui.fest.use_cases.settings.appearance.VerifyAppearanceShowBalanceUseCase;
-import org.multibit.hd.ui.fest.use_cases.settings.appearance.VerifyAppearanceThemeUseCase;
-import org.multibit.hd.ui.fest.use_cases.settings.exchange.ShowThenCancelExchangeUseCase;
-import org.multibit.hd.ui.fest.use_cases.settings.exchange.VerifyExchangeNoneUseCase;
-import org.multibit.hd.ui.fest.use_cases.settings.exchange.VerifyExchangeOERUseCase;
-import org.multibit.hd.ui.fest.use_cases.settings.language.ShowThenCancelLanguageUseCase;
-import org.multibit.hd.ui.fest.use_cases.settings.sounds.ShowThenCancelSoundsUseCase;
-import org.multibit.hd.ui.fest.use_cases.settings.units.ShowThenCancelUnitsUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.ShowSettingsScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.appearance.ShowThenCancelAppearanceUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.appearance.VerifyAppearanceShowBalanceUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.appearance.VerifyAppearanceThemeUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.exchange.ShowThenCancelExchangeUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.exchange.VerifyExchangeNoneUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.exchange.VerifyExchangeOERUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.language.ShowThenCancelLanguageUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.sounds.ShowThenCancelSoundsUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.units.ShowThenCancelUnitsUseCase;
 
 import java.util.Map;
 

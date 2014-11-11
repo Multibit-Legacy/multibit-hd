@@ -329,7 +329,7 @@ public class Panels {
    *
    * @param listener               The action listener
    * @param createCommand          The create command name
-   * @param restorePasswordCommand The restore password command name
+   * @param restorePasswordCommand The restore credentials command name
    * @param restoreWalletCommand   The restore wallet command name
    * @param hardwareWalletCommand  The hardware wallet command name
    * @param existingWalletCommand  The existing wallet command name

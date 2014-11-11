@@ -28,6 +28,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
   // View components
   private JTextArea seedPhraseTextArea;
   private JTextField seedTimestampText;
+  private JCheckBox restoreAsTrezor;
 
   private JLabel verificationStatusLabel;
 
@@ -111,6 +112,15 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
       }
     });
 
+    restoreAsTrezor = new JCheckBox("Restore as Trezor soft wallet");
+    final EnterSeedPhraseModel finalModel = model;
+    restoreAsTrezor.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        finalModel.setRestoreAsTrezor(((JCheckBox)e.getSource()).isSelected());
+      }
+    });
+
     // Create a new verification status panel (initially invisible)
     verificationStatusLabel = Labels.newVerificationStatus(panelName + componentName, true);
     verificationStatusLabel.setVisible(false);
@@ -127,6 +137,11 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
       panel.add(seedPhraseTextArea, "span 2,growx,push");
       panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink,wrap");
     }
+
+    if (!showTimestamp && showSeedPhrase) {
+      panel.add(restoreAsTrezor, "span 3,wrap");
+    }
+
     panel.add(verificationStatusLabel, "span 3,push,wrap");
 
     return panel;
@@ -157,6 +172,8 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
       }
     }
+
+    getModel().get().setRestoreAsTrezor(restoreAsTrezor.isSelected());
 
   }
 

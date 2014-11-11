@@ -8,6 +8,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -127,20 +128,12 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
   }
 
   @Override
-  public void fireInitialStateViewEvents() {
-
-    // Send button starts off enabled (nothing to confirm besides values)
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
-
-  }
-
-  @Override
   public boolean beforeShow() {
 
     Configuration configuration = Configurations.currentConfiguration;
 
     // Update the model and view for the amount
-    transactionDisplayAmountMaV.getModel().setCoinAmount(getWizardModel().getCoinAmount());
+    transactionDisplayAmountMaV.getModel().setCoinAmount(getWizardModel().getCoinAmount().or(Coin.ZERO));
     transactionDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     transactionDisplayAmountMaV.getView().updateView(configuration);
 
@@ -153,7 +146,7 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the client fee
-    Optional<FeeState> feeStateOptional = getWizardModel().calculateBRITFeeState();
+    Optional<FeeState> feeStateOptional = WalletManager.INSTANCE.calculateBRITFeeState();
     log.debug("Fee state at beforeShow {}", feeStateOptional);
     String feeText;
     if (feeStateOptional.isPresent()) {
@@ -165,7 +158,7 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
         feeText = Languages.safeText(MessageKey.CLIENT_FEE_OVERPAID);
       }  else {
         if (feeState.getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) <= 0) {
-          //Below dust limit
+          // Below dust limit
           feeText = "";
         } else {
           // The fee is due now
@@ -199,6 +192,10 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
       @Override
       public void run() {
         getCancelButton().requestFocusInWindow();
+        // Enable the Send button after showing since there is nothing to stop confirmation
+        // It should start disabled to avoid double click skipping the confirmation
+        ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+
       }
     });
 

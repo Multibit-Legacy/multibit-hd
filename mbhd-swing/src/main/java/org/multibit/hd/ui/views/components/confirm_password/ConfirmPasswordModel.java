@@ -26,7 +26,7 @@ public class ConfirmPasswordModel implements Model<String> {
   }
 
   /**
-   * <p>Compares the passwords and fires a password status event</p>
+   * <p>Compares the passwords and fires a credentials status event</p>
    */
   public boolean comparePasswords() {
 

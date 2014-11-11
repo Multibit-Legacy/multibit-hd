@@ -13,13 +13,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.config.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
+import org.multibit.hd.core.utils.Addresses;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +99,7 @@ public class WalletServiceTest {
     // Create a new payment request
     PaymentRequestData paymentRequestData1 = new PaymentRequestData();
 
-    paymentRequestData1.setAddress("1abc");
+    paymentRequestData1.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
     paymentRequestData1.setAmountCoin(Coin.valueOf(245));
     DateTime date1 = new DateTime();
     paymentRequestData1.setDate(date1);
@@ -147,11 +148,11 @@ public class WalletServiceTest {
 
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
 
-    // Change the password once
+    // Change the credentials once
     WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD1);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD1)).isTrue();
 
-    // Change the password again
+    // Change the credentials again
     WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD1, CHANGED_PASSWORD2);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD2)).isTrue();
 

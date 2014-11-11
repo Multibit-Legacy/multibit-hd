@@ -86,7 +86,7 @@ public class WalletService {
   /**
    * The payment requests in a map, indexed by the bitcoin address
    */
-  private final Map<String, PaymentRequestData> paymentRequestMap = Maps.newHashMap();
+  private final Map<Address, PaymentRequestData> paymentRequestMap = Maps.newHashMap();
 
   /**
    * The additional transaction information, in the form of a map, index by the transaction hash
@@ -263,13 +263,19 @@ public class WalletService {
       boolean isRawTransactionMatched = false;
 
       if (paymentData instanceof PaymentRequestData) {
+
         PaymentRequestData paymentRequestData = (PaymentRequestData) paymentData;
         isQrCodeLabelMatched = paymentRequestData.getLabel().toLowerCase().contains(lowerQuery);
-        isPaymentAddressMatched = paymentRequestData.getAddress().toLowerCase().contains(lowerQuery);
+
+        // Exact match only
+        isPaymentAddressMatched = paymentRequestData.getAddress().toString().equals(query);
+
       } else if (paymentData instanceof TransactionData) {
+
         TransactionData transactionData = (TransactionData) paymentData;
         isOutputAddressMatched = Joiner.on(" ").join(transactionData.getOutputAddresses()).toLowerCase().contains(lowerQuery);
         isRawTransactionMatched = transactionData.getRawTransaction().toLowerCase().contains(lowerQuery);
+
       }
       if (isDescriptionMatched
         || isNoteMatched
@@ -354,7 +360,7 @@ public class WalletService {
       e1.printStackTrace();
     }
 
-    List<String> outputAddresses = calculateOutputAddresses(transaction);
+    List<Address> outputAddresses = calculateOutputAddresses(transaction);
 
     // Create the DTO from the raw transaction info
     TransactionData transactionData = new TransactionData(
@@ -520,13 +526,12 @@ public class WalletService {
     return description;
   }
 
-  private List<String> calculateOutputAddresses(Transaction transaction) {
-    List<String> outputAddresses = Lists.newArrayList();
+  private List<Address> calculateOutputAddresses(Transaction transaction) {
+    List<Address> outputAddresses = Lists.newArrayList();
 
     if (transaction.getOutputs() != null) {
       for (TransactionOutput transactionOutput : transaction.getOutputs()) {
-        String outputAddress = transactionOutput.getScriptPubKey().getToAddress(networkParameters).toString();
-        outputAddresses.add(outputAddress);
+        outputAddresses.add(transactionOutput.getScriptPubKey().getToAddress(networkParameters));
       }
     }
 
@@ -572,28 +577,6 @@ public class WalletService {
     transactionInfoMap.put(transactionHashAsString, newTransactionInfo);
     return amountFiat;
   }
-
-  /**
-   * Work out a fiatPayment holding the exchange rate information only.
-   * @return fiat payment containing exchange rate details
-   */
-  public static Optional<FiatPayment> calculateFiatPaymentHoldingExchangeRate() {
-     FiatPayment fiatPayment = new FiatPayment();
-
-     fiatPayment.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
-
-     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
-       fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-       fiatPayment.setAmount(Optional.<BigDecimal>absent());
-       fiatPayment.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
-     } else {
-       fiatPayment.setRate(Optional.<String>absent());
-       fiatPayment.setAmount(Optional.<BigDecimal>absent());
-       fiatPayment.setCurrency(Optional.<Currency>absent());
-     }
-     return Optional.of(fiatPayment);
-   }
 
   private String calculateNote(TransactionData transactionData, String transactionHashAsString) {
     String note = "";
@@ -738,6 +721,11 @@ public class WalletService {
     transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
   }
 
+  public TransactionInfo getTransactionInfoByHash(String transactionHashAsString) {
+    return transactionInfoMap.get(transactionHashAsString);
+  }
+
+
   List<PaymentRequestData> getPaymentRequests() {
     return Lists.newArrayList(paymentRequestMap.values());
   }
@@ -747,7 +735,7 @@ public class WalletService {
    * This is either the first key's address in the wallet or is
    * worked out deterministically and uses the lastIndexUsed on the Payments so that each address is unique
    *
-   * @param walletPasswordOptional Either: Optional.absent() = just recycle the first address in the wallet or:  password of the wallet to which the new private key is added
+   * @param walletPasswordOptional Either: Optional.absent() = just recycle the first address in the wallet or:  credentials of the wallet to which the new private key is added
    *
    * @return Address the next generated address, as a String. The corresponding private key will be added to the wallet
    */
@@ -758,13 +746,13 @@ public class WalletService {
       // No wallet is present
       throw new IllegalStateException("Trying to add a key to a non-existent wallet");
     } else {
-      // If there is no password then recycle the first address in the wallet
+      // If there is no credentials then recycle the first address in the wallet
       if (walletPasswordOptional.isPresent()) {
         ECKey newKey = currentWalletSummary.get().getWallet().freshReceiveKey();
         return newKey.toAddress(networkParameters).toString();
       } else {
-        // A password is required as all wallets are encrypted
-        throw new IllegalStateException("No password specified");
+        // A credentials is required as all wallets are encrypted
+        throw new IllegalStateException("No credentials specified");
       }
     }
 
@@ -782,7 +770,7 @@ public class WalletService {
     List<PaymentRequestData> paymentRequestDataList = Lists.newArrayList();
 
     if (transactionData != null && transactionData.getOutputAddresses() != null) {
-      for (String address : transactionData.getOutputAddresses()) {
+      for (Address address : transactionData.getOutputAddresses()) {
         PaymentRequestData paymentRequestData = paymentRequestMap.get(address);
         if (paymentRequestData != null) {
           // This transaction funds this payment address
@@ -848,12 +836,12 @@ public class WalletService {
   }
 
   /**
-   * Change the wallet password.
+   * Change the wallet credentials.
    * The result of the operation is emitted as a ChangePasswordResultEvent
    *
-   * @param walletSummary The walletsummary with the wallet whose password to change
-   * @param oldPassword   The old wallet password
-   * @param newPassword   The new wallet password
+   * @param walletSummary The walletsummary with the wallet whose credentials to change
+   * @param oldPassword   The old wallet credentials
+   * @param newPassword   The new wallet credentials
    */
   public static void changeWalletPassword(final WalletSummary walletSummary, final String oldPassword, final String newPassword) {
 
@@ -876,14 +864,14 @@ public class WalletService {
       Wallet wallet = walletSummary.getWallet();
       WalletId walletId = walletSummary.getWalletId();
 
-      // Check old password
+      // Check old credentials
       if (!walletSummary.getWallet().checkPassword(oldPassword)) {
         CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_WRONG_OLD_PASSWORD, null));
         return;
       }
 
       try {
-        // Decrypt the seedDerivedAESKey using the old password and encrypt it with the new one
+        // Decrypt the seedDerivedAESKey using the old credentials and encrypt it with the new one
         byte[] encryptedOldBackupAESKey = walletSummary.getEncryptedBackupKey();
 
         KeyParameter oldWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(oldPassword.getBytes(Charsets.UTF_8), WalletManager.SCRYPT_SALT);
@@ -896,11 +884,11 @@ public class WalletService {
         byte[] decryptedRebornBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(encryptedNewBackupAESKey, newWalletPasswordDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
 
         if (!Arrays.equals(decryptedOldBackupAESKey, decryptedRebornBackupAESKey)) {
-          throw new IllegalStateException("The encryption of the backup AES key was not reversible. Aborting change of wallet password");
+          throw new IllegalStateException("The encryption of the backup AES key was not reversible. Aborting change of wallet credentials");
         }
 
-        // Encrypt the new password with an the decryptedOldBackupAESKey
-        // Pad the new password
+        // Encrypt the new credentials with an the decryptedOldBackupAESKey
+        // Pad the new credentials
         byte[] newPasswordBytes = newPassword.getBytes(Charsets.UTF_8);
         byte[] paddedNewPassword = WalletManager.padPasswordBytes(newPasswordBytes);
         byte[] encryptedPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(paddedNewPassword, new KeyParameter(decryptedOldBackupAESKey), WalletManager.AES_INITIALISATION_VECTOR);
@@ -909,18 +897,18 @@ public class WalletService {
         byte[] decryptedRebornPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.decrypt(encryptedPaddedNewPassword, new KeyParameter(decryptedOldBackupAESKey), WalletManager.AES_INITIALISATION_VECTOR);
 
         if (!Arrays.equals(newPasswordBytes, WalletManager.unpadPasswordBytes(decryptedRebornPaddedNewPassword))) {
-          throw new IllegalStateException("The encryption of the new password was not reversible. Aborting change of wallet password");
+          throw new IllegalStateException("The encryption of the new credentials was not reversible. Aborting change of wallet credentials");
         }
 
         // Locate the installation directory
         File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
-        // Load up all the history, contacts and payments using the old password
+        // Load up all the history, contacts and payments using the old credentials
         ContactService contactService = CoreServices.getOrCreateContactService(walletId);
         HistoryService historyService = CoreServices.getOrCreateHistoryService(walletId);
         WalletService walletService = CoreServices.getOrCreateWalletService(walletId);
 
-        // Change the password used to encrypt the wallet
+        // Change the credentials used to encrypt the wallet
         wallet.decrypt(oldPassword);
         walletSummary.setPassword(newPassword);
         walletSummary.setEncryptedBackupKey(encryptedNewBackupAESKey);
@@ -929,7 +917,7 @@ public class WalletService {
         // Save the wallet summary file
         WalletManager.updateWalletSummary(WalletManager.INSTANCE.getCurrentWalletSummaryFile(applicationDataDirectory).get(), walletSummary);
 
-        // Save all the Contacts, history and payment information using the new wallet password
+        // Save all the Contacts, history and payment information using the new wallet credentials
         contactService.writeContacts();
         historyService.writeHistory();
         walletService.writePayments();
@@ -942,7 +930,7 @@ public class WalletService {
         CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_ERROR, new Object[]{e.getMessage()}));
       }
     } else {
-      // No wallet to change the password for
+      // No wallet to change the credentials for
       CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_ERROR, new Object[]{"There is no wallet"}));
     }
   }

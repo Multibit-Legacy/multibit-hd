@@ -96,7 +96,7 @@ public abstract class AbstractFestUseCase {
    * <p>Provides a naming convention for the verification label</p>
    *
    * @param panelName     The panel name taken from the wizard state (e.g. WelcomeWizardState.RESTORE_PASSWORD_SEED_PHRASE)
-   * @param componentName The component name to avoid conflict with multiple verifiable components (e.g. "timestamp", "seedphrase", "password")
+   * @param componentName The component name to avoid conflict with multiple verifiable components (e.g. "timestamp", "seedphrase", "credentials")
    *
    * @return The appropriate FEST name for the verification label
    */
@@ -207,11 +207,24 @@ public abstract class AbstractFestUseCase {
    *
    * @param key The message key to use
    */
-  protected void assertLabelValue(MessageKey key, String value) {
+  protected void assertLabelContainsValue(MessageKey key, String value) {
 
-    String titleHtml = window.label(key.getKey()).text();
+    String label = window.label(key.getKey()).text();
 
-    assertThat(titleHtml).contains(value);
+    assertThat(label).contains(value);
+
+  }
+
+  /**
+   * <p>Asserts that a label contains the required value text in the current locale (ignores wrapping HTML if present)</p>
+   *
+   * @param key The message key to use
+   */
+  protected void assertLabelContainsValue(String key, String value) {
+
+    String label = window.label(key).text();
+
+    assertThat(label).contains(value);
 
   }
 
@@ -293,7 +306,7 @@ public abstract class AbstractFestUseCase {
   }
 
   /**
-   * The standard length of time for a wallet password to change
+   * The standard length of time for a wallet credentials to change
    */
   protected void pauseForWalletPasswordChange() {
     Pause.pause(3, TimeUnit.SECONDS);

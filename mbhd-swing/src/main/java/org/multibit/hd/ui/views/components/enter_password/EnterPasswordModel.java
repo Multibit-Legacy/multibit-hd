@@ -8,7 +8,7 @@ import org.multibit.hd.ui.models.Model;
 /**
  * <p>Model to provide the following to view:</p>
  * <ul>
- * <li>Show/hide the seed phrase (initially hidden)</li>
+ * <li>Entry of password</li>
  * </ul>
  *
  * @since 0.0.1

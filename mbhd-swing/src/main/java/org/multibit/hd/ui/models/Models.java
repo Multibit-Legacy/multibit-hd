@@ -4,13 +4,17 @@ import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.TransactionSeenEvent;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Formats;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
 
 import javax.swing.*;
@@ -106,7 +110,7 @@ public class Models {
 
       }
     };
-    JButton button = Buttons.newAlertPanelButton(action, MessageKey.YES, AwesomeIcon.CHECK);
+    JButton button = Buttons.newAlertPanelButton(action, MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);
 
     // Attempt to decode the Bitcoin URI
     Optional<String> alertMessage = Formats.formatAlertMessage(bitcoinURI);
@@ -126,7 +130,9 @@ public class Models {
   }
 
   /**
-   * @param transactionSeenEvent@return An alert model suitable for use for displaying the information, absent if the Bitcoin URI does not contain sufficient information
+   * @param transactionSeenEvent The transaction seen event
+   *
+   * @return An alert model suitable for use for displaying the information, absent if the Bitcoin URI does not contain sufficient information
    */
   public static AlertModel newPaymentReceivedAlertModel(TransactionSeenEvent transactionSeenEvent) {
 
@@ -137,6 +143,54 @@ public class Models {
       alertMessage,
       RAGStatus.GREEN
     );
+
+  }
+
+  /**
+   * @param event The hardware wallet event (e.g. SHOW_PIN_ENTRY etc)
+   *
+   * @return An alert model suitable for use for displaying the information, absent if the Bitcoin URI does not contain sufficient information
+   */
+  public static AlertModel newHardwareWalletAlertModel(HardwareWalletEvent event) {
+
+    switch (event.getEventType()) {
+      case SHOW_DEVICE_READY:
+
+        String label = "";
+        if (event.getMessage().isPresent()) {
+          Features features = (Features) event.getMessage().get();
+          label=features.getLabel();
+        }
+
+        // Provide action to allow user to enter PIN
+        // (required if device prompts when providing
+        // encrypted info to unlock wallet)
+        JButton button = Buttons.newAlertPanelButton(new AbstractAction() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            // Open the Credentials wizard, asking for a Trezor PIN entry screen
+            Panels.showLightBox(Wizards.newExitingCredentialsWizard(CredentialsRequestType.TREZOR_PIN).getWizardScreenHolder());
+          }
+        }, MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);
+
+        return Models.newAlertModel(
+          Languages.safeText(MessageKey.TREZOR_CONNECTED_ALERT, label),
+          RAGStatus.GREEN,
+          button
+        );
+      case SHOW_DEVICE_DETACHED:
+        return Models.newAlertModel(
+          Languages.safeText(MessageKey.TREZOR_DISCONNECTED_ALERT),
+          RAGStatus.AMBER
+        );
+      case SHOW_DEVICE_FAILED:
+        return Models.newAlertModel(
+          Languages.safeText(MessageKey.TREZOR_FAILURE_ALERT),
+          RAGStatus.RED
+        );
+      default:
+        throw new IllegalStateException("Unknown hardware wallet system event");
+    }
 
   }
 

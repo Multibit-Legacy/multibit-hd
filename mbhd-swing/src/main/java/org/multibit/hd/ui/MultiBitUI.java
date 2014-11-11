@@ -163,6 +163,11 @@ public interface MultiBitUI {
   String LARGE_BUTTON_MIG = "wmin 150,hmin 120";
 
   /**
+    * Provides the MiG layout information for a medium button (used for PIN entry)
+    */
+   String MEDIUM_BUTTON_MIG = "wmin 75,hmin 60";
+
+   /**
    * Provides the MiG layout information for a normal icon
    */
   String NORMAL_ICON_SIZE_MIG = "w " + NORMAL_ICON_SIZE + ",h " + NORMAL_ICON_SIZE;
@@ -180,7 +185,7 @@ public interface MultiBitUI {
   int RECEIVE_ADDRESS_LABEL_LENGTH = 60;
 
   /**
-   * The maximum length of the password
+   * The maximum length of the credentials
    */
   int PASSWORD_LENGTH = 40;
 

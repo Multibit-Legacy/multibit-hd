@@ -1,5 +1,6 @@
 package org.multibit.hd.installer;
 
+import jwrapper.jwutils.JWInstallApp;
 import jwrapper.jwutils.JWMacOS;
 import jwrapper.jwutils.JWSystem;
 import jwrapper.jwutils.JWWindowsOS;
@@ -26,7 +27,10 @@ public class MultiBitHDPostInstall {
       JWWindowsOS.registerURLSchemeForVirtualApp("bitcoin",JWSystem.getMyAppName());
     }
 
-    // TODO Find a suitable solution for Linux
+    JWInstallApp.addAppShortcut(
+      "MultiBit HD",
+      "MultiBit HD"
+    );
   }
 
 }

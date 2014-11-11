@@ -2,9 +2,9 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.payments.SearchPaymentsUseCase;
-import org.multibit.hd.ui.fest.use_cases.payments.ShowDetailPaymentsUseCase;
-import org.multibit.hd.ui.fest.use_cases.payments.ShowPaymentsScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.payments.SearchPaymentsUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.payments.ShowDetailPaymentsUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.payments.ShowPaymentsScreenUseCase;
 
 import java.util.Map;
 

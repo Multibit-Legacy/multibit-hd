@@ -20,6 +20,9 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.*;
 import org.multibit.hd.core.store.TransactionInfo;
+import org.multibit.hd.hardware.core.HardwareWalletService;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
@@ -38,11 +41,11 @@ import org.multibit.hd.ui.views.themes.Theme;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsState;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
-import org.multibit.hd.ui.views.wizards.password.PasswordState;
-import org.multibit.hd.ui.views.wizards.password.PasswordWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
@@ -75,6 +78,8 @@ public class MainController extends AbstractController implements
 
   private Optional<BitcoinNetworkService> bitcoinNetworkService = Optional.absent();
 
+  private Optional<HardwareWalletService> hardwareWalletService = Optional.absent();
+
   private final BitcoinURIListeningService bitcoinURIListeningService;
 
   final ListeningExecutorService handoverExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-handover");
@@ -88,6 +93,14 @@ public class MainController extends AbstractController implements
 
   // Start with the assumption that it is fine to avoid annoying "everything is OK" alert
   private RAGStatus lastExchangeSeverity = RAGStatus.GREEN;
+
+  // Start with the assumption that it is fine to avoid annoying "device is detached" alert
+  private boolean isDetachRelevant = false;
+
+  // Keep a thread pool for transaction status checking
+  private static final ListeningExecutorService transactionCheckingExecutorService = SafeExecutors.newFixedThreadPool(10, "transaction-checking");
+
+  private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 10;
 
   /**
    * @param bitcoinURIListeningService The Bitcoin URI listening service (must be present to permit a UI)
@@ -110,6 +123,16 @@ public class MainController extends AbstractController implements
     this.headerController = headerController;
     this.sidebarController = sidebarController;
 
+    // Subscribe to hardware wallet events
+    HardwareWalletService.hardwareWalletEventBus.register(this);
+
+    // Initialise the HardwareWalletService
+    hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+
+    if (hardwareWalletService.isPresent()) {
+      // Start the service
+      hardwareWalletService.get().start();
+    }
   }
 
   /**
@@ -135,13 +158,14 @@ public class MainController extends AbstractController implements
 
         // Dispose of the main view and all its attendant references
         log.debug("Disposing of MainView");
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            Panels.hideLightBoxIfPresent();
-            Panels.applicationFrame.dispose();
-          }
-        });
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              Panels.hideLightBoxIfPresent();
+              Panels.applicationFrame.dispose();
+            }
+          });
         mainView = null;
         System.gc();
 
@@ -169,19 +193,19 @@ public class MainController extends AbstractController implements
         || WelcomeWizardState.WELCOME_SELECT_WALLET.name().equals(event.getPanelName())
         ) {
 
-        // Need to hand over to the password wizard
+        // Need to hand over to the credentials wizard
         handoverToPasswordWizard();
 
       }
 
-      if (PasswordState.PASSWORD_ENTER_PASSWORD.name().equals(event.getPanelName())) {
+      if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(event.getPanelName())) {
 
         // Perform final initialisation
         hidePasswordWizard();
 
       }
 
-      if (PasswordState.PASSWORD_RESTORE.name().equals(event.getPanelName())) {
+      if (CredentialsState.CREDENTIALS_RESTORE.name().equals(event.getPanelName())) {
 
         // Need to hand over to the welcome wizard
         handoverToWelcomeWizard();
@@ -221,23 +245,24 @@ public class MainController extends AbstractController implements
       log.debug("Using simplified view refresh (language change)");
 
       // Ensure the Swing thread can perform a complete refresh
-      SwingUtilities.invokeLater(new Runnable() {
-        public void run() {
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          public void run() {
 
-          // Switch the theme before any other UI building takes place
-          handleTheme();
+            // Switch the theme before any other UI building takes place
+            handleTheme();
 
-          // Rebuild MainView contents
-          handleLocale();
+            // Rebuild MainView contents
+            handleLocale();
 
-          // Force a frame redraw
-          Panels.applicationFrame.invalidate();
+            // Force a frame redraw
+            Panels.applicationFrame.invalidate();
 
-          // Rebuild the detail views and alert panels
-          mainView.refresh();
+            // Rebuild the detail views and alert panels
+            mainView.refresh();
 
-        }
-      });
+          }
+        });
 
     } else {
 
@@ -248,30 +273,31 @@ public class MainController extends AbstractController implements
       handleExchange();
 
       // Ensure the Swing thread can perform a complete refresh
-      SwingUtilities.invokeLater(new Runnable() {
-        public void run() {
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          public void run() {
 
-          // Switch the theme before any other UI building takes place
-          handleTheme();
+            // Switch the theme before any other UI building takes place
+            handleTheme();
 
-          // Rebuild MainView contents
-          handleLocale();
+            // Rebuild MainView contents
+            handleLocale();
 
-          // Force a frame redraw
-          Panels.applicationFrame.invalidate();
+            // Force a frame redraw
+            Panels.applicationFrame.invalidate();
 
-          // Rebuild the detail views and alert panels
-          mainView.refresh();
+            // Rebuild the detail views and alert panels
+            mainView.refresh();
 
-          // Show the current detail screen
-          Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
-          ControllerEvents.fireShowDetailScreenEvent(screen);
+            // Show the current detail screen
+            Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
+            ControllerEvents.fireShowDetailScreenEvent(screen);
 
-          // Trigger the alert panels to refresh
-          headerController.refresh();
+            // Trigger the alert panels to refresh
+            headerController.refresh();
 
-        }
-      });
+          }
+        });
 
       // Restart the Bitcoin network (may have switched parameters)
       handleBitcoinNetwork();
@@ -367,7 +393,7 @@ public class MainController extends AbstractController implements
 
         }
       };
-      JButton button = Buttons.newAlertPanelButton(action, MessageKey.SETTINGS, AwesomeIcon.CHECK);
+      JButton button = Buttons.newAlertPanelButton(action, MessageKey.SETTINGS, MessageKey.SETTINGS_TOOLTIP, AwesomeIcon.CHECK);
 
       // Provide the alert
       ControllerEvents.fireAddAlertEvent(
@@ -417,7 +443,7 @@ public class MainController extends AbstractController implements
         break;
       case CERTIFICATE_FAILED:
         // Create a button to the repair wallet tool
-        JButton button = Buttons.newAlertPanelButton(getShowRepairWalletAction(), MessageKey.REPAIR, AwesomeIcon.MEDKIT);
+        JButton button = Buttons.newAlertPanelButton(getShowRepairWalletAction(), MessageKey.REPAIR, MessageKey.REPAIR_TOOLTIP, AwesomeIcon.MEDKIT);
 
         // Append general security advice allowing for LTR/RTL
         ControllerEvents.fireAddAlertEvent(
@@ -481,6 +507,105 @@ public class MainController extends AbstractController implements
   }
 
   /**
+   * Make sure that when a transaction is successfully created its 'metadata' is stored in a transactionInfo
+   *
+   * @param transactionCreationEvent The transaction creation event from the EventBus
+   */
+  @Subscribe
+  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+
+    initiateDelayedTransactionStatusCheck(transactionCreationEvent);
+
+    // Only store successful transactions
+    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+      return;
+    }
+
+    // Create a transactionInfo to match the event created
+    TransactionInfo transactionInfo = new TransactionInfo();
+    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
+    String note = transactionCreationEvent.getNotes().or("");
+    transactionInfo.setNote(note);
+
+    // Append miner's fee info
+    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
+
+    // Append client fee info
+    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
+
+    // Set the fiat payment amount
+    transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
+
+    transactionInfo.setSentBySelf(transactionCreationEvent.isSentByMe());
+
+    WalletService walletService = CoreServices.getCurrentWalletService();
+    walletService.addTransactionInfo(transactionInfo);
+    log.debug("Added transactionInfo {} to walletService {}", transactionInfo, walletService);
+    try {
+      walletService.writePayments();
+    } catch (PaymentsSaveException pse) {
+      ExceptionHandler.handleThrowable(pse);
+    }
+  }
+
+  /**
+   * Respond to a hardware wallet system event
+   *
+   * @param event The event
+   */
+  @Subscribe
+  public void onHardwareWalletEvent(final HardwareWalletEvent event) {
+
+    log.debug("Received hardware event: '{}'", event.getEventType().name());
+
+    switch (event.getEventType()) {
+      case SHOW_DEVICE_FAILED:
+        // Treat as end of example
+        break;
+      case SHOW_DEVICE_DETACHED:
+        // Can simply wait for another device to be connected again
+        break;
+      case SHOW_DEVICE_READY:
+        // Get some information about the device
+        Features features = hardwareWalletService.get().getContext().getFeatures().get();
+        log.info("Features: {}", features);
+
+      default:
+        // Ignore
+    }
+
+    // Quick check for relevancy
+    switch (event.getEventType()) {
+      case SHOW_DEVICE_DETACHED:
+        if (!isDetachRelevant) {
+          // Ignore the detach since we've never been attached
+          return;
+        }
+        // Ensure we ignore the detach in the future
+        isDetachRelevant = false;
+        break;
+      case SHOW_DEVICE_READY:
+        // Now that we've been attached we want to trap detach later
+        isDetachRelevant = true;
+        break;
+    }
+
+    // Ensure we return from this event quickly
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+
+          // Attempt to create a suitable alert model
+          AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+
+          ControllerEvents.fireAddAlertEvent(alertModel);
+        }
+      });
+
+  }
+
+  /**
    * @return An action to show the "repair wallet" tool
    */
   private AbstractAction getShowRepairWalletAction() {
@@ -489,6 +614,19 @@ public class MainController extends AbstractController implements
       public void actionPerformed(ActionEvent e) {
 
         Panels.showLightBox(Wizards.newRepairWalletWizard().getWizardScreenHolder());
+      }
+    };
+  }
+
+  /**
+   * @return An action to show the help screen for 'spendable balance may be lower"
+   */
+  private AbstractAction getShowHelpAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        ControllerEvents.fireShowDetailScreenEvent(Screen.HELP); // TODO show the 'spendable balance may be lower' help screen when it is written
       }
     };
   }
@@ -609,7 +747,7 @@ public class MainController extends AbstractController implements
 
     bitcoinNetworkService = Optional.of(CoreServices.getOrCreateBitcoinNetworkService());
 
-    // Start the network now that the password has been validated
+    // Start the network now that the credentials has been validated
     bitcoinNetworkService.get().start();
 
     if (bitcoinNetworkService.get().isStartedOk()) {
@@ -637,44 +775,47 @@ public class MainController extends AbstractController implements
   }
 
   /**
-   * Welcome wizard has created a new wallet so hand over to the password wizard for access
+   * Welcome wizard has created a new wallet so hand over to the credentials wizard for access
    */
   private void handoverToPasswordWizard() {
 
-    log.debug("Hand over to password wizard");
+    log.debug("Hand over to credentials wizard");
 
     // Handover
     mainView.setShowExitingWelcomeWizard(false);
     mainView.setShowExitingPasswordWizard(true);
 
     // Start building the wizard on the EDT to prevent UI updates
-    final PasswordWizard passwordWizard = Wizards.newExitingPasswordWizard();
+    final CredentialsWizard credentialsWizard = Wizards.newExitingCredentialsWizard();
 
     // Use a new thread to handle the new wizard so that the handover can complete
-    handoverExecutorService.execute(new Runnable() {
-      @Override
-      public void run() {
+    handoverExecutorService.execute(
+      new Runnable() {
+        @Override
+        public void run() {
 
-        // Allow time for the other wizard to finish hiding (200ms is the minimum)
-        Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+          // Allow time for the other wizard to finish hiding (200ms is the minimum)
+          Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
-        // Must execute on the EDT
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
+          // Must execute on the EDT
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
 
-            Panels.hideLightBoxIfPresent();
+                Panels.hideLightBoxIfPresent();
 
-            log.debug("Showing exiting password wizard after handover");
-            Panels.showLightBox(passwordWizard.getWizardScreenHolder());
+                log.debug("Showing exiting credentials wizard after handover");
+                Panels.showLightBox(credentialsWizard.getWizardScreenHolder());
 
-          }
-        });
+              }
+            });
 
-      }
-    });
+        }
+      });
 
   }
+
 
   /**
    * Password wizard needs to perform a restore so hand over to the welcome wizard
@@ -691,28 +832,30 @@ public class MainController extends AbstractController implements
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET);
 
     // Use a new thread to handle the new wizard so that the handover can complete
-    handoverExecutorService.execute(new Runnable() {
-      @Override
-      public void run() {
+    handoverExecutorService.execute(
+      new Runnable() {
+        @Override
+        public void run() {
 
-        // Allow time for the other wizard to finish hiding (200ms is the minimum)
-        Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+          // Allow time for the other wizard to finish hiding (200ms is the minimum)
+          Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
-        // Must execute on the EDT
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
+          // Must execute on the EDT
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
 
-            Panels.hideLightBoxIfPresent();
+                Panels.hideLightBoxIfPresent();
 
-            log.debug("Showing exiting welcome wizard after handover");
-            Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
+                log.debug("Showing exiting welcome wizard after handover");
+                Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
 
-          }
-        });
+              }
+            });
 
-      }
-    });
+        }
+      });
 
   }
 
@@ -728,12 +871,13 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingPasswordWizard(false);
 
     // Start the main view refresh on the EDT
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        mainView.refresh();
-      }
-    });
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          mainView.refresh();
+        }
+      });
 
     // Allow time for MainView to refresh
     Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
@@ -758,66 +902,67 @@ public class MainController extends AbstractController implements
     ControllerEvents.fireShowDetailScreenEvent(screen);
 
     // Don't hold up the UI thread with these background operations
-    SafeExecutors.newSingleThreadExecutor("wallet-services").submit(new Runnable() {
-      @Override
-      public void run() {
-        try {
+    SafeExecutors.newSingleThreadExecutor("wallet-services").submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          try {
 
-          // Get a ticker going
-          log.debug("Starting exchange...");
-          handleExchange();
+            // Get a ticker going
+            log.debug("Starting exchange...");
+            handleExchange();
 
-          // Check for Bitcoin URIs
-          log.debug("Check for Bitcoin URIs...");
-          handleBitcoinURIAlert();
+            // Check for Bitcoin URIs
+            log.debug("Check for Bitcoin URIs...");
+            handleBitcoinURIAlert();
 
-          // Lastly start the Bitcoin network
-          log.debug("Starting Bitcoin network...");
-          handleBitcoinNetwork();
+            // Lastly start the Bitcoin network
+            log.debug("Starting Bitcoin network...");
+            handleBitcoinNetwork();
 
-        } catch (Exception e) {
-          // TODO localise and put on UI
-          log.error("Services did not start ok. Error was {}", e.getClass().getCanonicalName() + " " + e.getMessage(), e);
+          } catch (Exception e) {
+            // TODO localise and put on UI
+            log.error("Services did not start ok. Error was {}", e.getClass().getCanonicalName() + " " + e.getMessage(), e);
+          }
         }
-      }
-    });
+      });
   }
 
-
   /**
-   * Make sure that when a transaction is successfully created its 'metadata' is stored in a transactionInfo
-   * @param transactionCreationEvent
+   * When a transaction is created, fire off a delayed check of the transaction confidence/ network status
+   *
+   * @param transactionCreationEvent The transaction creation event from the EventBus
    */
-  @Subscribe
-  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+  private void initiateDelayedTransactionStatusCheck(final TransactionCreationEvent transactionCreationEvent) {
+    transactionCheckingExecutorService.submit(
+      new Runnable() {
 
-    // Only store successful transactions
-    if (!transactionCreationEvent.isTransactionCreationWasSuccessful()) {
-      return;
-    }
+        @Override
+        public void run() {
+          log.debug("Performing delayed status check on transaction '" + transactionCreationEvent.getTransactionId() + "'");
+          // Wait for a while to let the Bitcoin network respond to the tx being sent
+          Uninterruptibles.sleepUninterruptibly(NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING, TimeUnit.SECONDS);
 
-    // Create a transactionInfo to match the event created
-    TransactionInfo transactionInfo = new TransactionInfo();
-    transactionInfo.setHash(transactionCreationEvent.getTransactionId());
-    String note = transactionCreationEvent.getNotes().or("");
-    transactionInfo.setNote(note);
+          // See if the transaction has a RAGStatus if red.
+          // This could be the tx has not been transmitted ok or is only seen by zero or one peers.
+          // In this case the user will not have access to the tx change and notify them with a warning alert
+          WalletService currentWalletService = CoreServices.getCurrentWalletService();
+          if (currentWalletService != null) {
+            java.util.List<PaymentData> paymentDataList = currentWalletService.getPaymentDataList();
+            if (paymentDataList != null) {
+              for (PaymentData paymentData : paymentDataList) {
+                PaymentStatus status = paymentData.getStatus();
+                if (status.getStatus().equals(RAGStatus.RED)) {
+                  JButton button = Buttons.newAlertPanelButton(getShowHelpAction(), MessageKey.DETAILS, MessageKey.DETAILS_TOOLTIP, AwesomeIcon.QUESTION);
 
-    // Append miner's fee info
-    transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
-
-    // Append client fee info
-    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
-
-    // Set the fiat payment amount
-    transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
-
-    WalletService walletService = CoreServices.getCurrentWalletService();
-    walletService.addTransactionInfo(transactionInfo);
-    log.debug("Added transactionInfo {} to walletService {}", transactionInfo, walletService);
-    try {
-      walletService.writePayments();
-    } catch (PaymentsSaveException pse) {
-      ExceptionHandler.handleThrowable(pse);
-    }
+                  // The transaction has not been sent correctly, or change is not spendable, throw a warning alert
+                  AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER), RAGStatus.AMBER, button);
+                  ViewEvents.fireAlertAddedEvent(alertModel);
+                }
+              }
+            }
+          }
+        }
+      });
   }
 }

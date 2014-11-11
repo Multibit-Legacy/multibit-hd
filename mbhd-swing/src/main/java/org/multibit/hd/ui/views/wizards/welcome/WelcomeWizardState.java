@@ -36,7 +36,7 @@ public enum WelcomeWizardState {
    */
   CREATE_WALLET_CONFIRM_SEED_PHRASE,
   /**
-   * Create wallet: Create password
+   * Create wallet: Create credentials
    */
   CREATE_WALLET_CREATE_PASSWORD,
   /**
@@ -44,11 +44,11 @@ public enum WelcomeWizardState {
    */
   CREATE_WALLET_REPORT,
   /**
-   * Restore password: Enter seed phrase to begin the process
+   * Restore credentials: Enter seed phrase to begin the process
    */
   RESTORE_PASSWORD_SEED_PHRASE,
   /**
-   * Restore password: Report on the restoration outcome
+   * Restore credentials: Report on the restoration outcome
    */
   RESTORE_PASSWORD_REPORT,
   /**

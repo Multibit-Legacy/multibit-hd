@@ -41,7 +41,7 @@ public class QuickUnlockWalletUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireDisabled();
 
-    // Enter password text
+    // Enter credentials text
     window
       .textBox(MessageKey.ENTER_PASSWORD.getKey())
       .enterText(WalletFixtures.STANDARD_PASSWORD);

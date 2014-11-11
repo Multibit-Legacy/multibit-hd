@@ -11,6 +11,7 @@ import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.managers.WalletManagerTest;
+import org.multibit.hd.core.utils.Addresses;
 import org.multibit.hd.core.utils.Dates;
 
 import java.io.File;
@@ -96,7 +97,7 @@ public class PersistentContactServiceTest {
     Contact newContact = contactService.newContact(newContactName);
     contactService.addAll(Lists.newArrayList(newContact));
 
-    newContact.setBitcoinAddress("bippy");
+    newContact.setBitcoinAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
     newContact.setEmail("boppy");
     newContact.setExtendedPublicKey("soppy");
     newContact.setImagePath("sippy");

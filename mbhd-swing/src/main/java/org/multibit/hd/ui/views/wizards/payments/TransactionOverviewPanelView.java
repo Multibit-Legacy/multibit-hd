@@ -1,19 +1,14 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
 import com.google.bitcoin.core.Coin;
-import com.google.bitcoin.core.NetworkParameters;
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.config.BitcoinConfiguration;
-import org.multibit.hd.core.config.BitcoinNetwork;
-import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.Recipient;
@@ -54,12 +49,11 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
   private JLabel statusValue;
   private JLabel typeValue;
   private JLabel descriptionValue;
-  private JLabel recipientValue;
+
+  // Use a text area to allow for multiple output addresses that are not matched to a Contact
+  private JTextArea recipientValue;
+
   private JLabel recipientImageLabel;
-
-
-  // TODO Inject this
-  private final NetworkParameters networkParameters = BitcoinNetwork.current().get();
 
   /**
    * @param wizard The wizard managing the states
@@ -75,7 +69,7 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
     // Configure the panel model
     TransactionOverviewPanelModel panelModel = new TransactionOverviewPanelModel(
-            getPanelName()
+      getPanelName()
     );
     setPanelModel(panelModel);
   }
@@ -83,11 +77,12 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
-    contentPanel.setLayout(new MigLayout(
-            Panels.migXYLayout(),
-            "[]10[][][]", // Column constraints
-            "[]10[]10[]10[]" // Row constraints
-    ));
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[]10[][][]", // Column constraints
+        "[]10[]10[]10[]" // Row constraints
+      ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -105,7 +100,7 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
     descriptionValue = Labels.newValueLabel("");
 
     JLabel recipientLabel = Labels.newValueLabel(Languages.safeText(MessageKey.RECIPIENT));
-    recipientValue = Labels.newValueLabel("");
+    recipientValue = TextBoxes.newDisplayRecipientBitcoinAddresses();
 
     // Start with an invisible label
     recipientImageLabel = Labels.newImageLabel(Optional.<BufferedImage>absent());
@@ -142,13 +137,14 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        getNextButton().requestFocusInWindow();
-        getNextButton().setEnabled(true);
-      }
-    });
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          getNextButton().requestFocusInWindow();
+          getNextButton().setEnabled(true);
+        }
+      });
 
     update();
 
@@ -166,8 +162,6 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
     if (paymentData != null) {
 
       DateTime date = paymentData.getDate();
-      LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
-      BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
       updateMetadata(paymentData, date);
 
@@ -178,18 +172,33 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
           // Received bitcoin
           recipientValue.setText(Languages.safeText(MessageKey.THIS_BITCOIN_WAS_SENT_TO_YOU));
+          recipientValue.setRows(1);
         } else {
           // Contact may be one of the output addresses
-          Collection<String> addressList = transactionData.getOutputAddresses();
+          Collection<Address> outputAddresses = transactionData.getOutputAddresses();
 
-          Contact matchedContact = matchContact(addressList);
-          if (matchedContact == null) {
-            if (addressList.size() == 1) {
-              // We can unambiguously set a recipient address (e.g. empty wallet tx)
-              recipientValue.setText(addressList.iterator().next());
-            } else {
-              // Do not know or multiple addresses
-              recipientValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+          Optional<Contact> matchedContact = matchContact(outputAddresses);
+          if (matchedContact.isPresent()) {
+            // Show their gravatar if possible
+            displayGravatar(matchedContact.get(), recipientImageLabel);
+          } else {
+            // No matching contact - provide an unambiguous message
+            switch (outputAddresses.size()) {
+              case 0:
+                // Do not know
+                recipientValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+                recipientValue.setRows(1);
+                break;
+              case 1:
+                // We can unambiguously set a recipient address (e.g. empty wallet tx)
+                recipientValue.setText(outputAddresses.iterator().next().toString());
+                recipientValue.setRows(1);
+                break;
+              default:
+                // More than one match
+                recipientValue.setText(Joiner.on("\n").join(outputAddresses));
+                recipientValue.setRows(outputAddresses.size() <=5 ? outputAddresses.size() : 5);
+                break;
             }
           }
         }
@@ -197,10 +206,16 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
     }
   }
 
-  private Contact matchContact(Collection<String> addressList) {
+  /**
+   * <p>Matches a Contact against one of the supplied addresses. If more than one matches then the first is selected
+   * since the other is most likely to be a change address to ourselves.</p>
+   *
+   * @param addresses The addresses to match
+   *
+   * @return The matching contact if present
+   */
+  private Optional<Contact> matchContact(Collection<Address> addresses) {
 
-    // This is a bit inefficient - could have a hashmap of Contacts, keyed by address
-    // Or store the address sent to
     ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
     List<Contact> allContacts = contactService.allContacts();
 
@@ -208,26 +223,17 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
     for (Contact contact : allContacts) {
 
-      if (addressList != null) {
-        for (String address : addressList) {
+      if (addresses != null) {
+        for (Address address : addresses) {
           if (contact.getBitcoinAddress().isPresent() && contact.getBitcoinAddress().get().equals(address)) {
 
             // This is a contact for this address
-            final Address bitcoinAddress;
-            try {
-              bitcoinAddress = new Address(networkParameters, address);
-            } catch (AddressFormatException e) {
-              // If this occurs we really want to know
-              throw new IllegalArgumentException("Contact has an incorrect Bitcoin address: " + contact, e);
-            }
-
             // Only show the first match
             recipientValue.setText(contact.getName());
-            Recipient matchedRecipient = new Recipient(bitcoinAddress);
+            Recipient matchedRecipient = new Recipient(address);
             matchedRecipient.setContact(contact);
             matchedContact = contact;
 
-            displayGravatar(contact, recipientImageLabel);
             break;
           }
         }
@@ -235,7 +241,7 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
     }
 
-    return matchedContact;
+    return Optional.fromNullable(matchedContact);
   }
 
   private void updateMetadata(PaymentData paymentData, DateTime date) {
@@ -260,29 +266,30 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
     String emailAddress = contact.getEmail().or("nobody@example.org");
 
     final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(emailAddress);
-    Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
-      public void onSuccess(Optional<BufferedImage> image) {
-        if (image.isPresent()) {
+    Futures.addCallback(
+      imageFuture, new FutureCallback<Optional<BufferedImage>>() {
+        public void onSuccess(Optional<BufferedImage> image) {
+          if (image.isPresent()) {
 
-          // Apply the rounded corners
-          ImageIcon imageIcon = new ImageIcon(ImageDecorator.applyRoundedCorners(image.get(), MultiBitUI.IMAGE_CORNER_RADIUS));
+            // Apply the rounded corners
+            ImageIcon imageIcon = new ImageIcon(ImageDecorator.applyRoundedCorners(image.get(), MultiBitUI.IMAGE_CORNER_RADIUS));
 
-          recipientImageLabel.setIcon(imageIcon);
-        } else {
-          // Update the UI to use the "no network" icon
-          recipientImageLabel.setIcon(Images.newNoNetworkContactImageIcon());
+            recipientImageLabel.setIcon(imageIcon);
+          } else {
+            // Update the UI to use the "no network" icon
+            recipientImageLabel.setIcon(Images.newNoNetworkContactImageIcon());
+          }
+
+          recipientImageLabel.setVisible(true);
+
         }
 
-        recipientImageLabel.setVisible(true);
-
-      }
-
-      public void onFailure(Throwable thrown) {
-        // Update the UI to use the "no network" icon
-        recipientImageLabel.setIcon(Images.newNoNetworkContactImageIcon());
-        recipientImageLabel.setVisible(true);
-      }
-    });
+        public void onFailure(Throwable thrown) {
+          // Update the UI to use the "no network" icon
+          recipientImageLabel.setIcon(Images.newNoNetworkContactImageIcon());
+          recipientImageLabel.setVisible(true);
+        }
+      });
 
   }
 }

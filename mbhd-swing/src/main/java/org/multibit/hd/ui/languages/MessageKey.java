@@ -20,45 +20,105 @@ public enum MessageKey {
 
   // Verbs
   APPLY("apply"),
+  APPLY_TOOLTIP("apply_tooltip"),
+
   UNDO("undo"),
+  UNDO_TOOLTIP("undo_tooltip"),
+
   CANCEL("cancel"),
+  CANCEL_TOOLTIP("cancel_tooltip"),
+
   EXIT("exit"),
+  EXIT_TOOLTIP("exit_tooltip"),
+
   SEND("send"),
+  SEND_TOOLTIP("send_tooltip"),
+
   REQUEST("request"),
+  REQUEST_TOOLTIP("request_tooltip"),
+
   REFRESH("refresh"),
+  REFRESH_TOOLTIP("refresh_tooltip"),
+
   FINISH("finish"),
+  FINISH_TOOLTIP("finish_tooltip"),
+
   CLOSE("close"),
+  CLOSE_TOOLTIP("close_tooltip"),
+
   SHOW("show"),
   HIDE("hide"),
+
   ADD("add"),
+  ADD_TOOLTIP("add_tooltip"),
+
   EDIT("edit"),
+  EDIT_TOOLTIP("edit_tooltip"),
+
   DELETE("delete"),
+  DELETE_TOOLTIP("delete_tooltip"),
+
   RESTORE("restore"),
+  RESTORE_TOOLTIP("restore_tooltip"),
+
   SEARCH("search"),
+  SEARCH_TOOLTIP("search_tooltip"),
+
   BACK("back"),
+  BACK_TOOLTIP("back_tooltip"),
+
   FORWARD("forward"),
+  FORWARD_TOOLTIP("forward_tooltip"),
+
   BROWSE("browse"),
-  PRINT("print"),
+  BROWSE_TOOLTIP("browse_tooltip"),
+
   PASTE("paste"),
+  PASTE_TOOLTIP("paste_tooltip"),
+
   PASTE_ALL("paste_all"),
+  PASTE_ALL_TOOLTIP("paste_all_tooltip"),
+
   COPY("copy"),
+  COPY_TOOLTIP("copy_tooltip"),
+
   REPAIR("repair"),
+  REPAIR_TOOLTIP("repair_tooltip"),
+
   CLEAR_ALL("clear_all"),
+  CLEAR_ALL_TOOLTIP("clear_all_tooltip"),
+
   COPY_ALL("copy_all"),
+  COPY_ALL_TOOLTIP("copy_all_tooltip"),
+
   SIGN_MESSAGE("sign_message"),
+  SIGN_MESSAGE_TOOLTIP("sign_message_tooltip"),
+
   VERIFY_MESSAGE("verify_message"),
+  VERIFY_MESSAGE_TOOLTIP("verify_message_tooltip"),
 
   // Nouns
 
   YES("yes"),
+  YES_TOOLTIP("yes_tooltip"),
+
   NO("no"),
+  NO_TOOLTIP("no_tooltip"),
+
   NEXT("next"),
+  NEXT_TOOLTIP("next_tooltip"),
+
   PREVIOUS("previous"),
+  PREVIOUS_TOOLTIP("previous_tooltip"),
+
   ALL("all"),
   NONE("none"),
   ERROR("error"),
+  @Deprecated
   DEFAULT("default"),
+
   QR_CODE("qr_code"),
+  QR_CODE_TOOLTIP("qr_code_tooltip"),
 
   // Adjectives
   LEADING("leading"),
@@ -67,8 +127,12 @@ public enum MessageKey {
   // Field labels
 
   RECIPIENT("recipient"),
+  RECIPIENT_TOOLTIP("recipient_tooltip"),
+
   TRANSACTION_LABEL("transaction_label"),
+  TRANSACTION_LABEL_TOOLTIP("transaction_label_tooltip"),
   QR_CODE_LABEL("qr_code_label"),
+  QR_CODE_LABEL_TOOLTIP("qr_code_label_tooltip"),
   QR_CODE_NOTE_1("qr_code_note_1"),
   QR_CODE_NOTE_2("qr_code_note_2"),
 
@@ -84,6 +148,7 @@ public enum MessageKey {
   MESSAGE_TOOLTIP("message_tooltip"),
 
   SIGNATURE("signature"),
+  SIGNATURE_TOOLTIP("signature_tooltip"),
 
   CONTACT_IMAGE("contact_image"),
 
@@ -91,9 +156,13 @@ public enum MessageKey {
   THIS_BITCOIN_WAS_SENT_TO_YOU("this_bitcoin_was_sent_to_you"),
 
   SELECT_FOLDER("select_folder"),
+  SELECT_FOLDER_TOOLTIP("select_folder_tooltip"),
+
   SELECT_FILE("select_file"),
+  SELECT_FILE_TOOLTIP("select_file_tooltip"),
 
   SELECT_WALLET("select_wallet"),
+  SELECT_WALLET_TOOLTIP("select_wallet_tooltip"),
 
   ENTER_PASSWORD("enter_password"),
   ENTER_PASSWORD_TOOLTIP("enter_password_tooltip"),
@@ -106,7 +175,9 @@ public enum MessageKey {
   PASSWORD_FAILED("password_failed"),
 
   BITCOIN_AMOUNT("bitcoin_amount"),
+  BITCOIN_AMOUNT_TOOLTIP("bitcoin_amount_tooltip"),
   LOCAL_AMOUNT("local_amount"),
+  LOCAL_AMOUNT_TOOLTIP("local_amount_tooltip"),
   LOCAL_AMOUNT_INCLUDING_FEES("local_amount_including_fees"),
   AMOUNT_PAID("amount_paid"),
   TRANSACTION_FEE("transaction_fee"),
@@ -120,47 +191,85 @@ public enum MessageKey {
   COINBASE("coinbase"),
 
   NAME("name"),
+  NAME_TOOLTIP("name_tooltip"),
   NAMES("names"),
   EMAIL_ADDRESS("email_address"),
+  EMAIL_ADDRESS_TOOLTIP("email_address_tooltip"),
   BITCOIN_ADDRESS("bitcoin_address"),
+  BITCOIN_ADDRESS_TOOLTIP("bitcoin_address_tooltip"),
   EXTENDED_PUBLIC_KEY("extended_public_key"),
+  EXTENDED_PUBLIC_KEY_TOOLTIP("extended_public_key_tooltip"),
   TAGS("tags"),
+  TAGS_TOOLTIP("tags_tooltip"),
   EXAMPLE("example"),
   VERSION("version"),
 
   VISIT_WEBSITE("visit_website"),
+  VISIT_WEBSITE_TOOLTIP("visit_website_tooltip"),
 
   DISPLAY_LANGUAGE("display_language"),
 
   SHOW_BALANCE("show_balance"),
+  SHOW_BALANCE_TOOLTIP("show_balance_tooltip"),
+
   SELECT_THEME("select_theme"),
+  SELECT_THEME_TOOLTIP("select_theme_tooltip"),
 
   SELECT_DECIMAL_SEPARATOR("select_decimal_separator"),
+  SELECT_DECIMAL_SEPARATOR_TOOLTIP("select_decimal_separator_tooltip"),
+
   SELECT_GROUPING_SEPARATOR("select_grouping_separator"),
+  SELECT_GROUPING_SEPARATOR_TOOLTIP("select_grouping_separator_tooltip"),
+
   SELECT_LOCAL_SYMBOL("select_local_symbol"),
+  SELECT_LOCAL_SYMBOL_TOOLTIP("select_local_symbol_tooltip"),
+
   SELECT_BITCOIN_SYMBOL("select_bitcoin_symbol"),
+  SELECT_BITCOIN_SYMBOL_TOOLTIP("select_bitcoin_symbol_tooltip"),
+
   SELECT_PLACEMENT("select_placement"),
+  SELECT_PLACEMENT_TOOLTIP("select_placement_tooltip"),
 
   SELECT_EXCHANGE_RATE_PROVIDER("select_exchange_rate_provider"),
+  SELECT_EXCHANGE_RATE_PROVIDER_TOOLTIP("select_exchange_rate_provider_tooltip"),
+
   SELECT_LOCAL_CURRENCY("select_local_currency"),
+  SELECT_LOCAL_CURRENCY_TOOLTIP("select_local_currency_tooltip"),
+
   ENTER_ACCESS_CODE("enter_access_code"),
+  ENTER_ACCESS_CODE_TOOLTIP("enter_access_code_tooltip"),
   EXCHANGE_RATE_LABEL("exchange_rate_label"),
+
   NOT_AVAILABLE("not_available"),
+
   NO_CLIENT_FEE_WAS_ADDED("no_client_fee_was_added"),
 
   ALERT_SOUND("alert_sound"),
+  ALERT_SOUND_TOOLTIP("alert_sound_tooltip"),
+
   RECEIVE_SOUND("receive_sound"),
+  RECEIVE_SOUND_TOOLTIP("receive_sound_tooltip"),
+
+  PLAY_SOUND("play_sound"),
+  PLAY_SOUND_TOOLTIP("play_sound_tooltip"),
 
   SELECT_TOR("select_tor"),
+  SELECT_TOR_TOOLTIP("select_tor_tooltip"),
 
   // Sidebar
 
   SIDEBAR_TREE("sidebar_tree"),
   WALLET("wallet"),
   SEND_OR_REQUEST("send_or_request"),
+
   CONTACTS("contacts"),
+  CONTACTS_TOOLTIP("contacts_tooltip"),
+
   PAYMENTS("payments"),
+
   HISTORY("history"),
+  HISTORY_TOOLTIP("history_tooltip"),
+
   PREFERENCES("preferences"),
   TOOLS("tools"),
 
@@ -177,17 +286,27 @@ public enum MessageKey {
   PAYMENT_RECEIVED_ALERT("payment_received_label"),
   PAYMENT_SENT_ALERT("payment_sent_label"),
 
+  // Trezor alerts
+  TREZOR_CONNECTED_ALERT("trezor_connected_alert"),
+  TREZOR_DISCONNECTED_ALERT("trezor_disconnected_alert"),
+  TREZOR_FAILURE_ALERT("trezor_failure_alert"),
+
   PEER_COUNT("peer_count"),
   BLOCKS_LEFT("blocks_left"),
+
+  @Deprecated
   LAST_TRANSACTION_ID("last_transaction_id"),
 
+  @Deprecated
   TRANSACTION_COUNT("transaction_count"),
 
   // Panels
 
   NETWORK_CONFIGURATION_ERROR("network_configuration_error"),
   HELP("help"),
+
   SETTINGS("settings"),
+  SETTINGS_TOOLTIP("settings_tooltip"),
 
   // Titles
 
@@ -238,7 +357,13 @@ public enum MessageKey {
   EDIT_HISTORY_ENTRIES_TITLE("edit_history_entries_title"),
 
   PASSWORD_TITLE("password_title"),
+
   PASSWORD_UNLOCK("password_unlock"),
+  PASSWORD_UNLOCK_TOOLTIP("password_unlock_tooltip"),
+
+  PIN_TITLE("pin_title"),
+  PIN_INTRODUCTION("pin_introduction"),
+  PIN_FAILURE("pin_failure"),
 
   // Settings titles
 
@@ -266,7 +391,10 @@ public enum MessageKey {
 
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),
+
   EXCHANGE_RATE_PROVIDER("exchange_rate_provider"),
+  EXCHANGE_RATE_PROVIDER_TOOLTIP("exchange_rate_provider_tooltip"),
+
   BROADCAST_STATUS("broadcast_status"),
   RELAY_STATUS("relay_status"),
   CONFIRMATION_STATUS("confirmation_status"),
@@ -282,6 +410,8 @@ public enum MessageKey {
   WALLET_REPAIRED_STATUS("wallet_repaired_status"),
   SYNCHRONIZING_STATUS("synchronizing_status"),
 
+  ADDRESS_IS_MINE_STATUS("address_is_mine_status"),
+
   PASSWORD_CHANGED_STATUS("password_changed_status"),
 
   HISTORY_WALLET_CREATED("history_wallet_created"),
@@ -293,10 +423,17 @@ public enum MessageKey {
   ALERT_REMAINING("alert_remaining"),
   EXCHANGE_FIAT_RATE("exchange_fiat_rate"),
   EXCHANGE_FIAT_RATE_WITH_PROVIDER("exchange_fiat_rate_with_provider"),
+
   SELECT_LANGUAGE("select_language"),
+  SELECT_LANGUAGE_TOOLTIP("select_language_tooltip"),
+
   SEED_SIZE("seed_size"),
+  SEED_SIZE_TOOLTIP("seed_size_tooltip"),
+
   SEED_PHRASE("seed_phrase"),
+  SEED_PHRASE_TOOLTIP("seed_phrase_tooltip"),
   TIMESTAMP("timestamp"),
+  TIMESTAMP_TOOLTIP("timestamp_tooltip"),
   MULTI_EDIT_NOTE("multi_edit_note"),
 
   TRANSACTION_CONSTRUCTION_STATUS_SUMMARY("transaction_construction_status_summary"),
@@ -307,22 +444,55 @@ public enum MessageKey {
 
   // Tool buttons
   SHOW_WELCOME_WIZARD("show_welcome_wizard"),
+  SHOW_WELCOME_WIZARD_TOOLTIP("show_welcome_wizard_tooltip"),
+
   SHOW_SEND_WIZARD("show_send_wizard"),
+  SHOW_SEND_WIZARD_TOOLTIP("show_send_wizard_tooltip"),
+
   SHOW_REQUEST_WIZARD("show_request_wizard"),
+  SHOW_REQUEST_WIZARD_TOOLTIP("show_request_wizard_tooltip"),
+
   SHOW_SOUNDS_WIZARD("show_sounds_wizard"),
+  SHOW_SOUNDS_WIZARD_TOOLTIP("show_sounds_wizard_tooltip"),
+
   SHOW_LAB_WIZARD("show_lab_wizard"),
+  SHOW_LAB_WIZARD_TOOLTIP("show_lab_wizard_tooltip"),
+
   SHOW_UNITS_WIZARD("show_units_wizard"),
+  SHOW_UNITS_WIZARD_TOOLTIP("show_units_wizard_tooltip"),
+
   SHOW_EXCHANGE_WIZARD("show_exchange_wizard"),
+  SHOW_EXCHANGE_WIZARD_TOOLTIP("show_exchange_wizard_tooltip"),
+
   SHOW_APPEARANCE_WIZARD("show_appearance_wizard"),
+  SHOW_APPEARANCE_WIZARD_TOOLTIP("show_appearance_wizard_tooltip"),
+
   SHOW_LANGUAGE_WIZARD("show_language_wizard"),
+  SHOW_LANGUAGE_WIZARD_TOOLTIP("show_language_wizard_tooltip"),
+
   SHOW_EDIT_WALLET_WIZARD("show_edit_wallet_wizard"),
+  SHOW_EDIT_WALLET_WIZARD_TOOLTIP("show_edit_wallet_wizard_tooltip"),
+
   SHOW_CHANGE_PASSWORD_WIZARD("show_change_password_wizard"),
+  SHOW_CHANGE_PASSWORD_WIZARD_TOOLTIP("show_change_password_wizard_tooltip"),
+
   SHOW_VERIFY_NETWORK_WIZARD("show_verify_network_wizard"),
+  SHOW_VERIFY_NETWORK_WIZARD_TOOLTIP("show_verify_network_wizard_tooltip"),
+
   SHOW_REPAIR_WALLET_WIZARD("show_repair_wallet_wizard"),
+  SHOW_REPAIR_WALLET_WIZARD_TOOLTIP("show_repair_wallet_wizard_tooltip"),
+
   SHOW_EMPTY_WALLET_WIZARD("show_empty_wallet_wizard"),
+  SHOW_EMPTY_WALLET_WIZARD_TOOLTIP("show_empty_wallet_wizard_tooltip"),
+
   SHOW_SIGN_WIZARD("show_sign_wizard"),
+  SHOW_SIGN_WIZARD_TOOLTIP("show_sign_wizard_tooltip"),
+
   SHOW_VERIFY_WIZARD("show_verify_wizard"),
+  SHOW_VERIFY_WIZARD_TOOLTIP("show_verify_wizard_tooltip"),
+
   SHOW_ABOUT_WIZARD("show_about_wizard"),
+  SHOW_ABOUT_WIZARD_TOOLTIP("show_about_wizard_tooltip"),
 
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),
@@ -358,6 +528,7 @@ public enum MessageKey {
   SELECT_BACKUP_LOCATION_NOTE_4("select_backup_location_note_4"),
 
   SELECT_BACKUP_NOTE_1("select_backup_note_1"),
+  SELECT_BACKUP_NOTE_1_TOOLTIP("select_backup_note_1_tooltip"),
   SELECT_BACKUP_NOTE_2("select_backup_note_2"),
 
   SEED_WARNING_NOTE_1("seed_warning_note_1"),
@@ -438,12 +609,21 @@ public enum MessageKey {
 
   // Payments panel and wizard
   DETAILS("details"),
+  DETAILS_TOOLTIP("details_tooltip"),
+
   EXPORT("export"),
+  EXPORT_TOOLTIP("export_tooltip"),
+
   DELETE_PAYMENT_REQUEST("delete_payment_request"),
+  DELETE_PAYMENT_REQUEST_TOOLTIP("delete_payment_request_tooltip"),
+
   TRANSACTION_OVERVIEW("transaction_overview"),
   TRANSACTION_AMOUNT("transaction_amount"),
   TRANSACTION_DETAIL("transaction_detail"),
+
   CHOOSE_PAYMENT_REQUEST("choose_payment_request"),
+  CHOOSE_PAYMENT_REQUEST_TOOLTIP("choose_payment_request_tooltip"),
+
   CHOOSE_PAYMENT_REQUEST_LABEL("choose_payment_request_label"),
   PAYMENT_REQUEST_INFO_SINGULAR("payment_request_info_singular"),
   PAYMENT_REQUEST_INFO_PLURAL("payment_request_info_plural"),
@@ -452,6 +632,8 @@ public enum MessageKey {
   DATE("date"),
   STATUS("status"),
   TYPE("type"),
+  FIAT_AMOUNT("fiat_amount"),
+  FIAT_CURRENCY("fiat_currency"),
 
   DESCRIPTION("description"),
   DESCRIPTION_READ_ONLY("description_read_only"),
@@ -460,7 +642,10 @@ public enum MessageKey {
   RAW_TRANSACTION("raw_transaction"),
 
   VIEW_IN_BLOCKCHAIN_INFO("view_in_blockchain_info"),
+  VIEW_IN_BLOCKCHAIN_INFO_TOOLTIP("view_in_blockchain_info_tooltip"),
+
   VIEW_IN_EXTERNAL_BROWSER("view_in_external_browser"),
+  VIEW_IN_EXTERNAL_BROWSER_TOOLTIP("view_in_external_browser_tooltip"),
 
   SIZE("size"),
   SIZE_VALUE("size_value"),
@@ -494,6 +679,8 @@ public enum MessageKey {
   REPAIR_WALLET_NOTE_2("repair_wallet_note_2"),
   REPAIR_WALLET_NOTE_3("repair_wallet_note_3"),
   REPAIR_WALLET_NOTE_4("repair_wallet_note_4"),
+
+  SPENDABLE_BALANCE_IS_LOWER("spendable_balance_is_lower"),
 
   // End of enum
   ;

@@ -5,7 +5,7 @@
   <parent>
     <artifactId>mbhd-parent</artifactId>
     <groupId>org.multibit.hd</groupId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -36,7 +36,6 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>${maven-antrun.version}</version>
 
             <executions>
 
@@ -49,6 +48,7 @@
                 </goals>
                 <configuration>
                   <target>
+
                     <!-- Transfer classpath over to Ant -->
                     <property name="compile_classpath" refid="maven.compile.classpath"/>
                     <property name="runtime_classpath" refid="maven.runtime.classpath"/>
@@ -211,7 +211,7 @@
     <dependency>
       <groupId>org.multibit.hd</groupId>
       <artifactId>mbhd-swing</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.4</version>
     </dependency>
 
     <!-- JWrapper contains jwrapper_utils.jar that will need to be expanded

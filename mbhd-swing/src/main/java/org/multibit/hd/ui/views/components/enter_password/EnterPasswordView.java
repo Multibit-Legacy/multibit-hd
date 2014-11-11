@@ -14,7 +14,7 @@ import java.awt.event.KeyEvent;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Presentation of password entry</li>
+ * <li>Presentation of credentials entry</li>
  * <li>Support for reveal operation</li>
  * </ul>
  *
@@ -46,7 +46,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
       "[]" // Rows
     ));
 
-    // Keep track of the password fields
+    // Keep track of the credentials fields
     password = TextBoxes.newPassword();
 
     // Provide an invisible tar pit spinner
@@ -62,7 +62,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
       @Override
       public void keyReleased(KeyEvent e) {
 
-        // Reset the password background
+        // Reset the credentials background
         password.setBackground(Themes.currentTheme.dataEntryBackground());
 
         getModel().get().setPassword(password.getPassword());
@@ -152,7 +152,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
   }
 
   /**
-   * Handles the UI feedback for an incorrect password
+   * Handles the UI feedback for an incorrect credentials
    */
   public void incorrectPassword() {
 

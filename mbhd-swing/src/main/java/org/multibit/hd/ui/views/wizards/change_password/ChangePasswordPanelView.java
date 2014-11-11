@@ -89,7 +89,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
   public void initialiseContent(JPanel contentPanel) {
 
     // Postpone initialisation until first showing
-    executorService = SafeExecutors.newSingleThreadExecutor("change-password");
+    executorService = SafeExecutors.newSingleThreadExecutor("change-credentials");
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
@@ -171,7 +171,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
       }
     });
 
-    // Check the old password (might take a while so do it asynchronously while showing a spinner)
+    // Check the old credentials (might take a while so do it asynchronously while showing a spinner)
     // Tar pit (must be in a separate thread to ensure UI updates)
     ListenableFuture<Boolean> passwordFuture = executorService.submit(new Callable<Boolean>() {
 
@@ -267,7 +267,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
   }
 
   /**
-   * @return True if the selected wallet can be opened with the given password
+   * @return True if the selected wallet can be opened with the given credentials
    */
   private boolean checkPassword() {
 
@@ -275,12 +275,12 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
 
     if (!"".equals(password)) {
 
-      // If a password has been entered, put it into the wallet summary (so that it is available for address generation)
+      // If a credentials has been entered, put it into the wallet summary (so that it is available for address generation)
       WalletId walletId = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId();
       try {
         WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
       } catch (WalletLoadException wle) {
-        // Wallet did not load - assume password was incorrect
+        // Wallet did not load - assume credentials was incorrect
         return false;
       }
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
@@ -300,7 +300,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
     }
 
     // Must have failed to be here
-    log.error("Failed attempt to open wallet - old password was incorrect");
+    log.error("Failed attempt to open wallet - old credentials was incorrect");
 
     return false;
 

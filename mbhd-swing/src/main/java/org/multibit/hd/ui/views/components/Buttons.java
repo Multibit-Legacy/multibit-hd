@@ -8,6 +8,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 
@@ -52,17 +53,18 @@ public class Buttons {
   }
 
   /**
-   * @param key    The resource key for the language string
-   * @param values The values to apply to the string (can be null)
+   * @param key    The resource key for the language string for the button text
+   * @param tooltipKey The resource key for the tooltip
+   * @param values The values to apply to the button language string (can be null)
    *
    * @return A new JButton with default styling
    */
-  public static JButton newButton(Action action, MessageKey key, Object... values) {
+  public static JButton newButton(Action action, MessageKey key, MessageKey tooltipKey, @Nullable Object... values) {
 
     JButton button = newButton(action);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(button, key);
+    AccessibilityDecorator.apply(button, key, tooltipKey);
 
     button.setText(Languages.safeText(key, values));
 
@@ -70,14 +72,15 @@ public class Buttons {
   }
 
   /**
-   * @param key    The resource key for the language string
-   * @param values The values to apply to the string (can be null)
+   * @param key    The resource key for the button language string
+   * @param tooltipKey The resource key for the tooltip
+   * @param values The values to apply to the button string (can be null)
    *
    * @return A new JButton with default styling and text arranged below the icon
    */
-  public static JButton newLargeButton(Action action, MessageKey key, Object... values) {
+  public static JButton newLargeButton(Action action, MessageKey key, MessageKey tooltipKey,  @Nullable Object... values) {
 
-    JButton button = newButton(action, key, values);
+    JButton button = newButton(action, key, tooltipKey, values);
 
     button.setVerticalTextPosition(SwingConstants.BOTTOM);
     button.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -92,14 +95,15 @@ public class Buttons {
    * <p>Create a new alert panel button</p>
    *
    * @param action     The click action
-   * @param messageKey The message key to use
+   * @param messageKey The message key to use for the button
+   * @param tooltipKey The resource key for the tooltip
    * @param icon       The awesome icon to use
    *
    * @return A new "alert panel" button with icon
    */
-  public static JButton newAlertPanelButton(Action action, MessageKey messageKey, AwesomeIcon icon) {
+  public static JButton newAlertPanelButton(Action action, MessageKey messageKey, MessageKey tooltipKey, AwesomeIcon icon) {
 
-    JButton button = newButton(action, messageKey);
+    JButton button = newButton(action, messageKey, tooltipKey);
 
     AwesomeDecorator.applyIcon(icon, button, true, MultiBitUI.SMALL_ICON_SIZE);
 
@@ -116,7 +120,7 @@ public class Buttons {
    */
   public static JButton newYesButton(Action action, AwesomeIcon confirmIcon, boolean isConfirmDangerous) {
 
-    JButton button = newButton(action, MessageKey.YES);
+    JButton button = newButton(action, MessageKey.YES, MessageKey.YES_TOOLTIP);
 
     // The icon should trail the text for visual consistency
     AwesomeDecorator.applyIcon(confirmIcon, button, false, MultiBitUI.NORMAL_ICON_SIZE);
@@ -136,7 +140,7 @@ public class Buttons {
    */
   public static JButton newNoButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.NO);
+    JButton button = newButton(action, MessageKey.NO, MessageKey.NO_TOOLTIP);
 
     // The icon should trail the text for visual consistency
     AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, false, MultiBitUI.NORMAL_ICON_SIZE);
@@ -152,7 +156,7 @@ public class Buttons {
    */
   public static JButton newUndoButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.UNDO);
+    JButton button = newButton(action, MessageKey.UNDO, MessageKey.UNDO_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.UNDO, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -167,7 +171,7 @@ public class Buttons {
    */
   public static JButton newExportButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.EXPORT);
+    JButton button = newButton(action, MessageKey.EXPORT,  MessageKey.EXPORT_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.SHARE_SQUARE_O, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -182,7 +186,7 @@ public class Buttons {
    */
   public static JButton newSignMessageButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.SIGN_MESSAGE);
+    JButton button = newButton(action, MessageKey.SIGN_MESSAGE, MessageKey.SIGN_MESSAGE_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.PENCIL, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -197,7 +201,7 @@ public class Buttons {
    */
   public static JButton newVerifyMessageButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.VERIFY_MESSAGE);
+    JButton button = newButton(action, MessageKey.VERIFY_MESSAGE, MessageKey.VERIFY_MESSAGE_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -212,7 +216,7 @@ public class Buttons {
    */
   public static JButton newClearAllButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.CLEAR_ALL);
+    JButton button = newButton(action, MessageKey.CLEAR_ALL, MessageKey.CLEAR_ALL_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.MINUS_CIRCLE, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -227,7 +231,7 @@ public class Buttons {
    */
   public static JButton newDeletePaymentRequestButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.DELETE_PAYMENT_REQUEST);
+    JButton button = newButton(action, MessageKey.DELETE_PAYMENT_REQUEST, MessageKey.DELETE_PAYMENT_REQUEST_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_O, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -242,7 +246,7 @@ public class Buttons {
    */
   public static JButton newDeleteButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.DELETE);
+    JButton button = newButton(action, MessageKey.DELETE, MessageKey.DELETE_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_O, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -256,7 +260,7 @@ public class Buttons {
    */
   public static JButton newCancelButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.CANCEL);
+    JButton button = newButton(action, MessageKey.CANCEL, MessageKey.CANCEL_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -272,7 +276,7 @@ public class Buttons {
    */
   public static JButton newExitButton(Action action, boolean leading) {
 
-    JButton button = newButton(action, MessageKey.EXIT);
+    JButton button = newButton(action, MessageKey.EXIT, MessageKey.EXIT_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, button, leading, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -289,7 +293,7 @@ public class Buttons {
    */
   public static JButton newNextButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.NEXT);
+    JButton button = newButton(action, MessageKey.NEXT, MessageKey.NEXT_TOOLTIP);
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_RIGHT, AwesomeIcon.ANGLE_DOUBLE_LEFT);
 
@@ -307,7 +311,7 @@ public class Buttons {
    */
   public static JButton newPreviousButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.PREVIOUS);
+    JButton button = newButton(action, MessageKey.PREVIOUS, MessageKey.PREVIOUS_TOOLTIP);
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_LEFT, AwesomeIcon.ANGLE_DOUBLE_RIGHT);
 
@@ -324,7 +328,7 @@ public class Buttons {
    */
   public static JButton newFinishButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.FINISH);
+    JButton button = newButton(action, MessageKey.FINISH, MessageKey.FINISH_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.FLAG_CHECKERED, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -339,7 +343,7 @@ public class Buttons {
    */
   public static JButton newUnlockButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.PASSWORD_UNLOCK);
+    JButton button = newButton(action, MessageKey.PASSWORD_UNLOCK, MessageKey.PASSWORD_UNLOCK_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.UNLOCK, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -354,7 +358,7 @@ public class Buttons {
    */
   public static JButton newApplyButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.APPLY);
+    JButton button = newButton(action, MessageKey.APPLY, MessageKey.APPLY_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -369,7 +373,7 @@ public class Buttons {
    */
   public static JButton newSendButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.SEND);
+    JButton button = newButton(action, MessageKey.SEND, MessageKey.SEND_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -388,29 +392,9 @@ public class Buttons {
     JButton button = newButton(action);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.REFRESH);
+    AccessibilityDecorator.apply(button, MessageKey.REFRESH, MessageKey.REFRESH_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.REFRESH, button, true, MultiBitUI.NORMAL_ICON_SIZE);
-
-    return button;
-
-  }
-
-  /**
-   * @param action The click action
-   *
-   * @return A new "Print" button with icon
-   */
-  public static JButton newPrintButton(Action action) {
-
-    JButton button = newButton(action);
-
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.PRINT);
-
-    AwesomeDecorator.applyIcon(AwesomeIcon.PRINT, button, true, MultiBitUI.NORMAL_ICON_SIZE);
-
-    NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), button);
 
     return button;
 
@@ -456,7 +440,7 @@ public class Buttons {
     JButton button = newButton(action);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.QR_CODE);
+    AccessibilityDecorator.apply(button, MessageKey.QR_CODE, MessageKey.QR_CODE_TOOLTIP);
 
     // Require this background color to ensure people can find the QR code icon quickly
     NimbusDecorator.applyThemeColor(Themes.currentTheme.readOnlyBackground(), button);
@@ -480,7 +464,7 @@ public class Buttons {
     JButton button = newButton(action);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.COPY);
+    AccessibilityDecorator.apply(button, MessageKey.COPY, MessageKey.COPY_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.COPY, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -495,7 +479,7 @@ public class Buttons {
    */
   public static JButton newCopyAllButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.COPY_ALL);
+    JButton button = newButton(action, MessageKey.COPY_ALL, MessageKey.COPY_ALL_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.COPY, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -513,7 +497,7 @@ public class Buttons {
     JButton button = newButton(action);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.PASTE);
+    AccessibilityDecorator.apply(button, MessageKey.PASTE, MessageKey.PASTE_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.PASTE, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -528,7 +512,7 @@ public class Buttons {
    */
   public static JButton newPasteAllButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.PASTE_ALL);
+    JButton button = newButton(action, MessageKey.PASTE_ALL, MessageKey.PASTE_ALL_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.PASTE, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -564,7 +548,7 @@ public class Buttons {
     JButton button = newButton(action);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.SELECT_FOLDER);
+    AccessibilityDecorator.apply(button, MessageKey.SELECT_FOLDER, MessageKey.SELECT_FOLDER_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.FOLDER_OPEN, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -578,7 +562,7 @@ public class Buttons {
    */
   public static JButton newAddButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.ADD);
+    JButton button = newButton(action, MessageKey.ADD, MessageKey.ADD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.PLUS, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -592,7 +576,7 @@ public class Buttons {
    */
   public static JButton newEditButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.EDIT);
+    JButton button = newButton(action, MessageKey.EDIT, MessageKey.EDIT_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.EDIT, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -606,7 +590,7 @@ public class Buttons {
    */
   public static JButton newDetailsButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.DETAILS);
+    JButton button = newButton(action, MessageKey.DETAILS, MessageKey.DETAILS_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.FILE_TEXT_O, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -623,7 +607,7 @@ public class Buttons {
     JButton button = newButton(action);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.SEARCH);
+    AccessibilityDecorator.apply(button, MessageKey.SEARCH, MessageKey.SEARCH_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.SEARCH, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -640,7 +624,7 @@ public class Buttons {
     JButton button = newButton(action);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.BACK);
+    AccessibilityDecorator.apply(button, MessageKey.BACK, MessageKey.BACK_TOOLTIP);
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ARROW_LEFT, AwesomeIcon.ARROW_RIGHT);
 
@@ -659,7 +643,7 @@ public class Buttons {
     JButton button = newButton(action);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.FORWARD);
+    AccessibilityDecorator.apply(button, MessageKey.FORWARD, MessageKey.FORWARD_TOOLTIP);
 
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ARROW_RIGHT, AwesomeIcon.ARROW_LEFT);
 
@@ -678,7 +662,7 @@ public class Buttons {
     JButton button = newButton(action);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.BROWSE);
+    AccessibilityDecorator.apply(button, MessageKey.BROWSE, MessageKey.BROWSE_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -690,11 +674,25 @@ public class Buttons {
    *
    * @return A new "launch browser" button with icon and message
    */
-  public static JButton newLaunchBrowserButton(Action action, MessageKey key) {
+  public static JButton newLaunchBrowserButton(Action action, MessageKey key, MessageKey tooltipKey) {
 
-    JButton button = newButton(action, key);
+    JButton button = newButton(action, key, tooltipKey);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "play sound" button with icon and message
+   */
+  public static JButton newPlaySoundButton(Action action, MessageKey key, MessageKey tooltipKey) {
+
+    JButton button = newButton(action, key, tooltipKey);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.PLAY, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
   }
@@ -706,7 +704,7 @@ public class Buttons {
    */
   public static JButton newRestoreButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.RESTORE);
+    JButton button = newButton(action, MessageKey.RESTORE, MessageKey.RESTORE_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.MAGIC, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -720,7 +718,7 @@ public class Buttons {
    */
   public static JButton newSendBitcoinWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_SEND_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_SEND_WIZARD, MessageKey.SHOW_SEND_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, true, JLabel.BOTTOM, MultiBitUI.LARGE_ICON_SIZE);
 
@@ -734,7 +732,7 @@ public class Buttons {
    */
   public static JButton newRequestBitcoinWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_REQUEST_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_REQUEST_WIZARD, MessageKey.SHOW_REQUEST_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_DOWNLOAD, button, true, JLabel.BOTTOM, MultiBitUI.LARGE_ICON_SIZE);
 
@@ -749,7 +747,7 @@ public class Buttons {
    */
   public static JButton newLargeShowSignMessageWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_SIGN_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_SIGN_WIZARD, MessageKey.SHOW_SIGN_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.PENCIL,
@@ -763,33 +761,13 @@ public class Buttons {
   }
 
   /**
-    * @param action The click action
-    *
-    * @return A new small "sign" wizard button with icon
-    */
-   public static JButton newSmallShowSignMessageWizardButton(Action action) {
-
-     JButton button = newButton(action);
-
-     AwesomeDecorator.applyIcon(
-       AwesomeIcon.PENCIL,
-       button,
-       true,
-       JLabel.BOTTOM,
-       MultiBitUI.NORMAL_ICON_SIZE
-     );
-
-     return button;
-   }
-
-  /**
    * @param action The click action
    *
    * @return A new "verify" wizard button with icon
    */
   public static JButton newShowVerifyMessageWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_VERIFY_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_VERIFY_WIZARD, MessageKey.SHOW_VERIFY_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.CHECK,
@@ -809,7 +787,7 @@ public class Buttons {
    */
   public static JButton newShowLanguageSettingsWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_LANGUAGE_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_LANGUAGE_WIZARD, MessageKey.SHOW_LANGUAGE_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.GLOBE,
@@ -829,7 +807,7 @@ public class Buttons {
    */
   public static JButton newShowUnitsSettingsWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_UNITS_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_UNITS_WIZARD, MessageKey.SHOW_UNITS_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.BITCOIN,
@@ -849,7 +827,7 @@ public class Buttons {
    */
   public static JButton newShowExchangeSettingsWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_EXCHANGE_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_EXCHANGE_WIZARD, MessageKey.SHOW_EXCHANGE_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.DOLLAR,
@@ -869,7 +847,7 @@ public class Buttons {
    */
   public static JButton newShowApplicationSettingsWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_APPEARANCE_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_APPEARANCE_WIZARD, MessageKey.SHOW_APPEARANCE_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.DESKTOP,
@@ -889,7 +867,7 @@ public class Buttons {
    */
   public static JButton newShowSoundSettingsWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_SOUNDS_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_SOUNDS_WIZARD, MessageKey.SHOW_SOUNDS_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.MUSIC,
@@ -909,7 +887,7 @@ public class Buttons {
    */
   public static JButton newShowLabSettingsWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_LAB_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_LAB_WIZARD, MessageKey.SHOW_LAB_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.FLASK,
@@ -929,7 +907,7 @@ public class Buttons {
    */
   public static JButton newShowEditWalletButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_EDIT_WALLET_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_EDIT_WALLET_WIZARD, MessageKey.SHOW_EDIT_WALLET_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.EDIT,
@@ -945,11 +923,11 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "change password" button with icon
+   * @return A new "change credentials" button with icon
    */
   public static JButton newShowChangePasswordButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_CHANGE_PASSWORD_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_CHANGE_PASSWORD_WIZARD, MessageKey.SHOW_CHANGE_PASSWORD_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.LOCK,
@@ -969,7 +947,7 @@ public class Buttons {
    */
   public static JButton newShowVerifyNetworkButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_VERIFY_NETWORK_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_VERIFY_NETWORK_WIZARD, MessageKey.SHOW_VERIFY_NETWORK_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.SITEMAP,
@@ -989,7 +967,7 @@ public class Buttons {
    */
   public static JButton newShowAboutButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_ABOUT_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_ABOUT_WIZARD, MessageKey.SHOW_ABOUT_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.SMILE_O,
@@ -1009,7 +987,7 @@ public class Buttons {
    */
   public static JButton newShowRepairWalletButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_REPAIR_WALLET_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_REPAIR_WALLET_WIZARD, MessageKey.SHOW_REPAIR_WALLET_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.MEDKIT,
@@ -1029,7 +1007,7 @@ public class Buttons {
    */
   public static JButton newShowEmptyWalletButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_EMPTY_WALLET_WIZARD);
+    JButton button = newLargeButton(action, MessageKey.SHOW_EMPTY_WALLET_WIZARD, MessageKey.SHOW_EMPTY_WALLET_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.FIRE,

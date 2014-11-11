@@ -151,6 +151,7 @@ public class ExportManager {
       // Success
     } catch (Exception e) {
       exportWasSuccessful = false;
+      e.printStackTrace();
       errorMessage = e.getClass().getCanonicalName() + " " + e.getMessage();
     }
 
@@ -171,6 +172,7 @@ public class ExportManager {
       // Success
     } catch (Exception e) {
       exportWasSuccessful = false;
+      e.printStackTrace();
       errorMessage = e.getClass().getCanonicalName() + " " + e.getMessage();
     }
 

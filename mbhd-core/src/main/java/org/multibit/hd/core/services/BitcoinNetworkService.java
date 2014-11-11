@@ -241,7 +241,7 @@ public class BitcoinNetworkService extends AbstractService {
    * <li>the wallet to send from - when Trezor comes onstream</li>
    * <li>a CoinSelector - when HD subnodes are supported</li>
    * </ul>
-   * <p>The result of the operation is sent to the CoreEventBus as a TransactionCreationEvent and, if the tx is created ok, a BitcoinSentEvent</p>
+   * <p>The result of the operation is sent to the CoreEventBus as a TransactionCreationEvent and, if the tx is sent ok, a BitcoinSentEvent</p>
    *
    * @param sendRequestSummary The information required to send bitcoin
    */
@@ -331,7 +331,8 @@ public class BitcoinNetworkService extends AbstractService {
               false,
               CoreMessageKey.THE_ERROR_WAS.getKey(),
               new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()},
-              sendRequestSummary.getNotes()));
+              sendRequestSummary.getNotes(),
+              false));
     }
 
     // Must have failed to be here
@@ -394,7 +395,8 @@ public class BitcoinNetworkService extends AbstractService {
               false,
               CoreMessageKey.NO_ACTIVE_WALLET.getKey(),
               new String[]{""},
-              sendRequestSummary.getNotes()
+              sendRequestSummary.getNotes(),
+              false
       ));
 
       // Prevent fall-through to success
@@ -516,7 +518,8 @@ public class BitcoinNetworkService extends AbstractService {
               false,
               CoreMessageKey.THE_ERROR_WAS.getKey(),
               new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()},
-              sendRequestSummary.getNotes()
+              sendRequestSummary.getNotes(),
+              false
       ));
 
       // We cannot proceed to broadcast
@@ -530,7 +533,7 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
-   * @param sendRequestSummary The information required to prepare a transaction for sending (this is everything except the password)
+   * @param sendRequestSummary The information required to prepare a transaction for sending (this is everything except the credentials)
    *                           This prepares the transaction but does not sign it.
    * @return whether the prepareTransaction was successful or not
    */
@@ -724,9 +727,10 @@ public class BitcoinNetworkService extends AbstractService {
               false,
               CoreMessageKey.THE_ERROR_WAS.getKey(),
               new String[]{e.getMessage()},
-              sendRequestSummary.getNotes()));
+              sendRequestSummary.getNotes(),
+              false));
 
-      // We cannot proceed to broadcast
+      // We cannot proceed to signing
       return false;
     }
 
@@ -746,8 +750,14 @@ public class BitcoinNetworkService extends AbstractService {
     Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 
     try {
+      // Ensure the aeskey for decrypting the keys is present in the sendRequest
+      sendRequest.aesKey = wallet.getKeyCrypter().deriveKey(sendRequestSummary.getPassword());
+
       // Sign the transaction
-      sendRequest.tx.signInputs(Transaction.SigHash.ALL, wallet, sendRequestSummary.getKeyParameter().get());
+      sendRequest.signInputs=true;
+      log.debug("sendRequest just before signing " + sendRequest);
+      wallet.signTransaction(sendRequest);
+      // sendRequest.tx.signInputs(Transaction.SigHash.ALL, wallet, sendRequestSummary.getKeyParameter().get());
 
       // Commit to the wallet (informs the wallet of the transaction)
       wallet.commitTx(sendRequest.tx);
@@ -764,7 +774,8 @@ public class BitcoinNetworkService extends AbstractService {
               true,
               null,
               null,
-              sendRequestSummary.getNotes()
+              sendRequestSummary.getNotes(),
+              true
       ));
 
     } catch (Exception e) {
@@ -785,7 +796,8 @@ public class BitcoinNetworkService extends AbstractService {
               false,
               CoreMessageKey.THE_ERROR_WAS.getKey(),
               new String[]{e.getMessage()},
-              sendRequestSummary.getNotes()));
+              sendRequestSummary.getNotes(),
+              false));
 
       // We cannot proceed to broadcast
       return false;
@@ -892,6 +904,7 @@ public class BitcoinNetworkService extends AbstractService {
             Configurations.currentConfiguration.getAppearance().getVersion());
     peerGroup.setFastCatchupTimeSecs(0); // genesis block
     peerGroup.setMaxConnections(MAXIMUM_NUMBER_OF_PEERS);
+    peerGroup.setUseLocalhostPeerWhenPossible(false);
 
     peerEventListener = new MultiBitPeerEventListener();
     peerGroup.addEventListener(peerEventListener);

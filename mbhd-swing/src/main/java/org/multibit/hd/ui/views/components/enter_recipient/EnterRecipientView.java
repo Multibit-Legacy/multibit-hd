@@ -5,7 +5,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.config.BitcoinNetwork;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;

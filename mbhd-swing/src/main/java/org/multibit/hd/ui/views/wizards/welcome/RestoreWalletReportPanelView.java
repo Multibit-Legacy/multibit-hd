@@ -225,7 +225,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     log.debug("The restore method is {}", model.getRestoreMethod());
 
     // There are two sorts of restore wallet method:
-    // RESTORE_WALLET_SEED_PHRASE = restore from a seed phrase and timestamp
+    // RESTORE_WALLET_SEED_PHRASE = restore from a seed phrase and timestamp (MBHD soft wallet or Trezor soft wallet)
     // RESTORE_WALLET_BACKUP = restore from a seed phrase and wallet backup
 
     // Locate the installation directory
@@ -265,6 +265,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
       walletCreatedStatus = createWalletFromSeedPhraseAndTimestamp(
         restoreEnterSeedPhraseModel.getSeedPhrase(),
+        restoreEnterSeedPhraseModel.isRestoreAsTrezor(),
         restoreEnterTimestampModel.getSeedTimestamp(),
         confirmPasswordModel.getValue()
       );
@@ -324,9 +325,9 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   }
 
   /**
-   * Create a wallet from a seed phrase, timestamp and password
+   * Create a wallet from a seed phrase, timestamp and credentials
    */
-  private boolean createWalletFromSeedPhraseAndTimestamp(List<String> seedPhrase, String timestamp, String password) {
+  private boolean createWalletFromSeedPhraseAndTimestamp(List<String> seedPhrase, boolean isRestoreTrezor, String timestamp, String password) {
 
     if (!verifySeedPhrase(seedPhrase)) return false;
 
@@ -349,7 +350,8 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       );
 
       // TODO necessary to backup any existing wallet with the same seed before creation/ overwrite ?
-      WalletManager.INSTANCE.createWalletSummary(seed, Dates.thenInSeconds(replayDate), password, name, notes);
+
+      WalletManager.INSTANCE.createWalletSummary(seed, Dates.thenInSeconds(replayDate), password, name, notes, isRestoreTrezor);
 
       // TODO Do we require an immediate backup ?
 
@@ -408,7 +410,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       // Locate the installation directory
       File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
-      // Work out what the wallet password was from the encrypted value stored in the WalletSummary
+      // Work out what the wallet credentials was from the encrypted value stored in the WalletSummary
       SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
       byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
 

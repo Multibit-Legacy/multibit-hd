@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.config.BitcoinNetwork;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
@@ -57,7 +57,7 @@ public class BitcoinNetworkServiceFunctionalTest {
   /**
    * Separate from BitcoinNetworkService since some tests do not require it to be initialised
    */
-  private static final NetworkParameters networkParameters = BitcoinNetwork.current().get();
+  private static final NetworkParameters networkParameters = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
 
   private Properties seedProperties;
 

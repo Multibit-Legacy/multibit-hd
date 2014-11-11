@@ -1,14 +1,13 @@
 package org.multibit.hd.ui.views.components.text_fields;
 
 import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.core.NetworkParameters;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.services.ContactService;
+import org.multibit.hd.core.utils.Addresses;
 import org.multibit.hd.ui.views.components.select_recipient.RecipientComboBoxEditor;
 import org.multibit.hd.ui.views.themes.Themes;
 
@@ -33,18 +32,16 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
   private final Color validColor = Themes.currentTheme.dataEntryBackground();
 
   private final ContactService contactService;
-  private final NetworkParameters networkParameters;
 
   /**
    * @param contactService    The contact service for the current wallet
-   * @param networkParameters The network parameters
+   *
    */
-  public ThemeAwareRecipientInputVerifier(ContactService contactService, NetworkParameters networkParameters) {
+  public ThemeAwareRecipientInputVerifier(ContactService contactService) {
 
     Preconditions.checkNotNull(contactService, "'contactService' must be present");
 
     this.contactService = contactService;
-    this.networkParameters = networkParameters;
 
   }
 
@@ -62,7 +59,7 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
       if (!Strings.isNullOrEmpty(text)) {
 
         // Treat as an address first
-        final Optional<Address> enteredAddress = verifyBitcoinAddress(text);
+        final Optional<Address> enteredAddress = Addresses.parse(text);
         if (enteredAddress.isPresent()) {
 
           // Validated as a Bitcoin address
@@ -81,20 +78,17 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
             Contact contact = contactOptional.get();
 
             // Verify that the only possibility has a valid Bitcoin address
-            Optional<String> bitcoinAddress = contact.getBitcoinAddress();
+            Optional<Address> bitcoinAddress = contact.getBitcoinAddress();
             if (bitcoinAddress.isPresent()) {
-              Optional<Address> contactAddress = verifyBitcoinAddress(bitcoinAddress.get());
-              if (contactAddress.isPresent()) {
+              Recipient recipient = new Recipient(bitcoinAddress.get());
+              recipient.setContact(contact);
 
-                isValid = true;
+              textField.setText(contact.getName());
+              textField.setRecipient(Optional.of(recipient));
 
-                Recipient recipient = new Recipient(contactAddress.get());
-                recipient.setContact(contact);
+              // Validated as a recipient
+              isValid = true;
 
-                textField.setText(contact.getName());
-                textField.setRecipient(Optional.of(recipient));
-
-              }
             }
           }
 
@@ -110,32 +104,6 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
     } else {
       throw new IllegalArgumentException("'component' must be a JTextField. Actual: " + component.getClass().getCanonicalName());
     }
-
-  }
-
-  /**
-   * TODO (GR) Consider adding this to an Addresses factory
-   *
-   * @param bitcoinAddress The Bitcoin address
-   *
-   * @return A Bitcoin address if the text is valid
-   */
-  private Optional<Address> verifyBitcoinAddress(String bitcoinAddress) {
-
-    // Deny empty values
-    if (bitcoinAddress.trim().length() == 0) {
-      return Optional.absent();
-    }
-
-    // Parse the text as a Bitcoin address
-    try {
-      return Optional.of(new Address(networkParameters, bitcoinAddress));
-    } catch (AddressFormatException e) {
-      // Do nothing
-    }
-
-    // Must have failed to be here
-    return Optional.absent();
 
   }
 

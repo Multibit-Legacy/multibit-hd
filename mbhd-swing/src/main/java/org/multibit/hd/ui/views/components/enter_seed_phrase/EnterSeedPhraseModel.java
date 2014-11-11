@@ -35,6 +35,11 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
   private final String panelName;
 
   /**
+   * Use the seed to restore a Trezor soft wallet
+   */
+  private boolean restoreAsTrezor = false;
+
+  /**
    * @param panelName The panel name to identify the "verification status" and "next" buttons
    */
   public EnterSeedPhraseModel(String panelName) {
@@ -137,6 +142,14 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
    */
   public String getPanelName() {
     return panelName;
+  }
+
+  public boolean isRestoreAsTrezor() {
+    return restoreAsTrezor;
+  }
+
+  public void setRestoreAsTrezor(boolean restoreAsTrezor) {
+    this.restoreAsTrezor = restoreAsTrezor;
   }
 
   @Override

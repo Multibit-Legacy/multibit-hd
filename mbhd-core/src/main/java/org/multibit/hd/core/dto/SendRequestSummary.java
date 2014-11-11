@@ -46,7 +46,7 @@ public class SendRequestSummary {
    *                           Then the fiat amount equivalent to the total bitcoin amount is computed and stored.
    * @param changeAddress      The change address
    * @param feePerKB           The fee per Kb (in coins)
-   * @param password           The wallet password
+   * @param password           The wallet credentials
    * @param feeState           The BRIT fee state
    * @param emptyWallet        True if the wallet should be fully emptied including all payable fees
    */
@@ -119,7 +119,7 @@ public class SendRequestSummary {
   }
 
   /**
-   * @return The wallet password
+   * @return The wallet credentials
    */
   public String getPassword() {
     return password;
@@ -205,7 +205,7 @@ public class SendRequestSummary {
       ", fiatPayment=" +fiatPayment +
       ", changeAddress=" + changeAddress +
       ", feePerKB=" + feePerKB +
-      ", password=***" +
+      ", credentials=***" +
       ", feeStateOptional=" + feeState +
       ", clientFeeAdded=" + clientFeeAdded +
       ", notes = " + notes +

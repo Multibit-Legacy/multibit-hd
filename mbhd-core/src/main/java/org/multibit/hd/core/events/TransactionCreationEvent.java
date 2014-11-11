@@ -49,6 +49,8 @@ public class TransactionCreationEvent implements CoreEvent {
 
   private final Optional<String> notes;
 
+  private final Boolean sentByMe;
+
   public TransactionCreationEvent(
     String transactionId,
     Coin amount,
@@ -60,7 +62,8 @@ public class TransactionCreationEvent implements CoreEvent {
     boolean transactionCreationWasSuccessful,
     String transactionCreationFailureReasonKey,
     String[] transactionCreationFailureReasonData,
-    Optional<String> notes
+    Optional<String> notes,
+    Boolean sentByMe
   ) {
 
     this.transactionId = transactionId;
@@ -74,6 +77,7 @@ public class TransactionCreationEvent implements CoreEvent {
     this.transactionCreationFailureReasonKey = transactionCreationFailureReasonKey;
     this.transactionCreationFailureReasonData = transactionCreationFailureReasonData;
     this.notes = notes;
+    this.sentByMe = sentByMe;
   }
 
   private final String[] transactionCreationFailureReasonData;
@@ -114,6 +118,10 @@ public class TransactionCreationEvent implements CoreEvent {
     return notes;
   }
 
+  public Boolean isSentByMe() {
+    return sentByMe;
+  }
+
   @Override
   public String toString() {
     return "TransactionCreationEvent{" +
@@ -128,6 +136,7 @@ public class TransactionCreationEvent implements CoreEvent {
       ", transactionCreationFailureReasonKey='" + transactionCreationFailureReasonKey + '\'' +
       ", transactionCreationFailureReasonData=" + Arrays.toString(transactionCreationFailureReasonData) +
       ", notes=" + notes +
+      ", sentByMe=" +sentByMe +
       '}';
   }
 }

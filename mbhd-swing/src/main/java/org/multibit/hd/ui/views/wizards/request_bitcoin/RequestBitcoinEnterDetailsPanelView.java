@@ -19,6 +19,7 @@ import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
+import org.multibit.hd.core.utils.Addresses;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -79,8 +80,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
 
     enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
 
-    // See if there is a password entered for the wallet
-    // TODO (JB) remove when HD wallets supported - won't need a password to generate the next address
+    // See if there is a credentials entered for the wallet
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     Optional<CharSequence> passwordParameter = Optional.absent();
     CharSequence password = currentWalletSummary.get().getPassword();
@@ -102,7 +102,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     // Create the QR code display
     displayQRCodePopoverMaV = Popovers.newDisplayQRCodePopoverMaV(getPanelName());
 
-    transactionLabel = TextBoxes.newEnterTransactionLabel();
+    transactionLabel = TextBoxes.newEnterQRCodeLabel();
     showQRCode = Buttons.newQRCodeButton(getShowQRCodePopoverAction());
     addressCommentLabel = Labels.newLabel(MessageKey.ONE_OF_YOUR_ADDRESSES);
 
@@ -197,7 +197,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     final PaymentRequestData paymentRequestData = new PaymentRequestData();
     paymentRequestData.setNote(notesTextArea.getText());
     paymentRequestData.setDate(DateTime.now());
-    paymentRequestData.setAddress(displayBitcoinAddressMaV.getModel().getValue());
+    paymentRequestData.setAddress(Addresses.parse(displayBitcoinAddressMaV.getModel().getValue()).get());
     paymentRequestData.setLabel(transactionLabel.getText());
     paymentRequestData.setAmountCoin(enterAmountMaV.getModel().getCoinAmount());
 

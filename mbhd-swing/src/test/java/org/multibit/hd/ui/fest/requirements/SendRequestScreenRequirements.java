@@ -2,11 +2,11 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.send_request.ShowSendRequestScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.send_request.request.ShowRequestEnterAmountBitcoinUseCase;
-import org.multibit.hd.ui.fest.use_cases.send_request.request.ShowRequestEnterAmountWithQRBitcoinUseCase;
-import org.multibit.hd.ui.fest.use_cases.send_request.request.ShowRequestThenFinishUseCase;
-import org.multibit.hd.ui.fest.use_cases.send_request.send.*;
+import org.multibit.hd.ui.fest.use_cases.sidebar.send_request.ShowSendRequestScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.send_request.request.ShowRequestEnterAmountBitcoinUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.send_request.request.ShowRequestEnterAmountWithQRBitcoinUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.send_request.request.ShowRequestThenFinishUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.send_request.send.*;
 
 import java.util.Map;
 

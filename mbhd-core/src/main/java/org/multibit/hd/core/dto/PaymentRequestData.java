@@ -1,5 +1,6 @@
 package org.multibit.hd.core.dto;
 
+import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.Coin;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -16,7 +17,7 @@ import java.util.Set;
  */
 public class PaymentRequestData implements PaymentData {
 
-  private String address;
+  private Address address;
   private String label;
   private Coin amountCoin;
   private FiatPayment amountFiat;
@@ -55,12 +56,12 @@ public class PaymentRequestData implements PaymentData {
   /**
    * @return The Bitcoin address
    */
-  public String getAddress() {
+  public Address getAddress() {
 
     return address;
   }
 
-  public void setAddress(String address) {
+  public void setAddress(Address address) {
     this.address = address;
   }
 
@@ -126,7 +127,6 @@ public class PaymentRequestData implements PaymentData {
 
     if (appendAddress) {
       builder
-        .append(": ")
         .append(getAddress());
     }
 

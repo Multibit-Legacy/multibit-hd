@@ -145,6 +145,8 @@ public class HeaderView extends AbstractView {
           alertButton.setAction(button.getAction());
           alertButton.setText(button.getText());
           alertButton.setIcon(button.getIcon());
+          alertButton.setName(button.getName());
+          alertButton.setToolTipText(button.getToolTipText());
 
           alertButton.setVisible(true);
         } else {
@@ -237,9 +239,14 @@ public class HeaderView extends AbstractView {
     alertPanel.removeAll();
 
     alertMessageLabel = Labels.newBlankLabel();
-    alertRemainingLabel = Labels.newBlankLabel();
+    alertMessageLabel.setName("alert_message_label");
 
+    alertRemainingLabel = Labels.newBlankLabel();
+    alertRemainingLabel.setName("alert_remaining_label");
+
+    // Placeholder button that gets overwritten
     alertButton = new JButton();
+    alertButton.setName("alert_button");
     alertButton.setVisible(false);
 
     closeButton = Buttons.newPanelCloseButton(getCloseAlertAction());

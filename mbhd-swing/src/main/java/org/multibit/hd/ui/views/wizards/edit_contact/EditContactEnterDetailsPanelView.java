@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.Contact;
+import org.multibit.hd.core.utils.Addresses;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.gravatar.Gravatars;
@@ -168,7 +169,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
         // Populate the email address and update the image
         emailAddress.setText(firstContact.getEmail().or("").trim());
 
-        bitcoinAddress.setText(firstContact.getBitcoinAddress().or("").trim());
+        bitcoinAddress.setText(firstContact.getBitcoinAddress().isPresent()? firstContact.getBitcoinAddress().get().toString() : "");
         extendedPublicKey.setText(firstContact.getExtendedPublicKey().or("").trim());
         notes.setText(firstContact.getNotes().or("").trim());
 
@@ -322,7 +323,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
         // Handle the single item properties
         contact.setName(name.getText().trim());
         contact.setEmail(emailAddress.getText().trim());
-        contact.setBitcoinAddress(bitcoinAddress.getText().trim());
+        contact.setBitcoinAddress(Addresses.parse(bitcoinAddress.getText().trim()).orNull());
         contact.setExtendedPublicKey(extendedPublicKey.getText().trim());
 
         // Notes are not appended

@@ -5,7 +5,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
-import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.managers.WalletManager;
@@ -53,26 +52,18 @@ public class HeaderController extends AbstractController {
   public void onExchangeRateChangedEvent(ExchangeRateChangedEvent event) {
 
     // Build the exchange string
-    Coin coin;
+    Optional<Coin> coin = WalletManager.INSTANCE.getCurrentWalletBalance();
 
-    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-    if (currentWalletSummary.isPresent()) {
-      // Use the real wallet data
-      coin = currentWalletSummary.get().getWallet().getBalance();
-    } else {
-      // Unknown at this time
-      coin = Coin.ZERO;
-    }
     BigDecimal localBalance;
 
     if (event.getRate() != null) {
-      localBalance = Coins.toLocalAmount(coin, event.getRate());
+      localBalance = Coins.toLocalAmount(coin.or(Coin.ZERO), event.getRate());
     } else {
       localBalance = null;
     }
     // Post the event
     ViewEvents.fireBalanceChangedEvent(
-      coin,
+      coin.or(Coin.ZERO),
       localBalance,
       event.getRateProvider()
     );
@@ -132,17 +123,17 @@ public class HeaderController extends AbstractController {
   @Subscribe
   public synchronized void onRemoveAlertEvent(RemoveAlertEvent event) {
 
-    // Remove the topmost alert model
-    alertModels.remove(0);
-
     if (!alertModels.isEmpty()) {
+      // Remove the topmost alert model
+      alertModels.remove(0);
 
       // Adjust the models to reflect the new M of N values
       updateRemaining();
 
       // The alert structure has changed so inform the view
-      ViewEvents.fireAlertAddedEvent(alertModels.get(0));
-
+      if (!alertModels.isEmpty()) {
+        ViewEvents.fireAlertAddedEvent(alertModels.get(0));
+      }
     } else {
 
       // Use an empty event to signal that the event should be hidden

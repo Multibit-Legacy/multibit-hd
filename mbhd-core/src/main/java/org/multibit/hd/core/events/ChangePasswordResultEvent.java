@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  *  <p>Event to provide the following to UI event subscribers:</p>
  *  <ul>
- *  <li>Success or failure of change of a wallet password</li>
+ *  <li>Success or failure of change of a wallet credentials</li>
  *  </ul>
  */
 public class ChangePasswordResultEvent implements CoreEvent {

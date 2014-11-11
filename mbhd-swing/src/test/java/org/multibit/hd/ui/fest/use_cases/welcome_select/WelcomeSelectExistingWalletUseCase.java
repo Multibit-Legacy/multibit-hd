@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the welcome wizard "select password" panel view</li>
+ * <li>Verify the welcome wizard "select credentials" panel view</li>
  * <li>Proceed with "use existing wallet" selection</li>
  * </ul>
  *

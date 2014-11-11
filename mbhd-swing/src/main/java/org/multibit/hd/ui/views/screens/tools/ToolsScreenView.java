@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.screens.tools;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
@@ -9,6 +10,7 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -19,6 +21,8 @@ import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -35,7 +39,11 @@ import java.io.File;
  */
 public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
+  private static final Logger log = LoggerFactory.getLogger(ToolsScreenView.class);
+
   private JButton showEmptyWalletButton;
+
+  private Optional<BitcoinNetworkChangedEvent> unprocessedBitcoinNetworkChangedEvent = Optional.absent();
 
   /**
    * @param panelModel The model backing this panel view
@@ -66,6 +74,13 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
     showEmptyWalletButton = Buttons.newShowEmptyWalletButton(getShowEmptyWalletAction());
 
+    // Initially show the button disabled - it is enabled when the network is synced
+    showEmptyWalletButton.setEnabled(false);
+
+    // Check for any Bitcoin network events that may have occurred before this screen
+    // is initialised
+    unprocessedBitcoinNetworkChangedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
+
     contentPanel.add(primaryButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(showEmptyWalletButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
@@ -78,7 +93,18 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     contentPanel.add(Buttons.newLargeShowSignMessageWizardButton(getShowSignMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowVerifyMessageWizardButton(getShowVerifyMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
 
+    setInitialised(true);
     return contentPanel;
+  }
+
+  @Override
+  public void afterShow() {
+
+    // Ensure any unprocessed bitcoin network change events are dealt with
+    if (isInitialised() && unprocessedBitcoinNetworkChangedEvent.isPresent()) {
+      updateEmptyButton(unprocessedBitcoinNetworkChangedEvent.get());
+      unprocessedBitcoinNetworkChangedEvent = Optional.absent();
+    }
   }
 
   /**
@@ -88,6 +114,9 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
   public void onBitcoinNetworkChangeEvent(final BitcoinNetworkChangedEvent event) {
 
     if (!isInitialised()) {
+      // Remember the last bitcoin change event if the panel is not initialised
+      unprocessedBitcoinNetworkChangedEvent = Optional.of(event);
+      log.trace("Not initialised so remembering the the unprocessed Bitcoin network change event " + event.getSummary());
       return;
     }
 
@@ -161,7 +190,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
   }
 
   /**
-   * @return An action to show the "change password" tool
+   * @return An action to show the "change credentials" tool
    */
   private AbstractAction getShowChangePasswordAction() {
     return new AbstractAction() {
@@ -238,6 +267,11 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
   }
 
+  /**
+   * <p>Ensure that a wallet can only be emptied once synchronization has completed</p>
+   *
+   * @param event The "Bitcoin network changed" event - one per block downloaded during synchronization
+   */
   private void updateEmptyButton(BitcoinNetworkChangedEvent event) {
 
     boolean currentEnabled = showEmptyWalletButton.isEnabled();
@@ -248,18 +282,22 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     // because it is possible that a second wallet is generating transactions using
     // addresses that this one has not displayed yet. This would lead to the same
     // address being used twice.
+    log.trace("Empty button status is " + currentEnabled);
     switch (event.getSummary().getSeverity()) {
       case RED:
         // Always disabled on RED
         newEnabled = false;
+        log.trace("Severity = red");
         break;
       case AMBER:
         // Enable on AMBER only if unrestricted
         newEnabled = InstallationManager.unrestricted;
+        log.trace("Severity = AMBER, newEnabled = " + newEnabled);
         break;
       case GREEN:
         // Enable on GREEN only if synchronized or unrestricted
         newEnabled = BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus()) || InstallationManager.unrestricted;
+        log.trace("Severity = GREEN, newEnabled = " + newEnabled);
         break;
       default:
         // Unknown status
@@ -272,6 +310,8 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
+          log.trace("Changing button enable state, newEnabled = " + newEnabled);
+
           showEmptyWalletButton.setEnabled(newEnabled);
         }
       });
@@ -279,7 +319,5 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     }
 
   }
-
-
 
 }

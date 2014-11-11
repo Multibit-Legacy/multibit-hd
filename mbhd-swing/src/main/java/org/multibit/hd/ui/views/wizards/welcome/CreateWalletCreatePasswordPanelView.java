@@ -21,7 +21,7 @@ import javax.swing.*;
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Create and confirm a master password</li>
+ * <li>Create and confirm a master credentials</li>
  * </ul>
  *
  * @since 0.0.1

@@ -79,7 +79,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
     if (wizard.getWizardModel().isRestoring()) {
-      // Do not allow a return to the password wizard
+      // Do not allow a return to the credentials wizard
       // The logic is too complex to justify the operation
       // It is much easier to just have the user either
       // "exit and restart" or "use existing wallet" instead

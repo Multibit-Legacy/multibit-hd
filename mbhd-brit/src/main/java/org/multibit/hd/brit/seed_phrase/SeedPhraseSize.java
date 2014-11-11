@@ -3,7 +3,7 @@ package org.multibit.hd.brit.seed_phrase;
 /**
  * <p>Enum to provide the following to Core API:</p>
  * <ul>
- * <li>Information about the Bitcoin network status</li>
+ * <li>Information about the seed phrase size</li>
  * </ul>
  *
  * @since 0.0.1
@@ -11,17 +11,17 @@ package org.multibit.hd.brit.seed_phrase;
 public enum SeedPhraseSize {
 
   /**
-   * 12 words
+   * 12 words (128 bits in 16 bytes)
    */
   TWELVE_WORDS(12),
 
   /**
-   * 18 words
+   * 18 words (192 bits in 24 bytes)
    */
   EIGHTEEN_WORDS(18),
 
   /**
-   * 24 words
+   * 24 words (256 bits in 32 bytes)
    */
   TWENTY_FOUR_WORDS(24),
 

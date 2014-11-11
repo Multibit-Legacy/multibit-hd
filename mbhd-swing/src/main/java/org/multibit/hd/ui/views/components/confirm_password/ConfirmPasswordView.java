@@ -18,7 +18,7 @@ import java.awt.event.KeyEvent;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Presentation of a password confirmation</li>
+ * <li>Presentation of a credentials confirmation</li>
  * <li>Support for reveal operation</li>
  * </ul>
  *
@@ -51,7 +51,7 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
       "[][][]" // Rows
     ));
 
-    // Keep track of the password fields
+    // Keep track of the credentials fields
     password1 = TextBoxes.newPassword();
     password1.setName(MessageKey.ENTER_NEW_PASSWORD.getKey());
 
@@ -69,8 +69,8 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
         getModel().get().setPassword1(password1.getPassword());
         boolean isPasswordValid = getModel().get().comparePasswords();
 
-        // Fire the UI event for "password verification status" message
-        ViewEvents.fireVerificationStatusChangedEvent(panelName + ".password", isPasswordValid);
+        // Fire the UI event for "credentials verification status" message
+        ViewEvents.fireVerificationStatusChangedEvent(panelName + ".credentials", isPasswordValid);
 
         // Fire the UI event for "component changed" message
         ViewEvents.fireComponentChangedEvent(panelName, Optional.of(getModel()));
@@ -85,8 +85,8 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
         getModel().get().setPassword2(password2.getPassword());
         boolean isPasswordValid = getModel().get().comparePasswords();
 
-        // Fire the UI event for "password verification status" message
-        ViewEvents.fireVerificationStatusChangedEvent(panelName + ".password", isPasswordValid);
+        // Fire the UI event for "credentials verification status" message
+        ViewEvents.fireVerificationStatusChangedEvent(panelName + ".credentials", isPasswordValid);
 
         // Fire the UI event for "component changed" message
         ViewEvents.fireComponentChangedEvent(panelName, Optional.of(getModel()));
@@ -96,7 +96,7 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
     });
 
     // Create a new verification status panel (initially hidden)
-    verificationStatusLabel = Labels.newVerificationStatus(panelName + ".password", true);
+    verificationStatusLabel = Labels.newVerificationStatus(panelName + ".credentials", true);
     verificationStatusLabel.setVisible(false);
 
     JLabel spinner = Labels.newSpinner(Themes.currentTheme.fadedText(), MultiBitUI.NORMAL_PLUS_ICON_SIZE);
@@ -170,7 +170,7 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
   @Subscribe
   public void onVerificationStatusChanged(VerificationStatusChangedEvent event) {
 
-    if (event.getPanelName().equals(getModel().get().getPanelName() + ".password") && verificationStatusLabel != null) {
+    if (event.getPanelName().equals(getModel().get().getPanelName() + ".credentials") && verificationStatusLabel != null) {
 
       verificationStatusLabel.setVisible(event.isOK());
 

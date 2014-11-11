@@ -14,7 +14,7 @@ import static org.fest.swing.timing.Timeout.timeout;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the welcome wizard "restore password report" panel view</li>
+ * <li>Verify the welcome wizard "restore credentials report" panel view</li>
  * </ul>
  *
  * @since 0.0.1
@@ -34,8 +34,8 @@ public class RestorePasswordReportUseCase extends AbstractFestUseCase {
     // Verify that the title appears
     assertLabelText(MessageKey.RESTORE_PASSWORD_REPORT_TITLE);
 
-    // Restoring the password should be instant
-    assertLabelValue(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, WalletFixtures.STANDARD_PASSWORD.toString());
+    // Restoring the credentials should be instant
+    assertLabelContainsValue(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, WalletFixtures.STANDARD_PASSWORD.toString());
 
     // OK to proceed
     window
@@ -43,7 +43,7 @@ public class RestorePasswordReportUseCase extends AbstractFestUseCase {
       .requireEnabled(timeout(2, TimeUnit.SECONDS))
       .click();
 
-    // Wait for password wizard Exit button to appear
+    // Wait for credentials wizard Exit button to appear
     pauseForViewReset();
 
     // Verify

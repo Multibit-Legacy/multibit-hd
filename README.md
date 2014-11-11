@@ -1,3 +1,5 @@
+Build status: [![Build Status](https://travis-ci.org/bitcoin-solutions/multibit-hd.png?branch=develop)](https://travis-ci.org/bitcoin-solutions/multibit-hd)
+
 Project status: Private beta. Expect minor bugs and API changes. Not suitable for production, but early adopter developers and early testers should get on board.
 
 ### MultiBit HD (MBHD)
@@ -32,16 +34,9 @@ To quickly check that you have Maven 3+ installed check on the command line:
 $ mvn --version
 ```
 
-#### Manually build and install Bitcoinj (optional)
+#### We currently use a forked version of Bitcoinj
 
-The [MultiBit Staging repository](https://github.com/bitcoin-solutions/mbhd-maven) contains a `bitcoinj-0.12-SNAPSHOT` and Orchid JAR for TOR that is aligned with the MultiBit HD `develop` branch. This can be used for development builds but is certainly not suitable for production. The Bitcoinj occasionally gets updated but should not be relied upon.
-
-Ideally, developers should clone [Bitcoinj](https://code.google.com/p/bitcoinj/) and build it manually. You should start with the HEAD of the `master` branch:
-```
-$ mvn clean install
-```
-
-When building ensure that no application is listening on port 8330.
+The [MultiBit Staging repository](https://github.com/bitcoin-solutions/mbhd-maven) contains a `bitcoinj-0.12-SNAPSHOT` and supporting Orchid JAR for TOR that is aligned with the MultiBit HD `develop` branch. This should be used for development builds but is not yet suitable for production. As we make changes to our fork we update the staging repository. Wherever possible we will introduce our forked changes as a pull request into the upstream bitcoinj so that other projects can benefit but we must use a fork to ensure rapid updates are possible.
 
 #### Start the application (from an IDE)
 
@@ -79,6 +74,14 @@ Of course, if you want to contribute coding effort or deeper code review and com
 
 As always, donations to the MultiBit address are welcome: [1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty](bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org).
 
+#### Where's the Trezor support ?
+
+We've begun the process of integrating the Trezor device through the [MultiBit Hardware](https://github.com/bitcoin-solutions/multibit-hardware) project. If you are a hardware 
+wallet developer, or are just interested to learn how the Trezor device works under the covers please watch this project.
+
+From now you should be able to attach your Trezor device and see an alert message providing information and a button to switch your current wallet over to one that tracks your
+Trezor device. All private keys remain on the Trezor device and associated contacts, payments and so on are keep encrypted in your wallet.
+
 #### Why not Java 8 ?
 
 At the time MBHD was being written (Q4 2013 - Q2 2014) Java 8 was not in production release and the sheer size of the packaged download was coming in at 150Mb (18x MultiBit Classic and 3x the standard Java 7 packaged footprints). That footprint alone would be sufficient to dramatically increase the cost of serving the application and deter people from downloading in countries where bandwidth is less available.
@@ -115,12 +118,6 @@ In Java 7 the Nimbus look and feel became integrated with the JDK. It provides a
 Using Nimbus ensures that we don't have this or similar problems.
 
 [Technical details on the default colours](http://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary)
-
-#### Where's the Trezor support ?
-
-Due to the complexity of getting MultiBit HD working with a "soft" wallet we've moved the Trezor support into a
-different branch (`mbhd-trezor`) which is periodically updated from `develop`. Once the main MBHD code has finalised
-then we will be integrating Trezor into the main branch.
 
 #### I want an installer not this IDE
 
@@ -174,3 +171,16 @@ Use the `FontAwesomeTools` to create the necessary enum entries for `AwesomeIcon
 ### Changing resource bundles
 
 Use the `ResourceBundleTools` to find similar entries and to arrange keys in the same order across all bundles.
+
+#### Updating the internationalisation files
+
+To do an i18n refresh:
+
+1. [Download the i18n zip](http://translate.multibit.org/project/multibit-hd) using the Download button
+2. Unzip this to a directory `multibit-hd`
+3. Copy `multibit-hd` to: `mbhd-swing/src/main/resources/languages-from-crowdin`
+4. Run a terminal and cd to `mbhd-swing/src/main/resources/languages-from-crowdin`
+5. Run the script `./move-files.sh`
+
+This moves and renames all the files into the languages directory.
+If there are any files or new languages it lists them at the end so that you can see there is something missing from the `move-files` script.

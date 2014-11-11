@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Show password recovery progress report</li>
+ * <li>Show credentials recovery progress report</li>
  * </ul>
  *
  * @since 0.0.1
@@ -103,7 +103,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
   }
 
   /**
-   * Attempt to recover the password and display it to the user
+   * Attempt to recover the credentials and display it to the user
    */
   private void recoverPassword() {
 
@@ -141,7 +141,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
       return;
     }
 
-    // Read the encrypted wallet password and decrypt with an AES key derived from the seed
+    // Read the encrypted wallet credentials and decrypt with an AES key derived from the seed
     KeyParameter backupAESKey;
     try {
       backupAESKey = AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
@@ -155,7 +155,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     }
 
     byte[] decryptedPaddedWalletPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(
-      // Get the padded password out of the wallet summary. This is put in when a wallet is created.
+      // Get the padded credentials out of the wallet summary. This is put in when a wallet is created.
       walletSummary.getEncryptedPassword(),
       backupAESKey,
       WalletManager.AES_INITIALISATION_VECTOR

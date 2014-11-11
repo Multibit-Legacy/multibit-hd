@@ -12,7 +12,7 @@ import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
-import org.multibit.hd.core.config.BitcoinNetwork;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
@@ -25,6 +25,11 @@ import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.hardware.core.HardwareWalletClient;
+import org.multibit.hd.hardware.core.HardwareWalletService;
+import org.multibit.hd.hardware.core.wallets.HardwareWallets;
+import org.multibit.hd.hardware.trezor.clients.TrezorHardwareWalletClient;
+import org.multibit.hd.hardware.trezor.wallets.v1.TrezorV1HidHardwareWallet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,6 +89,11 @@ public class CoreServices {
    * Keep track of the Bitcoin network
    */
   private static BitcoinNetworkService bitcoinNetworkService;
+
+  /**
+   * Keep track of the hardware wallets
+   */
+  private static Optional<HardwareWalletService> hardwareWalletService = Optional.absent();
 
   /**
    * Keeps track of all the contact services against hard and soft wallets
@@ -189,6 +199,10 @@ public class CoreServices {
 
             log.info("Applying soft shutdown. Waiting for processes to clean up...");
 
+            if (hardwareWalletService.isPresent()) {
+              hardwareWalletService.get().stopAndWait();
+            }
+
             // Provide a short delay while modules deal with the ShutdownEvent
             Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
 
@@ -196,6 +210,7 @@ public class CoreServices {
 
             // Reset the existing services
             bitcoinNetworkService = null;
+            hardwareWalletService = null;
             contactServiceMap = Maps.newHashMap();
             walletServiceMap = Maps.newHashMap();
             historyServiceMap = Maps.newHashMap();
@@ -223,6 +238,38 @@ public class CoreServices {
   public static ExchangeTickerService newExchangeService(BitcoinConfiguration bitcoinConfiguration) {
     log.trace("Creating new exchange ticker service");
     return new ExchangeTickerService(bitcoinConfiguration);
+
+  }
+
+  /**
+   * @return Create a new hardware wallet service or return the extant one
+   */
+  public static synchronized Optional<HardwareWalletService> getOrCreateHardwareWalletService() {
+
+    log.trace("Get hardware wallet service");
+    if (!hardwareWalletService.isPresent()) {
+
+      try {
+        // Use factory to statically bind a specific hardware wallet
+        TrezorV1HidHardwareWallet wallet = HardwareWallets.newUsbInstance(
+          TrezorV1HidHardwareWallet.class,
+          Optional.<Integer>absent(),
+          Optional.<Integer>absent(),
+          Optional.<String>absent()
+        );
+        // Wrap the hardware wallet in a suitable client to simplify message API
+        HardwareWalletClient client = new TrezorHardwareWalletClient(wallet);
+
+        // Wrap the client in a service for high level API suitable for downstream applications
+        hardwareWalletService = Optional.of(new HardwareWalletService(client));
+
+      } catch (Throwable throwable) {
+        log.warn("Could not create the hardware wallet.", throwable);
+        hardwareWalletService = Optional.absent();
+      }
+    }
+
+    return hardwareWalletService;
 
   }
 
@@ -425,4 +472,5 @@ public class CoreServices {
       throw new CoreException(e);
     }
   }
+
 }

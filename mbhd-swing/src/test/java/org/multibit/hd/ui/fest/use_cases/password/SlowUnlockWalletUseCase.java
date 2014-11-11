@@ -14,7 +14,7 @@ import static org.fest.swing.timing.Timeout.timeout;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Unlock a wallet with a failed password</li>
+ * <li>Unlock a wallet with a failed credentials</li>
  * </ul>
  *
  * @since 0.0.1
@@ -42,7 +42,7 @@ public class SlowUnlockWalletUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireDisabled();
 
-    // Enter incorrect password text
+    // Enter incorrect credentials text
     window
       .textBox(MessageKey.ENTER_PASSWORD.getKey())
       .enterText(WalletFixtures.ALTERNATIVE_PASSWORD);
@@ -71,7 +71,7 @@ public class SlowUnlockWalletUseCase extends AbstractFestUseCase {
       .background()
       .requireEqualTo(Themes.currentTheme.invalidDataEntryBackground());
 
-    // Enter new password
+    // Enter new credentials
     window
       .textBox(MessageKey.ENTER_PASSWORD.getKey())
       .deleteText()

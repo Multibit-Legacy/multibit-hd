@@ -33,21 +33,21 @@ import java.util.concurrent.TimeUnit;
  * Rolling backups
  * <p/>
  * make saves every 2 minutes
- * make first save 2 minutes after MBHD start (most likely after initial sync)
+ * make first save 1 minutes after MBHD start (most likely after initial sync)
  * make a save at MBHD exit
  * <p/>
  * <p/>
  * Local zip backups
  * <p/>
  * make saves every 10 minutes
- * make first save 2 minutes after MBHD start
+ * make first save 1 minutes after MBHD start
  * make a save at MBHD exit
  * <p/>
  * <p/>
  * Cloud backups
  * <p/>
  * make saves every 30 minutes
- * make first save 2 minutes after MBHD start
+ * make first save 1 minutes after MBHD start
  * make a save at MBHD exit
  * <p/>
  * <p/>
@@ -60,7 +60,13 @@ import java.util.concurrent.TimeUnit;
 public class BackupService extends AbstractService {
 
   /**
-   * This is the fastest tick used for backups.
+   * Initial delay in seconds after startup before making a backup.
+   * This delay is so that the wallet can sync.
+   */
+  private static final int INITIAL_DELAY = 60;
+
+  /**
+   * This is the fastest tick in seconds used for backups.
    * Everything else is done on a multiple of this
    */
   private static final int TICK_TIME_SECONDS = 120;
@@ -87,7 +93,7 @@ public class BackupService extends AbstractService {
   private Optional<WalletSummary> rememberedWalletSummaryForRollingBackup = Optional.absent();
 
   /**
-   * The password to use for the next rolling backup
+   * The credentials to use for the next rolling backup
    */
   private Optional<CharSequence> rememberedPasswordForRollingBackup = Optional.absent();
 
@@ -97,7 +103,7 @@ public class BackupService extends AbstractService {
   private Optional<WalletId> rememberedWalletIdForLocalBackup = Optional.absent();
 
   /**
-   * The password to use for the next local zip backup
+   * The credentials to use for the next local zip backup
    */
   private Optional<CharSequence> rememberedPasswordForLocalBackup = Optional.absent();
 
@@ -107,7 +113,7 @@ public class BackupService extends AbstractService {
   private Optional<WalletId> rememberedWalletIdForCloudBackup = Optional.absent();
 
   /**
-   * The password to use for the next cloud zip backup
+   * The credentials to use for the next cloud zip backup
    */
   private Optional<CharSequence> rememberedPasswordForCloudBackup = Optional.absent();
 
@@ -131,7 +137,7 @@ public class BackupService extends AbstractService {
 
     log.debug("Starting service");
 
-    // The first tick (at time TICK_TIME_SECONDS seconds) all of a rolling backup,
+    // The first tick (at time INITIAL_DELAY seconds) all of a rolling backup,
     // local backup and a cloud backup
     // The users copy of MBHD will most likely be fully synchronised by then
     tickCount = 0;
@@ -169,14 +175,14 @@ public class BackupService extends AbstractService {
         }
       }
     }
-            , TICK_TIME_SECONDS, TICK_TIME_SECONDS, TimeUnit.SECONDS);
+            , INITIAL_DELAY, TICK_TIME_SECONDS, TimeUnit.SECONDS);
 
     return true;
   }
 
 
   /**
-   * Remember a wallet summary and password.
+   * Remember a wallet summary and credentials.
    * This will be used at the next rolling backup.
    */
   public void rememberWalletSummaryAndPasswordForRollingBackup(WalletSummary walletSummary, CharSequence password) {
@@ -185,7 +191,7 @@ public class BackupService extends AbstractService {
   }
 
   /**
-   * Perform a rolling backup using the last remembered wallet summary and password
+   * Perform a rolling backup using the last remembered wallet summary and credentials
    */
   private void performRollingBackup() {
     if (rememberedWalletSummaryForRollingBackup.isPresent() && rememberedPasswordForRollingBackup.isPresent()) {
@@ -206,7 +212,7 @@ public class BackupService extends AbstractService {
   }
 
   /**
-   * Remember a wallet id and password.
+   * Remember a wallet id and credentials.
    * This will be used at the next local zip backup.
    */
   public void rememberWalletIdAndPasswordForLocalZipBackup(WalletId walletId, CharSequence password) {
@@ -236,7 +242,7 @@ public class BackupService extends AbstractService {
   }
 
   /**
-   * Remember a wallet id and password.
+   * Remember a wallet id and credentials.
    * This will be used at the next cloud zip backup.
    */
   public void rememberWalletIdAndPasswordForCloudZipBackup(WalletId walletId, CharSequence password) {

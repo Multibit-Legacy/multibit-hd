@@ -26,7 +26,7 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Show result of attempting to change the password of a wallet</li>
+ * <li>Show result of attempting to change the credentials of a wallet</li>
  * </ul>
  *
  * @since 0.0.1
@@ -107,8 +107,8 @@ public class ChangePasswordReportPanelView extends AbstractWizardPanelView<Chang
     passwordChangedStatusLabel.setText(Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
     if (walletSummaryOptional.isPresent()) {
       WalletSummary walletSummary = walletSummaryOptional.get();
-      // Change the wallet password.
-      // The result of the password change is emitted as a ChangePasswordResultEvent
+      // Change the wallet credentials.
+      // The result of the credentials change is emitted as a ChangePasswordResultEvent
 
       WalletService.changeWalletPassword(walletSummary, oldPassword, newPassword);
     }

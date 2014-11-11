@@ -134,7 +134,7 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
     // Fire the "timestamp verified" event
     ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".timestamp", isTimestampValid);
 
-    // Confirm password will fire its own event
+    // Confirm credentials will fire its own event
 
     return isTimestampValid && isPasswordValid;
 

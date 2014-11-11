@@ -39,7 +39,7 @@ public class AESUtils {
    * Generate 160 bits of entropy from the seed bytes.
    * This uses a number of trapdoor functions and is tweakable by specifying a custom salt value
    *
-   * @param seed seed bytes to use as 'password'/ initial value
+   * @param seed seed bytes to use as 'credentials'/ initial value
    * @param salt salt value used to customise trapdoor functions
    * @return entropy 20 bytes of entropy
    */
@@ -51,7 +51,7 @@ public class AESUtils {
 
     // Convert the seed to entropy using various trapdoor functions.
 
-    // Scrypt - scrypt is run using the seedBigInteger.toString() as the 'password'.
+    // Scrypt - scrypt is run using the seedBigInteger.toString() as the 'credentials'.
     // This returns a byte array (normally used as an AES256 key but here passed on to more trapdoor functions).
     // The scrypt parameters used are the default, except for the salt which is passed in.
     Protos.ScryptParameters.Builder scryptParametersBuilder = Protos.ScryptParameters.newBuilder().setSalt(ByteString.copyFrom(salt));
@@ -81,7 +81,7 @@ public class AESUtils {
 
   /**
    * Create an AES 256 key given 20 bytes of entropy (e.g. a walletId) and a salt byte array
-   * @param seed entropy, typically a wallet id or a password as bytes
+   * @param seed entropy, typically a wallet id or a credentials as bytes
    * @param salt bytes, used as salt
    * @return a KeyParameter suitable for AES encryption and decryption
    * @throws NoSuchAlgorithmException

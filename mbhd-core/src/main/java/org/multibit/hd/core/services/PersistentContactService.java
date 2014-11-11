@@ -3,7 +3,6 @@ package org.multibit.hd.core.services;
 import com.google.bitcoin.core.Address;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -132,13 +131,11 @@ public class PersistentContactService implements ContactService {
 
     Preconditions.checkNotNull(address, "'address' must be present");
 
-    String queryAddress = address.toString();
-
     List<Contact> filteredContacts = Lists.newArrayList();
 
     for (Contact contact : contacts) {
 
-      if (contact.getBitcoinAddress().or("").equals(queryAddress)) {
+      if (contact.getBitcoinAddress().isPresent() && contact.getBitcoinAddress().get().equals(address)) {
         filteredContacts.add(contact);
       }
     }
@@ -158,7 +155,7 @@ public class PersistentContactService implements ContactService {
     for (Contact contact : contacts) {
 
       // No Bitcoin address and excluding not payable
-      if (excludeNotPayable && Strings.isNullOrEmpty(contact.getBitcoinAddress().or("").trim())) {
+      if (excludeNotPayable && !contact.getBitcoinAddress().isPresent() ) {
         continue;
       }
 
@@ -221,7 +218,7 @@ public class PersistentContactService implements ContactService {
     for (Contact contact : contacts) {
 
       // No Bitcoin address and excluding not payable
-      if (excludeNotPayable && Strings.isNullOrEmpty(contact.getBitcoinAddress().or("").trim())) {
+      if (excludeNotPayable && !contact.getBitcoinAddress().isPresent()) {
         continue;
       }
 

@@ -117,7 +117,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     }
 
     // Initialise panel with a blank list of today's sending payments
-    List<PaymentData> todaysSendingPayments = Lists.newArrayList(); // walletService.subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
+    List<PaymentData> todaysSendingPayments = Lists.newArrayList();
     displaySendingPaymentsMaV = Components.newDisplayPaymentsMaV(getScreen().name() + "_SENDING");
     displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
 
@@ -247,8 +247,6 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
         displayRequestedPaymentsMaV.getView().createView();
         displayRequestedPaymentsMaV.getView().updateView();
-
-        sendBitcoin.requestFocusInWindow();
 
       }
     });
