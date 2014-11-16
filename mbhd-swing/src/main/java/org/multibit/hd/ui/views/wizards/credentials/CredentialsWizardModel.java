@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.wizards.credentials;
 
-import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 
 /**
  * <p>Model object to provide the following to "credentials wizard":</p>
@@ -12,7 +12,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
  * @since 0.0.1
  *
  */
-public class CredentialsWizardModel extends AbstractWizardModel<CredentialsState> {
+public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<CredentialsState> {
 
   /**
    * The "enter password" panel model

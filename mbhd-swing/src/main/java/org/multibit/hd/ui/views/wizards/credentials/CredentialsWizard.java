@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.credentials;
 
 import com.google.common.base.Optional;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
@@ -16,7 +17,7 @@ import java.util.Map;
  * @since 0.0.1
  *
  */
-public class CredentialsWizard extends AbstractWizard<CredentialsWizardModel> {
+public class CredentialsWizard extends AbstractHardwareWalletWizard<CredentialsWizardModel> {
 
   public CredentialsWizard(CredentialsWizardModel model, boolean isExiting) {
     super(model, isExiting, Optional.absent());
