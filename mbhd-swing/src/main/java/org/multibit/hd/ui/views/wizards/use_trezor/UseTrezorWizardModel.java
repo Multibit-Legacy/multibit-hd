@@ -14,7 +14,6 @@ import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.wallet.KeyChain;
 import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -33,7 +32,6 @@ import org.spongycastle.util.encoders.Hex;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.Callable;
 
 /**
@@ -52,9 +50,14 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   private static final Logger log = LoggerFactory.getLogger(UseTrezorWizardModel.class);
 
   /**
-   * Request features requires a separate executor
+   * Trezor requests have their own executor service
    */
   private final ListeningExecutorService trezorRequestService = SafeExecutors.newSingleThreadExecutor("trezor-requests");
+
+  /**
+   * Wallet creation has its own executor service
+   */
+  private final ListeningExecutorService trezorCreateWalletService = SafeExecutors.newSingleThreadExecutor("trezor-wallet-create");
 
   /**
    * The current selection option as a state
@@ -271,96 +274,39 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
     switch (state) {
       case USE_TREZOR_REPORT_PANEL:
-        // Attempt to create the wallet
 
-        Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
-        if (hardwareWalletServiceOptional.isPresent()) {
+        // Attempt to create the wallet in a new thread off the Trezor event thread
+        ListenableFuture<Boolean> future = trezorCreateWalletService.submit(new Callable<Boolean>() {
+          @Override
+          public Boolean call() throws Exception {
 
-          HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
+            // Shutdown the existing Bitcoin network service
+            CoreServices.getOrCreateBitcoinNetworkService().stopAndWait();
 
-          if (hardwareWalletService.isWalletPresent()) {
+            WalletManager.INSTANCE.setCurrentWalletSummary(null);
 
-            HardwareWalletContext hardwareWalletContext = hardwareWalletService.getContext();
-            // Parent key should be M/44'/0'/0'
-            final DeterministicKey parentKey = hardwareWalletContext.getDeterministicKey().get();
-            log.info("Parent key path: {}", parentKey.getPathAsString());
-
-            // Verify the deterministic hierarchy can derive child keys
-            // In this case 0/0 from a parent of M/44'/0'/0'
-            DeterministicHierarchy hierarchy = hardwareWalletContext.getDeterministicHierarchy().get();
-            DeterministicKey childKey = hierarchy.deriveChild(
-              Lists.newArrayList(
-                ChildNumber.ZERO
-              ),
-              true,
-              true,
-              ChildNumber.ZERO
-            );
-
-            // Calculate the address
-            ECKey seedKey = ECKey.fromPublicOnly(childKey.getPubKey());
-            Address walletKeyAddress = new Address(MainNetParams.get(), seedKey.getPubKeyHash());
-
-            log.info("Path {}/0/0 has address: '{}'", parentKey.getPathAsString(), walletKeyAddress.toString());
-
-            // Get the label of the Trezor from the features to use as the wallet name
-            Optional<Features> features = hardwareWalletContext.getFeatures();
-            final String label;
-            if (features.isPresent()) {
-              label = features.get().getLabel();
-            } else {
-              label = "";
-            }
-
-            try {
-              if (!getEntropyOptional().isPresent()) {
-                log.debug("No entropy - no wallet to load");
-                // TODO Notify user
-                return;
-              }
-
-              // The entropy is used as the password of the Trezor wallet (so the user does not need to remember it
-              log.debug("Running decrypt of Trezor wallet with entropy of length {}", getEntropyOptional().get().length);
-
-              // Locate the installation directory
-              final File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-
-              // Must be OK to be here - run wallet creation off the hardware event thread
-              SwingUtilities.invokeLater(
-                new Runnable() {
-                  @Override
-                  public void run() {
-
-                    try {
-                      WalletSummary walletSummary = WalletManager.INSTANCE.getOrCreateWalletSummary(
-                        applicationDataDirectory,
-                        parentKey, Dates.nowInSeconds(), Hex.toHexString(getEntropyOptional().get()),
-                        label, "");
-
-                      log.debug("Wallet summary {}", walletSummary);
-
-                      getReportPanelView().setStatus(true);
-
-                    } catch (IOException ioe) {
-                      ioe.printStackTrace();
-                    }
-                  }
-                });
-
-
-            } catch (Exception e) {
-              e.printStackTrace();
-            }
-
-
-          } else {
-            log.debug("No wallet present");
+            return handleTrezorCreateWallet();
           }
-        } else {
-          log.error("No hardware wallet service");
-        }
+        });
+        Futures.addCallback(future, new FutureCallback<Boolean>() {
+          @Override
+          public void onSuccess(final @Nullable Boolean result) {
+            SwingUtilities.invokeLater(new Runnable() {
+              @Override
+              public void run() {
+                getEnterPinPanelView().setPinStatus(result, true);
+              }
+            });
 
-        getEnterPinPanelView().setPinStatus(false, true);
+          }
+
+          @Override
+          public void onFailure(Throwable t) {
+            ExceptionHandler.handleThrowable(t);
+          }
+        });
+
+
         break;
       default:
         // TODO Fill in the other states and provide success feedback
@@ -648,5 +594,92 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
   public void setReportPanelView(UseTrezorReportPanelView reportPanelView) {
     this.reportPanelView = reportPanelView;
+  }
+
+  /**
+   * <p>Create a Trezor wallet based on the </p>
+   * @return True if the wallet was created successfully
+   */
+  private boolean handleTrezorCreateWallet() {
+
+    Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
+    if (hardwareWalletServiceOptional.isPresent()) {
+
+      HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
+
+      if (hardwareWalletService.isWalletPresent()) {
+
+        HardwareWalletContext hardwareWalletContext = hardwareWalletService.getContext();
+        // Parent key should be M/44'/0'/0'
+        final DeterministicKey parentKey = hardwareWalletContext.getDeterministicKey().get();
+        log.info("Parent key path: {}", parentKey.getPathAsString());
+
+        // Verify the deterministic hierarchy can derive child keys
+        // In this case 0/0 from a parent of M/44'/0'/0'
+        DeterministicHierarchy hierarchy = hardwareWalletContext.getDeterministicHierarchy().get();
+        DeterministicKey childKey = hierarchy.deriveChild(
+          Lists.newArrayList(
+            ChildNumber.ZERO
+          ),
+          true,
+          true,
+          ChildNumber.ZERO
+        );
+
+        // Calculate the address
+        ECKey seedKey = ECKey.fromPublicOnly(childKey.getPubKey());
+        Address walletKeyAddress = new Address(MainNetParams.get(), seedKey.getPubKeyHash());
+
+        log.info("Path {}/0/0 has address: '{}'", parentKey.getPathAsString(), walletKeyAddress.toString());
+
+        // Get the label of the Trezor from the features to use as the wallet name
+        Optional<Features> features = hardwareWalletContext.getFeatures();
+        final String label;
+        if (features.isPresent()) {
+          label = features.get().getLabel();
+        } else {
+          label = "";
+        }
+
+        try {
+          if (!getEntropyOptional().isPresent()) {
+            log.error("No entropy from Trezor so cannot create or load a wallet.");
+            return false;
+          }
+
+          // The entropy is used as the password of the Trezor wallet (so the user does not need to remember it
+          log.debug("Running decrypt of Trezor wallet with entropy of length {}", getEntropyOptional().get().length);
+
+          // Locate the installation directory
+          final File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+          // Must be OK to be here
+
+          WalletManager.INSTANCE.getOrCreateWalletSummary(
+            applicationDataDirectory,
+            parentKey,
+            // TODO The wizard should provide a suitable timestamp field for new wallets
+            Dates.parseSeedTimestamp("2101/64").getMillis() / 1000,
+            Hex.toHexString(getEntropyOptional().get()),
+            label, "Trezor");
+
+          // Trigger the deferred hide
+          ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
+
+          return true;
+
+        } catch (Exception e) {
+
+          e.printStackTrace();
+        }
+
+
+      } else {
+        log.debug("No wallet present");
+      }
+    } else {
+      log.error("No hardware wallet service");
+    }
+    return false;
   }
 }

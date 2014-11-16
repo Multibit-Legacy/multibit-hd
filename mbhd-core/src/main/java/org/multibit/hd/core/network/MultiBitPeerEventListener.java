@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 public class MultiBitPeerEventListener implements PeerEventListener {
@@ -30,6 +31,11 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   private boolean suppressPeerCountMessages = true;
 
   public MultiBitPeerEventListener() {
+  }
+
+  @Override
+  public void onPeersDiscovered(Set<PeerAddress> peerAddresses) {
+    // Do nothing
   }
 
   @Override

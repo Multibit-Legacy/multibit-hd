@@ -166,6 +166,11 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
+    // Check if we had to provide a PIN
+    if (pinStatus == null) {
+      return;
+    }
+
     pinStatus.setVisible(visible);
 
     if (status) {

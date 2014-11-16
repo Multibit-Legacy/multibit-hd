@@ -103,12 +103,12 @@ public enum WalletManager implements WalletEventListener {
     }
 
     @Override
-    public void onScriptsAdded(Wallet wallet, List<Script> scripts) {
+    public void onKeysAdded(List<ECKey> keys) {
 
     }
 
     @Override
-    public void onKeysAdded(List<ECKey> keys) {
+    public void onScriptsChanged(Wallet wallet, List<Script> scripts, boolean isAddingScripts) {
 
     }
   };
@@ -411,33 +411,38 @@ public enum WalletManager implements WalletEventListener {
     String notes
   ) throws WalletLoadException, WalletVersionException, IOException {
 
-    final WalletSummary walletSummary;
-
     // Create a wallet id from the rootNode to work out the wallet root directory
     final WalletId walletId = new WalletId(rootNode.getIdentifier());
     String walletRoot = createWalletRoot(walletId);
 
     final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
-    log.debug("walletDirectory = " + walletDirectory.toString());
-
     final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
     final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
+
+    WalletSummary walletSummary;
+
     if (walletFileWithAES.exists()) {
-      log.debug("A wallet with name {} exists, opening", walletFileWithAES.getAbsolutePath());
+      log.debug("A wallet with name {} exists. Opening...", walletFileWithAES.getAbsolutePath());
 
-      // There is already a wallet created with this root - if so load it and return that
-      walletSummary = loadFromWalletDirectory(walletDirectory, password);
-      if (Configurations.currentConfiguration != null) {
-        Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
+      try {
+        // There is already a wallet created with this root - if so load it and return that
+        walletSummary = loadFromWalletDirectory(walletDirectory, password);
+        if (Configurations.currentConfiguration != null) {
+          Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
+        }
+        walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
+        setCurrentWalletSummary(walletSummary);
+
+        return walletSummary;
+
+      } catch (WalletLoadException e) {
+        // Failed to decrypt the existing wallet/backups so create a new one
+        log.error("Failed to load from wallet directory. Attempting to create instead.");
       }
-      walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
-      setCurrentWalletSummary(walletSummary);
-
-      return walletSummary;
     }
 
-    log.debug("Wallet file does not exist so create it . . .");
+    log.debug("Wallet file does not exist. Creating...");
 
     // Create the containing directory if it does not exist
     if (!walletDirectory.exists()) {
@@ -448,7 +453,8 @@ public enum WalletManager implements WalletEventListener {
 
     // Create a wallet using the root node
     DeterministicKey rootNodePubOnly = rootNode.getPubOnly();
-    log.debug("rootNodePubOnly = " + rootNodePubOnly);
+    log.debug("Watching wallet based on: {}", rootNodePubOnly);
+
     Wallet walletToReturn = Wallet.fromWatchingKey(networkParameters, rootNodePubOnly, creationTimeInSeconds, rootNodePubOnly.getPath());
     walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
 
@@ -853,20 +859,21 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * @param currentWalletSummary The current wallet data
+   * @param walletSummary The current wallet summary (null if a reset is required)
    */
-  public void setCurrentWalletSummary(WalletSummary currentWalletSummary) {
+  public void setCurrentWalletSummary(WalletSummary walletSummary) {
 
-    if (currentWalletSummary.getWallet() != null) {
+    if (walletSummary != null && walletSummary.getWallet() != null) {
 
-      // Remove the previous WalletEventListener
-      currentWalletSummary.getWallet().removeEventListener(this);
+        // Remove the previous WalletEventListener
+        walletSummary.getWallet().removeEventListener(this);
 
-      // Add the wallet event listener
-      currentWalletSummary.getWallet().addEventListener(this);
-    }
+        // Add the wallet event listener
+        walletSummary.getWallet().addEventListener(this);
+      }
 
-    this.currentWalletSummary = Optional.of(currentWalletSummary);
+    this.currentWalletSummary = Optional.fromNullable(walletSummary);
+
   }
 
   /**

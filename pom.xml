@@ -289,7 +289,7 @@
       <dependency>
         <groupId>org.bitcoinj</groupId>
         <artifactId>bitcoinj-core</artifactId>
-        <version>0.12-alice</version>
+        <version>0.13-alice-SNAPSHOT</version>
       </dependency>
 
       <!-- Crypto -->
