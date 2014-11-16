@@ -582,9 +582,12 @@ public class MainController extends AbstractController implements
               break;
             case SHOW_DEVICE_FAILED:
             case SHOW_DEVICE_READY:
-              // Attempt to create a suitable alert model in addition to view event
-              AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
-              ControllerEvents.fireAddAlertEvent(alertModel);
+              // Show an alert if the Trezor connects when there is a current wallet
+              if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+                // Attempt to create a suitable alert model in addition to view event
+                AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+                ControllerEvents.fireAddAlertEvent(alertModel);
+              }
               break;
             default:
               // The AbstractHardwareWalletWizard handles specific cases
@@ -593,6 +596,7 @@ public class MainController extends AbstractController implements
           }
 
           // Must have a view event (device ready/not ready) to be here
+          // See the AbstractHardwareWalletWizard for more fine detailed handling
           ViewEvents.fireHardwareWalletStatusChangedEvent(event.getEventType());
 
         }
