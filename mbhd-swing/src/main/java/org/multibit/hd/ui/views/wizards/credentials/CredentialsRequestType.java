@@ -11,7 +11,14 @@ package org.multibit.hd.ui.views.wizards.credentials;
  *
  */
 public enum CredentialsRequestType {
+
+  /**
+   * Standard user entered password
+   */
   PASSWORD,
-  TREZOR_PIN,
-  NO_TREZOR_PIN
+
+  /**
+   * Trezor cipher key method (may require a PIN as well)
+   */
+  TREZOR_CIPHER_KEY,
 }

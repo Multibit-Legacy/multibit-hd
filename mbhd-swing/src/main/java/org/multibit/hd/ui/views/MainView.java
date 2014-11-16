@@ -161,7 +161,13 @@ public class MainView extends JFrame {
       log.debug("Showing exiting credentials wizard");
 
       // Force an exit if the user can't get through
-      Panels.showLightBox(Wizards.newExitingCredentialsWizard(CredentialsRequestType.PASSWORD).getWizardScreenHolder());
+      if (CoreServices.getOrCreateHardwareWalletService().isPresent() && CoreServices.getOrCreateHardwareWalletService().get().isWalletPresent()) {
+        // Hardware wallet attached with initialised wallet
+        Panels.showLightBox(Wizards.newExitingCredentialsWizard(CredentialsRequestType.TREZOR_CIPHER_KEY).getWizardScreenHolder());
+      } else {
+        // No hardware wallet attached (or it has no wallet loaded so needs initialisation beyond credentials)
+        Panels.showLightBox(Wizards.newExitingCredentialsWizard(CredentialsRequestType.PASSWORD).getWizardScreenHolder());
+      }
 
     } else {
 

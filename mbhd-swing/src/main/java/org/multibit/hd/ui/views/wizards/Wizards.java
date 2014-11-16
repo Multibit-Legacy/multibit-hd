@@ -252,13 +252,11 @@ public class Wizards {
 
     log.debug("New 'Credentials wizard' with credentialsRequestType = " + credentialsRequestType);
     switch (credentialsRequestType) {
-      case NO_TREZOR_PIN:
-        throw new UnsupportedOperationException("No Trezor PIN support in Credentials Wizard");
-      case TREZOR_PIN:
-        throw new UnsupportedOperationException("Trezor PIN support in Credentials Wizard");
+      case TREZOR_CIPHER_KEY:
+        return new CredentialsWizard(new CredentialsWizardModel(CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY, credentialsRequestType), true);
       case PASSWORD:
       default:
-        return new CredentialsWizard(new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD, credentialsRequestType), true);
+        throw new UnsupportedOperationException("The '" + credentialsRequestType.name() + "' is not supported");
     }
   }
 

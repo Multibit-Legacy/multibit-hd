@@ -313,9 +313,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     switch (credentialsRequestType) {
       case PASSWORD:
         return enterPasswordPanelModel.getEnterPasswordModel().getValue();
-      case TREZOR_PIN:
+      case TREZOR_CIPHER_KEY:
         return enterPinPanelModel.getEnterPinModel().getValue();
-      case NO_TREZOR_PIN:
       default:
         return "";
     }
