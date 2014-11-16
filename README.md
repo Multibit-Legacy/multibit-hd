@@ -126,13 +126,9 @@ Using Nimbus ensures that we don't have this or similar problems.
 
 #### I want an installer not this IDE
 
-The code is changing too rapidly and is too unstable to justify a long-lived installer for download. If you want to create one for demo purposes you need to [first read the installer README](mbhd-install/README.md) to do the necessary manual steps to configure JWrapper and then run the following Maven command:
-```
-mvn -Dinstaller=true clean install
-```
-The installers will be found in the `target` directory ready for installer signing.
+Installers lag the latest changes by a few weeks. You can find them on the [MultiBit HD website](https://beta.multibit.org).
 
-Alternatively apply to join the [private beta mailing list](https://groups.google.com/forum/?hl=en#!forum/multibit-hd-private-beta) where new signed installers will be shared.
+As new changes are released they will update automatically from 0.0.4 (Private Beta 4) onwards.
 
 #### Is there a developer wiki ?
 
@@ -142,16 +138,9 @@ Yes. [The wiki pages](https://github.com/bitcoin-solutions/multibit-hd/wiki/_pag
 
 We are currently working to the following timetable:
 
-1. Add BRIT support
-2. BIP32/39 hierarchical deterministic wallet (HDW) support following Bitcoinj + Trezor approach
-3. BIP70-73 payment protocol support
-4. Hardware wallet (Trezor) support
-5. Hierarchical deterministic multi-signature (HDM) support
-
-### Do you have use cases documentation ?
-
-The use cases are described here:
-https://docs.google.com/document/d/18qtE5lmRzB32Sc9Ii37GySJGLKx3VNypBkjnHbNjdik/edit?usp=drive_web
+1. Hardware wallet (Trezor) support (Private Beta 5)
+2. BIP70-73 payment protocol support (Pubic Beta 1)
+3. Hierarchical deterministic multi-signature (HDM) support (Public Beta 2)
 
 ## Developer tools
 
