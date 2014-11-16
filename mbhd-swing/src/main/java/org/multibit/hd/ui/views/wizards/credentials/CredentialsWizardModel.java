@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.util.encoders.Hex;
 
 import javax.annotation.Nullable;
-import javax.swing.*;
 import java.io.File;
 import java.util.concurrent.Callable;
 
