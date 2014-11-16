@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.use_trezor;
+package org.multibit.hd.ui.views.wizards.credentials;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -19,15 +19,15 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Credentials: Enter pin</li>
+ * <li>Credentials: Request cipher key</li>
  * </ul>
- *
+ * <p>This is the first step in getting the extended public key from a Trezor device</p>
  * @since 0.0.1
  *  
  */
-public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorEnterPinPanelModel> {
+public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelView<CredentialsWizardModel, String> {
 
-  private static final Logger log = LoggerFactory.getLogger(UseTrezorRequestCipherKeyPanelView.class);
+  private static final Logger log = LoggerFactory.getLogger(CredentialsRequestCipherKeyPanelView.class);
 
   // TODO Add language support
   private JLabel message = Labels.newValueLabel("Talking to device...");
@@ -35,9 +35,9 @@ public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<
   /**
    * @param wizard The wizard managing the states
    */
-  public UseTrezorRequestCipherKeyPanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
+  public CredentialsRequestCipherKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.PIN_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT, AwesomeIcon.LOCK);
 
   }
 
@@ -66,7 +66,7 @@ public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
 
     PanelDecorator.addExitCancelRestoreUnlock(this, wizard);
 
@@ -88,6 +88,14 @@ public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<
   public void afterShow() {
 
     registerDefaultButton(getFinishButton());
+
+    // Start the wallet access process by requesting a cipher key
+    // to get a deterministic wallet ID
+    //
+    // This is done as a transitional panel to allow for a device
+    // failure at each stage with the user having the option to
+    // easily escape
+    getWizardModel().requestCipherKey();
 
   }
 

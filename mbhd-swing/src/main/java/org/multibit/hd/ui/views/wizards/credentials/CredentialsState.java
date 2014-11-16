@@ -16,6 +16,21 @@ public enum CredentialsState {
    */
   CREDENTIALS_ENTER_PASSWORD,
 
+  /**
+   * Request a cipher key from the Trezor (most likely triggers a PIN request)
+   */
+  CREDENTIALS_REQUEST_CIPHER_KEY,
+
+  /**
+   * Enter a PIN
+   */
+  CREDENTIALS_ENTER_PIN,
+
+  /**
+   * Information panel asking user to press the Trezor "confirm" button
+   */
+  CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK,
+
    /**
    * Special case state used by the restore button action to trigger
    * a handover to the welcome wizard

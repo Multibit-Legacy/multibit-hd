@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.wizards;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 
 /**
@@ -13,6 +15,11 @@ import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
  * @since 0.0.1
  */
 public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizardModel<S> {
+
+  /**
+   * Trezor requests have their own executor service
+   */
+  protected final ListeningExecutorService trezorRequestService = SafeExecutors.newSingleThreadExecutor("trezor-requests");
 
   protected AbstractHardwareWalletWizardModel(S state) {
     super(state);

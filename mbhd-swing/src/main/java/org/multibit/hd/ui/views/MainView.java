@@ -16,6 +16,7 @@ import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class MainView extends JFrame {
 
   // Need to track if a wizard was showing before a refresh occurred
   private boolean showExitingWelcomeWizard = false;
-  private boolean showExitingPasswordWizard = false;
+  private boolean showExitingCredentialsWizard = false;
   private boolean isCentered = false;
 
   public MainView() {
@@ -153,14 +154,14 @@ public class MainView extends JFrame {
         Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_LICENCE).getWizardScreenHolder());
       }
 
-    } else if (showExitingPasswordWizard) {
+    } else if (showExitingCredentialsWizard) {
 
       // This section must come after a deferred hide has completed
 
       log.debug("Showing exiting credentials wizard");
 
       // Force an exit if the user can't get through
-      Panels.showLightBox(Wizards.newExitingCredentialsWizard().getWizardScreenHolder());
+      Panels.showLightBox(Wizards.newExitingCredentialsWizard(CredentialsRequestType.PASSWORD).getWizardScreenHolder());
 
     } else {
 
@@ -224,16 +225,16 @@ public class MainView extends JFrame {
   /**
    * @return True if the exiting credentials wizard will be shown on a reset
    */
-  public boolean isShowExitingPasswordWizard() {
-    return showExitingPasswordWizard;
+  public boolean isShowExitingCredentialsWizard() {
+    return showExitingCredentialsWizard;
   }
 
   /**
    * @param show True if the exiting credentials wizard should be shown during the next refresh
    */
-  public void setShowExitingPasswordWizard(boolean show) {
+  public void setShowExitingCredentialsWizard(boolean show) {
 
-    showExitingPasswordWizard = show;
+    showExitingCredentialsWizard = show;
 
   }
 

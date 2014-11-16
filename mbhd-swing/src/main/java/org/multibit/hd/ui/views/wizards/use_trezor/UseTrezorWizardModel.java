@@ -6,32 +6,24 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import org.bitcoinj.core.Address;
-import org.bitcoinj.core.ECKey;
 import org.bitcoinj.crypto.ChildNumber;
-import org.bitcoinj.crypto.DeterministicHierarchy;
-import org.bitcoinj.crypto.DeterministicKey;
-import org.bitcoinj.params.MainNetParams;
-import org.bitcoinj.wallet.KeyChain;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
-import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
-import org.multibit.hd.hardware.core.fsm.HardwareWalletContext;
-import org.multibit.hd.hardware.core.messages.*;
+import org.multibit.hd.hardware.core.messages.ButtonRequest;
+import org.multibit.hd.hardware.core.messages.Failure;
+import org.multibit.hd.hardware.core.messages.FailureType;
+import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongycastle.util.encoders.Hex;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
-import java.io.File;
 import java.util.concurrent.Callable;
 
 /**
@@ -50,11 +42,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   private static final Logger log = LoggerFactory.getLogger(UseTrezorWizardModel.class);
 
   /**
-   * Trezor requests have their own executor service
-   */
-  private final ListeningExecutorService trezorRequestService = SafeExecutors.newSingleThreadExecutor("trezor-requests");
-
-  /**
    * Wallet creation has its own executor service
    */
   private final ListeningExecutorService trezorCreateWalletService = SafeExecutors.newSingleThreadExecutor("trezor-wallet-create");
@@ -70,15 +57,12 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   Optional<Features> featuresOptional = Optional.absent();
 
   /**
-   * The entropy to be used for the wallet id (result of encryption by the Trezor of fixed text)
-   */
-  Optional<byte[]> entropyOptional = Optional.absent();
-
-  /**
    * The "enter pin" panel view
    */
   private UseTrezorEnterPinPanelView enterPinPanelView;
+
   private UseTrezorRequestCipherKeyPanelView requestCipherKeyPanelView;
+
   private UseTrezorReportPanelView reportPanelView;
 
   public UseTrezorWizardModel(UseTrezorState useTrezorState) {
@@ -107,7 +91,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
           case SELECT_TREZOR_ACTION:
             break;
           case USE_TREZOR_WALLET:
-            state = UseTrezorState.REQUEST_CIPHER_KEY;
+            //state = UseTrezorState.REQUEST_CIPHER_KEY;
             break;
           case BUY_TREZOR:
             state = UseTrezorState.BUY_TREZOR;
@@ -132,14 +116,14 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
         state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
         break;
       case ENTER_PIN:
-        state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
+//        state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
         break;
       case NO_PIN_REQUIRED:
-        state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
+//        state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
         break;
-      case PRESS_CONFIRM_FOR_UNLOCK:
-        state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
-        break;
+//      case PRESS_CONFIRM_FOR_UNLOCK:
+//        state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
+//        break;
       default:
         throw new IllegalStateException("Cannot showNext with a state of " + state);
     }
@@ -165,9 +149,9 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     // Device is PIN protected
 
     switch (state) {
-      case REQUEST_CIPHER_KEY:
-        state = UseTrezorState.ENTER_PIN;
-        break;
+//      case REQUEST_CIPHER_KEY:
+//        state = UseTrezorState.ENTER_PIN;
+//        break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
     }
@@ -181,16 +165,8 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     ButtonRequest buttonRequest = (ButtonRequest) event.getMessage().get();
 
     switch (state) {
-      case REQUEST_CIPHER_KEY:
-        // A button press here indicates no PIN or previously unlocked device
-        state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
-        break;
       case ENTER_PIN:
       case NO_PIN_REQUIRED:
-        // Require a button press to encrypt the message
-        state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
-        break;
-      case PRESS_CONFIRM_FOR_UNLOCK:
         // Should be catered for by finish
         break;
       case WIPE_TREZOR:
@@ -218,25 +194,25 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
         getEnterPinPanelView().setPinStatus(true, true);
 
         // Fall through to "press confirm for unlock"
-      case PRESS_CONFIRM_FOR_UNLOCK:
-
-        if (event.getMessage().get() instanceof Success) {
-
-          byte[] payload = ((Success) event.getMessage().get()).getPayload();
-          String message = ((Success) event.getMessage().get()).getMessage();
-
-          log.info(
-            "Message:'{}'\nPayload length: {}",
-            message,
-            payload == null ? 0 : payload.length
-          );
-
-          log.debug("Using the payload as entropy");
-          entropyOptional = Optional.fromNullable(payload);
-
-          state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
-
-        }
+//      case PRESS_CONFIRM_FOR_UNLOCK:
+//
+//        if (event.getMessage().get() instanceof Success) {
+//
+//          byte[] payload = ((Success) event.getMessage().get()).getPayload();
+//          String message = ((Success) event.getMessage().get()).getMessage();
+//
+//          log.info(
+//            "Message:'{}'\nPayload length: {}",
+//            message,
+//            payload == null ? 0 : payload.length
+//          );
+//
+//          log.debug("Using the payload as entropy");
+//          entropyOptional = Optional.fromNullable(payload);
+//
+//          state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
+//
+//        }
         break;
       default:
         // TODO Fill in the other states and provide success feedback
@@ -285,7 +261,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
             WalletManager.INSTANCE.setCurrentWalletSummary(null);
 
-            return handleTrezorCreateWallet();
+            return false;
           }
         });
         Futures.addCallback(future, new FutureCallback<Boolean>() {
@@ -330,9 +306,9 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     return featuresOptional;
   }
 
-  public Optional<byte[]> getEntropyOptional() {
-    return entropyOptional;
-  }
+//  public Optional<byte[]> getEntropyOptional() {
+//    return entropyOptional;
+//  }
 
   /**
    * <p>Request the Trezor features</p>
@@ -534,51 +510,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
   }
 
-  /**
-   * Request a cipher key from the device
-   */
-  public void requestCipherKey() {
-
-    // Communicate with the device off the EDT
-    trezorRequestService.submit(
-      new Runnable() {
-        @Override
-        public void run() {
-          log.debug("Performing a request cipher key to Trezor");
-
-          // A 'requestCipherKey' is performed in which the user presses the OK button to encrypt a set text
-          // (the result of which will be used to decrypt the wallet)
-          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-
-          // Check if there is a wallet present
-          if (hardwareWalletService.isPresent()) {
-
-            // Use this layout to ensure line wrapping occurs on a V1 Trezor
-            byte[] key = "MultiBit HD     Unlock".getBytes();
-            byte[] keyValue = "0123456789abcdef".getBytes();
-
-            // Request a cipher key against 0'/0/0
-            // AbstractHardwareWalletWizard will deal with the responses
-            hardwareWalletService.get().requestCipherKey(
-              0,
-              KeyChain.KeyPurpose.RECEIVE_FUNDS,
-              0,
-              key,
-              keyValue,
-              true,
-              true,
-              true
-            );
-
-          } else {
-            // TODO Require MessageKey
-            getRequestCipherKeyPanelView().setMessage("No wallet is present on the device");
-          }
-
-        }
-      });
-
-  }
 
   public UseTrezorRequestCipherKeyPanelView getRequestCipherKeyPanelView() {
     return requestCipherKeyPanelView;
@@ -596,90 +527,4 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     this.reportPanelView = reportPanelView;
   }
 
-  /**
-   * <p>Create a Trezor wallet based on the </p>
-   * @return True if the wallet was created successfully
-   */
-  private boolean handleTrezorCreateWallet() {
-
-    Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
-    if (hardwareWalletServiceOptional.isPresent()) {
-
-      HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
-
-      if (hardwareWalletService.isWalletPresent()) {
-
-        HardwareWalletContext hardwareWalletContext = hardwareWalletService.getContext();
-        // Parent key should be M/44'/0'/0'
-        final DeterministicKey parentKey = hardwareWalletContext.getDeterministicKey().get();
-        log.info("Parent key path: {}", parentKey.getPathAsString());
-
-        // Verify the deterministic hierarchy can derive child keys
-        // In this case 0/0 from a parent of M/44'/0'/0'
-        DeterministicHierarchy hierarchy = hardwareWalletContext.getDeterministicHierarchy().get();
-        DeterministicKey childKey = hierarchy.deriveChild(
-          Lists.newArrayList(
-            ChildNumber.ZERO
-          ),
-          true,
-          true,
-          ChildNumber.ZERO
-        );
-
-        // Calculate the address
-        ECKey seedKey = ECKey.fromPublicOnly(childKey.getPubKey());
-        Address walletKeyAddress = new Address(MainNetParams.get(), seedKey.getPubKeyHash());
-
-        log.info("Path {}/0/0 has address: '{}'", parentKey.getPathAsString(), walletKeyAddress.toString());
-
-        // Get the label of the Trezor from the features to use as the wallet name
-        Optional<Features> features = hardwareWalletContext.getFeatures();
-        final String label;
-        if (features.isPresent()) {
-          label = features.get().getLabel();
-        } else {
-          label = "";
-        }
-
-        try {
-          if (!getEntropyOptional().isPresent()) {
-            log.error("No entropy from Trezor so cannot create or load a wallet.");
-            return false;
-          }
-
-          // The entropy is used as the password of the Trezor wallet (so the user does not need to remember it
-          log.debug("Running decrypt of Trezor wallet with entropy of length {}", getEntropyOptional().get().length);
-
-          // Locate the installation directory
-          final File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-
-          // Must be OK to be here
-
-          WalletManager.INSTANCE.getOrCreateWalletSummary(
-            applicationDataDirectory,
-            parentKey,
-            // TODO The wizard should provide a suitable timestamp field for new wallets
-            Dates.parseSeedTimestamp("2101/64").getMillis() / 1000,
-            Hex.toHexString(getEntropyOptional().get()),
-            label, "Trezor");
-
-          // Trigger the deferred hide
-          ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
-
-          return true;
-
-        } catch (Exception e) {
-
-          e.printStackTrace();
-        }
-
-
-      } else {
-        log.debug("No wallet present");
-      }
-    } else {
-      log.error("No hardware wallet service");
-    }
-    return false;
-  }
 }

@@ -292,12 +292,12 @@ public class MultiBitHD {
 
       log.debug("No wallets in the directory or licence not accepted - showing the welcome wizard");
       mainView.setShowExitingWelcomeWizard(true);
-      mainView.setShowExitingPasswordWizard(false);
+      mainView.setShowExitingCredentialsWizard(false);
 
     } else {
 
       log.debug("Wallets are present - showing the credentials wizard");
-      mainView.setShowExitingPasswordWizard(true);
+      mainView.setShowExitingCredentialsWizard(true);
       mainView.setShowExitingWelcomeWizard(false);
 
     }

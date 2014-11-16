@@ -88,12 +88,11 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
     contentPanel.add(Buttons.newShowHistoryScreenButton(getShowHistoryAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     WalletType walletType = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType();
 
-    // TODO Re-instate this
-//    if (WalletType.TREZOR_HARD_WALLET.equals(walletType)) {
+    if (WalletType.TREZOR_HARD_WALLET.equals(walletType)) {
       contentPanel.add(Buttons.newShowChangePinButton(getShowChangePinAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-//    } else {
-//      contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-//    }
+    } else {
+      contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    }
 
     // Repair is in bottom right for fastest visibility
     contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
@@ -171,7 +170,7 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
   }
 
   /**
-   * @return An action to show the "change credentials" tool
+   * @return An action to show the "change password" tool
    */
   private AbstractAction getShowChangePasswordAction() {
     return new AbstractAction() {

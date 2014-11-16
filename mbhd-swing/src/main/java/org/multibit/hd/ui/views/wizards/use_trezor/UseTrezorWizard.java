@@ -30,9 +30,9 @@ public class UseTrezorWizard extends AbstractHardwareWalletWizard<UseTrezorWizar
       new UseTrezorSelectPanelView(this, UseTrezorState.SELECT_TREZOR_ACTION.name()));
 
     // Transitional view to kick off the process of authenticating to Trezor
-    wizardViewMap.put(
-      UseTrezorState.REQUEST_CIPHER_KEY.name(),
-      new UseTrezorRequestCipherKeyPanelView(this, UseTrezorState.REQUEST_CIPHER_KEY.name()));
+//    wizardViewMap.put(
+//      UseTrezorState.REQUEST_CIPHER_KEY.name(),
+//      new UseTrezorRequestCipherKeyPanelView(this, UseTrezorState.REQUEST_CIPHER_KEY.name()));
 
     wizardViewMap.put(UseTrezorState.BUY_TREZOR.name(), new UseTrezorBuyTrezorPanelView(this, UseTrezorState.BUY_TREZOR.name()));
 
@@ -47,9 +47,9 @@ public class UseTrezorWizard extends AbstractHardwareWalletWizard<UseTrezorWizar
     // TODO - "when there is no PIN" panel
 
     // Ask user to confirm 'Encrypt MultiBit HD unlock text'
-    wizardViewMap.put(
-      UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK.name(),
-      new UseTrezorPressConfirmForEncryptCodePanelView(this, UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK.name()));
+//    wizardViewMap.put(
+//      UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK.name(),
+//      new UseTrezorPressConfirmForEncryptCodePanelView(this, UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK.name()));
 
     // Trezor report panel
     wizardViewMap.put(

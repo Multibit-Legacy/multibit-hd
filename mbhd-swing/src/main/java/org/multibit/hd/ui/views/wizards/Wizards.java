@@ -122,7 +122,6 @@ import java.util.List;
  * will handle all the work for you.</p>
  *
  * @since 0.0.1
- *
  */
 public class Wizards {
 
@@ -146,7 +145,7 @@ public class Wizards {
     return new AboutWizard(new AboutWizardModel(AboutState.ABOUT_DETAILS), true);
   }
 
-   /**
+  /**
    * @param parameter Providing information about how the send should be performed
    *
    * @return A new "send bitcoin" wizard
@@ -245,41 +244,33 @@ public class Wizards {
   }
 
   /**
-   * @return A new "credentials" wizard for a warm start - requesting the user enters a Password
+   * @param credentialsRequestType whether the user enters a password or PIN
+   *
+   * @return A new "credentials" wizard for a warm start
    */
-  public static CredentialsWizard newExitingCredentialsWizard() {
+  public static CredentialsWizard newExitingCredentialsWizard(CredentialsRequestType credentialsRequestType) {
 
-    return newExitingCredentialsWizard(CredentialsRequestType.PASSWORD);
-
+    log.debug("New 'Credentials wizard' with credentialsRequestType = " + credentialsRequestType);
+    switch (credentialsRequestType) {
+      case NO_TREZOR_PIN:
+        throw new UnsupportedOperationException("No Trezor PIN support in Credentials Wizard");
+      case TREZOR_PIN:
+        throw new UnsupportedOperationException("Trezor PIN support in Credentials Wizard");
+      case PASSWORD:
+      default:
+        return new CredentialsWizard(new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD, credentialsRequestType), true);
+    }
   }
 
   /**
-    * @return A new "credentials" wizard for a warm start
-    * @param credentialsRequestType whether the user enters a password or PIN
-    */
-   public static CredentialsWizard newExitingCredentialsWizard(CredentialsRequestType credentialsRequestType) {
+   * @return A new "use trezor" wizard
+   */
+  public static UseTrezorWizard newUseTrezorWizard() {
 
-     log.debug("New 'Credentials wizard' with credentialsRequestType = " + credentialsRequestType);
-     switch (credentialsRequestType) {
-       case NO_TREZOR_PIN:
-         throw new UnsupportedOperationException("No Trezor PIN support in Credentials Wizard");
-       case TREZOR_PIN:
-         throw new UnsupportedOperationException("Trezor PIN support in Credentials Wizard");
-       case PASSWORD:
-       default:
-         return new CredentialsWizard(new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD, credentialsRequestType), true);
-     }
-   }
+    return new UseTrezorWizard(new UseTrezorWizardModel(UseTrezorState.SELECT_TREZOR_ACTION), false);
+  }
 
   /**
-     * @return A new "use trezor" wizard
-     */
-    public static UseTrezorWizard newUseTrezorWizard() {
-
-      return new UseTrezorWizard(new UseTrezorWizardModel(UseTrezorState.SELECT_TREZOR_ACTION), false);
-    }
-
-   /**
    * @return A new "change credentials" wizard
    */
   public static ChangePasswordWizard newChangePasswordWizard() {

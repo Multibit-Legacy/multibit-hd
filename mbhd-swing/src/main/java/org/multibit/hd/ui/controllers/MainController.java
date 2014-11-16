@@ -41,6 +41,7 @@ import org.multibit.hd.ui.views.themes.Theme;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsState;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
@@ -182,14 +183,14 @@ public class MainController extends AbstractController implements
         ) {
 
         // Need to hand over to the credentials wizard
-        handoverToPasswordWizard();
+        handoverToCredentialsWizard();
 
       }
 
       if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(event.getPanelName())) {
 
         // Perform final initialisation
-        hidePasswordWizard();
+        hideCredentialsWizard();
 
       }
 
@@ -851,16 +852,16 @@ public class MainController extends AbstractController implements
   /**
    * Welcome wizard has created a new wallet so hand over to the credentials wizard for access
    */
-  private void handoverToPasswordWizard() {
+  private void handoverToCredentialsWizard() {
 
     log.debug("Hand over to credentials wizard");
 
     // Handover
     mainView.setShowExitingWelcomeWizard(false);
-    mainView.setShowExitingPasswordWizard(true);
+    mainView.setShowExitingCredentialsWizard(true);
 
     // Start building the wizard on the EDT to prevent UI updates
-    final CredentialsWizard credentialsWizard = Wizards.newExitingCredentialsWizard();
+    final CredentialsWizard credentialsWizard = Wizards.newExitingCredentialsWizard(CredentialsRequestType.PASSWORD);
 
     // Use a new thread to handle the new wizard so that the handover can complete
     handoverExecutorService.execute(
@@ -900,7 +901,7 @@ public class MainController extends AbstractController implements
 
     // Handover
     mainView.setShowExitingWelcomeWizard(true);
-    mainView.setShowExitingPasswordWizard(false);
+    mainView.setShowExitingCredentialsWizard(false);
 
     // Start building the wizard on the EDT to prevent UI updates
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET);
@@ -934,15 +935,15 @@ public class MainController extends AbstractController implements
   }
 
   /**
-   * Password wizard has hidden
+   * Credentials wizard has hidden
    */
-  private void hidePasswordWizard() {
+  private void hideCredentialsWizard() {
 
     log.debug("Wallet unlocked. Starting services...");
 
     // No wizards on further refreshes
     mainView.setShowExitingWelcomeWizard(false);
-    mainView.setShowExitingPasswordWizard(false);
+    mainView.setShowExitingCredentialsWizard(false);
 
     // Start the main view refresh on the EDT
     SwingUtilities.invokeLater(

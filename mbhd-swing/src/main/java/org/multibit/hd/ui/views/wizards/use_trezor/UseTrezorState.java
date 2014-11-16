@@ -17,16 +17,16 @@ public enum UseTrezorState {
   SELECT_TREZOR_ACTION,
 
   /**
-    * Use the Trezor wallet
-    */
-   USE_TREZOR_WALLET,
+   * Use the Trezor wallet
+   */
+  USE_TREZOR_WALLET,
 
   /**
-     * Buy a Trezor
-     */
-    BUY_TREZOR,
+   * Buy a Trezor
+   */
+  BUY_TREZOR,
 
-   /**
+  /**
    * Verify the Trezor device
    */
   VERIFY_TREZOR,
@@ -37,11 +37,6 @@ public enum UseTrezorState {
   WIPE_TREZOR,
 
   /**
-   * Request a cipher key from the Trezor (most likely triggers a PIN request)
-   */
-  REQUEST_CIPHER_KEY,
-
-  /**
    * Enter a Trezor PIN
    */
   ENTER_PIN,
@@ -50,11 +45,6 @@ public enum UseTrezorState {
    * No Trezor PIN required
    */
   NO_PIN_REQUIRED,
-
-  /**
-   * Information panel asking user to press the Trezor Confirm button to the comment 'Encrypt MultiBit HD unlock'
-   */
-  PRESS_CONFIRM_FOR_UNLOCK,
 
   /**
    * Report panel
