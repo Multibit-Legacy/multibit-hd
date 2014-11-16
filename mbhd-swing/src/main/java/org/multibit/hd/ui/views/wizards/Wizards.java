@@ -255,6 +255,7 @@ public class Wizards {
       case TREZOR_CIPHER_KEY:
         return new CredentialsWizard(new CredentialsWizardModel(CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY, credentialsRequestType), true);
       case PASSWORD:
+        return new CredentialsWizard(new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD, credentialsRequestType), true);
       default:
         throw new UnsupportedOperationException("The '" + credentialsRequestType.name() + "' is not supported");
     }

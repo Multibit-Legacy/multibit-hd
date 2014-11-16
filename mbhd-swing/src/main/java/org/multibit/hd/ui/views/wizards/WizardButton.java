@@ -15,7 +15,7 @@ public enum WizardButton {
   CANCEL,
   NEXT,
   PREVIOUS,
-  FINISH,
+  FINISH, // TODO Make Unlock its own button
   APPLY,
   RESTORE
 

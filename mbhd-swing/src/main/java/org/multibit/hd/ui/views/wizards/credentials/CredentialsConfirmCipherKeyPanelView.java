@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.credentials;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
@@ -11,6 +12,7 @@ import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 
@@ -56,7 +58,7 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
     deviceDisplayTextArea.setText(Languages.safeText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT));
 
     contentPanel.add(Labels.newPressConfirmOnDevice(), "wrap");
-    contentPanel.add(deviceDisplayTextArea,"aligny top,wrap");
+    contentPanel.add(deviceDisplayTextArea, "aligny top,wrap");
 
   }
 
@@ -68,14 +70,50 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
   }
 
   @Override
-  public void afterShow() {
+  public boolean beforeHide(boolean isExitCancel) {
 
+    // Don't block an exit
+    if (isExitCancel) {
+      return true;
+    }
+
+    // Disable the buttons while the processing is going on
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+
+        // Ensure the view shows the spinner and disables components
+        getFinishButton().setEnabled(false);
+        getExitButton().setEnabled(false);
+        getRestoreButton().setEnabled(false);
+
+      }
+    });
+
+    // Defer the hide operation
+    return false;
   }
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // No need to update the wizard it has the references
+
+    // Determine any events
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.FINISH,
+      isUnlockEnabled()
+    );
+
+  }
+
+  /**
+   * @return True if the "unlock" button should be enabled
+   */
+  private boolean isUnlockEnabled() {
+
+    return getWizardModel().getEntropy().isPresent();
 
   }
 

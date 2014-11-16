@@ -52,6 +52,12 @@ public class MainView extends JFrame {
   private boolean showExitingWelcomeWizard = false;
   private boolean showExitingCredentialsWizard = false;
   private boolean isCentered = false;
+  private boolean showTrezorCredentials = false;
+
+  /**
+   * The credentials type to show when starting the credentials wizard
+   */
+  private CredentialsRequestType credentialsRequestType = CredentialsRequestType.PASSWORD;
 
   public MainView() {
 
@@ -161,13 +167,7 @@ public class MainView extends JFrame {
       log.debug("Showing exiting credentials wizard");
 
       // Force an exit if the user can't get through
-      if (CoreServices.getOrCreateHardwareWalletService().isPresent() && CoreServices.getOrCreateHardwareWalletService().get().isWalletPresent()) {
-        // Hardware wallet attached with initialised wallet
-        Panels.showLightBox(Wizards.newExitingCredentialsWizard(CredentialsRequestType.TREZOR_CIPHER_KEY).getWizardScreenHolder());
-      } else {
-        // No hardware wallet attached (or it has no wallet loaded so needs initialisation beyond credentials)
-        Panels.showLightBox(Wizards.newExitingCredentialsWizard(CredentialsRequestType.PASSWORD).getWizardScreenHolder());
-      }
+      Panels.showLightBox(Wizards.newExitingCredentialsWizard(credentialsRequestType).getWizardScreenHolder());
 
     } else {
 
@@ -459,4 +459,11 @@ public class MainView extends JFrame {
     return devices;
   }
 
+  public void setCredentialsRequestType(CredentialsRequestType credentialsRequestType) {
+    this.credentialsRequestType = credentialsRequestType;
+  }
+
+  public CredentialsRequestType getCredentialsRequestType() {
+    return credentialsRequestType;
+  }
 }

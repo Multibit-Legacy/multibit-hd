@@ -18,7 +18,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,7 +151,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
 
           // Ensure the view disables components
           getFinishButton().setEnabled(false);
-          getCancelButton().setEnabled(false);
+          getExitButton().setEnabled(false);
           getRestoreButton().setEnabled(false);
 
         }

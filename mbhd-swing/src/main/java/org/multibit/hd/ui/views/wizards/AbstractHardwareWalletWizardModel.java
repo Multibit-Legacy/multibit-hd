@@ -19,7 +19,7 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   /**
    * Trezor requests have their own executor service
    */
-  protected final ListeningExecutorService trezorRequestService = SafeExecutors.newSingleThreadExecutor("trezor-requests");
+  protected final ListeningExecutorService hardwareWalletRequestService = SafeExecutors.newSingleThreadExecutor("trezor-requests");
 
   protected AbstractHardwareWalletWizardModel(S state) {
     super(state);

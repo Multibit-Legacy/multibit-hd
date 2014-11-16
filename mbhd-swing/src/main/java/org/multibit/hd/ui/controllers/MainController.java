@@ -102,6 +102,11 @@ public class MainController extends AbstractController implements
   private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 10;
 
   /**
+   * True if the credentials wizard should be shown with Trezor credentials
+   */
+  private boolean showTrezorCredentials = false;
+
+  /**
    * @param bitcoinURIListeningService The Bitcoin URI listening service (must be present to permit a UI)
    * @param headerController           The header controller
    * @param sidebarController          The sidebar controller
@@ -128,7 +133,9 @@ public class MainController extends AbstractController implements
    * @param mainView The current main view
    */
   public void setMainView(MainView mainView) {
+
     this.mainView = mainView;
+
   }
 
   @Subscribe
@@ -187,7 +194,9 @@ public class MainController extends AbstractController implements
 
       }
 
-      if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(event.getPanelName())) {
+      if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(event.getPanelName())
+        || CredentialsState.CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK.name().equals(event.getPanelName())
+        ) {
 
         // Perform final initialisation
         hideCredentialsWizard();
@@ -568,40 +577,35 @@ public class MainController extends AbstractController implements
 
     log.debug("Received hardware event: '{}'", event.getEventType().name());
 
-    // Ensure we return from this event quickly and that UI happens on the EDT
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-
-          // Quick check for relevancy
-          switch (event.getEventType()) {
-            case SHOW_DEVICE_STOPPED:
-            case SHOW_DEVICE_DETACHED:
-              // Rely on the view status event to inform the user
-              // An alert tends to stack and gets messy/irrelevant
-              break;
-            case SHOW_DEVICE_FAILED:
-            case SHOW_DEVICE_READY:
-              // Show an alert if the Trezor connects when there is a current wallet
-              if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-                // Attempt to create a suitable alert model in addition to view event
-                AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
-                ControllerEvents.fireAddAlertEvent(alertModel);
-              }
-              break;
-            default:
-              // The AbstractHardwareWalletWizard handles specific cases
-              // No view event
-              return;
-          }
-
-          // Must have a view event (device ready/not ready) to be here
-          // See the AbstractHardwareWalletWizard for more fine detailed handling
-          ViewEvents.fireHardwareWalletStatusChangedEvent(event.getEventType());
-
+    // Quick check for relevancy
+    switch (event.getEventType()) {
+      case SHOW_DEVICE_STOPPED:
+      case SHOW_DEVICE_DETACHED:
+        // Rely on the view status event to inform the user
+        // An alert tends to stack and gets messy/irrelevant
+        // Reset the credentials request type
+        mainView.setCredentialsRequestType(CredentialsRequestType.PASSWORD);
+        break;
+      case SHOW_DEVICE_FAILED:
+      case SHOW_DEVICE_READY:
+        // Show an alert if the Trezor connects when there is a current wallet
+        if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+          // Attempt to create a suitable alert model in addition to view event
+          AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+          ControllerEvents.fireAddAlertEvent(alertModel);
         }
-      });
+        // Set the credentials request type
+        mainView.setCredentialsRequestType(CredentialsRequestType.TREZOR_CIPHER_KEY);
+        break;
+      default:
+        // The AbstractHardwareWalletWizard handles specific cases
+        // No view event
+        return;
+    }
+
+    // Must have a view event (device ready/not ready) to be here
+    // See the AbstractHardwareWalletWizard for more fine detailed handling
+    ViewEvents.fireHardwareWalletStatusChangedEvent(event.getEventType());
 
   }
 

@@ -1,15 +1,12 @@
 package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import org.bitcoinj.crypto.ChildNumber;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
-import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
@@ -23,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import javax.swing.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -245,55 +241,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
   }
 
-  @Override
-  public void receivedDeterministicHierarchy(HardwareWalletEvent event) {
-
-    switch (state) {
-      case USE_TREZOR_REPORT_PANEL:
-
-        // Attempt to create the wallet in a new thread off the Trezor event thread
-        ListenableFuture<Boolean> future = trezorCreateWalletService.submit(new Callable<Boolean>() {
-          @Override
-          public Boolean call() throws Exception {
-
-            // Shutdown the existing Bitcoin network service
-            CoreServices.getOrCreateBitcoinNetworkService().stopAndWait();
-
-            WalletManager.INSTANCE.setCurrentWalletSummary(null);
-
-            return false;
-          }
-        });
-        Futures.addCallback(future, new FutureCallback<Boolean>() {
-          @Override
-          public void onSuccess(final @Nullable Boolean result) {
-            SwingUtilities.invokeLater(new Runnable() {
-              @Override
-              public void run() {
-                getEnterPinPanelView().setPinStatus(result, true);
-              }
-            });
-
-          }
-
-          @Override
-          public void onFailure(Throwable t) {
-            ExceptionHandler.handleThrowable(t);
-          }
-        });
-
-
-        break;
-      default:
-        // TODO Fill in the other states and provide success feedback
-        log.info(
-          "Message:'Operation succeeded'\n{}",
-          event.getMessage().get()
-        );
-    }
-
-  }
-
   public UseTrezorState getCurrentSelection() {
     return currentSelection;
   }
@@ -316,7 +263,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   public void requestFeatures() {
 
     // Start the features request
-    ListenableFuture future = trezorRequestService.submit(
+    ListenableFuture future = hardwareWalletRequestService.submit(
       new Callable<Boolean>() {
 
         @Override
@@ -361,7 +308,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   public void wipeTrezor() {
 
     // Start the wipe Trezor
-    ListenableFuture future = trezorRequestService.submit(
+    ListenableFuture future = hardwareWalletRequestService.submit(
       new Callable<Boolean>() {
 
         @Override
@@ -405,67 +352,11 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   }
 
   /**
-   * Request the root node for the Trezor HD wallet as a deterministic hierarchy
-   */
-  public void requestRootNode() {
-
-    // Start the requestRootNode
-    ListenableFuture future = trezorRequestService.submit(
-      new Callable<Boolean>() {
-
-        @Override
-        public Boolean call() throws Exception {
-
-          Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
-          if (hardwareWalletServiceOptional.isPresent()) {
-            HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
-            if (hardwareWalletService.isWalletPresent()) {
-              log.debug("Request the deterministic hierarchy for the Trezor account");
-              hardwareWalletService.requestDeterministicHierarchy(
-                Lists.newArrayList(
-                  new ChildNumber(44 | ChildNumber.HARDENED_BIT),
-                  ChildNumber.ZERO_HARDENED,
-                  ChildNumber.ZERO_HARDENED
-                ));
-              log.debug("Request deterministic hierarchy has been performed");
-              // The "receivedDeterministicHierarchy" response is dealt with in the wizard model
-            } else {
-              log.debug("No wallet present");
-            }
-          } else {
-            log.error("No hardware wallet service");
-          }
-          return true;
-
-        }
-
-      });
-    Futures.addCallback(
-      future, new FutureCallback() {
-        @Override
-        public void onSuccess(@Nullable Object result) {
-
-          // We successfully requested the deterministic hierarchy so throw a ComponentChangedEvent for the UI to update
-          ViewEvents.fireComponentChangedEvent(UseTrezorState.USE_TREZOR_REPORT_PANEL.name(), Optional.absent());
-
-        }
-
-        @Override
-        public void onFailure(Throwable t) {
-
-          // Have a failure
-          ExceptionHandler.handleThrowable(t);
-        }
-
-      });
-  }
-
-  /**
    * @param pinPositions The PIN positions providing a level of obfuscation to protect the PIN
    */
   public void requestPinCheck(final String pinPositions) {
 
-    ListenableFuture<Boolean> pinCheckFuture = trezorRequestService.submit(
+    ListenableFuture<Boolean> pinCheckFuture = hardwareWalletRequestService.submit(
       new Callable<Boolean>() {
 
         @Override

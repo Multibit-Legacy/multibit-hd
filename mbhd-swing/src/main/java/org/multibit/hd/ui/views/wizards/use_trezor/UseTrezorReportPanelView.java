@@ -95,12 +95,6 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
         @Override
         public void run() {
 
-          if (!decryptHasBeenRequested) {
-            decryptTrezorWallet();
-          }
-
-          decryptHasBeenRequested = true;
-
           // Enable the Finish button
           ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
 
@@ -121,18 +115,6 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
   @Override
   public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
-  }
-
-  /**
-   * Attempt to decrypt the Trezor wallet and feedback to user
-   */
-  private void decryptTrezorWallet() {
-
-    UseTrezorWizardModel model = getWizardModel();
-
-    // Request the root node from the Trezor
-    // This will fire a HardwareWalletEvent of type PUBLIC_KEY, picked up by the onHardwareWalletEvent below
-    model.requestRootNode();
   }
 
   public void setStatus(boolean status) {

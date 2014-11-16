@@ -340,15 +340,15 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
       WizardButton.FINISH,
-      isFinishEnabled()
+      isUnlockEnabled()
     );
 
   }
 
   /**
-   * @return True if the "finish" button should be enabled
+   * @return True if the "unlock" button should be enabled
    */
-  private boolean isFinishEnabled() {
+  private boolean isUnlockEnabled() {
 
     return !Strings.isNullOrEmpty(
       getPanelModel().get()
