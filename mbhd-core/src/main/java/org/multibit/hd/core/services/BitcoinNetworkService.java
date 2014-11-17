@@ -1046,6 +1046,8 @@ public class BitcoinNetworkService extends AbstractService {
    */
   private Map<Integer, ImmutableList<ChildNumber>> buildReceivingAddressPathMap(Transaction unsignedTx, Wallet wallet) {
 
+    log.debug("Building Receiving address path map for transaction {}", unsignedTx);
+
     Map<Integer, ImmutableList<ChildNumber>> receivingAddressPathMap = Maps.newHashMap();
 
     // Examine the Tx inputs to determine receiving addresses in use
@@ -1054,12 +1056,20 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Unsigned input script arranged as OP_0, PUSHDATA(33)[public key]
       Script script = input.getScriptSig();
-      byte[] data = script.getChunks().get(1).data;
+      TransactionOutput connectedTransactionOutput = input.getConnectedOutput();
+      //if (script.getChunks().size() == 2) {
+      //  byte[] data = script.getChunks().get(1).data;
+      log.debug("Connected transaction output {}", connectedTransactionOutput);
+      if (connectedTransactionOutput != null) {
+        byte[] pubKeyHash = connectedTransactionOutput.getScriptPubKey().getPubKeyHash();
+        log.debug("Connected transaction pubKeyHash {}", Utils.HEX.encode(pubKeyHash));
+        DeterministicKey keyFromPubKey = wallet.getActiveKeychain().findKeyFromPubHash(pubKeyHash);
+        Preconditions.checkNotNull(keyFromPubKey, "Could not find deterministic key from given pubKeyHash. Input script index: " + i);
 
-      DeterministicKey keyFromPubKey = wallet.getActiveKeychain().findKeyFromPubKey(data);
-      Preconditions.checkNotNull(keyFromPubKey, "Could not find deterministic key from given pubkey. Input script index: " + i);
-
-      receivingAddressPathMap.put(i, keyFromPubKey.getPath());
+        receivingAddressPathMap.put(i, keyFromPubKey.getPath());
+      } else {
+        log.debug("Could not parse tx input script '{}'", script.toString());
+      }
 
     }
 
