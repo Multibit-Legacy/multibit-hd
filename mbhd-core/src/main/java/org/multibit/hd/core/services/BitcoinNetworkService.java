@@ -189,14 +189,13 @@ public class BitcoinNetworkService extends AbstractService {
 
         // This method blocks until completed but fires events along the way
         try {
+          log.debug("Starting blockchain download . . .");
           peerGroup.downloadBlockChain();
+          log.debug("Block chain downloaded.");
+          CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkReady(peerGroup.numConnectedPeers()));
         } catch (RuntimeException re) {
           log.debug("Blockchain download was interrupted. Error was : '" + re.getMessage() + "'");
         }
-
-        log.debug("Block chain downloaded.");
-
-        CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkReady(peerGroup.numConnectedPeers()));
       }
     });
 

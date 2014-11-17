@@ -151,7 +151,7 @@ public class TrezorWalletTest {
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
     InstallationManager.setCurrentApplicationDataDirectory(temporaryDirectory);
 
-    // Create a Trezor soft wallet using the test seed phrase, using a BIP44 account structure
+    // Create a Trezor soft wallet using the test root node, using a BIP44 account structure
     WalletSummary walletSummary = WalletManager
             .INSTANCE
             .getOrCreateWalletSummary(

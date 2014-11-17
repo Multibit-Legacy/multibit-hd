@@ -14,11 +14,8 @@ import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.wallet.KeyChain;
 import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
-import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
@@ -30,8 +27,6 @@ import org.multibit.hd.hardware.core.messages.ButtonRequest;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.Success;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.languages.Languages;
-import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -215,41 +210,16 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         unlockWalletService.submit(new Runnable() {
           @Override
           public void run() {
-            Optional<WalletSummary> walletSummaryOptional = getOrCreateTrezorWallet();
+            log.debug("Processing a received Deterministic Hierarchy hardwareWalletEvent");
+
+            // See if the wallet has already been opened
+            // TODO This is racey - receivedDeterministicHierarchy is being called twice on the same wallet
+            Optional<CharSequence> currentWalletPassword = Optional.absent();
+            if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+              currentWalletPassword = Optional.of(WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword());
+            }
+            Optional<WalletSummary> walletSummaryOptional = getOrCreateTrezorWallet(currentWalletPassword);
             if (walletSummaryOptional.isPresent()) {
-
-              WalletSummary walletSummary = walletSummaryOptional.get();
-
-              // Attempt to open the wallet
-              WalletId walletId = walletSummary.getWalletId();
-              try {
-                WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, walletSummary.getPassword());
-              } catch (WalletLoadException wle) {
-                // Mostly this will be from a bad password
-                log.error(wle.getMessage());
-                // Assume bad credentials
-                // TODO Update the UI with failure
-                return;
-              }
-
-              Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-              if (currentWalletSummary.isPresent()) {
-
-                // Store this wallet in the current configuration
-                String walletRoot = WalletManager.createWalletRoot(walletId);
-                Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
-
-                // Create the history service
-                CoreServices.getOrCreateHistoryService(walletSummary.getWalletId());
-
-                // Must have succeeded to be here
-                CoreServices.logHistory(Languages.safeText(MessageKey.PASSWORD_VERIFIED));
-
-              } else {
-
-                // TODO Update the UI with failure
-                return;
-              }
 
               // Trigger the deferred hide
               ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
@@ -428,7 +398,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    *
    * @return The wallet summary, present if the wallet was created/opened successfully
    */
-  private Optional<WalletSummary> getOrCreateTrezorWallet() {
+  private Optional<WalletSummary> getOrCreateTrezorWallet(Optional<CharSequence> currentWalletPassword) {
 
     Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
     if (hardwareWalletServiceOptional.isPresent()) {
@@ -478,6 +448,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           // The entropy is used as the password of the Trezor wallet (so the user does not need to remember it
           log.debug("Running decrypt of Trezor wallet with entropy of length {}", entropy.get().length);
 
+          String newWalletPassword = Hex.toHexString(entropy.get());
+
+          if (currentWalletPassword.isPresent() && currentWalletPassword.get().equals(newWalletPassword)) {
+            log.debug("Trying to load the same wallet twice - looks like getOrCreateTrezorWallet has been called twice on the same wallet. Aborting");
+            return Optional.absent();
+          }
+
           // Locate the installation directory
           final File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -488,7 +465,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             parentKey,
             // TODO The wizard should provide a suitable timestamp field for new wallets
             Dates.parseSeedTimestamp("2101/64").getMillis() / 1000,
-            Hex.toHexString(entropy.get()),
+            newWalletPassword,
             label, "Trezor"));
 
         } catch (Exception e) {

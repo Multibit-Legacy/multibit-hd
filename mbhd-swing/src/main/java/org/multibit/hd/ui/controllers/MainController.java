@@ -969,6 +969,8 @@ public class MainController extends AbstractController implements
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     mainView.sidebarWalletName(walletSummary.get().getName());
 
+    final boolean bounceNetwork = !WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType());
+
     // Start the wallet service
     log.debug("Starting wallet service...");
     CoreServices.getOrCreateWalletService(walletSummary.get().getWalletId());
@@ -999,9 +1001,13 @@ public class MainController extends AbstractController implements
             log.debug("Check for Bitcoin URIs...");
             handleBitcoinURIAlert();
 
-            // Lastly start the Bitcoin network
-            log.debug("Starting Bitcoin network...");
-            handleBitcoinNetwork();
+            // Lastly start the Bitcoin network (for non-Trezor wallets - these are synced by WalletManager)
+            if (bounceNetwork) {
+              log.debug("Starting Bitcoin network...");
+              handleBitcoinNetwork();
+            } else {
+              log.debug("NOT restarting the Bitcoin network connection");
+            }
 
           } catch (Exception e) {
             // TODO localise and put on UI
