@@ -13,13 +13,13 @@ import org.bitcoinj.crypto.DeterministicHierarchy;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.wallet.KeyChain;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.fsm.HardwareWalletContext;
@@ -213,7 +213,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             log.debug("Processing a received Deterministic Hierarchy hardwareWalletEvent");
 
             // See if the wallet has already been opened
-            // TODO This is racey - receivedDeterministicHierarchy is being called twice on the same wallet
+            // TODO This is racey - receivedDeterministicHierarchy is being called twice on the same wallet but I don't know where
             Optional<CharSequence> currentWalletPassword = Optional.absent();
             if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
               currentWalletPassword = Optional.of(WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword());
@@ -451,7 +451,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           String newWalletPassword = Hex.toHexString(entropy.get());
 
           if (currentWalletPassword.isPresent() && currentWalletPassword.get().equals(newWalletPassword)) {
-            log.debug("Trying to load the same wallet twice - looks like getOrCreateTrezorWallet has been called twice on the same wallet. Aborting");
+            log.debug("Trying to load the same wallet twice - looks like getOrCreateTrezorWallet has been called twice on the same wallet. Aborting this invocation");
             return Optional.absent();
           }
 
@@ -464,7 +464,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             applicationDataDirectory,
             parentKey,
             // TODO The wizard should provide a suitable timestamp field for new wallets
-            Dates.parseSeedTimestamp("2101/64").getMillis() / 1000,
+                  DateTime.parse(WalletManager.EARLIEST_HD_WALLET_DATE).getMillis() / 1000,
             newWalletPassword,
             label, "Trezor"));
 

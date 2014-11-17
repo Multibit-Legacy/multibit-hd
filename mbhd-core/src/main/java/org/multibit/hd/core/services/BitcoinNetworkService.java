@@ -222,9 +222,6 @@ public class BitcoinNetworkService extends AbstractService {
     log.info("Starting replay of wallet with id '" + WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId()
       + "' from date " + dateToReplayFrom);
 
-    // TODO (JB) The current best height should be remembered and used to generate percentage completeWithoutSigning as
-    // TODO (JB) then if the peer is replaced the percentage increases monotonically
-
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     String walletRoot = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get().getParentFile().getAbsolutePath();
 

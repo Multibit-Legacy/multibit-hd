@@ -37,7 +37,6 @@ import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.files.SecureFiles;
-import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.slf4j.Logger;
@@ -120,7 +119,7 @@ public enum WalletManager implements WalletEventListener {
 
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
-  private static final String EARLIEST_HD_WALLET_DATE = "2014-06-01"; // TODO refine this
+  public static final String EARLIEST_HD_WALLET_DATE = "2014-10-01"; // TODO refine this
 
   public static final String WALLET_DIRECTORY_PREFIX = "mbhd";
   // The format of the wallet directories is WALLET_DIRECTORY_PREFIX + a wallet id.
@@ -654,11 +653,6 @@ public enum WalletManager implements WalletEventListener {
               @Override
               public Boolean call() throws Exception {
                 log.debug("synchroniseFromDate  called with replay date {}", syncDate);
-
-                //BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
-                // Bounce the network connection
-                //bitcoinNetworkService.stopAndWait();
-                //bitcoinNetworkService.start();
 
                 // Replay wallet - this also bounces the Bitcoin network connection
                 CoreServices.getOrCreateBitcoinNetworkService().replayWallet(syncDate);
