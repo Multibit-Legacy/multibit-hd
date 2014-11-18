@@ -1,7 +1,6 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -12,7 +11,6 @@ import com.xeiam.xchange.ExchangeFactory;
 import com.xeiam.xchange.NotAvailableFromExchangeException;
 import com.xeiam.xchange.currency.CurrencyPair;
 import com.xeiam.xchange.dto.marketdata.Ticker;
-import com.xeiam.xchange.service.BaseExchangeService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
@@ -41,7 +39,6 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class ExchangeTickerService extends AbstractService {
 
@@ -314,21 +311,14 @@ public class ExchangeTickerService extends AbstractService {
 
         // This may involve a call to the exchange or not
         Collection<CurrencyPair> currencyPairs;
-        BaseExchangeService exchangeService = (BaseExchangeService) exchange.get().getPollingMarketDataService();
-        if (exchangeService != null) {
-          try {
-            // Use dynamic lookup (may result in null or SSL failures)
-            currencyPairs = exchangeService.getExchangeSymbols();
-          } catch (SSLHandshakeException e) {
-            // Inform the user of a serious problem with current certificates
-            CoreEvents.fireSecurityEvent(SecuritySummary.newCertificateFailed());
-            // Trigger the failure handler
-            throw new IllegalStateException(e.getMessage(), e);
-          }
-
-        } else {
-          log.warn("Exchange '{}' does not support dynamic currency lookup.", ExchangeKey.current().getExchangeName());
-          currencyPairs = Lists.newArrayList();
+        try {
+          // Use dynamic lookup (may result in null or SSL failures)
+          currencyPairs = exchange.get().getPollingMarketDataService().getExchangeSymbols();
+        } catch (SSLHandshakeException e) {
+          // Inform the user of a serious problem with current certificates
+          CoreEvents.fireSecurityEvent(SecuritySummary.newCertificateFailed());
+          // Trigger the failure handler
+          throw new IllegalStateException(e.getMessage(), e);
         }
 
         // Fail fast

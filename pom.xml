@@ -20,8 +20,8 @@
 
     <!-- Library versions with multiple modules -->
     <slf4j.version>1.7.2</slf4j.version>
-    <xchange.version>2.0.0</xchange.version>
-    <jackson.version>2.2.2</jackson.version>
+    <xchange.version>2.1.0</xchange.version>
+    <jackson.version>2.3.2</jackson.version>
 
     <!-- 2.0M10/1.2.1 -->
     <fest.version>1.2.1</fest.version>
