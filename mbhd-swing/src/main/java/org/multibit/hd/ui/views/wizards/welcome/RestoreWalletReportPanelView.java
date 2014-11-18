@@ -64,8 +64,6 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   private JLabel blocksLeftLabel;
   private JLabel blocksLeftStatusLabel;
 
-  private JLabel spinner;
-
   private ListeningExecutorService restoreWalletExecutorService;
 
   /**
@@ -113,9 +111,6 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     blocksLeftLabel = Labels.newValueLabel("0");
     blocksLeftStatusLabel = Labels.newBlocksLeft();
 
-    // Provide a spinner
-    spinner = Labels.newSpinner(Themes.currentTheme.text(), MultiBitUI.NORMAL_PLUS_ICON_SIZE);
-
     // Make all labels invisible initially
     walletCreatedStatusLabel.setVisible(false);
     cacertsInstalledStatusLabel.setVisible(false);
@@ -123,7 +118,6 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     blocksLeftLabel.setVisible(false);
     blocksLeftStatusLabel.setVisible(false);
 
-    contentPanel.add(spinner, "span 3,align right," + MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG + ",wrap");
     contentPanel.add(walletCreatedStatusLabel, "wrap");
     contentPanel.add(cacertsInstalledStatusLabel, "wrap");
     contentPanel.add(synchronizationStatusLabel, "wrap");
@@ -253,9 +247,6 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
               // Stop the Bitcoin network to release resources
               CoreServices.getOrCreateBitcoinNetworkService().stopAndWait();
-
-              // We're done
-              spinner.setVisible(false);
 
             }
 

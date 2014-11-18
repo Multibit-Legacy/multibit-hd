@@ -54,7 +54,6 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   private JLabel backupLocationStatusLabel;
   private JLabel walletCreatedStatusLabel;
   private JLabel cacertsInstalledStatusLabel;
-  private JLabel spinner;
 
   private ListeningExecutorService createWalletExecutorService;
 
@@ -100,9 +99,6 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     cacertsInstalledStatusLabel = Labels.newCACertsInstalledStatus(false);
     walletCreatedStatusLabel = Labels.newWalletCreatedStatus(false);
 
-    // Provide a spinner
-    spinner = Labels.newSpinner(Themes.currentTheme.text(), MultiBitUI.NORMAL_PLUS_ICON_SIZE);
-
     // Make all labels invisible initially
     seedPhraseCreatedStatusLabel.setVisible(false);
     walletPasswordCreatedStatusLabel.setVisible(false);
@@ -110,7 +106,6 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     cacertsInstalledStatusLabel.setVisible(false);
     walletCreatedStatusLabel.setVisible(false);
 
-    contentPanel.add(spinner, "span 3,align right," + MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG + ",wrap");
     contentPanel.add(seedPhraseCreatedStatusLabel, "wrap");
     contentPanel.add(walletPasswordCreatedStatusLabel, "wrap");
     contentPanel.add(backupLocationStatusLabel, "wrap");
@@ -286,9 +281,6 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
           AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, cacertsInstalledStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
           cacertsInstalledStatusLabel.setVisible(true);
 
-          // We're done
-          spinner.setVisible(false);
-
         }
       });
 
@@ -332,7 +324,6 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
     } catch (Exception e) {
       // Handing over to the exception handler means a hard shutdown
-      spinner.setVisible(false);
       ExceptionHandler.handleThrowable(e);
     }
   }
