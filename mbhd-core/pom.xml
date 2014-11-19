@@ -158,11 +158,12 @@
     <!-- List exchanges in alphabetical order -->
 
     <!-- XChange ANX exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-anx</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
+    <!-- Rates broken as of 2.1.0 -->
+    <!--<dependency>-->
+      <!--<groupId>com.xeiam.xchange</groupId>-->
+      <!--<artifactId>xchange-anx</artifactId>-->
+      <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
 
     <!-- XChange Atlas ATS exchange support -->
     <!-- No 2.1.0 release -->

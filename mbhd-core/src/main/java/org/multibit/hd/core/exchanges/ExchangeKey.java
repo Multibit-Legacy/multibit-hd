@@ -3,7 +3,6 @@ package org.multibit.hd.core.exchanges;
 import com.google.common.base.Optional;
 import com.xeiam.xchange.Exchange;
 import com.xeiam.xchange.ExchangeFactory;
-import com.xeiam.xchange.anx.v2.ANXExchange;
 import com.xeiam.xchange.bitbay.BitbayExchange;
 import com.xeiam.xchange.bitcurex.BitcurexExchange;
 import com.xeiam.xchange.bitfinex.v1.BitfinexExchange;
@@ -43,7 +42,7 @@ public enum ExchangeKey {
    * NONE is always the first entry in the list
    */
   NONE(""),
-  ANX(ANXExchange.class.getName()),
+  // ANX(ANXExchange.class.getName()), // Rates broken
   // ATLASATS(AtlasATS.class.getName()), // No 2.1.0 release
   BITBAY(BitbayExchange.class.getName()),
   // BITCOIN_AVERAGE(BitcoinAverage.class.getName()), // Causes problems with enum creation
