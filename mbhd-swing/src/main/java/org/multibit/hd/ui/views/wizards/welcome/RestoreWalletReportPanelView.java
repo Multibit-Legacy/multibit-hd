@@ -421,7 +421,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         CoreServices.getOrCreateWalletService(currentWalletSummary.get().getWalletId());
 
         // Start the Bitcoin network to synchronize
-        CoreServices.getOrCreateBitcoinNetworkService().replayWallet(replayDate);
+        CoreServices.getOrCreateBitcoinNetworkService().replayWallet(Optional.of(replayDate.toDate()));
 
         return true;
       }

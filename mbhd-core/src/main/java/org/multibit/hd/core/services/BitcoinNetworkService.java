@@ -16,7 +16,6 @@ import org.bitcoinj.script.Script;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.wallet.KeyChain;
-import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
@@ -39,6 +38,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -98,23 +98,51 @@ public class BitcoinNetworkService extends AbstractService {
 
   }
 
-  @Override
-  public boolean start() {
+  /**
+   * Open the blockstore, optionally checkpointing it to a date
+   * @param replayDateOptional the date from which to replay the blcock store (hence use the next earliest checkpoint)
+   *                           if not present then no checkpointing is done and te blockstore is simply opened
+   */
+  public BlockStore openBlockStore(Optional<Date> replayDateOptional) {
+    BlockStore blockStoreToReturn = null;
     try {
       // Check if there is a wallet - if there is no wallet the network will not start (there's nowhere to put the blockchain)
       if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-        log.warn("Not starting bitcoin network service as there is currently no wallet.");
-        return true;
+        log.warn("Not opening blockstore as there is currently no wallet.");
       }
       File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
       String walletRoot = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get().getParentFile().getAbsolutePath();
       File blockStoreFile = new File(walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX);
       File checkpointsFile = new File(walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX);
 
-      // Load or create the blockStore..
-      log.debug("Create new block store");
-      blockStore = new BlockStoreManager(networkParameters).createBlockStore(blockStoreFile, checkpointsFile, null, false);
-      log.debug("Success. Blockstore is '{}'", blockStore);
+      if (replayDateOptional.isPresent()) {
+        // Create a block store and checkpoint it
+        blockStoreToReturn = new BlockStoreManager(networkParameters).createOrOpenBlockStore(blockStoreFile, checkpointsFile, replayDateOptional.get(), true);
+      } else {
+        // Load or create the blockStore - no checkpointing
+        log.debug("Create new block store - no replay date");
+        blockStoreToReturn = new BlockStoreManager(networkParameters).createOrOpenBlockStore(blockStoreFile, checkpointsFile, null, false);
+        log.debug("Success. Blockstore is '{}', height is {}", blockStoreToReturn, blockStoreToReturn.getChainHead() == null ? "Unknown" : blockStoreToReturn.getChainHead().getHeight());
+      }
+    } catch (IOException | BlockStoreException e) {
+      log.error(e.getMessage(), e);
+
+      CoreEvents.fireBitcoinNetworkChangedEvent(
+        BitcoinNetworkSummary.newNetworkStartupFailed(
+          CoreMessageKey.START_NETWORK_CONNECTION_ERROR,
+          Optional.of(new Object[]{})
+        )
+      );
+    }
+    return blockStoreToReturn;
+  }
+
+  @Override
+  public boolean start() {
+    try {
+      if (blockStore == null) {
+        blockStore = openBlockStore(Optional.<Date>absent());
+      }
 
       log.debug("Starting Bitcoin network...");
 
@@ -202,12 +230,12 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
-   * Sync the current wallet from the date specified.
+   * Sync the current wallet from the date specified. If Optional.absent() is specified no checkpointing is performed
    * The blockstore is deleted and created anew, checkpointed and then the blockchain is downloaded.
    */
-  public void replayWallet(DateTime dateToReplayFrom) throws IOException, BlockStoreException, TimeoutException {
+  public void replayWallet(Optional<Date> dateToReplayFromOptional) throws IOException, BlockStoreException, TimeoutException {
 
-    Preconditions.checkNotNull(dateToReplayFrom);
+    Preconditions.checkNotNull(dateToReplayFromOptional);
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent());
     Preconditions.checkState(!SwingUtilities.isEventDispatchThread(), "Replay should not take place on the EDT");
 
@@ -216,20 +244,14 @@ public class BitcoinNetworkService extends AbstractService {
     // Stop the peer group if it is running
     stopPeerGroup();
 
-    // Close the block store
+    // Close the block store if it is open
     closeBlockstore();
 
     log.info("Starting replay of wallet with id '" + WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId()
-      + "' from date " + dateToReplayFrom);
+      + "' from date " + dateToReplayFromOptional);
 
-    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-    String walletRoot = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get().getParentFile().getAbsolutePath();
-
-    File blockchainFile = new File(walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX);
-    File checkpointsFile = new File(walletRoot + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX);
-
-    log.debug("Recreating blockstore with checkpoint date of " + dateToReplayFrom + " ...");
-    blockStore = new BlockStoreManager(networkParameters).createBlockStore(blockchainFile, checkpointsFile, dateToReplayFrom.toDate(), true);
+    log.debug("Recreating blockstore with checkpoint date of " + dateToReplayFromOptional + " ...");
+    blockStore = openBlockStore(dateToReplayFromOptional);
     log.debug("Blockstore is '{}'", blockStore);
 
     restartNetwork();
@@ -1243,7 +1265,7 @@ public class BitcoinNetworkService extends AbstractService {
    * @throws IOException                           If the network fails
    * @throws java.util.concurrent.TimeoutException If the TOR connection fails
    */
-  private void restartNetwork() throws BlockStoreException, IOException, TimeoutException {
+  public void restartNetwork() throws BlockStoreException, IOException, TimeoutException {
 
     // Check if there is a network connection
     if (!isNetworkPresent()) {
@@ -1330,5 +1352,9 @@ public class BitcoinNetworkService extends AbstractService {
 
   public void setLastWalletOptional(Optional<Wallet> lastWalletOptional) {
     this.lastWalletOptional = lastWalletOptional;
+  }
+
+  public BlockStore getBlockStore() {
+    return blockStore;
   }
 }

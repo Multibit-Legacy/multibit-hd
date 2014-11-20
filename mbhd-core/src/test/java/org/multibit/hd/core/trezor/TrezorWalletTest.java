@@ -1,5 +1,6 @@
 package org.multibit.hd.core.trezor;
 
+import com.google.common.base.Optional;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Wallet;
@@ -8,29 +9,24 @@ import org.bitcoinj.crypto.DeterministicHierarchy;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
 import org.bitcoinj.wallet.KeyChain;
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.Uninterruptibles;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.files.SecureFiles;
-import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletType;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.BitcoinNetworkService;
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -216,12 +212,5 @@ public class TrezorWalletTest {
 
     log.debug("Wallet at end of test = " + walletSummary.getWallet().toString());
 
-  }
-
-  private void syncWallet() throws Exception {
-    BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
-    bitcoinNetworkService.replayWallet(TREZOR_WALLET_CREATION_DATE);
-    Uninterruptibles.sleepUninterruptibly(180, TimeUnit.SECONDS);
-    bitcoinNetworkService.stopAndWait();
   }
 }
