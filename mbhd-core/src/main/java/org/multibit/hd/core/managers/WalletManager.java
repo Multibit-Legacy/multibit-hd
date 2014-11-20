@@ -528,7 +528,7 @@ public enum WalletManager implements WalletEventListener {
           // Carry on - it's just logging
           bse.printStackTrace();
         }  finally {
-          // Close the blockstore
+          // Close the blockstore - it will get opened again later but may or may not be checkpointed
           if (blockStore != null) {
             try {
               blockStore.close();
@@ -542,7 +542,6 @@ public enum WalletManager implements WalletEventListener {
           synchroniseWallet(Optional.<Date>absent());
           return walletSummary;
         }
-
 
         log.debug("The lastBlockSeenTime = {}. EarliestKeyCreationDate = {}", walletBeingReturned.getLastBlockSeenTime(), walletBeingReturned.getEarliestKeyCreationTime());
         DateTime syncDate = null;
@@ -640,7 +639,7 @@ public enum WalletManager implements WalletEventListener {
       }
 
       Wallet wallet;
-      boolean performSync = false;
+
       try {
         wallet = loadWalletFromFile(walletFile, password);
       } catch (WalletVersionException wve) {
@@ -655,8 +654,6 @@ public enum WalletManager implements WalletEventListener {
         // If the rolling backups don't load then loadRollingBackup will throw a WalletLoadException which will propagate out
         wallet = BackupManager.INSTANCE.loadRollingBackup(walletId, password);
 
-        // To be on the safe side, perform a sync of the wallet
-        performSync = true;
       }
 
       // Create the wallet summary with its wallet
@@ -673,10 +670,9 @@ public enum WalletManager implements WalletEventListener {
       // + local/ cloud backups are also saved where necessary
       wallet.autosaveToFile(new File(walletFilenameNoAESSuffix), AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
 
-      if (performSync) {
-        // Perform a sync from the last seen block date to ensure all tx are seen
-        synchroniseWallet(Optional.fromNullable(wallet.getLastBlockSeenTime()));
-      }
+      // Perform a sync from the last seen block date to ensure all tx are seen
+      synchroniseWallet(Optional.fromNullable(wallet.getLastBlockSeenTime()));
+
       return walletSummary;
 
     } catch (WalletVersionException wve) {
@@ -688,6 +684,8 @@ public enum WalletManager implements WalletEventListener {
   }
 
   private void synchroniseWallet(final Optional<Date> syncDateOptional) {
+    log.debug("Synchronise wallet called with syncDate {}", syncDateOptional);
+
     if (walletExecutorService == null) {
       walletExecutorService = SafeExecutors.newSingleThreadExecutor("sync-wallet");
     }

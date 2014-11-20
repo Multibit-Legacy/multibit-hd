@@ -298,7 +298,7 @@ public class MainController extends AbstractController implements
         });
 
       // Restart the Bitcoin network (may have switched parameters)
-      handleBitcoinNetwork();
+      //handleBitcoinNetwork();
 
       // Restart the hardware wallet service (devices may have changed)
       handleHardwareWallets();
@@ -742,23 +742,24 @@ public class MainController extends AbstractController implements
   /**
    * <p>Restart the Bitcoin network</p>
    */
-  private void handleBitcoinNetwork() {
-
-    // Only start the network once
-    if (bitcoinNetworkService.isPresent()) {
-      bitcoinNetworkService.get().stopAndWait();
-    }
-
-    bitcoinNetworkService = Optional.of(CoreServices.getOrCreateBitcoinNetworkService());
-
-    // Start the network now that the credentials has been validated
-    bitcoinNetworkService.get().start();
-
-    if (bitcoinNetworkService.get().isStartedOk()) {
-      bitcoinNetworkService.get().downloadBlockChainInBackground();
-    }
-
-  }
+//  private void handleBitcoinNetwork() {
+//
+//    // Only start the network once
+//    if (bitcoinNetworkService.isPresent()) {
+//      bitcoinNetworkService.get().stopAndWait();
+//    }
+//
+//    bitcoinNetworkService = Optional.of(CoreServices.getOrCreateBitcoinNetworkService());
+//
+//    // Start the network now that the credentials has been validated
+//    bitcoinNetworkService.get().start();
+//
+//    if (bitcoinNetworkService.get().isStartedOk()) {
+//      log.debug("Replaying wallet with no snc date (regular sync)");
+//      bitcoinNetworkService.get().replayWallet(Optional.<Date>absent()); // TODO consider when the wallet and chain head differ
+//    }
+//
+//  }
 
   /**
    * <p>Restart the hardware wallet service if necessary</p>
@@ -1004,12 +1005,12 @@ public class MainController extends AbstractController implements
             handleBitcoinURIAlert();
 
             // Lastly start the Bitcoin network (for non-Trezor wallets - these are synced by WalletManager)
-            if (bounceNetwork) {
-              log.debug("Starting Bitcoin network...");
-              handleBitcoinNetwork();
-            } else {
-              log.debug("NOT restarting the Bitcoin network connection");
-            }
+            //if (bounceNetwork) {
+            //  log.debug("Starting Bitcoin network...");
+            //  handleBitcoinNetwork();
+            //} else {
+            //  log.debug("NOT restarting the Bitcoin network connection");
+            //}
 
           } catch (Exception e) {
             // TODO localise and put on UI
