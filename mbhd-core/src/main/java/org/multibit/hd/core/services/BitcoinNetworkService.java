@@ -36,8 +36,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -1177,32 +1175,9 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
-   * @return True if at least one of the MainNet DNS seeds can be reached without error
-   */
-  private boolean isNetworkPresent() {
-
-    final String[] dnsSeeds = networkParameters.getDnsSeeds();
-
-    // Attempt to lookup each address - first success indicates working network
-    for (String dnsSeed : dnsSeeds) {
-      try {
-        if (InetAddress.getAllByName(dnsSeed) != null) {
-          return true;
-        }
-      } catch (UnknownHostException e) {
-        log.warn("Could not resolve '{}'", dnsSeed);
-      }
-    }
-
-    // All DNS seeds failed
-    return false;
-  }
-
-  /**
    * Removes the current wallet from the block chain and closes the block store
    */
   private void closeBlockstore() {
-
     // Remove the wallet from the block chain before closing the blockstore
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() && blockChain != null) {
       blockChain.removeWallet(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
@@ -1351,9 +1326,5 @@ public class BitcoinNetworkService extends AbstractService {
 
   public void setLastWalletOptional(Optional<Wallet> lastWalletOptional) {
     this.lastWalletOptional = lastWalletOptional;
-  }
-
-  public BlockStore getBlockStore() {
-    return blockStore;
   }
 }

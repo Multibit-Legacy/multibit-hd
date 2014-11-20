@@ -297,9 +297,6 @@ public class MainController extends AbstractController implements
           }
         });
 
-      // Restart the Bitcoin network (may have switched parameters)
-      //handleBitcoinNetwork();
-
       // Restart the hardware wallet service (devices may have changed)
       handleHardwareWallets();
 

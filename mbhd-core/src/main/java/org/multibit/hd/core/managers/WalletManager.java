@@ -212,7 +212,7 @@ public enum WalletManager implements WalletEventListener {
         String walletDirectoryPath = walletDirectory.getAbsolutePath();
         if (walletDirectoryPath.contains(walletIdPath)) {
           // Found the required wallet directory - attempt to open the wallet
-          WalletSummary walletSummary = loadFromWalletDirectory(walletDirectory, password);
+          WalletSummary walletSummary = loadFromWalletDirectory(walletDirectory, password, true);
           currentWalletSummary = Optional.of(walletSummary);
         }
 
@@ -299,7 +299,6 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
    */
-  // TODO Rename this to reflect target or consider a dedicated WalletSummaries factory
   public WalletSummary getOrCreateWalletSummary(
           File applicationDataDirectory,
           byte[] seed,
@@ -326,7 +325,7 @@ public enum WalletManager implements WalletEventListener {
       log.debug("Discovered AES encrypted wallet file. Loading...");
 
       // There is already a wallet created with this root - if so load it and return that
-      walletSummary = loadFromWalletDirectory(walletDirectory, password);
+      walletSummary = loadFromWalletDirectory(walletDirectory, password, true);
       if (Configurations.currentConfiguration != null) {
         Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
       }
@@ -431,7 +430,7 @@ public enum WalletManager implements WalletEventListener {
 
       try {
         // There is already a wallet created with this root - if so load it and return that
-        walletSummary = loadFromWalletDirectory(walletDirectory, password);
+        walletSummary = loadFromWalletDirectory(walletDirectory, password, false);
         if (Configurations.currentConfiguration != null) {
           Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
         }
@@ -481,11 +480,9 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setName(name);
       walletSummary.setNotes(notes);
       walletSummary.setPassword(password);
-      walletSummary.setWalletType(WalletType.TREZOR_SOFT_WALLET);
+      walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
       setCurrentWalletSummary(walletSummary);
     }
-
-    // TODO backup of Trezor wallets
 
     // See if there is a checkpoints file - if not then get the InstallationManager to copy one in
     File checkpointsFile = new File(walletDirectory.getAbsolutePath() + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX);
@@ -617,11 +614,12 @@ public enum WalletManager implements WalletEventListener {
    *
    * @param walletDirectory The wallet directory containing the various wallet files to load
    * @param password        The credentials to use to decrypt the wallet
+   * @param performSync     Perform a sync
    * @return Wallet - the loaded wallet
    * @throws WalletLoadException    If the wallet could not be loaded
    * @throws WalletVersionException If the wallet has an unsupported version number
    */
-  WalletSummary loadFromWalletDirectory(File walletDirectory, CharSequence password) throws WalletLoadException, WalletVersionException {
+  WalletSummary loadFromWalletDirectory(File walletDirectory, CharSequence password, boolean performSync) throws WalletLoadException, WalletVersionException {
 
     Preconditions.checkNotNull(walletDirectory, "'walletDirectory' must be present");
     Preconditions.checkNotNull(password, "'credentials' must be present");
@@ -657,6 +655,8 @@ public enum WalletManager implements WalletEventListener {
         // If the rolling backups don't load then loadRollingBackup will throw a WalletLoadException which will propagate out
         wallet = BackupManager.INSTANCE.loadRollingBackup(walletId, password);
 
+        // Make sure a sync is performed
+        performSync = true;
       }
 
       // Create the wallet summary with its wallet
@@ -674,7 +674,9 @@ public enum WalletManager implements WalletEventListener {
       wallet.autosaveToFile(new File(walletFilenameNoAESSuffix), AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
 
       // Perform a sync from the last seen block date to ensure all tx are seen
-      synchroniseWallet(Optional.fromNullable(wallet.getLastBlockSeenTime()));
+      if (performSync) {
+        synchroniseWallet(Optional.fromNullable(wallet.getLastBlockSeenTime()));
+      }
 
       return walletSummary;
 

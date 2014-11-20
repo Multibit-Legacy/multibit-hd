@@ -484,7 +484,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         loadedWalletId,
         decryptedWalletPassword);
 
-      // Start the Bitcoin network to synchronize the wallet
+      // Start the Bitcoin network and synchronize the wallet
       BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
       bitcoinNetworkService.start();
       if (bitcoinNetworkService.isStartedOk()) {
