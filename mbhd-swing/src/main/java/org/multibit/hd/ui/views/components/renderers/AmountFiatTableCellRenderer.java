@@ -83,10 +83,10 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
           log.error(nfe.getClass().getCanonicalName() + " " + nfe.getMessage());
         }
       } else {
-        log.warn("Cannot render fiatPayment = "
-          + fiatPayment
-          + ", bitcoinConfiguration.getLocalCurrencyCode() = "
-          + Configurations.currentConfiguration.getBitcoin().getLocalCurrencyCode()
+        // No fiat payment information (could be no exchange)
+        log.debug("Cannot render fiatPayment. {} {}",
+          fiatPayment,
+          Configurations.currentConfiguration.getBitcoin().getLocalCurrencyCode()
         );
         label.setText("");
         if (isSelected) {
