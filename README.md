@@ -49,9 +49,9 @@ To run the application within an IDE, simply execute `MultiBitHD.main()` in the 
 
 #### Start the application (from the command line)
 
-To run the application from the command line, first build with:
+To run the application from the command line, first build from the project root directory:
 ```
-$ mvn clean package
+$ mvn clean install
 ```
 then start the application using the shaded JAR:
 ```
