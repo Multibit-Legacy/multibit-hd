@@ -641,7 +641,15 @@ public class MainController extends AbstractController implements
   private void handleExchange() {
 
     BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
-    ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
+    ExchangeKey exchangeKey;
+    try {
+      exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
+    } catch (IllegalArgumentException e) {
+      // Exchange in configuration is not supported
+      exchangeKey = ExchangeKey.NONE;
+      Configurations.currentConfiguration.getBitcoin().setCurrentExchange(exchangeKey.name());
+      Configurations.persistCurrentConfiguration();
+    }
 
     if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
       if (bitcoinConfiguration.getExchangeApiKeys().containsKey(ExchangeKey.OPEN_EXCHANGE_RATES.name())) {
