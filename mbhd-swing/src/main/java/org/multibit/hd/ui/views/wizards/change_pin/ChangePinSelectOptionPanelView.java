@@ -21,7 +21,7 @@ import java.awt.event.ActionListener;
  * <li>Select how PIN is to be added or removed</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.5
  */
 
 public class ChangePinSelectOptionPanelView extends AbstractWizardPanelView<ChangePinWizardModel, Boolean> implements ActionListener {
@@ -59,7 +59,7 @@ public class ChangePinSelectOptionPanelView extends AbstractWizardPanelView<Chan
     contentPanel.add(
       Panels.newChangePinSelector(
         this,
-        ChangePinState.REQUEST_PIN_CHANGE.name(),
+        ChangePinState.REQUEST_CHANGE_PIN.name(),
         ChangePinState.REQUEST_REMOVE_PIN.name()
       ), "wrap");
 

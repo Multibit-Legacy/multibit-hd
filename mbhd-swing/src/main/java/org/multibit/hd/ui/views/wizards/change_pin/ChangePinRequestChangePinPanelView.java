@@ -19,23 +19,22 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Change PIN: Request PIN change</li>
+ * <li>Change PIN: Request change PIN</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.5
  *  
  */
-public class ChangePinRequestPinChangePanelView extends AbstractWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
+public class ChangePinRequestChangePinPanelView extends AbstractWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(ChangePinRequestPinChangePanelView.class);
+  private static final Logger log = LoggerFactory.getLogger(ChangePinRequestChangePinPanelView.class);
 
-  // TODO Add language support
-  private JLabel message = Labels.newValueLabel("Talking to device...");
+  private JLabel message = Labels.newCommunicatingWithTrezor();
 
   /**
    * @param wizard The wizard managing the states
    */
-  public ChangePinRequestPinChangePanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
+  public ChangePinRequestChangePinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.PIN_TITLE, AwesomeIcon.LOCK);
 

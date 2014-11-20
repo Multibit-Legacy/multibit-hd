@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
  * <li>Enter confirmation of new PIN</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.5
  *
  */
 public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {

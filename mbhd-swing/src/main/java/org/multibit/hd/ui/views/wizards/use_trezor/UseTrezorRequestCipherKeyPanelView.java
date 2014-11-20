@@ -29,8 +29,7 @@ public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<
 
   private static final Logger log = LoggerFactory.getLogger(UseTrezorRequestCipherKeyPanelView.class);
 
-  // TODO Add language support
-  private JLabel message = Labels.newValueLabel("Talking to device...");
+  private JLabel message = Labels.newCommunicatingWithTrezor();
 
   /**
    * @param wizard The wizard managing the states

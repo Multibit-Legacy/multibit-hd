@@ -9,7 +9,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
  * <li>Storage of state for the "change PIN" panel</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.5
  */
 public class ChangePinEnterPinPanelModel extends AbstractWizardPanelModel {
 

@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.credentials;
+package org.multibit.hd.ui.views.wizards.change_pin;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -19,24 +19,24 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Credentials: Request cipher key</li>
+ * <li>Change PIN: Request remove PIN</li>
  * </ul>
- * <p>This is the first step in getting the extended public key from a Trezor device</p>
- * @since 0.0.1
+ *
+ * @since 0.0.5
  *  
  */
-public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelView<CredentialsWizardModel, String> {
+public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(CredentialsRequestCipherKeyPanelView.class);
+  private static final Logger log = LoggerFactory.getLogger(ChangePinRequestRemovePinPanelView.class);
 
-  private JLabel message = Labels.newCommunicatingWithTrezor();
+  private JLabel message = Labels.newTalkingToDevice();
 
   /**
    * @param wizard The wizard managing the states
    */
-  public CredentialsRequestCipherKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
+  public ChangePinRequestRemovePinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT, AwesomeIcon.LOCK);
+    super(wizard, panelName, MessageKey.PIN_TITLE, AwesomeIcon.LOCK);
 
   }
 
@@ -44,7 +44,7 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
   public void newPanelModel() {
 
     // Bind it to the wizard model in case of failure
-    getWizardModel().setRequestCipherKeyPanelView(this);
+    getWizardModel().setRequestRemovePinPanelView(this);
 
   }
 
@@ -65,9 +65,9 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<ChangePinWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelRestoreUnlock(this, wizard);
+    PanelDecorator.addExitCancelNext(this, wizard);
 
   }
 
@@ -77,7 +77,7 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
     // Initialise with "Unlock" disabled to force users to enter credentials
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
-      WizardButton.FINISH,
+      WizardButton.NEXT,
       false
     );
 
@@ -86,15 +86,13 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
   @Override
   public void afterShow() {
 
-    registerDefaultButton(getFinishButton());
-
     // Start the wallet access process by requesting a cipher key
     // to get a deterministic wallet ID
     //
     // This is done as a transitional panel to allow for a device
     // failure at each stage with the user having the option to
     // easily escape
-    getWizardModel().requestCipherKey();
+    getWizardModel().requestChangeOrRemovePin();
 
   }
 

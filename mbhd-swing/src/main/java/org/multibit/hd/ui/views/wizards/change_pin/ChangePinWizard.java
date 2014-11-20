@@ -13,7 +13,7 @@ import java.util.Map;
  * <li>Enter and confirm new PIN</li>
  * </ol>
  *
- * @since 0.0.1
+ * @since 0.0.5
  *
  */
 public class ChangePinWizard extends AbstractHardwareWalletWizard<ChangePinWizardModel> {
@@ -28,18 +28,27 @@ public class ChangePinWizard extends AbstractHardwareWalletWizard<ChangePinWizar
     wizardViewMap.put(
       ChangePinState.SELECT_OPTION.name(),
       new ChangePinSelectOptionPanelView(this, ChangePinState.SELECT_OPTION.name()));
+
     wizardViewMap.put(
-      ChangePinState.REQUEST_PIN_CHANGE.name(),
-      new ChangePinRequestPinChangePanelView(this, ChangePinState.REQUEST_PIN_CHANGE.name()));
+      ChangePinState.REQUEST_CHANGE_PIN.name(),
+      new ChangePinRequestChangePinPanelView(this, ChangePinState.REQUEST_CHANGE_PIN.name()));
+
+    wizardViewMap.put(
+      ChangePinState.REQUEST_REMOVE_PIN.name(),
+      new ChangePinRequestRemovePinPanelView(this, ChangePinState.REQUEST_REMOVE_PIN.name()));
+
     wizardViewMap.put(
       ChangePinState.ENTER_CURRENT_PIN.name(),
       new ChangePinEnterPinPanelView(this, ChangePinState.ENTER_CURRENT_PIN.name()));
+
     wizardViewMap.put(
       ChangePinState.ENTER_NEW_PIN.name(),
       new ChangePinEnterPinPanelView(this, ChangePinState.ENTER_NEW_PIN.name()));
+
     wizardViewMap.put(
       ChangePinState.CONFIRM_NEW_PIN.name(),
       new ChangePinEnterPinPanelView(this, ChangePinState.CONFIRM_NEW_PIN.name()));
+
     wizardViewMap.put(
         ChangePinState.SHOW_REPORT.name(),
         new ChangePinReportPanelView(this, ChangePinState.SHOW_REPORT.name()));

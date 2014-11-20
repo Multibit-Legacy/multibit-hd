@@ -29,7 +29,7 @@ import javax.swing.*;
  * <li>Show result of attempting to change the credentials of a wallet</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.5
  *
  */
 public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinWizardModel, String> {

@@ -1087,6 +1087,13 @@ public class Labels {
   }
 
   /**
+   * @return A new "communicating with Trezor" label
+   */
+  public static JLabel newCommunicatingWithTrezor() {
+    return newLabel(MessageKey.COMMUNICATING_WITH_TREZOR);
+  }
+
+  /**
    * @return A new "multi edit note" label
    */
   public static JLabel newMultiEditNote() {

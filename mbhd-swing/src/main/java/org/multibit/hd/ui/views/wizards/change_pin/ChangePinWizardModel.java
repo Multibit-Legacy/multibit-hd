@@ -12,6 +12,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.PinMatrixRequest;
+import org.multibit.hd.hardware.core.messages.PinMatrixRequestType;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
@@ -30,7 +31,7 @@ import java.util.concurrent.Callable;
  * <li>State transition management</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.5
  */
 public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<ChangePinState> {
 
@@ -52,9 +53,14 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
   private boolean removePin = false;
 
   /**
-   * The request change PIN view
+   * The "request change PIN" view
    */
-  private ChangePinRequestPinChangePanelView requestChangePinPanelView;
+  private ChangePinRequestChangePinPanelView requestChangePinPanelView;
+
+  /**
+   * The "request remove PIN" view
+   */
+  private ChangePinRequestRemovePinPanelView requestRemovePinPanelView;
 
   /**
    * @param state The state object
@@ -100,12 +106,20 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
     this.removePin = removePin;
   }
 
-  public void setRequestChangePinPanelView(ChangePinRequestPinChangePanelView requestChangePinPanelView) {
+  public ChangePinRequestChangePinPanelView getRequestChangePinPanelView() {
+    return requestChangePinPanelView;
+  }
+
+  public void setRequestChangePinPanelView(ChangePinRequestChangePinPanelView requestChangePinPanelView) {
     this.requestChangePinPanelView = requestChangePinPanelView;
   }
 
-  public ChangePinRequestPinChangePanelView getRequestChangePinPanelView() {
-    return requestChangePinPanelView;
+  public ChangePinRequestRemovePinPanelView getRequestRemovePinPanelView() {
+    return requestRemovePinPanelView;
+  }
+
+  public void setRequestRemovePinPanelView(ChangePinRequestRemovePinPanelView requestRemovePinPanelView) {
+    this.requestRemovePinPanelView = requestRemovePinPanelView;
   }
 
   /**
@@ -131,10 +145,11 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
 
     switch (state) {
       case SELECT_OPTION:
-        state=ChangePinState.REQUEST_PIN_CHANGE;
+        state = isRemovePin() ? ChangePinState.REQUEST_REMOVE_PIN: ChangePinState.REQUEST_CHANGE_PIN;
         break;
-      case REQUEST_PIN_CHANGE:
-
+      case REQUEST_REMOVE_PIN:
+        break;
+      case REQUEST_CHANGE_PIN:
         break;
       case ENTER_CURRENT_PIN:
         state = ChangePinState.ENTER_NEW_PIN;
@@ -156,15 +171,28 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
 
     // Determine if this is the first or second PIN entry
     PinMatrixRequest request = (PinMatrixRequest) event.getMessage().get();
-    String pin;
-    switch (request.getPinMatrixRequestType()) {
-      case CURRENT:
+    PinMatrixRequestType requestType = request.getPinMatrixRequestType();
+
+    // The PIN entry could have come about from many possible paths
+    switch (state) {
+      case SELECT_OPTION:
         break;
-      case NEW_FIRST:
+      case REQUEST_REMOVE_PIN:
         break;
-      case NEW_SECOND:
+      case REQUEST_CHANGE_PIN:
         break;
+      case ENTER_CURRENT_PIN:
+        break;
+      case ENTER_NEW_PIN:
+        break;
+      case CONFIRM_NEW_PIN:
+        break;
+      case SHOW_REPORT:
+        break;
+      default:
+        throw new IllegalStateException("Unknown state: " + state.name());
     }
+
 
   }
 

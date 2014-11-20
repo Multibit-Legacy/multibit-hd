@@ -373,6 +373,7 @@ public enum MessageKey {
   PASSWORD_UNLOCK_TOOLTIP("password_unlock_tooltip"),
 
   PIN_TITLE("pin_title"),
+  CHANGE_PIN_TITLE("change_pin_title"),
   PIN_INTRODUCTION("pin_introduction"),
 
   PIN_FAILURE("pin_failure"),
