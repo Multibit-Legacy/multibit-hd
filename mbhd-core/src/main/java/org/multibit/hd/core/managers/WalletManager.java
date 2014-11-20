@@ -515,10 +515,13 @@ public enum WalletManager implements WalletEventListener {
           blockStore = bitcoinNetworkService.openBlockStore(Optional.<Date>absent());
           log.debug("blockStore = {}", blockStore);
 
-          StoredBlock chainHead = blockStore.getChainHead();
-          int blockStoreBlockHeight = chainHead == null ? -2 : chainHead.getHeight(); // -2 is just a dummy value
-          log.debug("The blockStore is at height {}", blockStoreBlockHeight);
+          int blockStoreBlockHeight = -2;  // -2 is just a dummy value
+          if (blockStore != null) {
+            StoredBlock chainHead = blockStore.getChainHead();
+            blockStoreBlockHeight = chainHead == null ? -2 : chainHead.getHeight();
 
+          }
+          log.debug("The blockStore is at height {}", blockStoreBlockHeight);
           if (walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) {
             // Regular sync is ok - no need to checkpoint
             log.debug("Wil perform a regular sync");
