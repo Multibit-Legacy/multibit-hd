@@ -120,7 +120,7 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
   @Subscribe
   public void onVerificationStatusChangedEvent(VerificationStatusChangedEvent event) {
 
-    if (ChangePinState.CHANGE_PIN_ENTER_CURRENT_PIN.name().equals(event.getPanelName())) {
+    if (ChangePinState.ENTER_CURRENT_PIN.name().equals(event.getPanelName())) {
       ViewEvents.fireWizardButtonEnabledEvent(event.getPanelName(), WizardButton.NEXT, event.isOK());
     }
 
@@ -130,21 +130,21 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
   public void showNext() {
 
     switch (state) {
-      case CHANGE_PIN_SELECT_OPTION:
-        state=ChangePinState.CHANGE_PIN_REQUEST_PIN_CHANGE;
+      case SELECT_OPTION:
+        state=ChangePinState.REQUEST_PIN_CHANGE;
         break;
-      case CHANGE_PIN_REQUEST_PIN_CHANGE:
+      case REQUEST_PIN_CHANGE:
 
         break;
-      case CHANGE_PIN_ENTER_CURRENT_PIN:
-        state = ChangePinState.CHANGE_PIN_ENTER_NEW_PIN;
+      case ENTER_CURRENT_PIN:
+        state = ChangePinState.ENTER_NEW_PIN;
         break;
-      case CHANGE_PIN_ENTER_NEW_PIN:
+      case ENTER_NEW_PIN:
         break;
-      case CHANGE_PIN_CONFIRM_NEW_PIN:
+      case CONFIRM_NEW_PIN:
         break;
-      case CHANGE_PIN_REPORT:
-        state = ChangePinState.CHANGE_PIN_REPORT;
+      case SHOW_REPORT:
+        state = ChangePinState.SHOW_REPORT;
         break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());

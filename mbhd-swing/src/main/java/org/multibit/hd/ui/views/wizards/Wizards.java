@@ -287,7 +287,7 @@ public class Wizards {
 
     log.debug("New 'Change PIN wizard'");
 
-    return new ChangePinWizard(new ChangePinWizardModel(ChangePinState.CHANGE_PIN_SELECT_OPTION), false);
+    return new ChangePinWizard(new ChangePinWizardModel(ChangePinState.SELECT_OPTION), false);
 
   }
 

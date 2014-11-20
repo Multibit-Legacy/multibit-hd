@@ -59,8 +59,8 @@ public class ChangePinSelectOptionPanelView extends AbstractWizardPanelView<Chan
     contentPanel.add(
       Panels.newChangePinSelector(
         this,
-        "SELECT_CHANGE_PIN",
-        "SELECT_REMOVE_PIN"
+        ChangePinState.REQUEST_PIN_CHANGE.name(),
+        ChangePinState.REQUEST_REMOVE_PIN.name()
       ), "wrap");
 
   }
@@ -94,7 +94,7 @@ public class ChangePinSelectOptionPanelView extends AbstractWizardPanelView<Chan
   }
 
   /**
-   * <p>Handle the "select wallet" action event</p>
+   * <p>Handle the "select PIN change/remove" action event</p>
    *
    * @param e The action event
    */
@@ -103,11 +103,7 @@ public class ChangePinSelectOptionPanelView extends AbstractWizardPanelView<Chan
 
     JRadioButton source = (JRadioButton) e.getSource();
 
-    if ("SELECT_REMOVE_PIN".equals(source.getActionCommand())) {
-      getWizardModel().setRemovePin(true);
-    } else {
-      getWizardModel().setRemovePin(false);
-    }
+    getWizardModel().setRemovePin(ChangePinState.REQUEST_REMOVE_PIN.name().equals(source.getActionCommand()));
 
   }
 }

@@ -26,22 +26,22 @@ public class ChangePinWizard extends AbstractHardwareWalletWizard<ChangePinWizar
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
     wizardViewMap.put(
-      ChangePinState.CHANGE_PIN_SELECT_OPTION.name(),
-      new ChangePinSelectOptionPanelView(this, ChangePinState.CHANGE_PIN_SELECT_OPTION.name()));
+      ChangePinState.SELECT_OPTION.name(),
+      new ChangePinSelectOptionPanelView(this, ChangePinState.SELECT_OPTION.name()));
     wizardViewMap.put(
-      ChangePinState.CHANGE_PIN_REQUEST_PIN_CHANGE.name(),
-      new ChangePinRequestPinChangePanelView(this, ChangePinState.CHANGE_PIN_REQUEST_PIN_CHANGE.name()));
+      ChangePinState.REQUEST_PIN_CHANGE.name(),
+      new ChangePinRequestPinChangePanelView(this, ChangePinState.REQUEST_PIN_CHANGE.name()));
     wizardViewMap.put(
-      ChangePinState.CHANGE_PIN_ENTER_CURRENT_PIN.name(),
-      new ChangePinEnterPinPanelView(this, ChangePinState.CHANGE_PIN_ENTER_CURRENT_PIN.name()));
+      ChangePinState.ENTER_CURRENT_PIN.name(),
+      new ChangePinEnterPinPanelView(this, ChangePinState.ENTER_CURRENT_PIN.name()));
     wizardViewMap.put(
-      ChangePinState.CHANGE_PIN_ENTER_NEW_PIN.name(),
-      new ChangePinEnterPinPanelView(this, ChangePinState.CHANGE_PIN_ENTER_NEW_PIN.name()));
+      ChangePinState.ENTER_NEW_PIN.name(),
+      new ChangePinEnterPinPanelView(this, ChangePinState.ENTER_NEW_PIN.name()));
     wizardViewMap.put(
-      ChangePinState.CHANGE_PIN_CONFIRM_NEW_PIN.name(),
-      new ChangePinEnterPinPanelView(this, ChangePinState.CHANGE_PIN_CONFIRM_NEW_PIN.name()));
+      ChangePinState.CONFIRM_NEW_PIN.name(),
+      new ChangePinEnterPinPanelView(this, ChangePinState.CONFIRM_NEW_PIN.name()));
     wizardViewMap.put(
-        ChangePinState.CHANGE_PIN_REPORT.name(),
-        new ChangePinReportPanelView(this, ChangePinState.CHANGE_PIN_REPORT.name()));
+        ChangePinState.SHOW_REPORT.name(),
+        new ChangePinReportPanelView(this, ChangePinState.SHOW_REPORT.name()));
   }
 }
