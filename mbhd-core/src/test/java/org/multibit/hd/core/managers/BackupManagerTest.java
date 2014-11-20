@@ -128,7 +128,7 @@ public class BackupManagerTest {
     // Open
     String walletRoot = WalletManager.createWalletRoot(recreatedWalletId);
     File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDirectory, walletRoot);
-    WalletSummary recreatedWalletSummary = WalletManager.INSTANCE.loadFromWalletDirectory(walletDirectory, password);
+    WalletSummary recreatedWalletSummary = WalletManager.INSTANCE.loadFromWalletDirectory(walletDirectory, password, true);
     assertThat(recreatedWalletSummary).isNotNull();
     assertThat(recreatedWalletSummary.getWallet()).isNotNull();
 

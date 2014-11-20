@@ -220,6 +220,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
 
     walletService.addPaymentRequest(paymentRequestData);
     try {
+      log.debug("Saving payment information");
       walletService.writePayments();
     } catch (PaymentsSaveException pse) {
       ExceptionHandler.handleThrowable(pse);

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Logback configuration for use during tests -->
+<configuration>
+
+  <!-- Standard console appender for checking activity (short on detail) -->
+  <appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- Simplified standard logging encoder -->
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%contextName] [%thread] %-5level %logger{36} - %msg %xEx%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- Define logging for third party customisation -->
+  <!--<logger name="org.hibernate" level="DEBUG" />-->
+  <!--<logger name="com.sun.jersey" level="DEBUG" />-->
+  <logger name="org.bitcoinj" level="WARN" />
+
+  <!-- Define logging for organisation applications only -->
+  <logger name="org.multibit" level="DEBUG"/>
+
+  <root level="WARN">
+  </root>
+
+</configuration>

@@ -43,6 +43,7 @@ import org.spongycastle.crypto.params.KeyParameter;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -421,7 +422,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         CoreServices.getOrCreateWalletService(currentWalletSummary.get().getWalletId());
 
         // Start the Bitcoin network to synchronize
-        CoreServices.getOrCreateBitcoinNetworkService().replayWallet(replayDate);
+        CoreServices.getOrCreateBitcoinNetworkService().replayWallet(Optional.of(replayDate.toDate()));
 
         return true;
       }
@@ -483,11 +484,11 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         loadedWalletId,
         decryptedWalletPassword);
 
-      // Start the Bitcoin network to synchronize the wallet
+      // Start the Bitcoin network and synchronize the wallet
       BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
       bitcoinNetworkService.start();
       if (bitcoinNetworkService.isStartedOk()) {
-        bitcoinNetworkService.downloadBlockChainInBackground();
+        bitcoinNetworkService.replayWallet(Optional.of(new Date(walletSummary.getWallet().getEarliestKeyCreationTime())));
       } else {
         log.error("Could not start the Bitcoin network service");
         return false;
