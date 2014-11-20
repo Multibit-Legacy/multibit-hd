@@ -55,11 +55,11 @@ $ mvn clean package
 ```
 then start the application using the shaded JAR:
 ```
-$ java -jar mbhd-install/target/multibit-hd.jar
+$ java -jar mbhd-swing/target/multibit-hd.jar
 ```
 No command line parameters are needed, although a Bitcoin URI is accepted (the quotes are required to avoid URL decoding):
 ```
-$ java -jar mbhd-install/target/multibit-hd.jar "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org"
+$ java -jar mbhd-swing/target/multibit-hd.jar "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org"
 ```
 #### Multiple instances
 
@@ -126,7 +126,7 @@ Using Nimbus ensures that we don't have this or similar problems.
 
 #### I want an installer not this IDE
 
-Installers lag the latest changes by a few weeks. You can find them on the [MultiBit HD website](https://beta.multibit.org).
+Installers lag the latest changes by a few weeks. You can find them on the [MultiBit HD website](https://www.multibit.org/releases/multibit-hd).
 
 As new changes are released they will update automatically from 0.0.4 (Private Beta 4) onwards.
 
