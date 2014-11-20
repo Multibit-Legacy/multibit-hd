@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.credentials;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -23,7 +24,7 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 
 public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelView<CredentialsWizardModel, CredentialsConfirmCipherKeyPanelModel> {
@@ -31,8 +32,8 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
   private JTextArea deviceDisplayTextArea;
 
   /**
-   * @param wizard The wizard managing the states
-   * @param panelName   The panel name to filter events from components
+   * @param wizard    The wizard managing the states
+   * @param panelName The panel name to filter events from components
    */
   public CredentialsConfirmCipherKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
@@ -54,11 +55,11 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
       "[]10[]" // Row constraints
     ));
 
-    deviceDisplayTextArea = TextBoxes.newReadOnlyTextArea(5,50);
+    deviceDisplayTextArea = TextBoxes.newTrezorV1Display();
     deviceDisplayTextArea.setText(Languages.safeText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT));
 
     contentPanel.add(Labels.newPressConfirmOnDevice(), "wrap");
-    contentPanel.add(deviceDisplayTextArea, "aligny top,wrap");
+    contentPanel.add(deviceDisplayTextArea, "align center," + MultiBitUI.TREZOR_SCREEN_MAX_WIDTH_MIG + ",wrap");
 
   }
 

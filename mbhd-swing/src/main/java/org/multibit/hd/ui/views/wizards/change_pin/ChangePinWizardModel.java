@@ -11,10 +11,14 @@ import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.messages.ButtonRequest;
+import org.multibit.hd.hardware.core.messages.ButtonRequestType;
 import org.multibit.hd.hardware.core.messages.PinMatrixRequest;
 import org.multibit.hd.hardware.core.messages.PinMatrixRequestType;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorState;
@@ -148,6 +152,7 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
         state = isRemovePin() ? ChangePinState.REQUEST_REMOVE_PIN: ChangePinState.REQUEST_CHANGE_PIN;
         break;
       case REQUEST_REMOVE_PIN:
+        state = ChangePinState.SHOW_REPORT;
         break;
       case REQUEST_CHANGE_PIN:
         break;
@@ -167,6 +172,37 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
   }
 
   @Override
+  public void showButtonPress(HardwareWalletEvent event) {
+
+    // Determine if this is the first or second PIN entry
+    ButtonRequest request = (ButtonRequest) event.getMessage().get();
+    ButtonRequestType requestType = request.getButtonRequestType();
+
+    // The button request could have come about from many possible paths
+    switch (state) {
+      case SELECT_OPTION:
+        break;
+      case REQUEST_REMOVE_PIN:
+        // Must be the device asking to confirm
+        getRequestRemovePinPanelView().setDeviceText(Languages.safeText(MessageKey.TREZOR_REMOVE_PIN_TEXT));
+        break;
+      case REQUEST_CHANGE_PIN:
+        break;
+      case ENTER_CURRENT_PIN:
+        break;
+      case ENTER_NEW_PIN:
+        break;
+      case CONFIRM_NEW_PIN:
+        break;
+      case SHOW_REPORT:
+        break;
+      default:
+        throw new IllegalStateException("Unknown state: " + state.name());
+    }
+
+  }
+
+  @Override
   public void showPINEntry(HardwareWalletEvent event) {
 
     // Determine if this is the first or second PIN entry
@@ -178,6 +214,8 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
       case SELECT_OPTION:
         break;
       case REQUEST_REMOVE_PIN:
+        // User has confirmed the removal and has a current PIN
+        state = ChangePinState.ENTER_CURRENT_PIN;
         break;
       case REQUEST_CHANGE_PIN:
         break;

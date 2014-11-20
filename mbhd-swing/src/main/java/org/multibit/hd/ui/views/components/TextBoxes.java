@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.DocumentMaxLengthFilter;
 import org.multibit.hd.ui.MultiBitUI;
@@ -26,7 +26,6 @@ import java.util.Collection;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class TextBoxes {
 
@@ -661,6 +660,13 @@ public class TextBoxes {
   }
 
   /**
+   * @return A text area with similar dimensions to a V1 Trezor
+   */
+  public static JTextArea newTrezorV1Display() {
+    return newReadOnlyTextArea(5, 50);
+  }
+
+  /**
    * @param listener A document listener to detect changes
    *
    * @return A new "enter API key" text field
@@ -684,5 +690,4 @@ public class TextBoxes {
   public static char getPasswordEchoChar() {
     return '\u2022';
   }
-
 }

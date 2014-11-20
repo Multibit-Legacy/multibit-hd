@@ -80,6 +80,11 @@ public interface MultiBitUI {
    */
   String COMBO_BOX_WIDTH_MIG = "w min:350:";
 
+  /**
+   * A width constraint to avoid text overflow in wizards showing Trezor device screens
+   */
+  String TREZOR_SCREEN_MAX_WIDTH_MIG = "w 150";
+
   // Corners
 
   /**

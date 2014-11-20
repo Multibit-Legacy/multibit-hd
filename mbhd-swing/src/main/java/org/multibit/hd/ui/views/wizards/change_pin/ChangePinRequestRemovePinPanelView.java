@@ -2,10 +2,12 @@ package org.multibit.hd.ui.views.wizards.change_pin;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -29,7 +31,9 @@ public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<
 
   private static final Logger log = LoggerFactory.getLogger(ChangePinRequestRemovePinPanelView.class);
 
-  private JLabel message = Labels.newTalkingToDevice();
+  private JLabel message = Labels.newCommunicatingWithTrezor();
+
+  private JTextArea deviceDisplayTextArea = TextBoxes.newTrezorV1Display();
 
   /**
    * @param wizard The wizard managing the states
@@ -51,16 +55,18 @@ public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
-    contentPanel.setLayout(
-      new MigLayout(
-        Panels.migXLayout(),
-        "[120][][][40]", // Column constraints
-        "[]12[][][30]" // Row constraints
-      ));
+    contentPanel.setLayout(new MigLayout(
+      Panels.migXYLayout(),
+      "[]", // Column constraints
+      "[]10[]" // Row constraints
+    ));
+
+    // Hide the display area initially
+    deviceDisplayTextArea.setVisible(false);
 
     // Need some text here in case device fails just as we being the process
-    contentPanel.add(Labels.newBlankLabel());
-    contentPanel.add(message, "align left,span 2,wrap");
+    contentPanel.add(message, "align left,wrap");
+    contentPanel.add(deviceDisplayTextArea, "align center," + MultiBitUI.TREZOR_SCREEN_MAX_WIDTH_MIG + ",wrap");
 
   }
 
@@ -104,10 +110,13 @@ public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<
   }
 
   /**
-   * @param message The message text
+   * @param deviceText The text showing on the device
    */
-  public void setMessage(String message) {
-    this.message.setText(message);
+  public void setDeviceText(String deviceText) {
+
+    this.deviceDisplayTextArea.setVisible(true);
+    this.deviceDisplayTextArea.setText(deviceText);
+
   }
 
 }
