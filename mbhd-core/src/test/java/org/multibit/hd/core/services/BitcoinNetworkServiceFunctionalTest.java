@@ -283,7 +283,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Clear percentage complete
     percentComplete = 0;
 
-    bitcoinNetworkService.replayWallet(replayDate);
+    bitcoinNetworkService.replayWallet(Optional.of(replayDate.toDate()));
 
     int timeout = 0;
     while (timeout < MAX_TIMEOUT && (percentComplete < 100)) {

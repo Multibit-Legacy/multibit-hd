@@ -14,6 +14,8 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.*;
 import org.bitcoinj.script.Script;
+import org.bitcoinj.store.BlockStore;
+import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.store.UnreadableWalletException;
 import org.bitcoinj.store.WalletProtobufSerializer;
 import org.bitcoinj.wallet.DeterministicSeed;
@@ -37,6 +39,7 @@ import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.slf4j.Logger;
@@ -48,6 +51,7 @@ import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -487,16 +491,63 @@ public enum WalletManager implements WalletEventListener {
     File checkpointsFile = new File(walletDirectory.getAbsolutePath() + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX);
     InstallationManager.copyCheckpointsTo(checkpointsFile);
 
-    // Perform a sync from the last seen block date to ensure all tx are seen
+    // See if the wallet and blockstore are at the same height - in which case perform a regular download blockchain
+    // Else perform a sync from the last seen block date to ensure all tx are seen
     log.debug("Seeing if wallet needs to sync");
     if (walletSummary != null) {
-      DateTime syncDate = null;
       Wallet walletBeingReturned = walletSummary.getWallet();
 
       if (walletBeingReturned == null) {
         log.debug("There is no wallet to examine");
       } else {
+
+        boolean performRegularSync = false;
+        BlockStore blockStore = null;
+        try {
+          // Make sure the block store is open
+          BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
+          log.debug("bitcoinNetworkService = {}", bitcoinNetworkService);
+
+          int walletBlockHeight = walletBeingReturned.getLastBlockSeenHeight();
+          log.debug("Wallet lastBlockSeenHeight is {}", walletBlockHeight);
+
+          // Open the blockstore with no checkpointing (this is to get the height
+          blockStore = bitcoinNetworkService.openBlockStore(Optional.<Date>absent());
+          log.debug("blockStore = {}", blockStore);
+
+          int blockStoreBlockHeight = -2;  // -2 is just a dummy value
+          if (blockStore != null) {
+            StoredBlock chainHead = blockStore.getChainHead();
+            blockStoreBlockHeight = chainHead == null ? -2 : chainHead.getHeight();
+
+          }
+          log.debug("The blockStore is at height {}", blockStoreBlockHeight);
+          if (walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) {
+            // Regular sync is ok - no need to checkpoint
+            log.debug("Wil perform a regular sync");
+            performRegularSync = true;
+          }
+        } catch (BlockStoreException bse) {
+          // Carry on - it's just logging
+          bse.printStackTrace();
+        }  finally {
+          // Close the blockstore - it will get opened again later but may or may not be checkpointed
+          if (blockStore != null) {
+            try {
+              blockStore.close();
+            } catch (BlockStoreException bse) {
+              bse.printStackTrace();
+            }
+          }
+        }
+
+        if (performRegularSync) {
+          synchroniseWallet(Optional.<Date>absent());
+          return walletSummary;
+        }
+
         log.debug("The lastBlockSeenTime = {}. EarliestKeyCreationDate = {}", walletBeingReturned.getLastBlockSeenTime(), walletBeingReturned.getEarliestKeyCreationTime());
+        DateTime syncDate = null;
 
         if (walletBeingReturned.getLastBlockSeenTime() != null) {
           syncDate = new DateTime(walletBeingReturned.getLastBlockSeenTime());
@@ -518,7 +569,7 @@ public enum WalletManager implements WalletEventListener {
 
         log.debug("Syncing wallet from date {}", syncDate);
         if (syncDate != null) {
-          synchroniseFromDate(syncDate);
+          synchroniseWallet(Optional.of(syncDate.toDate()));
         }
       }
     }
@@ -591,7 +642,7 @@ public enum WalletManager implements WalletEventListener {
       }
 
       Wallet wallet;
-      boolean performSync = false;
+
       try {
         wallet = loadWalletFromFile(walletFile, password);
       } catch (WalletVersionException wve) {
@@ -606,8 +657,6 @@ public enum WalletManager implements WalletEventListener {
         // If the rolling backups don't load then loadRollingBackup will throw a WalletLoadException which will propagate out
         wallet = BackupManager.INSTANCE.loadRollingBackup(walletId, password);
 
-        // To be on the safe side, perform a sync of the wallet
-        performSync = true;
       }
 
       // Create the wallet summary with its wallet
@@ -624,13 +673,9 @@ public enum WalletManager implements WalletEventListener {
       // + local/ cloud backups are also saved where necessary
       wallet.autosaveToFile(new File(walletFilenameNoAESSuffix), AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
 
-      if (performSync) {
-        // Perform a sync from the last seen block date to ensure all tx are seen
-        if (wallet.getLastBlockSeenTime() != null) {
-          final DateTime syncDate = new DateTime(wallet.getLastBlockSeenTime());
-          synchroniseFromDate(syncDate);
-        }
-      }
+      // Perform a sync from the last seen block date to ensure all tx are seen
+      synchroniseWallet(Optional.fromNullable(wallet.getLastBlockSeenTime()));
+
       return walletSummary;
 
     } catch (WalletVersionException wve) {
@@ -641,7 +686,9 @@ public enum WalletManager implements WalletEventListener {
     }
   }
 
-  private void synchroniseFromDate(final DateTime syncDate) {
+  private void synchroniseWallet(final Optional<Date> syncDateOptional) {
+    log.debug("Synchronise wallet called with syncDate {}", syncDateOptional);
+
     if (walletExecutorService == null) {
       walletExecutorService = SafeExecutors.newSingleThreadExecutor("sync-wallet");
     }
@@ -652,10 +699,10 @@ public enum WalletManager implements WalletEventListener {
 
               @Override
               public Boolean call() throws Exception {
-                log.debug("synchroniseFromDate  called with replay date {}", syncDate);
+                log.debug("synchroniseWallet  called with replay date {}", syncDateOptional);
 
                 // Replay wallet - this also bounces the Bitcoin network connection
-                CoreServices.getOrCreateBitcoinNetworkService().replayWallet(syncDate);
+                CoreServices.getOrCreateBitcoinNetworkService().replayWallet(syncDateOptional);
                 return true;
 
               }
@@ -678,7 +725,6 @@ public enum WalletManager implements WalletEventListener {
               }
             });
   }
-
 
   /**
    * @param walletFile the wallet to test serialisation for

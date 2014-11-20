@@ -145,7 +145,7 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
     // Also the labels must be part of the component to ensure correct layout
     panel.add(Labels.newEnterNewPassword());
     panel.add(password1);
-    panel.add(Buttons.newShowButton(toggleDisplayAction), "spany 2");
+    panel.add(Buttons.newShowButton(toggleDisplayAction), "spany 2, wrap");
     panel.add(Labels.newRetypeNewPassword());
     panel.add(password2, "wrap");
     panel.add(verificationStatusLabel, "span 4,grow,push");

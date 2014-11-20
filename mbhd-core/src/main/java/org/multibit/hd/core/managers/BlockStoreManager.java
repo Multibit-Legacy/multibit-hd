@@ -47,7 +47,7 @@ public class BlockStoreManager {
    * @throws BlockStoreException
    * @throws IOException
    */
-  public BlockStore createBlockStore(File blockStoreFile, File checkpointsFile, Date checkpointDate, boolean createNew) throws BlockStoreException, IOException {
+  public BlockStore createOrOpenBlockStore(File blockStoreFile, File checkpointsFile, Date checkpointDate, boolean createNew) throws BlockStoreException, IOException {
 
     boolean blockStoreCreatedNew = !blockStoreFile.exists();
 
