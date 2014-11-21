@@ -9,6 +9,7 @@ import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -163,7 +164,9 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     contentPanel.add(Labels.newNotes());
     contentPanel.add(notesTextArea, "span 3,growx,push,wrap");
 
-    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 4,align right,wrap");
+    if (!isTrezorWallet()) {
+      contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 4,align right,wrap");
+    }
 
     // Register components
     registerComponents(transactionDisplayAmountMaV, transactionFeeDisplayAmountMaV, clientFeeDisplayAmountMaV);
@@ -180,9 +183,14 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   @Override
   public void fireInitialStateViewEvents() {
 
-    // Send button starts off disabled
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
+    // Send button starts off disabled for regular wallets, enabled for Trezor hard wallets
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, isTrezorWallet());
 
+  }
+
+  private boolean isTrezorWallet() {
+    return WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() &&
+                WalletType.TREZOR_HARD_WALLET.equals(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType());
   }
 
   @Override

@@ -142,12 +142,15 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
         getFinishButton().requestFocusInWindow();
         if (lastTransactionCreationEvent != null) {
           onTransactionCreationEvent(lastTransactionCreationEvent);
+          lastTransactionCreationEvent = null;
         }
         if (lastBitcoinSentEvent != null) {
           onBitcoinSentEvent(lastBitcoinSentEvent);
+          lastBitcoinSentEvent = null;
         }
         if (lastTransactionSeenEvent != null) {
           onTransactionSeenEvent(lastTransactionSeenEvent);
+          lastTransactionSeenEvent = null;
         }
       }
     });
@@ -162,7 +165,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   @Subscribe
   public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
 
-    log.debug("Received the TransactionCreationEvent: " + transactionCreationEvent.toString());
+    log.debug("Received the TransactionCreationEvent: " + transactionCreationEvent);
 
     lastTransactionCreationEvent = transactionCreationEvent;
 
@@ -187,12 +190,12 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
       Labels.decorateWrappingLabel(transactionConstructionStatusDetail, detailMessage);
       Labels.decorateStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
     }
+
   }
 
   @Subscribe
   public void onBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
-
-    log.debug("Received the BitcoinSentEvent: " + bitcoinSentEvent.toString());
+    log.debug("Received the BitcoinSentEvent: " + bitcoinSentEvent);
 
     lastBitcoinSentEvent = bitcoinSentEvent;
     // The event may be fired before the UI has initialised
@@ -214,6 +217,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
+    log.debug("Seen transactionSeenEvent {}", transactionSeenEvent);
 
     lastTransactionSeenEvent = transactionSeenEvent;
     // The event may be fired before the UI has initialised

@@ -274,7 +274,7 @@ public class BitcoinNetworkService extends AbstractService {
       downloadBlockChainInBackground();
 
       log.debug("Blockchain download started.");
-    } catch (BlockStoreException  | IOException | TimeoutException | RuntimeException e) {
+    } catch (BlockStoreException | IOException | TimeoutException | RuntimeException e) {
       log.debug("Wallet replay was interrupted. Error was : '" + e.getMessage() + "'");
     }
   }
@@ -944,27 +944,30 @@ public class BitcoinNetworkService extends AbstractService {
       // Commit to the wallet (informs the wallet of the transaction)
       if (wallet.getTransaction(sendRequest.tx.getHash()) != null) {
         wallet.commitTx(sendRequest.tx);
-
-        // Fire a successful transaction creation event (not yet broadcast)
-        CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
-                sendRequest.tx.getHashAsString(),
-                sendRequestSummary.getTotalAmount(),
-                sendRequestSummary.getFiatPayment(),
-                Optional.of(sendRequest.fee) /* the actual mining fee paid */,
-                sendRequestSummary.getClientFeeAdded(),
-                sendRequestSummary.getDestinationAddress(),
-                sendRequestSummary.getChangeAddress(),
-                true,
-                null,
-                null,
-                sendRequestSummary.getNotes(),
-                true
-        ));
       } else {
         log.debug("Not committing tx with hash '{}' because tx is already present in wallet", sendRequest.tx.getHashAsString());
       }
 
-    } catch (Exception e) {
+      // Fire a successful transaction creation event (not yet broadcast)
+      CoreEvents.fireTransactionCreationEvent(new TransactionCreationEvent(
+              sendRequest.tx.getHashAsString(),
+              sendRequestSummary.getTotalAmount(),
+              sendRequestSummary.getFiatPayment(),
+              Optional.of(sendRequest.fee) /* the actual mining fee paid */,
+              sendRequestSummary.getClientFeeAdded(),
+              sendRequestSummary.getDestinationAddress(),
+              sendRequestSummary.getChangeAddress(),
+              true,
+              null,
+              null,
+              sendRequestSummary.getNotes(),
+              true
+      ));
+    } catch (
+            Exception e
+            )
+
+    {
 
       log.error(e.getMessage(), e);
 
