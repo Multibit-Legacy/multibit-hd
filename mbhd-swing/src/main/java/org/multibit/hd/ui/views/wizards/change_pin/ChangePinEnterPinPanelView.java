@@ -48,8 +48,8 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
 
   // Panel specific components
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
-
   private ModelAndView<EnterPinModel, EnterPinView> enterPinMaV;
+
   private ListeningExecutorService executorService;
 
   /**

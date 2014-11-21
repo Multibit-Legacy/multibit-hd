@@ -6,9 +6,12 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.components.trezor_screen.TrezorScreenModel;
+import org.multibit.hd.ui.views.components.trezor_screen.TrezorScreenView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -30,6 +33,8 @@ import javax.swing.*;
 public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
 
   private static final Logger log = LoggerFactory.getLogger(ChangePinRequestRemovePinPanelView.class);
+
+  private ModelAndView<TrezorScreenModel, TrezorScreenView> trezorScreenMaV;
 
   private JLabel message = Labels.newCommunicatingWithTrezor();
 
@@ -116,6 +121,8 @@ public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<
 
     this.deviceDisplayTextArea.setVisible(true);
     this.deviceDisplayTextArea.setText(deviceText);
+
+    this.trezorScreenMaV.getView().setDeviceText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT);
 
   }
 
