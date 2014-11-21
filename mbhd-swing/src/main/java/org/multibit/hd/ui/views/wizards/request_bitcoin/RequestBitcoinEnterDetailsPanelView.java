@@ -226,6 +226,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
       ExceptionHandler.handleThrowable(pse);
     }
 
+
     // Ensure the views that display payments update through a "wallet detail changed" event
     final WalletDetail walletDetail = new WalletDetail();
 
@@ -233,12 +234,15 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     final File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get();
 
     final WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
+
     ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());
 
     walletDetail.setApplicationDirectory(applicationDataDirectory.getAbsolutePath());
     walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
     walletDetail.setNumberOfContacts(contactService.allContacts().size());
     walletDetail.setNumberOfPayments(walletService.getPaymentDataList().size());
+
+    log.debug("A new receiving address has been issued. The number of external keys is now {}", walletSummary.getWallet().getActiveKeychain().getIssuedExternalKeys());
 
     ViewEvents.fireWalletDetailChangedEvent(walletDetail);
 

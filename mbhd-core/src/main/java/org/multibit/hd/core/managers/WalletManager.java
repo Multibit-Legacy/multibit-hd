@@ -116,7 +116,7 @@ public enum WalletManager implements WalletEventListener {
     }
   };
 
-  private static final int AUTO_SAVE_DELAY = 30; // Seconds
+  private static final int AUTO_SAVE_DELAY = 30000; // milliseconds
 
   // TODO (GR) Refactor this to be injected
   private static final NetworkParameters networkParameters = BitcoinNetwork.current().get();
@@ -348,7 +348,7 @@ public enum WalletManager implements WalletEventListener {
     // Set up auto-save on the wallet.
     // This ensures the wallet is saved on modification
     // The listener has a 'after save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
-    walletToReturn.autosaveToFile(walletFile, AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
+    walletToReturn.autosaveToFile(walletFile, AUTO_SAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener());
 
     // Save it now to ensure it is on the disk
     walletToReturn.saveToFile(walletFile);
@@ -465,7 +465,7 @@ public enum WalletManager implements WalletEventListener {
       // Set up auto-save on the wallet.
       // This ensures the wallet is saved on modification
       // The listener has a 'after save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
-      walletToReturn.autosaveToFile(walletFile, AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
+      walletToReturn.autosaveToFile(walletFile, AUTO_SAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener());
 
       // Save it now to ensure it is on the disk
       walletToReturn.saveToFile(walletFile);
@@ -527,7 +527,7 @@ public enum WalletManager implements WalletEventListener {
         } catch (BlockStoreException bse) {
           // Carry on - it's just logging
           bse.printStackTrace();
-        }  finally {
+        } finally {
           // Close the blockstore - it will get opened again later but may or may not be checkpointed
           if (blockStore != null) {
             try {
@@ -614,12 +614,12 @@ public enum WalletManager implements WalletEventListener {
    *
    * @param walletDirectory The wallet directory containing the various wallet files to load
    * @param password        The credentials to use to decrypt the wallet
-   * @param performSync     Perform a sync
+   * @param syncAndSave     Perform a sync and set up an autosave listener
    * @return Wallet - the loaded wallet
    * @throws WalletLoadException    If the wallet could not be loaded
    * @throws WalletVersionException If the wallet has an unsupported version number
    */
-  WalletSummary loadFromWalletDirectory(File walletDirectory, CharSequence password, boolean performSync) throws WalletLoadException, WalletVersionException {
+  WalletSummary loadFromWalletDirectory(File walletDirectory, CharSequence password, boolean syncAndSave) throws WalletLoadException, WalletVersionException {
 
     Preconditions.checkNotNull(walletDirectory, "'walletDirectory' must be present");
     Preconditions.checkNotNull(password, "'credentials' must be present");
@@ -656,7 +656,7 @@ public enum WalletManager implements WalletEventListener {
         wallet = BackupManager.INSTANCE.loadRollingBackup(walletId, password);
 
         // Make sure a sync is performed
-        performSync = true;
+        syncAndSave = true;
       }
 
       // Create the wallet summary with its wallet
@@ -665,16 +665,16 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setPassword(password);
       setCurrentWalletSummary(walletSummary);
 
-      // Set up autosave on the wallet.
-      // This ensures the wallet is saved on modification
-      // The listener has a 'post save' callback which:
-      // + encrypts the wallet
-      // + ensures rolling backups
-      // + local/ cloud backups are also saved where necessary
-      wallet.autosaveToFile(new File(walletFilenameNoAESSuffix), AUTO_SAVE_DELAY, TimeUnit.SECONDS, new WalletAutoSaveListener());
+      if (syncAndSave) {
+        // Set up autosave on the wallet.
+        // This ensures the wallet is saved on modification
+        // The listener has a 'post save' callback which:
+        // + encrypts the wallet
+        // + ensures rolling backups
+        // + local/ cloud backups are also saved where necessary
+        wallet.autosaveToFile(new File(walletFilenameNoAESSuffix), AUTO_SAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener());
 
       // Perform a sync from the last seen block date to ensure all tx are seen
-      if (performSync) {
         synchroniseWallet(Optional.fromNullable(wallet.getLastBlockSeenTime()));
       }
 
@@ -1048,8 +1048,8 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setNotes("");
     }
     walletSummary.setWalletId(walletId);
-    // TODO Wallet type should be worked out from the internals of the loaded wallet for safety
-    // walletSummary.setWalletType(walletType);
+
+    log.debug("Wallet info: The number of external keys is now {}", walletSummary.getWallet() == null ? 0 : walletSummary.getWallet().getActiveKeychain().getIssuedExternalKeys());
 
     return walletSummary;
 
