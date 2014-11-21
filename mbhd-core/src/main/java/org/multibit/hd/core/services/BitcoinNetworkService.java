@@ -223,7 +223,17 @@ public class BitcoinNetworkService extends AbstractService {
         try {
           log.debug("Starting blockchain download . . .");
           peerGroup.downloadBlockChain();
-          log.debug("Block chain downloaded.");
+          log.debug("Blockchain downloaded.");
+          if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+            Wallet currentWallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+            if (currentWallet != null) {
+              log.debug("Wallet has {} transactions and the balance is {}", currentWallet.getTransactions(true).size(), currentWallet.getBalance());
+            } else {
+              log.debug("There is no current wallet");
+            }
+          } else {
+            log.debug("There is no wallet in the current WalletSummary");
+          }
           CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkReady(peerGroup.numConnectedPeers()));
         } catch (RuntimeException re) {
           log.debug("Blockchain download was interrupted. Error was : '" + re.getMessage() + "'");
