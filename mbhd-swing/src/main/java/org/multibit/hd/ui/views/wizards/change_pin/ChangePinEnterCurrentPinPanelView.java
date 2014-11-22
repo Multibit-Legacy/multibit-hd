@@ -56,7 +56,7 @@ public class ChangePinEnterCurrentPinPanelView extends AbstractWizardPanelView<C
     setPanelModel(panelModel);
 
     // Bind it to the wizard model
-    getWizardModel().setChangePinPanelModel(panelModel);
+    getWizardModel().setEnterCurrentPinPanelView(this);
 
     // Register components
     registerComponents(enterPinMaV);

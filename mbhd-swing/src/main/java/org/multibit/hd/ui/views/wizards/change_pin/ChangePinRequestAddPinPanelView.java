@@ -28,8 +28,6 @@ import javax.swing.*;
  */
 public class ChangePinRequestAddPinPanelView extends AbstractWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
 
-  private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
-
   /**
    * @param wizard The wizard managing the states
    */
@@ -42,8 +40,7 @@ public class ChangePinRequestAddPinPanelView extends AbstractWizardPanelView<Cha
   @Override
   public void newPanelModel() {
 
-    // Bind it to the wizard model in case of failure
-    getWizardModel().setRequestNewPinPanelView(this);
+    // Nothing to bind
 
   }
 
@@ -56,7 +53,7 @@ public class ChangePinRequestAddPinPanelView extends AbstractWizardPanelView<Cha
       "[]10[]" // Row constraints
     ));
 
-    trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
+    ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
 
     // Need some text here in case device fails just as we being the process
     contentPanel.add(trezorDisplayMaV.getView().newComponentPanel(), "align center,wrap");

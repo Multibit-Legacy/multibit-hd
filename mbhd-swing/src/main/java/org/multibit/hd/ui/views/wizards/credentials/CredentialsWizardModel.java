@@ -224,8 +224,16 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
 
-    // In all cases fall back to the beginning
-    state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
+    switch (state) {
+
+      case CREDENTIALS_ENTER_PIN:
+        // User entered incorrect PIN so should start again
+        state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
+        break;
+      default:
+        // User is backing out of using their device (switch to password)
+        state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+    }
 
   }
 

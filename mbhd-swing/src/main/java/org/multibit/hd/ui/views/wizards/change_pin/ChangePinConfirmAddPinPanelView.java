@@ -43,8 +43,7 @@ public class ChangePinConfirmAddPinPanelView extends AbstractWizardPanelView<Cha
   @Override
   public void newPanelModel() {
 
-    // Bind it to the wizard model in case of failure
-    getWizardModel().setConfirmAddPinPanelView(this);
+    // Nothing to bind
 
   }
 

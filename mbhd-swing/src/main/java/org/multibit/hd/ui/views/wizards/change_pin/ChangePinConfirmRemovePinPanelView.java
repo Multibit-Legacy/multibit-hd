@@ -42,8 +42,7 @@ public class ChangePinConfirmRemovePinPanelView extends AbstractWizardPanelView<
   @Override
   public void newPanelModel() {
 
-    // Bind it to the wizard model in case of failure
-    getWizardModel().setConfirmRemovePinPanelView(this);
+    // Nothing to bind
 
   }
 

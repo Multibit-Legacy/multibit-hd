@@ -36,11 +36,6 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
   private static final Logger log = LoggerFactory.getLogger(ChangePinWizardModel.class);
 
   /**
-   * The "change PIN" panel model
-   */
-  private ChangePinEnterPinPanelModel changePinPanelModel;
-
-  /**
    * Change PIN requires a separate executor
    */
   private final ListeningExecutorService trezorRequestService = SafeExecutors.newSingleThreadExecutor("trezor-requests-change-pin");
@@ -74,7 +69,6 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
    * The "confirm new PIN" view
    */
   private ChangePinConfirmNewPinPanelView confirmNewPinPanelView;
-  private ChangePinConfirmRemovePinPanelView confirmRemovePinPanelView;
 
   /**
    * The most recent PIN entered by the user
@@ -90,14 +84,10 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
    * The report message key
    */
   private MessageKey reportMessageKey;
-  private ChangePinConfirmChangePinPanelView confirmChangePinPanelView;
-
   /**
    * True if the device currently has PIN protection
    */
   private boolean hasPinProtection = false;
-  private ChangePinRequestAddPinPanelView requestNewPinPanelView;
-  private ChangePinConfirmAddPinPanelView confirmAddPinPanelView;
 
   /**
    * @param state The state object
@@ -130,34 +120,16 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
     this.requestRemovePinPanelView = requestRemovePinPanelView;
   }
 
-  /**
-   * <p>Reduced visibility for panel models only</p>
-   *
-   * @param changePinPanelModel The "enter PIN" panel model
-   */
-  void setChangePinPanelModel(ChangePinEnterPinPanelModel changePinPanelModel) {
-    this.changePinPanelModel = changePinPanelModel;
+  public void setEnterCurrentPinPanelView(ChangePinEnterCurrentPinPanelView enterCurrentPinPanelView) {
+    this.enterCurrentPinPanelView = enterCurrentPinPanelView;
   }
 
-  /**
-   * <p>Reduced visibility for panel models only</p>
-   *
-   * @param confirmRemovePinPanelView The "confirm remove PIN" panel model
-   */
-  public void setConfirmRemovePinPanelView(ChangePinConfirmRemovePinPanelView confirmRemovePinPanelView) {
-    this.confirmRemovePinPanelView = confirmRemovePinPanelView;
+  public void setEnterNewPinPanelView(ChangePinEnterNewPinPanelView enterNewPinPanelView) {
+    this.enterNewPinPanelView = enterNewPinPanelView;
   }
 
-  public void setConfirmChangePinPanelView(ChangePinConfirmChangePinPanelView confirmChangePinPanelView) {
-    this.confirmChangePinPanelView = confirmChangePinPanelView;
-  }
-
-  public void setRequestNewPinPanelView(ChangePinRequestAddPinPanelView requestNewPinPanelView) {
-    this.requestNewPinPanelView = requestNewPinPanelView;
-  }
-
-  public void setConfirmAddPinPanelView(ChangePinConfirmAddPinPanelView confirmAddPinPanelView) {
-    this.confirmAddPinPanelView = confirmAddPinPanelView;
+  public void setConfirmNewPinPanelView(ChangePinConfirmNewPinPanelView confirmNewPinPanelView) {
+    this.confirmNewPinPanelView = confirmNewPinPanelView;
   }
 
   /**
@@ -250,10 +222,6 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
 
   @Override
   public void showButtonPress(HardwareWalletEvent event) {
-
-    // Determine if this is the first or second PIN entry
-    ButtonRequest request = (ButtonRequest) event.getMessage().get();
-    ButtonRequestType requestType = request.getButtonRequestType();
 
     // The button request could have come about from many possible paths
     switch (state) {
@@ -491,6 +459,15 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
 
     switch (state) {
 
+      case CONFIRM_ADD_PIN:
+        state = ChangePinState.SELECT_OPTION;
+        break;
+      case CONFIRM_CHANGE_PIN:
+        state = ChangePinState.SELECT_OPTION;
+        break;
+      case CONFIRM_REMOVE_PIN:
+        state = ChangePinState.SELECT_OPTION;
+        break;
       case ENTER_CURRENT_PIN:
         enterCurrentPinPanelView.incorrectPin();
         break;
