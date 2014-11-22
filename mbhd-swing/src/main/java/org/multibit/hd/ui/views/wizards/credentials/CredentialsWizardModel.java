@@ -278,7 +278,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             );
 
           } else {
-            requestCipherKeyPanelView.setOperationText(MessageKey.TREZOR_NO_WALLET_OPERATION);
+            requestCipherKeyPanelView. setOperationText(MessageKey.TREZOR_NO_WALLET_OPERATION);
           }
 
         }

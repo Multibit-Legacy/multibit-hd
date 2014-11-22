@@ -15,7 +15,6 @@ import javax.swing.event.DocumentListener;
  * @param <S> The state object type
  *
  * @since 0.0.1
- *
  */
 public abstract class AbstractWizardModel<S> implements DocumentListener {
 
@@ -38,6 +37,13 @@ public abstract class AbstractWizardModel<S> implements DocumentListener {
     // All wizard models can receive UI events
     CoreServices.uiEventBus.register(this);
 
+  }
+
+  /**
+   * @return The current wizard model state
+   */
+  public S getState() {
+    return state;
   }
 
   /**
@@ -83,11 +89,11 @@ public abstract class AbstractWizardModel<S> implements DocumentListener {
     setDirty(true);
   }
 
+
   @Override
   public void removeUpdate(DocumentEvent e) {
     setDirty(true);
   }
-
 
   @Override
   public void changedUpdate(DocumentEvent e) {

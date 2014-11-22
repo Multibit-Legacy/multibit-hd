@@ -1,14 +1,8 @@
 package org.multibit.hd.ui.views.wizards.change_pin;
 
 import com.google.common.base.Optional;
-import com.google.common.eventbus.Subscribe;
+import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.CoreMessageKey;
-import org.multibit.hd.core.dto.WalletSummary;
-import org.multibit.hd.core.events.ChangePasswordResultEvent;
-import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.WalletService;
-import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.AccessibilityDecorator;
@@ -19,7 +13,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
-import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 
@@ -30,12 +23,11 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.5
- *
  */
 public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinWizardModel, String> {
 
   // View
-  private JLabel passwordChangedStatusLabel;
+  private JLabel pinStatusLabel;
 
   /**
    * @param wizard    The wizard managing the states
@@ -43,7 +35,7 @@ public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinW
    */
   public ChangePinReportPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.CHANGE_PASSWORD_TITLE, AwesomeIcon.FILE_TEXT);
+    super(wizard, panelName, MessageKey.CHANGE_PIN_REPORT_TITLE, AwesomeIcon.FILE_TEXT);
 
   }
 
@@ -62,18 +54,18 @@ public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinW
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
-      "[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
+      "[]", // Column constraints
+      "[]" // Row constraints
     ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    // Initialise to failure
-    passwordChangedStatusLabel = Labels.newPasswordChangedStatus();
-    AccessibilityDecorator.apply(passwordChangedStatusLabel, MessageKey.PASSWORD_CHANGED_STATUS);
+    // Provide an empty status label (populated after show)
+    pinStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.TREZOR_FAILURE_OPERATION), null, Optional.<Boolean>absent());
+    pinStatusLabel.setVisible(false);
 
-    contentPanel.add(passwordChangedStatusLabel, "wrap");
+    contentPanel.add(pinStatusLabel, "aligny top,wrap");
 
   }
 
@@ -83,53 +75,29 @@ public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinW
   }
 
   @Override
-  public void fireInitialStateViewEvents() {
-
-    // Disable the finish button while the process is occurring
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
-
-  }
-
-  @Override
   public void updateFromComponentModels(Optional componentModel) {
-    // Do nothing - panel model is updated via an action and wizard model is not applicable
+    // Do nothing - panel model is read only
   }
 
   @Override
   public boolean beforeShow() {
 
-    ChangePinWizardModel model = getWizardModel();
-    String oldPassword = model.getCurrentPin();
-    String newPassword = model.getNewPin();
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
-    Optional<WalletSummary> walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
-
-    passwordChangedStatusLabel.setText(Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
-    if (walletSummaryOptional.isPresent()) {
-      WalletSummary walletSummary = walletSummaryOptional.get();
-      // Change the wallet credentials.
-      // The result of the credentials change is emitted as a ChangePasswordResultEvent
-
-      WalletService.changeWalletPassword(walletSummary, oldPassword, newPassword);
-    }
+    // Use the outcome from the previous operations to decorate the existing status label
+    final MessageKey reportMessageKey = getWizardModel().getReportMessageKey();
+    pinStatusLabel.setText(Languages.safeText(reportMessageKey));
+    AccessibilityDecorator.apply(
+      pinStatusLabel,
+      reportMessageKey
+    );
+    Labels.decorateStatusLabel(
+      pinStatusLabel,
+      Optional.of(getWizardModel().isReportMessageStatus())
+    );
+    pinStatusLabel.setVisible(true);
 
     return true;
   }
 
-  @Subscribe
-  public void onChangePasswordResultEvent(final ChangePasswordResultEvent changePasswordResultEvent) {
-
-    // Enable and focus the finish button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
-
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        passwordChangedStatusLabel.setText(Languages.safeText(changePasswordResultEvent.getChangePasswordResultKey(), changePasswordResultEvent.getChangePasswordResultData()));
-        Labels.decorateStatusLabel(passwordChangedStatusLabel, Optional.of(changePasswordResultEvent.isChangePasswordWasSuccessful()));
-        getFinishButton().requestFocusInWindow();
-      }
-    });
-
-  }
 }

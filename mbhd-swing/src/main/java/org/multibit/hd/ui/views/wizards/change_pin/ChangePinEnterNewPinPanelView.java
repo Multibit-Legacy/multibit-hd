@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
  * @since 0.0.5
  *
  */
-public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
+public class ChangePinEnterNewPinPanelView extends AbstractWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
 
   // Panel specific components
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
@@ -55,10 +55,10 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
   /**
    * @param wizard The wizard managing the states
    */
-  public ChangePinEnterPinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
+  public ChangePinEnterNewPinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
     // Need to use the LOCK icon here because TH is visually confusing
-    super(wizard, panelName, MessageKey.CHANGE_PIN_ENTER_CURRENT_PIN_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, MessageKey.CHANGE_PIN_ENTER_NEW_PIN_TITLE, AwesomeIcon.LOCK);
 
   }
 
@@ -317,6 +317,15 @@ public class ChangePinEnterPinPanelView extends AbstractWizardPanelView<ChangePi
 
     // TODO Implement this
     return true;
+
+  }
+
+  /**
+   * User has entered an incorrect PIN
+   */
+  public void incorrectPin() {
+
+    enterPinMaV.getView().incorrectPin();
 
   }
 

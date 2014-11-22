@@ -374,20 +374,30 @@ public enum MessageKey {
 
   PIN_TITLE("pin_title"),
   CHANGE_PIN_TITLE("change_pin_title"),
+  CHANGE_PIN_REPORT_TITLE("change_pin_report_title"),
   PIN_INTRODUCTION("pin_introduction"),
 
   PIN_FAILURE("pin_failure"),
   PIN_SUCCESS("pin_success"),
 
+  // Use Trezor
+  TREZOR_CONFIRM_CHANGE_PIN_TITLE("trezor_confirm_change_pin_title"),
+  TREZOR_CONFIRM_REMOVE_PIN_TITLE("trezor_confirm_remove_pin_title"),
   TREZOR_PRESS_CONFIRM_TITLE("trezor_press_confirm_title"),
 
   // Operations
   TREZOR_PRESS_CONFIRM_OPERATION("trezor_press_confirm_operation"),
   TREZOR_NO_WALLET_OPERATION("trezor_no_wallet_operation"),
   TREZOR_FAILURE_OPERATION("trezor_failure_operation"),
+  TREZOR_REMOVE_PIN_OPERATION("trezor_remove_pin_operation"),
+
+  // Reports
+  TREZOR_REMOVE_PIN_SUCCESS("trezor_remove_pin_success"),
+  TREZOR_REMOVE_PIN_FAILURE("trezor_remove_pin_failure"),
 
   // Trezor display text
   TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY("trezor_encrypt_multibit_hd_unlock_display"),
+  TREZOR_NEW_PIN_DISPLAY("trezor_new_pin_display"),
   TREZOR_REMOVE_PIN_DISPLAY("trezor_remove_pin_display"),
 
   USE_TREZOR_REPORT_TITLE("use_trezor_report_title"),

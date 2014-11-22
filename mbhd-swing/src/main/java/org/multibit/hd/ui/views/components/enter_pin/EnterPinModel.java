@@ -45,7 +45,7 @@ public class EnterPinModel implements Model<String> {
   }
 
   /**
-   * @return a String consisting of the button positions of the PIN
+   * @return The button positions of the PIN using a numerical keyboard layout (1 bottom left, 9 top right)
    */
   @Override
   public String getValue() {

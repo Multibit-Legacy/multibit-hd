@@ -14,8 +14,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -30,8 +28,6 @@ import javax.swing.*;
  *  
  */
 public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelView<CredentialsWizardModel, String> {
-
-  private static final Logger log = LoggerFactory.getLogger(CredentialsRequestCipherKeyPanelView.class);
 
   private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
 
@@ -126,13 +122,6 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
    */
   public void setOperationText(MessageKey key) {
     this.trezorDisplayMaV.getView().setOperationText(key);
-  }
-
-  /**
-   * @param key The key to the device text
-   */
-  public void setDisplayText(MessageKey key) {
-    this.trezorDisplayMaV.getView().setDisplayText(key);
   }
 
 }

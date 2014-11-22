@@ -187,4 +187,14 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
     }
 
   }
+
+  /**
+   * The user has entered an incorrect PIN
+   */
+  public void incorrectPin() {
+
+    setPinStatus(false, true);
+
+  }
+
 }

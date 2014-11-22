@@ -4,6 +4,8 @@ import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.util.Map;
 
 
@@ -38,19 +40,57 @@ public class ChangePinWizard extends AbstractHardwareWalletWizard<ChangePinWizar
       new ChangePinRequestRemovePinPanelView(this, ChangePinState.REQUEST_REMOVE_PIN.name()));
 
     wizardViewMap.put(
+      ChangePinState.CONFIRM_REMOVE_PIN.name(),
+      new ChangePinConfirmRemovePinPanelView(this, ChangePinState.CONFIRM_REMOVE_PIN.name()));
+
+    wizardViewMap.put(
       ChangePinState.ENTER_CURRENT_PIN.name(),
-      new ChangePinEnterPinPanelView(this, ChangePinState.ENTER_CURRENT_PIN.name()));
+      new ChangePinEnterCurrentPinPanelView(this, ChangePinState.ENTER_CURRENT_PIN.name()));
 
     wizardViewMap.put(
       ChangePinState.ENTER_NEW_PIN.name(),
-      new ChangePinEnterPinPanelView(this, ChangePinState.ENTER_NEW_PIN.name()));
+      new ChangePinEnterNewPinPanelView(this, ChangePinState.ENTER_NEW_PIN.name()));
 
     wizardViewMap.put(
       ChangePinState.CONFIRM_NEW_PIN.name(),
-      new ChangePinEnterPinPanelView(this, ChangePinState.CONFIRM_NEW_PIN.name()));
+      new ChangePinConfirmNewPinPanelView(this, ChangePinState.CONFIRM_NEW_PIN.name()));
 
     wizardViewMap.put(
         ChangePinState.SHOW_REPORT.name(),
         new ChangePinReportPanelView(this, ChangePinState.SHOW_REPORT.name()));
   }
+
+  @Override
+  public <P> Action getNextAction(final AbstractWizardPanelView<ChangePinWizardModel, P> wizardPanelView) {
+
+    // Change the Next button handling for PIN entry screens to avoid transitions
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        // Ensure the panel updates its model (the button is outside of the panel itself)
+        wizardPanelView.updateFromComponentModels(Optional.absent());
+
+        if (ChangePinState.ENTER_CURRENT_PIN.equals(getWizardModel().getState())) {
+
+          // Treat as a PIN entry
+          getWizardModel().providePin(getWizardModel().getMostRecentPin());
+
+        } else {
+
+          // Treat as a Next
+
+          // Move to the next state
+          getWizardModel().showNext();
+
+          // Show the panel based on the state
+          show(getWizardModel().getPanelName());
+        }
+      }
+
+    };
+
+  }
+
 }

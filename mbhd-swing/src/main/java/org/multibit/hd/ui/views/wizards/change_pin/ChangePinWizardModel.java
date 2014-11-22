@@ -7,7 +7,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
@@ -20,7 +19,6 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +64,37 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
   private ChangePinRequestRemovePinPanelView requestRemovePinPanelView;
 
   /**
+   * The "enter current PIN" view
+   */
+  private ChangePinEnterCurrentPinPanelView enterCurrentPinPanelView;
+
+  /**
+   * The "enter new PIN" view
+   */
+  private ChangePinEnterNewPinPanelView enterNewPinPanelView;
+
+  /**
+   * The "confirm new PIN" view
+   */
+  private ChangePinConfirmNewPinPanelView confirmNewPinPanelView;
+  private ChangePinConfirmRemovePinPanelView confirmRemovePinPanelView;
+
+  /**
+   * The most recent PIN entered by the user
+   */
+  private String mostRecentPin;
+
+  /**
+   * True if the report message indicates a success
+   */
+  private boolean reportMessageStatus = false;
+
+  /**
+   * The report message key
+   */
+  private MessageKey reportMessageKey;
+
+  /**
    * @param state The state object
    */
   public ChangePinWizardModel(ChangePinState state) {
@@ -78,47 +107,18 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
   }
 
   /**
-   * @return The PIN the user entered (must be able to unlock the current device)
+   * @return The most recent PIN entered by the user
    */
-  public String getCurrentPin() {
-    return changePinPanelModel.getEnterPinModel().getValue();
+  public String getMostRecentPin() {
+    return mostRecentPin;
   }
 
-  /**
-   * @return The new PIN
-   */
-  public String getNewPin() {
-    return changePinPanelModel.getEnterPinModel().getValue();
-  }
-
-  /**
-   * @return The confirmed PIN
-   */
-  public String getConfirmedPin() {
-    return changePinPanelModel.getEnterPinModel().getValue();
-  }
-
-  /**
-   * @return True if the PIN is to be removed
-   */
-  public boolean isRemovePin() {
-    return removePin;
-  }
-
-  public void setRemovePin(boolean removePin) {
-    this.removePin = removePin;
-  }
-
-  public ChangePinRequestChangePinPanelView getRequestChangePinPanelView() {
-    return requestChangePinPanelView;
+  public void setMostRecentPin(String mostRecentPin) {
+    this.mostRecentPin = mostRecentPin;
   }
 
   public void setRequestChangePinPanelView(ChangePinRequestChangePinPanelView requestChangePinPanelView) {
     this.requestChangePinPanelView = requestChangePinPanelView;
-  }
-
-  public ChangePinRequestRemovePinPanelView getRequestRemovePinPanelView() {
-    return requestRemovePinPanelView;
   }
 
   public void setRequestRemovePinPanelView(ChangePinRequestRemovePinPanelView requestRemovePinPanelView) {
@@ -132,6 +132,37 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
    */
   void setChangePinPanelModel(ChangePinEnterPinPanelModel changePinPanelModel) {
     this.changePinPanelModel = changePinPanelModel;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models only</p>
+   *
+   * @param confirmRemovePinPanelView The "confirm remove PIN" panel model
+   */
+  public void setConfirmRemovePinPanelView(ChangePinConfirmRemovePinPanelView confirmRemovePinPanelView) {
+    this.confirmRemovePinPanelView = confirmRemovePinPanelView;
+  }
+
+  /**
+   * @param removePin True if the user selected the "remove PIN" option
+   */
+  public void setRemovePin(boolean removePin) {
+    this.removePin = removePin;
+  }
+
+  /**
+   *
+   * @return True if the report message indicates success
+   */
+  public boolean isReportMessageStatus() {
+    return reportMessageStatus;
+  }
+
+  /**
+   * @return The key to the report message
+   */
+  public MessageKey getReportMessageKey() {
+    return reportMessageKey;
   }
 
   @Subscribe
@@ -148,19 +179,24 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
 
     switch (state) {
       case SELECT_OPTION:
-        state = isRemovePin() ? ChangePinState.REQUEST_REMOVE_PIN: ChangePinState.REQUEST_CHANGE_PIN;
+        state = removePin ? ChangePinState.REQUEST_REMOVE_PIN : ChangePinState.REQUEST_CHANGE_PIN;
         break;
       case REQUEST_REMOVE_PIN:
+        state = ChangePinState.CONFIRM_REMOVE_PIN;
+        break;
+      case CONFIRM_REMOVE_PIN:
         state = ChangePinState.SHOW_REPORT;
         break;
       case REQUEST_CHANGE_PIN:
         break;
       case ENTER_CURRENT_PIN:
-        state = ChangePinState.ENTER_NEW_PIN;
+        // Provide PIN handled by ChangePinWizard overriding Next button behaviour
         break;
       case ENTER_NEW_PIN:
+        // Provide PIN handled by ChangePinWizard overriding Next button behaviour
         break;
       case CONFIRM_NEW_PIN:
+        // Provide PIN handled by ChangePinWizard overriding Next button behaviour
         break;
       case SHOW_REPORT:
         state = ChangePinState.SHOW_REPORT;
@@ -169,6 +205,7 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
         throw new IllegalStateException("Unknown state: " + state.name());
     }
   }
+
 
   @Override
   public void showButtonPress(HardwareWalletEvent event) {
@@ -182,9 +219,8 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
       case SELECT_OPTION:
         break;
       case REQUEST_REMOVE_PIN:
-        // Must be the device asking to confirm
-        getRequestRemovePinPanelView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
-        getRequestRemovePinPanelView().setDisplayText(MessageKey.TREZOR_REMOVE_PIN_DISPLAY);
+        // Device is requesting confirmation of the PIN removal
+        state = ChangePinState.CONFIRM_REMOVE_PIN;
         break;
       case REQUEST_CHANGE_PIN:
         break;
@@ -214,7 +250,9 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
       case SELECT_OPTION:
         break;
       case REQUEST_REMOVE_PIN:
-        // User has confirmed the removal and has a current PIN
+        break;
+      case CONFIRM_REMOVE_PIN:
+        // User has confirmed the removal of the PIN
         state = ChangePinState.ENTER_CURRENT_PIN;
         break;
       case REQUEST_CHANGE_PIN:
@@ -234,20 +272,22 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
 
   }
 
-
   /**
    * Request a change or removal of the device PIN
    */
-  public void requestChangeOrRemovePin() {
+  public void requestRemovePin(final boolean removePin) {
+
+    // Maintain state for the response
+    this.removePin = removePin;
 
     // Communicate with the device off the EDT
     trezorRequestService.submit(
       new Runnable() {
         @Override
         public void run() {
-          log.debug("Performing a request PIN to Trezor");
 
-          // A 'requestPin' is performed in which the user provides a new PIN
+          log.debug("Request '{}' PIN", removePin ? "remove" : "change");
+
           Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
           // Check if there is a wallet present
@@ -255,11 +295,14 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
 
             // Request a PIN
             // AbstractHardwareWalletWizard will deal with the responses
-            hardwareWalletService.get().changePIN(isRemovePin());
+            hardwareWalletService.get().changePIN(removePin);
 
           } else {
-            // TODO Require MessageKey
-            getRequestChangePinPanelView().setMessage("No wallet is present on the device");
+            if (removePin) {
+              requestRemovePinPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
+            } else {
+              requestChangePinPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
+            }
           }
 
         }
@@ -309,8 +352,7 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
         @Override
         public void onSuccess(@Nullable Object result) {
 
-          // We successfully requested the deterministic hierarchy so throw a ComponentChangedEvent for the UI to update
-          ViewEvents.fireComponentChangedEvent(UseTrezorState.USE_TREZOR_REPORT_PANEL.name(), Optional.absent());
+          // We successfully provided the PIN so wait for the result
 
         }
 
@@ -318,11 +360,51 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
         public void onFailure(Throwable t) {
 
           // Have a failure
-          ExceptionHandler.handleThrowable(t);
+          switch (state) {
+
+            case ENTER_CURRENT_PIN:
+              enterCurrentPinPanelView.incorrectPin();
+              break;
+            case ENTER_NEW_PIN:
+              enterNewPinPanelView.incorrectPin();
+              break;
+            case CONFIRM_NEW_PIN:
+              confirmNewPinPanelView.incorrectPin();
+              break;
+            default:
+              throw new IllegalStateException("Should not reach here from " + state.name());
+          }
         }
 
       });
 
   }
 
+  @Override
+  public void showOperationSucceeded(HardwareWalletEvent event) {
+
+    switch (state) {
+
+      case REQUEST_REMOVE_PIN:
+        // No PIN present so fall through
+      case ENTER_CURRENT_PIN:
+        if (removePin) {
+          state = ChangePinState.SHOW_REPORT;
+          reportMessageKey = MessageKey.TREZOR_REMOVE_PIN_SUCCESS;
+          reportMessageStatus = true;
+        }
+        break;
+      case ENTER_NEW_PIN:
+        state = ChangePinState.CONFIRM_NEW_PIN;
+        break;
+      case CONFIRM_NEW_PIN:
+        state = ChangePinState.SHOW_REPORT;
+        break;
+      case SHOW_REPORT:
+        break;
+      default:
+        throw new IllegalStateException("Should not reach here from " + state.name());
+
+    }
+  }
 }

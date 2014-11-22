@@ -10,6 +10,7 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardDeferredHideEvent;
@@ -410,6 +411,11 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     // De-register
     wizardPanelView.deregisterDefaultButton();
 
+    // Ensure we de-register for all hardware wallet events
+    if (this instanceof AbstractHardwareWalletWizard) {
+      HardwareWalletService.hardwareWalletEventBus.unregister(this);
+    }
+
     // Issue the wizard hide event before the hide takes place to give UI time to update
     ViewEvents.fireWizardHideEvent(panelName, wizardModel, isExitCancel);
 
@@ -434,13 +440,16 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
             // Ensure we deregister the wizard panel view (and model if present) for events
             try {
+
               CoreServices.uiEventBus.unregister(panelView);
               log.trace("Deregistered wizard panel view '{}' from UI events", panelView.getPanelName());
+
               if (panelView.getPanelModel().isPresent()) {
                 Object panelModel = panelView.getPanelModel().get();
                 CoreServices.uiEventBus.unregister(panelModel);
                 log.trace("Deregistered wizard panel model '{}' from UI events", panelView.getPanelName());
               }
+
             } catch (NullPointerException | IllegalArgumentException e) {
               log.warn("Wizard panel model/view '{}' was not registered", panelView.getPanelName(), e);
             }

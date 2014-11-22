@@ -29,6 +29,12 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   /**
    * Handles state transition to a "PIN entry" panel
    *
+   * Usually this will be an "EnterCurrentPin" panel following a "Request" and the
+   * panel will show a PIN matrix
+   *
+   * Clicking "Next" or "Unlock" will trigger the sending of PIN positions to the device
+   * and subsequent state transitions
+   *
    * @param event The hardware wallet event containing payload and context
    */
   public void showPINEntry(HardwareWalletEvent event) {
@@ -37,6 +43,11 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
 
   /**
    * Handles state transition to a "button press" panel
+   *
+   * Usually this will be a "Confirm" panel following a "Request" and the
+   * panel will show text mirroring the Trezor
+   *
+   * Clicking a button on the device will trigger further state transitions
    *
    * @param event The hardware wallet event containing payload and context
    */

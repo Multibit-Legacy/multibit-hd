@@ -14,8 +14,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -30,8 +28,6 @@ import javax.swing.*;
  */
 public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(ChangePinRequestRemovePinPanelView.class);
-
   private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
 
   /**
@@ -39,7 +35,7 @@ public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<
    */
   public ChangePinRequestRemovePinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.PIN_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, MessageKey.TREZOR_CONFIRM_REMOVE_PIN_TITLE, AwesomeIcon.LOCK);
 
   }
 
@@ -92,13 +88,8 @@ public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<
   @Override
   public void afterShow() {
 
-    // Start the wallet access process by requesting a cipher key
-    // to get a deterministic wallet ID
-    //
-    // This is done as a transitional panel to allow for a device
-    // failure at each stage with the user having the option to
-    // easily escape
-    getWizardModel().requestChangeOrRemovePin();
+    // Start the removal request process immediately
+    getWizardModel().requestRemovePin(true);
 
   }
 
@@ -116,11 +107,10 @@ public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<
     this.trezorDisplayMaV.getView().setOperationText(key);
   }
 
-  /**
-   * @param key The key to the device text
-   */
-  public void setDisplayText(MessageKey key) {
-    this.trezorDisplayMaV.getView().setDisplayText(key);
-  }
+  public void confirmRemovePin() {
 
+    trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
+    trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_REMOVE_PIN_DISPLAY);
+
+  }
 }
