@@ -40,7 +40,7 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
   public JPanel newComponentPanel() {
 
     panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout() + ",hidemode 1", // Layout
+      Panels.migXLayout(), // Layout
       "[]", // Columns
       "[]10[]10[]" // Rows
     ));
@@ -59,7 +59,7 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
     // Add to the panel
     panel.add(operationText, "align center,wrap");
     panel.add(deviceDisplayTextArea, "align center," + MultiBitUI.TREZOR_DISPLAY_MAX_WIDTH_MIG + ",wrap");
-    panel.add(spinner, "align center,pad 10,wrap");
+    panel.add(spinner, "align center,wrap");
 
     return panel;
 
