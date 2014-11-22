@@ -5,7 +5,6 @@ import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.*;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
-import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 
 /**
  * <p>Service to provide the following to application:</p>
@@ -67,9 +66,8 @@ public class ApplicationEventService {
   public void repeatLatestEvents() {
 
     // Don't replay security events - it gives a false positive
-    if (latestSecurityEvent.isPresent()) {
-      CoreEvents.fireSecurityEvent(latestSecurityEvent.get().getSummary());
-    }
+
+    // Don't replay hardware events - it gives a false positive and race conditions
 
     if (latestBitcoinNetworkChangedEvent.isPresent()) {
       CoreEvents.fireBitcoinNetworkChangedEvent(latestBitcoinNetworkChangedEvent.get().getSummary());
@@ -82,19 +80,6 @@ public class ApplicationEventService {
         latestExchangeRateChangedEvent.get().getRateProvider(),
         latestExchangeRateChangedEvent.get().getExpires()
       );
-    }
-
-    if (latestHardwareWalletEvent.isPresent()) {
-      if (latestHardwareWalletEvent.get().getMessage().isPresent()) {
-        HardwareWalletEvents.fireHardwareWalletEvent(
-          latestHardwareWalletEvent.get().getEventType(),
-          latestHardwareWalletEvent.get().getMessage().get()
-        );
-      } else {
-        HardwareWalletEvents.fireHardwareWalletEvent(
-          latestHardwareWalletEvent.get().getEventType()
-        );
-      }
     }
 
   }

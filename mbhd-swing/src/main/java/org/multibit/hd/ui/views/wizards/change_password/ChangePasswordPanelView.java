@@ -154,7 +154,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
         // Ensure the view shows the spinner and disables components
         getNextButton().setEnabled(false);
         getCancelButton().setEnabled(false);
-        enterPasswordMaV.getView().setSpinnerVisibility(true);
+        enterPasswordMaV.getView().setSpinnerVisible(true);
 
       }
     });
@@ -217,7 +217,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
                   getNextButton().setEnabled(true);
                 }
                 getCancelButton().setEnabled(true);
-                enterPasswordMaV.getView().setSpinnerVisibility(false);
+                enterPasswordMaV.getView().setSpinnerVisible(false);
 
                 enterPasswordMaV.getView().requestInitialFocus();
 
@@ -238,7 +238,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
                 getNextButton().setEnabled(true);
               }
               getCancelButton().setEnabled(true);
-              enterPasswordMaV.getView().setSpinnerVisibility(false);
+              enterPasswordMaV.getView().setSpinnerVisible(false);
 
               enterPasswordMaV.getView().requestInitialFocus();
             }

@@ -17,7 +17,6 @@ import org.multibit.hd.hardware.core.messages.PinMatrixRequest;
 import org.multibit.hd.hardware.core.messages.PinMatrixRequestType;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -184,7 +183,8 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
         break;
       case REQUEST_REMOVE_PIN:
         // Must be the device asking to confirm
-        getRequestRemovePinPanelView().setDeviceText(Languages.safeText(MessageKey.TREZOR_REMOVE_PIN_TEXT));
+        getRequestRemovePinPanelView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
+        getRequestRemovePinPanelView().setDisplayText(MessageKey.TREZOR_REMOVE_PIN_DISPLAY);
         break;
       case REQUEST_CHANGE_PIN:
         break;

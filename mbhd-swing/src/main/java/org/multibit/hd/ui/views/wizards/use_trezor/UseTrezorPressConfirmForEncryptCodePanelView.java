@@ -34,7 +34,7 @@ public class UseTrezorPressConfirmForEncryptCodePanelView extends AbstractWizard
    */
   public UseTrezorPressConfirmForEncryptCodePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.PRESS_CONFIRM_ON_TREZOR_TITLE, AwesomeIcon.SHIELD);
+    super(wizard, panelName, MessageKey.TREZOR_PRESS_CONFIRM_TITLE, AwesomeIcon.SHIELD);
 
   }
 
@@ -53,7 +53,7 @@ public class UseTrezorPressConfirmForEncryptCodePanelView extends AbstractWizard
     ));
 
     deviceDisplayTextArea = TextBoxes.newReadOnlyTextArea(5,50);
-    deviceDisplayTextArea.setText(Languages.safeText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT));
+    deviceDisplayTextArea.setText(Languages.safeText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY));
 
     contentPanel.add(Labels.newPressConfirmOnDevice(), "wrap");
     contentPanel.add(deviceDisplayTextArea,"aligny top,wrap");

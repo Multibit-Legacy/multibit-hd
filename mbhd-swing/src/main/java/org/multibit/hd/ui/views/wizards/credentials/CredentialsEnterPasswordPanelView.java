@@ -1,23 +1,17 @@
 package org.multibit.hd.ui.views.wizards.credentials;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.util.concurrent.*;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.SecuritySummary;
-import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.SecurityEvent;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
-import org.multibit.hd.core.exceptions.WalletLoadException;
-import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
@@ -36,8 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -46,7 +38,6 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<CredentialsWizardModel, CredentialsEnterPasswordPanelModel> {
 
@@ -86,6 +77,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
 
     // Bind it to the wizard model
     getWizardModel().setEnterPasswordPanelModel(panelModel);
+    getWizardModel().setEnterPasswordPanelView(this);
 
     // Register components
     registerComponents(displaySecurityPopoverMaV, enterPasswordMaV, selectWalletMaV);
@@ -178,157 +170,11 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
       return true;
     }
 
-    // Start the spinner (we are deferring the hide)
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        // Ensure the view shows the spinner and disables components
-        getFinishButton().setEnabled(false);
-        getExitButton().setEnabled(false);
-        getRestoreButton().setEnabled(false);
-
-        enterPasswordMaV.getView().setSpinnerVisibility(true);
-        selectWalletMaV.getView().setEnabled(false);
-
-      }
-    });
-
-    // Check the password (might take a while so do it asynchronously while showing a spinner)
-    // Tar pit (must be in a separate thread to ensure UI updates)
-    ListenableFuture<Boolean> passwordFuture = checkPasswordExecutorService.submit(new Callable<Boolean>() {
-
-      @Override
-      public Boolean call() {
-
-        // Need a very short delay here to allow the UI thread to update
-        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
-
-        return checkPassword();
-
-      }
-    });
-    Futures.addCallback(passwordFuture, new FutureCallback<Boolean>() {
-
-        @Override
-        public void onSuccess(Boolean result) {
-
-          // Check the result
-          if (result) {
-
-            // Maintain the spinner while the initialisation continues
-
-            // Manually deregister the MaVs
-            CoreServices.uiEventBus.unregister(displaySecurityPopoverMaV);
-            CoreServices.uiEventBus.unregister(enterPasswordMaV);
-            CoreServices.uiEventBus.unregister(selectWalletMaV);
-
-            // Trigger the deferred hide
-            ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
-
-          } else {
-
-            // Wait just long enough to be annoying (anything below 2 seconds is comfortable)
-            Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
-
-            // Failed
-            Sounds.playBeep();
-
-            // Ensure the view hides the spinner and enables components
-            SwingUtilities.invokeLater(new Runnable() {
-              @Override
-              public void run() {
-
-                enterPasswordMaV.getView().incorrectPassword();
-
-                getFinishButton().setEnabled(true);
-                getExitButton().setEnabled(true);
-                getRestoreButton().setEnabled(true);
-                enterPasswordMaV.getView().setSpinnerVisibility(false);
-
-                enterPasswordMaV.getView().requestInitialFocus();
-                selectWalletMaV.getView().setEnabled(true);
-
-              }
-            });
-
-          }
-
-        }
-
-        @Override
-        public void onFailure(Throwable t) {
-
-          // Ensure the view hides the spinner and enables components
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-
-              getFinishButton().setEnabled(true);
-              getExitButton().setEnabled(true);
-              getRestoreButton().setEnabled(true);
-              enterPasswordMaV.getView().setSpinnerVisibility(false);
-
-              enterPasswordMaV.getView().requestInitialFocus();
-              selectWalletMaV.getView().setEnabled(true);
-            }
-          });
-
-          // Should not have seen an error
-          ExceptionHandler.handleThrowable(t);
-        }
-      }
-    );
+    // Hand over to the wizard to complete the hide or return on failure
+    getWizardModel().unlockWalletWithPassword();
 
     // Defer the hide operation
     return false;
-  }
-
-  /**
-   * @return True if the selected wallet can be opened with the given password.
-   */
-  private boolean checkPassword() {
-
-    CharSequence password = enterPasswordMaV.getModel().getValue();
-
-    if (!"".equals(password)) {
-      // Attempt to open the wallet
-      WalletId walletId = selectWalletMaV.getModel().getValue().getWalletId();
-      try {
-        WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
-      } catch (WalletLoadException wle) {
-        // Mostly this will be from a bad password
-        log.error(wle.getMessage());
-        // Assume bad credentials
-        return false;
-      }
-      Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-      if (currentWalletSummary.isPresent()) {
-
-        // Store this wallet in the current configuration
-        String walletRoot = WalletManager.createWalletRoot(walletId);
-        Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
-
-        // Update the wallet data
-        WalletSummary walletSummary = currentWalletSummary.get();
-        walletSummary.setPassword(password);
-
-        // Create the history service
-        CoreServices.getOrCreateHistoryService(walletSummary.getWalletId());
-
-        // Must have succeeded to be here
-        CoreServices.logHistory(Languages.safeText(MessageKey.PASSWORD_VERIFIED));
-
-        return true;
-      }
-
-    }
-
-    // Must have failed to be here
-    log.error("Failed attempt to open wallet");
-
-    return false;
-
   }
 
   @Override
@@ -358,4 +204,49 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
 
   }
 
+  /**
+   * Prevent further user interaction during the unlock process
+   */
+  public void disableForUnlock() {
+
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
+
+    getFinishButton().setEnabled(false);
+    getExitButton().setEnabled(false);
+    getRestoreButton().setEnabled(false);
+
+    enterPasswordMaV.getView().setSpinnerVisible(true);
+
+    selectWalletMaV.getView().setEnabled(false);
+
+  }
+
+  /**
+   * Allow further user interaction after a failed unlock process
+   */
+  public void enableForFailedUnlock() {
+
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
+
+    getFinishButton().setEnabled(true);
+    getExitButton().setEnabled(true);
+    getRestoreButton().setEnabled(true);
+
+    enterPasswordMaV.getView().setSpinnerVisible(false);
+    enterPasswordMaV.getView().requestInitialFocus();
+
+    selectWalletMaV.getView().setEnabled(true);
+
+  }
+
+  /**
+   * Update the UI to reflect an incorrect password
+   */
+  public void incorrectPassword() {
+
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
+
+    enterPasswordMaV.getView().incorrectPassword();
+
+  }
 }

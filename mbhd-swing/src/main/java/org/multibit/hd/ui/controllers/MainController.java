@@ -189,7 +189,8 @@ public class MainController extends AbstractController implements
         || WelcomeWizardState.WELCOME_SELECT_WALLET.name().equals(event.getPanelName())
         ) {
 
-        // Need to hand over to the credentials wizard
+        // We have just finished the welcome wizard and want the credentials screen
+
         handoverToCredentialsWizard();
 
       }
@@ -198,25 +199,31 @@ public class MainController extends AbstractController implements
         || CredentialsState.CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK.name().equals(event.getPanelName())
         ) {
 
-        // Perform final initialisation
+        // We have just finished the credentials wizard and want the wallet details screen
+
         hideCredentialsWizard();
 
       }
 
       if (CredentialsState.CREDENTIALS_RESTORE.name().equals(event.getPanelName())) {
 
-        // Need to hand over to the welcome wizard
+        // We are exiting the credentials wizard via the restore button and want the welcome wizard
+
         handoverToWelcomeWizard();
 
       }
 
       if (EditWalletState.EDIT_WALLET.name().equals(event.getPanelName())) {
 
-        // Update the sidebar name
+        // We are exiting the edit wallet wizard and want the details screen to update with changes
+
+        // Update the details screen (title etc)
         String walletName = ((EditWalletWizardModel) event.getWizardModel()).getWalletSummary().getName();
         hideEditWalletWizard(walletName);
 
       }
+
+      // Do nothing other than usual wizard hide operations
 
     } else {
 
@@ -975,7 +982,6 @@ public class MainController extends AbstractController implements
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     mainView.sidebarWalletName(walletSummary.get().getName());
 
-
     final boolean bounceNetwork = WalletType.MBHD_SOFT_WALLET.equals(walletSummary.get().getWalletType());
     log.debug("For this wallet, type {} the bounceNetwork flag is {}", walletSummary.get().getWalletType(), bounceNetwork);
 
@@ -1009,16 +1015,8 @@ public class MainController extends AbstractController implements
             log.debug("Check for Bitcoin URIs...");
             handleBitcoinURIAlert();
 
-            // Lastly start the Bitcoin network (for non-Trezor wallets - these are synced by WalletManager)
-            //if (bounceNetwork) {
-            //  log.debug("Starting Bitcoin network...");
-            //  handleBitcoinNetwork();
-            //} else {
-            //  log.debug("NOT restarting the Bitcoin network connection");
-            //}
-
           } catch (Exception e) {
-            // TODO localise and put on UI
+            // TODO localise and put on UI via an alert
             log.error("Services did not start ok. Error was {}", e.getClass().getCanonicalName() + " " + e.getMessage(), e);
           }
         }

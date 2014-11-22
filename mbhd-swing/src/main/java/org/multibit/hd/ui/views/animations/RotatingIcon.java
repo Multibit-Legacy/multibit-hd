@@ -162,7 +162,7 @@ public class RotatingIcon implements Icon {
     g2.setRenderingHints(ImageDecorator.smoothRenderingHints());
 
     // Required to center the image within the component
-    int xCenteringOffset = 11;
+    int xCenteringOffset = 0;
     int yCenteringOffset = 0;
 
     // Required to compensate for centroid movements during placement within the component

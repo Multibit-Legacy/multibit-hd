@@ -83,7 +83,7 @@ public interface MultiBitUI {
   /**
    * A width constraint to avoid text overflow in wizards showing Trezor device screens
    */
-  String TREZOR_SCREEN_MAX_WIDTH_MIG = "w 150";
+  String TREZOR_DISPLAY_MAX_WIDTH_MIG = "w 150";
 
   // Corners
 

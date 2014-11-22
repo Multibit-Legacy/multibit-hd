@@ -2,10 +2,7 @@ package org.multibit.hd.ui.views.wizards.credentials;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.*;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.crypto.ChildNumber;
@@ -15,8 +12,11 @@ import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.wallet.KeyChain;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
@@ -26,15 +26,20 @@ import org.multibit.hd.hardware.core.fsm.HardwareWalletContext;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.Success;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.util.encoders.Hex;
 
 import javax.annotation.Nullable;
+import javax.swing.*;
 import java.io.File;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Model object to provide the following to "credentials wizard":</p>
@@ -55,11 +60,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   private CredentialsEnterPasswordPanelModel enterPasswordPanelModel;
 
   /**
-   * The "enter pin" panel model
-   */
-  private CredentialsEnterPinPanelModel enterPinPanelModel;
-
-  /**
    * The type of credentials being requested password/ Trezor PIN / no Trezor PIN
    */
   private final CredentialsRequestType credentialsRequestType;
@@ -73,6 +73,16 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    * The "request cipher key" panel view
    */
   private CredentialsRequestCipherKeyPanelView requestCipherKeyPanelView;
+
+  /**
+   * The "confirm cipher key" panel view
+   */
+  private CredentialsConfirmCipherKeyPanelView confirmCipherKeyPanelView;
+
+  /**
+   * The "enter password" panel view
+   */
+  private CredentialsEnterPasswordPanelView enterPasswordPanelView;
 
   /**
    * The unlock wallet executor service
@@ -171,6 +181,17 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         // Fall through to "press confirm for unlock"
       case CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK:
 
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+
+            confirmCipherKeyPanelView.getTrezorDisplayView().setOperationText(MessageKey.COMMUNICATING_WITH_TREZOR);
+            confirmCipherKeyPanelView.setDisplayVisible(false);
+            confirmCipherKeyPanelView.getTrezorDisplayView().setSpinnerVisible(true);
+
+          }
+        });
+
         if (event.getMessage().get() instanceof Success) {
 
           byte[] payload = ((Success) event.getMessage().get()).getPayload();
@@ -205,29 +226,9 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
     switch (state) {
       case CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK:
+
         // Ready to unlock the device wallet
-
-        unlockWalletService.submit(new Runnable() {
-          @Override
-          public void run() {
-            log.debug("Processing a received Deterministic Hierarchy hardwareWalletEvent");
-
-            // See if the wallet has already been opened
-            // TODO This is racey - receivedDeterministicHierarchy is being called twice on the same wallet but I don't know where
-            Optional<CharSequence> currentWalletPassword = Optional.absent();
-            if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-              currentWalletPassword = Optional.of(WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword());
-            }
-            Optional<WalletSummary> walletSummaryOptional = getOrCreateTrezorWallet(currentWalletPassword);
-            if (walletSummaryOptional.isPresent()) {
-
-              // Trigger the deferred hide
-              ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
-
-            }
-
-          }
-        });
+        unlockWalletWithEntropy();
 
         break;
       default:
@@ -277,8 +278,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             );
 
           } else {
-            // TODO Require MessageKey
-            getRequestCipherKeyPanelView().setMessage("No wallet is present on the device");
+            requestCipherKeyPanelView.setOperationText(MessageKey.TREZOR_NO_WALLET_OPERATION);
           }
 
         }
@@ -350,9 +350,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         public Boolean call() throws Exception {
 
           Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
+
           if (hardwareWalletServiceOptional.isPresent()) {
+
             HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
+
             if (hardwareWalletService.isWalletPresent()) {
+
               log.debug("Request the deterministic hierarchy for the Trezor account");
               hardwareWalletService.requestDeterministicHierarchy(
                 Lists.newArrayList(
@@ -360,8 +364,11 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
                   ChildNumber.ZERO_HARDENED,
                   ChildNumber.ZERO_HARDENED
                 ));
+
               log.debug("Request deterministic hierarchy has been performed");
+
               // The "receivedDeterministicHierarchy" response is dealt with in the wizard model
+
             } else {
               log.debug("No wallet present");
             }
@@ -373,6 +380,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         }
 
       });
+
     Futures.addCallback(
       future, new FutureCallback() {
         @Override
@@ -386,19 +394,239 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         public void onFailure(Throwable t) {
 
           // Failed to send the message
-          ExceptionHandler.handleThrowable(t);
+          requestCipherKeyPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
         }
 
       });
   }
 
+  /**
+   * <p>Continue the hide process after user has confirmed entropy and we have a deterministic hierarchy</p>
+   */
+  private void unlockWalletWithEntropy() {
+
+    // Start the spinner (we are deferring the hide)
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+
+        // Ensure the view shows the spinner and disables components
+        confirmCipherKeyPanelView.disableForUnlock();
+
+      }
+    });
+
+    // Check the password (might take a while so do it asynchronously while showing a spinner)
+    ListenableFuture<Optional<WalletSummary>> passwordFuture = unlockWalletService.submit(new Callable<Optional<WalletSummary>>() {
+
+      @Override
+      public Optional<WalletSummary> call() {
+
+        // Need a very short delay here to allow the UI thread to update
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+        return getOrCreateTrezorWallet();
+
+      }
+    });
+    Futures.addCallback(passwordFuture, new FutureCallback<Optional<WalletSummary>>() {
+
+        @Override
+        public void onSuccess(Optional<WalletSummary> result) {
+
+          // Check the result
+          if (result.isPresent()) {
+
+            // Maintain the spinner while the initialisation continues
+
+            // Trigger the deferred hide
+            ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
+
+          } else {
+
+            // Wait just long enough to be annoying (anything below 2 seconds is comfortable)
+            Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+
+            // Failed
+            Sounds.playBeep();
+
+            // Ensure the view hides the spinner and enables components
+            SwingUtilities.invokeLater(new Runnable() {
+              @Override
+              public void run() {
+
+                confirmCipherKeyPanelView.incorrectEntropy();
+                confirmCipherKeyPanelView.enableForFailedUnlock();
+
+              }
+            });
+
+          }
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          // Ensure the view hides the spinner and enables components
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+
+              enterPasswordPanelView.enableForFailedUnlock();
+
+            }
+          });
+
+          // Should not have seen an error
+          ExceptionHandler.handleThrowable(t);
+        }
+      }
+    );
+
+  }
+
 
   /**
-   * <p>Get or create a Trezor wallet based on the entropy and root node</p>
+   * <p>Continue the hide process after user has entered a password and clicked unlock</p>
+   */
+  public void unlockWalletWithPassword() {
+
+    // Start the spinner (we are deferring the hide)
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+
+        // Ensure the view shows the spinner and disables components
+        enterPasswordPanelView.disableForUnlock();
+
+      }
+    });
+
+    // Check the password (might take a while so do it asynchronously while showing a spinner)
+    // Tar pit (must be in a separate thread to ensure UI updates)
+    ListenableFuture<Boolean> passwordFuture = unlockWalletService.submit(new Callable<Boolean>() {
+
+      @Override
+      public Boolean call() {
+
+        // Need a very short delay here to allow the UI thread to update
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+        return checkPassword();
+
+      }
+    });
+    Futures.addCallback(passwordFuture, new FutureCallback<Boolean>() {
+
+        @Override
+        public void onSuccess(Boolean result) {
+
+          // Check the result
+          if (result) {
+
+            // Maintain the spinner while the initialisation continues
+
+            // Trigger the deferred hide
+            ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
+
+          } else {
+
+            // Wait just long enough to be annoying (anything below 2 seconds is comfortable)
+            Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+
+            // Failed
+            Sounds.playBeep();
+
+            // Ensure the view hides the spinner and enables components
+            SwingUtilities.invokeLater(new Runnable() {
+              @Override
+              public void run() {
+
+                enterPasswordPanelView.incorrectPassword();
+                enterPasswordPanelView.enableForFailedUnlock();
+
+              }
+            });
+
+          }
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          // Ensure the view hides the spinner and enables components
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+
+              enterPasswordPanelView.enableForFailedUnlock();
+
+            }
+          });
+
+          // Should not have seen an error
+          ExceptionHandler.handleThrowable(t);
+        }
+      }
+    );
+
+  }
+
+  /**
+   * @return True if the selected wallet can be opened with the given password
+   */
+  private boolean checkPassword() {
+
+    CharSequence password = enterPasswordPanelModel.getEnterPasswordModel().getValue();
+
+    if (!"".equals(password)) {
+      // Attempt to open the wallet
+      WalletId walletId = enterPasswordPanelModel.getSelectWalletModel().getValue().getWalletId();
+      try {
+        WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
+      } catch (WalletLoadException wle) {
+        // Mostly this will be from a bad password
+        log.error(wle.getMessage());
+        // Assume bad credentials
+        return false;
+      }
+      Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+      if (currentWalletSummary.isPresent()) {
+
+        // Store this wallet in the current configuration
+        String walletRoot = WalletManager.createWalletRoot(walletId);
+        Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
+
+        // Update the wallet data
+        WalletSummary walletSummary = currentWalletSummary.get();
+        walletSummary.setPassword(password);
+
+        // Create the history service
+        CoreServices.getOrCreateHistoryService(walletSummary.getWalletId());
+
+        // Must have succeeded to be here
+        CoreServices.logHistory(Languages.safeText(MessageKey.PASSWORD_VERIFIED));
+
+        return true;
+      }
+
+    }
+
+    // Must have failed to be here
+    log.error("Failed attempt to open wallet");
+
+    return false;
+
+  }
+
+  /**
+   * <p>Get or create a Trezor wallet based on the entropy and deterministic hierarchy obtained earlier</p>
    *
    * @return The wallet summary, present if the wallet was created/opened successfully
    */
-  private Optional<WalletSummary> getOrCreateTrezorWallet(Optional<CharSequence> currentWalletPassword) {
+  private Optional<WalletSummary> getOrCreateTrezorWallet() {
 
     Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
     if (hardwareWalletServiceOptional.isPresent()) {
@@ -450,11 +678,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
           String newWalletPassword = Hex.toHexString(entropy.get());
 
-          if (currentWalletPassword.isPresent() && currentWalletPassword.get().equals(newWalletPassword)) {
-            log.debug("Trying to load the same wallet twice - looks like getOrCreateTrezorWallet has been called twice on the same wallet. Aborting this invocation");
-            return Optional.absent();
-          }
-
           // Locate the installation directory
           final File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -464,13 +687,14 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             applicationDataDirectory,
             parentKey,
             // TODO The wizard should provide a suitable timestamp field for new wallets
-                  DateTime.parse(WalletManager.EARLIEST_HD_WALLET_DATE).getMillis() / 1000,
+            DateTime.parse(WalletManager.EARLIEST_HD_WALLET_DATE).getMillis() / 1000,
             newWalletPassword,
             label, "Trezor"));
 
         } catch (Exception e) {
 
-          e.printStackTrace();
+          log.error(e.getMessage(), e);
+
         }
 
 
@@ -483,21 +707,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     return Optional.absent();
   }
 
-
-  /**
-   * @return The credentials the user entered
-   */
-  public String getCredentials() {
-    switch (credentialsRequestType) {
-      case PASSWORD:
-        return enterPasswordPanelModel.getEnterPasswordModel().getValue();
-      case TREZOR_CIPHER_KEY:
-        return enterPinPanelModel.getEnterPinModel().getValue();
-      default:
-        return "";
-    }
-  }
-
   /**
    * <p>Reduced visibility for panel models only</p>
    *
@@ -505,22 +714,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    */
   void setEnterPasswordPanelModel(CredentialsEnterPasswordPanelModel enterPasswordPanelModel) {
     this.enterPasswordPanelModel = enterPasswordPanelModel;
-  }
-
-  public CredentialsRequestType getCredentialsRequestType() {
-    return credentialsRequestType;
-  }
-
-  public CredentialsEnterPinPanelModel getEnterPinPanelModel() {
-    return enterPinPanelModel;
-  }
-
-  public void setEnterPinPanelModel(CredentialsEnterPinPanelModel enterPinPanelModel) {
-    this.enterPinPanelModel = enterPinPanelModel;
-  }
-
-  public CredentialsEnterPasswordPanelModel getEnterPasswordPanelModel() {
-    return enterPasswordPanelModel;
   }
 
   public CredentialsEnterPinPanelView getEnterPinPanelView() {
@@ -531,12 +724,16 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     this.enterPinPanelView = enterPinPanelView;
   }
 
-  public CredentialsRequestCipherKeyPanelView getRequestCipherKeyPanelView() {
-    return requestCipherKeyPanelView;
-  }
-
   public void setRequestCipherKeyPanelView(CredentialsRequestCipherKeyPanelView requestCipherKeyPanelView) {
     this.requestCipherKeyPanelView = requestCipherKeyPanelView;
+  }
+
+  public void setConfirmCipherKeyPanelView(CredentialsConfirmCipherKeyPanelView confirmCipherKeyPanelView) {
+    this.confirmCipherKeyPanelView = confirmCipherKeyPanelView;
+  }
+
+  public void setEnterPasswordPanelView(CredentialsEnterPasswordPanelView enterPasswordPanelView) {
+    this.enterPasswordPanelView = enterPasswordPanelView;
   }
 
   /**

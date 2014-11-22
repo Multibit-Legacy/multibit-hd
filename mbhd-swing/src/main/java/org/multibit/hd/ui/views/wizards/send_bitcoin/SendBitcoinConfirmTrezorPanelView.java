@@ -50,7 +50,7 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<S
    */
   public SendBitcoinConfirmTrezorPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.PRESS_CONFIRM_ON_TREZOR_TITLE, AwesomeIcon.SHIELD);
+    super(wizard, panelName, MessageKey.TREZOR_PRESS_CONFIRM_TITLE, AwesomeIcon.SHIELD);
 
 
     HardwareWalletService.hardwareWalletEventBus.register(this);

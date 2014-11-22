@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.components.trezor_screen;
+package org.multibit.hd.ui.views.components.trezor_display;
 
 import org.multibit.hd.ui.models.Model;
 
@@ -11,11 +11,14 @@ import org.multibit.hd.ui.models.Model;
  * @since 0.0.1
  *
  */
-public class TrezorScreenModel implements Model<String> {
+public class TrezorDisplayModel implements Model<String> {
 
   private String displayText;
 
-  public TrezorScreenModel() {
+  private final String panelName;
+
+  public TrezorDisplayModel(String panelName) {
+    this.panelName = panelName;
   }
 
   @Override
@@ -28,4 +31,7 @@ public class TrezorScreenModel implements Model<String> {
     this.displayText = value;
   }
 
+  public String getPanelName() {
+    return panelName;
+  }
 }

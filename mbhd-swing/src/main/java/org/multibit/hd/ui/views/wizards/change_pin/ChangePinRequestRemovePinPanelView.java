@@ -2,16 +2,14 @@ package org.multibit.hd.ui.views.wizards.change_pin;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
-import org.multibit.hd.ui.views.components.trezor_screen.TrezorScreenModel;
-import org.multibit.hd.ui.views.components.trezor_screen.TrezorScreenView;
+import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayModel;
+import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -34,11 +32,7 @@ public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<
 
   private static final Logger log = LoggerFactory.getLogger(ChangePinRequestRemovePinPanelView.class);
 
-  private ModelAndView<TrezorScreenModel, TrezorScreenView> trezorScreenMaV;
-
-  private JLabel message = Labels.newCommunicatingWithTrezor();
-
-  private JTextArea deviceDisplayTextArea = TextBoxes.newTrezorV1Display();
+  private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
 
   /**
    * @param wizard The wizard managing the states
@@ -66,12 +60,13 @@ public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<
       "[]10[]" // Row constraints
     ));
 
-    // Hide the display area initially
-    deviceDisplayTextArea.setVisible(false);
+    trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
 
     // Need some text here in case device fails just as we being the process
-    contentPanel.add(message, "align left,wrap");
-    contentPanel.add(deviceDisplayTextArea, "align center," + MultiBitUI.TREZOR_SCREEN_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(trezorDisplayMaV.getView().newComponentPanel(), "align center,wrap");
+
+    // Ensure we register the components to avoid memory leaks
+    registerComponents(trezorDisplayMaV);
 
   }
 
@@ -115,15 +110,17 @@ public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<
   }
 
   /**
-   * @param deviceText The text showing on the device
+   * @param key The key to the operation text
    */
-  public void setDeviceText(String deviceText) {
+  public void setOperationText(MessageKey key) {
+    this.trezorDisplayMaV.getView().setOperationText(key);
+  }
 
-    this.deviceDisplayTextArea.setVisible(true);
-    this.deviceDisplayTextArea.setText(deviceText);
-
-    this.trezorScreenMaV.getView().setDeviceText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT);
-
+  /**
+   * @param key The key to the device text
+   */
+  public void setDisplayText(MessageKey key) {
+    this.trezorDisplayMaV.getView().setDisplayText(key);
   }
 
 }

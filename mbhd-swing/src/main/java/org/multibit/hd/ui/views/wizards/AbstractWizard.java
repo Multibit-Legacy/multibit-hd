@@ -405,7 +405,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   private void handleHide(final String panelName, boolean isExitCancel, AbstractWizardPanelView wizardPanelView) {
 
-    log.trace("Handle hide starting: '{}' ExitCancel: {}", panelName, isExitCancel);
+    log.debug("Handle hide starting: '{}' ExitCancel: {}", panelName, isExitCancel);
 
     // De-register
     wizardPanelView.deregisterDefaultButton();
@@ -418,8 +418,6 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
       new Runnable() {
         @Override
         public void run() {
-
-          log.trace("Handle hide background cleanup: '{}'", panelName);
 
           // Require some extra time to get the rest of the UI started for credentials wizard
           if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(panelName)) {

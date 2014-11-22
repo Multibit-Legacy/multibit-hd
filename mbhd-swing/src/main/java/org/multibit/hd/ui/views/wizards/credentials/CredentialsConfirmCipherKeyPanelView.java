@@ -1,19 +1,18 @@
 package org.multibit.hd.ui.views.wizards.credentials;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayModel;
+import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
-import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 
@@ -29,7 +28,7 @@ import javax.swing.*;
 
 public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelView<CredentialsWizardModel, CredentialsConfirmCipherKeyPanelModel> {
 
-  private JTextArea deviceDisplayTextArea;
+  private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
 
   /**
    * @param wizard    The wizard managing the states
@@ -37,12 +36,15 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
    */
   public CredentialsConfirmCipherKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.PRESS_CONFIRM_ON_TREZOR_TITLE, AwesomeIcon.SHIELD);
+    super(wizard, panelName, MessageKey.TREZOR_PRESS_CONFIRM_TITLE, AwesomeIcon.SHIELD);
 
   }
 
   @Override
   public void newPanelModel() {
+
+    // Bind it to the wizard model in case of failure
+    getWizardModel().setConfirmCipherKeyPanelView(this);
 
   }
 
@@ -55,18 +57,41 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
       "[]10[]" // Row constraints
     ));
 
-    deviceDisplayTextArea = TextBoxes.newTrezorV1Display();
-    deviceDisplayTextArea.setText(Languages.safeText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT));
+    trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
 
-    contentPanel.add(Labels.newPressConfirmOnDevice(), "wrap");
-    contentPanel.add(deviceDisplayTextArea, "align center," + MultiBitUI.TREZOR_SCREEN_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(trezorDisplayMaV.getView().newComponentPanel(), "align center,wrap");
+
+    // Register the components
+    registerComponents(trezorDisplayMaV);
 
   }
 
   @Override
   protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelNext(this, wizard);
+    PanelDecorator.addExitCancelRestoreUnlock(this, wizard);
+
+  }
+
+  @Override
+  public void afterShow() {
+
+    SwingUtilities.invokeLater(new Runnable() {
+
+      @Override public void run() {
+
+        // Set the confirm text
+        trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
+
+        // Show unlock message
+        trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY);
+
+        // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
+        getFinishButton().setEnabled(false);
+
+      }
+
+    });
 
   }
 
@@ -78,19 +103,6 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
       return true;
     }
 
-    // Disable the buttons while the processing is going on
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        // Ensure the view shows the spinner and disables components
-        getFinishButton().setEnabled(false);
-        getExitButton().setEnabled(false);
-        getRestoreButton().setEnabled(false);
-
-      }
-    });
-
     // Defer the hide operation
     return false;
   }
@@ -100,22 +112,51 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
 
     // No need to update the wizard it has the references
 
-    // Determine any events
-    ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.FINISH,
-      isUnlockEnabled()
-    );
-
   }
 
   /**
-   * @return True if the "unlock" button should be enabled
+   * @return The Trezor display view to avoid method duplication
    */
-  private boolean isUnlockEnabled() {
+  public TrezorDisplayView getTrezorDisplayView() {
+    return trezorDisplayMaV.getView();
+  }
 
-    return getWizardModel().getEntropy().isPresent();
+  /**
+   * @param visible True if the display should not be visible
+   */
+  public void setDisplayVisible(boolean visible) {
+    this.trezorDisplayMaV.getView().setDisplayVisible(visible);
+  }
+
+  public void disableForUnlock() {
+
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
+
+    getFinishButton().setEnabled(false);
+    getExitButton().setEnabled(false);
+    getRestoreButton().setEnabled(false);
+
+    trezorDisplayMaV.getView().setSpinnerVisible(true);
 
   }
 
+  public void enableForFailedUnlock() {
+
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
+
+    getFinishButton().setEnabled(false);
+    getExitButton().setEnabled(true);
+    getRestoreButton().setEnabled(true);
+
+    trezorDisplayMaV.getView().setSpinnerVisible(false);
+
+  }
+
+  public void incorrectEntropy() {
+
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
+
+    trezorDisplayMaV.getView().incorrectEntropy();
+
+  }
 }

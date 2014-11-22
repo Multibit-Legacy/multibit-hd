@@ -523,6 +523,9 @@ public class Labels {
 
     label.setIcon(rotatingIcon);
 
+    // Require a small border when placing in a central position
+    label.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+
     return label;
   }
 
@@ -785,7 +788,7 @@ public class Labels {
    */
   public static JLabel newPressConfirmOnDevice() {
 
-    return newLabel(MessageKey.PRESS_CONFIRM_ON_TREZOR);
+    return newLabel(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
 
   }
 
@@ -1150,7 +1153,7 @@ public class Labels {
   public static JLabel newPressConfirmOnTrezorNoteShort() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.PRESS_CONFIRM_ON_TREZOR
+      MessageKey.TREZOR_PRESS_CONFIRM_OPERATION
     }, new Object[][]{});
 
   }

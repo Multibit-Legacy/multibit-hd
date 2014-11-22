@@ -4,9 +4,12 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayModel;
+import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -22,6 +25,7 @@ import javax.swing.*;
  * <li>Credentials: Request cipher key</li>
  * </ul>
  * <p>This is the first step in getting the extended public key from a Trezor device</p>
+ *
  * @since 0.0.1
  *  
  */
@@ -29,14 +33,14 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
 
   private static final Logger log = LoggerFactory.getLogger(CredentialsRequestCipherKeyPanelView.class);
 
-  private JLabel message = Labels.newCommunicatingWithTrezor();
+  private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
 
   /**
    * @param wizard The wizard managing the states
    */
   public CredentialsRequestCipherKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT, AwesomeIcon.LOCK);
+    super(wizard, panelName, MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY, AwesomeIcon.LOCK);
 
   }
 
@@ -54,13 +58,15 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
     contentPanel.setLayout(
       new MigLayout(
         Panels.migXLayout(),
-        "[120][][][40]", // Column constraints
-        "[]12[][][30]" // Row constraints
+        "[]", // Column constraints
+        "[]" // Row constraints
       ));
 
-    // Need some text here in case device fails just as we being the process
-    contentPanel.add(Labels.newBlankLabel());
-    contentPanel.add(message, "align left,span 2,wrap");
+    trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
+    contentPanel.add(trezorDisplayMaV.getView().newComponentPanel(), "align center,wrap");
+
+    // Register the components
+    registerComponents(trezorDisplayMaV);
 
   }
 
@@ -86,7 +92,17 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
   @Override
   public void afterShow() {
 
-    registerDefaultButton(getFinishButton());
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+
+        // Set the communication message
+        trezorDisplayMaV.getView().setOperationText(MessageKey.COMMUNICATING_WITH_TREZOR);
+
+        // This could take a while
+        trezorDisplayMaV.getView().setSpinnerVisible(true);
+      }
+    });
 
     // Start the wallet access process by requesting a cipher key
     // to get a deterministic wallet ID
@@ -106,10 +122,17 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
   }
 
   /**
-   * @param message The message text
+   * @param key The key to the operation text
    */
-  public void setMessage(String message) {
-    this.message.setText(message);
+  public void setOperationText(MessageKey key) {
+    this.trezorDisplayMaV.getView().setOperationText(key);
+  }
+
+  /**
+   * @param key The key to the device text
+   */
+  public void setDisplayText(MessageKey key) {
+    this.trezorDisplayMaV.getView().setDisplayText(key);
   }
 
 }

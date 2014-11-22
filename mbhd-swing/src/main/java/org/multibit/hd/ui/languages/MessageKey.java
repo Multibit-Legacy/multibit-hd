@@ -379,11 +379,16 @@ public enum MessageKey {
   PIN_FAILURE("pin_failure"),
   PIN_SUCCESS("pin_success"),
 
-  PRESS_CONFIRM_ON_TREZOR("press_confirm_on_trezor"),
-  PRESS_CONFIRM_ON_TREZOR_TITLE("press_confirm_on_trezor_title"),
+  TREZOR_PRESS_CONFIRM_TITLE("trezor_press_confirm_title"),
 
-  TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_TEXT("trezor_encrypt_multibit_hd_unlock_text"),
-  TREZOR_REMOVE_PIN_TEXT("trezor_remove_pin_text"),
+  // Operations
+  TREZOR_PRESS_CONFIRM_OPERATION("trezor_press_confirm_operation"),
+  TREZOR_NO_WALLET_OPERATION("trezor_no_wallet_operation"),
+  TREZOR_FAILURE_OPERATION("trezor_failure_operation"),
+
+  // Trezor display text
+  TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY("trezor_encrypt_multibit_hd_unlock_display"),
+  TREZOR_REMOVE_PIN_DISPLAY("trezor_remove_pin_display"),
 
   USE_TREZOR_REPORT_TITLE("use_trezor_report_title"),
   USE_TREZOR_REPORT_MESSAGE_SUCCESS("use_trezor_report_message_success"),

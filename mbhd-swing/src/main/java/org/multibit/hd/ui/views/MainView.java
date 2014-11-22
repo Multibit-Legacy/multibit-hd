@@ -143,6 +143,8 @@ public class MainView extends JFrame {
     // Rebuild the main content
     getContentPane().add(createMainContent());
 
+    log.debug("Repeating earlier events...");
+
     // Catch up on recent events
     CoreServices.getApplicationEventService().repeatLatestEvents();
 
@@ -300,12 +302,15 @@ public class MainView extends JFrame {
 
     }
 
+    log.debug("Creating fresh views under MainView...");
     // Create supporting views (rebuild every time for language support)
     headerView = new HeaderView();
     // At present we are always in single wallet mode
     sidebarView = new SidebarView(false);
     detailView = new DetailView();
     footerView = new FooterView();
+
+    log.debug("Creating split pane...");
 
     // Create a splitter pane
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);

@@ -101,7 +101,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
     panel.add(showButton, "shrink");
 
     // Ensure the icon label is a size suitable for rotation
-    panel.add(spinner, "grow," + MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG + ",wrap");
+    panel.add(spinner, MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG + ",wrap");
 
     return panel;
 
@@ -153,13 +153,13 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
   }
 
   /**
-   * @param showSpinner True if the view should show the spinner and disable other components
+   * @param visible True if the view should show the spinner and disable other components
    */
-  public void setSpinnerVisibility(boolean showSpinner) {
+  public void setSpinnerVisible(boolean visible) {
 
-    spinner.setVisible(showSpinner);
-    password.setEnabled(!showSpinner);
-    showButton.setEnabled(!showSpinner);
+    spinner.setVisible(visible);
+    password.setEnabled(!visible);
+    showButton.setEnabled(!visible);
 
   }
 
