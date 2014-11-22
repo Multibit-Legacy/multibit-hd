@@ -12,7 +12,10 @@ package org.multibit.hd.ui.views.wizards.change_pin;
 public enum ChangePinState {
 
   SELECT_OPTION,
+  REQUEST_ADD_PIN,
+  CONFIRM_ADD_PIN,
   REQUEST_CHANGE_PIN,
+  CONFIRM_CHANGE_PIN,
   REQUEST_REMOVE_PIN,
   CONFIRM_REMOVE_PIN,
   ENTER_CURRENT_PIN,

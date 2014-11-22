@@ -372,6 +372,8 @@ public enum MessageKey {
   PASSWORD_UNLOCK("password_unlock"),
   PASSWORD_UNLOCK_TOOLTIP("password_unlock_tooltip"),
 
+  // Credentials
+  TREZOR_UNLOCK_TITLE("trezor_unlock_title"),
   PIN_TITLE("pin_title"),
   CHANGE_PIN_TITLE("change_pin_title"),
   CHANGE_PIN_REPORT_TITLE("change_pin_report_title"),
@@ -381,6 +383,7 @@ public enum MessageKey {
   PIN_SUCCESS("pin_success"),
 
   // Use Trezor
+  TREZOR_CONFIRM_ADD_PIN_TITLE("trezor_confirm_add_pin_title"),
   TREZOR_CONFIRM_CHANGE_PIN_TITLE("trezor_confirm_change_pin_title"),
   TREZOR_CONFIRM_REMOVE_PIN_TITLE("trezor_confirm_remove_pin_title"),
   TREZOR_PRESS_CONFIRM_TITLE("trezor_press_confirm_title"),
@@ -392,12 +395,14 @@ public enum MessageKey {
   TREZOR_REMOVE_PIN_OPERATION("trezor_remove_pin_operation"),
 
   // Reports
+  TREZOR_CHANGE_PIN_SUCCESS("trezor_change_pin_success"),
   TREZOR_REMOVE_PIN_SUCCESS("trezor_remove_pin_success"),
   TREZOR_REMOVE_PIN_FAILURE("trezor_remove_pin_failure"),
 
   // Trezor display text
   TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY("trezor_encrypt_multibit_hd_unlock_display"),
-  TREZOR_NEW_PIN_DISPLAY("trezor_new_pin_display"),
+  TREZOR_ADD_PIN_DISPLAY("trezor_add_pin_display"),
+  TREZOR_CHANGE_PIN_DISPLAY("trezor_change_pin_display"),
   TREZOR_REMOVE_PIN_DISPLAY("trezor_remove_pin_display"),
 
   USE_TREZOR_REPORT_TITLE("use_trezor_report_title"),
@@ -449,6 +454,7 @@ public enum MessageKey {
   CHANGE_PIN_ENTER_CURRENT_PIN_TITLE("change_pin_enter_current_pin_title"),
   CHANGE_PIN_ENTER_NEW_PIN_TITLE("change_pin_enter_new_pin_title"),
   CHANGE_PIN_CONFIRM_NEW_PIN_TITLE("change_pin_confirm_new_pin_title"),
+  CHANGE_PIN_CONFIRM_CHANGE_PIN_TITLE("change_pin_confirm_change_pin_title"),
 
   REPAIR_WALLET_TITLE("repair_wallet_title"),
   REPAIR_WALLET_PROGRESS_TITLE("repair_wallet_progress_title"),

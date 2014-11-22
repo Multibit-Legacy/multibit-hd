@@ -49,15 +49,18 @@ public class EnterPinModel implements Model<String> {
    */
   @Override
   public String getValue() {
+
     StringBuilder builder = new StringBuilder();
     for (Integer buttonPosition : buttonPositionsPressed) {
       builder.append(buttonPosition.toString());
     }
+
     return builder.toString();
   }
 
   @Override
   public void setValue(String value) {
+
     Preconditions.checkNotNull(value, "'value' must be present");
 
     buttonPositionsPressed = new ArrayList<>();
@@ -66,28 +69,23 @@ public class EnterPinModel implements Model<String> {
     }
   }
 
-//  public void setPin(char[] pin) {
-//
-//    this.pin = Optional.of(pin);
-//
-//    // Alert the panel model that a component has changed
-//    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
-//  }
-
   public void addButtonPressed(int buttonPosition) {
-    log.debug("Saw a button pressed at position " + buttonPosition);
+
     buttonPositionsPressed.add(buttonPosition);
 
     // Alert the panel model that a component has changed
     ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
+
   }
 
   public void removeLastButtonPressed() {
+
     if (!buttonPositionsPressed.isEmpty()) {
       buttonPositionsPressed.remove(buttonPositionsPressed.size() - 1);
 
       // Alert the panel model that a component has changed
       ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
     }
+
   }
 }

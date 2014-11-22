@@ -20,22 +20,22 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Change PIN: Request change PIN</li>
+ * <li>Change PIN: Request new PIN</li>
  * </ul>
  *
  * @since 0.0.5
  *  
  */
-public class ChangePinRequestChangePinPanelView extends AbstractWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
+public class ChangePinRequestAddPinPanelView extends AbstractWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
 
   private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
 
   /**
    * @param wizard The wizard managing the states
    */
-  public ChangePinRequestChangePinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
+  public ChangePinRequestAddPinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_CONFIRM_CHANGE_PIN_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, MessageKey.TREZOR_CONFIRM_ADD_PIN_TITLE, AwesomeIcon.LOCK);
 
   }
 
@@ -43,7 +43,7 @@ public class ChangePinRequestChangePinPanelView extends AbstractWizardPanelView<
   public void newPanelModel() {
 
     // Bind it to the wizard model in case of failure
-    getWizardModel().setRequestChangePinPanelView(this);
+    getWizardModel().setRequestNewPinPanelView(this);
 
   }
 
@@ -88,7 +88,7 @@ public class ChangePinRequestChangePinPanelView extends AbstractWizardPanelView<
   @Override
   public void afterShow() {
 
-    // Start the change request process immediately
+    // Start the add/change request process immediately
     getWizardModel().requestRemovePin(false);
 
   }
@@ -98,13 +98,6 @@ public class ChangePinRequestChangePinPanelView extends AbstractWizardPanelView<
 
     // Do nothing we are a transitional view
 
-  }
-
-  /**
-   * @param key The key to the operation text
-   */
-  public void setOperationText(MessageKey key) {
-    this.trezorDisplayMaV.getView().setOperationText(key);
   }
 
 }

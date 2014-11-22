@@ -16,7 +16,6 @@ import java.util.Map;
  * </ol>
  *
  * @since 0.0.5
- *
  */
 public class ChangePinWizard extends AbstractHardwareWalletWizard<ChangePinWizardModel> {
 
@@ -32,8 +31,20 @@ public class ChangePinWizard extends AbstractHardwareWalletWizard<ChangePinWizar
       new ChangePinSelectOptionPanelView(this, ChangePinState.SELECT_OPTION.name()));
 
     wizardViewMap.put(
+      ChangePinState.REQUEST_ADD_PIN.name(),
+      new ChangePinRequestAddPinPanelView(this, ChangePinState.REQUEST_ADD_PIN.name()));
+
+    wizardViewMap.put(
+      ChangePinState.CONFIRM_ADD_PIN.name(),
+      new ChangePinConfirmAddPinPanelView(this, ChangePinState.CONFIRM_ADD_PIN.name()));
+
+    wizardViewMap.put(
       ChangePinState.REQUEST_CHANGE_PIN.name(),
       new ChangePinRequestChangePinPanelView(this, ChangePinState.REQUEST_CHANGE_PIN.name()));
+
+    wizardViewMap.put(
+      ChangePinState.CONFIRM_CHANGE_PIN.name(),
+      new ChangePinConfirmChangePinPanelView(this, ChangePinState.CONFIRM_CHANGE_PIN.name()));
 
     wizardViewMap.put(
       ChangePinState.REQUEST_REMOVE_PIN.name(),
@@ -56,8 +67,8 @@ public class ChangePinWizard extends AbstractHardwareWalletWizard<ChangePinWizar
       new ChangePinConfirmNewPinPanelView(this, ChangePinState.CONFIRM_NEW_PIN.name()));
 
     wizardViewMap.put(
-        ChangePinState.SHOW_REPORT.name(),
-        new ChangePinReportPanelView(this, ChangePinState.SHOW_REPORT.name()));
+      ChangePinState.SHOW_REPORT.name(),
+      new ChangePinReportPanelView(this, ChangePinState.SHOW_REPORT.name()));
   }
 
   @Override
@@ -72,20 +83,24 @@ public class ChangePinWizard extends AbstractHardwareWalletWizard<ChangePinWizar
         // Ensure the panel updates its model (the button is outside of the panel itself)
         wizardPanelView.updateFromComponentModels(Optional.absent());
 
-        if (ChangePinState.ENTER_CURRENT_PIN.equals(getWizardModel().getState())) {
+        switch (getWizardModel().getState()) {
 
-          // Treat as a PIN entry
-          getWizardModel().providePin(getWizardModel().getMostRecentPin());
+          case ENTER_CURRENT_PIN:
+          case ENTER_NEW_PIN:
+          case CONFIRM_NEW_PIN:
+            // Treat as a PIN entry
+            getWizardModel().providePin(getWizardModel().getMostRecentPin());
+            break;
+          default:
+            // Treat as a Next
 
-        } else {
+            // Move to the next state
+            getWizardModel().showNext();
 
-          // Treat as a Next
+            // Show the panel based on the state
+            show(getWizardModel().getPanelName());
 
-          // Move to the next state
-          getWizardModel().showNext();
-
-          // Show the panel based on the state
-          show(getWizardModel().getPanelName());
+            break;
         }
       }
 

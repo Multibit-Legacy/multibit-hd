@@ -222,6 +222,14 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   }
 
   @Override
+  public void showOperationFailed(HardwareWalletEvent event) {
+
+    // In all cases fall back to the beginning
+    state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
+
+  }
+
+  @Override
   public void receivedDeterministicHierarchy(HardwareWalletEvent event) {
 
     switch (state) {

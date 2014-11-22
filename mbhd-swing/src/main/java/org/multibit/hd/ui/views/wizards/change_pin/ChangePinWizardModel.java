@@ -10,10 +10,7 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
-import org.multibit.hd.hardware.core.messages.ButtonRequest;
-import org.multibit.hd.hardware.core.messages.ButtonRequestType;
-import org.multibit.hd.hardware.core.messages.PinMatrixRequest;
-import org.multibit.hd.hardware.core.messages.PinMatrixRequestType;
+import org.multibit.hd.hardware.core.messages.*;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -93,6 +90,14 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
    * The report message key
    */
   private MessageKey reportMessageKey;
+  private ChangePinConfirmChangePinPanelView confirmChangePinPanelView;
+
+  /**
+   * True if the device currently has PIN protection
+   */
+  private boolean hasPinProtection = false;
+  private ChangePinRequestAddPinPanelView requestNewPinPanelView;
+  private ChangePinConfirmAddPinPanelView confirmAddPinPanelView;
 
   /**
    * @param state The state object
@@ -143,6 +148,18 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
     this.confirmRemovePinPanelView = confirmRemovePinPanelView;
   }
 
+  public void setConfirmChangePinPanelView(ChangePinConfirmChangePinPanelView confirmChangePinPanelView) {
+    this.confirmChangePinPanelView = confirmChangePinPanelView;
+  }
+
+  public void setRequestNewPinPanelView(ChangePinRequestAddPinPanelView requestNewPinPanelView) {
+    this.requestNewPinPanelView = requestNewPinPanelView;
+  }
+
+  public void setConfirmAddPinPanelView(ChangePinConfirmAddPinPanelView confirmAddPinPanelView) {
+    this.confirmAddPinPanelView = confirmAddPinPanelView;
+  }
+
   /**
    * @param removePin True if the user selected the "remove PIN" option
    */
@@ -151,7 +168,6 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
   }
 
   /**
-   *
    * @return True if the report message indicates success
    */
   public boolean isReportMessageStatus() {
@@ -165,6 +181,13 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
     return reportMessageKey;
   }
 
+  /**
+   * @return True if the device currently has PIN protection
+   */
+  public boolean hasPinProtection() {
+    return hasPinProtection;
+  }
+
   @Subscribe
   public void onVerificationStatusChangedEvent(VerificationStatusChangedEvent event) {
 
@@ -174,12 +197,36 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
 
   }
 
+
   @Override
   public void showNext() {
 
     switch (state) {
       case SELECT_OPTION:
-        state = removePin ? ChangePinState.REQUEST_REMOVE_PIN : ChangePinState.REQUEST_CHANGE_PIN;
+
+        // Read the current features to establish PIN status
+        Features features = CoreServices.getOrCreateHardwareWalletService().get().getContext().getFeatures().get();
+        hasPinProtection = features.hasPinProtection();
+
+        if (removePin) {
+          state = ChangePinState.REQUEST_REMOVE_PIN;
+        } else if (hasPinProtection()) {
+          state = ChangePinState.REQUEST_CHANGE_PIN;
+        } else {
+          state = ChangePinState.REQUEST_ADD_PIN;
+        }
+        break;
+      case REQUEST_ADD_PIN:
+        state = ChangePinState.CONFIRM_NEW_PIN;
+        break;
+      case CONFIRM_NEW_PIN:
+        state = ChangePinState.ENTER_NEW_PIN;
+        break;
+      case REQUEST_CHANGE_PIN:
+        state = ChangePinState.CONFIRM_CHANGE_PIN;
+        break;
+      case CONFIRM_CHANGE_PIN:
+        state = ChangePinState.SHOW_REPORT;
         break;
       case REQUEST_REMOVE_PIN:
         state = ChangePinState.CONFIRM_REMOVE_PIN;
@@ -187,25 +234,19 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
       case CONFIRM_REMOVE_PIN:
         state = ChangePinState.SHOW_REPORT;
         break;
-      case REQUEST_CHANGE_PIN:
-        break;
       case ENTER_CURRENT_PIN:
         // Provide PIN handled by ChangePinWizard overriding Next button behaviour
         break;
       case ENTER_NEW_PIN:
         // Provide PIN handled by ChangePinWizard overriding Next button behaviour
         break;
-      case CONFIRM_NEW_PIN:
-        // Provide PIN handled by ChangePinWizard overriding Next button behaviour
-        break;
       case SHOW_REPORT:
         state = ChangePinState.SHOW_REPORT;
         break;
       default:
-        throw new IllegalStateException("Unknown state: " + state.name());
+        throw new IllegalStateException("Should not reach here from " + state.name());
     }
   }
-
 
   @Override
   public void showButtonPress(HardwareWalletEvent event) {
@@ -219,21 +260,19 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
       case SELECT_OPTION:
         break;
       case REQUEST_REMOVE_PIN:
-        // Device is requesting confirmation of the PIN removal
+        // Device is requesting PIN removal
         state = ChangePinState.CONFIRM_REMOVE_PIN;
         break;
+      case REQUEST_ADD_PIN:
+        // Device is requesting PIN addition
+        state = ChangePinState.CONFIRM_ADD_PIN;
+        break;
       case REQUEST_CHANGE_PIN:
-        break;
-      case ENTER_CURRENT_PIN:
-        break;
-      case ENTER_NEW_PIN:
-        break;
-      case CONFIRM_NEW_PIN:
-        break;
-      case SHOW_REPORT:
+        // Device is requesting a PIN change
+        state = ChangePinState.CONFIRM_CHANGE_PIN;
         break;
       default:
-        throw new IllegalStateException("Unknown state: " + state.name());
+        throw new IllegalStateException("Should not reach here from " + state.name());
     }
 
   }
@@ -247,26 +286,59 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
 
     // The PIN entry could have come about from many possible paths
     switch (state) {
-      case SELECT_OPTION:
+      case CONFIRM_ADD_PIN:
+        // User has confirmed the change of the PIN
+        switch (requestType) {
+          case NEW_FIRST:
+            state = ChangePinState.ENTER_NEW_PIN;
+            break;
+          default:
+            throw new IllegalStateException("Should not reach here from " + requestType.name());
+        }
         break;
-      case REQUEST_REMOVE_PIN:
+      case CONFIRM_CHANGE_PIN:
+        // User has confirmed the change of the PIN
+        switch (requestType) {
+          case CURRENT:
+            state = ChangePinState.ENTER_CURRENT_PIN;
+            break;
+          case NEW_FIRST:
+            state = ChangePinState.ENTER_NEW_PIN;
+            break;
+          default:
+            throw new IllegalStateException("Should not reach here from " + requestType.name());
+        }
         break;
       case CONFIRM_REMOVE_PIN:
         // User has confirmed the removal of the PIN
         state = ChangePinState.ENTER_CURRENT_PIN;
         break;
-      case REQUEST_CHANGE_PIN:
-        break;
       case ENTER_CURRENT_PIN:
+        // User has made another attempt at the current PIN
+        switch (requestType) {
+          case NEW_FIRST:
+            state = ChangePinState.ENTER_NEW_PIN;
+            break;
+          default:
+            throw new IllegalStateException("Should not reach here from " + requestType.name());
+        }
         break;
       case ENTER_NEW_PIN:
+        // User has confirmed the change of the PIN
+        switch (requestType) {
+          case NEW_SECOND:
+            state = ChangePinState.CONFIRM_NEW_PIN;
+            break;
+          default:
+            throw new IllegalStateException("Should not reach here from " + requestType.name());
+        }
         break;
       case CONFIRM_NEW_PIN:
         break;
       case SHOW_REPORT:
         break;
       default:
-        throw new IllegalStateException("Unknown state: " + state.name());
+        throw new IllegalStateException("Should not reach here from " + state.name());
     }
 
 
@@ -393,12 +465,18 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
           reportMessageKey = MessageKey.TREZOR_REMOVE_PIN_SUCCESS;
           reportMessageStatus = true;
         }
+        // Update the features for next time
+        CoreServices.getOrCreateHardwareWalletService().get().getContext().resetToAttached();
         break;
       case ENTER_NEW_PIN:
         state = ChangePinState.CONFIRM_NEW_PIN;
         break;
       case CONFIRM_NEW_PIN:
         state = ChangePinState.SHOW_REPORT;
+        reportMessageKey = MessageKey.TREZOR_CHANGE_PIN_SUCCESS;
+        reportMessageStatus = true;
+        // Update the features for next time
+        CoreServices.getOrCreateHardwareWalletService().get().getContext().resetToAttached();
         break;
       case SHOW_REPORT:
         break;
@@ -406,5 +484,26 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
         throw new IllegalStateException("Should not reach here from " + state.name());
 
     }
+  }
+
+  @Override
+  public void showOperationFailed(HardwareWalletEvent event) {
+
+    switch (state) {
+
+      case ENTER_CURRENT_PIN:
+        enterCurrentPinPanelView.incorrectPin();
+        break;
+      case ENTER_NEW_PIN:
+        enterNewPinPanelView.incorrectPin();
+        break;
+      case CONFIRM_NEW_PIN:
+        confirmNewPinPanelView.incorrectPin();
+        break;
+      default:
+        throw new IllegalStateException("Should not reach here from " + state.name());
+
+    }
+
   }
 }

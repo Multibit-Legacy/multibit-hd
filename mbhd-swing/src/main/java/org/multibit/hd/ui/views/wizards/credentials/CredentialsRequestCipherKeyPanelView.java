@@ -36,7 +36,7 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
    */
   public CredentialsRequestCipherKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY, AwesomeIcon.LOCK);
+    super(wizard, panelName, MessageKey.TREZOR_UNLOCK_TITLE, AwesomeIcon.LOCK);
 
   }
 

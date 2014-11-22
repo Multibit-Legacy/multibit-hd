@@ -5,9 +5,10 @@ import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
+import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.ModelAndView;
+import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.enter_pin.EnterPinModel;
 import org.multibit.hd.ui.views.components.enter_pin.EnterPinView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -22,8 +23,6 @@ import javax.swing.*;
  * <p>View to provide the following to UI:</p>
  * <ul>
  * <li>Enter current PIN</li>
- * <li>Enter new PIN</li>
- * <li>Enter confirmation of new PIN</li>
  * </ul>
  *
  * @since 0.0.5
@@ -32,7 +31,6 @@ import javax.swing.*;
 public class ChangePinEnterCurrentPinPanelView extends AbstractWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
 
   // Panel specific components
-  private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
   private ModelAndView<EnterPinModel, EnterPinView> enterPinMaV;
 
   /**
@@ -48,7 +46,6 @@ public class ChangePinEnterCurrentPinPanelView extends AbstractWizardPanelView<C
   @Override
   public void newPanelModel() {
 
-    displaySecurityPopoverMaV = Popovers.newDisplaySecurityPopoverMaV(getPanelName());
     enterPinMaV = Components.newEnterPinMaV(getPanelName());
 
     // Configure the panel model
@@ -62,7 +59,7 @@ public class ChangePinEnterCurrentPinPanelView extends AbstractWizardPanelView<C
     getWizardModel().setChangePinPanelModel(panelModel);
 
     // Register components
-    registerComponents(enterPinMaV, displaySecurityPopoverMaV);
+    registerComponents(enterPinMaV);
 
   }
 

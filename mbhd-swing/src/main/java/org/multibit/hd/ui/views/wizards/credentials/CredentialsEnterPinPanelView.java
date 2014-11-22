@@ -194,7 +194,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
           getFinishButton().setEnabled(status);
 
           // Ensure the view enables the escape components
-          getCancelButton().setEnabled(true);
+          getExitButton().setEnabled(true);
           getRestoreButton().setEnabled(true);
         }
       });
@@ -213,4 +213,11 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
 
   }
 
+  /**
+   * Show the PIN entry as incorrect
+   */
+  public void incorrectPin() {
+
+    setPinStatus(false, true);
+  }
 }

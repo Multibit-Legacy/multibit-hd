@@ -67,6 +67,9 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   /**
    * Handles state transition to an "operation failed" panel
    *
+   * Typically a wizard would restart with fresh state since the Trezor will fall back
+   * to its initialised state
+   *
    * @param event The hardware wallet event containing payload and context
    */
   public void showOperationFailed(HardwareWalletEvent event) {
