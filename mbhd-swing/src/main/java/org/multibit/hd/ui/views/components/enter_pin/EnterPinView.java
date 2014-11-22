@@ -195,6 +195,7 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
 
     setPinStatus(false, true);
 
+
   }
 
 }

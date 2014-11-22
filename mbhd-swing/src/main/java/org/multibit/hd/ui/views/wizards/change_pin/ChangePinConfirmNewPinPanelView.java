@@ -123,13 +123,4 @@ public class ChangePinConfirmNewPinPanelView extends AbstractWizardPanelView<Cha
 
   }
 
-  /**
-   * User has entered an incorrect PIN
-   */
-  public void incorrectPin() {
-
-    enterPinMaV.getView().incorrectPin();
-
-  }
-
 }

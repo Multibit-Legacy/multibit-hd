@@ -123,14 +123,4 @@ public class ChangePinEnterCurrentPinPanelView extends AbstractWizardPanelView<C
     return !Strings.isNullOrEmpty(enterPinMaV.getModel().getValue());
 
   }
-
-  /**
-   * User has entered an incorrect PIN
-   */
-  public void incorrectPin() {
-
-    enterPinMaV.getView().incorrectPin();
-
-  }
-
 }

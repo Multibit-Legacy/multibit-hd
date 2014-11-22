@@ -403,13 +403,11 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
           switch (state) {
 
             case ENTER_CURRENT_PIN:
-              enterCurrentPinPanelView.incorrectPin();
-              break;
             case ENTER_NEW_PIN:
-              enterNewPinPanelView.incorrectPin();
-              break;
             case CONFIRM_NEW_PIN:
-              confirmNewPinPanelView.incorrectPin();
+              state = ChangePinState.SHOW_REPORT;
+              reportMessageKey = MessageKey.TREZOR_INCORRECT_PIN_FAILURE;
+              reportMessageStatus = false;
               break;
             default:
               throw new IllegalStateException("Should not reach here from " + state.name());
@@ -469,13 +467,11 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
         state = ChangePinState.SELECT_OPTION;
         break;
       case ENTER_CURRENT_PIN:
-        enterCurrentPinPanelView.incorrectPin();
-        break;
       case ENTER_NEW_PIN:
-        enterNewPinPanelView.incorrectPin();
-        break;
       case CONFIRM_NEW_PIN:
-        confirmNewPinPanelView.incorrectPin();
+        state = ChangePinState.SHOW_REPORT;
+        reportMessageKey = MessageKey.TREZOR_INCORRECT_PIN_FAILURE;
+        reportMessageStatus = false;
         break;
       default:
         throw new IllegalStateException("Should not reach here from " + state.name());
