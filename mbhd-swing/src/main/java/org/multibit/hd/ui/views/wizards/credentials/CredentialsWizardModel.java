@@ -94,6 +94,11 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    */
   Optional<byte[]> entropy = Optional.absent();
 
+  /**
+   * True if a Trezor failure has occurred that necessitates a switch to password entry
+   */
+  private boolean switchToPassword;
+
   public CredentialsWizardModel(CredentialsState credentialsState, CredentialsRequestType credentialsRequestType) {
     super(credentialsState);
     this.credentialsRequestType = credentialsRequestType;
@@ -104,6 +109,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     return state.name();
   }
 
+  /**
+   * @param switchToPassword True if there is a need to switch to password entry through showNext()
+   */
+  public void setSwitchToPassword(boolean switchToPassword) {
+    this.switchToPassword = switchToPassword;
+  }
+
   @Override
   public void showNext() {
 
@@ -111,6 +123,9 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       case CREDENTIALS_ENTER_PASSWORD:
         break;
       case CREDENTIALS_REQUEST_CIPHER_KEY:
+        if (switchToPassword) {
+          state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+        }
         break;
       case CREDENTIALS_ENTER_PIN:
         break;
@@ -294,7 +309,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             );
 
           } else {
-            requestCipherKeyPanelView. setOperationText(MessageKey.TREZOR_NO_WALLET_OPERATION);
+            requestCipherKeyPanelView.setOperationText(MessageKey.TREZOR_NO_WALLET_OPERATION);
           }
 
         }

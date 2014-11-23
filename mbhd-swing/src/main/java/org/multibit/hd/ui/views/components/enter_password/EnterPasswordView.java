@@ -97,7 +97,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
     if (isAddLabel()) {
       panel.add(Labels.newEnterPassword(), "grow,push");
     }
-    panel.add(password, "grow,push");
+    panel.add(password, "growx,h 32,push");
     panel.add(showButton, "shrink");
 
     // Ensure the icon label is a size suitable for rotation

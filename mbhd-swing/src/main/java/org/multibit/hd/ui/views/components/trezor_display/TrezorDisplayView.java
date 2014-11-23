@@ -26,6 +26,7 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
 
   // View components
   private JLabel operationText;
+  private JLabel recoveryText;
   private JTextArea deviceDisplayTextArea;
   private JLabel spinner;
 
@@ -47,6 +48,7 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
 
     // Initialise the components
     operationText = Labels.newCommunicatingWithTrezor();
+    recoveryText = Labels.newBlankLabel();
     deviceDisplayTextArea = TextBoxes.newTrezorV1Display();
 
     // Provide an invisible tar pit spinner
@@ -58,6 +60,7 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
 
     // Add to the panel
     panel.add(operationText, "align center,wrap");
+    panel.add(recoveryText, "align center,wrap");
     panel.add(deviceDisplayTextArea, "align center," + MultiBitUI.TREZOR_DISPLAY_MAX_WIDTH_MIG + ",wrap");
     panel.add(spinner, "align center,wrap");
 
@@ -77,6 +80,32 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
 
 
   /**
+   * <p>Update the operation label with suitable text</p>
+   *
+   * @param key The message key defining the operation text (e.g. "Communicating with Trezor")
+   */
+  public void setOperationText(MessageKey key) {
+
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
+
+    operationText.setText(Languages.safeText(key));
+
+  }
+
+  /**
+   * <p>Update the recovery label with suitable text</p>
+   *
+   * @param key The message key defining the recovery text (e.g. "Click next to continue" etc)
+   */
+  public void setRecoveryText(MessageKey key) {
+
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
+
+    recoveryText.setText(Languages.safeText(key));
+
+  }
+
+  /**
    * <p>Update the display with suitable text</p>
    *
    * @param key    The message key defining the Trezor text
@@ -88,19 +117,6 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
 
     setDisplayVisible(true);
     deviceDisplayTextArea.setText(Languages.safeText(key, values));
-
-  }
-
-  /**
-   * <p>Update the operation label with suitable text</p>
-   *
-   * @param key The message key defining the operation text
-   */
-  public void setOperationText(MessageKey key) {
-
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
-
-    operationText.setText(Languages.safeText(key));
 
   }
 

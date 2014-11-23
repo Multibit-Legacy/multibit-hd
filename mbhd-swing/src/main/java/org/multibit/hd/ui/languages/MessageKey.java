@@ -507,6 +507,9 @@ public enum MessageKey {
   EXCHANGE_FIAT_RATE("exchange_fiat_rate"),
   EXCHANGE_FIAT_RATE_WITH_PROVIDER("exchange_fiat_rate_with_provider"),
 
+  CLICK_NEXT_TO_CONTINUE("click_next_to_continue"),
+  CLICK_FINISH_TO_CONTINUE("click_finish_to_continue"),
+
   SELECT_LANGUAGE("select_language"),
   SELECT_LANGUAGE_TOOLTIP("select_language_tooltip"),
 
@@ -780,7 +783,6 @@ public enum MessageKey {
   REPAIR_WALLET_NOTE_1("repair_wallet_note_1"),
   REPAIR_WALLET_NOTE_2("repair_wallet_note_2"),
   REPAIR_WALLET_NOTE_3("repair_wallet_note_3"),
-  REPAIR_WALLET_NOTE_4("repair_wallet_note_4"),
 
   SPENDABLE_BALANCE_IS_LOWER("spendable_balance_is_lower"),
 

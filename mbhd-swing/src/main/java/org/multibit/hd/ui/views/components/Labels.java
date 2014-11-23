@@ -1486,7 +1486,7 @@ public class Labels {
       MessageKey.REPAIR_WALLET_NOTE_1,
       MessageKey.REPAIR_WALLET_NOTE_2,
       MessageKey.REPAIR_WALLET_NOTE_3,
-      MessageKey.REPAIR_WALLET_NOTE_4
+      MessageKey.CLICK_NEXT_TO_CONTINUE
     }, new Object[][]{});
 
   }

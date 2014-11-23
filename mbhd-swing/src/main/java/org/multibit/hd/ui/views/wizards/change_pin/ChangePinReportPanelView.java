@@ -27,7 +27,7 @@ import javax.swing.*;
 public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinWizardModel, String> {
 
   // View
-  private JLabel pinStatusLabel;
+  private JLabel reportStatusLabel;
 
   /**
    * @param wizard    The wizard managing the states
@@ -62,10 +62,10 @@ public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinW
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Provide an empty status label (populated after show)
-    pinStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.TREZOR_FAILURE_OPERATION), null, Optional.<Boolean>absent());
-    pinStatusLabel.setVisible(false);
+    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.TREZOR_FAILURE_OPERATION), null, Optional.<Boolean>absent());
+    reportStatusLabel.setVisible(false);
 
-    contentPanel.add(pinStatusLabel, "aligny top,wrap");
+    contentPanel.add(reportStatusLabel, "aligny top,wrap");
 
   }
 
@@ -86,16 +86,16 @@ public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinW
 
     // Use the outcome from the previous operations to decorate the existing status label
     final MessageKey reportMessageKey = getWizardModel().getReportMessageKey();
-    pinStatusLabel.setText(Languages.safeText(reportMessageKey));
+    reportStatusLabel.setText(Languages.safeText(reportMessageKey));
     AccessibilityDecorator.apply(
-      pinStatusLabel,
+      reportStatusLabel,
       reportMessageKey
     );
     Labels.decorateStatusLabel(
-      pinStatusLabel,
+      reportStatusLabel,
       Optional.of(getWizardModel().isReportMessageStatus())
     );
-    pinStatusLabel.setVisible(true);
+    reportStatusLabel.setVisible(true);
 
     return true;
   }
