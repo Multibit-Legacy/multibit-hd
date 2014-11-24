@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.create_wallet.*;
 import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
@@ -9,6 +10,7 @@ import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectCreateWalle
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>FEST Swing UI test to provide:</p>
@@ -41,7 +43,11 @@ public class WelcomeWizardCreateWallet_en_US_Requirements {
     new CreateWalletSeedPhraseUseCase(window).execute(parameters);
     new CreateWalletConfirmSeedPhraseUseCase(window).execute(parameters);
 
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
     new CreateWalletCreatePasswordUseCase(window).execute(parameters);
+
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     new CreateWalletReportUseCase(window).execute(parameters);
 
