@@ -7,8 +7,8 @@ import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.events.view.HardwareWalletStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ProgressChangedEvent;
 import org.multibit.hd.ui.events.view.SystemStatusChangedEvent;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -87,8 +87,9 @@ public class FooterView extends AbstractView {
     hardwareWalletIcon = Labels.newBlankLabel();
     AwesomeDecorator.bindIcon(AwesomeIcon.SHIELD, hardwareWalletIcon, false, MultiBitUI.SMALL_ICON_SIZE);
     AccessibilityDecorator.apply(hardwareWalletIcon, MessageKey.SELECT_TREZOR, MessageKey.SELECT_TREZOR_TOOLTIP);
-    // Start invisible and rely on the application event service to repeat events
-    hardwareWalletIcon.setVisible(false);
+
+    // The icon is only changed during a soft reset and the FooterView will be rebuilt each time
+    hardwareWalletIcon.setVisible(WalletManager.INSTANCE.isUnlockedTrezorHardWallet());
 
     // Spacer
     JLabel spacerLabel = Labels.newBlankLabel();
@@ -149,38 +150,6 @@ public class FooterView extends AbstractView {
             default:
               // Unknown status
               throw new IllegalStateException("Unknown event severity " + event.getSeverity());
-          }
-
-        }
-      });
-
-  }
-
-  /**
-   * <p>Handles the representation of a hardware wallet status change</p>
-   *
-   * @param event The hardware wallet status change event
-   */
-  @Subscribe
-  public void onHardwareWalletStatusChangeEvent(final HardwareWalletStatusChangedEvent event) {
-
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-
-          switch (event.getEventType()) {
-            case SHOW_DEVICE_DETACHED:
-              hardwareWalletIcon.setVisible(false);
-              break;
-            case SHOW_DEVICE_READY:
-              hardwareWalletIcon.setVisible(true);
-              break;
-            case SHOW_DEVICE_FAILED:
-              hardwareWalletIcon.setVisible(false);
-              break;
-            default:
-              // Ignore other types;
           }
 
         }
