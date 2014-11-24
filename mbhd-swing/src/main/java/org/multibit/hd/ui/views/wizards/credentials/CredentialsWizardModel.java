@@ -284,6 +284,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         public void run() {
           log.debug("Performing a request cipher key to Trezor");
 
+          Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
           // A 'requestCipherKey' is performed in which the user presses the OK button to encrypt a set text
           // (the result of which will be used to decrypt the wallet)
           Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
