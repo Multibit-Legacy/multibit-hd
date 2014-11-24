@@ -592,8 +592,11 @@ public class MainController extends AbstractController implements
         break;
       case SHOW_DEVICE_FAILED:
       case SHOW_DEVICE_READY:
-        // Show an alert if the Trezor connects when there is a current wallet
-        if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+        // Show an alert if the Trezor connects when
+        // - there is a current wallet
+        // - the current wallet is not a "hard" Trezor wallet
+        Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+        if (walletSummary.isPresent() &&  !WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
           // Attempt to create a suitable alert model in addition to view event
           AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
           ControllerEvents.fireAddAlertEvent(alertModel);
