@@ -1122,6 +1122,29 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
+   * @return True if current wallet is unlocked and represents a Trezor "hard" wallet
+   */
+  public boolean isUnlockedTrezorHardWallet() {
+    try {
+
+      Optional<WalletSummary> walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+      if (walletSummaryOptional.isPresent()) {
+        WalletSummary walletSummary = walletSummaryOptional.get();
+
+        return WalletType.TREZOR_HARD_WALLET.equals(walletSummary.getWalletType());
+
+      } else {
+        // No wallet present
+        return false;
+      }
+    } catch (Exception e) {
+      // Some other problem
+      return false;
+    }
+  }
+
+  /**
    * <p>Method to sign a message</p>
    *
    * @param addressText    Text address to use to sign (makes UI Address conversion code DRY)
