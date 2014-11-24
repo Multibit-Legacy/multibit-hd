@@ -154,6 +154,7 @@ public class EncryptedFileReaderWriter {
           SecureFiles.secureDelete(fileToEncrypt);
         } else {
           // The saved file isn't the correct size - do not delete the original
+          log.debug("The saved file is not the size of the encrypted bytes - not deleting the original file");
           return null;
         }
 

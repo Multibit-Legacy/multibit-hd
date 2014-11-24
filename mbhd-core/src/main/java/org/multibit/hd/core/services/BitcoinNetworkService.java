@@ -61,7 +61,7 @@ public class BitcoinNetworkService extends AbstractService {
 
   private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
 
-  public static final Coin DEFAULT_FEE_PER_KB = Transaction.REFERENCE_DEFAULT_MIN_TX_FEE; // Currently 10,000 satoshi
+  public static final Coin DEFAULT_FEE_PER_KB = Transaction.REFERENCE_DEFAULT_MIN_TX_FEE; // Currently 1,000 satoshi
   public static final int MAXIMUM_NUMBER_OF_PEERS = 6;
 
   /**
@@ -1140,6 +1140,7 @@ public class BitcoinNetworkService extends AbstractService {
       Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
       peerGroup.addWallet(wallet);
       peerGroup.setFastCatchupTimeSecs(wallet.getEarliestKeyCreationTime());
+      peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
     }
   }
 
