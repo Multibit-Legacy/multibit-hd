@@ -366,6 +366,7 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   private boolean performCommitAndBroadcast(SendRequestSummary sendRequestSummary, Wallet wallet) {
+
     // Attempt to commit the signed transaction to the wallet
     if (!commit(sendRequestSummary, wallet)) {
       return false;
@@ -839,8 +840,8 @@ public class BitcoinNetworkService extends AbstractService {
    * @return True if the signDirectly operation was successful
    */
   private boolean signUsingTrezor(SendRequestSummary sendRequestSummary, Wallet wallet) {
-    log.debug("Signing the send request using a Trezor ...");
 
+    log.debug("Signing the send request using a Trezor ...");
 
     Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 

@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
-import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.Map;
  * @since 0.0.1
  *         
  */
-public class SendBitcoinWizard extends AbstractWizard<SendBitcoinWizardModel> {
+public class SendBitcoinWizard extends AbstractHardwareWalletWizard<SendBitcoinWizardModel> {
 
   public SendBitcoinWizard(SendBitcoinWizardModel model) {
     super(model, false, Optional.absent());
