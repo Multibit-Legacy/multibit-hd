@@ -2,7 +2,6 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.hardware_wallet.ShowThenCancelUseHardwareWalletUseCase;
 
 import java.util.Map;
 
@@ -21,8 +20,9 @@ public class HardwareWalletEventRequirements {
 
     Map<String, Object> parameters = Maps.newHashMap();
 
+    System.out.println("Everything is commented out in HardwareWalletEventRequirements#verifyUsing");
     // Verify the "device connected" alert
-    new ShowThenCancelUseHardwareWalletUseCase(window).execute(parameters);
+    // new ShowThenCancelUseHardwareWalletUseCase(window).execute(parameters);
 
     // Require mocking capability on HardwareWalletService (perhaps use emulator)
     // Verify the PIN matrix

@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.ShowManageWalletScreenUseCase;
@@ -11,6 +12,7 @@ import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.repair_wallet.Sho
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.wallet_details.ShowThenCancelWalletDetailsUseCase;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>FEST Swing UI test to provide:</p>
@@ -29,20 +31,30 @@ public class ManageWalletScreenRequirements {
     // Show the manage wallets screen
     new ShowManageWalletScreenUseCase(window).execute(parameters);
 
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
     // Show then cancel the "edit wallet" wizard
     new ShowThenCancelEditWalletUseCase(window).execute(parameters);
+
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Show then cancel the "wallet details" wizard
     new ShowThenCancelWalletDetailsUseCase(window).execute(parameters);
 
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
     if (CoreServices.getOrCreateBitcoinNetworkService().isStartedOk()) {
       // Show then cancel the "empty wallet" wizard
       new ShowThenCancelEmptyWalletUseCase(window).execute(parameters);
+
+      Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
     }
 
     // Show then cancel the "repair wallet" wizard
     // Verifying the repair will take too long
     new ShowThenCancelRepairWalletUseCase(window).execute(parameters);
+
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Verify the "history" screen change
     verifyHistoryScreen(window, parameters);

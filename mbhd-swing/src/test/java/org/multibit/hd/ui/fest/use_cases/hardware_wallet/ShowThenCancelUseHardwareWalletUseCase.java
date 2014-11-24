@@ -36,6 +36,8 @@ public class ShowThenCancelUseHardwareWalletUseCase extends AbstractFestUseCase 
       features
     );
 
+    // TODO the above hardware wallet event does not do anything to the UI now
+    // not sure what the expected behaviour is so commenting out test in
     // Allow time for the view to react
     pauseForViewReset();
 

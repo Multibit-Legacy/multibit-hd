@@ -1,12 +1,14 @@
 package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.sidebar.payments.SearchPaymentsUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.payments.ShowDetailPaymentsUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.payments.ShowPaymentsScreenUseCase;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>FEST Swing UI test to provide:</p>
@@ -26,8 +28,12 @@ public class PaymentsScreenRequirements {
     // Select the payments screen
     new ShowPaymentsScreenUseCase(window).execute(parameters);
 
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
      // Verify the transaction details wizard works ok
     new ShowDetailPaymentsUseCase(window).execute(parameters);
+
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Verify the standard wallet contains some payments
     new SearchPaymentsUseCase(window).execute(parameters);
