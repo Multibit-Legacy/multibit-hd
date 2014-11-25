@@ -84,7 +84,7 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
         }
       } else {
         // No fiat payment information (could be no exchange)
-        log.debug("Cannot render fiatPayment. {} {}",
+        log.trace("Cannot render fiatPayment. {} {}",
           fiatPayment,
           Configurations.currentConfiguration.getBitcoin().getLocalCurrencyCode()
         );
