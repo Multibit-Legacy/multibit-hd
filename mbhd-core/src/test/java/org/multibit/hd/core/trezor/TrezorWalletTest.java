@@ -150,7 +150,7 @@ public class TrezorWalletTest {
     // Create a Trezor soft wallet using the test root node, using a BIP44 account structure
     WalletSummary walletSummary = WalletManager
             .INSTANCE
-            .getOrCreateWalletSummary(
+            .getOrCreateWalletSummaryFromRootNode(
                     temporaryDirectory,
                     trezorRootNode,
                     TREZOR_WALLET_CREATION_DATE.getMillis() / 1000,

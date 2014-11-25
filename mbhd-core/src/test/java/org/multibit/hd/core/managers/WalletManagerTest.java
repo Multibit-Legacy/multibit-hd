@@ -116,7 +116,7 @@ public class WalletManagerTest {
     long nowInSeconds = Dates.nowInSeconds();
 
     WalletSummary walletSummary1 = walletManager
-            .getOrCreateWalletSummary(
+            .getOrCreateWalletSummaryFromSeed(
                     applicationDirectory,
                     seed,
                     nowInSeconds,
@@ -135,7 +135,7 @@ public class WalletManagerTest {
     BackupManager.INSTANCE.initialise(applicationDirectory2, null);
 
     WalletSummary walletSummary2 = walletManager
-            .getOrCreateWalletSummary(
+            .getOrCreateWalletSummaryFromSeed(
                     applicationDirectory2,
                     seed,
                     nowInSeconds,
@@ -298,7 +298,7 @@ public class WalletManagerTest {
     long nowInSeconds = Dates.nowInSeconds();
 
     log.debug("");
-    WalletSummary walletSummary = walletManager.getOrCreateWalletSummary(
+    WalletSummary walletSummary = walletManager.getOrCreateWalletSummaryFromSeed(
             applicationDirectory,
             seed,
             nowInSeconds,
@@ -394,7 +394,7 @@ public class WalletManagerTest {
 
 
       WalletSummary walletSummary = walletManager
-              .getOrCreateWalletSummary(
+              .getOrCreateWalletSummaryFromSeed(
                       applicationDirectory,
                       seed,
                       nowInSeconds,

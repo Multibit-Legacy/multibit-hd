@@ -37,13 +37,13 @@ public class PersistentHistoryServiceTest {
     long nowInSeconds = Dates.nowInSeconds();
     WalletManager
       .INSTANCE
-      .getOrCreateWalletSummary(
-        temporaryDirectory,
-        seed1,
-        nowInSeconds,
-        WalletServiceTest.PASSWORD,
-        "Example",
-        "Example"
+      .getOrCreateWalletSummaryFromSeed(
+              temporaryDirectory,
+              seed1,
+              nowInSeconds,
+              WalletServiceTest.PASSWORD,
+              "Example",
+              "Example"
       );
 
     File contactDbFile = new File(temporaryDirectory.getAbsolutePath() + File.separator + HistoryService.HISTORY_DATABASE_NAME);

@@ -79,13 +79,13 @@ public class BackupManagerTest {
     // Create a wallet summary
     WalletSummary walletSummary = WalletManager
       .INSTANCE
-      .getOrCreateWalletSummary(
-        applicationDirectory,
-        seed,
-        nowInSeconds,
-        password,
-        "Example",
-        "Example"
+      .getOrCreateWalletSummaryFromSeed(
+              applicationDirectory,
+              seed,
+              nowInSeconds,
+              password,
+              "Example",
+              "Example"
       );
 
     // Wallet manager does not initiate the backup

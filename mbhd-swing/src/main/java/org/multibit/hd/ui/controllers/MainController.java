@@ -152,6 +152,9 @@ public class MainController extends AbstractController implements
         BackupManager.INSTANCE.onShutdownEvent(shutdownEvent);
         InstallationManager.onShutdownEvent(shutdownEvent);
 
+        // Close the Bitcoin network connection and save the block store
+        CoreServices.getOrCreateBitcoinNetworkService().onShutdownEvent(shutdownEvent);
+
         // Dispose of the main view and all its attendant references
         log.debug("Disposing of MainView");
         SwingUtilities.invokeLater(

@@ -259,13 +259,13 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    WalletSummary walletSummary = walletManager.getOrCreateWalletSummary(
-      walletDirectory,
-      seed,
-      nowInSeconds,
-      WALLET_PASSWORD,
-      name,
-      notes
+    WalletSummary walletSummary = walletManager.getOrCreateWalletSummaryFromSeed(
+            walletDirectory,
+            seed,
+            nowInSeconds,
+            WALLET_PASSWORD,
+            name,
+            notes
     );
     assertThat(walletSummary).isNotNull();
     assertThat(walletSummary.getWallet()).isNotNull();

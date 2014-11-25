@@ -146,7 +146,7 @@ public enum WalletManager implements WalletEventListener {
   /**
    * The wallet version number for protobuf encrypted wallets - compatible with MultiBit Classic
    */
-  public static final int MBHD_WALLET_VERSION = 1; // TODO - check compatibility - this is the same as the old serialised MB classic wallets
+  public static final int MBHD_WALLET_VERSION = 1;
   public static final String MBHD_WALLET_PREFIX = "mbhd";
   public static final String MBHD_WALLET_SUFFIX = ".wallet";
   public static final String MBHD_AES_SUFFIX = ".aes";
@@ -272,10 +272,10 @@ public enum WalletManager implements WalletEventListener {
       // Create a root node from which all addresses will be generated
       DeterministicKey trezorRootNode = WalletManager.generateTrezorRootNode(privateMasterKey);
       log.debug("Creating a Trezor soft wallet with rootNode = " + trezorRootNode);
-      return getOrCreateWalletSummary(applicationDataDirectory, trezorRootNode, creationTimeInSeconds, password, name, notes);
+      return getOrCreateWalletSummaryFromRootNode(applicationDataDirectory, trezorRootNode, creationTimeInSeconds, password, name, notes);
     } else {
       log.debug("Creating a MBHD soft wallet");
-      return getOrCreateWalletSummary(applicationDataDirectory, seed, creationTimeInSeconds, password, name, notes);
+      return getOrCreateWalletSummaryFromSeed(applicationDataDirectory, seed, creationTimeInSeconds, password, name, notes);
     }
   }
 
@@ -299,7 +299,7 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
    */
-  public WalletSummary getOrCreateWalletSummary(
+  public WalletSummary getOrCreateWalletSummaryFromSeed(
           File applicationDataDirectory,
           byte[] seed,
           long creationTimeInSeconds,
@@ -308,7 +308,7 @@ public enum WalletManager implements WalletEventListener {
           String notes
   ) throws WalletLoadException, WalletVersionException, IOException {
 
-    log.debug("getOrCreateWalletSummary 4 called");
+    log.debug("getOrCreateWalletSummaryFromRootNode 4 called");
     final WalletSummary walletSummary;
 
     // Create a wallet id from the seed to work out the wallet root directory
@@ -376,8 +376,6 @@ public enum WalletManager implements WalletEventListener {
     File checkpointsFile = new File(walletDirectory.getAbsolutePath() + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX);
     InstallationManager.copyCheckpointsTo(checkpointsFile);
 
-    // Do not create an initial rolling backup and zip backup (the backup location may not exist)
-
     return walletSummary;
   }
 
@@ -401,8 +399,7 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
    */
-  // TODO Rename this to reflect target or consider a dedicated WalletSummaries factory
-  public WalletSummary getOrCreateWalletSummary(
+  public WalletSummary getOrCreateWalletSummaryFromRootNode(
           File applicationDataDirectory,
           DeterministicKey rootNode,
           long creationTimeInSeconds,
@@ -411,7 +408,6 @@ public enum WalletManager implements WalletEventListener {
           String notes
   ) throws WalletLoadException, WalletVersionException, IOException {
 
-    log.debug("getOrCreateWalletSummary 2 called");
     // Create a wallet id from the rootNode to work out the wallet root directory
     final WalletId walletId = new WalletId(rootNode.getIdentifier());
     String walletRoot = createWalletRoot(walletId);
@@ -571,8 +567,6 @@ public enum WalletManager implements WalletEventListener {
       }
     }
 
-    // Do not create an initial rolling backup and zip backup (the backup location may not exist)
-
     return walletSummary;
   }
 
@@ -583,7 +577,6 @@ public enum WalletManager implements WalletEventListener {
 
     Preconditions.checkNotNull(encryptedWalletBytes, "'encryptedWalletBytes' must be present");
 
-    // This will flood the logs if left at debug
     log.trace("Encrypted wallet bytes after load:\n{}", Utils.HEX.encode(encryptedWalletBytes));
     log.debug("Loaded bytes: {}", encryptedWalletBytes.length);
 
@@ -605,7 +598,6 @@ public enum WalletManager implements WalletEventListener {
     log.trace("Just loaded wallet:\n{}", wallet.toString());
 
     return wallet;
-
   }
 
   /**
@@ -784,7 +776,6 @@ public enum WalletManager implements WalletEventListener {
    * @return The directory composed of parent directory plus the wallet root
    * @throws IllegalStateException if wallet could not be created
    */
-  // TODO (GR) Refactor this to take a WalletId and infer the prefix to avoid info leak
   public static File getOrCreateWalletDirectory(File applicationDataDirectory, String walletRoot) {
 
     // Create wallet directory under application directory
@@ -866,7 +857,6 @@ public enum WalletManager implements WalletEventListener {
           }
         }
       }
-
     }
 
     return walletList;
@@ -922,7 +912,6 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * TODO (GR) Consider moving this to the same model as Configurations and Themes
    *
    * @return The current wallet summary (present only if a wallet has been unlocked)
    */
@@ -1028,10 +1017,9 @@ public enum WalletManager implements WalletEventListener {
    * @param walletDirectory The wallet directory to read
    * @return The wallet summary if present, or a default if not
    */
-  // TODO Rename this to reflect target or consider a dedicated WalletSummaries factory
   public static WalletSummary getOrCreateWalletSummary(File walletDirectory, WalletId walletId) {
 
-    log.debug("getOrCreateWalletSummary 3 called");
+    log.debug("getOrCreateWalletSummaryFromRootNode 3 called");
     verifyWalletDirectory(walletDirectory);
 
     Optional<WalletSummary> walletSummaryOptional = Optional.absent();

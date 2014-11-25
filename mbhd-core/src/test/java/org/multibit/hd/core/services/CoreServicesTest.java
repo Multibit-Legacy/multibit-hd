@@ -58,13 +58,13 @@ public class CoreServicesTest {
     long nowInSeconds = Dates.nowInSeconds();
     WalletSummary walletSummary = WalletManager
       .INSTANCE
-      .getOrCreateWalletSummary(
-        temporaryDirectory,
-        seed,
-        nowInSeconds,
-        PASSWORD,
-        "Example",
-        "Example"
+      .getOrCreateWalletSummaryFromSeed(
+              temporaryDirectory,
+              seed,
+              nowInSeconds,
+              PASSWORD,
+              "Example",
+              "Example"
       );
 
     Wallet wallet  = walletSummary.getWallet();

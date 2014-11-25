@@ -154,14 +154,12 @@ public class EncryptedFileReaderWriter {
           SecureFiles.secureDelete(fileToEncrypt);
         } else {
           // The saved file isn't the correct size - do not delete the original
-          log.debug("The saved file is not the size of the encrypted bytes - not deleting the original file");
-          return null;
+          throw new EncryptedFileReaderWriterException("The saved file " + encryptedFilename + " is not the size of the encrypted bytes - not deleting the original file");
         }
 
         return encryptedFilename;
       } else {
-        log.error("The file encryption was not reversible. Aborting. This means the file {} is being stored unencrypted", fileToEncrypt.getAbsolutePath());
-        return null;
+        throw new EncryptedFileReaderWriterException("The file encryption was not reversible. Aborting. This means the file " + fileToEncrypt.getAbsolutePath() +  " is being stored unencrypted");
       }
     } catch (Exception e) {
       throw new EncryptedFileReaderWriterException("Cannot make encrypted copy for file '" + fileToEncrypt.getAbsolutePath() + "'", e);

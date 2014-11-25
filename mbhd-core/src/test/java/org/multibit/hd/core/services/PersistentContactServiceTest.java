@@ -39,13 +39,13 @@ public class PersistentContactServiceTest {
     long nowInSeconds = Dates.nowInSeconds();
     WalletManager
       .INSTANCE
-      .getOrCreateWalletSummary(
-        temporaryDirectory,
-        seed1,
-        nowInSeconds,
-        WalletServiceTest.PASSWORD,
-        "Example",
-        "Example"
+      .getOrCreateWalletSummaryFromSeed(
+              temporaryDirectory,
+              seed1,
+              nowInSeconds,
+              WalletServiceTest.PASSWORD,
+              "Example",
+              "Example"
       );
 
     File contactDbFile = new File(temporaryDirectory.getAbsolutePath() + File.separator + ContactService.CONTACTS_DATABASE_NAME);

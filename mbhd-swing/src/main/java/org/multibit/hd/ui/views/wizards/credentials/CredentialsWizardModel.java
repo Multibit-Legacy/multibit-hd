@@ -717,13 +717,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
           // Must be OK to be here
 
-          return Optional.fromNullable(WalletManager.INSTANCE.getOrCreateWalletSummary(
-            applicationDataDirectory,
-            parentKey,
-            // TODO The wizard should provide a suitable timestamp field for new wallets
-            DateTime.parse(WalletManager.EARLIEST_HD_WALLET_DATE).getMillis() / 1000,
-            newWalletPassword,
-            label, "Trezor"));
+          return Optional.fromNullable(WalletManager.INSTANCE.getOrCreateWalletSummaryFromRootNode(
+                  applicationDataDirectory,
+                  parentKey,
+                  // TODO The wizard should provide a suitable timestamp field for new wallets
+                  DateTime.parse(WalletManager.EARLIEST_HD_WALLET_DATE).getMillis() / 1000,
+                  newWalletPassword,
+                  label, "Trezor"));
 
         } catch (Exception e) {
 
