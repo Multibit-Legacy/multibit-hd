@@ -35,7 +35,6 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
     if (walletSummary.isPresent()) {
-
       // Save an encrypted copy of the wallet
       CharSequence password = walletSummary.get().getPassword();
       File encryptedWalletFile = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(newlySavedFile, password);
@@ -54,6 +53,5 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
     } else {
       log.error("No AES wallet encryption nor backups created as there was no wallet data to backup.");
     }
-
   }
 }

@@ -345,14 +345,12 @@ public enum WalletManager implements WalletEventListener {
     walletToReturn.encrypt(password);
     walletToReturn.setVersion(MBHD_WALLET_VERSION);
 
-    // Set up auto-save on the wallet.
-    // This ensures the wallet is saved on modification
-    // The listener has a 'after save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
-    walletToReturn.autosaveToFile(walletFile, AUTO_SAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener());
-
     // Save it now to ensure it is on the disk
     walletToReturn.saveToFile(walletFile);
     EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, password);
+
+    // Set up auto-save on the wallet.
+    addAutoSaveListener(walletToReturn, walletFile);
 
     if (Configurations.currentConfiguration != null) {
       Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
@@ -384,7 +382,7 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Create a Trezor soft wallet.
+   * Create a Trezor hard wallet.
    * This is stored in the specified application directory.
    * The name of the wallet directory is derived from the rootNode.
    * <p/>
@@ -436,6 +434,10 @@ public enum WalletManager implements WalletEventListener {
         }
         walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
         setCurrentWalletSummary(walletSummary);
+
+        // Set up auto-save on the wallet.
+        addAutoSaveListener(walletSummary.getWallet(), walletFile);
+
         log.debug("Loaded the wallet from {} successfully", walletDirectory);
 
       } catch (WalletLoadException e) {
@@ -462,14 +464,12 @@ public enum WalletManager implements WalletEventListener {
       // No need to encrypt as it is a watch only wallet - no private keys
       walletToReturn.setVersion(MBHD_WALLET_VERSION);
 
-      // Set up auto-save on the wallet.
-      // This ensures the wallet is saved on modification
-      // The listener has a 'after save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
-      walletToReturn.autosaveToFile(walletFile, AUTO_SAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener());
-
       // Save it now to ensure it is on the disk
       walletToReturn.saveToFile(walletFile);
       EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, password);
+
+      // Set up auto-save on the wallet.
+      addAutoSaveListener(walletToReturn, walletFile);
 
       if (Configurations.currentConfiguration != null) {
         Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
@@ -521,7 +521,7 @@ public enum WalletManager implements WalletEventListener {
           log.debug("The blockStore is at height {}", blockStoreBlockHeight);
           if (walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) {
             // Regular sync is ok - no need to checkpoint
-            log.debug("Wil perform a regular sync");
+            log.debug("Will perform a regular sync");
             performRegularSync = true;
           }
         } catch (BlockStoreException bse) {
@@ -666,15 +666,10 @@ public enum WalletManager implements WalletEventListener {
       setCurrentWalletSummary(walletSummary);
 
       if (syncAndSave) {
-        // Set up autosave on the wallet.
-        // This ensures the wallet is saved on modification
-        // The listener has a 'post save' callback which:
-        // + encrypts the wallet
-        // + ensures rolling backups
-        // + local/ cloud backups are also saved where necessary
-        wallet.autosaveToFile(new File(walletFilenameNoAESSuffix), AUTO_SAVE_DELAY, TimeUnit.MILLISECONDS, new WalletAutoSaveListener());
+        // Set up auto-save on the wallet.
+        addAutoSaveListener(wallet, new File(walletFilenameNoAESSuffix));
 
-      // Perform a sync from the last seen block date to ensure all tx are seen
+        // Perform a sync from the last seen block date to ensure all tx are seen
         synchroniseWallet(Optional.fromNullable(wallet.getLastBlockSeenTime()));
       }
 
@@ -686,6 +681,20 @@ public enum WalletManager implements WalletEventListener {
     } catch (Exception e) {
       throw new WalletLoadException(e.getMessage(), e);
     }
+  }
+
+  /**
+   * Set up auto-save on the wallet.
+   * This ensures the wallet is saved on modification
+   * The listener has a 'after save' callback which ensures rolling backups and local/ cloud backups are also saved where necessary
+   *
+   * @param wallet The wallet to add the autosave listener to
+   * @param file   The file to add the autoSaveListener to - this should be WITHOUT the AES suffix
+   */
+  private void addAutoSaveListener(Wallet wallet, File file) {
+    WalletAutoSaveListener walletAutoSaveListener = new WalletAutoSaveListener();
+    wallet.autosaveToFile(file, AUTO_SAVE_DELAY, TimeUnit.MILLISECONDS, walletAutoSaveListener);
+    log.debug("WalletAutoSaveListener {} just added to wallet {}", System.identityHashCode(this), System.identityHashCode(wallet));
   }
 
   private void synchroniseWallet(final Optional<Date> syncDateOptional) {
