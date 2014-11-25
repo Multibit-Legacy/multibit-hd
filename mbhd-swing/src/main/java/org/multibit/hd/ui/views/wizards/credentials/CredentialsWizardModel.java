@@ -547,7 +547,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         // Need a very short delay here to allow the UI thread to update
         Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
-        return checkPassword();
+        return checkPasswordAndLoadWallet();
 
       }
     });
@@ -609,14 +609,15 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   }
 
   /**
+   * Check the password and load the wallet
    * @return True if the selected wallet can be opened with the given password
    */
-  private boolean checkPassword() {
+  private boolean checkPasswordAndLoadWallet() {
 
     CharSequence password = enterPasswordPanelModel.getEnterPasswordModel().getValue();
 
     if (!"".equals(password)) {
-      // Attempt to open the wallet
+      // Attempt to open the wallet to check the password
       WalletId walletId = enterPasswordPanelModel.getSelectWalletModel().getValue().getWalletId();
       try {
         WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
@@ -694,6 +695,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
         // Get the label of the Trezor from the features to use as the wallet name
         Optional<Features> features = hardwareWalletContext.getFeatures();
+        log.debug("Features: {}", features);
         final String label;
         if (features.isPresent()) {
           label = features.get().getLabel();
@@ -720,7 +722,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           return Optional.fromNullable(WalletManager.INSTANCE.getOrCreateWalletSummaryFromRootNode(
                   applicationDataDirectory,
                   parentKey,
-                  // TODO The wizard should provide a suitable timestamp field for new wallets
+                  // There is no reliable timestamp for a 'new' wallet as it could exist elsewhere
                   DateTime.parse(WalletManager.EARLIEST_HD_WALLET_DATE).getMillis() / 1000,
                   newWalletPassword,
                   label, "Trezor"));

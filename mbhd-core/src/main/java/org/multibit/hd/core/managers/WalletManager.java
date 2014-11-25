@@ -214,10 +214,12 @@ public enum WalletManager implements WalletEventListener {
           // Found the required wallet directory - attempt to open the wallet
           WalletSummary walletSummary = loadFromWalletDirectory(walletDirectory, password, true);
           currentWalletSummary = Optional.of(walletSummary);
+
+          // Add it to the Bitcoin network service
+          CoreServices.getOrCreateBitcoinNetworkService().addWalletToBlockChain(walletSummary.getWallet());
+          CoreServices.getOrCreateBitcoinNetworkService().addWalletToPeerGroup(walletSummary.getWallet());
         }
-
       }
-
     } else {
       currentWalletSummary = Optional.absent();
     }
@@ -429,6 +431,9 @@ public enum WalletManager implements WalletEventListener {
           Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
         }
         walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
+
+        // Make sure the name of the wallet matches the Trezor label
+        walletSummary.setName(name);
         setCurrentWalletSummary(walletSummary);
 
         // Set up auto-save on the wallet.

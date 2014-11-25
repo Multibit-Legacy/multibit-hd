@@ -135,8 +135,8 @@ public class BitcoinNetworkService extends AbstractService {
     }
 
     // Add the wallet to the block chain
-    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() && blockChain != null) {
-      blockChain.addWallet(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
+     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() && blockChain != null) {
+       addWalletToBlockChain(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
     }
     return blockStoreToReturn;
   }
@@ -1138,12 +1138,23 @@ public class BitcoinNetworkService extends AbstractService {
     peerGroup.addEventListener(peerEventListener);
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+      addWalletToPeerGroup(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
+    }
+  }
+
+  public void addWalletToPeerGroup(Wallet wallet) {
+    if (peerGroup != null) {
       peerGroup.addWallet(wallet);
       peerGroup.setFastCatchupTimeSecs(wallet.getEarliestKeyCreationTime());
       peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
     }
   }
+
+  public void addWalletToBlockChain(Wallet wallet) {
+     if (blockChain != null) {
+       blockChain.addWallet(wallet);
+     }
+   }
 
   /**
    * Get the next available change address
