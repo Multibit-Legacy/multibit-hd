@@ -1,5 +1,7 @@
 Build status: [![Build Status](https://travis-ci.org/bitcoin-solutions/multibit-hd.png?branch=develop)](https://travis-ci.org/bitcoin-solutions/multibit-hd)
 
+Coverage status: [![Coverage Status](https://coveralls.io/repos/bitcoin-solutions/multibit-hd/badge.png)](https://coveralls.io/r/bitcoin-solutions/multibit-hd)
+
 Project status: Private beta. Expect minor bugs and API changes. Not suitable for production, but early adopter developers and early testers should get on board.
 
 ### MultiBit HD (MBHD)
