@@ -429,8 +429,9 @@ public enum MessageKey {
 
   WIPE_TREZOR_MESSAGE("wipe_trezor_message"),
 
-  TREZOR_TRANSACTION_OUTPUT_CONFIRM("trezor_transaction_output_confirm"),
-  TREZOR_SIGN_CONFIRM("trezor_sign_confirm"),
+  TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY("trezor_transaction_output_confirm_display"),
+  TREZOR_SIGN_CONFIRM_DISPLAY("trezor_sign_confirm_display"),
+  TREZOR_TRANSACTION_CREATED_OPERATION("trezor_transaction_created"),
 
   // Settings titles
 

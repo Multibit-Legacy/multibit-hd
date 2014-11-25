@@ -18,7 +18,6 @@ import java.util.ResourceBundle;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class Languages {
 
@@ -105,6 +104,11 @@ public class Languages {
    * @return The localised text with any substitutions made
    */
   public static String safeText(MessageKey key, Object... values) {
+
+    // Simplifies processing of empty text
+    if (key == null) {
+      return "";
+    }
 
     ResourceBundle rb = currentResourceBundle();
 

@@ -881,7 +881,7 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingCredentialsWizard(true);
 
     // Start building the wizard on the EDT to prevent UI updates
-    final CredentialsWizard credentialsWizard = Wizards.newExitingCredentialsWizard(CredentialsRequestType.PASSWORD);
+    final CredentialsWizard credentialsWizard = Wizards.newExitingCredentialsWizard(mainView.getCredentialsRequestType());
 
     // Use a new thread to handle the new wizard so that the handover can complete
     handoverExecutorService.execute(
