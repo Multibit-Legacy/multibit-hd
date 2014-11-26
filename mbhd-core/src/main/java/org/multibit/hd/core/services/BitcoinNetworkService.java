@@ -331,9 +331,6 @@ public class BitcoinNetworkService extends AbstractService {
       lastSendRequestSummaryOptional = Optional.of(sendRequestSummary);
       lastWalletOptional = Optional.of(wallet);
 
-      // Clear the transaction output count in the HardwareWalletService context
-      CoreServices.getOrCreateHardwareWalletService().get().getContext().setTransactionOutputCount(Optional.<Integer>absent());
-
       if (!signUsingTrezor(sendRequestSummary, wallet)) {
         return false;
       }
