@@ -178,7 +178,7 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
           }
         } catch (Exception ex) {
           // Log the error but carry on (no need to shut down for this type of error - just show an alert)
-          log.error("Failed to open URL " + blockchainInfoURL, ex);
+          log.error("Failed to openWalletFromWalletId URL " + blockchainInfoURL, ex);
           String message = ex.toString();
           if (message.length() >MAXIMUM_ERROR_LENGTH) {
             message = message.substring(0, MAXIMUM_ERROR_LENGTH) + ELLIPSIS;

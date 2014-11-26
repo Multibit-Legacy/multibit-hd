@@ -197,7 +197,7 @@ public class TrezorWalletTest {
     assertThat(address4).isEqualTo(EXPECTED_ADDRESS_4);
 
     // Load the wallet up again to check it loads ok
-    Optional<WalletSummary> rereadWalletSummary = WalletManager.INSTANCE.open(temporaryDirectory, walletSummary.getWalletId(), PASSWORD);
+    Optional<WalletSummary> rereadWalletSummary = WalletManager.INSTANCE.openWalletFromWalletId(temporaryDirectory, walletSummary.getWalletId(), PASSWORD);
     assertThat(rereadWalletSummary.isPresent());
 
     // Check the newly read in wallet has all the expected addresses

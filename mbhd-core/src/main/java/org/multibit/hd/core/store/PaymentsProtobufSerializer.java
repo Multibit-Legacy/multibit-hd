@@ -107,7 +107,7 @@ public class PaymentsProtobufSerializer {
 
   /**
    * <p>Parses a Payments from the given stream, using the provided Payments instance to loadContacts data into.
-   * <p>A Payments db can be unreadable for various reasons, such as inability to open the file, corrupt data, internally
+   * <p>A Payments db can be unreadable for various reasons, such as inability to openWalletFromWalletId the file, corrupt data, internally
    * inconsistent data, You should always
    * handle {@link org.multibit.hd.core.exceptions.PaymentsLoadException} and communicate failure to the user in an appropriate manner.</p>
    *
@@ -127,7 +127,7 @@ public class PaymentsProtobufSerializer {
   /**
    * <p>Loads payments data from the given protocol buffer and inserts it into the given Payments object.
    * <p/>
-   * <p>A payments db can be unreadable for various reasons, such as inability to open the file, corrupt data, internally
+   * <p>A payments db can be unreadable for various reasons, such as inability to openWalletFromWalletId the file, corrupt data, internally
    * inconsistent data, a wallet extension marked as mandatory that cannot be handled and so on. You should always
    * handle {@link org.multibit.hd.core.exceptions.PaymentsLoadException} and communicate failure to the user in an appropriate manner.</p>
    *

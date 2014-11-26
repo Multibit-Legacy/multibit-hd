@@ -402,7 +402,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
       // TODO necessary to backup any existing wallet with the same seed before creation/ overwrite ?
 
-      WalletManager.INSTANCE.createWalletSummary(seed, Dates.thenInSeconds(replayDate), password, name, notes, isRestoreTrezor);
+      WalletManager.INSTANCE.createSoftWalletSummary(seed, Dates.thenInSeconds(replayDate), password, name, notes, isRestoreTrezor);
 
       // TODO Do we require an immediate backup ?
 
@@ -479,10 +479,10 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, "UTF8");
 
       // No wallet should be present in the welcome wizard
-      WalletManager.INSTANCE.open(
-        InstallationManager.getOrCreateApplicationDataDirectory(),
-        loadedWalletId,
-        decryptedWalletPassword);
+      WalletManager.INSTANCE.openWalletFromWalletId(
+              InstallationManager.getOrCreateApplicationDataDirectory(),
+              loadedWalletId,
+              decryptedWalletPassword);
 
       // Start the Bitcoin network and synchronize the wallet
       BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();

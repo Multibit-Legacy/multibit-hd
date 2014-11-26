@@ -613,14 +613,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    * @return True if the selected wallet can be opened with the given password
    */
   private boolean checkPasswordAndLoadWallet() {
-
     CharSequence password = enterPasswordPanelModel.getEnterPasswordModel().getValue();
 
     if (!"".equals(password)) {
-      // Attempt to open the wallet to check the password
+      // Attempt to openWalletFromWalletId the wallet to check the password
       WalletId walletId = enterPasswordPanelModel.getSelectWalletModel().getValue().getWalletId();
       try {
-        WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
+        WalletManager.INSTANCE.openWalletFromWalletId(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
       } catch (WalletLoadException wle) {
         // Mostly this will be from a bad password
         log.error(wle.getMessage());
@@ -650,7 +649,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     }
 
     // Must have failed to be here
-    log.error("Failed attempt to open wallet");
+    log.error("Failed attempt to openWalletFromWalletId wallet");
 
     return false;
 

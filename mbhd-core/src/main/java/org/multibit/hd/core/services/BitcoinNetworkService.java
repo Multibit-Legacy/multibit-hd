@@ -259,7 +259,7 @@ public class BitcoinNetworkService extends AbstractService {
       // Stop the peer group if it is running
       stopPeerGroup();
 
-      // Close the block store if it is open
+      // Close the block store if it is openWalletFromWalletId
       closeBlockstore();
 
       log.info("Starting replay of wallet with id '" + WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId()

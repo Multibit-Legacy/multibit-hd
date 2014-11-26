@@ -178,16 +178,15 @@ public enum WalletManager implements WalletEventListener {
   private ListeningExecutorService walletExecutorService = null;
 
   /**
-   * Open the given wallet
+   * Open the given wallet and hook it up to the blockchain and peergroup so that it receives notifications
    *
    * @param applicationDataDirectory The application data directory
    * @param walletId                 The wallet ID to locate the wallet
    * @param password                 The credentials to use to decrypt the wallet
    * @return The wallet summary if found
    */
-  public Optional<WalletSummary> open(File applicationDataDirectory, WalletId walletId, CharSequence password) {
-
-    log.debug("Open wallet called");
+  public Optional<WalletSummary> openWalletFromWalletId(File applicationDataDirectory, WalletId walletId, CharSequence password) throws WalletLoadException {
+    log.debug("openWalletFromWalletId called");
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
     Preconditions.checkNotNull(password, "'credentials' must be present");
 
@@ -201,9 +200,7 @@ public enum WalletManager implements WalletEventListener {
 
     // If a wallet directory is present try to load the wallet
     if (!walletDirectories.isEmpty()) {
-
       String walletIdPath = walletId.toFormattedString();
-
       // Match the wallet directory to the wallet data
       for (File walletDirectory : walletDirectories) {
 
@@ -211,13 +208,23 @@ public enum WalletManager implements WalletEventListener {
 
         String walletDirectoryPath = walletDirectory.getAbsolutePath();
         if (walletDirectoryPath.contains(walletIdPath)) {
-          // Found the required wallet directory - attempt to open the wallet
-          WalletSummary walletSummary = loadFromWalletDirectory(walletDirectory, password, true);
-          currentWalletSummary = Optional.of(walletSummary);
+          // Found the required wallet directory - attempt to openWalletFromWalletId the wallet
+          WalletSummary walletSummary = loadFromWalletDirectory(walletDirectory, password);
+          setCurrentWalletSummary(walletSummary);
 
-          // Add it to the Bitcoin network service
+          // Add it to the Bitcoin network services blockchain and peergroup
           CoreServices.getOrCreateBitcoinNetworkService().addWalletToBlockChain(walletSummary.getWallet());
           CoreServices.getOrCreateBitcoinNetworkService().addWalletToPeerGroup(walletSummary.getWallet());
+
+
+          try {
+            // Wallet is now created - finish off other configuration
+            updateConfigurationAndCheckSync(createWalletRoot(walletId), walletDirectory, walletSummary, false);
+          } catch (IOException ioe) {
+            throw new WalletLoadException("Cannot load wallet with id: " + walletId, ioe);
+          }
+
+          break;
         }
       }
     } else {
@@ -228,19 +235,9 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * @param shutdownEvent The shutdown event
-   */
-  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
-
-    log.debug("Received shutdown event: {}", shutdownEvent.getShutdownType().name());
-    currentWalletSummary = Optional.absent();
-
-  }
-
-  /**
-   * Create a wallet
+   * Create a soft wallet (either MBHD or Trezor)
+   * <p/>
    * This is stored in the MultiBitHD application data directory
-   * The name of the wallet file is derived from the seed.
    * If the wallet file already exists it is loaded and returned (and the input credentials is not used)
    *
    * @param seed                  the seed used to initialise the wallet
@@ -248,13 +245,13 @@ public enum WalletManager implements WalletEventListener {
    * @param password              to use to encrypt the wallet
    * @param name                  The wallet name
    * @param notes                 Public notes associated with the wallet
-   * @param isTrezor              if false, create an MBHD soft wallet, if true create a Trezor soft wallet
+   * @param isTrezor              if true create a Trezor soft wallet. if false, create an MBHD soft wallet.
    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
    * @throws IllegalStateException  if applicationDataDirectory is incorrect
    * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
    */
-  public WalletSummary createWalletSummary(
+  public WalletSummary createSoftWalletSummary(
           byte[] seed,
           long creationTimeInSeconds,
           String password,
@@ -263,7 +260,7 @@ public enum WalletManager implements WalletEventListener {
           boolean isTrezor
 
   ) throws WalletLoadException, WalletVersionException, IOException {
-    log.debug("createWalletSummary 1 called");
+    log.debug("createSoftWalletSummary called");
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     if (isTrezor) {
@@ -276,19 +273,20 @@ public enum WalletManager implements WalletEventListener {
       log.debug("Creating a Trezor soft wallet with rootNode = " + trezorRootNode);
       return getOrCreateWalletSummaryFromRootNode(applicationDataDirectory, trezorRootNode, creationTimeInSeconds, password, name, notes);
     } else {
-      log.debug("Creating a MBHD soft wallet");
+      log.debug("Creating a MBHD soft wallet from seed");
       return getOrCreateWalletSummaryFromSeed(applicationDataDirectory, seed, creationTimeInSeconds, password, name, notes);
     }
   }
 
   /**
-   * Create a MBHD soft wallet.
+   * Create a MBHD soft wallet from a seed.
+   * <p/>
    * This is stored in the specified directory.
    * The name of the wallet directory is derived from the seed.
    * <p/>
    * If the wallet file already exists it is loaded and returned
    * <p/>
-   * Auto-save is hooked up so that the wallet is changed on modification
+   * Auto-save is hooked up so that the wallet is saved on modification
    *
    * @param applicationDataDirectory The application data directory containing the wallet
    * @param seed                     The seed phrase to initialise the wallet
@@ -309,8 +307,7 @@ public enum WalletManager implements WalletEventListener {
           String name,
           String notes
   ) throws WalletLoadException, WalletVersionException, IOException {
-
-    log.debug("getOrCreateWalletSummaryFromRootNode 4 called");
+    log.debug("getOrCreateWalletSummaryFromSeed called");
     final WalletSummary walletSummary;
 
     // Create a wallet id from the seed to work out the wallet root directory
@@ -322,73 +319,65 @@ public enum WalletManager implements WalletEventListener {
 
     final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
     final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
-    if (walletFileWithAES.exists()) {
 
+    boolean saveWalletYaml = false;
+    if (walletFileWithAES.exists()) {
       log.debug("Discovered AES encrypted wallet file. Loading...");
 
       // There is already a wallet created with this root - if so load it and return that
-      walletSummary = loadFromWalletDirectory(walletDirectory, password, true);
-      if (Configurations.currentConfiguration != null) {
-        Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
-      }
+      walletSummary = loadFromWalletDirectory(walletDirectory, password);
+
       walletSummary.setWalletType(WalletType.MBHD_SOFT_WALLET);
       setCurrentWalletSummary(walletSummary);
+    } else {
+      // Wallet file does not exist so create it below the known good wallet directory
+      log.debug("Creating new wallet file...");
 
-      return walletSummary;
+      // Create a wallet using the seed (no salt passphrase)
+      DeterministicSeed deterministicSeed = new DeterministicSeed(seed, "", creationTimeInSeconds);
+      Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
+      walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
+      walletToReturn.encrypt(password);
+      walletToReturn.setVersion(MBHD_WALLET_VERSION);
+
+      // Save it now to ensure it is on the disk
+      walletToReturn.saveToFile(walletFile);
+      EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, password);
+
+      // Create a new wallet summary
+      walletSummary = new WalletSummary(walletId, walletToReturn);
+      walletSummary.setName(name);
+      walletSummary.setNotes(notes);
+      walletSummary.setPassword(password);
+      walletSummary.setWalletType(WalletType.MBHD_SOFT_WALLET);
+      walletSummary.setWalletFile(walletFile);
+      setCurrentWalletSummary(walletSummary);
+
+      // Save the wallet YAML
+      saveWalletYaml = true;
+
+      try {
+        WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, seed, password);
+      } catch (NoSuchAlgorithmException e) {
+        throw new WalletLoadException("could not store encrypted credentials and backup AES key", e);
+      }
     }
 
-    // Wallet file does not exist so create it below the known good wallet directory
-    log.debug("Creating new wallet file...");
-
-    // Create a wallet using the seed (no salt passphrase)
-    DeterministicSeed deterministicSeed = new DeterministicSeed(seed, "", creationTimeInSeconds);
-    Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
-    walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
-    walletToReturn.encrypt(password);
-    walletToReturn.setVersion(MBHD_WALLET_VERSION);
-
-    // Save it now to ensure it is on the disk
-    walletToReturn.saveToFile(walletFile);
-    EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, password);
-
-    // Set up auto-save on the wallet.
-    addAutoSaveListener(walletToReturn, walletFile);
-
-    if (Configurations.currentConfiguration != null) {
-      Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
-    }
-
-    // Create a new wallet summary
-    walletSummary = new WalletSummary(walletId, walletToReturn);
-    walletSummary.setName(name);
-    walletSummary.setNotes(notes);
-    walletSummary.setPassword(password);
-    walletSummary.setWalletType(WalletType.MBHD_SOFT_WALLET);
-    setCurrentWalletSummary(walletSummary);
-
-    try {
-      WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, seed, password);
-      File walletSummaryFile = WalletManager.getOrCreateWalletSummaryFile(walletDirectory);
-      WalletManager.updateWalletSummary(walletSummaryFile, walletSummary);
-    } catch (NoSuchAlgorithmException e) {
-      throw new WalletLoadException("could not store encrypted credentials and backup AES key", e);
-    }
-
-    // See if there is a checkpoints file - if not then get the InstallationManager to copy one in
-    File checkpointsFile = new File(walletDirectory.getAbsolutePath() + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX);
-    InstallationManager.copyCheckpointsTo(checkpointsFile);
+    // Wallet is now created - finish off other configuration and check if wallet needs syncing
+    updateConfigurationAndCheckSync(walletRoot, walletDirectory, walletSummary, saveWalletYaml);
 
     return walletSummary;
   }
 
   /**
-   * Create a Trezor hard wallet.
+   * Create a Trezor hard wallet from an HD root node.
+   * <p/>
    * This is stored in the specified application directory.
    * The name of the wallet directory is derived from the rootNode.
    * <p/>
    * If the wallet file already exists it is loaded and returned
    * <p/>
-   * Auto-save is hooked up so that the wallet is changed on modification
+   * Auto-save is hooked up so that the wallet is saved on modification
    *
    * @param applicationDataDirectory The application data directory containing the wallet
    * @param rootNode                 The root node that will be used to initialise the wallet (e.g. a BIP44 node)
@@ -410,37 +399,23 @@ public enum WalletManager implements WalletEventListener {
           String notes
   ) throws WalletLoadException, WalletVersionException, IOException {
 
+    log.debug("getOrCreateWalletSummaryFromRootNode called");
+
     // Create a wallet id from the rootNode to work out the wallet root directory
     final WalletId walletId = new WalletId(rootNode.getIdentifier());
     String walletRoot = createWalletRoot(walletId);
 
     final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
-
     final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
     final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
 
     WalletSummary walletSummary = null;
 
     if (walletFileWithAES.exists()) {
-      log.debug("A wallet with name {} exists. Opening...", walletFileWithAES.getAbsolutePath());
-
       try {
         // There is already a wallet created with this root - if so load it and return that
-        walletSummary = loadFromWalletDirectory(walletDirectory, password, false);
-        if (Configurations.currentConfiguration != null) {
-          Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
-        }
-        walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
-
-        // Make sure the name of the wallet matches the Trezor label
-        walletSummary.setName(name);
-        setCurrentWalletSummary(walletSummary);
-
-        // Set up auto-save on the wallet.
-        addAutoSaveListener(walletSummary.getWallet(), walletFile);
-
-        log.debug("Loaded the wallet from {} successfully", walletDirectory);
-
+        log.debug("A wallet with name {} exists. Opening...", walletFileWithAES.getAbsolutePath());
+        walletSummary = loadFromWalletDirectory(walletDirectory, password);
       } catch (WalletLoadException e) {
         // Failed to decrypt the existing wallet/backups
         log.error("Failed to load from wallet directory.");
@@ -461,34 +436,65 @@ public enum WalletManager implements WalletEventListener {
 
       Wallet walletToReturn = Wallet.fromWatchingKey(networkParameters, rootNodePubOnly, creationTimeInSeconds, rootNodePubOnly.getPath());
       walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
-
-      // No need to encrypt as it is a watch only wallet - no private keys
       walletToReturn.setVersion(MBHD_WALLET_VERSION);
 
       // Save it now to ensure it is on the disk
       walletToReturn.saveToFile(walletFile);
       EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, password);
 
-      // Set up auto-save on the wallet.
-      addAutoSaveListener(walletToReturn, walletFile);
-
-      if (Configurations.currentConfiguration != null) {
-        Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
-      }
-
       // Create a new wallet summary
       walletSummary = new WalletSummary(walletId, walletToReturn);
+    }
+
+    if (walletSummary != null) {
+      walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
+      walletSummary.setWalletFile(walletFile);
       walletSummary.setName(name);
       walletSummary.setNotes(notes);
       walletSummary.setPassword(password);
-      walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
+
       setCurrentWalletSummary(walletSummary);
+    }
+
+    // Wallet is now created - finish off other configuration and check if wallet needs syncing
+    // (Always save the wallet yaml as there was a bug in early Trezor wallets where it was not written out)
+    updateConfigurationAndCheckSync(walletRoot, walletDirectory, walletSummary, true);
+
+    return walletSummary;
+  }
+
+
+  /**
+   * Update configuration with new wallet information
+   */
+  private void updateConfigurationAndCheckSync(String walletRoot, File walletDirectory, WalletSummary walletSummary, boolean saveWalletYaml) throws IOException {
+    if (saveWalletYaml) {
+      File walletSummaryFile = WalletManager.getOrCreateWalletSummaryFile(walletDirectory);
+      log.debug("Writing wallet YAML out to {}", walletSummaryFile.getAbsolutePath());
+      WalletManager.updateWalletSummary(walletSummaryFile, walletSummary);
+    }
+
+    if (Configurations.currentConfiguration != null) {
+      Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
     }
 
     // See if there is a checkpoints file - if not then get the InstallationManager to copy one in
     File checkpointsFile = new File(walletDirectory.getAbsolutePath() + File.separator + InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX);
     InstallationManager.copyCheckpointsTo(checkpointsFile);
 
+    // Set up auto-save on the wallet.
+    addAutoSaveListener(walletSummary.getWallet(), walletSummary.getWalletFile());
+
+    // Check if the wallet needs to sync
+    checkIfWalletNeedsToSync(walletSummary);
+  }
+
+  /**
+   * Check if the wallet needs to sync and, if so, work out the sync date and fire off the synchronise
+   *
+   * @param walletSummary The wallet summary containing the wallet that may need syncing
+   */
+  private void checkIfWalletNeedsToSync(WalletSummary walletSummary) {
     // See if the wallet and blockstore are at the same height - in which case perform a regular download blockchain
     // Else perform a sync from the last seen block date to ensure all tx are seen
     log.debug("Seeing if wallet needs to sync");
@@ -502,7 +508,7 @@ public enum WalletManager implements WalletEventListener {
         boolean performRegularSync = false;
         BlockStore blockStore = null;
         try {
-          // Make sure the block store is open
+          // Make sure the block store is openWalletFromWalletId
           BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
           log.debug("bitcoinNetworkService = {}", bitcoinNetworkService);
 
@@ -541,7 +547,6 @@ public enum WalletManager implements WalletEventListener {
 
         if (performRegularSync) {
           synchroniseWallet(Optional.<Date>absent());
-          return walletSummary;
         }
 
         log.debug("The lastBlockSeenTime = {}. EarliestKeyCreationDate = {}", walletBeingReturned.getLastBlockSeenTime(), walletBeingReturned.getEarliestKeyCreationTime());
@@ -571,11 +576,19 @@ public enum WalletManager implements WalletEventListener {
         }
       }
     }
-
-    return walletSummary;
   }
 
-  public static Wallet loadWalletFromFile(File walletFile, CharSequence password) throws IOException, UnreadableWalletException {
+  /**
+   * Load a wallet from a file and decrypt it
+   * (but don't hook it up to the Bitcoin network or sync it)
+   *
+   * @param walletFile wallet file to load
+   * @param password   password to use to decrypt the wallet
+   * @return the loaded wallet
+   * @throws IOException
+   * @throws UnreadableWalletException
+   */
+  public Wallet loadWalletFromFile(File walletFile, CharSequence password) throws IOException, UnreadableWalletException {
 
     // Read the encrypted file in and decrypt it.
     byte[] encryptedWalletBytes = Files.toByteArray(walletFile);
@@ -611,12 +624,11 @@ public enum WalletManager implements WalletEventListener {
    *
    * @param walletDirectory The wallet directory containing the various wallet files to load
    * @param password        The credentials to use to decrypt the wallet
-   * @param syncAndSave     Perform a sync and set up an autosave listener
    * @return Wallet - the loaded wallet
    * @throws WalletLoadException    If the wallet could not be loaded
    * @throws WalletVersionException If the wallet has an unsupported version number
    */
-  WalletSummary loadFromWalletDirectory(File walletDirectory, CharSequence password, boolean syncAndSave) throws WalletLoadException, WalletVersionException {
+  WalletSummary loadFromWalletDirectory(File walletDirectory, CharSequence password) throws WalletLoadException, WalletVersionException {
 
     Preconditions.checkNotNull(walletDirectory, "'walletDirectory' must be present");
     Preconditions.checkNotNull(password, "'credentials' must be present");
@@ -651,25 +663,15 @@ public enum WalletManager implements WalletEventListener {
         // Try loading one of the rolling backups - this will send a BackupWalletLoadedEvent containing the initial error
         // If the rolling backups don't load then loadRollingBackup will throw a WalletLoadException which will propagate out
         wallet = BackupManager.INSTANCE.loadRollingBackup(walletId, password);
-
-        // Make sure a sync is performed
-        syncAndSave = true;
       }
 
       // Create the wallet summary with its wallet
       WalletSummary walletSummary = getOrCreateWalletSummary(walletDirectory, walletId);
       walletSummary.setWallet(wallet);
+      walletSummary.setWalletFile(walletFile);
       walletSummary.setPassword(password);
-      setCurrentWalletSummary(walletSummary);
 
-      if (syncAndSave) {
-        // Set up auto-save on the wallet.
-        addAutoSaveListener(wallet, new File(walletFilenameNoAESSuffix));
-
-        // Perform a sync from the last seen block date to ensure all tx are seen
-        synchroniseWallet(Optional.fromNullable(wallet.getLastBlockSeenTime()));
-      }
-
+      log.debug("Loaded the wallet from {} successfully", walletDirectory);
       return walletSummary;
 
     } catch (WalletVersionException wve) {
@@ -689,9 +691,13 @@ public enum WalletManager implements WalletEventListener {
    * @param file   The file to add the autoSaveListener to - this should be WITHOUT the AES suffix
    */
   private void addAutoSaveListener(Wallet wallet, File file) {
-    WalletAutoSaveListener walletAutoSaveListener = new WalletAutoSaveListener();
-    wallet.autosaveToFile(file, AUTO_SAVE_DELAY, TimeUnit.MILLISECONDS, walletAutoSaveListener);
-    log.debug("WalletAutoSaveListener {} just added to wallet {}", System.identityHashCode(this), System.identityHashCode(wallet));
+    if (file != null) {
+      WalletAutoSaveListener walletAutoSaveListener = new WalletAutoSaveListener();
+      wallet.autosaveToFile(file, AUTO_SAVE_DELAY, TimeUnit.MILLISECONDS, walletAutoSaveListener);
+      log.debug("WalletAutoSaveListener {} just added to wallet {}", System.identityHashCode(this), System.identityHashCode(wallet));
+    } else {
+      log.debug("Not adding autoSaveListener to wallet {} as no wallet file is specified", System.identityHashCode(wallet));
+    }
   }
 
   private void synchroniseWallet(final Optional<Date> syncDateOptional) {
@@ -917,7 +923,6 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   *
    * @return The current wallet summary (present only if a wallet has been unlocked)
    */
   public Optional<WalletSummary> getCurrentWalletSummary() {
@@ -1024,7 +1029,7 @@ public enum WalletManager implements WalletEventListener {
    */
   public static WalletSummary getOrCreateWalletSummary(File walletDirectory, WalletId walletId) {
 
-    log.debug("getOrCreateWalletSummaryFromRootNode 3 called");
+    log.debug("getOrCreateWalletSummary called");
     verifyWalletDirectory(walletDirectory);
 
     Optional<WalletSummary> walletSummaryOptional = Optional.absent();
@@ -1314,5 +1319,15 @@ public enum WalletManager implements WalletEventListener {
     log.debug("key_m_44h_0h_0h = " + key_m_44h_0h_0h);
 
     return key_m_44h_0h_0h;
+  }
+
+  /**
+   * @param shutdownEvent The shutdown event
+   */
+  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+
+    log.debug("Received shutdown event: {}", shutdownEvent.getShutdownType().name());
+    currentWalletSummary = Optional.absent();
+
   }
 }

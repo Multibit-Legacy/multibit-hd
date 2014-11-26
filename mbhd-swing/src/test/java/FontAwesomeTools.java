@@ -14,7 +14,7 @@ import java.util.Locale;
  * <p>Upgrade process:</p>
  * <ol>
  * <li>Download <a href="http://fontawesome.io/" target="_blank">latest Font Awesome ZIP</a></li>
- * <li>Unzip and open <code>variables.less</code></li>
+ * <li>Unzip and openWalletFromWalletId <code>variables.less</code></li>
  * <li>Copy the contents starting from <code>@fa-var</code></li>
  * <li>Remove the contents of <code>variablesLessRaw</code> and replace as ""</li>
  * <li>Paste the new contents. Intellij will automatically provide string concatenation</li>
@@ -251,8 +251,8 @@ public class FontAwesomeTools {
     "@fa-var-floppy-o: \"\\f0c7\";\n" +
     "@fa-var-folder: \"\\f07b\";\n" +
     "@fa-var-folder-o: \"\\f114\";\n" +
-    "@fa-var-folder-open: \"\\f07c\";\n" +
-    "@fa-var-folder-open-o: \"\\f115\";\n" +
+    "@fa-var-folder-openWalletFromWalletId: \"\\f07c\";\n" +
+    "@fa-var-folder-openWalletFromWalletId-o: \"\\f115\";\n" +
     "@fa-var-font: \"\\f031\";\n" +
     "@fa-var-forward: \"\\f04e\";\n" +
     "@fa-var-foursquare: \"\\f180\";\n" +
