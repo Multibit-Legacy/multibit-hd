@@ -10,6 +10,7 @@ import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.utils.Addresses;
 import org.multibit.hd.core.utils.Dates;
@@ -26,6 +27,9 @@ public class PersistentContactServiceTest {
 
   @Before
   public void setUp() throws Exception {
+    InstallationManager.reset();
+    InstallationManager.unrestricted = true;
+
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
     File temporaryDirectory = SecureFiles.createTemporaryDirectory();
