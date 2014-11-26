@@ -857,8 +857,11 @@ public class BitcoinNetworkService extends AbstractService {
                 wallet
         );
 
+        // TODO - generate change address map
+        Map<Address, ImmutableList<ChildNumber>> changeAddressPathMap =  Maps.newHashMap();
+
         // Sign the transaction using the Trezor device
-        hardwareWalletService.get().signTx(sendRequest.tx, receivingAddressPathMap);
+        hardwareWalletService.get().signTx(sendRequest.tx, receivingAddressPathMap, changeAddressPathMap);
 
         // Must be ok to reach here
         return true;
@@ -1075,6 +1078,7 @@ public class BitcoinNetworkService extends AbstractService {
    * @param unsignedTx The unsigned transaction (expect OP_0 in place of signatures)
    * @param wallet     The wallet
    * @return The receiving address path map linking the tx input index to a deterministic path
+   *
    */
   private Map<Integer, ImmutableList<ChildNumber>> buildReceivingAddressPathMap(Transaction unsignedTx, Wallet wallet) {
 
@@ -1086,11 +1090,9 @@ public class BitcoinNetworkService extends AbstractService {
     for (int i = 0; i < unsignedTx.getInputs().size(); i++) {
       TransactionInput input = unsignedTx.getInput(i);
 
-      // Unsigned input script arranged as OP_0, PUSHDATA(33)[public key]
+      // Get input script from the connected transaction output script
       Script script = input.getScriptSig();
       TransactionOutput connectedTransactionOutput = input.getConnectedOutput();
-      //if (script.getChunks().size() == 2) {
-      //  byte[] data = script.getChunks().get(1).data;
       log.debug("Connected transaction output {}", connectedTransactionOutput);
       if (connectedTransactionOutput != null) {
         byte[] pubKeyHash = connectedTransactionOutput.getScriptPubKey().getPubKeyHash();
