@@ -176,6 +176,9 @@ public class BitcoinNetworkService extends AbstractService {
     // Stop the peer group if it is running
     stopPeerGroup();
 
+    // Hand over to the superclass to finalise service executors
+    super.stopAndWait();
+
     // Close the block store
     closeBlockstore();
 
@@ -185,10 +188,7 @@ public class BitcoinNetworkService extends AbstractService {
     // Close the wallet
     closeWallet();
 
-    // Hand over to the superclass to finalise service executors
-    super.stopAndWait();
-
-    log.debug("Bitcoin network service shut down");
+     log.debug("Bitcoin network service shut down");
 
   }
 
@@ -1216,6 +1216,7 @@ public class BitcoinNetworkService extends AbstractService {
     if (blockStore != null) {
       try {
         // The blockstore can throw an NPE internally
+        log.debug("When the blockstore was closed the height was {}", blockStore.getChainHead() == null ? "unknown" : blockStore.getChainHead().getHeight());
         blockStore.close();
       } catch (BlockStoreException e) {
         log.error("Blockstore not closed cleanly", e);
@@ -1232,7 +1233,9 @@ public class BitcoinNetworkService extends AbstractService {
   private void closeWallet() {
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() && blockChain != null) {
       try {
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().shutdownAutosaveAndWait();
+        Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+        wallet.shutdownAutosaveAndWait();
+        log.debug("When the wallet was saved the height was {} ", wallet.getLastBlockSeenHeight());
       } catch (IllegalStateException ise) {
         // If there is no autosaving set up yet then that is ok
         if (!ise.getMessage().contains("Auto saving not enabled.")) {

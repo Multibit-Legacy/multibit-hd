@@ -547,32 +547,33 @@ public enum WalletManager implements WalletEventListener {
 
         if (performRegularSync) {
           synchroniseWallet(Optional.<Date>absent());
-        }
+        } else {
+          // Work out the date to sync from from the last block seen, the earliest key creation date and the earliest HD wallet date
+          log.debug("The lastBlockSeenTime = {}. EarliestKeyCreationDate = {}", walletBeingReturned.getLastBlockSeenTime(), walletBeingReturned.getEarliestKeyCreationTime());
+          DateTime syncDate = null;
 
-        log.debug("The lastBlockSeenTime = {}. EarliestKeyCreationDate = {}", walletBeingReturned.getLastBlockSeenTime(), walletBeingReturned.getEarliestKeyCreationTime());
-        DateTime syncDate = null;
-
-        if (walletBeingReturned.getLastBlockSeenTime() != null) {
-          syncDate = new DateTime(walletBeingReturned.getLastBlockSeenTime());
-        }
-        if (walletBeingReturned.getEarliestKeyCreationTime() != -1) {
-          DateTime keyCreationTime = new DateTime(walletBeingReturned.getEarliestKeyCreationTime());
-          if (syncDate == null) {
-            syncDate = keyCreationTime;
-          } else {
-            syncDate = keyCreationTime.isBefore(syncDate) ? syncDate : keyCreationTime;
+          if (walletBeingReturned.getLastBlockSeenTime() != null) {
+            syncDate = new DateTime(walletBeingReturned.getLastBlockSeenTime());
           }
-        }
+          if (walletBeingReturned.getEarliestKeyCreationTime() != -1) {
+            DateTime keyCreationTime = new DateTime(walletBeingReturned.getEarliestKeyCreationTime());
+            if (syncDate == null) {
+              syncDate = keyCreationTime;
+            } else {
+              syncDate = keyCreationTime.isBefore(syncDate) ? syncDate : keyCreationTime;
+            }
+          }
 
-        DateTime earliestHDWalletDate = DateTime.parse(EARLIEST_HD_WALLET_DATE);
+          DateTime earliestHDWalletDate = DateTime.parse(EARLIEST_HD_WALLET_DATE);
 
-        if (syncDate == null || syncDate.isBefore(earliestHDWalletDate)) {
-          syncDate = earliestHDWalletDate;
-        }
+          if (syncDate == null || syncDate.isBefore(earliestHDWalletDate)) {
+            syncDate = earliestHDWalletDate;
+          }
 
-        log.debug("Syncing wallet from date {}", syncDate);
-        if (syncDate != null) {
-          synchroniseWallet(Optional.of(syncDate.toDate()));
+          log.debug("Syncing wallet from date {}", syncDate);
+          if (syncDate != null) {
+            synchroniseWallet(Optional.of(syncDate.toDate()));
+          }
         }
       }
     }
@@ -668,7 +669,7 @@ public enum WalletManager implements WalletEventListener {
       // Create the wallet summary with its wallet
       WalletSummary walletSummary = getOrCreateWalletSummary(walletDirectory, walletId);
       walletSummary.setWallet(wallet);
-      walletSummary.setWalletFile(walletFile);
+      walletSummary.setWalletFile(new File(walletFilenameNoAESSuffix));
       walletSummary.setPassword(password);
 
       log.debug("Loaded the wallet from {} successfully", walletDirectory);
@@ -694,7 +695,7 @@ public enum WalletManager implements WalletEventListener {
     if (file != null) {
       WalletAutoSaveListener walletAutoSaveListener = new WalletAutoSaveListener();
       wallet.autosaveToFile(file, AUTO_SAVE_DELAY, TimeUnit.MILLISECONDS, walletAutoSaveListener);
-      log.debug("WalletAutoSaveListener {} just added to wallet {}", System.identityHashCode(this), System.identityHashCode(wallet));
+      log.debug("WalletAutoSaveListener {} on file {} just added to wallet {}", System.identityHashCode(this), file.getAbsolutePath(), System.identityHashCode(wallet));
     } else {
       log.debug("Not adding autoSaveListener to wallet {} as no wallet file is specified", System.identityHashCode(wallet));
     }
