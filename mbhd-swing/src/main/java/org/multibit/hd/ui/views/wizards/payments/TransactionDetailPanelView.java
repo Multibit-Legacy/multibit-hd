@@ -11,7 +11,6 @@ import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -84,20 +83,7 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
     rawTransactionTextArea.setBorder(null);
 
     // Raw transaction requires its own scroll pane
-    JScrollPane scrollPane = new JScrollPane();
-    scrollPane.setOpaque(true);
-    scrollPane.setBackground(Themes.currentTheme.readOnlyBackground());
-    scrollPane.setBorder(null);
-    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-    // View port requires special handling
-    scrollPane.setViewportView(rawTransactionTextArea);
-    scrollPane.getViewport().setBackground(Themes.currentTheme.readOnlyBackground());
-    scrollPane.setViewportBorder(new TextBubbleBorder(Themes.currentTheme.readOnlyBorder()));
-
-    // Ensure we maintain the overall theme
-    ScrollBarUIDecorator.apply(scrollPane, false);
+    JScrollPane scrollPane = ScrollPanes.newReadOnlyScrollPane(rawTransactionTextArea);
 
     JButton blockchainInfoBrowserButton = Buttons.newLaunchBrowserButton(getBlockchainInfoBrowserAction(), MessageKey.VIEW_IN_BLOCKCHAIN_INFO, MessageKey.VIEW_IN_BLOCKCHAIN_INFO_TOOLTIP);
 

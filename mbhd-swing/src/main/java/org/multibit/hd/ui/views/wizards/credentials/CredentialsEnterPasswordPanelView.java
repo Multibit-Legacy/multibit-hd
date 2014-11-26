@@ -3,9 +3,7 @@ package org.multibit.hd.ui.views.wizards.credentials;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.SecurityEvent;
@@ -25,8 +23,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.util.List;
@@ -41,14 +37,10 @@ import java.util.List;
  */
 public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<CredentialsWizardModel, CredentialsEnterPasswordPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(CredentialsEnterPasswordPanelView.class);
-
   // Panel specific components
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
   private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
   private ModelAndView<SelectWalletModel, SelectWalletView> selectWalletMaV;
-
-  final ListeningExecutorService checkPasswordExecutorService = SafeExecutors.newSingleThreadExecutor("check-password");
 
   /**
    * @param wizard The wizard managing the states

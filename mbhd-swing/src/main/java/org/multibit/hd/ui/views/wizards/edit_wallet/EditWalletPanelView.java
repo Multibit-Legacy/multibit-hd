@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -71,11 +72,15 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
     contentPanel.add(name, "push,wrap");
     name.setText(getWizardModel().getWalletSummary().getName());
 
-    // Public notes
-    contentPanel.add(Labels.newLabel(MessageKey.NOTES));
+    // Public notes can become quite long
     notes = TextBoxes.newEnterNotes(getWizardModel());
+    JScrollPane scrollPane = ScrollPanes.newDataEntryScrollPane(notes);
+
     notes.setText(getWizardModel().getWalletSummary().getNotes());
-    contentPanel.add(notes, "push,wrap");
+    notes.setCaretPosition(0);
+
+    contentPanel.add(Labels.newLabel(MessageKey.NOTES));
+    contentPanel.add(scrollPane, "push,"+ MultiBitUI.WIZARD_MAX_WIDTH_MIG+",wrap");
 
     contentPanel.add(Labels.newLabel(MessageKey.CLOUD_BACKUP_LOCATION));
     contentPanel.add(selectFileMaV.getView().newComponentPanel(), "span 2,wrap");
