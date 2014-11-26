@@ -183,13 +183,13 @@ public class WalletManagerTest {
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(TREZOR_SEED_PHRASE));
     long nowInSeconds = Dates.nowInSeconds();
 
-    WalletSummary walletSummary = walletManager.createWalletSummary(
-      seed,
-      nowInSeconds,
-      "aPassword",
-      "Abandon",
-      "Abandon",
-      true);
+    WalletSummary walletSummary = walletManager.createSoftWalletSummary(
+            seed,
+            nowInSeconds,
+            "aPassword",
+            "Abandon",
+            "Abandon",
+            true);
 
     assertThat(walletSummary).isNotNull();
     assertThat(WalletType.TREZOR_SOFT_WALLET.equals(walletSummary.getWalletType()));

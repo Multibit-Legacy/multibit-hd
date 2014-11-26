@@ -55,7 +55,7 @@ public class WalletFixtures {
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    return walletManager.createWalletSummary(seed, nowInSeconds, STANDARD_PASSWORD, "Example", "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.", false);
+    return walletManager.createSoftWalletSummary(seed, nowInSeconds, STANDARD_PASSWORD, "Example", "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.", false);
 
   }
 

@@ -988,9 +988,6 @@ public class MainController extends AbstractController implements
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     mainView.sidebarWalletName(walletSummary.get().getName());
 
-    final boolean bounceNetwork = WalletType.MBHD_SOFT_WALLET.equals(walletSummary.get().getWalletType());
-    log.debug("For this wallet, type {} the bounceNetwork flag is {}", walletSummary.get().getWalletType(), bounceNetwork);
-
     // Start the wallet service
     log.debug("Starting wallet service...");
     CoreServices.getOrCreateWalletService(walletSummary.get().getWalletId());

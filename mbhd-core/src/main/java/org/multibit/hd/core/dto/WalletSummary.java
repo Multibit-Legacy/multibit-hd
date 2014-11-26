@@ -1,10 +1,11 @@
 package org.multibit.hd.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.bitcoinj.core.Wallet;
 import com.google.common.base.Preconditions;
+import org.bitcoinj.core.Wallet;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.util.Arrays;
 
 /**
@@ -25,6 +26,9 @@ public class WalletSummary {
 
   @JsonIgnore
   private WalletId walletId;
+
+  @JsonIgnore
+  private File walletFile;
 
   @JsonIgnore
   private CharSequence password;
@@ -145,9 +149,17 @@ public class WalletSummary {
      return walletType;
    }
 
-   public void setWalletType(WalletType walletType) {
+  public void setWalletType(WalletType walletType) {
      this.walletType = walletType;
    }
+
+  public File getWalletFile() {
+    return walletFile;
+  }
+
+  public void setWalletFile(File walletFile) {
+    this.walletFile = walletFile;
+  }
 
 
   @Override
@@ -156,6 +168,7 @@ public class WalletSummary {
             "wallet=" + wallet +
             ", walletId=" + walletId +
             ", walletType=" + walletType +
+            ", walletFile=" +walletFile +
             ", credentials=***" +
             ", name='" + name + '\'' +
             ", notes='" + notes + '\'' +

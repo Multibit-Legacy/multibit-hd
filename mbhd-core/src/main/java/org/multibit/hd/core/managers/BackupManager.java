@@ -414,7 +414,7 @@ public enum BackupManager {
       // Try loading each rolling backup in turn, newest first
       for (int i = rollingBackupFiles.size(); i > 0; i--) {
         try {
-          wallet = WalletManager.loadWalletFromFile(rollingBackupFiles.get(i - 1), password);
+          wallet = WalletManager.INSTANCE.loadWalletFromFile(rollingBackupFiles.get(i - 1), password);
           log.debug("Wallet at read in from rolling backup file:\n" + wallet.toString());
           fileLoaded = rollingBackupFiles.get(i - 1);
           break;

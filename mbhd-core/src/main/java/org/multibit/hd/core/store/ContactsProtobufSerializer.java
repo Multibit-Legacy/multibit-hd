@@ -116,7 +116,7 @@ public class ContactsProtobufSerializer {
 
   /**
    * <p>Parses a Contacts from the given stream, using the provided Contacts instance to loadContacts data into.
-   * <p>A Contacts db can be unreadable for various reasons, such as inability to open the file, corrupt data, internally
+   * <p>A Contacts db can be unreadable for various reasons, such as inability to openWalletFromWalletId the file, corrupt data, internally
    * inconsistent data, You should always
    * handle {@link org.multibit.hd.core.exceptions.ContactsLoadException} and communicate failure to the user in an appropriate manner.</p>
    *
@@ -136,7 +136,7 @@ public class ContactsProtobufSerializer {
   /**
    * <p>Loads contacts data from the given protocol buffer and inserts it into the given Set of Contact object.
    *
-   * <p>A contact db can be unreadable for various reasons, such as inability to open the file, corrupt data, internally
+   * <p>A contact db can be unreadable for various reasons, such as inability to openWalletFromWalletId the file, corrupt data, internally
    * inconsistent data, a wallet extension marked as mandatory that cannot be handled and so on. You should always
    * handle {@link ContactsLoadException} and communicate failure to the user in an appropriate manner.</p>
    *

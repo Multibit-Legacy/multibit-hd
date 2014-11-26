@@ -201,7 +201,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
               paymentsTable.changeSelection(selectedTableRow, 0, false, false);
             }
           } catch (IllegalStateException ise) {
-            // No wallet is open - nothing to do
+            // No wallet is openWalletFromWalletId - nothing to do
           }
         }
       });
