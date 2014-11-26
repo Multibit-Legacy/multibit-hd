@@ -1305,7 +1305,7 @@ public class BitcoinNetworkService extends AbstractService {
 
       WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
       WalletId walletId = walletSummary.getWalletId();
-      log.debug("Saving wallet with id '" + walletId + "'.");
+      log.debug("Saving wallet with id : {}, height : {}", walletId, walletSummary.getWallet().getLastBlockSeenHeight());
 
       try {
         File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
