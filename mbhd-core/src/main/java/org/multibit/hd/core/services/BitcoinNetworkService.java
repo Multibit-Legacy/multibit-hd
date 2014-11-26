@@ -12,9 +12,11 @@ import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.KeyCrypterException;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.net.discovery.DnsDiscovery;
+import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
+import org.bitcoinj.wallet.DeterministicKeyChain;
 import org.bitcoinj.wallet.KeyChain;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -857,8 +859,10 @@ public class BitcoinNetworkService extends AbstractService {
                 wallet
         );
 
-        // TODO - generate change address map
-        Map<Address, ImmutableList<ChildNumber>> changeAddressPathMap =  Maps.newHashMap();
+        Map<Address, ImmutableList<ChildNumber>> changeAddressPathMap =  buildChangeAddressPathMap(
+                sendRequest.tx,
+                wallet
+        );
 
         // Sign the transaction using the Trezor device
         hardwareWalletService.get().signTx(sendRequest.tx, receivingAddressPathMap, changeAddressPathMap);
@@ -890,6 +894,9 @@ public class BitcoinNetworkService extends AbstractService {
 
     try {
       // Ensure the aeskey for decrypting the keys is present in the sendRequest
+      if (wallet.getKeyCrypter() == null) {
+        throw new IllegalStateException("Should not have an unencrypted wallet");
+      }
       sendRequest.aesKey = wallet.getKeyCrypter().deriveKey(sendRequestSummary.getPassword());
 
       // Sign the transaction
@@ -1078,7 +1085,6 @@ public class BitcoinNetworkService extends AbstractService {
    * @param unsignedTx The unsigned transaction (expect OP_0 in place of signatures)
    * @param wallet     The wallet
    * @return The receiving address path map linking the tx input index to a deterministic path
-   *
    */
   private Map<Integer, ImmutableList<ChildNumber>> buildReceivingAddressPathMap(Transaction unsignedTx, Wallet wallet) {
 
@@ -1108,6 +1114,64 @@ public class BitcoinNetworkService extends AbstractService {
     }
 
     return receivingAddressPathMap;
+  }
+
+  /**
+   * @param unsignedTx The unsigned transaction (expect OP_0 in place of signatures)
+   * @param wallet     The wallet
+   *
+   * @return The receiving address path map linking the tx input index to a deterministic path
+   */
+  private Map<Address, ImmutableList<ChildNumber>> buildChangeAddressPathMap(Transaction unsignedTx, Wallet wallet) {
+
+    Map<Address, ImmutableList<ChildNumber>> changeAddressPathMap = Maps.newHashMap();
+
+    DeterministicKeyChain activeKeyChain = wallet.getActiveKeychain();
+
+    for (int i = 0; i < unsignedTx.getOutputs().size(); i++) {
+
+      TransactionOutput output = unsignedTx.getOutput(i);
+
+      Optional<DeterministicKey> key = Optional.absent();
+      Optional<Address> address = Optional.absent();
+
+      // Analyse the output script
+      Script script = output.getScriptPubKey();
+      if (script.isSentToRawPubKey()) {
+
+        // Use the raw public key
+        byte[] pubkey = script.getPubKey();
+        if (wallet.isPubKeyMine(pubkey)) {
+          key = Optional.fromNullable(activeKeyChain.findKeyFromPubKey(pubkey));
+          ECKey ecKey = ECKey.fromPublicOnly(pubkey);
+          address = Optional.fromNullable(ecKey.toAddress(MainNetParams.get()));
+        }
+
+      } else if (script.isPayToScriptHash() && wallet.isPayToScriptHashMine(script.getPubKeyHash())) {
+
+        // Extract the public key hash from the script
+        byte[] pubkeyHash = script.getPubKeyHash();
+        key = Optional.fromNullable(activeKeyChain.findKeyFromPubHash(pubkeyHash));
+        address = Optional.fromNullable(new Address(MainNetParams.get(), pubkeyHash));
+      } else {
+
+        // Use the public key hash
+        byte[] pubkeyHash = script.getPubKeyHash();
+        if (wallet.isPubKeyHashMine(pubkeyHash)) {
+          key = Optional.fromNullable(activeKeyChain.findKeyFromPubHash(pubkeyHash));
+          address = Optional.fromNullable(new Address(MainNetParams.get(), pubkeyHash));
+        }
+      }
+
+      if (key.isPresent() && address.isPresent()) {
+
+        // Found an address we own
+        changeAddressPathMap.put(address.get(), key.get().getPath());
+      }
+
+    }
+
+    return changeAddressPathMap;
   }
 
 

@@ -793,9 +793,11 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
+   * @param filterHardWallets True if "hard" wallets are to be filtered out
+   *
    * @return A list of wallet summaries based on the current application directory contents (never null)
    */
-  public static List<WalletSummary> getWalletSummaries() {
+  public static List<WalletSummary> getWalletSummaries(boolean filterHardWallets) {
 
     List<File> walletDirectories = findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
     Optional<String> walletRoot = INSTANCE.getCurrentWalletRoot();

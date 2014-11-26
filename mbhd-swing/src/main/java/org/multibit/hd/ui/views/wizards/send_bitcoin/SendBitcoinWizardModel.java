@@ -16,7 +16,6 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
@@ -63,17 +62,16 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   private SendBitcoinReportPanelModel reportPanelModel;
 
   /**
-   * Whether the transaction was prepared ok.
-   * (This means the fee was calculated correctly)
+   * Keep track of which transaction output is being signed
+   * Start with -1 to allow for initial increment
    */
-  private boolean preparedOk = false;
+  private int txOutputIndex = -1;
 
   /**
    * The FeeService used to calculate the FeeState
    */
   //private FeeService feeService;
 
-  private final NetworkParameters networkParameters = BitcoinNetwork.current().get();
   private final boolean emptyWallet;
   private final Optional<BitcoinURI> bitcoinURI;
 
@@ -102,11 +100,11 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       case SEND_ENTER_AMOUNT:
 
         // The user has entered the send details so the tx can be prepared
-        // If the transaction was prepared ok this returns true, otherwise false
-        // If there is insufficient money in the wallet a TransactionCreationEvent with the details will be thrown
-        preparedOk = prepareTransaction();
+        // If the transaction was prepared OK this returns true, otherwise false
+        // If there is insufficient money in the wallet a TransactionCreationEvent
+        // with the details will be thrown
 
-        if (preparedOk) {
+        if (prepareTransaction()) {
           state = SEND_CONFIRM_AMOUNT;
         } else {
           // Transaction did not prepare correctly
@@ -392,25 +390,17 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
 
-    // Update the transaction output count in the hardwareWalletService context
-    Optional<Integer> transactionOutputCountOptional = CoreServices.getOrCreateHardwareWalletService().get().getContext().getTransactionOutputCount();
-    int transactionOutputCount;
-    if (transactionOutputCountOptional.isPresent()) {
-      transactionOutputCount = transactionOutputCountOptional.get() + 1;
-    } else {
-      // Originally the count is absent - start counting at 0
-      transactionOutputCount = 0;
-    }
-    CoreServices.getOrCreateHardwareWalletService().get().getContext().setTransactionOutputCount(Optional.of(transactionOutputCount));
-
     // Update label with descriptive text matching what the Trezor is showing
     ButtonRequest buttonRequest = (ButtonRequest) event.getMessage().get();
 
-    // General message is nothing else can be derived
+    // General message is nothing
     MessageKey key = null;
     Object[] values = null;
 
     if (bitcoinNetworkService.getLastSendRequestSummaryOptional().isPresent() && bitcoinNetworkService.getLastWalletOptional().isPresent()) {
+
+      // We have a send request and a wallet
+
       Wallet wallet = bitcoinNetworkService.getLastWalletOptional().get();
 
       Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
@@ -429,22 +419,44 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
         switch (buttonRequest.getButtonRequestType()) {
           case CONFIRM_OUTPUT:
-            if (transactionOutputCount >= currentTransaction.getOutputs().size()) {
-              log.debug("Seeing more button presses than there are tx outputs - using the general message");
-            } else {
-              String[] transactionOutputAmount = Formats.formatCoinAsSymbolic(currentTransaction.getOutput(transactionOutputCount).getValue(), languageConfiguration, bitcoinConfiguration);
 
-              Address transactionOutputAddress = currentTransaction.getOutput(transactionOutputCount).getAddressFromP2PKHScript(MainNetParams.get());
+            // Work out which output we're confirming (will be in same order as tx but wallet addresses will be ignored)
+
+            Optional<TransactionOutput> confirmingOutput = Optional.absent();
+            do {
+              // Always increment from starting position (first button request is then 0 index)
+              txOutputIndex++;
+
+              if (!currentTransaction.getOutput(txOutputIndex).isMine(wallet)) {
+                // Not owned by us so Trezor will show it on the display
+                confirmingOutput=Optional.of(currentTransaction.getOutput(txOutputIndex));
+                break;
+              }
+            }  while (txOutputIndex < currentTransaction.getOutputs().size());
+
+            if (confirmingOutput.isPresent()) {
+
+              // Trezor will be displaying this output
+              TransactionOutput output = confirmingOutput.get();
+
+              String[] transactionOutputAmount = Formats.formatCoinAsSymbolic(output.getValue(), languageConfiguration, bitcoinConfiguration);
+
+              Address transactionOutputAddress = output.getAddressFromP2PKHScript(MainNetParams.get());
               key = MessageKey.TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY;
               values = new String[]{
                 transactionOutputAmount[0] + transactionOutputAmount[1] + " " + bitcoinSymbolText,
                 transactionOutputAddress == null ? "" : transactionOutputAddress.toString()
               };
+
+            } else {
+              throw new IllegalStateException("Trezor is confirming an output outside of the transaction. Have change addresses been ignored?");
             }
             break;
           case SIGN_TX:
-            // The Trezor device shows the amount including fee so work that out
-            Coin transactionAmount = currentTransaction.getValue(wallet).negate().add(currentTransaction.getFee());
+            // Transaction#getValue() provides the net amount leaving the wallet which includes the fee
+            // Trezor displays the sum of all external outputs and the fee separately
+            // Thus we perform the calculation below to arrive at the same figure the transaction amount to reassure the user all is well
+            Coin transactionAmount = currentTransaction.getValue(wallet).negate().subtract(currentTransaction.getFee());
             String[] transactionAmountFormatted = Formats.formatCoinAsSymbolic(transactionAmount, languageConfiguration, bitcoinConfiguration);
 
             String[] feeAmount = Formats.formatCoinAsSymbolic(currentTransaction.getFee(), languageConfiguration, bitcoinConfiguration);
@@ -527,6 +539,21 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
         }
       });
+
+  }
+
+  @Override
+  public void showOperationFailed(HardwareWalletEvent event) {
+
+    switch (state) {
+
+      case SEND_CONFIRM_TREZOR:
+        // TODO Fill out the error report
+        state = SendBitcoinState.SEND_REPORT;
+        break;
+      default:
+        throw new IllegalStateException("Should not reach here from " + state.name());
+    }
 
   }
 
