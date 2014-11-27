@@ -422,12 +422,12 @@ public enum MessageKey {
   BUY_TREZOR("buy_trezor"),
   BUY_TREZOR_TOOLTIP("buy_trezor_tooltip"),
 
-  SEARCHING_FOR_A_CONNECTED_TREZOR("searching_for_a_connected_trezor"),
-  COMMUNICATING_WITH_TREZOR("communicating_with_trezor"),
+  SEARCHING_FOR_A_CONNECTED_TREZOR_OPERATION("searching_for_a_connected_trezor_operation"),
+  COMMUNICATING_WITH_TREZOR_OPERATION("communicating_with_trezor_operation"),
   TREZOR_FOUND("trezor_found"),
   NO_TREZOR_FOUND("no_trezor_found"),
 
-  WIPE_TREZOR_MESSAGE("wipe_trezor_message"),
+  TREZOR_WIPE_CONFIRM_DISPLAY("trezor_wipe_confirm_display"),
 
   TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY("trezor_transaction_output_confirm_display"),
   TREZOR_SIGN_CONFIRM_DISPLAY("trezor_sign_confirm_display"),

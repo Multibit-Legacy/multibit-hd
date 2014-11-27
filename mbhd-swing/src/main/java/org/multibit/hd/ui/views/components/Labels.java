@@ -492,7 +492,7 @@ public class Labels {
    * @return A new "wipe Trezor message" status label
    */
   public static JLabel newWipeTrezorLabel() {
-    return newLabel(MessageKey.WIPE_TREZOR_MESSAGE);
+    return newLabel(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
   }
 
   /**
@@ -1093,7 +1093,7 @@ public class Labels {
    * @return A new "communicating with Trezor" label
    */
   public static JLabel newCommunicatingWithTrezor() {
-    return newLabel(MessageKey.COMMUNICATING_WITH_TREZOR);
+    return newLabel(MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION);
   }
 
   /**

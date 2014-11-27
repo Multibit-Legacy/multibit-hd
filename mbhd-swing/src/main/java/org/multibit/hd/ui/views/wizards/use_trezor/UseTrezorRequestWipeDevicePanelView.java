@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.credentials;
+package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -22,23 +22,22 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Credentials: Request cipher key</li>
+ * <li>Panel telling the user to press the continue button to wipe their Trezor</li>
  * </ul>
- * <p>This is the first step in getting the extended public key from a Trezor device</p>
  *
- * @since 0.0.1
- *  
+ * @since 0.0.5
+ *
  */
-public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelView<CredentialsWizardModel, String> {
+public class UseTrezorRequestWipeDevicePanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorWipeDevicePanelModel> {
 
   private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
 
   /**
    * @param wizard The wizard managing the states
    */
-  public CredentialsRequestCipherKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
+  public UseTrezorRequestWipeDevicePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_UNLOCK_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, MessageKey.WIPE_DEVICE_TITLE, AwesomeIcon.ERASER);
 
   }
 
@@ -46,7 +45,7 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
   public void newPanelModel() {
 
     // Bind it to the wizard model in case of failure
-    getWizardModel().setRequestCipherKeyPanelView(this);
+    getWizardModel().setRequestWipeDevicePanelView(this);
 
   }
 
@@ -69,16 +68,16 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelRestoreNext(this, wizard);
+    PanelDecorator.addExitCancelNext(this, wizard);
 
   }
 
   @Override
   public void fireInitialStateViewEvents() {
 
-    // Initialise with "Unlock" disabled to force users to work with Trezor
+    // Initialise with "Next" disabled to force users to work with Trezor
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
       WizardButton.NEXT,
@@ -94,17 +93,17 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
     Optional<Features> features = CoreServices.getOrCreateHardwareWalletService().get().getContext().getFeatures();
 
     final MessageKey operationKey;
-    final boolean switchToPassword;
+    final boolean showReportView;
     if (!features.isPresent()) {
       operationKey = MessageKey.TREZOR_FAILURE_OPERATION;
-      switchToPassword = true;
+      showReportView = true;
     } else {
       if (features.get().isInitialized()) {
         operationKey = MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION;
-        switchToPassword = false;
+        showReportView = false;
       } else {
         operationKey = MessageKey.TREZOR_NO_WALLET_OPERATION;
-        switchToPassword = true;
+        showReportView = true;
       }
     }
 
@@ -115,35 +114,34 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
         // Set the communication message
         trezorDisplayMaV.getView().setOperationText(operationKey);
 
-        if (switchToPassword) {
+        if (showReportView) {
           trezorDisplayMaV.getView().setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
         }
 
         // This could take a while (device may tarpit after failed PINs etc)
-        trezorDisplayMaV.getView().setSpinnerVisible(!switchToPassword);
+        trezorDisplayMaV.getView().setSpinnerVisible(!showReportView);
 
         // Override the earlier button enable setting
         ViewEvents.fireWizardButtonEnabledEvent(
           getPanelName(),
           WizardButton.NEXT,
-          switchToPassword
+          showReportView
         );
 
       }
     });
 
     // Update the wizard model so we can change state
-    getWizardModel().setSwitchToPassword(switchToPassword);
+    getWizardModel().setShowReportView(showReportView);
 
-    if (!switchToPassword) {
+    if (!showReportView) {
 
-      // Start the wallet access process by requesting a cipher key
-      // to get a deterministic wallet ID
+      // Start the wipe process
       //
       // This is done as a transitional panel to allow for a device
       // failure at each stage with the user having the option to
       // easily escape
-      getWizardModel().requestCipherKey();
+      getWizardModel().requestWipeDevice();
 
     }
 

@@ -32,9 +32,14 @@ public enum UseTrezorState {
   VERIFY_TREZOR,
 
   /**
-   * Wipe the Trezor device
+   * Request a wipe of the Trezor device
    */
-  WIPE_TREZOR,
+  REQUEST_WIPE_TREZOR,
+
+  /**
+   * Confirm a wipe of the Trezor device
+   */
+  CONFIRM_WIPE_TREZOR,
 
   /**
    * Enter a Trezor PIN

@@ -200,7 +200,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           @Override
           public void run() {
 
-            confirmCipherKeyPanelView.getTrezorDisplayView().setOperationText(MessageKey.COMMUNICATING_WITH_TREZOR);
+            confirmCipherKeyPanelView.getTrezorDisplayView().setOperationText(MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION);
             confirmCipherKeyPanelView.setDisplayVisible(false);
             confirmCipherKeyPanelView.getTrezorDisplayView().setSpinnerVisible(true);
 

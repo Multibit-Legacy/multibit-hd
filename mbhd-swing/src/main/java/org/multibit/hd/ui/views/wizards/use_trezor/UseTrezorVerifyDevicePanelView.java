@@ -73,10 +73,10 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
 
     // Trezor communications status label
     trezorCommunicationsStatusLabel = Labels.newStatusLabel(
-            Optional.of(MessageKey.COMMUNICATING_WITH_TREZOR),
+            Optional.of(MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION),
             null,
             Optional.<Boolean>absent());
-    AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.COMMUNICATING_WITH_TREZOR);
+    AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION);
 
     contentPanel.add(trezorCommunicationsStatusLabel, "wrap");
     // The Trezor features is a wall of text so needs scroll bars

@@ -63,7 +63,7 @@ public class UseTrezorSelectPanelView extends AbstractWizardPanelView<UseTrezorW
               UseTrezorState.USE_TREZOR_WALLET.name(),
               UseTrezorState.BUY_TREZOR.name(),
               UseTrezorState.VERIFY_TREZOR.name(),
-              UseTrezorState.WIPE_TREZOR.name()
+              UseTrezorState.REQUEST_WIPE_TREZOR.name()
       ), "span 2, wrap");
 
   }

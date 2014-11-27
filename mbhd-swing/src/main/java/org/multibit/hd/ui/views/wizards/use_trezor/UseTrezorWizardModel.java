@@ -60,6 +60,9 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   private UseTrezorRequestCipherKeyPanelView requestCipherKeyPanelView;
 
   private UseTrezorReportPanelView reportPanelView;
+  private UseTrezorConfirmWipeDevicePanelView confirmWipeDevicePanelView;
+  private UseTrezorRequestWipeDevicePanelView requestWipeDevicePanelView;
+  private boolean showReportView;
 
   public UseTrezorWizardModel(UseTrezorState useTrezorState) {
     super(useTrezorState);
@@ -76,6 +79,35 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
   public void setEnterPinPanelView(UseTrezorEnterPinPanelView enterPinPanelView) {
     this.enterPinPanelView = enterPinPanelView;
+  }
+
+
+  public UseTrezorRequestCipherKeyPanelView getRequestCipherKeyPanelView() {
+    return requestCipherKeyPanelView;
+  }
+
+  public void setRequestCipherKeyPanelView(UseTrezorRequestCipherKeyPanelView requestCipherKeyPanelView) {
+    this.requestCipherKeyPanelView = requestCipherKeyPanelView;
+  }
+
+  public UseTrezorReportPanelView getReportPanelView() {
+    return reportPanelView;
+  }
+
+  public void setReportPanelView(UseTrezorReportPanelView reportPanelView) {
+    this.reportPanelView = reportPanelView;
+  }
+
+  public void setConfirmWipeDevicePanelView(UseTrezorConfirmWipeDevicePanelView confirmWipeDevicePanelView) {
+    this.confirmWipeDevicePanelView = confirmWipeDevicePanelView;
+  }
+
+  public void setRequestWipeDevicePanelView(UseTrezorRequestWipeDevicePanelView requestWipeDevicePanelView) {
+    this.requestWipeDevicePanelView = requestWipeDevicePanelView;
+  }
+
+  public void setShowReportView(boolean showReportView) {
+    this.showReportView = showReportView;
   }
 
   @Override
@@ -95,8 +127,8 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
           case VERIFY_TREZOR:
             state = UseTrezorState.VERIFY_TREZOR;
             break;
-          case WIPE_TREZOR:
-            state = UseTrezorState.WIPE_TREZOR;
+          case REQUEST_WIPE_TREZOR:
+            state = UseTrezorState.REQUEST_WIPE_TREZOR;
             break;
           default:
             throw new IllegalStateException("Cannot showNext with a state of SELECT_TREZOR_ACTION and a selection of " + getCurrentSelection());
@@ -108,7 +140,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       case VERIFY_TREZOR:
         state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
         break;
-      case WIPE_TREZOR:
+      case REQUEST_WIPE_TREZOR:
         state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
         break;
       case ENTER_PIN:
@@ -165,8 +197,15 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       case NO_PIN_REQUIRED:
         // Should be catered for by finish
         break;
-      case WIPE_TREZOR:
-        // Should be catered for by finish on Wipe Trezor panel
+      case REQUEST_WIPE_TREZOR:
+        switch (buttonRequest.getButtonRequestType()) {
+          case WIPE_DEVICE:
+            // Device requires confirmation to wipe
+            state = UseTrezorState.CONFIRM_WIPE_TREZOR;
+            break;
+          default:
+            throw new IllegalStateException("Unexpected button: " + buttonRequest.getButtonRequestType().name());
+        }
         break;
       case VERIFY_TREZOR:
         // Should be catered for by finish on Verify Trezor panel
@@ -188,27 +227,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       case ENTER_PIN:
         // Indicate a successful PIN
         getEnterPinPanelView().setPinStatus(true, true);
-
-        // Fall through to "press confirm for unlock"
-//      case PRESS_CONFIRM_FOR_UNLOCK:
-//
-//        if (event.getMessage().get() instanceof Success) {
-//
-//          byte[] payload = ((Success) event.getMessage().get()).getPayload();
-//          String message = ((Success) event.getMessage().get()).getMessage();
-//
-//          log.info(
-//            "Message:'{}'\nPayload length: {}",
-//            message,
-//            payload == null ? 0 : payload.length
-//          );
-//
-//          log.debug("Using the payload as entropy");
-//          entropyOptional = Optional.fromNullable(payload);
-//
-//          state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
-//
-//        }
         break;
       default:
         // TODO Fill in the other states and provide success feedback
@@ -252,10 +270,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   public Optional<Features> getFeaturesOptional() {
     return featuresOptional;
   }
-
-//  public Optional<byte[]> getEntropyOptional() {
-//    return entropyOptional;
-//  }
 
   /**
    * <p>Request the Trezor features</p>
@@ -305,7 +319,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   /**
    * <p>Wipe the Trezor device</p>
    */
-  public void wipeTrezor() {
+  public void requestWipeDevice() {
 
     // Start the wipe Trezor
     ListenableFuture future = hardwareWalletRequestService.submit(
@@ -337,7 +351,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
         public void onSuccess(@Nullable Object result) {
 
           // We now wiped the device so throw a ComponentChangedEvent for the UI to update
-          ViewEvents.fireComponentChangedEvent(UseTrezorState.WIPE_TREZOR.name(), Optional.absent());
+          ViewEvents.fireComponentChangedEvent(UseTrezorState.REQUEST_WIPE_TREZOR.name(), Optional.absent());
 
         }
 
@@ -399,23 +413,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       }
     );
 
-  }
-
-
-  public UseTrezorRequestCipherKeyPanelView getRequestCipherKeyPanelView() {
-    return requestCipherKeyPanelView;
-  }
-
-  public void setRequestCipherKeyPanelView(UseTrezorRequestCipherKeyPanelView requestCipherKeyPanelView) {
-    this.requestCipherKeyPanelView = requestCipherKeyPanelView;
-  }
-
-  public UseTrezorReportPanelView getReportPanelView() {
-    return reportPanelView;
-  }
-
-  public void setReportPanelView(UseTrezorReportPanelView reportPanelView) {
-    this.reportPanelView = reportPanelView;
   }
 
 }

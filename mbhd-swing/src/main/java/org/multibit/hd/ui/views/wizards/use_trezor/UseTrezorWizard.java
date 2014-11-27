@@ -29,27 +29,25 @@ public class UseTrezorWizard extends AbstractHardwareWalletWizard<UseTrezorWizar
       UseTrezorState.SELECT_TREZOR_ACTION.name(),
       new UseTrezorSelectPanelView(this, UseTrezorState.SELECT_TREZOR_ACTION.name()));
 
-    // Transitional view to kick off the process of authenticating to Trezor
-//    wizardViewMap.put(
-//      UseTrezorState.REQUEST_CIPHER_KEY.name(),
-//      new UseTrezorRequestCipherKeyPanelView(this, UseTrezorState.REQUEST_CIPHER_KEY.name()));
+    wizardViewMap.put(
+      UseTrezorState.BUY_TREZOR.name(),
+      new UseTrezorBuyTrezorPanelView(this, UseTrezorState.BUY_TREZOR.name()));
 
-    wizardViewMap.put(UseTrezorState.BUY_TREZOR.name(), new UseTrezorBuyTrezorPanelView(this, UseTrezorState.BUY_TREZOR.name()));
+    wizardViewMap.put(
+      UseTrezorState.VERIFY_TREZOR.name(),
+      new UseTrezorVerifyDevicePanelView(this, UseTrezorState.VERIFY_TREZOR.name()));
 
-    wizardViewMap.put(UseTrezorState.VERIFY_TREZOR.name(), new UseTrezorVerifyDevicePanelView(this, UseTrezorState.VERIFY_TREZOR.name()));
+    wizardViewMap.put(
+      UseTrezorState.REQUEST_WIPE_TREZOR.name(),
+      new UseTrezorRequestWipeDevicePanelView(this, UseTrezorState.REQUEST_WIPE_TREZOR.name()));
 
-    wizardViewMap.put(UseTrezorState.WIPE_TREZOR.name(), new UseTrezorWipeDevicePanelView(this, UseTrezorState.WIPE_TREZOR.name()));
+    wizardViewMap.put(
+      UseTrezorState.CONFIRM_WIPE_TREZOR.name(),
+      new UseTrezorConfirmWipeDevicePanelView(this, UseTrezorState.CONFIRM_WIPE_TREZOR.name()));
 
     wizardViewMap.put(
       UseTrezorState.ENTER_PIN.name(),
       new UseTrezorEnterPinPanelView(this, UseTrezorState.ENTER_PIN.name()));
-
-    // TODO - "when there is no PIN" panel
-
-    // Ask user to confirm 'Encrypt MultiBit HD unlock text'
-//    wizardViewMap.put(
-//      UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK.name(),
-//      new UseTrezorPressConfirmForEncryptCodePanelView(this, UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK.name()));
 
     // Trezor report panel
     wizardViewMap.put(
