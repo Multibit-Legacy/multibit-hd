@@ -25,6 +25,8 @@ import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.extensions.MatcherResponseWalletExtension;
 import org.multibit.hd.brit.extensions.SendFeeDtoWalletExtension;
+import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.brit.services.TransactionSentBySelfProvider;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -57,8 +59,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SEPARATOR;
-import static org.multibit.hd.core.dto.WalletId.parseWalletFilename;
+import static org.multibit.hd.core.dto.WalletId.*;
 
 /**
  * <p>Manager to provide the following to core users:</p>
@@ -216,7 +217,6 @@ public enum WalletManager implements WalletEventListener {
           CoreServices.getOrCreateBitcoinNetworkService().addWalletToBlockChain(walletSummary.getWallet());
           CoreServices.getOrCreateBitcoinNetworkService().addWalletToPeerGroup(walletSummary.getWallet());
 
-
           try {
             // Wallet is now created - finish off other configuration
             updateConfigurationAndCheckSync(createWalletRoot(walletId), walletDirectory, walletSummary, false);
@@ -232,50 +232,6 @@ public enum WalletManager implements WalletEventListener {
     }
 
     return currentWalletSummary;
-  }
-
-  /**
-   * Create a soft wallet (either MBHD or Trezor)
-   * <p/>
-   * This is stored in the MultiBitHD application data directory
-   * If the wallet file already exists it is loaded and returned (and the input credentials is not used)
-   *
-   * @param seed                  the seed used to initialise the wallet
-   * @param creationTimeInSeconds The creation time of the wallet, in seconds since epoch
-   * @param password              to use to encrypt the wallet
-   * @param name                  The wallet name
-   * @param notes                 Public notes associated with the wallet
-   * @param isTrezor              if true create a Trezor soft wallet. if false, create an MBHD soft wallet.
-   * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
-   * @throws IllegalStateException  if applicationDataDirectory is incorrect
-   * @throws WalletLoadException    if there is already a simple wallet created but it could not be loaded
-   * @throws WalletVersionException if there is already a simple wallet but the wallet version cannot be understood
-   */
-  public WalletSummary createSoftWalletSummary(
-          byte[] seed,
-          long creationTimeInSeconds,
-          String password,
-          String name,
-          String notes,
-          boolean isTrezor
-
-  ) throws WalletLoadException, WalletVersionException, IOException {
-    log.debug("createSoftWalletSummary called");
-    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-
-    if (isTrezor) {
-      DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed);
-
-      // Trezor uses BIP-44
-      // BIP-44 starts from M/44'/0'/0'
-      // Create a root node from which all addresses will be generated
-      DeterministicKey trezorRootNode = WalletManager.generateTrezorRootNode(privateMasterKey);
-      log.debug("Creating a Trezor soft wallet with rootNode = " + trezorRootNode);
-      return getOrCreateWalletSummaryFromRootNode(applicationDataDirectory, trezorRootNode, creationTimeInSeconds, password, name, notes);
-    } else {
-      log.debug("Creating a MBHD soft wallet from seed");
-      return getOrCreateWalletSummaryFromSeed(applicationDataDirectory, seed, creationTimeInSeconds, password, name, notes);
-    }
   }
 
   /**
@@ -299,7 +255,7 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
    */
-  public WalletSummary getOrCreateWalletSummaryFromSeed(
+  public WalletSummary getOrCreateMBHDSoftWalletSummaryFromSeed(
           File applicationDataDirectory,
           byte[] seed,
           long creationTimeInSeconds,
@@ -307,7 +263,7 @@ public enum WalletManager implements WalletEventListener {
           String name,
           String notes
   ) throws WalletLoadException, WalletVersionException, IOException {
-    log.debug("getOrCreateWalletSummaryFromSeed called");
+    log.debug("getOrCreateMBHDSoftWalletSummaryFromSeed called");
     final WalletSummary walletSummary;
 
     // Create a wallet id from the seed to work out the wallet root directory
@@ -390,7 +346,7 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
    */
-  public WalletSummary getOrCreateWalletSummaryFromRootNode(
+  public WalletSummary getOrCreateTrezorHardWalletSummaryFromRootNode(
           File applicationDataDirectory,
           DeterministicKey rootNode,
           long creationTimeInSeconds,
@@ -399,7 +355,7 @@ public enum WalletManager implements WalletEventListener {
           String notes
   ) throws WalletLoadException, WalletVersionException, IOException {
 
-    log.debug("getOrCreateWalletSummaryFromRootNode called");
+    log.debug("getOrCreateTrezorHardWalletSummaryFromRootNode called");
 
     // Create a wallet id from the rootNode to work out the wallet root directory
     final WalletId walletId = new WalletId(rootNode.getIdentifier());
@@ -448,6 +404,102 @@ public enum WalletManager implements WalletEventListener {
 
     if (walletSummary != null) {
       walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
+      walletSummary.setWalletFile(walletFile);
+      walletSummary.setName(name);
+      walletSummary.setNotes(notes);
+      walletSummary.setPassword(password);
+
+      setCurrentWalletSummary(walletSummary);
+    }
+
+    // Wallet is now created - finish off other configuration and check if wallet needs syncing
+    // (Always save the wallet yaml as there was a bug in early Trezor wallets where it was not written out)
+    updateConfigurationAndCheckSync(walletRoot, walletDirectory, walletSummary, true);
+
+    return walletSummary;
+  }
+
+  /**
+   * Create a Trezor soft wallet from a seed phrase
+   * <p/>
+   * This is stored in the specified application directory.
+   * The name of the wallet directory is derived from the rootNode.
+   * <p/>
+   * If the wallet file already exists it is loaded and returned
+   * <p/>
+   * Auto-save is hooked up so that the wallet is saved on modification
+   *
+   * @param applicationDataDirectory The application data directory containing the wallet
+   * @param seedPhrase               The BIP39 seed phrase to use to initialise the walelt
+   * @param creationTimeInSeconds    The creation time of the wallet, in seconds since epoch
+   * @param password                 The credentials to use to encrypt the wallet - if null then the wallet is not loaded
+   * @param name                     The wallet name
+   * @param notes                    Public notes associated with the wallet
+   * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
+   * @throws IllegalStateException  if applicationDataDirectory is incorrect
+   * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
+   * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
+   */
+  public WalletSummary getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
+          File applicationDataDirectory,
+          String seedPhrase,
+          long creationTimeInSeconds,
+          String password,
+          String name,
+          String notes
+  ) throws UnreadableWalletException, WalletLoadException, WalletVersionException, IOException {
+
+    log.debug("getOrCreateTrezorSoftWalletSummaryFromSeedPhrase called");
+
+    // Create a wallet id from the seed to work out the wallet root directory
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedPhrase));
+
+    final WalletId walletId = new WalletId(seed, WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_WALLETS);
+    String walletRoot = createWalletRoot(walletId);
+
+    final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
+    final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
+    final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
+
+    WalletSummary walletSummary = null;
+
+    if (walletFileWithAES.exists()) {
+      try {
+        // There is already a wallet created with this root - if so load it and return that
+        log.debug("A wallet with name {} exists. Opening...", walletFileWithAES.getAbsolutePath());
+        walletSummary = loadFromWalletDirectory(walletDirectory, password);
+      } catch (WalletLoadException e) {
+        // Failed to decrypt the existing wallet/backups
+        log.error("Failed to load from wallet directory.");
+      }
+    } else {
+      log.debug("Wallet file does not exist. Creating...");
+
+      // Create the containing directory if it does not exist
+      if (!walletDirectory.exists()) {
+        if (!walletDirectory.mkdir()) {
+          throw new IllegalStateException("The directory for the wallet '" + walletDirectory.getAbsoluteFile() + "' could not be created");
+        }
+      }
+
+      // Create a wallet using the seed phrase
+      DeterministicSeed deterministicSeed = new DeterministicSeed(seedPhrase, null, "", creationTimeInSeconds);
+
+      Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
+      walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
+      walletToReturn.setVersion(MBHD_WALLET_VERSION);
+
+      // Save it now to ensure it is on the disk
+      walletToReturn.saveToFile(walletFile);
+      EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, password);
+
+      // Create a new wallet summary
+      walletSummary = new WalletSummary(walletId, walletToReturn);
+    }
+
+    if (walletSummary != null) {
+      walletSummary.setWalletType(WalletType.TREZOR_SOFT_WALLET);
       walletSummary.setWalletFile(walletFile);
       walletSummary.setName(name);
       walletSummary.setNotes(notes);
@@ -801,7 +853,6 @@ public enum WalletManager implements WalletEventListener {
 
   /**
    * @param filterHardWallets True if "hard" wallets are to be filtered out
-   *
    * @return A list of wallet summaries based on the current application directory contents (never null)
    */
   public static List<WalletSummary> getWalletSummaries(boolean filterHardWallets) {

@@ -70,7 +70,7 @@ public class SecureFiles {
 
     alternativeSecureDelete(file);
     log.trace("End of secureDelete");
-    log.debug("Secure delete of took {} milliseconds", System.currentTimeMillis() - start);
+    log.debug("Secure delete took {} milliseconds", System.currentTimeMillis() - start);
   }
 
   /**

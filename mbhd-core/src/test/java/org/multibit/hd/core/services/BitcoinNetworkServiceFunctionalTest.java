@@ -259,7 +259,7 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    WalletSummary walletSummary = walletManager.getOrCreateWalletSummaryFromSeed(
+    WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
             walletDirectory,
             seed,
             nowInSeconds,

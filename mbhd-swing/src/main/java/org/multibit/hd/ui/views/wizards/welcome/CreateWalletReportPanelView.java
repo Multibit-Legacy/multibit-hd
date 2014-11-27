@@ -203,7 +203,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
         // Provide a precise local creation time
         Dates.formatTransactionDateLocal(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
       );
-      walletSummary = walletManager.createSoftWalletSummary(seed, Dates.nowInSeconds(), password, name, notes, false);
+      walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(applicationDataDirectory, seed, Dates.nowInSeconds(), password, name, notes);
 
       Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
 

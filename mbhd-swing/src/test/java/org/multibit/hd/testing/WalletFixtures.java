@@ -8,6 +8,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.utils.Dates;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,6 +47,10 @@ public class WalletFixtures {
    */
   public static WalletSummary createEmptyWalletFixture() throws IOException {
 
+    String applicationDirectoryName = InstallationManager
+      .getOrCreateApplicationDataDirectory()
+      .getAbsolutePath();
+
     Bip39SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
 
     List<String> seedPhrase = Bip39SeedPhraseGenerator.split(EMPTY_WALLET_SEED_PHRASE);
@@ -55,7 +60,7 @@ public class WalletFixtures {
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    return walletManager.createSoftWalletSummary(seed, nowInSeconds, STANDARD_PASSWORD, "Example", "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.", false);
+    return walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(new File(applicationDirectoryName), seed, nowInSeconds, STANDARD_PASSWORD, "Example", "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.");
 
   }
 

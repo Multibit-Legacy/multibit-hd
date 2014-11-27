@@ -43,7 +43,7 @@ public class PersistentContactServiceTest {
     long nowInSeconds = Dates.nowInSeconds();
     WalletManager
       .INSTANCE
-      .getOrCreateWalletSummaryFromSeed(
+      .getOrCreateMBHDSoftWalletSummaryFromSeed(
               temporaryDirectory,
               seed1,
               nowInSeconds,

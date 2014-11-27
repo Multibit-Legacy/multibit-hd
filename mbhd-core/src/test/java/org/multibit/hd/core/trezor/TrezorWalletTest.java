@@ -150,7 +150,7 @@ public class TrezorWalletTest {
     // Create a Trezor soft wallet using the test root node, using a BIP44 account structure
     WalletSummary walletSummary = WalletManager
             .INSTANCE
-            .getOrCreateWalletSummaryFromRootNode(
+            .getOrCreateTrezorHardWalletSummaryFromRootNode(
                     temporaryDirectory,
                     trezorRootNode,
                     TREZOR_WALLET_CREATION_DATE.getMillis() / 1000,
@@ -166,6 +166,7 @@ public class TrezorWalletTest {
     // Get the first five keys and addresses
     DeterministicKey key0 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String address0 = key0.toAddress(networkParameters).toString();
+    log.debug("key0: {}", key0);
 
     DeterministicKey key1 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String address1 = key1.toAddress(networkParameters).toString();

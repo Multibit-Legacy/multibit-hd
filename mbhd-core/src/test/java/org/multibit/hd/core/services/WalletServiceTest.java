@@ -74,7 +74,7 @@ public class WalletServiceTest {
     long nowInSeconds = Dates.nowInSeconds();
     walletSummary = WalletManager
             .INSTANCE
-            .getOrCreateWalletSummaryFromSeed(
+            .getOrCreateMBHDSoftWalletSummaryFromSeed(
                     temporaryDirectory,
                     seed1,
                     nowInSeconds,

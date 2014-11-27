@@ -24,9 +24,14 @@ public class WalletId {
   public static final String WALLET_ID_SEPARATOR = "-";
 
   /**
-   * The salt used in converting seed bytes to a wallet id
+   * The salt used in converting seed bytes to a wallet id for MBHD wallets
    */
-  public static final byte[] WALLET_ID_SALT_USED_IN_SCRYPT = new byte[]{(byte) 1};
+  public static final byte[] WALLET_ID_SALT_USED_IN_SCRYPT_FOR_MBHD_WALLETS = new byte[]{(byte) 1};
+
+  /**
+    * The salt used in converting seed bytes to a wallet id for Trezor wallets
+    */
+  public static final byte[] WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_WALLETS = new byte[]{(byte) 2};
 
   private static final int NUMBER_OF_BYTES_IN_WALLET_ID = 20;
   public static final int LENGTH_OF_FORMATTED_WALLET_ID = 2 * NUMBER_OF_BYTES_IN_WALLET_ID + (NUMBER_OF_BYTES_IN_WALLET_ID / SEPARATOR_REPEAT_PERIOD) - 1;
@@ -49,16 +54,29 @@ public class WalletId {
   }
 
   /**
-   * Create a wallet id from the given seed.
+   * Create an MBHD wallet id from the given seed.
    * This produces a wallet id from the seed using various trapdoor functions.
    * The seed is typically generated from the SeedPhraseGenerator#convertToSeed method.
    *
    * @param seed The seed to use in deriving the wallet id
    */
   public WalletId(byte[] seed) {
-    walletId = AESUtils.generate160BitsOfEntropy(seed, WALLET_ID_SALT_USED_IN_SCRYPT);
+    walletId = AESUtils.generate160BitsOfEntropy(seed, WALLET_ID_SALT_USED_IN_SCRYPT_FOR_MBHD_WALLETS);
   }
 
+
+  /**
+   * Create an wallet id from the given seed and salt
+   *
+   * You can use this to generate a wallet id for a Trezor wallet passing in WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_WALLETS
+   * This produces a wallet id from the seed using various trapdoor functions.
+   * The seed is typically generated from the SeedPhraseGenerator#convertToSeed method.
+   *
+   * @param seed The seed to use in deriving the wallet id
+   */
+  public WalletId(byte[] seed, byte[] salt) {
+    walletId = AESUtils.generate160BitsOfEntropy(seed, salt);
+  }
 
   /**
    * Create a WalletId from a wallet filename - the filename is parsed into a walletId byte array

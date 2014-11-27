@@ -116,7 +116,7 @@ public class WalletManagerTest {
     long nowInSeconds = Dates.nowInSeconds();
 
     WalletSummary walletSummary1 = walletManager
-            .getOrCreateWalletSummaryFromSeed(
+            .getOrCreateMBHDSoftWalletSummaryFromSeed(
                     applicationDirectory,
                     seed,
                     nowInSeconds,
@@ -135,7 +135,7 @@ public class WalletManagerTest {
     BackupManager.INSTANCE.initialise(applicationDirectory2, null);
 
     WalletSummary walletSummary2 = walletManager
-            .getOrCreateWalletSummaryFromSeed(
+            .getOrCreateMBHDSoftWalletSummaryFromSeed(
                     applicationDirectory2,
                     seed,
                     nowInSeconds,
@@ -183,13 +183,13 @@ public class WalletManagerTest {
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(TREZOR_SEED_PHRASE));
     long nowInSeconds = Dates.nowInSeconds();
 
-    WalletSummary walletSummary = walletManager.createSoftWalletSummary(
+    WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
+            applicationDirectory,
             seed,
             nowInSeconds,
             "aPassword",
             "Abandon",
-            "Abandon",
-            true);
+            "Abandon");
 
     assertThat(walletSummary).isNotNull();
     assertThat(WalletType.TREZOR_SOFT_WALLET.equals(walletSummary.getWalletType()));
@@ -298,7 +298,7 @@ public class WalletManagerTest {
     long nowInSeconds = Dates.nowInSeconds();
 
     log.debug("");
-    WalletSummary walletSummary = walletManager.getOrCreateWalletSummaryFromSeed(
+    WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
             applicationDirectory,
             seed,
             nowInSeconds,
@@ -394,7 +394,7 @@ public class WalletManagerTest {
 
 
       WalletSummary walletSummary = walletManager
-              .getOrCreateWalletSummaryFromSeed(
+              .getOrCreateMBHDSoftWalletSummaryFromSeed(
                       applicationDirectory,
                       seed,
                       nowInSeconds,

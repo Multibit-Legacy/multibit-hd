@@ -718,7 +718,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
           // Must be OK to be here
 
-          return Optional.fromNullable(WalletManager.INSTANCE.getOrCreateWalletSummaryFromRootNode(
+          return Optional.fromNullable(WalletManager.INSTANCE.getOrCreateTrezorHardWalletSummaryFromRootNode(
                   applicationDataDirectory,
                   parentKey,
                   // There is no reliable timestamp for a 'new' wallet as it could exist elsewhere

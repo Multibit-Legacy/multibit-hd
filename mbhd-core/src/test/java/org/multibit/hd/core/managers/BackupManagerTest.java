@@ -79,7 +79,7 @@ public class BackupManagerTest {
     // Create a wallet summary
     WalletSummary walletSummary = WalletManager
       .INSTANCE
-      .getOrCreateWalletSummaryFromSeed(
+      .getOrCreateMBHDSoftWalletSummaryFromSeed(
               applicationDirectory,
               seed,
               nowInSeconds,
