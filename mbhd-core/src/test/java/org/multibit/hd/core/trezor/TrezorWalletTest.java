@@ -79,7 +79,7 @@ public class TrezorWalletTest {
 
     // Trezor uses BIP-44
     // BIP-44 starts from M/44'/0'/0'
-    DeterministicKey trezorRootNode = WalletManager.generateTrezorRootNode(privateMasterKey);
+    DeterministicKey trezorRootNode = WalletManager.generateTrezorWalletRootNode(privateMasterKey);
 
     DeterministicHierarchy deterministicHierarchy = new DeterministicHierarchy(trezorRootNode);
 
@@ -142,7 +142,7 @@ public class TrezorWalletTest {
     // Trezor uses BIP-44
     // BIP-44 starts from M/44'/0'/0'
     // Create a root node from which all addresses will be generated
-    DeterministicKey trezorRootNode = WalletManager.generateTrezorRootNode(privateMasterKey);
+    DeterministicKey trezorRootNode = WalletManager.generateTrezorWalletRootNode(privateMasterKey);
 
     BackupManager.INSTANCE.initialise(temporaryDirectory, null);
     InstallationManager.setCurrentApplicationDataDirectory(temporaryDirectory);

@@ -483,12 +483,27 @@ public enum WalletManager implements WalletEventListener {
         }
       }
 
-      // Create a wallet using the seed phrase
+      DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed);
+
+      // Trezor uses BIP-44
+      // BIP-44 starts from M/44'/0'/0' for soft wallets
+      DeterministicKey trezorRootNode = WalletManager.generateTrezorWalletRootNode(privateMasterKey);
+
+      // Create a wallet using the seed phrase and Trezor root node
       DeterministicSeed deterministicSeed = new DeterministicSeed(seedPhrase, null, "", creationTimeInSeconds);
 
-      Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
+      Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed, trezorRootNode.getPath());
       walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
       walletToReturn.setVersion(MBHD_WALLET_VERSION);
+
+      // Add the parents of the rootNode so that the wallet can round trip to and from protobuf ok
+//      DeterministicKey key_m_44h_0h = trezorRootNode.getParent();
+//      if (key_m_44h_0h != null) {
+//        DeterministicKey key_m_44h = key_m_44h_0h.getParent();
+//        walletToReturn.addKey(key_m_44h);
+//      }
+//
+//      walletToReturn.addKey(key_m_44h_0h);
 
       // Save it now to ensure it is on the disk
       walletToReturn.saveToFile(walletFile);
@@ -1355,14 +1370,14 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Generate the public only DeterministicKey from the private master key
+   * Generate the DeterministicKey from the private master key for a Trezor  wallet
    * <p/>
    * For a real Trezor device this will be the result of a GetPublicKey of the M/44'/0'/0' path, received as an xpub and then converted to a DeterministicKey
    *
    * @param privateMasterKey the private master key derived from the wallet seed
    * @return the public only DeterministicSeed corresponding to the root Trezor wallet node e.g. M/44'/0'/0'
    */
-  public static DeterministicKey generateTrezorRootNode(DeterministicKey privateMasterKey) {
+  public static DeterministicKey generateTrezorWalletRootNode(DeterministicKey privateMasterKey) {
     DeterministicKey key_m_44h = HDKeyDerivation.deriveChildKey(privateMasterKey, new ChildNumber(44 | ChildNumber.HARDENED_BIT));
     log.debug("key_m_44h deterministic key = " + key_m_44h);
 

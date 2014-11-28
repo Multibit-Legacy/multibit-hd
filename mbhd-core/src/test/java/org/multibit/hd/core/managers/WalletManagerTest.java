@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.services.CoreServices;
@@ -179,13 +180,11 @@ public class WalletManagerTest {
     WalletManager walletManager = WalletManager.INSTANCE;
     BackupManager.INSTANCE.initialise(applicationDirectory, null);
 
-    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(TREZOR_SEED_PHRASE));
     long nowInSeconds = Dates.nowInSeconds();
 
-    WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
+    WalletSummary walletSummary = walletManager.getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
             applicationDirectory,
-            seed,
+            TREZOR_SEED_PHRASE,
             nowInSeconds,
             "aPassword",
             "Abandon",
@@ -201,10 +200,20 @@ public class WalletManagerTest {
 
     log.debug("TrezorWallet : {}", trezorWallet.toString());
 
-    Address trezorAddressM44H_0H_0H_0_0 = trezorWallet.freshAddress(KeyChain.KeyPurpose.RECEIVE_FUNDS);
-    Address trezorAddressM44H_0H_0H_1_0 = trezorWallet.freshAddress(KeyChain.KeyPurpose.CHANGE);
-    assertThat(TREZOR_ADDRESS_M_44H_0H_0H_0_0.equals(trezorAddressM44H_0H_0H_0_0.toString())).isTrue();
-    assertThat(TREZOR_ADDRESS_M_44H_0H_0H_1_0.equals(trezorAddressM44H_0H_0H_1_0.toString())).isTrue();
+    DeterministicKey trezorKeyM44H_0H_0H_0_0 = trezorWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    String addressM44H_0H_0H_0_0 = trezorKeyM44H_0H_0H_0_0.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+
+    System.out.println("WalletManagerTest - trezorKeyM44H_0H_0H_0_0 = " + trezorKeyM44H_0H_0H_0_0.toString());
+    System.out.println("WalletManagerTest - addressM44H_0H_0H_0_0 = " + addressM44H_0H_0H_0_0);
+
+    DeterministicKey trezorKeyM44H_0H_0H_1_0 = trezorWallet.freshKey(KeyChain.KeyPurpose.CHANGE);
+    String addressM44H_0H_0H_1_0 = trezorKeyM44H_0H_0H_1_0.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+
+    System.out.println("WalletManagerTest - trezorKeyM44H_0H_0H_1_0 = " + trezorKeyM44H_0H_0H_1_0.toString());
+    System.out.println("WalletManagerTest - addressM44H_0H_0H_1_0 = " + addressM44H_0H_0H_1_0);
+
+    assertThat(TREZOR_ADDRESS_M_44H_0H_0H_0_0.equals(addressM44H_0H_0H_0_0)).isTrue();
+    assertThat(TREZOR_ADDRESS_M_44H_0H_0H_1_0.equals(addressM44H_0H_0H_1_0)).isTrue();
 
     Address trezorAddressM44H_0H_0H_0_1 = trezorWallet.freshAddress(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     Address trezorAddressM44H_0H_0H_1_1 = trezorWallet.freshAddress(KeyChain.KeyPurpose.CHANGE);
@@ -220,7 +229,20 @@ public class WalletManagerTest {
     Address trezorAddressM44H_0H_0H_1_3 = trezorWallet.freshAddress(KeyChain.KeyPurpose.CHANGE);
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_0_3.equals(trezorAddressM44H_0H_0H_0_3.toString())).isTrue();
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_1_3.equals(trezorAddressM44H_0H_0H_1_3.toString())).isTrue();
-  }
+
+
+    File temporaryFile = File.createTempFile("WalletManagerTest", ".wallet");
+
+    // Check the wallet can be reloaded ok i.e. the protobuf round trips
+    trezorWallet.saveToFile(temporaryFile);
+    File encryptedWalletFile = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(temporaryFile, "aPassword");
+
+    Wallet rebornWallet = WalletManager.INSTANCE.loadWalletFromFile(encryptedWalletFile, "aPassword");
+
+    // Check the first keys above are in the wallet
+    assertThat(rebornWallet.hasKey(trezorKeyM44H_0H_0H_0_0)).isTrue();
+    assertThat(rebornWallet.hasKey(trezorKeyM44H_0H_0H_1_0)).isTrue();
+   }
 
   @Test
   public void testFindWalletDirectories() throws Exception {
