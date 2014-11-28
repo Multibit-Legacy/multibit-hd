@@ -86,7 +86,7 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
         trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
 
         // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
-        getFinishButton().setEnabled(false);
+        getNextButton().setEnabled(false);
 
       }
 
