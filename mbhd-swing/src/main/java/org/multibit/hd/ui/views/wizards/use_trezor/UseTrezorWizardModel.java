@@ -15,6 +15,7 @@ import org.multibit.hd.hardware.core.messages.Failure;
 import org.multibit.hd.hardware.core.messages.FailureType;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,8 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   private UseTrezorConfirmWipeDevicePanelView confirmWipeDevicePanelView;
   private UseTrezorRequestWipeDevicePanelView requestWipeDevicePanelView;
   private boolean showReportView;
+  private MessageKey reportMessageKey;
+  private boolean reportMessageStatus;
 
   public UseTrezorWizardModel(UseTrezorState useTrezorState) {
     super(useTrezorState);
@@ -141,6 +144,10 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
         state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
         break;
       case REQUEST_WIPE_TREZOR:
+        // Trezor must have failed and user is clicking through
+        state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
+        break;
+      case CONFIRM_WIPE_TREZOR:
         state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
         break;
       case ENTER_PIN:
@@ -224,9 +231,11 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   public void showOperationSucceeded(HardwareWalletEvent event) {
 
     switch (state) {
-      case ENTER_PIN:
-        // Indicate a successful PIN
-        getEnterPinPanelView().setPinStatus(true, true);
+      case CONFIRM_WIPE_TREZOR:
+        // Indicate a successful wipe
+        state=UseTrezorState.USE_TREZOR_REPORT_PANEL;
+        reportMessageKey = MessageKey.TREZOR_WIPE_DEVICE_SUCCESS;
+        reportMessageStatus = true;
         break;
       default:
         // TODO Fill in the other states and provide success feedback
@@ -415,4 +424,19 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
   }
 
+  public MessageKey getReportMessageKey() {
+    return reportMessageKey;
+  }
+
+  public void setReportMessageKey(MessageKey reportMessageKey) {
+    this.reportMessageKey = reportMessageKey;
+  }
+
+  public boolean isReportMessageStatus() {
+    return reportMessageStatus;
+  }
+
+  public void setReportMessageStatus(boolean reportMessageStatus) {
+    this.reportMessageStatus = reportMessageStatus;
+  }
 }

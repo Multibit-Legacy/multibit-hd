@@ -397,6 +397,7 @@ public enum MessageKey {
   // Reports
   TREZOR_CHANGE_PIN_SUCCESS("trezor_change_pin_success"),
   TREZOR_REMOVE_PIN_SUCCESS("trezor_remove_pin_success"),
+  TREZOR_WIPE_DEVICE_SUCCESS("trezor_wipe_device_success"),
 
   TREZOR_INCORRECT_PIN_FAILURE("trezor_incorrect_pin_failure"),
 
