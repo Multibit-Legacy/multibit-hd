@@ -215,6 +215,13 @@ public class WalletManagerTest {
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_0_0.equals(addressM44H_0H_0H_0_0)).isTrue();
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_1_0.equals(addressM44H_0H_0H_1_0)).isTrue();
 
+    // Check the private key bytes are available
+    byte[] privKeyM44H_0H_0H_0_0 = trezorKeyM44H_0H_0H_0_0.getPrivKeyBytes();
+    byte[] privKeyM44H_0H_0H_1_0 = trezorKeyM44H_0H_0H_1_0.getPrivKeyBytes();
+
+    assertThat(privKeyM44H_0H_0H_0_0.length >0).isTrue();
+    assertThat(privKeyM44H_0H_0H_1_0.length >0).isTrue();
+
     Address trezorAddressM44H_0H_0H_0_1 = trezorWallet.freshAddress(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     Address trezorAddressM44H_0H_0H_1_1 = trezorWallet.freshAddress(KeyChain.KeyPurpose.CHANGE);
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_0_1.equals(trezorAddressM44H_0H_0H_0_1.toString())).isTrue();
@@ -242,6 +249,13 @@ public class WalletManagerTest {
     // Check the first keys above are in the wallet
     assertThat(rebornWallet.hasKey(trezorKeyM44H_0H_0H_0_0)).isTrue();
     assertThat(rebornWallet.hasKey(trezorKeyM44H_0H_0H_1_0)).isTrue();
+
+    // Check the private keys survived the roundtrip
+    byte[] rebornPrivKeyM44H_0H_0H_0_0 = rebornWallet.findKeyFromPubKey(trezorKeyM44H_0H_0H_0_0.getPubKey()).getPrivKeyBytes();
+    byte[] rebornPrivKeyM44H_0H_0H_1_0 = rebornWallet.findKeyFromPubKey(trezorKeyM44H_0H_0H_1_0.getPubKey()).getPrivKeyBytes();
+
+    assertThat(Arrays.equals(rebornPrivKeyM44H_0H_0H_0_0, privKeyM44H_0H_0H_0_0)).isTrue();
+    assertThat(Arrays.equals(rebornPrivKeyM44H_0H_0H_1_0, privKeyM44H_0H_0H_1_0)).isTrue();
    }
 
   @Test
