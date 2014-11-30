@@ -3,10 +3,14 @@ package org.multibit.hd.ui.views.wizards.exit;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.AccessibilityDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.themes.NimbusDecorator;
+import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -23,7 +27,6 @@ import java.awt.event.ActionListener;
  * <p>For UI consistency the cancel button must lead the action button (exit)</p>
  *
  * @since 0.0.1
- *
  */
 public class ExitSelectPanelView extends AbstractWizardPanelView<ExitWizardModel, ExitState> implements ActionListener {
 
@@ -43,7 +46,8 @@ public class ExitSelectPanelView extends AbstractWizardPanelView<ExitWizardModel
   @Override
   public void newPanelModel() {
 
-    currentSelection = ExitState.SELECT_RESET_OPTION;
+    // Default to confirm exit
+    currentSelection = ExitState.CONFIRM_EXIT;
     setPanelModel(currentSelection);
 
   }
@@ -80,9 +84,10 @@ public class ExitSelectPanelView extends AbstractWizardPanelView<ExitWizardModel
   }
 
   @Override
-  public boolean beforeShow() {
+  public void afterShow() {
 
-    return true;
+    decorateNextButton();
+
   }
 
   @Override
@@ -109,19 +114,28 @@ public class ExitSelectPanelView extends AbstractWizardPanelView<ExitWizardModel
 
     currentSelection = ExitState.valueOf(source.getActionCommand());
 
+    decorateNextButton();
+
   }
 
-  @Override
-  public boolean beforeHide(boolean isExitCancel) {
-
-    if (!isExitCancel) {
-
-      // Ensure the wizard model correctly reflects the contents of the components
-      updateFromComponentModels(Optional.absent());
-
-    }
-
-    // Must be OK to proceed
-    return true;
+  private void decorateNextButton() {
+    // Change the button colour to indicate a dangerous operation
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          if (ExitState.CONFIRM_EXIT.equals(currentSelection)) {
+            getNextButton().setText(Languages.safeText(MessageKey.EXIT));
+            AccessibilityDecorator.apply(getNextButton(), MessageKey.EXIT, MessageKey.EXIT_TOOLTIP);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), getNextButton());
+          }
+          if (ExitState.SWITCH_WALLET.equals(currentSelection)) {
+            getNextButton().setText(Languages.safeText(MessageKey.SWITCH));
+            AccessibilityDecorator.apply(getNextButton(), MessageKey.SWITCH, MessageKey.SWITCH_TOOLTIP);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.detailPanelBackground() ,getNextButton());
+          }
+        }
+      });
   }
+
 }

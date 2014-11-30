@@ -1,9 +1,8 @@
 package org.multibit.hd.ui.views.wizards.exit;
 
+import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
-import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>Model object to provide the following to "exit" wizard:</p>
@@ -17,7 +16,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ExitWizardModel extends AbstractWizardModel<ExitState> {
 
-  private static final Logger log = LoggerFactory.getLogger(ExitWizardModel.class);
   private ExitState currentSelection;
 
   /**
@@ -31,7 +29,20 @@ public class ExitWizardModel extends AbstractWizardModel<ExitState> {
     this.currentSelection = currentSelection;
   }
 
-  public ExitState getCurrentSelection() {
-    return currentSelection;
+  @Override
+  public void showNext() {
+
+    switch (currentSelection) {
+
+      case CONFIRM_EXIT:
+        // User wishes to exit the application
+        CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
+        break;
+      case SWITCH_WALLET:
+        // User wishes to switch to a different wallet
+        CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
+        break;
+    }
+
   }
 }

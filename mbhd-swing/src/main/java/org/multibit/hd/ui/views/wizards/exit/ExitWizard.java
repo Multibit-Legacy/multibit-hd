@@ -28,6 +28,4 @@ public class ExitWizard extends AbstractWizard<ExitWizardModel> {
 
   }
 
-
-
 }

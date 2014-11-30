@@ -31,6 +31,9 @@ public enum MessageKey {
   EXIT("exit"),
   EXIT_TOOLTIP("exit_tooltip"),
 
+  SWITCH("switch"),
+  SWITCH_TOOLTIP("switch_tooltip"),
+
   SEND("send"),
   SEND_TOOLTIP("send_tooltip"),
 
