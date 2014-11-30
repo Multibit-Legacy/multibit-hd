@@ -400,6 +400,7 @@ public enum MessageKey {
   TREZOR_WIPE_DEVICE_SUCCESS("trezor_wipe_device_success"),
 
   TREZOR_INCORRECT_PIN_FAILURE("trezor_incorrect_pin_failure"),
+  TREZOR_WIPE_DEVICE_FAILURE("trezor_wipe_device_failure"),
 
   // Trezor display text
   TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY("trezor_encrypt_multibit_hd_unlock_display"),
