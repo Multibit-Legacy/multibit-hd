@@ -249,7 +249,7 @@ public class SidebarView extends AbstractView {
     root.add(settingsNode);
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.MANAGE_WALLET, Screen.MANAGE_WALLET));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.TOOLS, Screen.TOOLS));
-    root.add(TreeNodes.newSidebarTreeNode(MessageKey.EXIT, Screen.EXIT));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.EXIT_OR_SWITCH, Screen.EXIT));
 
     return root;
   }

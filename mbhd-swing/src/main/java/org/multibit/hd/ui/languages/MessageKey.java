@@ -277,6 +277,8 @@ public enum MessageKey {
   MANAGE_WALLET("manage_wallet"),
   TOOLS("tools"),
 
+  EXIT_OR_SWITCH("exit_or_switch"),
+
   // Tools
   HISTORY("history"),
   HISTORY_TOOLTIP("history_tooltip"),
