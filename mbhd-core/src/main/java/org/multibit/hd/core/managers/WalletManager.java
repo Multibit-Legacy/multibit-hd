@@ -489,21 +489,15 @@ public enum WalletManager implements WalletEventListener {
       // BIP-44 starts from M/44'/0'/0' for soft wallets
       DeterministicKey trezorRootNode = WalletManager.generateTrezorWalletRootNode(privateMasterKey);
 
+      // Create a KeyCrypter to encrypt the waller
+      KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));
+
       // Create a wallet using the seed phrase and Trezor root node
       DeterministicSeed deterministicSeed = new DeterministicSeed(seedPhrase, null, "", creationTimeInSeconds);
 
-      Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed, trezorRootNode.getPath());
+      Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed, trezorRootNode.getPath(), password, keyCrypterScrypt);
       walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
       walletToReturn.setVersion(MBHD_WALLET_VERSION);
-
-      // Add the parents of the rootNode so that the wallet can round trip to and from protobuf ok
-//      DeterministicKey key_m_44h_0h = trezorRootNode.getParent();
-//      if (key_m_44h_0h != null) {
-//        DeterministicKey key_m_44h = key_m_44h_0h.getParent();
-//        walletToReturn.addKey(key_m_44h);
-//      }
-//
-//      walletToReturn.addKey(key_m_44h_0h);
 
       // Save it now to ensure it is on the disk
       walletToReturn.saveToFile(walletFile);
