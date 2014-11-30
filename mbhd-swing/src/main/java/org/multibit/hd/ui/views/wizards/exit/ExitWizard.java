@@ -24,8 +24,10 @@ public class ExitWizard extends AbstractWizard<ExitWizardModel> {
   @Override
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
-    wizardViewMap.put(ExitState.EXIT_CONFIRM.name(), new ExitPanelView(this, ExitState.EXIT_CONFIRM.name()));
+    wizardViewMap.put(ExitState.SELECT_RESET_OPTION.name(), new ExitSelectPanelView(this, ExitState.SELECT_RESET_OPTION.name()));
 
   }
+
+
 
 }

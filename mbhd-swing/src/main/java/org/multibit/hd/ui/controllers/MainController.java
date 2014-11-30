@@ -857,7 +857,7 @@ public class MainController extends AbstractController implements
   private void hideAsExitCancel(String panelName) {
 
     // The exit dialog has no detail screen so focus defers to the sidebar
-    if (ExitState.EXIT_CONFIRM.name().equals(panelName)) {
+    if (ExitState.SELECT_RESET_OPTION.name().equals(panelName)) {
       mainView.sidebarRequestFocus();
     }
 

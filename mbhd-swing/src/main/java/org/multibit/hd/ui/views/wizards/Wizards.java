@@ -133,7 +133,7 @@ public class Wizards {
   public static ExitWizard newExitWizard() {
 
     log.debug("New 'Exit wizard'");
-    return new ExitWizard(new ExitWizardModel(ExitState.EXIT_CONFIRM), true);
+    return new ExitWizard(new ExitWizardModel(ExitState.SELECT_RESET_OPTION), true);
   }
 
   /**

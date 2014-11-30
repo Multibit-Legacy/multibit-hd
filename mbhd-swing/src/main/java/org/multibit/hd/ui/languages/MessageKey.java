@@ -278,6 +278,8 @@ public enum MessageKey {
   TOOLS("tools"),
 
   EXIT_OR_SWITCH("exit_or_switch"),
+  EXIT_WALLET("exit_wallet"),
+  SWITCH_WALLET("switch_wallet"),
 
   // Tools
   HISTORY("history"),
@@ -330,7 +332,7 @@ public enum MessageKey {
   CONFIRM_SEND_TITLE("confirm_send_title"),
   SEND_PROGRESS_TITLE("send_progress_title"),
 
-  EXIT_TITLE("exit_title"),
+  EXIT_OR_SWITCH_TITLE("exit_or_switch_title"),
 
   ABOUT_TITLE("about_title"),
 

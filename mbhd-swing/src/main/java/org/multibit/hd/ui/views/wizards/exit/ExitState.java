@@ -11,7 +11,9 @@ package org.multibit.hd.ui.views.wizards.exit;
  */
 public enum ExitState {
 
-  EXIT_CONFIRM,
+  SELECT_RESET_OPTION,
+  CONFIRM_EXIT,
+  SWITCH_WALLET,
 
   // End of enum
   ;
