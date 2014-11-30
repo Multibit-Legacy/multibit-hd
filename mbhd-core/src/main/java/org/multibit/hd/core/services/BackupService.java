@@ -55,7 +55,6 @@ import java.util.concurrent.TimeUnit;
  * is not worth the bother of writing a wallet extension to track it.
  *
  * @since 0.0.1
- *
  */
 public class BackupService extends AbstractService {
 
@@ -146,36 +145,37 @@ public class BackupService extends AbstractService {
     requireSingleThreadScheduledExecutor("backup");
 
     // Use the provided executor service management
-    getScheduledExecutorService().scheduleAtFixedRate(new Runnable() {
-      public void run() {
-        backupsAreRunning = true;
-        try {
-          // Main backup loop
-          //log.debug("The tickCount is {}", tickCount);
+    getScheduledExecutorService().scheduleAtFixedRate(
+      new Runnable() {
+        public void run() {
+          backupsAreRunning = true;
+          try {
+            // Main backup loop
+            //log.debug("The tickCount is {}", tickCount);
 
-          // A rolling backup is performed every tick
-          if (backupsAreEnabled) {
-            performRollingBackup();
+            // A rolling backup is performed every tick
+            if (backupsAreEnabled) {
+              performRollingBackup();
+            }
+
+            // Local zip backups are done every LOCAL_ZIP_BACKUP_MODULO number of ticks
+            if (backupsAreEnabled && tickCount % LOCAL_ZIP_BACKUP_MODULO == 0) {
+              performLocalZipBackup();
+            }
+
+            // Check if a cloud zip backup is required
+            // Cloud backups are done every CLOUD_ZIP_BACKUP_MODULO number of ticks
+            if (backupsAreEnabled && tickCount % CLOUD_ZIP_BACKUP_MODULO == 0) {
+              performCloudZipBackup();
+            }
+
+          } finally {
+            tickCount++;
+            backupsAreRunning = false;
           }
-
-          // Local zip backups are done every LOCAL_ZIP_BACKUP_MODULO number of ticks
-          if (backupsAreEnabled && tickCount % LOCAL_ZIP_BACKUP_MODULO == 0) {
-            performLocalZipBackup();
-          }
-
-          // Check if a cloud zip backup is required
-          // Cloud backups are done every CLOUD_ZIP_BACKUP_MODULO number of ticks
-          if (backupsAreEnabled && tickCount % CLOUD_ZIP_BACKUP_MODULO == 0) {
-            performCloudZipBackup();
-          }
-
-        } finally {
-          tickCount++;
-          backupsAreRunning = false;
         }
       }
-    }
-            , INITIAL_DELAY, TICK_TIME_SECONDS, TimeUnit.SECONDS);
+      , INITIAL_DELAY, TICK_TIME_SECONDS, TimeUnit.SECONDS);
 
     return true;
   }
@@ -274,36 +274,48 @@ public class BackupService extends AbstractService {
   /**
    * On shutdown disable any more backups, wait until any current backup is finished and then perform
    * a rolling, local and cloud backup
+   *
    * @param shutdownEvent Shutdown event
    */
   @Subscribe
   public void onShutdownEvent(ShutdownEvent shutdownEvent) {
 
-    // A hard shutdown does not give enough time to wait gracefully
-    // A soft shutdown occurs during FEST testing so the backups may not be running
-    if (shutdownEvent.getShutdownType() == ShutdownEvent.ShutdownType.SOFT && isBackupsAreRunning()) {
-      log.debug("Performing backups at shutdown");
+    switch (shutdownEvent.getShutdownType()) {
 
-      // Disable any new backups
-      this.setBackupsAreEnabled(false);
+      case HARD:
+        // A hard shutdown does not give enough time to wait gracefully
+        break;
+      case SOFT:
+        // A soft shutdown occurs during FEST testing so the backups may not be running
+        if (isBackupsAreRunning()) {
+          log.debug("Performing backups at shutdown");
 
-      getScheduledExecutorService().schedule(new Runnable() {
-        public void run() {
-          // Wait for any current backups to complete
-          while (isBackupsAreRunning()) {
-            Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
-          }
+          // Disable any new backups
+          this.setBackupsAreEnabled(false);
 
-          performRollingBackup();
+          getScheduledExecutorService().schedule(
+            new Runnable() {
+              public void run() {
+                // Wait for any current backups to complete
+                while (isBackupsAreRunning()) {
+                  Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+                }
 
-          performLocalZipBackup();
+                performRollingBackup();
 
-          performCloudZipBackup();
+                performLocalZipBackup();
 
+                performCloudZipBackup();
+
+              }
+
+            }, 0, TimeUnit.MILLISECONDS);
         }
-
-      }, 0, TimeUnit.MILLISECONDS);
+        break;
+      case SWITCH:
+        break;
     }
+
 
   }
 
@@ -311,6 +323,7 @@ public class BackupService extends AbstractService {
    * Set whether backups are enabled.
    * Can be called on any thread.
    * Only affects backups starting subsequently
+   *
    * @param backupsAreEnabled whether backups should be performed (true) or not (false)
    */
   public void setBackupsAreEnabled(boolean backupsAreEnabled) {
@@ -319,6 +332,7 @@ public class BackupService extends AbstractService {
 
   /**
    * Indicates whether backups are currently running in the main scheduled loop
+   *
    * @return true if a backup is running in the main scheduled loop
    */
   public boolean isBackupsAreRunning() {

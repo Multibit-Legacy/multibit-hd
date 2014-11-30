@@ -23,6 +23,7 @@ import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.managers.BlockStoreManager;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -171,15 +172,22 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   @Override
-  public void stopAndWait() {
+  public void stopAndUnregister() {
 
+    if (SwingUtilities.isEventDispatchThread()) {
+      log.warn("BitcoinNetworkService should not be closed on EDT - the UI will freeze");
+    }
+
+    log.debug("Bitcoin network service shutting down...");
+
+    // Order is important here
     startedOk = false;
 
     // Stop the peer group if it is running
     stopPeerGroup();
 
     // Hand over to the superclass to finalise service executors
-    super.stopAndWait();
+    super.stopAndUnregister();
 
     // Close the block store
     closeBlockstore();
@@ -190,7 +198,15 @@ public class BitcoinNetworkService extends AbstractService {
     // Close the wallet
     closeWallet();
 
-     log.debug("Bitcoin network service shut down");
+    log.debug("Bitcoin network service shut down");
+
+  }
+
+  @Override
+  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+
+    // Any kind of shutdown requires this service to stop
+    stopAndUnregister();
 
   }
 

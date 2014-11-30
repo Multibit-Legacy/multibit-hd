@@ -157,6 +157,24 @@ public class BitcoinURIListeningService extends AbstractService {
     }
   }
 
+  @Override
+  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+
+    switch (shutdownEvent.getShutdownType()) {
+
+      case HARD:
+        stopAndUnregister();
+        break;
+      case SOFT:
+        stopAndUnregister();
+        break;
+      case SWITCH:
+        // Do nothing
+        break;
+    }
+
+  }
+
   /**
    * <p>Handles the process of notifying another instance of the Bitcoin URI</p>
    */

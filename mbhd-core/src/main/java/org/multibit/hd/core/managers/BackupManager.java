@@ -91,6 +91,7 @@ public enum BackupManager {
 
     this.applicationDataDirectory = applicationDataDirectory;
     this.cloudBackupDirectory = cloudBackupDirectory;
+    this.backupNotifier = SafeExecutors.newSingleThreadScheduledExecutor("backup-notification");
   }
 
   /**
@@ -99,6 +100,18 @@ public enum BackupManager {
   public void onShutdownEvent(ShutdownEvent shutdownEvent) {
 
     this.applicationDataDirectory = null;
+    this.cloudBackupDirectory = Optional.absent();
+
+    // Not initialised yet
+    if (backupNotifier != null) {
+      backupNotifier.shutdown();
+      try {
+        backupNotifier.awaitTermination(1, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        log.warn("Timed out waiting for backup to complete");
+      }
+    }
+    backupNotifier = null;
   }
 
   /**
@@ -433,9 +446,7 @@ public enum BackupManager {
         if (fileLoaded != null) {
           log.debug("Loaded backup wallet " + fileLoaded.getAbsolutePath() + " ok.");
         }
-        if (backupNotifier == null) {
-          backupNotifier = SafeExecutors.newSingleThreadScheduledExecutor("backup-notification");
-        }
+
         final File finalFileLoaded = fileLoaded;
         backupNotifier.schedule(new Runnable() {
           @Override

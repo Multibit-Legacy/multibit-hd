@@ -3,6 +3,7 @@ package org.multibit.hd.core.services;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
@@ -55,6 +56,7 @@ public class SecurityCheckingService extends AbstractService {
           // Check frequently for a Java debugger being attached
           // to get immediate detection
           if (OSUtils.isDebuggerAttached()) {
+            // TODO Reinstate this
             //handleDebuggerAttached();
           }
 
@@ -78,6 +80,24 @@ public class SecurityCheckingService extends AbstractService {
       }, 0, ENVIRONMENT_REFRESH_SECONDS, TimeUnit.SECONDS);
 
     return true;
+
+  }
+
+  @Override
+  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+
+    switch (shutdownEvent.getShutdownType()) {
+
+      case HARD:
+        stopAndUnregister();
+        break;
+      case SOFT:
+        stopAndUnregister();
+        break;
+      case SWITCH:
+        // Do nothing
+        break;
+    }
 
   }
 

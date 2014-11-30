@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.bitcoinj.utils.Threading;
 import org.bouncycastle.openpgp.PGPPublicKey;
@@ -129,6 +130,12 @@ public class CoreServices {
   private static ContactService currentContactService;
 
   /**
+   * Manages CoreService startup and shutdown operations
+   */
+  private static ListeningExecutorService listeningExecutorService = SafeExecutors.newFixedThreadPool(1, "core-services");
+
+
+  /**
    * Utilities have a private constructor
    */
   private CoreServices() {
@@ -183,7 +190,7 @@ public class CoreServices {
 
     switch (shutdownType) {
       case HARD:
-        SafeExecutors.newFixedThreadPool(1, "hard-shutdown").execute(
+        listeningExecutorService.execute(
           new Runnable() {
             @Override
             public void run() {
@@ -200,12 +207,44 @@ public class CoreServices {
           });
         break;
       case SOFT:
-        SafeExecutors.newFixedThreadPool(1, "soft-shutdown").execute(
+        listeningExecutorService.execute(
           new Runnable() {
             @Override
             public void run() {
 
               log.info("Applying soft shutdown. Waiting for processes to clean up...");
+
+              if (hardwareWalletService.isPresent()) {
+                hardwareWalletService.get().stopAndWait();
+              }
+
+              // Provide a short delay while modules deal with the ShutdownEvent
+              Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
+              log.info("Resetting services and events");
+
+              // Reset the existing services
+              bitcoinNetworkService = null;
+              hardwareWalletService = Optional.absent();
+              contactServiceMap = Maps.newHashMap();
+              walletServiceMap = Maps.newHashMap();
+              historyServiceMap = Maps.newHashMap();
+
+              // Reset the event handler
+              uiEventBus = new EventBus();
+
+              // Suggest a garbage collection
+              System.gc();
+            }
+          });
+        break;
+      case SWITCH:
+        listeningExecutorService.execute(
+          new Runnable() {
+            @Override
+            public void run() {
+
+              log.info("Applying wallet switch. Waiting for processes to clean up...");
 
               if (hardwareWalletService.isPresent()) {
                 hardwareWalletService.get().stopAndWait();
@@ -229,10 +268,9 @@ public class CoreServices {
 
               // Suggest a garbage collection
               System.gc();
+
             }
           });
-        break;
-      case STANDBY:
         break;
     }
 
@@ -352,6 +390,27 @@ public class CoreServices {
   }
 
   /**
+   * <p>Stop the Bitcoin network service and allow garbage collection</p>
+   *
+   * <p>This occurs on the CoreServices task thread</p>
+   */
+  public static synchronized void stopBitcoinNetworkService() {
+
+    listeningExecutorService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          if (bitcoinNetworkService != null) {
+            bitcoinNetworkService.stopAndUnregister();
+            bitcoinNetworkService = null;
+            System.gc();
+          }
+        }
+      });
+
+  }
+
+  /**
    * <p>Convenience method to log a new history event for the current wallet</p>
    *
    * @param localisedDescription The localised description text
@@ -403,6 +462,7 @@ public class CoreServices {
     return getOrCreateContactService(walletId);
   }
 
+
   /**
    * @return The history service for the current wallet
    */
@@ -418,7 +478,6 @@ public class CoreServices {
 
     return getOrCreateHistoryService(walletId);
   }
-
 
   /**
    * @return The wallet service for a wallet (single soft, multiple hard)

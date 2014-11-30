@@ -2,12 +2,14 @@ package org.multibit.hd.ui.views.wizards.exit;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.AccessibilityDecorator;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -73,32 +75,32 @@ public class ExitSelectPanelView extends AbstractWizardPanelView<ExitWizardModel
 
   @Override
   protected void initialiseButtons(AbstractWizard<ExitWizardModel> wizard) {
-    PanelDecorator.addCancelNext(this, wizard);
+    PanelDecorator.addCancelFinish(this, wizard);
   }
 
   @Override
   public void fireInitialStateViewEvents() {
 
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
 
   }
 
   @Override
   public void afterShow() {
 
-    decorateNextButton();
+    decorateFinishButton();
 
   }
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    // Next has been clicked
+    // Finish has been clicked
 
     setPanelModel(currentSelection);
 
     // Bind this to the wizard model
-    getWizardModel().setCurrentSelection(currentSelection);
+    getWizardModel().setState(currentSelection);
 
   }
 
@@ -114,25 +116,43 @@ public class ExitSelectPanelView extends AbstractWizardPanelView<ExitWizardModel
 
     currentSelection = ExitState.valueOf(source.getActionCommand());
 
-    decorateNextButton();
+    // Bind this to the wizard model
+    getWizardModel().setState(currentSelection);
+
+    decorateFinishButton();
 
   }
 
-  private void decorateNextButton() {
+  private void decorateFinishButton() {
+
     // Change the button colour to indicate a dangerous operation
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
         public void run() {
+
+          // Require the finish button to ensure the wizard hide event
+          JButton finishButton = getFinishButton();
+
           if (ExitState.CONFIRM_EXIT.equals(currentSelection)) {
-            getNextButton().setText(Languages.safeText(MessageKey.EXIT));
-            AccessibilityDecorator.apply(getNextButton(), MessageKey.EXIT, MessageKey.EXIT_TOOLTIP);
-            NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), getNextButton());
+
+            finishButton.setText(Languages.safeText(MessageKey.EXIT));
+
+            AccessibilityDecorator.apply(finishButton, MessageKey.EXIT, MessageKey.EXIT_TOOLTIP);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), finishButton);
+
+            AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, finishButton, false, MultiBitUI.NORMAL_ICON_SIZE);
           }
           if (ExitState.SWITCH_WALLET.equals(currentSelection)) {
-            getNextButton().setText(Languages.safeText(MessageKey.SWITCH));
-            AccessibilityDecorator.apply(getNextButton(), MessageKey.SWITCH, MessageKey.SWITCH_TOOLTIP);
-            NimbusDecorator.applyThemeColor(Themes.currentTheme.detailPanelBackground() ,getNextButton());
+
+            finishButton.setText(Languages.safeText(MessageKey.SWITCH));
+
+            AccessibilityDecorator.apply(finishButton, MessageKey.SWITCH, MessageKey.SWITCH_TOOLTIP);
+            NimbusDecorator.applyThemeColor(Themes.currentTheme.detailPanelBackground(), finishButton);
+
+            AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_RIGHT, AwesomeIcon.ANGLE_DOUBLE_LEFT);
+            AwesomeDecorator.applyIcon(icon, finishButton, false, MultiBitUI.NORMAL_ICON_SIZE);
+
           }
         }
       });

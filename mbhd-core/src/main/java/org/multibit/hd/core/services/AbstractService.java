@@ -1,11 +1,9 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
-import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.events.ShutdownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +42,7 @@ public abstract class AbstractService implements ManagedService {
   }
 
   @Override
-  public void stopAndWait() {
+  public void stopAndUnregister() {
 
     log.debug("Service {} stopping...",this.getClass().getSimpleName());
 
@@ -55,6 +53,8 @@ public abstract class AbstractService implements ManagedService {
     if (service.isPresent()) {
       service.get().shutdownNow();
     }
+
+    CoreServices.uiEventBus.unregister(this);
 
   }
 
@@ -104,11 +104,4 @@ public abstract class AbstractService implements ManagedService {
     return scheduledService.get();
   }
 
-  @Override
-  @Subscribe
-  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
-
-    stopAndWait();
-
-  }
 }

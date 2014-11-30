@@ -10,24 +10,25 @@ import org.multibit.hd.core.events.ShutdownEvent;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public interface ManagedService {
 
   /**
-   * Start the service (events are fired)
+   * <p>Start the service (events are fired)</p>
    *
    * @return True if the service started sufficiently for the application to run, false if a shutdown is required
    */
   boolean start();
 
   /**
-   * Stop the service (blocking until terminated)
+   * <p>Stop the service (blocking until terminated) and unregister from CoreEvents</p>
    */
-  void stopAndWait();
+  void stopAndUnregister();
 
   /**
-   * Subscribe to a "shutdown" event
+   * <p>Subscribe to a "shutdown" event</p>
+   *
+   * <p>Implementers may choose to call <code>stopAndUnregister</code> as part of this operation</p>
    */
   @Subscribe
   void onShutdownEvent(ShutdownEvent shutdownEvent);

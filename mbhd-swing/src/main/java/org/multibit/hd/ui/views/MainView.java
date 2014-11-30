@@ -52,7 +52,6 @@ public class MainView extends JFrame {
   private boolean showExitingWelcomeWizard = false;
   private boolean showExitingCredentialsWizard = false;
   private boolean isCentered = false;
-  private boolean showTrezorCredentials = false;
 
   /**
    * The credentials type to show when starting the credentials wizard
@@ -76,6 +75,11 @@ public class MainView extends JFrame {
       new WindowAdapter() {
         @Override
         public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+
+          log.info("Hard shutdown from 'window closing' event");
+
+
+
           CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
         }
       });
@@ -227,14 +231,6 @@ public class MainView extends JFrame {
 
     showExitingWelcomeWizard = show;
 
-  }
-
-
-  /**
-   * @return True if the exiting credentials wizard will be shown on a reset
-   */
-  public boolean isShowExitingCredentialsWizard() {
-    return showExitingCredentialsWizard;
   }
 
   /**

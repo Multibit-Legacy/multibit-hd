@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class ConfigurationService extends AbstractService {
 
@@ -29,7 +28,18 @@ public class ConfigurationService extends AbstractService {
 
     log.debug("Persisting current configuration after shutdown");
 
-    super.onShutdownEvent(shutdownEvent);
+    switch (shutdownEvent.getShutdownType()) {
+
+      case HARD:
+        stopAndUnregister();
+        break;
+      case SOFT:
+        stopAndUnregister();
+        break;
+      case SWITCH:
+        // Do nothing
+        break;
+    }
 
     // We may be in a partial startup situation
     if (Configurations.currentConfiguration != null) {

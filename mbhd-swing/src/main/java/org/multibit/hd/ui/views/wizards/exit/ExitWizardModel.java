@@ -1,7 +1,5 @@
 package org.multibit.hd.ui.views.wizards.exit;
 
-import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 
 /**
@@ -16,8 +14,6 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
  */
 public class ExitWizardModel extends AbstractWizardModel<ExitState> {
 
-  private ExitState currentSelection;
-
   /**
    * @param state The state object
    */
@@ -25,24 +21,8 @@ public class ExitWizardModel extends AbstractWizardModel<ExitState> {
     super(state);
   }
 
-  public void setCurrentSelection(ExitState currentSelection) {
-    this.currentSelection = currentSelection;
+  public void setState(ExitState state) {
+    this.state = state;
   }
 
-  @Override
-  public void showNext() {
-
-    switch (currentSelection) {
-
-      case CONFIRM_EXIT:
-        // User wishes to exit the application
-        CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
-        break;
-      case SWITCH_WALLET:
-        // User wishes to switch to a different wallet
-        CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
-        break;
-    }
-
-  }
 }

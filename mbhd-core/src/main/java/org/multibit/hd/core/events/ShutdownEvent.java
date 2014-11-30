@@ -32,13 +32,13 @@ public class ShutdownEvent implements CoreEvent {
     SOFT,
 
     /**
-     * A standby shutdown performs a subset of tasks that are specific to
+     * A switch shutdown performs a subset of tasks that are specific to
      * closing a wallet (stopping peer group, block store etc). It leaves other
      * services running (exchange ticker, Bitcoin URI listening etc).
      *
-     * It is used in switching wallets.
+     * It is used when switching wallets.
      */
-    STANDBY
+    SWITCH
 
   }
 

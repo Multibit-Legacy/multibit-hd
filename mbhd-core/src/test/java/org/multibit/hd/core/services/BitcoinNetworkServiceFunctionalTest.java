@@ -236,7 +236,7 @@ public class BitcoinNetworkServiceFunctionalTest {
       assertThat(bitcoinSentEvent).isNotNull();
       assertThat(bitcoinSentEvent.isSendWasSuccessful()).isTrue();
     } finally {
-      bitcoinNetworkService.stopAndWait();
+      CoreServices.stopBitcoinNetworkService();
     }
   }
 
@@ -299,7 +299,8 @@ public class BitcoinNetworkServiceFunctionalTest {
       throw new IllegalStateException("Download did not complete.");
     }
 
-    bitcoinNetworkService.stopAndWait();
+    CoreServices.stopBitcoinNetworkService();
+
   }
 
   /**
