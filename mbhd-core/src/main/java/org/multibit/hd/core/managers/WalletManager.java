@@ -453,7 +453,8 @@ public enum WalletManager implements WalletEventListener {
 
     // Create a wallet id from the seed to work out the wallet root directory
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedPhrase));
+    List<String> seedPhraseList = Bip39SeedPhraseGenerator.split(seedPhrase);
+    byte[] seed = seedGenerator.convertToSeed(seedPhraseList);
 
     final WalletId walletId = new WalletId(seed, WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_WALLETS);
     String walletRoot = createWalletRoot(walletId);
@@ -493,7 +494,7 @@ public enum WalletManager implements WalletEventListener {
       KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));
 
       // Create a wallet using the seed phrase and Trezor root node
-      DeterministicSeed deterministicSeed = new DeterministicSeed(seedPhrase, null, "", creationTimeInSeconds);
+      DeterministicSeed deterministicSeed = new DeterministicSeed(seed, seedPhraseList, creationTimeInSeconds);
 
       Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed, trezorRootNode.getPath(), password, keyCrypterScrypt);
       walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
