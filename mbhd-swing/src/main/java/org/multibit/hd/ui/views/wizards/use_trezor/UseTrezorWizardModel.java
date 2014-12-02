@@ -255,6 +255,14 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
         // Indicate a failed PIN
         getEnterPinPanelView().setPinStatus(false, true);
         break;
+      case REQUEST_WIPE_TREZOR:
+        // Device communication has failed during requesting the wipe
+      case CONFIRM_WIPE_TREZOR:
+        // Indicate a cancelled wipe
+        state=UseTrezorState.USE_TREZOR_REPORT_PANEL;
+        reportMessageKey = MessageKey.TREZOR_WIPE_DEVICE_FAILURE;
+        reportMessageStatus = false;
+        break;
       default:
         // TODO Fill in the other states and provide failure feedback
         FailureType failureType = ((Failure) event.getMessage().get()).getType();
