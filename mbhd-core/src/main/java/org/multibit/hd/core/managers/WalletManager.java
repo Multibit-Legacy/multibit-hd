@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.common.primitives.Bytes;
@@ -52,6 +53,7 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -484,11 +486,13 @@ public enum WalletManager implements WalletEventListener {
         }
       }
 
-      DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed);
-
       // Trezor uses BIP-44
       // BIP-44 starts from M/44'/0'/0' for soft wallets
-      DeterministicKey trezorRootNode = WalletManager.generateTrezorWalletRootNode(privateMasterKey);
+      List<ChildNumber> trezorRootNodePathList = new ArrayList<>();
+      trezorRootNodePathList.add(new ChildNumber(44 | ChildNumber.HARDENED_BIT));
+      trezorRootNodePathList.add(new ChildNumber(ChildNumber.HARDENED_BIT));
+
+      DeterministicKey trezorRootNode = HDKeyDerivation.createRootNodeWithPrivateKey(ImmutableList.copyOf(trezorRootNodePathList), seed);
 
       // Create a KeyCrypter to encrypt the waller
       KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));
@@ -722,6 +726,7 @@ public enum WalletManager implements WalletEventListener {
       } catch (Exception e) {
         // Log the initial error
         log.error(e.getClass().getCanonicalName() + " " + e.getMessage(), e);
+        System.out.println("WalletManager error: " +e.getClass().getCanonicalName() + " " + e.getMessage());
 
         // Try loading one of the rolling backups - this will send a BackupWalletLoadedEvent containing the initial error
         // If the rolling backups don't load then loadRollingBackup will throw a WalletLoadException which will propagate out

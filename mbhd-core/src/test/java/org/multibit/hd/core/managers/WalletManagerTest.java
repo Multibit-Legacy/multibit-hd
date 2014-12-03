@@ -39,7 +39,6 @@ import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
-import org.spongycastle.util.encoders.Hex;
 
 import java.io.File;
 import java.util.Arrays;
@@ -199,8 +198,6 @@ public class WalletManagerTest {
 
     Wallet trezorWallet = walletSummary.getWallet();
 
-    log.debug("TrezorWallet : {}", trezorWallet.toString());
-
     DeterministicKey trezorKeyM44H_0H_0H_0_0 = trezorWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String addressM44H_0H_0H_0_0 = trezorKeyM44H_0H_0H_0_0.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
 
@@ -215,15 +212,6 @@ public class WalletManagerTest {
 
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_0_0.equals(addressM44H_0H_0H_0_0)).isTrue();
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_1_0.equals(addressM44H_0H_0H_1_0)).isTrue();
-
-    // Check the private key bytes are available
-    byte[] privKeyM44H_0H_0H_0_0 = trezorKeyM44H_0H_0H_0_0.getPrivKeyBytes();
-    byte[] privKeyM44H_0H_0H_1_0 = trezorKeyM44H_0H_0H_1_0.getPrivKeyBytes();
-    System.out.println("WalletManagerTest - privKeyM44H_0H_0H_0_0 = " + Hex.toHexString(privKeyM44H_0H_0H_0_0));
-    System.out.println("WalletManagerTest - privKeyM44H_0H_0H_1_0 = " + Hex.toHexString(privKeyM44H_0H_0H_1_0));
-
-    assertThat(privKeyM44H_0H_0H_0_0.length >0).isTrue();
-    assertThat(privKeyM44H_0H_0H_1_0.length >0).isTrue();
 
     Address trezorAddressM44H_0H_0H_0_1 = trezorWallet.freshAddress(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     Address trezorAddressM44H_0H_0H_1_1 = trezorWallet.freshAddress(KeyChain.KeyPurpose.CHANGE);
@@ -240,6 +228,8 @@ public class WalletManagerTest {
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_0_3.equals(trezorAddressM44H_0H_0H_0_3.toString())).isTrue();
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_1_3.equals(trezorAddressM44H_0H_0H_1_3.toString())).isTrue();
 
+    log.debug("TrezorWallet : {}", trezorWallet.toString());
+
     // Check the wallet can be reloaded ok i.e. the protobuf round trips
     File temporaryFile = File.createTempFile("WalletManagerTest", ".wallet");
     trezorWallet.saveToFile(temporaryFile);
@@ -250,16 +240,6 @@ public class WalletManagerTest {
     // Check the first keys above are in the wallet
     assertThat(rebornWallet.hasKey(trezorKeyM44H_0H_0H_0_0)).isTrue();
     assertThat(rebornWallet.hasKey(trezorKeyM44H_0H_0H_1_0)).isTrue();
-
-    // Check the private keys survived the roundtrip
-    byte[] rebornPrivKeyM44H_0H_0H_0_0 = rebornWallet.findKeyFromPubKey(trezorKeyM44H_0H_0H_0_0.getPubKey()).getPrivKeyBytes();
-    byte[] rebornPrivKeyM44H_0H_0H_1_0 = rebornWallet.findKeyFromPubKey(trezorKeyM44H_0H_0H_1_0.getPubKey()).getPrivKeyBytes();
-
-    System.out.println("WalletManagerTest - rebornPrivKeyM44H_0H_0H_0_0 = " + Hex.toHexString(rebornPrivKeyM44H_0H_0H_0_0));
-    System.out.println("WalletManagerTest - rebornPrivKeyM44H_0H_0H_1_0 = " + Hex.toHexString(rebornPrivKeyM44H_0H_0H_1_0));
-
-    assertThat(Arrays.equals(rebornPrivKeyM44H_0H_0H_0_0, privKeyM44H_0H_0H_0_0)).isTrue();
-    assertThat(Arrays.equals(rebornPrivKeyM44H_0H_0H_1_0, privKeyM44H_0H_0H_1_0)).isTrue();
    }
 
   @Test
