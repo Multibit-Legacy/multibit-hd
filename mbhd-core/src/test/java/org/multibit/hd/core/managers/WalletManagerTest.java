@@ -198,8 +198,6 @@ public class WalletManagerTest {
 
     Wallet trezorWallet = walletSummary.getWallet();
 
-    log.debug("TrezorWallet : {}", trezorWallet.toString());
-
     DeterministicKey trezorKeyM44H_0H_0H_0_0 = trezorWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String addressM44H_0H_0H_0_0 = trezorKeyM44H_0H_0H_0_0.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
 
@@ -230,10 +228,10 @@ public class WalletManagerTest {
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_0_3.equals(trezorAddressM44H_0H_0H_0_3.toString())).isTrue();
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_1_3.equals(trezorAddressM44H_0H_0H_1_3.toString())).isTrue();
 
-
-    File temporaryFile = File.createTempFile("WalletManagerTest", ".wallet");
+    log.debug("TrezorWallet : {}", trezorWallet.toString());
 
     // Check the wallet can be reloaded ok i.e. the protobuf round trips
+    File temporaryFile = File.createTempFile("WalletManagerTest", ".wallet");
     trezorWallet.saveToFile(temporaryFile);
     File encryptedWalletFile = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(temporaryFile, "aPassword");
 

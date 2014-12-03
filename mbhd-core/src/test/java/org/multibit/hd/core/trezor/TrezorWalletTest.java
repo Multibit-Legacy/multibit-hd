@@ -182,6 +182,8 @@ public class TrezorWalletTest {
 
     // Ensure it is saved with the newly generated addresses
     File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(temporaryDirectory).get();
+
+    System.out.println("TrezorWalletTest#testCreateWalletWithTrezorAccountUsingMasterPrivateKey wallet: " + wallet.toString());
     wallet.saveToFile(walletFile);
     EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, PASSWORD);
 

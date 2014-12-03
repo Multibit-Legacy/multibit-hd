@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.common.primitives.Bytes;
@@ -52,6 +53,7 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -453,7 +455,8 @@ public enum WalletManager implements WalletEventListener {
 
     // Create a wallet id from the seed to work out the wallet root directory
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedPhrase));
+    List<String> seedPhraseList = Bip39SeedPhraseGenerator.split(seedPhrase);
+    byte[] seed = seedGenerator.convertToSeed(seedPhraseList);
 
     final WalletId walletId = new WalletId(seed, WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_WALLETS);
     String walletRoot = createWalletRoot(walletId);
@@ -483,27 +486,23 @@ public enum WalletManager implements WalletEventListener {
         }
       }
 
-      DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed);
-
       // Trezor uses BIP-44
       // BIP-44 starts from M/44'/0'/0' for soft wallets
-      DeterministicKey trezorRootNode = WalletManager.generateTrezorWalletRootNode(privateMasterKey);
+      List<ChildNumber> trezorRootNodePathList = new ArrayList<>();
+      trezorRootNodePathList.add(new ChildNumber(44 | ChildNumber.HARDENED_BIT));
+      trezorRootNodePathList.add(new ChildNumber(ChildNumber.HARDENED_BIT));
+
+      DeterministicKey trezorRootNode = HDKeyDerivation.createRootNodeWithPrivateKey(ImmutableList.copyOf(trezorRootNodePathList), seed);
+
+      // Create a KeyCrypter to encrypt the waller
+      KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));
 
       // Create a wallet using the seed phrase and Trezor root node
-      DeterministicSeed deterministicSeed = new DeterministicSeed(seedPhrase, null, "", creationTimeInSeconds);
+      DeterministicSeed deterministicSeed = new DeterministicSeed(seed, seedPhraseList, creationTimeInSeconds);
 
-      Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed, trezorRootNode.getPath());
+      Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed, trezorRootNode.getPath(), password, keyCrypterScrypt);
       walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
       walletToReturn.setVersion(MBHD_WALLET_VERSION);
-
-      // Add the parents of the rootNode so that the wallet can round trip to and from protobuf ok
-//      DeterministicKey key_m_44h_0h = trezorRootNode.getParent();
-//      if (key_m_44h_0h != null) {
-//        DeterministicKey key_m_44h = key_m_44h_0h.getParent();
-//        walletToReturn.addKey(key_m_44h);
-//      }
-//
-//      walletToReturn.addKey(key_m_44h_0h);
 
       // Save it now to ensure it is on the disk
       walletToReturn.saveToFile(walletFile);
@@ -727,6 +726,7 @@ public enum WalletManager implements WalletEventListener {
       } catch (Exception e) {
         // Log the initial error
         log.error(e.getClass().getCanonicalName() + " " + e.getMessage(), e);
+        System.out.println("WalletManager error: " +e.getClass().getCanonicalName() + " " + e.getMessage());
 
         // Try loading one of the rolling backups - this will send a BackupWalletLoadedEvent containing the initial error
         // If the rolling backups don't load then loadRollingBackup will throw a WalletLoadException which will propagate out
