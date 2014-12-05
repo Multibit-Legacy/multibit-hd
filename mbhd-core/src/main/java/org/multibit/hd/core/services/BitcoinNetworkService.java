@@ -949,6 +949,11 @@ public class BitcoinNetworkService extends AbstractService {
     Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 
     try {
+      // Ensure the tx source is set to SELF as this is a self generated tx
+      // Note that the getConfidence automatically creates one if it is null
+      sendRequest.tx.getConfidence().setSource(TransactionConfidence.Source.SELF);
+      log.debug("Marking source as self for tx {}", sendRequest.tx.getHashAsString());
+
       // Commit to the wallet (informs the wallet of the transaction)
       if (wallet.getTransaction(sendRequest.tx.getHash()) != null) {
         wallet.commitTx(sendRequest.tx);

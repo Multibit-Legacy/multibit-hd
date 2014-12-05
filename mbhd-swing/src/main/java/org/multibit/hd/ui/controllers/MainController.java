@@ -562,6 +562,8 @@ public class MainController extends AbstractController implements
     // Set the fiat payment amount
     transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
 
+    // Set whether the transaction was created in this copy of MBHD
+    // This is a copy of the TransactionConfidence.Source which does not survive a repair wallet.
     transactionInfo.setSentBySelf(transactionCreationEvent.isSentByMe());
 
     WalletService walletService = CoreServices.getCurrentWalletService();
