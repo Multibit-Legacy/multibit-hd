@@ -141,7 +141,7 @@ Yes. [The wiki pages](https://github.com/bitcoin-solutions/multibit-hd/wiki/_pag
 We are currently working to the following timetable:
 
 1. Hardware wallet (Trezor) support (Private Beta 5)
-2. BIP70-73 payment protocol support (Pubic Beta 1)
+2. BIP70-73 payment protocol support (Public Beta 1)
 3. Hierarchical deterministic multi-signature (HDM) support (Public Beta 2)
 
 ## Developer tools
