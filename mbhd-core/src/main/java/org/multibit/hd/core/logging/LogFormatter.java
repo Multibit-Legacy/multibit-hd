@@ -21,7 +21,7 @@ public class LogFormatter extends PatternLayout {
     setOutputPatternAsHeader(false);
     getDefaultConverterMap().put("ex", PrefixedThrowableProxyConverter.class.getName());
     getDefaultConverterMap().put("xEx", PrefixedExtendedThrowableProxyConverter.class.getName());
-    setPattern("%-5p [%d{ISO8601," + timeZone.getID() + "}] [%thread] %c: %m%n%xEx");
+    setPattern("[%d{ISO8601," + timeZone.getID() + "}] [%thread] %-5level %logger{16} - %msg %xEx%n");
     setContext(context);
   }
 
