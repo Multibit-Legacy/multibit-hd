@@ -1261,12 +1261,12 @@ public class BitcoinNetworkService extends AbstractService {
     peerEventListener = new MultiBitPeerEventListener();
     peerGroup.addEventListener(peerEventListener);
 
-    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      addWalletToPeerGroup(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet());
-    }
   }
 
   public void addWalletToPeerGroup(Wallet wallet) {
+
+    Preconditions.checkNotNull(wallet, "'wallet' must be present");
+
     if (peerGroup != null) {
       peerGroup.addWallet(wallet);
       peerGroup.setFastCatchupTimeSecs(wallet.getEarliestKeyCreationTime());

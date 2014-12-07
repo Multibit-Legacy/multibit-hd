@@ -749,7 +749,8 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setWalletFile(new File(walletFilenameNoAESSuffix));
       walletSummary.setPassword(password);
 
-      log.debug("Loaded the wallet from {} successfully", walletDirectory);
+      log.debug("Successfully loaded the wallet from:\n'{}'", walletDirectory.getAbsolutePath());
+
       return walletSummary;
 
     } catch (WalletVersionException wve) {
