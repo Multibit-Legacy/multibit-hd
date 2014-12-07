@@ -210,7 +210,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
 
     String password = enterDetailsPanelModel.getEnterPasswordModel().getValue();
 
-    Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState();
+    Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState(true);
 
     sendRequestSummary = new SendRequestSummary(
             bitcoinAddress,

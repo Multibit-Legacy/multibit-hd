@@ -146,7 +146,7 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the client fee
-    Optional<FeeState> feeStateOptional = WalletManager.INSTANCE.calculateBRITFeeState();
+    Optional<FeeState> feeStateOptional = WalletManager.INSTANCE.calculateBRITFeeState(true);
     log.debug("Fee state at beforeShow {}", feeStateOptional);
     String feeText;
     if (feeStateOptional.isPresent()) {

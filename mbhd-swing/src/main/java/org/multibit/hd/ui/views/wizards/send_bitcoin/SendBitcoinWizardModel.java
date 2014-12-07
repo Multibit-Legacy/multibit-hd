@@ -274,7 +274,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       .get()
       .getBitcoinAddress();
 
-    Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState();
+    Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState(true);
 
     // Create the fiat payment - note that the fiat amount is not populated, only the exchange rate data.
     // This is because the client and transaction fee is only worked out at point of sending, and the fiat equivalent is computed from that

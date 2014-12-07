@@ -980,8 +980,9 @@ public enum WalletManager implements WalletEventListener {
   /**
    * @return The BRIT fee state for the current wallet - this includes things like how much is
    * currently owed to BRIT
+   * @param includeOneExtraFee include an extra fee to include a tx currently being constructed that isn't in the wallet yet
    */
-  public Optional<FeeState> calculateBRITFeeState() {
+  public Optional<FeeState> calculateBRITFeeState(boolean includeOneExtraFee) {
 
     if (feeService == null) {
       feeService = CoreServices.createFeeService();
@@ -999,12 +1000,16 @@ public enum WalletManager implements WalletEventListener {
       if (walletFileOptional.isPresent()) {
         log.debug("Wallet file prior to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
       }
-      Optional<FeeState> feeState = Optional.of(feeService.calculateFeeState(wallet, false));
+      FeeState feeState = feeService.calculateFeeState(wallet, false);
+      if (includeOneExtraFee) {
+        feeState.setFeeOwed(feeState.getFeeOwed().add(FeeService.FEE_PER_SEND));
+      }
+      Optional<FeeState> feeStateOptional = Optional.of(feeState);
       if (walletFileOptional.isPresent()) {
         log.debug("Wallet file after to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
       }
 
-      return feeState;
+      return feeStateOptional;
     } else {
       return Optional.absent();
     }

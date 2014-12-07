@@ -95,6 +95,10 @@ public class FeeState {
     return feeOwed;
   }
 
+  public void setFeeOwed(Coin feeOwed) {
+    this.feeOwed = feeOwed;
+  }
+
   @Override
   public String toString() {
     return "FeeState{" +
