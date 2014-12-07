@@ -140,7 +140,7 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
         @Override
         public Boolean call() throws Exception {
 
-          CoreServices.getOrCreateBitcoinNetworkService().replayWallet(Optional.of(replayDate.toDate()));
+          CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()));
           return true;
 
         }

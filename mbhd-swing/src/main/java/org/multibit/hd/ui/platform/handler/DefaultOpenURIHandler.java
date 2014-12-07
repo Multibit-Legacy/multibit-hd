@@ -55,7 +55,7 @@ public class DefaultOpenURIHandler implements GenericOpenURIHandler, GenericEven
       return;
     }
     log.debug("Event class is {}", event.getClass().getSimpleName());
-    log.debug("Received openWalletFromWalletId URI request of '{}'", event.getURI());
+    log.debug("Received present URI request of '{}'", event.getURI());
     log.debug("Broadcasting to {} listener(s)", listeners.size());
     for (GenericOpenURIEventListener listener : listeners) {
       Preconditions.checkNotNull(listener, "'listener must be present'");

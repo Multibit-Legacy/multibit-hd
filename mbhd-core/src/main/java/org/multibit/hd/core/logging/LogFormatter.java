@@ -21,7 +21,9 @@ public class LogFormatter extends PatternLayout {
     setOutputPatternAsHeader(false);
     getDefaultConverterMap().put("ex", PrefixedThrowableProxyConverter.class.getName());
     getDefaultConverterMap().put("xEx", PrefixedExtendedThrowableProxyConverter.class.getName());
-    setPattern("[%d{ISO8601," + timeZone.getID() + "}] [%thread] %-5level %logger{16} - %msg %xEx%n");
+    // This pattern allows time, log level then thread to be quickly located making unusual
+    // activity such as WARN and ERROR stand out
+    setPattern("[%d{ISO8601," + timeZone.getID() + "}] %-5level [%thread] %logger{16} - %msg %xEx%n");
     setContext(context);
   }
 

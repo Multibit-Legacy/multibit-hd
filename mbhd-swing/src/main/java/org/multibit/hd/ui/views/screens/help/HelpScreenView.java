@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.screens.help;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
@@ -10,6 +9,7 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -218,9 +218,10 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
       homeUrl = URI.create(InstallationManager.MBHD_WEBSITE_HELP_BASE + "/contents.html").toURL();
       addPage(homeUrl);
 
-      String content = Resources.toString(homeUrl, Charsets.UTF_8);
+      String content = SSLManager.getContentAsString(homeUrl);
       if (!content.contains("<li>")) {
         // Something is wrong at the server end so switch to internal mode
+        log.warn("Content from MultiBit.org does not contain <li> so switching to internal help");
         useInternalHelp = true;
       }
 

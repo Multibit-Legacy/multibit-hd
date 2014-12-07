@@ -1,5 +1,7 @@
 package org.multibit.hd.core.managers;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.files.SecureFiles;
 import org.slf4j.Logger;
@@ -7,10 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.*;
 import java.io.*;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -76,8 +75,9 @@ public enum SSLManager {
 
       // Build the trust manager factory
       final TrustManagerFactory tmf = TrustManagerFactory
-        .getInstance(TrustManagerFactory
-          .getDefaultAlgorithm());
+        .getInstance(
+          TrustManagerFactory
+            .getDefaultAlgorithm());
       tmf.init(ks);
 
       // Use X509
@@ -97,6 +97,10 @@ public enum SSLManager {
       String[] hosts = new String[ExchangeKey.values().length + 1];
       int i = 0;
       hosts[i] = "multibit.org";
+      i++;
+      hosts[i] = "beta.multibit.org";
+      i++;
+      hosts[i] = "www.multibit.org";
       i++;
       for (ExchangeKey exchangeKey : ExchangeKey.values()) {
         if (ExchangeKey.NONE.equals(exchangeKey)) {
@@ -139,11 +143,11 @@ public enum SSLManager {
 
           final X509Certificate[] chain = tm.chain;
           if (chain == null) {
-            log.info("Could not obtain server certificate chain");
+            log.warn("Could not obtain server certificate chain");
             return;
           }
 
-          log.info("Server sent " + chain.length + " certificate(s) which you can now add to the trust store:");
+          log.debug("Server sent " + chain.length + " certificate(s) which you can now add to the trust store:");
           final MessageDigest sha1 = MessageDigest.getInstance("SHA1");
           final MessageDigest md5 = MessageDigest.getInstance("MD5");
           for (int index = 0; index < chain.length; index++) {
@@ -154,11 +158,11 @@ public enum SSLManager {
             String alias = host + "-" + (index + 1);
             ks.setCertificateEntry(alias, cert);
 
-            log.info("-> {}: Subject '{}'", (index + 1), cert.getSubjectDN());
-            log.info("->   : Issuer '{}'", cert.getIssuerDN());
-            log.info("->   : SHA1 '{}'", toHexString(sha1.digest()));
-            log.info("->   : MD5 '{}'", toHexString(md5.digest()));
-            log.info("->   : Alias '{}'", alias);
+            log.debug("-> {}: Subject '{}'", (index + 1), cert.getSubjectDN());
+            log.debug("->   : Issuer '{}'", cert.getIssuerDN());
+            log.debug("->   : SHA1 '{}'", toHexString(sha1.digest()));
+            log.debug("->   : MD5 '{}'", toHexString(md5.digest()));
+            log.debug("->   : Alias '{}'", alias);
             try (OutputStream out = new FileOutputStream(appCacertsFile)) {
               ks.store(out, PASSPHRASE);
             }
@@ -173,6 +177,24 @@ public enum SSLManager {
 
       throw new IllegalStateException("CA Certificate update has failed.", e);
 
+    }
+
+  }
+
+  /**
+   * @param httpsUrl The HTTPS URL from which to get the data
+   *
+   * @return The contents of the URL as a String (UTF-8 encoding expected)
+   *
+   * @throws IOException If something goes wrong
+   */
+  public static String getContentAsString(URL httpsUrl) throws IOException {
+
+    HttpsURLConnection con = (HttpsURLConnection) httpsUrl.openConnection();
+
+    try (final InputStream in = con.getInputStream();
+         final InputStreamReader inr = new InputStreamReader(in, Charsets.UTF_8)) {
+      return CharStreams.toString(inr);
     }
 
   }

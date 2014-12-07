@@ -1,6 +1,5 @@
 package org.multibit.hd.core.services;
 
-import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.ShutdownEvent;
 
 /**
@@ -14,23 +13,17 @@ import org.multibit.hd.core.events.ShutdownEvent;
 public interface ManagedService {
 
   /**
-   * <p>Start the service (events are fired)</p>
+   * <p>Start the service</p>
    *
-   * @return True if the service started sufficiently for the application to run, false if a shutdown is required
+   * @return True if the service started sufficiently for the application to run, false if an application shutdown is required
    */
   boolean start();
 
   /**
-   * <p>Stop the service (blocking until terminated) and unregister from CoreEvents</p>
-   */
-  void stopAndUnregister();
-
-  /**
-   * <p>Subscribe to a "shutdown" event</p>
+   * <p>Shut down the service (blocking until terminated) and unregister from CoreEvents</p>
    *
-   * <p>Implementers may choose to call <code>stopAndUnregister</code> as part of this operation</p>
+   * @param shutdownType The shutdown type describing why this service is shutting down
    */
-  @Subscribe
-  void onShutdownEvent(ShutdownEvent shutdownEvent);
+  void shutdownNow(ShutdownEvent.ShutdownType shutdownType);
 
 }

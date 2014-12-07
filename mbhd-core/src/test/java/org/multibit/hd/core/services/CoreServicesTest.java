@@ -1,5 +1,6 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.base.Optional;
 import org.bitcoinj.core.Wallet;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -53,7 +54,7 @@ public class CoreServicesTest {
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
-    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
 
     long nowInSeconds = Dates.nowInSeconds();
     WalletSummary walletSummary = WalletManager

@@ -55,7 +55,7 @@ public class WalletDetailModel implements Model<WalletDetail> {
 
     Preconditions.checkNotNull(walletDetail, "Wallet detail must be set");
 
-    WalletService walletService = CoreServices.getCurrentWalletService();
+    WalletService walletService = CoreServices.getCurrentWalletService().get();
 
     // TODO Add this to a wallet service
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {

@@ -1,6 +1,5 @@
 package org.multibit.hd.core.services;
 
-import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.slf4j.Logger;
@@ -18,28 +17,17 @@ public class ConfigurationService extends AbstractService {
 
   private static final Logger log = LoggerFactory.getLogger(ConfigurationService.class);
 
-  public ConfigurationService() {
-    CoreServices.uiEventBus.register(this);
+  @Override
+  protected boolean startInternal() {
+
+    // Do nothing
+    return true;
   }
 
   @Override
-  @Subscribe
-  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+  protected boolean shutdownNowInternal(ShutdownEvent.ShutdownType shutdownType) {
 
     log.debug("Persisting current configuration after shutdown");
-
-    switch (shutdownEvent.getShutdownType()) {
-
-      case HARD:
-        stopAndUnregister();
-        break;
-      case SOFT:
-        stopAndUnregister();
-        break;
-      case SWITCH:
-        // Do nothing
-        break;
-    }
 
     // We may be in a partial startup situation
     if (Configurations.currentConfiguration != null) {
@@ -47,6 +35,10 @@ public class ConfigurationService extends AbstractService {
       Configurations.persistCurrentConfiguration();
 
     }
+
+    // Service can survive a switch
+    return preventCleanupOnSwitch(shutdownType);
+
   }
 
 }

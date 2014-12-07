@@ -144,7 +144,7 @@ public class TrezorWalletTest {
     // Create a root node from which all addresses will be generated
     DeterministicKey trezorRootNode = WalletManager.generateTrezorWalletRootNode(privateMasterKey);
 
-    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
     InstallationManager.setCurrentApplicationDataDirectory(temporaryDirectory);
 
     // Create a Trezor soft wallet using the test root node, using a BIP44 account structure

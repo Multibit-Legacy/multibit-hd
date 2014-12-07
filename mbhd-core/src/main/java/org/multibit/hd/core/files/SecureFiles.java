@@ -25,29 +25,6 @@ public class SecureFiles {
 
   private static final Logger log = LoggerFactory.getLogger(SecureFiles.class);
 
-  // Nonsense bytes to fill up deleted files - these have no meaning.
-  public static byte[] NONSENSE_BYTES = new byte[]{(byte) 0xF0, (byte) 0xA6, (byte) 0x55, (byte) 0xAA, (byte) 0x33,
-          (byte) 0x77, (byte) 0x33, (byte) 0x37, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0xC2, (byte) 0xB3,
-          (byte) 0xA4, (byte) 0x9A, (byte) 0x30, (byte) 0x7F, (byte) 0xE5, (byte) 0x5A, (byte) 0x23, (byte) 0x47, (byte) 0x13,
-          (byte) 0x17, (byte) 0x15, (byte) 0x32, (byte) 0x5C, (byte) 0x77, (byte) 0xC9, (byte) 0x73, (byte) 0x04, (byte) 0x2D,
-          (byte) 0x40, (byte) 0x0F, (byte) 0xA5, (byte) 0xA6, (byte) 0x43, (byte) 0x77, (byte) 0x33, (byte) 0x3B, (byte) 0x62,
-          (byte) 0x34, (byte) 0xB6, (byte) 0x72, (byte) 0x32, (byte) 0xB3, (byte) 0xA4, (byte) 0x4B, (byte) 0x80, (byte) 0x7F,
-          (byte) 0xC5, (byte) 0x43, (byte) 0x23, (byte) 0x47, (byte) 0x13, (byte) 0xB7, (byte) 0xA5, (byte) 0x32, (byte) 0xDC,
-          (byte) 0x79, (byte) 0x19, (byte) 0xB1, (byte) 0x03, (byte) 0x9D};
-  public static int BULKING_UP_FACTOR = 16;
-  public static byte[] SECURE_DELETE_FILL_BYTES = new byte[NONSENSE_BYTES.length * BULKING_UP_FACTOR];
-
-  static {
-    // Make some SECURE_DELETE_FILL_BYTES bytes = x BULKING_UP_FACTOR the
-    // NONSENSE just to save write time.
-    for (int i = 0; i < BULKING_UP_FACTOR; i++) {
-      System.arraycopy(
-              NONSENSE_BYTES, 0,
-              SECURE_DELETE_FILL_BYTES, NONSENSE_BYTES.length * i,
-              NONSENSE_BYTES.length);
-    }
-  }
-
   /**
    * Utilities have private constructor
    */
@@ -68,64 +45,39 @@ public class SecureFiles {
     long start = System.currentTimeMillis();
     log.trace("Start of secureDelete");
 
-    alternativeSecureDelete(file);
+    fastSecureDelete(file);
     log.trace("End of secureDelete");
     log.debug("Secure delete took {} milliseconds", System.currentTimeMillis() - start);
+
   }
-
-  /**
-   * Single pass secure delete
-   *    *
-      * @param file the file to secure delete
-   */
-   private static void singlePassSecureDelete(File file) throws IOException {
-     long length;
-     if (file != null && file.exists()) {
-       try (RandomAccessFile raf = new RandomAccessFile(file, "rws")) {
-         // Prep for file delete as this can be fiddly on Windows
-         // Make sure it is writable and any references to it are garbage
-         // collected and finalized.
-         if (!file.setWritable(true)) {
-           throw new IOException("Could not write to file " + file.getAbsolutePath());
-         }
-         System.gc();
-
-         length = file.length();
-         raf.seek(0);
-         raf.getFilePointer();
-         int pos = 0;
-         while (pos < length) {
-           raf.write(SECURE_DELETE_FILL_BYTES);
-           pos += SECURE_DELETE_FILL_BYTES.length;
-         }
-       }
-       boolean deleteSuccess = file.delete();
-       log.trace("Result of delete of file '" + file.getAbsolutePath() + "' was " + deleteSuccess);
-     }
-   }
 
   /**
    * An alternative secure delete algorithm from http://www.cafeaulait.org/books/javaio2/ioexamples/14/SecureDelete.java
    *
    * @param file the file to secure delete
    */
-  private static void alternativeSecureDelete(File file) throws IOException {
+  private static void fastSecureDelete(File file) throws IOException {
     if (file.exists()) {
       SecureRandom random = new SecureRandom();
       RandomAccessFile raf = new RandomAccessFile(file, "rw");
       FileChannel channel = raf.getChannel();
-      MappedByteBuffer buffer
-              = channel.map(FileChannel.MapMode.READ_WRITE, 0, raf.length());
 
-      // overwrite with random data; one byte at a time
+      MappedByteBuffer buffer = channel.map(
+        FileChannel.MapMode.READ_WRITE,
+        0,
+        raf.length()
+      );
+
+      // Overwrite with random data; one byte at a time
       byte[] data = new byte[1];
       while (buffer.hasRemaining()) {
         random.nextBytes(data);
         buffer.put(data[0]);
       }
       buffer.force();
+
       boolean deleteSuccess = file.delete();
-      log.trace("Result of delete of file '" + file.getAbsolutePath() + "' was " + deleteSuccess);
+      log.trace("Result of delete was {} for:\n'{}'", deleteSuccess, file.getAbsolutePath());
     }
   }
 
@@ -136,7 +88,7 @@ public class SecureFiles {
    */
   public static File verifyOrCreateDirectory(File directory) {
 
-    log.debug("Verify or create directory: '{}'", directory.getAbsolutePath());
+    log.debug("Verify or create directory:\n'{}'", directory.getAbsolutePath());
 
     if (!directory.exists()) {
       Preconditions.checkState(directory.mkdirs(), "Could not create directory: '" + directory + "'");
@@ -157,7 +109,7 @@ public class SecureFiles {
 
     File directory = new File(parentDirectory, childDirectory);
 
-    log.debug("Verify or create directory: '{}'", directory.getAbsolutePath());
+    log.debug("Verify or create directory:\n'{}'", directory.getAbsolutePath());
 
     if (!directory.exists()) {
       Preconditions.checkState(directory.mkdirs(), "Could not create directory: '" + directory + "'");
@@ -185,7 +137,7 @@ public class SecureFiles {
 
     File file = new File(parentDirectory.getAbsolutePath() + File.separator + filename);
 
-    log.debug("Verify or create file: '{}'", file.getAbsolutePath());
+    log.debug("Verify or create file:\n'{}'", file.getAbsolutePath());
 
     if (!file.exists()) {
       try {
@@ -213,9 +165,13 @@ public class SecureFiles {
     File temporaryDirectory = Files.createTempDir();
     temporaryDirectory.deleteOnExit();
 
-    log.debug("Created temporary directory: '{}'", temporaryDirectory.getAbsolutePath());
+    if (temporaryDirectory.exists() && temporaryDirectory.canWrite() && temporaryDirectory.canRead()) {
+      log.debug("Created temporary directory:\n'{}'", temporaryDirectory.getAbsolutePath());
+      return temporaryDirectory;
+    }
 
-    return temporaryDirectory;
+    // Must have failed to be here
+    throw new IOException("Did not create '"+temporaryDirectory.getAbsolutePath()+"' with RW permissions");
   }
 
   /**

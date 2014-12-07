@@ -1,7 +1,5 @@
 package org.multibit.hd.ui.services;
 
-import org.bitcoinj.uri.BitcoinURI;
-import org.bitcoinj.uri.BitcoinURIParseException;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -11,6 +9,8 @@ import com.google.common.io.CharStreams;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import org.bitcoinj.uri.BitcoinURI;
+import org.bitcoinj.uri.BitcoinURIParseException;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.AbstractService;
 import org.multibit.hd.core.services.CoreServices;
@@ -60,6 +60,8 @@ public class BitcoinURIListeningService extends AbstractService {
    */
   public BitcoinURIListeningService(String[] args) {
 
+    super();
+
     if (args == null || args.length == 0) {
       this.bitcoinURI = Optional.absent();
       rawURI = Optional.absent();
@@ -70,66 +72,38 @@ public class BitcoinURIListeningService extends AbstractService {
 
   }
 
-  /**
-   * <p>The parsed Bitcoin URI (if parsing was successful) provided during startup</p>
-   *
-   * @return The Bitcoin URI
-   */
-  public Optional<BitcoinURI> getBitcoinURI() {
-    return bitcoinURI;
-  }
-
-  /**
-   * <p>The raw Bitcoin URI (if parsing was successful) provided during startup</p>
-   *
-   * @return The raw Bitcoin URI
-   */
-  Optional<String> getRawURI() {
-    return rawURI;
-  }
-
-  /**
-   * <p>The server socket created as the master if no other was in place</p>
-   *
-   * @return The server socket
-   */
-  Optional<ServerSocket> getServerSocket() {
-    return serverSocket;
-  }
-
-  /**
-   * <p>Registers this instance of the application. Passing in the raw URI that was passed in on the command line</p>
-   */
   @Override
-  public boolean start() {
+  public boolean startInternal() {
 
     // This service will run a single background thread
-    requireFixedThreadPoolExecutor(1,"uri-listener");
+    requireFixedThreadPoolExecutor(1, "uri-listener");
 
     try {
 
       // Attempt to own the localhost server socket allowing for a backlog of connections
-      serverSocket = Optional.of(new ServerSocket(
-        MULTIBIT_HD_NETWORK_SOCKET,
-        10,
-        InetAddress.getLoopbackAddress()
-      ));
+      serverSocket = Optional.of(
+        new ServerSocket(
+          MULTIBIT_HD_NETWORK_SOCKET,
+          10,
+          InetAddress.getLoopbackAddress()
+        ));
 
       // Successfully owned the server port so handle ongoing messages as master
       ListenableFuture future = getExecutorService().submit(getInstanceServerRunnable(serverSocket.get()));
-      Futures.addCallback(future, new FutureCallback() {
-        @Override
-        public void onSuccess(Object result) {
-          log.debug("Stopping BitcoinURIListeningService executor (success)");
-          getExecutorService().shutdownNow();
-        }
+      Futures.addCallback(
+        future, new FutureCallback() {
+          @Override
+          public void onSuccess(Object result) {
+            log.debug("Stopping BitcoinURIListeningService executor (success)");
+            getExecutorService().shutdownNow();
+          }
 
-        @Override
-        public void onFailure(Throwable t) {
-          log.debug("Stopping BitcoinURIListeningService executor (failure)",t);
-          getExecutorService().shutdownNow();
-        }
-      });
+          @Override
+          public void onFailure(Throwable t) {
+            log.debug("Stopping BitcoinURIListeningService executor (failure)", t);
+            getExecutorService().shutdownNow();
+          }
+        });
 
       log.info("Listening for MultiBit HD instances on socket: '{}'", MULTIBIT_HD_NETWORK_SOCKET);
 
@@ -158,21 +132,38 @@ public class BitcoinURIListeningService extends AbstractService {
   }
 
   @Override
-  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+  protected boolean shutdownNowInternal(ShutdownEvent.ShutdownType shutdownType) {
 
-    switch (shutdownEvent.getShutdownType()) {
+    // Service can survive a switch
+    return preventCleanupOnSwitch(shutdownType);
 
-      case HARD:
-        stopAndUnregister();
-        break;
-      case SOFT:
-        stopAndUnregister();
-        break;
-      case SWITCH:
-        // Do nothing
-        break;
-    }
+  }
 
+  /**
+   * <p>The parsed Bitcoin URI (if parsing was successful) provided during startup</p>
+   *
+   * @return The Bitcoin URI
+   */
+  public Optional<BitcoinURI> getBitcoinURI() {
+    return bitcoinURI;
+  }
+
+  /**
+   * <p>The raw Bitcoin URI (if parsing was successful) provided during startup</p>
+   *
+   * @return The raw Bitcoin URI
+   */
+  Optional<String> getRawURI() {
+    return rawURI;
+  }
+
+  /**
+   * <p>The server socket created as the master if no other was in place</p>
+   *
+   * @return The server socket
+   */
+  Optional<ServerSocket> getServerSocket() {
+    return serverSocket;
   }
 
   /**
@@ -216,8 +207,15 @@ public class BitcoinURIListeningService extends AbstractService {
 
     return new Runnable() {
 
+      // Requires its own shutdown subscriber to ensure correct shutdown
       @Subscribe
       public void onShutdownEvent(ShutdownEvent event) {
+
+        if (ShutdownEvent.ShutdownType.SWITCH.equals(event.getShutdownType())) {
+          // Can ignore the shutdown
+          log.debug("Instance server runnable ignoring wallet switch shutdown event");
+          return;
+        }
 
         try {
           serverSocket.close();
@@ -281,7 +279,6 @@ public class BitcoinURIListeningService extends AbstractService {
             }
           }
         } // End of while
-
 
 
       }

@@ -30,17 +30,8 @@ public class SecurityCheckingService extends AbstractService {
    */
   private DateTime nextDebuggerAlert = Dates.nowUtc().minusSeconds(1);
 
-  /**
-   * Initialise to allow single security alert for system time drift
-   */
-  private DateTime nextSystemTimeDriftAlert = Dates.nowUtc().minusSeconds(1);
-
-  public SecurityCheckingService() {
-    CoreServices.uiEventBus.register(this);
-  }
-
   @Override
-  public boolean start() {
+  public boolean startInternal() {
 
     log.debug("Starting security service");
 
@@ -84,21 +75,9 @@ public class SecurityCheckingService extends AbstractService {
   }
 
   @Override
-  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
-
-    switch (shutdownEvent.getShutdownType()) {
-
-      case HARD:
-        stopAndUnregister();
-        break;
-      case SOFT:
-        stopAndUnregister();
-        break;
-      case SWITCH:
-        // Do nothing
-        break;
-    }
-
+  protected boolean shutdownNowInternal(ShutdownEvent.ShutdownType shutdownType) {
+    // Service can survive a switch
+    return preventCleanupOnSwitch(shutdownType);
   }
 
 }

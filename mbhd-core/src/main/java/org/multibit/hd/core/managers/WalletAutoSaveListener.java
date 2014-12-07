@@ -24,13 +24,13 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
 
   @Override
   public void onBeforeAutoSave(File tempFile) {
-    log.debug("Just about to save wallet to tempFile '{}'", tempFile.getAbsolutePath());
+    log.debug("Auto-saving wallet to tempFile:\n'{}'", tempFile.getAbsolutePath());
   }
 
   @Override
   public void onAfterAutoSave(File newlySavedFile) {
 
-    log.debug("Have just saved wallet to newlySavedFile: '{}'", newlySavedFile.getAbsolutePath());
+    log.debug("Wallet auto-saved to newlySavedFile:\n'{}'", newlySavedFile.getAbsolutePath());
 
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
@@ -39,9 +39,9 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
       CharSequence password = walletSummary.get().getPassword();
       File encryptedWalletFile = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(newlySavedFile, password);
       if (encryptedWalletFile != null && encryptedWalletFile.exists()) {
-        log.debug("Save encrypted copy of wallet as '{}'. Size was {} bytes.", encryptedWalletFile.getAbsolutePath(), encryptedWalletFile.length());
+        log.debug("Save encrypted copy of wallet (size: {} bytes) as:\n'{}'", encryptedWalletFile.length(), encryptedWalletFile.getAbsolutePath());
       } else {
-        log.debug("No encrypted copy of wallet '{}' made.", newlySavedFile.getAbsolutePath());
+        log.debug("No encrypted copy of wallet:\n'{}'", newlySavedFile.getAbsolutePath());
       }
 
       // Remember the info required for the next backups

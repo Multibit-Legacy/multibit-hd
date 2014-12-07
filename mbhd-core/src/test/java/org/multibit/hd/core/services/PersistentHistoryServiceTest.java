@@ -1,5 +1,7 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.base.Optional;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
@@ -7,7 +9,7 @@ import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.WalletIdTest;
-import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -30,19 +32,19 @@ public class PersistentHistoryServiceTest {
 
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
-    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Create a wallet from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
-    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     long nowInSeconds = Dates.nowInSeconds();
     WalletManager
       .INSTANCE
       .getOrCreateMBHDSoftWalletSummaryFromSeed(
-              temporaryDirectory,
+              applicationDirectory,
               seed1,
               nowInSeconds,
               WalletServiceTest.PASSWORD,
@@ -50,11 +52,22 @@ public class PersistentHistoryServiceTest {
               "Example"
       );
 
-    File contactDbFile = new File(temporaryDirectory.getAbsolutePath() + File.separator + HistoryService.HISTORY_DATABASE_NAME);
+    File contactDbFile = new File(applicationDirectory.getAbsolutePath() + File.separator + HistoryService.HISTORY_DATABASE_NAME);
 
     historyService = new PersistentHistoryService(contactDbFile);
     historyService.addDemoHistory();
 
+  }
+
+  @After
+  public void tearDown() throws Exception {
+
+    // Order is important here
+    CoreServices.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
+
+    InstallationManager.reset();
+    BackupManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.HARD);
+    WalletManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.HARD);
   }
 
   @Test

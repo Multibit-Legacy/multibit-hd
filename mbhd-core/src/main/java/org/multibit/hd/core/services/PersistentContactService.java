@@ -8,6 +8,7 @@ import com.google.common.collect.Sets;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.exceptions.ContactsSaveException;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
@@ -35,7 +36,7 @@ import java.util.UUID;
  * @since 0.0.1
  *
  */
-public class PersistentContactService implements ContactService {
+public class PersistentContactService extends AbstractService implements ContactService {
 
   private static final Logger log = LoggerFactory.getLogger(PersistentContactService.class);
 
@@ -100,6 +101,23 @@ public class PersistentContactService implements ContactService {
       loadContacts();
     }
 
+  }
+
+  @Override
+  protected boolean startInternal() {
+
+    Preconditions.checkNotNull(protobufSerializer,"protobufSerializer not present. Have you called initialise()?");
+
+    return true;
+  }
+
+  @Override
+  protected boolean shutdownNowInternal(ShutdownEvent.ShutdownType shutdownType) {
+
+    protobufSerializer = null;
+    backingStoreFile = null;
+
+    return true;
   }
 
   /**

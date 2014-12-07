@@ -11,6 +11,7 @@ import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 
 import java.io.InputStreamReader;
+import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -126,11 +127,15 @@ public class BitcoinURIListeningServiceTest {
   @Test
   public void testNotify_AddressOnly() throws Exception {
 
-    serverSocket = new ServerSocket(
-      BitcoinURIListeningService.MULTIBIT_HD_NETWORK_SOCKET,
-      10,
-      InetAddress.getLoopbackAddress()
-    );
+    try {
+      serverSocket = new ServerSocket(
+        BitcoinURIListeningService.MULTIBIT_HD_NETWORK_SOCKET,
+        10,
+        InetAddress.getLoopbackAddress()
+      );
+    } catch (BindException e) {
+      fail("Address already in use - is another version of MultiBit HD already running?");
+    }
 
     String[] args = new String[]{
       RAW_URI_ADDRESS

@@ -50,7 +50,6 @@ public class ExitSelectPanelView extends AbstractWizardPanelView<ExitWizardModel
 
     // Default to confirm exit
     currentSelection = ExitState.CONFIRM_EXIT;
-    setPanelModel(currentSelection);
 
   }
 
@@ -89,6 +88,9 @@ public class ExitSelectPanelView extends AbstractWizardPanelView<ExitWizardModel
   public void afterShow() {
 
     decorateFinishButton();
+
+    // Default to confirm exit in case user immediately clicks Finish
+    getWizardModel().setState(ExitState.CONFIRM_EXIT);
 
   }
 

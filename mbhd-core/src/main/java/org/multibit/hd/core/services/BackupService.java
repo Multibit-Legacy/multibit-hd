@@ -1,7 +1,6 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
-import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
@@ -59,13 +58,13 @@ import java.util.concurrent.TimeUnit;
 public class BackupService extends AbstractService {
 
   /**
-   * Initial delay in seconds after startup before making a backup.
-   * This delay is so that the wallet can sync.
+   * Initial delay in seconds after startup before making a backup
+   * This delay is so that the wallet can sync
    */
   private static final int INITIAL_DELAY = 60;
 
   /**
-   * This is the fastest tick in seconds used for backups.
+   * This is the fastest tick in seconds used for backups
    * Everything else is done on a multiple of this
    */
   private static final int TICK_TIME_SECONDS = 120;
@@ -126,15 +125,8 @@ public class BackupService extends AbstractService {
    */
   private boolean backupsAreRunning = false;
 
-
-  public BackupService() {
-
-  }
-
   @Override
-  public boolean start() {
-
-    log.debug("Starting service");
+  protected boolean startInternal() {
 
     // The first tick (at time INITIAL_DELAY seconds) all of a rolling backup,
     // local backup and a cloud backup
@@ -180,6 +172,49 @@ public class BackupService extends AbstractService {
     return true;
   }
 
+  @Override
+  protected boolean shutdownNowInternal(ShutdownEvent.ShutdownType shutdownType) {
+
+    switch (shutdownType) {
+
+      case HARD:
+        // A hard shutdown does not give enough time to wait gracefully
+        break;
+      case SOFT:
+        // A soft shutdown occurs during FEST testing so the backups may not be running
+        if (isBackupsAreRunning()) {
+          log.debug("Performing backups at shutdown");
+
+          // Disable any new backups
+          this.setBackupsAreEnabled(false);
+
+          getScheduledExecutorService().schedule(
+            new Runnable() {
+              public void run() {
+                // Wait for any current backups to complete
+                while (isBackupsAreRunning()) {
+                  Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+                }
+
+                performRollingBackup();
+
+                performLocalZipBackup();
+
+                performCloudZipBackup();
+
+              }
+
+            }, 0, TimeUnit.MILLISECONDS);
+        }
+        break;
+      case SWITCH:
+        break;
+    }
+
+    // Backup service is tied to a wallet so should be completely shutdown
+    return true;
+
+  }
 
   /**
    * Remember a wallet summary and credentials.
@@ -269,54 +304,6 @@ public class BackupService extends AbstractService {
         // TODO handle exception (which is thrown inside the main runnable)
       }
     }
-  }
-
-  /**
-   * On shutdown disable any more backups, wait until any current backup is finished and then perform
-   * a rolling, local and cloud backup
-   *
-   * @param shutdownEvent Shutdown event
-   */
-  @Subscribe
-  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
-
-    switch (shutdownEvent.getShutdownType()) {
-
-      case HARD:
-        // A hard shutdown does not give enough time to wait gracefully
-        break;
-      case SOFT:
-        // A soft shutdown occurs during FEST testing so the backups may not be running
-        if (isBackupsAreRunning()) {
-          log.debug("Performing backups at shutdown");
-
-          // Disable any new backups
-          this.setBackupsAreEnabled(false);
-
-          getScheduledExecutorService().schedule(
-            new Runnable() {
-              public void run() {
-                // Wait for any current backups to complete
-                while (isBackupsAreRunning()) {
-                  Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
-                }
-
-                performRollingBackup();
-
-                performLocalZipBackup();
-
-                performCloudZipBackup();
-
-              }
-
-            }, 0, TimeUnit.MILLISECONDS);
-        }
-        break;
-      case SWITCH:
-        break;
-    }
-
-
   }
 
   /**

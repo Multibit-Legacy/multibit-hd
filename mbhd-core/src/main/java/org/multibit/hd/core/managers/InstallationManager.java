@@ -33,7 +33,7 @@ public class InstallationManager {
   public static final URI MBHD_WEBSITE_URI = URI.create("https://multibit.org");
 
   /**
-   * The main MultiBit help site (HTTP in case HTTPS fails and user needs to discover how to access repair wallet)
+   * The main MultiBit help site (HTTPS to allow secure connection without redirect, with fall back to local help on failure)
    */
   public static final String MBHD_WEBSITE_HELP_DOMAIN = "https://beta.multibit.org";  // TODO remove beta when release-4.0.0 website pushed to multibit.org
   public static final String MBHD_WEBSITE_HELP_BASE = MBHD_WEBSITE_HELP_DOMAIN + "/hd0.1";
@@ -57,9 +57,9 @@ public class InstallationManager {
   public static boolean unrestricted = false;
 
   /**
-   * @param shutdownEvent The shutdown event
+   * @param shutdownType The shutdown type
    */
-  public static void onShutdownEvent(ShutdownEvent shutdownEvent) {
+  public static void shutdownNow(ShutdownEvent.ShutdownType shutdownType) {
 
     reset();
 
@@ -90,6 +90,7 @@ public class InstallationManager {
   /**
    * <p>Get the directory for the user's application data, creating if not present</p>
    * <p>Checks a few OS-dependent locations first</p>
+   * <p>For tests (unrestricted mode) this will create a long-lived temporary directory - use reset() to clear in the tearDown() phase</p>
    *
    * @return A suitable application directory for the OS and if running unit tests (unrestricted mode)
    */
@@ -102,7 +103,11 @@ public class InstallationManager {
     if (unrestricted) {
       try {
         log.debug("Unrestricted mode requires a temporary application directory");
-        return SecureFiles.createTemporaryDirectory();
+        // In order to preserve the same behaviour between the test and production environments
+        // this must be maintained throughout the lifetime of a unit test
+        // At tearDown() use reset() to clear
+        currentApplicationDataDirectory = SecureFiles.createTemporaryDirectory();
+        return currentApplicationDataDirectory;
       } catch (IOException e) {
         log.error("Failed to create temporary directory", e);
         return null;
@@ -112,7 +117,7 @@ public class InstallationManager {
       // Fail safe check for unit tests to avoid overwriting existing configuration file
       try {
         Class.forName("org.multibit.hd.core.managers.InstallationManagerTest");
-        throw new IllegalStateException("Cannot run without unrestricted when unit tests are present. You may overwrite live configuration.");
+        throw new IllegalStateException("Cannot run without unrestricted when unit tests are present. You could overwrite live configuration.");
       } catch (ClassNotFoundException e) {
         // We have passed the fail safe check
       }
@@ -215,7 +220,7 @@ public class InstallationManager {
   }
 
   /**
-   * Use for testing only
+   * Use for testing only (several different test packages use this)
    *
    * @param currentApplicationDataDirectory the application data directory to use
    */

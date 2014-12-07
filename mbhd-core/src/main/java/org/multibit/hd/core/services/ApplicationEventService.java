@@ -15,20 +15,51 @@ import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
  *
  * @since 0.0.1
  */
-public class ApplicationEventService {
+public class ApplicationEventService extends AbstractService {
 
   private Optional<ExchangeRateChangedEvent> latestExchangeRateChangedEvent = Optional.absent();
   private Optional<SecurityEvent> latestSecurityEvent = Optional.absent();
   private Optional<BitcoinNetworkChangedEvent> latestBitcoinNetworkChangedEvent = Optional.absent();
   private Optional<HardwareWalletEvent> latestHardwareWalletEvent = Optional.absent();
 
-  /**
-   * Reduced visibility constructor to prevent accidental instance creation outside of CoreServices
-   */
-  ApplicationEventService() {
+  private boolean isRegistered = false;
 
-    CoreServices.uiEventBus.register(this);
+  @Override
+  protected boolean startInternal() {
+
     HardwareWalletService.hardwareWalletEventBus.register(this);
+    isRegistered = true;
+
+    return false;
+  }
+
+  @Override
+  protected boolean shutdownNowInternal(ShutdownEvent.ShutdownType shutdownType) {
+
+    switch (shutdownType) {
+
+      case HARD:
+      case SOFT:
+        if (isRegistered) {
+          // Unregister from hardware wallet events
+          HardwareWalletService.hardwareWalletEventBus.unregister(this);
+          isRegistered=false;
+        }
+
+        // Allow ongoing cleanup
+        return true;
+      case SWITCH:
+        // Clear all the events to prevent inaccurate UI
+        latestBitcoinNetworkChangedEvent = Optional.absent();
+        latestExchangeRateChangedEvent = Optional.absent();
+        latestHardwareWalletEvent = Optional.absent();
+        latestSecurityEvent = Optional.absent();
+
+        // Avoid ongoing cleanup
+        return false;
+      default:
+        throw new IllegalStateException("Unsupported state: " + shutdownType.name());
+    }
 
   }
 
@@ -80,21 +111,6 @@ public class ApplicationEventService {
         latestExchangeRateChangedEvent.get().getRateProvider(),
         latestExchangeRateChangedEvent.get().getExpires()
       );
-    }
-
-  }
-
-  /**
-   * @param event The "shutdown" event
-   */
-  @Subscribe
-  public void onShutdownEvent(ShutdownEvent event) {
-
-    // Clear the non-essential events
-    if (ShutdownEvent.ShutdownType.SOFT.equals(event.getShutdownType())) {
-      latestBitcoinNetworkChangedEvent = Optional.absent();
-      latestExchangeRateChangedEvent = Optional.absent();
-      latestHardwareWalletEvent = Optional.absent();
     }
 
   }

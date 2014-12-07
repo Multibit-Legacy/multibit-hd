@@ -70,6 +70,8 @@ public class ExchangeTickerService extends AbstractService {
    */
   public ExchangeTickerService(BitcoinConfiguration bitcoinConfiguration) {
 
+    super();
+
     this.exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
     this.localCurrency = Currency.getInstance(bitcoinConfiguration.getLocalCurrencyCode());
 
@@ -95,7 +97,7 @@ public class ExchangeTickerService extends AbstractService {
   }
 
   @Override
-  public boolean start() {
+  public boolean startInternal() {
 
     log.debug("Starting service");
 
@@ -190,31 +192,23 @@ public class ExchangeTickerService extends AbstractService {
   }
 
   @Override
-  public void stopAndUnregister() {
+  protected boolean shutdownNowInternal(ShutdownEvent.ShutdownType shutdownType) {
 
-    super.stopAndUnregister();
-
-    allCurrenciesExecutorService.shutdownNow();
-    latestTickerExecutorService.shutdownNow();
-
-  }
-
-  @Override
-  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
-
-    switch (shutdownEvent.getShutdownType()) {
+    switch (shutdownType) {
 
       case HARD:
-        stopAndUnregister();
-        break;
       case SOFT:
-        stopAndUnregister();
-        break;
-      case SWITCH:
-        // Do nothing
-        break;
-    }
+        allCurrenciesExecutorService.shutdownNow();
+        latestTickerExecutorService.shutdownNow();
 
+        // Allow ongoing cleanup
+        return true;
+      case SWITCH:
+        // Avoid ongoing cleanup
+        return false;
+      default:
+        throw new IllegalStateException("Unsupported state: " + shutdownType.name());
+    }
   }
 
   /**

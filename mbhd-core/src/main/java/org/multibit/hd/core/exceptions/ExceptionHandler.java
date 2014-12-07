@@ -3,8 +3,8 @@ package org.multibit.hd.core.exceptions;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 import org.apache.commons.lang3.text.WordUtils;
-import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
         JOptionPane.showMessageDialog(null, WordUtils.wrap(message,30), "Error", JOptionPane.ERROR_MESSAGE);
 
         // Safest option at this point is to shut down
-        CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
+        CoreServices.shutdownNow(ShutdownEvent.ShutdownType.HARD);
       }
     });
 

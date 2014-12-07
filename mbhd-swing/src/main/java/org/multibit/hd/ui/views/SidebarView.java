@@ -162,7 +162,7 @@ public class SidebarView extends AbstractView {
     // Collapsing should be a rare event in normal use
     sidebarTree.setToggleClickCount(2);
 
-    // Ensure we always have the soft wallet openWalletFromWalletId
+    // Ensure we always have the soft wallet open
     TreePath walletPath = sidebarTree.getPathForRow(0);
     sidebarTree.getSelectionModel().setSelectionPath(walletPath);
     sidebarTree.expandPath(walletPath);

@@ -14,7 +14,6 @@ import java.util.List;
  * <ul>
  * <li>Common methods for contact data access</li>
  * </ul>
- * </p>
  *
  */
 public interface ContactService {

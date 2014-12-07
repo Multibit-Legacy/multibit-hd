@@ -3,7 +3,7 @@ package org.multibit.hd.core.events;
 /**
  * <p>Event to provide the following to Core event subscribers:</p>
  * <ul>
- * <li>One or more payments have been seen in the last second</li>
+ * <li>One or more payments have been seen recently</li>
  * </ul>
  * <p>This is a consolidated version of TransactionSeenEvent that you can use for slow updates.</p>
  *

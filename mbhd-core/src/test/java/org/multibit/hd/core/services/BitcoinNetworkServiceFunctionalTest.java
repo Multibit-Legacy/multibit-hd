@@ -14,6 +14,7 @@ import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
@@ -101,7 +102,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Create a random temporary directory and use it for wallet storage
     File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
-    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
 
     // Create a wallet from the WALLET_SEED_1_PROPERTY_NAME
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
@@ -138,7 +139,7 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     // Create a random temporary directory to writeContacts the wallets
     File temporaryDirectory = SecureFiles.createTemporaryDirectory();
-    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
 
     // Create two wallets from the two seeds
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
@@ -283,7 +284,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Clear percentage complete
     percentComplete = 0;
 
-    bitcoinNetworkService.replayWallet(Optional.of(replayDate.toDate()));
+    bitcoinNetworkService.replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()));
 
     int timeout = 0;
     while (timeout < MAX_TIMEOUT && (percentComplete < 100)) {
