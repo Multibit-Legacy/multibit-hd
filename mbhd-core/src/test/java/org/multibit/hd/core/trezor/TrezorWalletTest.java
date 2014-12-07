@@ -140,7 +140,7 @@ public class TrezorWalletTest {
     DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed);
 
     // Trezor uses BIP-44
-    // BIP-44 starts from M/44'/0'/0'
+    // BIP-44 starts from M/44'/0'
     // Create a root node from which all addresses will be generated
     DeterministicKey trezorRootNode = WalletManager.generateTrezorWalletRootNode(privateMasterKey);
 

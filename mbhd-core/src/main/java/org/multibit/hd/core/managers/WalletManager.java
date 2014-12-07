@@ -680,7 +680,7 @@ public enum WalletManager implements WalletEventListener {
     wallet.setKeychainLookaheadSize(WalletManager.LOOK_AHEAD_SIZE);
 
     // Too much information is revealed for debug
-    log.trace("Just loaded wallet:\n{}", wallet.toString());
+    System.out.println("WalletManager#loadWalletFromfile: Just loaded wallet:\n" + wallet.toString());
 
     return wallet;
   }
@@ -740,6 +740,7 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setPassword(password);
 
       log.debug("Loaded the wallet from {} successfully", walletDirectory);
+      log.debug("Wallet:{}", wallet);
       return walletSummary;
 
     } catch (WalletVersionException wve) {
