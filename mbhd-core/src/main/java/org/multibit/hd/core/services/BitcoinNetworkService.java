@@ -1441,4 +1441,8 @@ public class BitcoinNetworkService extends AbstractService {
   public void setLastWalletOptional(Optional<Wallet> lastWalletOptional) {
     this.lastWalletOptional = lastWalletOptional;
   }
+
+  public BlockStore getBlockStore() {
+    return blockStore;
+  }
 }

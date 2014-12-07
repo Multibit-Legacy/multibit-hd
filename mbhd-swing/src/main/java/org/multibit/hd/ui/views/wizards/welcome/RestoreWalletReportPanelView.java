@@ -44,7 +44,6 @@ import org.spongycastle.crypto.params.KeyParameter;
 
 import javax.swing.*;
 import java.io.File;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -485,25 +484,17 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       byte[] decryptedWalletPasswordBytes = WalletManager.unpadPasswordBytes(decryptedPaddedWalletPasswordBytes);
       String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, "UTF8");
 
-      // No wallet should be present in the welcome wizard
+      // Start the Bitcoin network and synchronize the wallet
+      BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
+
+      // Open the wallet and synchronize the wallet
       WalletManager.INSTANCE.openWalletFromWalletId(
               InstallationManager.getOrCreateApplicationDataDirectory(),
               loadedWalletId,
               decryptedWalletPassword);
 
       // Start the Bitcoin network and synchronize the wallet
-      BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
-      bitcoinNetworkService.start();
-      if (bitcoinNetworkService.isStartedOk()) {
-        bitcoinNetworkService.replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(new Date(walletSummary.getWallet().getEarliestKeyCreationTime())));
-      } else {
-        log.error("Could not start the Bitcoin network service");
-        return false;
-      }
-
-      // Must be OK to be here
-      return true;
-
+      return bitcoinNetworkService.isStartedOk();
     } catch (Exception e) {
       log.error("Failed to restore wallet. Error was '" + e.getMessage() + "'.");
       return false;

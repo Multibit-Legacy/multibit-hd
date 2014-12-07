@@ -265,14 +265,14 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
 
       // If a credentials has been entered, put it into the wallet summary (so that it is available for address generation)
       WalletId walletId = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId();
+      Optional<WalletSummary> currentWalletSummary;
       try {
-        WalletManager.INSTANCE.openWalletFromWalletId(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
+        currentWalletSummary = WalletManager.INSTANCE.openWalletFromWalletId(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
       } catch (WalletLoadException wle) {
         // Wallet did not load - assume credentials was incorrect
         return false;
       }
-      Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-      if (currentWalletSummary.isPresent()) {
+      if (currentWalletSummary != null && currentWalletSummary.isPresent()) {
 
         WalletSummary walletSummary = currentWalletSummary.get();
         walletSummary.setPassword(password);

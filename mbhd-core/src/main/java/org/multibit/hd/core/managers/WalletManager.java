@@ -217,10 +217,6 @@ public enum WalletManager implements WalletEventListener {
           WalletSummary walletSummary = loadFromWalletDirectory(walletDirectory, password);
           setCurrentWalletSummary(walletSummary);
 
-          // Add it to the Bitcoin network services blockchain and peergroup
-          CoreServices.getOrCreateBitcoinNetworkService().addWalletToBlockChain(walletSummary.getWallet());
-          CoreServices.getOrCreateBitcoinNetworkService().addWalletToPeerGroup(walletSummary.getWallet());
-
           try {
             // Wallet is now created - finish off other configuration
             updateConfigurationAndCheckSync(createWalletRoot(walletId), walletDirectory, walletSummary, false);
@@ -557,6 +553,11 @@ public enum WalletManager implements WalletEventListener {
     // Set up auto-save on the wallet.
     addAutoSaveListener(walletSummary.getWallet(), walletSummary.getWalletFile());
 
+     // Add it to the Bitcoin network services blockchain and peergroup
+     log.debug("Adding wallet to blockchain and peergroup");
+     CoreServices.getOrCreateBitcoinNetworkService().addWalletToBlockChain(walletSummary.getWallet());
+     CoreServices.getOrCreateBitcoinNetworkService().addWalletToPeerGroup(walletSummary.getWallet());
+
     // Check if the wallet needs to sync
     checkIfWalletNeedsToSync(walletSummary);
   }
@@ -587,8 +588,13 @@ public enum WalletManager implements WalletEventListener {
           int walletBlockHeight = walletBeingReturned.getLastBlockSeenHeight();
           log.debug("Wallet lastBlockSeenHeight is {}", walletBlockHeight);
 
-          // Open the blockstore with no checkpointing (this is to get the height
-          blockStore = bitcoinNetworkService.openBlockStore(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.<Date>absent());
+          // See if the bitcoinNetworkService already has an open blockstore
+          blockStore = bitcoinNetworkService.getBlockStore();
+
+          if (blockStore == null) {
+            // Open the blockstore with no checkpointing (this is to get the height
+            blockStore = bitcoinNetworkService.openBlockStore(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.<Date>absent());
+          }
           log.debug("blockStore = {}", blockStore);
 
           int blockStoreBlockHeight = -2;  // -2 is just a dummy value
