@@ -52,12 +52,12 @@ public class MainView extends JFrame {
   private boolean showExitingWelcomeWizard = false;
   private boolean showExitingCredentialsWizard = false;
   private boolean isCentered = false;
-  private boolean showTrezorCredentials = false;
 
   /**
    * The credentials type to show when starting the credentials wizard
    */
   private CredentialsRequestType credentialsRequestType = CredentialsRequestType.PASSWORD;
+  private boolean repeatLatestEvents = true;
 
   public MainView() {
 
@@ -76,6 +76,8 @@ public class MainView extends JFrame {
       new WindowAdapter() {
         @Override
         public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+
+          log.info("Hard shutdown from 'window closing' event");
           CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
         }
       });
@@ -143,10 +145,14 @@ public class MainView extends JFrame {
     // Rebuild the main content
     getContentPane().add(createMainContent());
 
-    log.debug("Repeating earlier events...");
+    // Usually the latest events need to be repeated after a configuration change
+    // Switch wallet should ignore them
+    if (repeatLatestEvents) {
+      log.debug("Repeating earlier events...");
 
-    // Catch up on recent events
-    CoreServices.getApplicationEventService().repeatLatestEvents();
+      // Catch up on recent events
+      CoreServices.getApplicationEventService().repeatLatestEvents();
+    }
 
     // Check for any wizards that were showing before the refresh occurred
     if (showExitingWelcomeWizard) {
@@ -227,14 +233,6 @@ public class MainView extends JFrame {
 
     showExitingWelcomeWizard = show;
 
-  }
-
-
-  /**
-   * @return True if the exiting credentials wizard will be shown on a reset
-   */
-  public boolean isShowExitingCredentialsWizard() {
-    return showExitingCredentialsWizard;
   }
 
   /**
@@ -470,5 +468,13 @@ public class MainView extends JFrame {
 
   public CredentialsRequestType getCredentialsRequestType() {
     return credentialsRequestType;
+  }
+
+  public void setRepeatLatestEvents(boolean repeatLatestEvents) {
+    this.repeatLatestEvents = repeatLatestEvents;
+  }
+
+  public boolean isRepeatLatestEvents() {
+    return repeatLatestEvents;
   }
 }

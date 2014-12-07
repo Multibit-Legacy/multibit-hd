@@ -87,18 +87,33 @@ public enum BackupManager {
    * Note that each wallet also have a local copy of the zip backups.
    */
   public void initialise(File applicationDataDirectory, Optional<File> cloudBackupDirectory) {
-    Preconditions.checkNotNull(applicationDataDirectory);
+
+    Preconditions.checkNotNull(applicationDataDirectory,"'applicationDataDirectory' must be present");
+    Preconditions.checkNotNull(cloudBackupDirectory,"'cloudBackupDirectory' must not be null");
 
     this.applicationDataDirectory = applicationDataDirectory;
     this.cloudBackupDirectory = cloudBackupDirectory;
+    this.backupNotifier = SafeExecutors.newSingleThreadScheduledExecutor("backup-notification");
   }
 
   /**
-   * @param shutdownEvent The shutdown event
+   * @param shutdownType The shutdown type
    */
-  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
+  public void shutdownNow(ShutdownEvent.ShutdownType shutdownType) {
 
     this.applicationDataDirectory = null;
+    this.cloudBackupDirectory = Optional.absent();
+
+    // Not initialised yet
+    if (backupNotifier != null) {
+      backupNotifier.shutdownNow();
+      try {
+        backupNotifier.awaitTermination(1, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        log.warn("Timed out waiting for backup to complete");
+      }
+    }
+    backupNotifier = null;
   }
 
   /**
@@ -284,7 +299,7 @@ public enum BackupManager {
     log.debug("Created rolling-backup successfully. Size = " + walletBackupFile.length() + " bytes");
 
     File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletBackupFile, password);
-    log.debug("Created rolling-backup AES copy successfully as file '{}'", encryptedAESCopy == null ? "null" : encryptedAESCopy.getAbsolutePath());
+    log.debug("Created rolling-backup AES copy successfully as file:\n'{}'", encryptedAESCopy == null ? "null" : encryptedAESCopy.getAbsolutePath());
 
     List<File> rollingBackups = getRollingBackups(walletSummary.getWalletId());
 
@@ -415,12 +430,12 @@ public enum BackupManager {
       for (int i = rollingBackupFiles.size(); i > 0; i--) {
         try {
           wallet = WalletManager.INSTANCE.loadWalletFromFile(rollingBackupFiles.get(i - 1), password);
-          log.debug("Wallet at read in from rolling backup file:\n" + wallet.toString());
+          log.debug("Wallet read in from rolling backup file:\n'{}'", wallet.toString());
           fileLoaded = rollingBackupFiles.get(i - 1);
           break;
         } catch (Exception e) {
           // Log the initial error (and then carry on to the next rolling backup
-          log.error("Could not load rolling backup " + rollingBackupFiles.get(i - 1).getAbsolutePath() + ", error was '" + e.getClass().getCanonicalName() + " " + e.getMessage() + "'");
+          log.error("Could not load rolling backup:\n'{}'",rollingBackupFiles.get(i - 1).getAbsolutePath(), e);
         }
       }
 
@@ -431,11 +446,9 @@ public enum BackupManager {
         // Emit backupWalletLoadedEvent for notification on GUI
         // This is delayed a few seconds to ensure the UI has initialised to accept alerts
         if (fileLoaded != null) {
-          log.debug("Loaded backup wallet " + fileLoaded.getAbsolutePath() + " ok.");
+          log.debug("Loaded backup wallet file:\n'{}'", fileLoaded.getAbsolutePath());
         }
-        if (backupNotifier == null) {
-          backupNotifier = SafeExecutors.newSingleThreadScheduledExecutor("backup-notification");
-        }
+
         final File finalFileLoaded = fileLoaded;
         backupNotifier.schedule(new Runnable() {
           @Override

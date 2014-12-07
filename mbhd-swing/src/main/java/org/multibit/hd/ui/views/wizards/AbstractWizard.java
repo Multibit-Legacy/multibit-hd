@@ -210,7 +210,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
         // Can immediately close since no data will be lost
         hide(wizardModel.getPanelName(), true);
 
-        // After panel has hidden fire the shutdown event
+        // After panel has hidden we can initiate the shutdown so that MainController
+        // will gracefully close the application
         CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
       }
     };

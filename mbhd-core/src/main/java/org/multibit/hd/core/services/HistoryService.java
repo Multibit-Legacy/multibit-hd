@@ -12,7 +12,6 @@ import java.util.List;
  * <ul>
  * <li>Common methods for history data access</li>
  * </ul>
- * </p>
  *
  */
 public interface HistoryService {

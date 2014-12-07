@@ -30,9 +30,9 @@ import org.multibit.hd.ui.platform.listener.GenericOpenURIEvent;
  */
 public interface GenericOpenURIHandler extends GenericHandler {
   /**
-   * Called in response to receiving an openWalletFromWalletId URI event
+   * Called in response to receiving an open URI event
    *
-   * @param event The generic openWalletFromWalletId URI event
+   * @param event The generic open URI event
    */
   void openURI(GenericOpenURIEvent event);
 }

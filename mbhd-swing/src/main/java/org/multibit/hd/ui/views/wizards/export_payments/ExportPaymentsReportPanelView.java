@@ -158,7 +158,7 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
       TransactionHeaderConverter transactionHeaderConverter = new TransactionHeaderConverter();
       TransactionConverter transactionConverter = new TransactionConverter();
 
-      CoreServices.getCurrentWalletService().exportPayments(
+      CoreServices.getCurrentWalletService().get().exportPayments(
         exportPaymentsLocationFile,
         stems[0],
         stems[1],

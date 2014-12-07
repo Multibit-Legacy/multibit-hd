@@ -616,7 +616,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     CharSequence password = enterPasswordPanelModel.getEnterPasswordModel().getValue();
 
     if (!"".equals(password)) {
-      // Attempt to openWalletFromWalletId the wallet to check the password
+      // Attempt to open the wallet to check the password
       WalletId walletId = enterPasswordPanelModel.getSelectWalletModel().getValue().getWalletId();
       try {
         WalletManager.INSTANCE.openWalletFromWalletId(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
@@ -649,7 +649,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     }
 
     // Must have failed to be here
-    log.error("Failed attempt to openWalletFromWalletId wallet");
+    log.error("Failed attempt to open wallet");
 
     return false;
 

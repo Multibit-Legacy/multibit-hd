@@ -248,7 +248,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
                   if (newEnabled) {
 
                     // Stop the Bitcoin network to release resources
-                    CoreServices.getOrCreateBitcoinNetworkService().stopAndWait();
+                    CoreServices.stopBitcoinNetworkService();
 
                   }
 
@@ -430,7 +430,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       CoreServices.getOrCreateWalletService(currentWalletSummary.getWalletId());
 
       // Start the Bitcoin network to synchronize
-      CoreServices.getOrCreateBitcoinNetworkService().replayWallet(Optional.of(replayDate.toDate()));
+      CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()));
 
       return true;
 
@@ -495,7 +495,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
       bitcoinNetworkService.start();
       if (bitcoinNetworkService.isStartedOk()) {
-        bitcoinNetworkService.replayWallet(Optional.of(new Date(walletSummary.getWallet().getEarliestKeyCreationTime())));
+        bitcoinNetworkService.replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(new Date(walletSummary.getWallet().getEarliestKeyCreationTime())));
       } else {
         log.error("Could not start the Bitcoin network service");
         return false;

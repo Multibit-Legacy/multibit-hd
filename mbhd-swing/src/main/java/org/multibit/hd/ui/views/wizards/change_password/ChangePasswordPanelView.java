@@ -288,7 +288,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
     }
 
     // Must have failed to be here
-    log.error("Failed attempt to openWalletFromWalletId wallet - old credentials was incorrect");
+    log.error("Failed attempt to open wallet - old credentials was incorrect");
 
     return false;
 

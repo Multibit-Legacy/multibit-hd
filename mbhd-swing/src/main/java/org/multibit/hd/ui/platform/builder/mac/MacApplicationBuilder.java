@@ -62,13 +62,13 @@ public class MacApplicationBuilder {
    *
    *  application.setOpenURIHandler(new OpenURIHandler() {
    *      void openURI(AppEvent.OpenURIEvent event) {
-   *          // Fire the internal openWalletFromWalletId file event
+   *          // Fire the internal open file event
    *      }
    *  });
    *
    *  application.setOpenFileHandler(new OpenFilesHandler() {
    *      void openFiles(AppEvent.OpenFilesEvent event) {
-   *          // Fire the internal openWalletFromWalletId file event
+   *          // Fire the internal open file event
    *      }
    *  });
    *

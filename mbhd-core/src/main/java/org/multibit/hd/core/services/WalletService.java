@@ -49,7 +49,7 @@ import java.util.concurrent.ExecutorService;
  * <p/>
  * Most of the functionality is provided by WalletManager and BackupManager.
  */
-public class WalletService {
+public class WalletService extends AbstractService {
 
   private static final Logger log = LoggerFactory.getLogger(WalletService.class);
 
@@ -117,6 +117,31 @@ public class WalletService {
     this.networkParameters = networkParameters;
 
     CoreServices.uiEventBus.register(this);
+  }
+
+  @Override
+  protected boolean startInternal() {
+
+    Preconditions.checkNotNull(walletId,"No walletId - have you called initialise() first?");
+
+    return true;
+  }
+
+  @Override
+  protected boolean shutdownNowInternal(ShutdownEvent.ShutdownType shutdownType) {
+
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+
+      try {
+        writePayments();
+      } catch (PaymentsSaveException pse) {
+        // Cannot do much as shutting down
+        log.error("Failed to write payments.", pse);
+      }
+    }
+
+    // Always treat as a hard shutdown
+    return true;
   }
 
   /**
@@ -350,7 +375,7 @@ public class WalletService {
     // Also works out outputAddresses
 
     // Include the raw serialized form of the transaction for lowest level viewing
-    String rawTransaction = transaction.toString()+"\n"+Utils.HEX.encode(transaction.bitcoinSerialize())+"\n";
+    String rawTransaction = transaction.toString() + "\n" + Utils.HEX.encode(transaction.bitcoinSerialize()) + "\n";
 
     int size = -1;
     ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
@@ -1006,25 +1031,6 @@ public class WalletService {
 
       log.trace("Created TransactionInfo: {}", transactionInfo.toString());
       transactionInfoMap.put(transactionSeenEvent.getTransactionId(), transactionInfo);
-    }
-  }
-
-  /**
-   * @param shutdownEvent The shutdown event
-   */
-  @Subscribe
-  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
-
-    if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      // Nothing to write
-      return;
-    }
-
-    try {
-      writePayments();
-    } catch (PaymentsSaveException pse) {
-      // Cannot do much as shutting down
-      log.error("Failed to write payments.", pse);
     }
   }
 

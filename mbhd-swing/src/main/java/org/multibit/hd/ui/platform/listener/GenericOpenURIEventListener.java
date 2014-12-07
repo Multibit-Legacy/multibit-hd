@@ -29,7 +29,7 @@ package org.multibit.hd.ui.platform.listener;
  */
 public interface GenericOpenURIEventListener {
   /**
-   * Received when the application receives an openWalletFromWalletId URI event
+   * Received when the application receives an open URI event
    *
    * @param event The event
    */

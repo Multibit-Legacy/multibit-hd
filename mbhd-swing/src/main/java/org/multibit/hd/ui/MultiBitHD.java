@@ -2,9 +2,9 @@ package org.multibit.hd.ui;
 
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.OSUtils;
@@ -55,7 +55,7 @@ public class MultiBitHD {
     if (!multiBitHD.start(args)) {
 
       // Failed to start so issue a hard shutdown
-      multiBitHD.stop(ShutdownEvent.ShutdownType.HARD);
+      CoreServices.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 
     } else {
 
@@ -108,15 +108,6 @@ public class MultiBitHD {
   }
 
   /**
-   * @param shutdownType The shutdown type to use
-   */
-  public void stop(ShutdownEvent.ShutdownType shutdownType) {
-
-    CoreEvents.fireShutdownEvent(shutdownType);
-
-  }
-
-  /**
    * <p>Initialise the JVM. This occurs before anything else is called.</p>
    */
   private void initialiseJVM() throws Exception {
@@ -159,6 +150,12 @@ public class MultiBitHD {
         addOSXKeyStrokes((InputMap) UIManager.get("EditorPane.focusInputMap"));
 
       }
+
+      // Configure SSL certificates without forcing and set up the local CA trust store
+      SSLManager.INSTANCE.installCACertificates(
+        InstallationManager.getOrCreateApplicationDataDirectory(),
+        InstallationManager.CA_CERTS_NAME,
+        false);
 
     } catch (SecurityException se) {
       log.error(se.getClass().getName() + " " + se.getMessage());

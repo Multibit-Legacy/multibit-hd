@@ -68,7 +68,7 @@ public class WalletServiceTest {
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     walletId = new WalletId(seed1);
 
-    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
     InstallationManager.setCurrentApplicationDataDirectory(temporaryDirectory);
 
     long nowInSeconds = Dates.nowInSeconds();

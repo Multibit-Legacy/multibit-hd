@@ -3,6 +3,7 @@ package org.multibit.hd.core.services;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
@@ -29,17 +30,8 @@ public class SecurityCheckingService extends AbstractService {
    */
   private DateTime nextDebuggerAlert = Dates.nowUtc().minusSeconds(1);
 
-  /**
-   * Initialise to allow single security alert for system time drift
-   */
-  private DateTime nextSystemTimeDriftAlert = Dates.nowUtc().minusSeconds(1);
-
-  public SecurityCheckingService() {
-    CoreServices.uiEventBus.register(this);
-  }
-
   @Override
-  public boolean start() {
+  public boolean startInternal() {
 
     log.debug("Starting security service");
 
@@ -55,6 +47,7 @@ public class SecurityCheckingService extends AbstractService {
           // Check frequently for a Java debugger being attached
           // to get immediate detection
           if (OSUtils.isDebuggerAttached()) {
+            // TODO Reinstate this
             //handleDebuggerAttached();
           }
 
@@ -79,6 +72,12 @@ public class SecurityCheckingService extends AbstractService {
 
     return true;
 
+  }
+
+  @Override
+  protected boolean shutdownNowInternal(ShutdownEvent.ShutdownType shutdownType) {
+    // Service can survive a switch
+    return preventCleanupOnSwitch(shutdownType);
   }
 
 }

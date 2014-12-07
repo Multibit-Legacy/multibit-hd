@@ -28,7 +28,9 @@ import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 
 import java.io.File;
@@ -48,35 +50,43 @@ public class BackupManagerTest {
 
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
+    // Start the core services
+    CoreServices.main(null);
+
   }
 
   @After
   public void tearDown() throws Exception {
 
-    InstallationManager.reset();
+    // Order is important here
+    CoreServices.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
 
+    InstallationManager.reset();
+    BackupManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.HARD);
+    WalletManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.HARD);
   }
 
   @Test
   public void testBackupWallet() throws IOException {
 
-    // Get the application directory (will be temporary for unit tests)
+    // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Create a random temporary directory in which to store the cloud backups
-    File temporaryBackupDirectory = SecureFiles.createTemporaryDirectory();
+    File temporaryCloudBackupDirectory = SecureFiles.createTemporaryDirectory();
 
     BackupManager backupManager = BackupManager.INSTANCE;
 
-    // Initialise the backup manager to point at the temporary backup directory
-    backupManager.initialise(applicationDirectory, Optional.of(temporaryBackupDirectory));
+    // Initialise the backup manager to point at the temporary cloud backup directory
+    backupManager.initialise(applicationDirectory, Optional.of(temporaryCloudBackupDirectory));
 
+    // Create a temporary seed phrase
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     long nowInSeconds = Dates.nowInSeconds();
     String password = "credentials";
 
-    // Create a wallet summary
+    // Create a wallet summary (requires a backup manager to be in place)
     WalletSummary walletSummary = WalletManager
       .INSTANCE
       .getOrCreateMBHDSoftWalletSummaryFromSeed(
@@ -99,7 +109,7 @@ public class BackupManagerTest {
     assertThat(localBackups).isNotNull();
     assertThat(localBackups.size()).isEqualTo(1);
 
-    List<BackupSummary> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletSummary.getWalletId(), temporaryBackupDirectory);
+    List<BackupSummary> cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletSummary.getWalletId(), temporaryCloudBackupDirectory);
     assertThat(cloudBackups).isNotNull();
     assertThat(cloudBackups.size()).isEqualTo(1);
 
@@ -117,7 +127,7 @@ public class BackupManagerTest {
     assertThat(localBackups.size()).isEqualTo(2);
 
     // Check that a backup copy has been saved in the cloud backup directory
-    cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletSummary.getWalletId(), temporaryBackupDirectory);
+    cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletSummary.getWalletId(), temporaryCloudBackupDirectory);
     assertThat(cloudBackups).isNotNull();
     assertThat(cloudBackups.size()).isEqualTo(2);
 

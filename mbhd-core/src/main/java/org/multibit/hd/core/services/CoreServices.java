@@ -2,9 +2,8 @@ package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
-import com.google.common.util.concurrent.Uninterruptibles;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import org.bitcoinj.utils.Threading;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.multibit.hd.brit.crypto.PGPUtils;
@@ -41,8 +40,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Factory to provide the following to application API:</p>
@@ -74,59 +71,62 @@ public class CoreServices {
 
   /**
    * Keep track of selected application events (e.g. exchange rate changes, security alerts etc)
+   * Not an optional service
    */
   private static ApplicationEventService applicationEventService;
 
   /**
    * Keep track of security events (e.g. debugger, file permissions etc) across all wallets
+   * Not an optional service
    */
   private static SecurityCheckingService securityCheckingService;
 
   /**
    * Keep track of shutdown events and ensure the configuration is persisted
+   * Not an optional service
    */
   private static ConfigurationService configurationService;
 
   /**
-   * Keep track of the Bitcoin network
+   * Keep track of the Bitcoin network for the current wallet
+   * Optional service until wallet is unlocked
    */
-  private static BitcoinNetworkService bitcoinNetworkService;
+  private static Optional<BitcoinNetworkService> bitcoinNetworkService = Optional.absent();
 
   /**
-   * Keep track of the hardware wallets
+   * Keep track of the hardware wallet service for the application
+   * Optional service if system does not support hardware wallets (or none attached)
    */
   private static Optional<HardwareWalletService> hardwareWalletService = Optional.absent();
 
   /**
-   * Keeps track of all the contact services against hard and soft wallets
+   * Keeps track of the contact service for the current wallet
+   * Optional service until wallet is unlocked
    */
-  private static Map<WalletId, ContactService> contactServiceMap = Maps.newHashMap();
+  private static Optional<PersistentContactService> contactService = Optional.absent();
 
   /**
-   * Keeps track of all the wallet services against hard and soft wallets
+   * Keeps track of the wallet service for the current wallet
+   * Optional service until wallet is unlocked
    */
-  private static Map<WalletId, WalletService> walletServiceMap = Maps.newHashMap();
+  private static Optional<WalletService> walletService = Optional.absent();
 
   /**
-   * Keeps track of all the history services against hard and soft wallets
+   * Keeps track of the history service for the current wallet
+   * Optional service until wallet is unlocked
    */
-  private static Map<WalletId, HistoryService> historyServiceMap = Maps.newHashMap();
+  private static Optional<PersistentHistoryService> historyService = Optional.absent();
 
   /**
-   * Keep track of the backup service
+   * Keeps track of the backup service for the current wallet
+   * Optional service until wallet is unlocked
    */
-  private static BackupService backupService;
+  private static Optional<BackupService> backupService = Optional.absent();
 
-  static {
-
-    // Order is important here
-    applicationEventService = new ApplicationEventService();
-    securityCheckingService = new SecurityCheckingService();
-    configurationService = new ConfigurationService();
-
-  }
-
-  private static ContactService currentContactService;
+  /**
+   * Manages CoreService startup and shutdown operations
+   */
+  private static ListeningExecutorService coreServices = SafeExecutors.newFixedThreadPool(10, "core-services");
 
   /**
    * Utilities have a private constructor
@@ -141,11 +141,18 @@ public class CoreServices {
    */
   public static void main(String[] args) {
 
+    // Order is important here
+    applicationEventService = new ApplicationEventService();
+    securityCheckingService = new SecurityCheckingService();
+    configurationService = new ConfigurationService();
+
     // Start the logging factory
     LoggingFactory.bootstrap();
 
-    log.debug("Loading configuration...");
+    // Start the configuration service to ensure shutdown events are trapped
+    configurationService.start();
 
+    log.debug("Loading configuration...");
     Optional<Configuration> configuration;
     try (InputStream is = new FileInputStream(InstallationManager.getConfigurationFile())) {
       // Load configuration (providing a default if none exists)
@@ -168,6 +175,9 @@ public class CoreServices {
     // Start security checking service
     securityCheckingService.start();
 
+    // Start application event service
+    applicationEventService.start();
+
     // Configure Bitcoinj
     Threading.UserThread.WARNING_THRESHOLD = Integer.MAX_VALUE;
 
@@ -179,64 +189,99 @@ public class CoreServices {
    *
    * @param shutdownType The
    */
-  public static synchronized void shutdown(final ShutdownEvent.ShutdownType shutdownType) {
+  public static synchronized void shutdownNow(final ShutdownEvent.ShutdownType shutdownType) {
 
     switch (shutdownType) {
       case HARD:
-        SafeExecutors.newFixedThreadPool(1, "hard-shutdown").execute(
-          new Runnable() {
-            @Override
-            public void run() {
+        log.info("Applying hard shutdown.");
 
-              log.info("Applying hard shutdown. Waiting for processes to clean up...");
+        shutdownWalletSupportServices(shutdownType);
+        shutdownApplicationSupportServices(shutdownType);
 
-              // Provide a short delay while modules deal with the ShutdownEvent
-              // Safe executors will trigger on the System.exit() itself
-              Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-
-              log.info("Issuing system exit");
-              System.exit(0);
-            }
-          });
+        log.info("Issuing system exit");
+        System.exit(0);
         break;
       case SOFT:
-        SafeExecutors.newFixedThreadPool(1, "soft-shutdown").execute(
-          new Runnable() {
-            @Override
-            public void run() {
+        log.info("Applying soft shutdown.");
 
-              log.info("Applying soft shutdown. Waiting for processes to clean up...");
+        shutdownWalletSupportServices(shutdownType);
+        shutdownApplicationSupportServices(shutdownType);
 
-              if (hardwareWalletService.isPresent()) {
-                hardwareWalletService.get().stopAndWait();
-              }
+        // Reset the event handler
+        uiEventBus = new EventBus();
 
-              // Provide a short delay while modules deal with the ShutdownEvent
-              // Safe executors will trigger on the System.exit() itself
-              Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-
-              log.info("Resetting services and events");
-
-              // Reset the existing services
-              bitcoinNetworkService = null;
-              hardwareWalletService = Optional.absent();
-              contactServiceMap = Maps.newHashMap();
-              walletServiceMap = Maps.newHashMap();
-              historyServiceMap = Maps.newHashMap();
-
-              // Reset the event handler
-              uiEventBus = new EventBus();
-
-              // Suggest a garbage collection
-              System.gc();
-            }
-          });
+        // Suggest a garbage collection
+        System.gc();
         break;
-      case STANDBY:
+      case SWITCH:
+        log.info("Applying wallet switch.");
+
+        shutdownWalletSupportServices(shutdownType);
+
+        // Suggest a garbage collection
+        System.gc();
         break;
     }
 
+  }
 
+  /**
+   * <p>Shutdown all application support services (non-optional)</p>
+   *
+   * @param shutdownType The shutdown type providing context
+   */
+  private static void shutdownWalletSupportServices(ShutdownEvent.ShutdownType shutdownType) {
+
+    // Shutdown non-managed services
+    if (hardwareWalletService.isPresent()) {
+      hardwareWalletService.get().stopAndWait();
+    }
+
+    // Allow graceful shutdown of managed services in the correct order
+    shutdownService(contactService, shutdownType);
+    shutdownService(historyService, shutdownType);
+
+    // Close the Bitcoin network service (peer group, save wallet etc)
+    shutdownService(bitcoinNetworkService, shutdownType);
+    shutdownService(walletService, shutdownType);
+    shutdownService(backupService, shutdownType);
+
+    // Clear the references
+    bitcoinNetworkService = Optional.absent();
+    hardwareWalletService = Optional.absent();
+    contactService = Optional.absent();
+    walletService = Optional.absent();
+    historyService = Optional.absent();
+    backupService = Optional.absent();
+
+  }
+
+  /**
+   * <p>Shutdown all application support services (non-optional)</p>
+   *
+   * @param shutdownType The shutdown type providing context
+   */
+  private static void shutdownApplicationSupportServices(ShutdownEvent.ShutdownType shutdownType) {
+
+    // Allow graceful shutdown in the correct order
+    configurationService.shutdownNow(shutdownType);
+    securityCheckingService.shutdownNow(shutdownType);
+    applicationEventService.shutdownNow(shutdownType);
+
+    // Do not clear references since it leads to complex behaviour during shutdown
+
+  }
+
+  /**
+   * <p>Shutdown a managed service</p>
+   *
+   * @param service      The service
+   * @param shutdownType The shutdown type providing context
+   */
+  private static void shutdownService(Optional<? extends ManagedService> service, ShutdownEvent.ShutdownType shutdownType) {
+    if (service.isPresent()) {
+      service.get().shutdownNow(shutdownType);
+    }
   }
 
   /**
@@ -244,9 +289,15 @@ public class CoreServices {
    *
    * @return A new exchange service based on the current configuration
    */
-  public static ExchangeTickerService newExchangeService(BitcoinConfiguration bitcoinConfiguration) {
-    log.trace("Creating new exchange ticker service");
-    return new ExchangeTickerService(bitcoinConfiguration);
+  public static ExchangeTickerService createAndStartExchangeService(BitcoinConfiguration bitcoinConfiguration) {
+
+    // Breaks the "get or create" pattern because it is used to examine all exchanges
+
+    log.debug("Create and start new exchange ticker service");
+    final ExchangeTickerService exchangeTickerService = new ExchangeTickerService(bitcoinConfiguration);
+    exchangeTickerService.start();
+
+    return exchangeTickerService;
 
   }
 
@@ -255,7 +306,7 @@ public class CoreServices {
    */
   public static synchronized Optional<HardwareWalletService> getOrCreateHardwareWalletService() {
 
-    log.trace("Get hardware wallet service");
+    log.debug("Get hardware wallet service");
     if (!hardwareWalletService.isPresent()) {
 
       // Attempt Trezor support
@@ -294,6 +345,7 @@ public class CoreServices {
    */
   public static void stopHardwareWalletService(Collection<Object> listeners) {
 
+    log.debug("Stop hardware wallet service");
     hardwareWalletService.get().stopAndWait();
     for (Object listener : listeners) {
       HardwareWalletService.hardwareWalletEventBus.unregister(listener);
@@ -306,19 +358,21 @@ public class CoreServices {
    * @return Create a new backup service or return the extant one
    */
   public static BackupService getOrCreateBackupService() {
-    log.trace("Getting backup service");
-    if (backupService == null) {
-      backupService = new BackupService();
+
+    log.debug("Getting backup service");
+    if (!backupService.isPresent()) {
+      backupService = Optional.of(new BackupService());
     }
 
-    return backupService;
+    return backupService.get();
   }
 
   /**
    * @return Create a new seed phrase generator
    */
   public static SeedPhraseGenerator newSeedPhraseGenerator() {
-    log.trace("Creating new BIP39 seed phrase generator");
+
+    log.debug("Creating new BIP39 seed phrase generator");
     return new Bip39SeedPhraseGenerator();
   }
 
@@ -334,21 +388,158 @@ public class CoreServices {
    * @return The security checking service singleton
    */
   public static SecurityCheckingService getSecurityCheckingService() {
-    log.trace("Get security checking service");
+    log.debug("Get security checking service");
     return securityCheckingService;
   }
 
   /**
-   * @return The Bitcoin network service
+   * @return The configuration service singleton
+   */
+  public static ConfigurationService getConfigurationService() {
+    log.debug("Get configuration service");
+    return configurationService;
+  }
+
+  /**
+   * @return The started Bitcoin network service (will have a block store)
    */
   public static synchronized BitcoinNetworkService getOrCreateBitcoinNetworkService() {
 
-    log.trace("Get Bitcoin network service");
-    if (bitcoinNetworkService == null || !bitcoinNetworkService.isStartedOk()) {
-      bitcoinNetworkService = new BitcoinNetworkService(BitcoinNetwork.current().get());
-    }
-    return bitcoinNetworkService;
+    log.debug("Get Bitcoin network service");
 
+    // Require session singleton so only a null will create a new instance
+    if (!bitcoinNetworkService.isPresent()) {
+      bitcoinNetworkService = Optional.of(new BitcoinNetworkService(BitcoinNetwork.current().get()));
+      bitcoinNetworkService.get().start();
+    }
+    return bitcoinNetworkService.get();
+
+  }
+
+  /**
+   * <p>Stop the Bitcoin network service and allow garbage collection</p>
+   *
+   * <p>This occurs on the CoreServices task thread</p>
+   */
+  public static synchronized void stopBitcoinNetworkService() {
+
+    log.debug("Stop Bitcoin network service");
+    coreServices.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          if (bitcoinNetworkService.isPresent()) {
+            bitcoinNetworkService.get().shutdownNow(ShutdownEvent.ShutdownType.HARD);
+            bitcoinNetworkService = Optional.absent();
+          }
+        }
+      });
+
+  }
+
+  /**
+   * @return The wallet service for the current wallet
+   */
+  public static Optional<WalletService> getCurrentWalletService() {
+
+    return walletService;
+
+  }
+
+  /**
+   * @param walletId The wallet ID for the wallet
+   *
+   * @return The started wallet service for the given wallet ID
+   */
+  public static WalletService getOrCreateWalletService(WalletId walletId) {
+
+    log.debug("Get or create wallet service");
+
+    Preconditions.checkNotNull(walletId, "'walletId' must be present");
+
+    // Check if the wallet service has been created for this wallet ID
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+    if (!walletService.isPresent()) {
+      walletService = Optional.of(new WalletService(BitcoinNetwork.current().get()));
+      walletService.get().initialise(applicationDirectory, walletId);
+      walletService.get().start();
+    }
+
+    // Return the wallet service
+    return walletService.get();
+
+  }
+
+  /**
+   * @return The contact service for the current wallet
+   */
+  public static ContactService getCurrentContactService() {
+
+    log.debug("Get current contact service");
+
+    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present. No wallet is present.");
+
+    WalletId walletId = currentWalletSummary.get().getWalletId();
+
+    return getOrCreateContactService(walletId);
+  }
+
+
+  /**
+   * @return The history service for the current wallet
+   */
+  public static HistoryService getCurrentHistoryService() {
+
+    log.debug("Get current history service");
+
+    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present. No wallet is present.");
+
+    WalletId walletId = currentWalletSummary.get().getWalletId();
+
+    return getOrCreateHistoryService(walletId);
+  }
+
+  /**
+   * @return The history service for a wallet (single soft, multiple hard)
+   */
+  public static HistoryService getOrCreateHistoryService(WalletId walletId) {
+
+    log.debug("Get or create history service");
+
+    Preconditions.checkNotNull(walletId, "'walletId' must be present");
+
+    if (!historyService.isPresent()) {
+      historyService = Optional.of(new PersistentHistoryService(walletId));
+    }
+
+    // Return the existing or new history service
+    return historyService.get();
+
+  }
+
+  /**
+   * @param walletId The wallet ID for the wallet
+   *
+   * @return The contact service for a wallet
+   */
+  public static ContactService getOrCreateContactService(WalletId walletId) {
+
+    log.debug("Get or create contact service");
+
+    Preconditions.checkNotNull(walletId, "'walletId' must be present");
+
+    // Check if the contact service has been created for this wallet ID
+    if (!contactService.isPresent()) {
+      contactService = Optional.of(new PersistentContactService(walletId));
+    }
+
+    // Return the existing or new contact service
+    return contactService.get();
   }
 
   /**
@@ -371,122 +562,10 @@ public class CoreServices {
   }
 
   /**
-   * @return The wallet service for the current wallet
-   */
-  public static WalletService getCurrentWalletService() {
-
-    log.trace("Get current wallet service");
-
-    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-
-    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present. No wallet is openWalletFromWalletId.");
-
-    WalletId walletId = currentWalletSummary.get().getWalletId();
-
-    return getOrCreateWalletService(walletId);
-
-  }
-
-  /**
-   * @return The contact service for the current wallet
-   */
-  public static ContactService getCurrentContactService() {
-
-    log.trace("Get current contact service");
-
-    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-
-    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present. No wallet is openWalletFromWalletId.");
-
-    WalletId walletId = currentWalletSummary.get().getWalletId();
-
-    return getOrCreateContactService(walletId);
-  }
-
-  /**
-   * @return The history service for the current wallet
-   */
-  public static HistoryService getCurrentHistoryService() {
-
-    log.trace("Get current history service");
-
-    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-
-    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present. No wallet is openWalletFromWalletId.");
-
-    WalletId walletId = currentWalletSummary.get().getWalletId();
-
-    return getOrCreateHistoryService(walletId);
-  }
-
-
-  /**
-   * @return The wallet service for a wallet (single soft, multiple hard)
-   */
-  public static WalletService getOrCreateWalletService(WalletId walletId) {
-
-    log.trace("Get or create wallet service");
-
-    Preconditions.checkNotNull(walletId, "'walletId' must be present");
-
-    // Check if the wallet service has been created for this wallet ID
-    if (!walletServiceMap.containsKey(walletId)) {
-      File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-
-      WalletService walletService = new WalletService(BitcoinNetwork.current().get());
-      walletService.initialise(applicationDirectory, walletId);
-      walletServiceMap.put(walletId, walletService);
-    }
-
-    // Return the existing or new wallet service
-    return walletServiceMap.get(walletId);
-
-  }
-
-  /**
-   * @return The history service for a wallet (single soft, multiple hard)
-   */
-  public static HistoryService getOrCreateHistoryService(WalletId walletId) {
-
-    log.trace("Get or create history service");
-
-    Preconditions.checkNotNull(walletId, "'walletId' must be present");
-
-    // Check if the history service has been created for this wallet ID
-    if (!historyServiceMap.containsKey(walletId)) {
-      historyServiceMap.put(walletId, new PersistentHistoryService(walletId));
-    }
-
-    // Return the existing or new history service
-    return historyServiceMap.get(walletId);
-
-  }
-
-  /**
-   * @param walletId The wallet ID for the wallet
-   *
-   * @return The contact service for a wallet
-   */
-  public static ContactService getOrCreateContactService(WalletId walletId) {
-
-    log.trace("Get or create contact service");
-
-    Preconditions.checkNotNull(walletId, "'walletId' must be present");
-
-    // Check if the contact service has been created for this wallet ID
-    if (!contactServiceMap.containsKey(walletId)) {
-      contactServiceMap.put(walletId, new PersistentContactService(walletId));
-    }
-
-    // Return the existing or new contact service
-    return contactServiceMap.get(walletId);
-  }
-
-  /**
    * @return A BRIT fee service pointing to the live Matcher machine
    */
   public static FeeService createFeeService() throws CoreException {
-    log.trace("Create fee service");
+    log.debug("Create fee service");
 
     ClassLoader classloader = Thread.currentThread().getContextClassLoader();
     InputStream pgpPublicKeyInputStream = classloader.getResourceAsStream(LIVE_MATCHER_PUBLIC_KEY_FILE);

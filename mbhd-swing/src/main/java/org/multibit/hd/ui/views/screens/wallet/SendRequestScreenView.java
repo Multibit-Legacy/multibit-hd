@@ -74,7 +74,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
   @Override
   public JPanel initialiseScreenViewPanel() {
 
-    walletService = CoreServices.getCurrentWalletService();
+    walletService = CoreServices.getCurrentWalletService().get();
 
     MigLayout layout = new MigLayout(
       Panels.migXYDetailLayout(),

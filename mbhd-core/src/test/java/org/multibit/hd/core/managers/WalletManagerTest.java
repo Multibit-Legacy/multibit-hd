@@ -33,6 +33,7 @@ import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
@@ -99,18 +100,23 @@ public class WalletManagerTest {
   @After
   public void tearDown() throws Exception {
 
+    // Order is important here
+    CoreServices.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
+
     InstallationManager.reset();
+    BackupManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.HARD);
+    WalletManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 
   }
 
   @Test
   public void testCreateWallet() throws Exception {
 
-    // Get the application directory (will be temporary for unit tests)
+    // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     WalletManager walletManager = WalletManager.INSTANCE;
-    BackupManager.INSTANCE.initialise(applicationDirectory, null);
+    BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
@@ -133,7 +139,7 @@ public class WalletManagerTest {
 
     // Create another wallet - it should have the same wallet id and the private key should be the same
     File applicationDirectory2 = SecureFiles.createTemporaryDirectory();
-    BackupManager.INSTANCE.initialise(applicationDirectory2, null);
+    BackupManager.INSTANCE.initialise(applicationDirectory2, Optional.<File>absent());
 
     WalletSummary walletSummary2 = walletManager
             .getOrCreateMBHDSoftWalletSummaryFromSeed(
@@ -174,11 +180,11 @@ public class WalletManagerTest {
    */
   public void testCreateTrezorWallet() throws Exception {
 
-    // Get the application directory (will be temporary for unit tests)
+    // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     WalletManager walletManager = WalletManager.INSTANCE;
-    BackupManager.INSTANCE.initialise(applicationDirectory, null);
+    BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     long nowInSeconds = Dates.nowInSeconds();
 
@@ -307,11 +313,19 @@ public class WalletManagerTest {
   @Test
   public void testSignAndVerifyMessage() throws Exception {
 
-    // Get the application directory (will be temporary for unit tests)
+    // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
+    // Create a random temporary directory in which to store the cloud backups
+    File temporaryCloudBackupDirectory = SecureFiles.createTemporaryDirectory();
+
+    BackupManager backupManager = BackupManager.INSTANCE;
+
+    // Initialise the backup manager to point at the temporary cloud backup directory
+    backupManager.initialise(applicationDirectory, Optional.of(temporaryCloudBackupDirectory));
+
     WalletManager walletManager = WalletManager.INSTANCE;
-    BackupManager.INSTANCE.initialise(applicationDirectory, null);
+    BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
@@ -402,16 +416,17 @@ public class WalletManagerTest {
     passwordList.add(LONGEST_PASSWORD);
 
     for (String passwordToCheck : passwordList) {
-      // Get the application directory (will be temporary for unit tests)
+
+      log.info("Testing password: {}", passwordToCheck);
+
+      // Get the application directory (should be fresh due to unit test cycle earlier)
       File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
       WalletManager walletManager = WalletManager.INSTANCE;
-      BackupManager.INSTANCE.initialise(applicationDirectory, null);
 
       SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
       byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
       long nowInSeconds = Dates.nowInSeconds();
-
 
       WalletSummary walletSummary = walletManager
               .getOrCreateMBHDSoftWalletSummaryFromSeed(
@@ -427,7 +442,7 @@ public class WalletManagerTest {
       byte[] foundEncryptedBackupKey = walletSummary.getEncryptedBackupKey();
       byte[] foundEncryptedPaddedPassword = walletSummary.getEncryptedPassword();
 
-      log.debug("Length of padded encrypted credentials = " + foundEncryptedPaddedPassword.length);
+      log.debug("Length of padded encrypted credentials: {}", foundEncryptedPaddedPassword.length);
 
       // Check that the encrypted credentials length is always equal to at least 3 x the AES block size of 16 bytes i.e 48 bytes.
       // This ensures that the existence of short passwords is not leaked from the length of the encrypted credentials
@@ -442,6 +457,11 @@ public class WalletManagerTest {
       KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(passwordBytes, WalletManager.SCRYPT_SALT);
       byte[] decryptedFoundBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(foundEncryptedBackupKey, walletPasswordDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
       assertThat(Arrays.equals(seedDerivedAESKey.getKey(), decryptedFoundBackupAESKey)).isTrue();
+
+      // Perform a unit test cycle to ensure we reset all services correctly
+      tearDown();
+      setUp();
+
     }
   }
 

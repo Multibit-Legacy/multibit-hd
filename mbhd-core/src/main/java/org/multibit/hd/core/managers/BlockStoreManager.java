@@ -64,13 +64,14 @@ public class BlockStoreManager {
       if (blockStoreFile.exists()) {
         boolean isWritable = blockStoreFile.setWritable(true);
         boolean isDeletedOk = blockStoreFile.delete();
-        log.debug("Deleting SPV block store (first pass).\nFilename: '{}' isWritable: '{}' isDeletedOK: '{}'", blockStoreFile.getAbsolutePath(), isWritable, isDeletedOk);
+        log.debug("Deleting SPV block store (pass 1) from file:\n'{}'", blockStoreFile.getAbsolutePath());
+        log.debug("isWritable: '{}' isDeletedOK: '{}'", isWritable, isDeletedOk);
       }
       blockStoreCreatedNew = true;
 
     }
 
-    log.debug("Get or create SPV block store '{}'", blockStoreFile.getAbsolutePath());
+    log.debug("Get or create SPV block store (pass 1):\n'{}'", blockStoreFile.getAbsolutePath());
     BlockStore blockStore;
     try {
       blockStore = new SPVBlockStore(networkParameters, blockStoreFile);
@@ -84,7 +85,8 @@ public class BlockStoreManager {
         System.gc();
         boolean isWritable = blockStoreFile.setWritable(true);
         boolean isDeletedOk = blockStoreFile.delete();
-        log.debug("Deleting SPV block store (second pass).\nFilename: '{}' isWritable: '{}' isDeletedOK: '{}'", blockStoreFile.getAbsolutePath(), isWritable, isDeletedOk);
+        log.info("Deleting SPV block store (pass 2) from file:\n'{}'", blockStoreFile.getAbsolutePath());
+        log.info("isWritable: '{}' isDeletedOK: '{}'", isWritable, isDeletedOk);
         blockStoreCreatedNew = true;
 
         blockStore = new SPVBlockStore(networkParameters, blockStoreFile);
@@ -100,7 +102,7 @@ public class BlockStoreManager {
     // Load the existing checkpoint file and checkpoint from today.
     if (checkpointsFile.exists()) {
 
-      log.debug("Checkpoints exist attempting to stream from '{}'", checkpointsFile.getAbsolutePath());
+      log.debug("Checkpoints exist attempting to stream from:\n'{}'", checkpointsFile.getAbsolutePath());
 
       try (FileInputStream checkpointsInputStream = new FileInputStream(checkpointsFile)) {
 

@@ -95,7 +95,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     JButton undoButton = Buttons.newUndoButton(getUndoAction());
     JButton exportButton = Buttons.newExportButton(getExportAction());
 
-    WalletService walletService = CoreServices.getCurrentWalletService();
+    WalletService walletService = CoreServices.getCurrentWalletService().get();
     List<PaymentData> paymentList = walletService.getPaymentDataList();
 
     paymentsTable = Tables.newPaymentsTable(paymentList, detailsButton);
@@ -185,7 +185,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
             // Remember the selected row
             int selectedTableRow = paymentsTable.getSelectedRow();
 
-            WalletService walletService = CoreServices.getCurrentWalletService();
+            WalletService walletService = CoreServices.getCurrentWalletService().get();
 
             // Refresh the wallet payment list if asked
             if (refreshData) {
@@ -201,7 +201,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
               paymentsTable.changeSelection(selectedTableRow, 0, false, false);
             }
           } catch (IllegalStateException ise) {
-            // No wallet is openWalletFromWalletId - nothing to do
+            // No wallet is open - nothing to do
           }
         }
       });
@@ -218,7 +218,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        WalletService walletService = CoreServices.getCurrentWalletService();
+        WalletService walletService = CoreServices.getCurrentWalletService().get();
 
         int selectedTableRow = paymentsTable.getSelectedRow();
 
@@ -268,7 +268,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        CoreServices.getCurrentWalletService().undoDeletePaymentRequest();
+        CoreServices.getCurrentWalletService().get().undoDeletePaymentRequest();
         fireWalletDetailsChanged();
 
       }
@@ -295,7 +295,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
         if (paymentData instanceof PaymentRequestData) {
           // We can delete this
-          CoreServices.getCurrentWalletService().deletePaymentRequest((PaymentRequestData) paymentData);
+          CoreServices.getCurrentWalletService().get().deletePaymentRequest((PaymentRequestData) paymentData);
           fireWalletDetailsChanged();
         }
       }
@@ -335,7 +335,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
-      walletDetail.setNumberOfPayments(CoreServices.getCurrentWalletService().getPaymentDataList().size());
+      walletDetail.setNumberOfPayments(CoreServices.getCurrentWalletService().get().getPaymentDataList().size());
       ViewEvents.fireWalletDetailChangedEvent(walletDetail);
 
     }

@@ -86,8 +86,17 @@ public class MainController extends AbstractController implements
 
   private final ListeningExecutorService handoverExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-handover");
 
+  // Keep a thread pool for transaction status checking
+  private static final ListeningExecutorService transactionCheckingExecutorService = SafeExecutors.newFixedThreadPool(10, "transaction-checking");
+
+  // Provide a separate executor service for wallet operations
+  private static final ListeningExecutorService walletExecutorService = SafeExecutors.newFixedThreadPool(10, "wallet-services");
+
+  private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 10;
+
   // Keep track of other controllers for use after a preferences change
   private final HeaderController headerController;
+
   private final SidebarController sidebarController;
 
   // Main view may be replaced during a soft shutdown
@@ -95,16 +104,6 @@ public class MainController extends AbstractController implements
 
   // Start with the assumption that it is fine to avoid annoying "everything is OK" alert
   private RAGStatus lastExchangeSeverity = RAGStatus.GREEN;
-
-  // Keep a thread pool for transaction status checking
-  private static final ListeningExecutorService transactionCheckingExecutorService = SafeExecutors.newFixedThreadPool(10, "transaction-checking");
-
-  private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 10;
-
-  /**
-   * True if the credentials wizard should be shown with Trezor credentials
-   */
-  private boolean showTrezorCredentials = false;
 
   /**
    * @param bitcoinURIListeningService The Bitcoin URI listening service (must be present to permit a UI)
@@ -129,50 +128,21 @@ public class MainController extends AbstractController implements
 
   }
 
-  /**
-   * @param mainView The current main view
-   */
-  public void setMainView(MainView mainView) {
-
-    this.mainView = mainView;
-
-  }
-
   @Subscribe
   public void onShutdownEvent(ShutdownEvent shutdownEvent) {
 
     switch (shutdownEvent.getShutdownType()) {
       case HARD:
       case SOFT:
-        log.debug("Informing singletons (wallet, backup, installation)");
-        if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-          CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId()).onShutdownEvent(shutdownEvent);
-        }
-        WalletManager.INSTANCE.onShutdownEvent(shutdownEvent);
-        BackupManager.INSTANCE.onShutdownEvent(shutdownEvent);
-        InstallationManager.onShutdownEvent(shutdownEvent);
 
-        // Close the Bitcoin network connection and save the block store
-        CoreServices.getOrCreateBitcoinNetworkService().onShutdownEvent(shutdownEvent);
+        log.info("MainController shutdown...");
 
-        // Dispose of the main view and all its attendant references
-        log.debug("Disposing of MainView");
-        SwingUtilities.invokeLater(
-          new Runnable() {
-            @Override
-            public void run() {
-              Panels.hideLightBoxIfPresent();
-              Panels.applicationFrame.dispose();
-            }
-          });
-        mainView = null;
-        System.gc();
+        shutdownCurrentWallet(shutdownEvent.getShutdownType());
 
         break;
-      case STANDBY:
-        log.debug("Keeping application frame (standby).");
-        Panels.hideLightBoxIfPresent();
-        break;
+      case SWITCH:
+        // Do nothing - the wizard hide event triggers this process
+
     }
 
   }
@@ -226,6 +196,21 @@ public class MainController extends AbstractController implements
 
       }
 
+      if (ExitState.SWITCH_WALLET.equals(event.getWizardModel().getState())) {
+
+        // We have just finished with the exit wizard and want the credentials screen
+
+        handleSwitchWallet();
+
+      }
+
+      if (ExitState.CONFIRM_EXIT.equals(event.getWizardModel().getState())) {
+
+        // We have just finished with the exit wizard and want to shut down
+        CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
+
+      }
+
       // Do nothing other than usual wizard hide operations
 
     } else {
@@ -250,68 +235,14 @@ public class MainController extends AbstractController implements
 
     if (mainView.isShowExitingWelcomeWizard()) {
 
-      log.debug("Using simplified view refresh (language change)");
-
-      // Ensure the Swing thread can perform a complete refresh
-      SwingUtilities.invokeLater(
-        new Runnable() {
-          public void run() {
-
-            // Switch the theme before any other UI building takes place
-            handleTheme();
-
-            // Rebuild MainView contents
-            handleLocale();
-
-            // Force a frame redraw
-            Panels.applicationFrame.invalidate();
-
-            // Rebuild the detail views and alert panels
-            mainView.refresh();
-
-          }
-        });
+      // Restarting the main view from a language change
+      handleBasicMainViewRefresh();
 
     } else {
 
-      log.debug("Using full view refresh (configuration change)");
+      // Restarting the main view from a configuration change
+      handleFullMainViewRefresh();
 
-      // Switch the exchange ticker service before the UI to ensure the
-      // exchange rate provider is rendered correctly
-      handleExchange();
-
-      // Ensure the Swing thread can perform a complete refresh
-      SwingUtilities.invokeLater(
-        new Runnable() {
-          public void run() {
-
-            // Switch the theme before any other UI building takes place
-            handleTheme();
-
-            // Rebuild MainView contents
-            handleLocale();
-
-            // Force a frame redraw
-            Panels.applicationFrame.invalidate();
-
-            // Rebuild the detail views and alert panels
-            mainView.refresh();
-
-            // Show the current detail screen
-            Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
-            ControllerEvents.fireShowDetailScreenEvent(screen);
-
-            // Trigger the alert panels to refresh
-            headerController.refresh();
-
-          }
-        });
-
-      // Restart the hardware wallet service (devices may have changed)
-      handleHardwareWallets();
-
-      // Check for system time drift (runs in the background)
-      handleSystemTimeDrift();
     }
 
   }
@@ -477,6 +408,206 @@ public class MainController extends AbstractController implements
     }
   }
 
+  /**
+   * @param mainView The current main view
+   */
+  public void setMainView(MainView mainView) {
+
+    this.mainView = mainView;
+
+  }
+
+  /**
+   * <p>Complete tear down and rebuild of the detail screens comprising the main view</p>
+   * <p>All services are restarted</p>
+   * <p>The main view references remain intact</p>
+   *
+   * <p>This is not done through a simple SWITCH shutdown event being fire since the order
+   * of shutdown is important and cannot be guaranteed otherwise.</p>
+   */
+  private void handleSwitchWallet() {
+
+    // Run this in a separate thread to ensure the original event returns promptly
+    handoverExecutorService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+
+          log.debug("Using switch wallet view refresh");
+
+          // Dispose of the MainView
+          shutdownCurrentWallet(ShutdownEvent.ShutdownType.SWITCH);
+
+          // Build a new MainView
+//          mainView = new MainView();
+//          mainView.setRepeatLatestEvents(false);
+
+          // Check for any pre-existing wallets in the application directory
+          File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+          java.util.List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
+
+          if (walletDirectories.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted()) {
+
+            log.debug("No wallets in the directory or licence not accepted - showing the welcome wizard");
+            mainView.setShowExitingWelcomeWizard(true);
+            mainView.setShowExitingCredentialsWizard(false);
+
+          } else {
+
+            log.debug("Wallets are present - showing the credentials wizard");
+            mainView.setShowExitingCredentialsWizard(true);
+            mainView.setShowExitingWelcomeWizard(false);
+
+          }
+
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+                // Provide a backdrop to the user and trigger the showing of the wizard
+                mainView.refresh();
+
+              }
+            });
+
+          // Sleep for a short time to allow UI events to occur
+          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+        }
+      });
+
+  }
+
+  /**
+   * Handles the process of shutting down the current wallet support services
+   */
+  private void shutdownCurrentWallet(ShutdownEvent.ShutdownType shutdownType) {
+
+    log.debug("Shutdown current wallet...");
+
+    if (!shutdownType.equals(ShutdownEvent.ShutdownType.SWITCH)) {
+      // Hide the UI
+      shutdownMainView();
+    }
+
+    // Provide a graceful shutdown of the relevant core services in the correct order
+    CoreServices.shutdownNow(shutdownType);
+
+    // Close the current wallet
+    WalletManager.INSTANCE.shutdownNow(shutdownType);
+
+    // Close the backup manager for the wallet
+    BackupManager.INSTANCE.shutdownNow(shutdownType);
+
+    // Reset the installation manager
+    InstallationManager.shutdownNow(shutdownType);
+
+  }
+
+  /**
+   * Shutdown the MainView and dispose of the main application frame
+   */
+  private void shutdownMainView() {
+
+    // Sleep for a short time to give user a less jerky experience
+    Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+
+    // Dispose of the main view and all its attendant references
+    log.debug("Disposing of MainView");
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          Panels.hideLightBoxIfPresent();
+          Panels.applicationFrame.dispose();
+        }
+      });
+
+    // Remove the reference
+    mainView = null;
+
+    // Sleep for a short time to allow UI events to occur
+    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+  }
+
+  /**
+   * <p>Complete tear down and rebuild of the detail screens comprising the main view</p>
+   * <p>Non-Bitcoin services are restarted</p>
+   * <p>The main view references remain intact</p>
+   */
+  private void handleFullMainViewRefresh() {
+
+    log.debug("Using full view refresh (configuration change)");
+
+    // Switch the exchange ticker service before the UI to ensure the
+    // exchange rate provider is rendered correctly
+    handleExchange();
+
+    // Ensure the Swing thread can perform a complete refresh
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        public void run() {
+
+          // Switch the theme before any other UI building takes place
+          handleTheme();
+
+          // Rebuild MainView contents
+          handleLocale();
+
+          // Force a frame redraw
+          Panels.applicationFrame.invalidate();
+
+          // Rebuild the detail views and alert panels
+          mainView.refresh();
+
+          // Show the current detail screen
+          Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
+          ControllerEvents.fireShowDetailScreenEvent(screen);
+
+          // Trigger the alert panels to refresh
+          headerController.refresh();
+
+        }
+      });
+
+    // Restart the hardware wallet service (devices may have changed)
+    handleHardwareWallets();
+
+    // Check for system time drift (runs in the background)
+    handleSystemTimeDrift();
+
+  }
+
+  /**
+   * <p>Partial rebuild of the detail screens comprising the main view</p>
+   * <p>The main view references remain intact</p>
+   */
+  private void handleBasicMainViewRefresh() {
+
+    log.debug("Using simplified view refresh (language change)");
+
+    // Ensure the Swing thread can perform a complete refresh
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        public void run() {
+
+          // Switch the theme before any other UI building takes place
+          handleTheme();
+
+          // Rebuild MainView contents
+          handleLocale();
+
+          // Force a frame redraw
+          Panels.applicationFrame.invalidate();
+
+          // Rebuild the detail views and alert panels
+          mainView.refresh();
+
+        }
+      });
+  }
+
   @Override
   public void onAboutEvent(GenericAboutEvent event) {
 
@@ -526,8 +657,6 @@ public class MainController extends AbstractController implements
   public void onQuitEvent(GenericQuitEvent event, GenericQuitResponse response) {
 
     log.debug("Received quit event (close button). Initiating hard shutdown...");
-
-    // Immediately shutdown without requesting confirmation
     CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
 
   }
@@ -566,7 +695,7 @@ public class MainController extends AbstractController implements
     // This is a copy of the TransactionConfidence.Source which does not survive a repair wallet.
     transactionInfo.setSentBySelf(transactionCreationEvent.isSentByMe());
 
-    WalletService walletService = CoreServices.getCurrentWalletService();
+    WalletService walletService = CoreServices.getCurrentWalletService().get();
     walletService.addTransactionInfo(transactionInfo);
     log.debug("Added transactionInfo {} to walletService {}", transactionInfo, walletService);
     try {
@@ -586,6 +715,11 @@ public class MainController extends AbstractController implements
 
     log.debug("Received hardware event: '{}'", event.getEventType().name());
 
+    if (mainView == null) {
+      // We're likely in the middle of a shutdown
+      return;
+    }
+
     // Quick check for relevancy
     switch (event.getEventType()) {
       case SHOW_DEVICE_STOPPED:
@@ -601,7 +735,7 @@ public class MainController extends AbstractController implements
         // - there is a current wallet
         // - the current wallet is not a "hard" Trezor wallet
         Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-        if (walletSummary.isPresent() &&  !WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
+        if (walletSummary.isPresent() && !WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
           // Attempt to create a suitable alert model in addition to view event
           AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
           ControllerEvents.fireAddAlertEvent(alertModel);
@@ -672,12 +806,11 @@ public class MainController extends AbstractController implements
 
     // Stop (with block) any existing exchange ticker service
     if (exchangeTickerService.isPresent()) {
-      exchangeTickerService.get().stopAndWait();
+      exchangeTickerService.get().shutdownNow(ShutdownEvent.ShutdownType.HARD);
     }
 
     // Create and start the exchange ticker service
-    exchangeTickerService = Optional.of(CoreServices.newExchangeService(bitcoinConfiguration));
-    exchangeTickerService.get().start();
+    exchangeTickerService = Optional.of(CoreServices.createAndStartExchangeService(bitcoinConfiguration));
 
   }
 
@@ -760,28 +893,6 @@ public class MainController extends AbstractController implements
   }
 
   /**
-   * <p>Restart the Bitcoin network</p>
-   */
-//  private void handleBitcoinNetwork() {
-//
-//    // Only start the network once
-//    if (bitcoinNetworkService.isPresent()) {
-//      bitcoinNetworkService.get().stopAndWait();
-//    }
-//
-//    bitcoinNetworkService = Optional.of(CoreServices.getOrCreateBitcoinNetworkService());
-//
-//    // Start the network now that the credentials has been validated
-//    bitcoinNetworkService.get().start();
-//
-//    if (bitcoinNetworkService.get().isStartedOk()) {
-//      log.debug("Replaying wallet with no snc date (regular sync)");
-//      bitcoinNetworkService.get().replayWallet(Optional.<Date>absent()); // TODO consider when the wallet and chain head differ
-//    }
-//
-//  }
-
-  /**
    * <p>Restart the hardware wallet service if necessary</p>
    */
   public void handleHardwareWallets() {
@@ -859,7 +970,7 @@ public class MainController extends AbstractController implements
   private void hideAsExitCancel(String panelName) {
 
     // The exit dialog has no detail screen so focus defers to the sidebar
-    if (ExitState.EXIT_CONFIRM.name().equals(panelName)) {
+    if (ExitState.SELECT_RESET_OPTION.name().equals(panelName)) {
       mainView.sidebarRequestFocus();
     }
 
@@ -1002,7 +1113,7 @@ public class MainController extends AbstractController implements
     ControllerEvents.fireShowDetailScreenEvent(screen);
 
     // Don't hold up the UI thread with these background operations
-    SafeExecutors.newSingleThreadExecutor("wallet-services").submit(
+    walletExecutorService.submit(
       new Runnable() {
         @Override
         public void run() {
@@ -1047,7 +1158,7 @@ public class MainController extends AbstractController implements
           // See if the transaction has a RAGStatus if red.
           // This could be the tx has not been transmitted ok or is only seen by zero or one peers.
           // In this case the user will not have access to the tx change and notify them with a warning alert
-          WalletService currentWalletService = CoreServices.getCurrentWalletService();
+          WalletService currentWalletService = CoreServices.getCurrentWalletService().get();
           if (currentWalletService != null) {
             java.util.List<PaymentData> paymentDataList = currentWalletService.getPaymentDataList();
             if (paymentDataList != null) {

@@ -354,7 +354,7 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "Unlock" button with icon (this is a finish button but just looks differently)
+   * @return A new "Unlock" button with icon (this is a finish button but just looks different)
    */
   public static JButton newUnlockButton(Action action) {
 

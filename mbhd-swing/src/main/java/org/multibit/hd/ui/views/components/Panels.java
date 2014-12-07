@@ -120,11 +120,12 @@ public class Panels {
    */
   public static JPanel newPanel() {
 
-    return Panels.newPanel(new MigLayout(
-      migXYLayout(), // Layout
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    return Panels.newPanel(
+      new MigLayout(
+        migXYLayout(), // Layout
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
   }
 
@@ -155,11 +156,12 @@ public class Panels {
    */
   public static JPanel newRoundedPanel() {
 
-    return newRoundedPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    return newRoundedPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
   }
 
@@ -188,19 +190,21 @@ public class Panels {
   public static BackgroundPanel newDetailBackgroundPanel(AwesomeIcon icon) {
 
     // Create an image from the AwesomeIcon
-    Image image = ImageDecorator.toImageIcon(AwesomeDecorator.createIcon(
-      icon,
-      Themes.currentTheme.fadedText(),
-      MultiBitUI.HUGE_ICON_SIZE
-    )).getImage();
+    Image image = ImageDecorator.toImageIcon(
+      AwesomeDecorator.createIcon(
+        icon,
+        Themes.currentTheme.fadedText(),
+        MultiBitUI.HUGE_ICON_SIZE
+      )).getImage();
 
     BackgroundPanel panel = new BackgroundPanel(image, BackgroundPanel.ACTUAL);
 
-    panel.setLayout(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    panel.setLayout(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
     panel.setAlpha(MultiBitUI.DETAIL_PANEL_BACKGROUND_ALPHA);
     panel.setPaint(Themes.currentTheme.detailPanelBackground());
     panel.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -284,6 +288,42 @@ public class Panels {
 
     lightBoxPopoverPanel = Optional.absent();
 
+  }
+
+  /**
+   * <p>An "exit selector" panel confirms an exit or switch operation</p>
+   *
+   * @param listener      The action listener
+   * @param exitCommand   The exit command name
+   * @param switchCommand The switch command name
+   *
+   * @return A new "exit selector" panel
+   */
+  public static JPanel newExitSelector(
+    ActionListener listener,
+    String exitCommand,
+    String switchCommand
+  ) {
+
+    JPanel panel = Panels.newPanel();
+
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.EXIT_WALLET);
+    radio1.setSelected(true);
+    radio1.setActionCommand(exitCommand);
+
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.SWITCH_WALLET);
+    radio2.setActionCommand(switchCommand);
+
+    // Wallet selection is mutually exclusive
+    ButtonGroup group = new ButtonGroup();
+    group.add(radio1);
+    group.add(radio2);
+
+    // Add to the panel
+    panel.add(radio1, "wrap");
+    panel.add(radio2, "wrap");
+
+    return panel;
   }
 
   /**
@@ -469,11 +509,12 @@ public class Panels {
    */
   public static JPanel newConfirmSeedPhrase() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXYLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Add to the panel
     panel.add(Labels.newConfirmSeedPhraseNote(), "grow,push");
@@ -488,11 +529,12 @@ public class Panels {
    */
   public static JPanel newSeedPhraseWarning() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Add to the panel
     panel.add(Labels.newCreateWalletPreparationNote(), "grow,push");
@@ -507,11 +549,12 @@ public class Panels {
    */
   public static JPanel newDebuggerWarning() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(panel, CoreMessageKey.DEBUGGER_ATTACHED);
@@ -531,11 +574,12 @@ public class Panels {
    */
   public static JPanel newLanguageChange() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     PanelDecorator.applySuccessFadedTheme(panel);
 
@@ -552,11 +596,12 @@ public class Panels {
    */
   public static JPanel newRestoreFromBackup() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Add to the panel
     panel.add(Labels.newRestoreFromBackupNote(), "grow,push");
@@ -571,11 +616,12 @@ public class Panels {
    */
   public static JPanel newRestoreFromSeedPhrase() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Add to the panel
     panel.add(Labels.newRestoreFromSeedPhraseNote(), "grow,push");
@@ -590,11 +636,12 @@ public class Panels {
    */
   public static JPanel newRestoreFromTimestamp() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Add to the panel
     panel.add(Labels.newRestoreFromTimestampNote(), "grow,push");
@@ -609,11 +656,12 @@ public class Panels {
    */
   public static JPanel newSelectBackupDirectory() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Add to the panel
     panel.add(Labels.newSelectBackupLocationNote(), "grow,push");
@@ -628,11 +676,12 @@ public class Panels {
    */
   public static JPanel newSelectExportPaymentsDirectory() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Add to the panel
     panel.add(Labels.newSelectExportPaymentsLocationNote(), "grow,push");

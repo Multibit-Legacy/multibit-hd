@@ -90,7 +90,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
       }
     }
     // Get the next receiving address from the wallet service
-    String nextAddress = CoreServices.getCurrentWalletService().generateNextReceivingAddress(passwordParameter);
+    String nextAddress = CoreServices.getCurrentWalletService().get().generateNextReceivingAddress(passwordParameter);
 
     // Recreate bloom filter
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
@@ -188,7 +188,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
 
     log.debug("Saving payment request");
 
-    WalletService walletService = CoreServices.getCurrentWalletService();
+    WalletService walletService = CoreServices.getCurrentWalletService().get();
 
     // Fail fast
     Preconditions.checkNotNull(walletService, "'walletService' must be present");

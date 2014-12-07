@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.fest;
 
+import com.google.common.base.Optional;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
@@ -413,7 +414,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     ByteStreams.copy(cacerts, target);
 
     // Initialise the backup manager
-    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
 
     // Add the empty wallet fixture
     WalletFixtures.createEmptyWalletFixture();
@@ -442,7 +443,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     ByteStreams.copy(cacerts, target);
 
     // Initialise the backup manager to use the temporary directory
-    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
 
     // Add the restored wallet fixture
     WalletFixtures.createStandardWalletFixture();
