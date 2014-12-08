@@ -1108,6 +1108,11 @@ public enum WalletManager implements WalletEventListener {
    */
   public static void updateWalletSummary(File walletSummaryFile, WalletSummary walletSummary) {
 
+    if (walletSummary == null) {
+      log.warn("WalletSummary is missing. The wallet configuration file is NOT being overwritten.");
+      return;
+    }
+
     // Persist the new configuration
     try (FileOutputStream fos = new FileOutputStream(walletSummaryFile)) {
 
