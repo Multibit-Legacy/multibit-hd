@@ -31,7 +31,7 @@ public class WalletId {
   /**
     * The salt used in converting seed bytes to a wallet id for Trezor wallets
     */
-  public static final byte[] WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_WALLETS = new byte[]{(byte) 2};
+  public static final byte[] WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS = new byte[]{(byte) 2};
 
   private static final int NUMBER_OF_BYTES_IN_WALLET_ID = 20;
   public static final int LENGTH_OF_FORMATTED_WALLET_ID = 2 * NUMBER_OF_BYTES_IN_WALLET_ID + (NUMBER_OF_BYTES_IN_WALLET_ID / SEPARATOR_REPEAT_PERIOD) - 1;
@@ -68,7 +68,7 @@ public class WalletId {
   /**
    * Create an wallet id from the given seed and salt
    *
-   * You can use this to generate a wallet id for a Trezor wallet passing in WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_WALLETS
+   * You can use this to generate a wallet id for a Trezor wallet passing in WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS
    * This produces a wallet id from the seed using various trapdoor functions.
    * The seed is typically generated from the SeedPhraseGenerator#convertToSeed method.
    *

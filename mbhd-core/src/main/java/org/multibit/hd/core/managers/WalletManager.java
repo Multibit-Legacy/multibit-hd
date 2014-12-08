@@ -315,7 +315,7 @@ public enum WalletManager implements WalletEventListener {
       try {
         WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, seed, password);
       } catch (NoSuchAlgorithmException e) {
-        throw new WalletLoadException("could not store encrypted credentials and backup AES key", e);
+        throw new WalletLoadException("Could not store encrypted credentials and backup AES key", e);
       }
     }
 
@@ -460,7 +460,7 @@ public enum WalletManager implements WalletEventListener {
     List<String> seedPhraseList = Bip39SeedPhraseGenerator.split(seedPhrase);
     byte[] seed = seedGenerator.convertToSeed(seedPhraseList);
 
-    final WalletId walletId = new WalletId(seed, WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_WALLETS);
+    final WalletId walletId = new WalletId(seed, WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS);
     String walletRoot = createWalletRoot(walletId);
 
     final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
@@ -522,6 +522,12 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setPassword(password);
 
       setCurrentWalletSummary(walletSummary);
+    }
+
+    try {
+      WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, seed, password);
+    } catch (NoSuchAlgorithmException e) {
+      throw new WalletLoadException("Could not store encrypted credentials and backup AES key", e);
     }
 
     // Wallet is now created - finish off other configuration and check if wallet needs syncing
