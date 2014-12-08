@@ -105,6 +105,9 @@ public class MainController extends AbstractController implements
   // Start with the assumption that it is fine to avoid annoying "everything is OK" alert
   private RAGStatus lastExchangeSeverity = RAGStatus.GREEN;
 
+  // Assume a password rather than a hardware wallet cipher key
+  private CredentialsRequestType deferredCredentialsRequestType = CredentialsRequestType.PASSWORD;
+
   /**
    * @param bitcoinURIListeningService The Bitcoin URI listening service (must be present to permit a UI)
    * @param headerController           The header controller
@@ -715,19 +718,13 @@ public class MainController extends AbstractController implements
 
     log.debug("Received hardware event: '{}'", event.getEventType().name());
 
-    if (mainView == null) {
-      // We're likely in the middle of a shutdown
-      return;
-    }
-
     // Quick check for relevancy
     switch (event.getEventType()) {
       case SHOW_DEVICE_STOPPED:
       case SHOW_DEVICE_DETACHED:
         // Rely on the view status event to inform the user
         // An alert tends to stack and gets messy/irrelevant
-        // Reset the credentials request type
-        mainView.setCredentialsRequestType(CredentialsRequestType.PASSWORD);
+        deferredCredentialsRequestType = CredentialsRequestType.PASSWORD;
         break;
       case SHOW_DEVICE_FAILED:
       case SHOW_DEVICE_READY:
@@ -740,13 +737,20 @@ public class MainController extends AbstractController implements
           AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
           ControllerEvents.fireAddAlertEvent(alertModel);
         }
-        // Set the credentials request type
-        mainView.setCredentialsRequestType(CredentialsRequestType.TREZOR_CIPHER_KEY);
+        // Set the deferred credentials request type
+        deferredCredentialsRequestType = CredentialsRequestType.TREZOR_CIPHER_KEY;
         break;
       default:
         // The AbstractHardwareWalletWizard handles specific cases
         // No view event
         return;
+    }
+
+    log.debug("Selected deferred credentials type: {}", deferredCredentialsRequestType);
+
+    // Set the credentials immediately if possible so that MainView.refresh() works correctly
+    if (mainView != null) {
+      mainView.setCredentialsRequestType(deferredCredentialsRequestType);
     }
 
     // Must have a view event (device ready/not ready) to be here
@@ -995,6 +999,7 @@ public class MainController extends AbstractController implements
     // Handover
     mainView.setShowExitingWelcomeWizard(false);
     mainView.setShowExitingCredentialsWizard(true);
+    mainView.setCredentialsRequestType(deferredCredentialsRequestType);
 
     // Start building the wizard on the EDT to prevent UI updates
     final CredentialsWizard credentialsWizard = Wizards.newExitingCredentialsWizard(mainView.getCredentialsRequestType());

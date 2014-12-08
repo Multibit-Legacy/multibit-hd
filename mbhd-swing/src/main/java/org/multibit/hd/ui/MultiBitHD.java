@@ -18,6 +18,7 @@ import org.multibit.hd.ui.services.BitcoinURIListeningService;
 import org.multibit.hd.ui.views.MainView;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -278,7 +279,7 @@ public class MultiBitHD {
     Themes.switchTheme(themeKey.theme());
 
     // Build a new MainView
-    final MainView mainView = new MainView();
+    final MainView mainView = new MainView(CredentialsRequestType.PASSWORD);
     mainController.setMainView(mainView);
 
     // Check for any pre-existing wallets in the application directory

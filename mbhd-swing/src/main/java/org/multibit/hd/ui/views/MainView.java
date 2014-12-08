@@ -59,7 +59,7 @@ public class MainView extends JFrame {
   private CredentialsRequestType credentialsRequestType = CredentialsRequestType.PASSWORD;
   private boolean repeatLatestEvents = true;
 
-  public MainView() {
+  public MainView(CredentialsRequestType credentialsRequestType) {
 
     // Ensure we can respond to UI events
     CoreServices.uiEventBus.register(this);
@@ -107,6 +107,8 @@ public class MainView extends JFrame {
 
         }
       });
+
+    this.credentialsRequestType = credentialsRequestType;
 
   }
 
