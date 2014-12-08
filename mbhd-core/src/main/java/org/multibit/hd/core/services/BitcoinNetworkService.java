@@ -103,28 +103,8 @@ public class BitcoinNetworkService extends AbstractService {
 
   @Override
   public boolean startInternal() {
-
-    try {
-      if (blockStore == null) {
-        blockStore = openBlockStore(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.<Date>absent());
-      }
-
-      log.debug("Starting Bitcoin network...");
-
-      restartNetwork(blockStore);
-
-    } catch (IOException | BlockStoreException | TimeoutException e) {
-
-      log.error(e.getMessage(), e);
-
-      CoreEvents.fireBitcoinNetworkChangedEvent(
-        BitcoinNetworkSummary.newNetworkStartupFailed(
-          CoreMessageKey.START_NETWORK_CONNECTION_ERROR,
-          Optional.of(new Object[]{})
-        )
-      );
-
-    }
+    // Note that the actual connection to the Bitcoin network is performed lazily,
+    // only when a wallet needs syncing
 
     return true;
   }
@@ -1234,17 +1214,16 @@ public class BitcoinNetworkService extends AbstractService {
 
   /**
    * <p>Create a new peer group</p>
+   * @param wallet the wallet to add to the peer group after constructio
    */
-  private void createNewPeerGroup() throws TimeoutException {
+  private void createNewPeerGroup(Wallet wallet) throws TimeoutException {
 
     if (Configurations.currentConfiguration.isTor()) {
-
       log.info("Creating new TOR peer group for '{}'", networkParameters);
       InstallationManager.removeCryptographyRestrictions();
       peerGroup = PeerGroup.newWithTor(networkParameters, blockChain, new TorClient());
 
     } else {
-
       log.info("Creating new DNS peer group for '{}'", networkParameters);
       peerGroup = new PeerGroup(networkParameters, blockChain);
       peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
@@ -1261,22 +1240,27 @@ public class BitcoinNetworkService extends AbstractService {
     peerEventListener = new MultiBitPeerEventListener();
     peerGroup.addEventListener(peerEventListener);
 
+    addWalletToPeerGroup(wallet);
+
   }
 
   public void addWalletToPeerGroup(Wallet wallet) {
-
-    Preconditions.checkNotNull(wallet, "'wallet' must be present");
-
-    if (peerGroup != null) {
+    if (peerGroup != null && wallet != null) {
+      log.debug("Adding wallet {} to peerGroup {}", wallet, peerGroup);
       peerGroup.addWallet(wallet);
       peerGroup.setFastCatchupTimeSecs(wallet.getEarliestKeyCreationTime());
       peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
+    } else {
+      log.debug("Could not add wallet to peerGroup - one or more is missing");
     }
   }
 
   public void addWalletToBlockChain(Wallet wallet) {
-    if (blockChain != null) {
+    if (blockChain != null && wallet != null) {
+      log.debug("Adding wallet {} to blockChain {}", wallet, blockChain);
       blockChain.addWallet(wallet);
+    } else {
+      log.debug("Could not add wallet to blockChain - one or more is missing");
     }
   }
 
@@ -1396,14 +1380,15 @@ public class BitcoinNetworkService extends AbstractService {
     log.debug("Creating block chain from blockStore {}...", blockStore);
     blockChain = new BlockChain(networkParameters, blockStore);
 
+    Wallet wallet = null;
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
-      blockChain.addWallet(wallet);
+      wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
     }
+    blockChain.addWallet(wallet);
     log.debug("Created block chain '{}' with height '{}'", blockChain, blockChain.getBestChainHeight());
 
     log.debug("Creating peer group ...");
-    createNewPeerGroup();
+    createNewPeerGroup(wallet);
     log.debug("Created peer group '{}'", peerGroup);
 
     log.debug("Starting peer group ...");

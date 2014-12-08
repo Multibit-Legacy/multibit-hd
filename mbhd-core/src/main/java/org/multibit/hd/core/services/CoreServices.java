@@ -401,17 +401,16 @@ public class CoreServices {
   }
 
   /**
-   * @return The started Bitcoin network service (will have a block store)
+   * @return The Bitcoin network service - note that this is NOT started
    */
   public static synchronized BitcoinNetworkService getOrCreateBitcoinNetworkService() {
-
-    log.debug("Get Bitcoin network service");
+    log.debug("Get Bitcoin network service ");
 
     // Require session singleton so only a null will create a new instance
     if (!bitcoinNetworkService.isPresent()) {
       bitcoinNetworkService = Optional.of(new BitcoinNetworkService(BitcoinNetwork.current().get()));
-      bitcoinNetworkService.get().start();
     }
+
     return bitcoinNetworkService.get();
 
   }

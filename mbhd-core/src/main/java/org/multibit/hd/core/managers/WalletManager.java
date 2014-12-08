@@ -553,11 +553,6 @@ public enum WalletManager implements WalletEventListener {
     // Set up auto-save on the wallet.
     addAutoSaveListener(walletSummary.getWallet(), walletSummary.getWalletFile());
 
-     // Add it to the Bitcoin network services blockchain and peergroup
-     log.debug("Adding wallet to blockchain and peergroup");
-     CoreServices.getOrCreateBitcoinNetworkService().addWalletToBlockChain(walletSummary.getWallet());
-     CoreServices.getOrCreateBitcoinNetworkService().addWalletToPeerGroup(walletSummary.getWallet());
-
     // Check if the wallet needs to sync
     checkIfWalletNeedsToSync(walletSummary);
   }
@@ -581,7 +576,7 @@ public enum WalletManager implements WalletEventListener {
         boolean performRegularSync = false;
         BlockStore blockStore = null;
         try {
-          // Make sure the block store is open
+          // Get the bitcoin network service
           BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
           log.debug("bitcoinNetworkService = {}", bitcoinNetworkService);
 
@@ -592,7 +587,7 @@ public enum WalletManager implements WalletEventListener {
           blockStore = bitcoinNetworkService.getBlockStore();
 
           if (blockStore == null) {
-            // Open the blockstore with no checkpointing (this is to get the height
+            // Open the blockstore with no checkpointing (this is to get the chain height)
             blockStore = bitcoinNetworkService.openBlockStore(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.<Date>absent());
           }
           log.debug("blockStore = {}", blockStore);
@@ -755,7 +750,7 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setWalletFile(new File(walletFilenameNoAESSuffix));
       walletSummary.setPassword(password);
 
-      log.debug("Loaded the wallet from {} successfully", walletDirectory);
+      log.debug("Loaded the wallet successfully from \n{}", walletDirectory);
       log.debug("Wallet:{}", wallet);
 
       return walletSummary;
