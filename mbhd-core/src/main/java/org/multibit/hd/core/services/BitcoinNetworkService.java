@@ -1430,4 +1430,12 @@ public class BitcoinNetworkService extends AbstractService {
   public BlockStore getBlockStore() {
     return blockStore;
   }
+
+  public int getNumberOfConnectedPeers() {
+    if (peerGroup == null) {
+      return 0;
+    } else {
+      return peerGroup.numConnectedPeers();
+    }
+  }
 }

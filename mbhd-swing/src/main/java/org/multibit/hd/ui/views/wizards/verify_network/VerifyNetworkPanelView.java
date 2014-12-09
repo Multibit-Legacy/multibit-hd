@@ -67,7 +67,7 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
 
     contentPanel.add(Labels.newVerifyNetworkNote(), "span 3," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
-    peerCountLabel = Labels.newValueLabel("0");
+    peerCountLabel = Labels.newValueLabel(String.valueOf(CoreServices.getOrCreateBitcoinNetworkService().getNumberOfConnectedPeers()));
     peerCountStatusLabel = Labels.newPeerCount();
 
     blocksLeftLabel = Labels.newValueLabel("0");
