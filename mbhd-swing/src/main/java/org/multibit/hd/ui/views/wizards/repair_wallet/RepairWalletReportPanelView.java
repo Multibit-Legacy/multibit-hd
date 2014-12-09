@@ -147,6 +147,11 @@ public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairW
 
     BitcoinNetworkSummary summary = event.getSummary();
 
+    // If the event is about peer group counts then ignore it - we are only interested in block count related events
+    if (summary.getPeerCount().isPresent()) {
+      return;
+    }
+
     // Blocks left
     int blocksLeft = event.getSummary().getBlocksLeft();
     if (blocksLeft < 0) {
