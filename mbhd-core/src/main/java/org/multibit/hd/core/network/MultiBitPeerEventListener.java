@@ -29,10 +29,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   @Override
   public void onPeersDiscovered(Set<PeerAddress> peerAddresses) {
-    log.trace("Peer addresses = {}", peerAddresses);
-    numberOfConnectedPeers = peerAddresses == null ? 0 : peerAddresses.size();
-    CoreEvents.fireBitcoinNetworkChangedEvent(
-      BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
+    // Do nothing - this is a list of potential peers to connect to, not actually connected peers
   }
 
   @Override
@@ -187,6 +184,10 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     // Fire that we have completed the sync
     lastPercent = 100;
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(100, 0));
+
+    // Used to indicate sync has finished (used in restore panel)
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadCompleted());
+
 
     // Then fire the number of connected peers
     CoreEvents.fireBitcoinNetworkChangedEvent(

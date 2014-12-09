@@ -81,6 +81,24 @@ public class BitcoinNetworkSummary {
   }
 
   /**
+    * <p>The network has completed</p>
+    *
+    * @return A new "progress update" summary
+    */
+   public static BitcoinNetworkSummary newChainDownloadCompleted() {
+
+     return new BitcoinNetworkSummary(
+       BitcoinNetworkStatus.SYNCHRONIZED,
+       RAGStatus.GREEN,
+       Optional.of(CoreMessageKey.CHAIN_DOWNLOAD),
+       Optional.of(new Object[]{100}),
+       Optional.<Integer>absent(),
+       100,
+       0
+     );
+
+   }
+  /**
    * <p>The network is only ready when 100% synchronization has been achieved</p>
    *
    * @param peerCount The peer count
