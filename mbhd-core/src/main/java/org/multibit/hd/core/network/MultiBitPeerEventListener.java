@@ -1,7 +1,7 @@
 package org.multibit.hd.core.network;
 
-import org.bitcoinj.core.*;
 import com.google.common.base.Optional;
+import org.bitcoinj.core.*;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
@@ -14,7 +14,6 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Semaphore;
 
 public class MultiBitPeerEventListener implements PeerEventListener {
 
@@ -22,34 +21,26 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   private int originalBlocksLeft = -1;
   private int lastPercent = 0;
-  private Semaphore done = new Semaphore(0);
-  private boolean caughtUp = false;
 
   private int numberOfConnectedPeers = 0;
-
-  // Start with peer count suppression until blocks start to arrive
-  private boolean suppressPeerCountMessages = true;
 
   public MultiBitPeerEventListener() {
   }
 
   @Override
   public void onPeersDiscovered(Set<PeerAddress> peerAddresses) {
-    // Do nothing
+    log.trace("Peer addresses = {}", peerAddresses);
+    numberOfConnectedPeers = peerAddresses == null ? 0 : peerAddresses.size();
+    CoreEvents.fireBitcoinNetworkChangedEvent(
+      BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
   }
 
   @Override
   public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
     log.trace("Number of blocks left = {}", blocksLeft);
 
-    if (caughtUp) {
-      return;
-    }
-
     if (blocksLeft == 0) {
-      caughtUp = true;
       doneDownload();
-      done.release();
     }
 
     if (blocksLeft < 0 || originalBlocksLeft <= 0) {
@@ -64,21 +55,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
       lastPercent = (int) pct;
     }
 
-    // Determine if peer count message should be suppressed
-    // (avoids UI confusion between synchronizing and peer count)
-    suppressPeerCountMessages = blocksLeft > 0;
-
-    // Keep track of the download progress
-    //updateDownloadPercent(blocksLeft);
-
     // Fire the download percentage
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(lastPercent, blocksLeft));
-
-    if (!suppressPeerCountMessages) {
-      // Fully synchronized so switch to showing the peer count
-      CoreEvents.fireBitcoinNetworkChangedEvent(
-        BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
-    }
   }
 
   @Override
@@ -95,27 +73,10 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     }
     if (blocksLeft == 0) {
       doneDownload();
-      done.release();
     }
 
-    // Reset the number of blocks at the start of the download
-    //numberOfBlocksAtStart = blocksLeft;
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(lastPercent, blocksLeft));
 
-    // Determine if peer count message should be suppressed
-    // (avoids UI confusion between synchronizing and peer count)
-    suppressPeerCountMessages = blocksLeft > 0;
-
-    // Keep track of the download progress
-    //updateDownloadPercent(blocksLeft);
-
-    // When the blocks are being downloaded - update the display
-    if (suppressPeerCountMessages) {
-      CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(lastPercent, blocksLeft));
-    } else {
-      // Fully synchronized so switch to showing the peer count
-      CoreEvents.fireBitcoinNetworkChangedEvent(
-        BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
-    }
   }
 
   @Override
@@ -124,12 +85,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
     numberOfConnectedPeers = peerCount;
 
-    // Only show peers after synchronization to avoid confusion
-    if (!suppressPeerCountMessages) {
-      // Fully synchronized so switch to showing the peer count
-      CoreEvents.fireBitcoinNetworkChangedEvent(
-        BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
-    }
+    CoreEvents.fireBitcoinNetworkChangedEvent(
+      BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
   }
 
   @Override
@@ -141,12 +98,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     }
     numberOfConnectedPeers = peerCount;
 
-    // Only show peers after synchronization to avoid confusion
-    if (!suppressPeerCountMessages) {
-      // Fully synchronized so switch to showing the peer count
-      CoreEvents.fireBitcoinNetworkChangedEvent(
-        BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
-    }
+    CoreEvents.fireBitcoinNetworkChangedEvent(
+      BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
   }
 
   @Override
@@ -229,13 +182,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    * Called when we are done downloading the block chain.
    */
   protected void doneDownload() {
-  }
-
-  /**
-   * Wait for the chain to be downloaded.
-   */
-  public void await() throws InterruptedException {
-    done.acquire();
   }
 }
 

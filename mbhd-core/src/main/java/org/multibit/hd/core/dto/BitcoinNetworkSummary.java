@@ -15,7 +15,7 @@ public class BitcoinNetworkSummary {
 
   private final BitcoinNetworkStatus status;
 
-  private final int peerCount;
+  private final Optional<Integer> peerCount;
   private final int percent;
   private final int blocksLeft;
 
@@ -35,7 +35,7 @@ public class BitcoinNetworkSummary {
       RAGStatus.RED,
       Optional.of(CoreMessageKey.NOT_INITIALISED),
       Optional.<Object[]>absent(),
-      0,
+      Optional.of(0),
       -1,
       -1
     );
@@ -52,7 +52,7 @@ public class BitcoinNetworkSummary {
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.CHAIN_DOWNLOAD),
       Optional.of(new Object[]{"0"}),
-      0,
+      Optional.<Integer>absent(),
       0,
       -1
     );
@@ -73,7 +73,7 @@ public class BitcoinNetworkSummary {
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.CHAIN_DOWNLOAD),
       Optional.of(new Object[]{percent}),
-      0,
+      Optional.<Integer>absent(),
       percent,
       blocksLeft
     );
@@ -93,7 +93,7 @@ public class BitcoinNetworkSummary {
       RAGStatus.GREEN,
       Optional.of(CoreMessageKey.PEER_COUNT),
       Optional.of(new Object[]{peerCount}),
-      peerCount,
+      Optional.of(peerCount),
       -1, /* Do not show the progress bar when the peer count changes - confusing */
       0
     );
@@ -112,7 +112,7 @@ public class BitcoinNetworkSummary {
       RAGStatus.RED,
       Optional.of(messageKey),
       messageData,
-      0,
+      Optional.<Integer>absent(),
       -1,
       -1
     );
@@ -123,7 +123,7 @@ public class BitcoinNetworkSummary {
    * @param severity    The severity (Red, Amber, Green)
    * @param messageKey  The error key to allow localisation
    * @param messageData The error data for insertion into the error message
-   * @param peerCount   The current peer count
+   * @param peerCount   The current peer count or Optional.empty if this avilable is not being messaged
    * @param percent     The percentage of blocks downloaded (-1 means "hide", 0-99 "in progress", 100 "success")
    * @param blocksLeft  The number of blocks left (-1 means "hide", 0+ "show")
    */
@@ -132,7 +132,7 @@ public class BitcoinNetworkSummary {
     RAGStatus severity,
     Optional<CoreMessageKey> messageKey,
     Optional<Object[]> messageData,
-    int peerCount,
+    Optional<Integer> peerCount,
     int percent,
     int blocksLeft) {
 
@@ -147,7 +147,7 @@ public class BitcoinNetworkSummary {
     this.blocksLeft = blocksLeft;
   }
 
-  public int getPeerCount() {
+  public Optional<Integer> getPeerCount() {
     return peerCount;
   }
 

@@ -25,7 +25,6 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetworkWizardModel, VerifyNetworkPanelModel> {
 
@@ -50,7 +49,7 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
 
     // Configure the panel model
     final VerifyNetworkPanelModel panelModel = new VerifyNetworkPanelModel(
-      getPanelName());
+            getPanelName());
     setPanelModel(panelModel);
 
     // Bind it to the wizard model
@@ -61,9 +60,9 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[]10[][]", // Column constraints
-      "[]10[]10[]" // Row constraints
+            Panels.migXYLayout(),
+            "[]10[][]", // Column constraints
+            "[]10[]10[]" // Row constraints
     ));
 
     contentPanel.add(Labels.newVerifyNetworkNote(), "span 3," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
@@ -118,53 +117,52 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
     BitcoinNetworkSummary summary = event.getSummary();
 
     // Peer count
-    int peerCount = event.getSummary().getPeerCount();
-    if (peerCount > 0) {
-      AwesomeDecorator.applyIcon(
-        AwesomeIcon.CHECK,
-        peerCountStatusLabel,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
-      );
-    } else {
-      AwesomeDecorator.applyIcon(
-        AwesomeIcon.TIMES,
-        peerCountStatusLabel,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
-      );
-
+    Optional<Integer> peerCount = event.getSummary().getPeerCount();
+    if (peerCount.isPresent()) {
+      peerCountLabel.setText(String.valueOf(summary.getPeerCount().get()));
+      if (peerCount.get() > 0) {
+        AwesomeDecorator.applyIcon(
+                AwesomeIcon.CHECK,
+                peerCountStatusLabel,
+                true,
+                MultiBitUI.NORMAL_ICON_SIZE
+        );
+      } else {
+        AwesomeDecorator.applyIcon(
+                AwesomeIcon.TIMES,
+                peerCountStatusLabel,
+                true,
+                MultiBitUI.NORMAL_ICON_SIZE
+        );
+      }
     }
-    peerCountLabel.setText(String.valueOf(summary.getPeerCount()));
 
     // Blocks left
     int blocksLeft = event.getSummary().getBlocksLeft();
     if (blocksLeft == 0) {
       AwesomeDecorator.applyIcon(
-        AwesomeIcon.CHECK,
-        blocksLeftStatusLabel,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
+              AwesomeIcon.CHECK,
+              blocksLeftStatusLabel,
+              true,
+              MultiBitUI.NORMAL_ICON_SIZE
       );
       blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
     } else if (blocksLeft < 0) {
       AwesomeDecorator.applyIcon(
-        AwesomeIcon.TIMES,
-        blocksLeftStatusLabel,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
+              AwesomeIcon.TIMES,
+              blocksLeftStatusLabel,
+              true,
+              MultiBitUI.NORMAL_ICON_SIZE
       );
       blocksLeftLabel.setText("");
     } else {
       AwesomeDecorator.applyIcon(
-        AwesomeIcon.EXCHANGE,
-        blocksLeftStatusLabel,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
+              AwesomeIcon.EXCHANGE,
+              blocksLeftStatusLabel,
+              true,
+              MultiBitUI.NORMAL_ICON_SIZE
       );
       blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
     }
-
   }
-
 }
