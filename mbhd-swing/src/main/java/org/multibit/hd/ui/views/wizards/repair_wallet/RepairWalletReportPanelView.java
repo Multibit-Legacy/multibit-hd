@@ -121,7 +121,7 @@ public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairW
     // Ensure the Finish button is disabled to avoid complex side effects during repair
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
 
-    // Hide the header balance
+    // Hide the header balance - swtching back on is dealt with in MainController#onBitcoinNetworkChangedEvent
     ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
 
     // Start the CA certs update process in a new thread
@@ -183,9 +183,6 @@ public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairW
       );
       // Looks ugly but is semantically correct
       blocksLeftLabel.setText("0");
-
-      // Show the header balance
-      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, true);
 
       // Enable the Finish button
       ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);

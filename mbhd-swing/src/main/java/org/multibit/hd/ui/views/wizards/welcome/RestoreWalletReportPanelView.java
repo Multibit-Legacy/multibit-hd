@@ -28,6 +28,7 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
@@ -289,6 +290,17 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
     // Initialise backup (must be before Bitcoin network starts and on the main thread)
     BackupManager.INSTANCE.initialise(applicationDataDirectory, cloudBackupLocation == null ? Optional.<File>absent() : Optional.of(cloudBackupLocation));
+
+     SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+
+                // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
+                ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+
+              }
+            });
 
     final boolean walletCreatedStatus;
 

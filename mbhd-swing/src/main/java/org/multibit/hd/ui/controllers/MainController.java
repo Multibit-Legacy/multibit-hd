@@ -33,6 +33,7 @@ import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.platform.listener.*;
 import org.multibit.hd.ui.services.BitcoinURIListeningService;
 import org.multibit.hd.ui.views.MainView;
+import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -280,6 +281,11 @@ public class MainController extends AbstractController implements
 
     // Ensure everyone is aware of the update
     ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
+
+    // Ensure that the header shows the header after a sync
+    if (BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus())) {
+      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, Configurations.currentConfiguration.getAppearance().isShowBalance());
+    }
   }
 
   @Subscribe

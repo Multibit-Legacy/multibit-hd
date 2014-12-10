@@ -10,7 +10,6 @@ import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -116,9 +115,6 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
 
     // Ensure the Finish button is enabled - user can dismiss the Verify screen at will
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
-
-    // Hide the header balance
-    ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
 
     // Ask the Trezor for features
     getWizardModel().requestFeatures();
