@@ -108,7 +108,7 @@ public class BitcoinNetworkSummary {
   public static BitcoinNetworkSummary newNetworkPeerCount(int peerCount) {
     return new BitcoinNetworkSummary(
       BitcoinNetworkStatus.CONNECTED,
-      RAGStatus.GREEN,
+      RAGStatus.EMPTY,  // Not specified - peer count can change whilst syncing or after
       Optional.of(CoreMessageKey.PEER_COUNT),
       Optional.of(new Object[]{peerCount}),
       Optional.of(peerCount),

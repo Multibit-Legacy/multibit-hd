@@ -174,6 +174,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    * @param blocks the number of blocks to download, estimated
    */
   protected void startDownload(int blocks) {
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadStarted());
 
   }
 
@@ -185,12 +186,14 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     lastPercent = 100;
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(100, 0));
 
-    // Used to indicate sync has finished (used in restore panel)
-    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadCompleted());
-
-    // Then fire the number of connected peers
+       // Then fire the number of connected peers
     CoreEvents.fireBitcoinNetworkChangedEvent(
          BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
+
+    // Used to indicate sync has finished
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadCompleted());
+
+
   }
 }
 

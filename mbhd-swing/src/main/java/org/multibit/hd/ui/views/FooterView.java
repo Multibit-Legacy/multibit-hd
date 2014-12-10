@@ -147,6 +147,9 @@ public class FooterView extends AbstractView {
             case GREEN:
               statusIcon.setForeground(Themes.currentTheme.statusGreen());
               break;
+            case EMPTY:
+              // the event did not specify a RAG status so do not change anything
+              break;
             default:
               // Unknown status
               throw new IllegalStateException("Unknown event severity " + event.getSeverity());
