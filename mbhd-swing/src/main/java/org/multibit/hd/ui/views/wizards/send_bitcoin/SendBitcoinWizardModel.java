@@ -519,6 +519,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
             // Substitute the signed tx from the trezor
             log.debug("Substituting the Trezor signed tx '{}' for the unsigned version {}", deviceTx.toString(), sendRequestSummary.getSendRequest().get().tx.toString());
             sendRequestSummary.getSendRequest().get().tx = deviceTx;
+            log.debug("The transaction fee was {}", sendRequestSummary.getSendRequest().get().fee);
 
             // Get the last wallet
             Wallet wallet = bitcoinNetworkService.getLastWalletOptional().get();
