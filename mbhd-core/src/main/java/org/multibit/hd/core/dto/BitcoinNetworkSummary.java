@@ -99,15 +99,15 @@ public class BitcoinNetworkSummary {
 
    }
   /**
-   * <p>The network is only ready when 100% synchronization has been achieved</p>
+   * <p>The network peer count has changed</p>
    *
    * @param peerCount The peer count
    *
    * @return A new "network ready with peer count" summary
    */
-  public static BitcoinNetworkSummary newNetworkReady(int peerCount) {
+  public static BitcoinNetworkSummary newNetworkPeerCount(int peerCount) {
     return new BitcoinNetworkSummary(
-      BitcoinNetworkStatus.SYNCHRONIZED,
+      BitcoinNetworkStatus.CONNECTED,
       RAGStatus.GREEN,
       Optional.of(CoreMessageKey.PEER_COUNT),
       Optional.of(new Object[]{peerCount}),

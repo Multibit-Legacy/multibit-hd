@@ -532,6 +532,9 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       @Override
       public void run() {
 
+        // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
+        ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+
         // Ensure the view shows the spinner and disables components
         enterPasswordPanelView.disableForUnlock();
 
@@ -547,9 +550,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
         // Need a very short delay here to allow the UI thread to update
         Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
-
-        // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
-        ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
 
         return checkPasswordAndLoadWallet();
 

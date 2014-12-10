@@ -239,7 +239,7 @@ public class BitcoinNetworkService extends AbstractService {
             } else {
               log.debug("There is no wallet in the current WalletSummary");
             }
-            CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkReady(peerGroup.numConnectedPeers()));
+            CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkPeerCount(peerGroup.numConnectedPeers()));
           } catch (RuntimeException re) {
             log.debug("Blockchain download was interrupted. Error was : '" + re.getMessage() + "'");
           }

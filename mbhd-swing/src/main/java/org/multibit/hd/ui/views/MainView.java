@@ -9,7 +9,6 @@ import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
@@ -187,10 +186,6 @@ public class MainView extends JFrame {
       // The AbstractWizard.handleHide credentials unlock thread will close the wizard later
       // to get the effect of everything happening behind the wizard
       detailViewAfterWalletOpened();
-
-      // Show the header information dependent on the overall configuration settings
-      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, Configurations.currentConfiguration.getAppearance().isShowBalance());
-
     }
 
     log.debug("Pack and show UI");

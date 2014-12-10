@@ -85,7 +85,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     numberOfConnectedPeers = peerCount;
 
     CoreEvents.fireBitcoinNetworkChangedEvent(
-      BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
+      BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
   }
 
   @Override
@@ -98,7 +98,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     numberOfConnectedPeers = peerCount;
 
     CoreEvents.fireBitcoinNetworkChangedEvent(
-      BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
+      BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
   }
 
   @Override
@@ -188,10 +188,9 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     // Used to indicate sync has finished (used in restore panel)
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadCompleted());
 
-
     // Then fire the number of connected peers
     CoreEvents.fireBitcoinNetworkChangedEvent(
-         BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
+         BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
   }
 }
 
