@@ -5,7 +5,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.BitcoinNetworkStatus;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletType;
@@ -270,7 +269,7 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
 
     boolean currentEnabled = showEmptyWalletButton.isEnabled();
 
-    final boolean newEnabled;
+    boolean newEnabled = currentEnabled;
 
     // NOTE: Show empty wallet is disabled when the network is not available
     // because it is possible that a second wallet is generating transactions using
@@ -289,25 +288,29 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
         log.trace("Severity = AMBER, newEnabled = " + newEnabled);
         break;
       case GREEN:
-        // Enable on GREEN only if synchronized or unrestricted
-        newEnabled = BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus()) || InstallationManager.unrestricted;
-        log.trace("Severity = GREEN, newEnabled = " + newEnabled);
+        // Enable on GREEN
+        newEnabled = true;
+        log.trace("Severity = GREEN, newEnabled = " + true);
+        break;
+      case EMPTY:
+        // If no status notification info do nothing
         break;
       default:
         // Unknown status
-        throw new IllegalStateException("Unknown event severity " + event.getSummary().getStatus());
+        throw new IllegalStateException("Unknown event severity " + event.getSummary().getSeverity());
     }
 
     // Test for a change in condition
     if (currentEnabled != newEnabled) {
+      final boolean finalNewEnabled = newEnabled;
 
       SwingUtilities.invokeLater(
         new Runnable() {
           @Override
           public void run() {
-            log.trace("Changing button enable state, newEnabled = " + newEnabled);
+            log.trace("Changing button enable state, newEnabled = " + finalNewEnabled);
 
-            showEmptyWalletButton.setEnabled(newEnabled);
+            showEmptyWalletButton.setEnabled(finalNewEnabled);
           }
         });
 

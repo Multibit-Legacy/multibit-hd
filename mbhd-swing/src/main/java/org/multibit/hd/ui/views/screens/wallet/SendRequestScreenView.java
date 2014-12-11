@@ -1,12 +1,11 @@
 package org.multibit.hd.ui.views.screens.wallet;
 
-import org.bitcoinj.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.BitcoinNetworkStatus;
+import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentType;
@@ -273,8 +272,8 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
         newEnabled = InstallationManager.unrestricted;
         break;
       case GREEN:
-        // Enable on GREEN only if synchronized or unrestricted
-        newEnabled = BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus()) || InstallationManager.unrestricted;
+        // Enable on GREEN
+        newEnabled = true;
         break;
       default:
         // Unknown status

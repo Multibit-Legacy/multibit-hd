@@ -25,6 +25,7 @@ public enum RAGStatus {
    * Amber means warning, interested users may want to explore further
    */
   AMBER,
+
   /**
    * Green means go, no action required all is well
    */

@@ -8,6 +8,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ProgressChangedEvent;
 import org.multibit.hd.ui.events.view.SystemStatusChangedEvent;
@@ -148,7 +149,15 @@ public class FooterView extends AbstractView {
               statusIcon.setForeground(Themes.currentTheme.statusGreen());
               break;
             case EMPTY:
-              // the event did not specify a RAG status so do not change anything
+              // The event did not specify a RAG status
+
+              // If there are Peers available and the status is currently RED
+              // then move it to amber (have network connection, sync not yet started)
+              if (statusIcon.getForeground().equals(Themes.currentTheme.statusRed())) {
+                if (CoreServices.getOrCreateBitcoinNetworkService().getNumberOfConnectedPeers() > 0) {
+                  statusIcon.setForeground(Themes.currentTheme.statusAmber());
+                }
+              }
               break;
             default:
               // Unknown status

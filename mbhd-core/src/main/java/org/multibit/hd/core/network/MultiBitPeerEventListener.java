@@ -186,13 +186,12 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     lastPercent = 100;
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(100, 0));
 
-       // Then fire the number of connected peers
-    CoreEvents.fireBitcoinNetworkChangedEvent(
-         BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
-
     // Used to indicate sync has finished
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadCompleted());
 
+    // Then fire the number of connected peers
+    CoreEvents.fireBitcoinNetworkChangedEvent(
+         BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
 
   }
 }
