@@ -2,6 +2,7 @@ package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.*;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
@@ -132,11 +133,14 @@ public class ApplicationEventService extends AbstractService {
   }
 
   /**
-   * @param event The "Bitcoin network changed" event
+   * @param event The "Bitcoin network changed" event (excluding peer count notifications)
    */
   @Subscribe
   public void onBitcoinNetworkChangedEvent(BitcoinNetworkChangedEvent event) {
-    latestBitcoinNetworkChangedEvent = Optional.of(event);
+    // Do not remember peer count notifications (RAGStatus of empty
+    if (!RAGStatus.EMPTY.equals(event.getSummary().getSeverity())) {
+      latestBitcoinNetworkChangedEvent = Optional.of(event);
+    }
   }
 
   /**

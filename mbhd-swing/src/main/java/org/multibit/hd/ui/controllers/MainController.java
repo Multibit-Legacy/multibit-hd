@@ -692,6 +692,7 @@ public class MainController extends AbstractController implements
     transactionInfo.setNote(note);
 
     // Append miner's fee info
+    log.debug("Transaction creation event with mining fee of {}", transactionCreationEvent.getMiningFeePaid());
     transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
 
     // Append client fee info

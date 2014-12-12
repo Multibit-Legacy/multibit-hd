@@ -366,7 +366,7 @@ public class PaymentsProtobufSerializer {
     }
 
     Optional<Coin> minerFee = transactionInfo.getMinerFee();
-    if (minerFee != null && minerFee.isPresent() && transactionInfo.getMinerFee().get() != null) {
+    if (minerFee != null && minerFee.isPresent() && minerFee.get() != null) {
       transactionInfoBuilder.setMinerFee(minerFee.get().longValue());
     } else {
       transactionInfoBuilder.setMinerFee(ABSENT_VALUE);

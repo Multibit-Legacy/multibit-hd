@@ -256,7 +256,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
     boolean currentEnabled = sendBitcoin.isEnabled();
 
-    final boolean newEnabled;
+    boolean newEnabled = currentEnabled;
 
     // NOTE: Both send and request are disabled when the network is not available
     // because it is possible that a second wallet is generating transactions using
@@ -275,19 +275,23 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
         // Enable on GREEN
         newEnabled = true;
         break;
+      case EMPTY:
+        // No RAG status info - do nothing
+        break;
       default:
         // Unknown status
-        throw new IllegalStateException("Unknown event severity " + event.getSummary().getStatus());
+        throw new IllegalStateException("Unknown event severity " + event.getSummary().getSeverity());
     }
 
     // Test for a change in condition
     if (currentEnabled != newEnabled) {
+      final boolean finalNewEnabled = newEnabled;
 
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          sendBitcoin.setEnabled(newEnabled);
-          requestBitcoin.setEnabled(newEnabled);
+          sendBitcoin.setEnabled(finalNewEnabled);
+          requestBitcoin.setEnabled(finalNewEnabled);
         }
       });
 

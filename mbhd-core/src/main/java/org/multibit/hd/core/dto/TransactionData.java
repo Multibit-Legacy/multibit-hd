@@ -1,12 +1,13 @@
 package org.multibit.hd.core.dto;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.TransactionConfidence;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
@@ -80,7 +81,7 @@ public class TransactionData implements PaymentData {
     DateTime date,
     PaymentStatus statusWithOrdinal,
     Coin amountBTC,
-    FiatPayment amountFiat,
+    @Nullable FiatPayment amountFiat,
     Optional<Coin> miningFee,
     Optional<Coin> clientFee,
     TransactionConfidence.ConfidenceType confidenceType,
@@ -99,7 +100,6 @@ public class TransactionData implements PaymentData {
       Preconditions.checkNotNull(date, "'date' must be present");
       Preconditions.checkNotNull(statusWithOrdinal, "'statusWithOrdinal' must be present");
       Preconditions.checkNotNull(amountBTC, "'amountBTC' must be present");
-      Preconditions.checkNotNull(amountFiat, "'amountFiat' must be present");
       Preconditions.checkNotNull(miningFee, "'miningFee' must be present");
       Preconditions.checkNotNull(clientFee, "'clientFee' must be present");
       Preconditions.checkNotNull(confidenceType, "'confidenceType' must be present");

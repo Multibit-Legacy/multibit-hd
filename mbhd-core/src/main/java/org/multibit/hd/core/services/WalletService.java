@@ -5,7 +5,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
@@ -39,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -86,12 +86,12 @@ public class WalletService extends AbstractService {
   /**
    * The payment requests in a map, indexed by the bitcoin address
    */
-  private final Map<Address, PaymentRequestData> paymentRequestMap = Maps.newHashMap();
+  private final Map<Address, PaymentRequestData> paymentRequestMap = Collections.synchronizedMap(new HashMap<Address, PaymentRequestData>());
 
   /**
    * The additional transaction information, in the form of a map, index by the transaction hash
    */
-  private final Map<String, TransactionInfo> transactionInfoMap = Maps.newHashMap();
+  private final ConcurrentHashMap<String, TransactionInfo> transactionInfoMap = new ConcurrentHashMap();
 
   /**
    * The wallet id that this WalletService is using
@@ -571,8 +571,7 @@ public class WalletService extends AbstractService {
     // This will use the fiat rate at time of send/ receive
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
     if (transactionInfo != null) {
-      log.trace("For the hash " + transactionHashAsString + " a bitcoin amount of " + amountBTC + " the local amount is " + transactionInfo.getAmountFiat().getAmount() + " STORED");
-      return transactionInfo.getAmountFiat();
+       return transactionInfo.getAmountFiat();
     }
 
     // Else work it out from the current settings
@@ -593,14 +592,18 @@ public class WalletService extends AbstractService {
       amountFiat.setAmount(Optional.<BigDecimal>absent());
       amountFiat.setCurrency(Optional.<Currency>absent());
     }
-    log.trace("For the hash " + transactionHashAsString + "  a bitcoin amount of " + amountBTC + " the local amount is " + amountFiat.getAmount() + " NEW");
 
     // Remember the fiat information just worked out
     TransactionInfo newTransactionInfo = new TransactionInfo();
     newTransactionInfo.setHash(transactionHashAsString);
     newTransactionInfo.setAmountFiat(amountFiat);
 
-    transactionInfoMap.put(transactionHashAsString, newTransactionInfo);
+    // Double check we are not overwriting an extant transactionInfo
+    if (transactionInfoMap.get(transactionHashAsString) == null) {
+      // Expected
+      transactionInfoMap.putIfAbsent(transactionHashAsString, newTransactionInfo);
+    }
+
     return amountFiat;
   }
 
@@ -696,7 +699,7 @@ public class WalletService extends AbstractService {
         }
       }
 
-      log.debug("Reading payments completed");
+      log.debug("Reading payments completed. TransactionInfoMap: {}", transactionInfoMap);
 
     } catch (EncryptedFileReaderWriterException e) {
       ExceptionHandler.handleThrowable(new PaymentsLoadException("Could not load payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'."));
@@ -715,6 +718,7 @@ public class WalletService extends AbstractService {
     try {
 
       log.debug("Writing payments to '{}'", backingStoreFile.getAbsolutePath());
+      log.debug("Writing TransactionInfoMap: {}", transactionInfoMap);
 
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
       Payments payments = new Payments();
@@ -746,6 +750,7 @@ public class WalletService extends AbstractService {
   }
 
   public void addTransactionInfo(TransactionInfo transactionInfo) {
+    log.debug("Adding transactionInfo {}", transactionInfo);
     transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
   }
 
@@ -991,10 +996,10 @@ public class WalletService extends AbstractService {
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
 
-    // Close out this method as soon as possible
-    if (transactionInfoMap.containsKey(transactionSeenEvent.getTransactionId())) {
+    // If not in the transaction info map create on and add
+    if (transactionInfoMap.get(transactionSeenEvent.getTransactionId()) == null) {
 
-      // Create a new one
+      // Create a new transaction info
       TransactionInfo transactionInfo = new TransactionInfo();
       transactionInfo.setHash(transactionSeenEvent.getTransactionId());
 
@@ -1020,17 +1025,20 @@ public class WalletService extends AbstractService {
         amountFiat.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
 
       } else {
-
         amountFiat.setRate(Optional.<String>absent());
         amountFiat.setAmount(Optional.<BigDecimal>absent());
         amountFiat.setCurrency(Optional.<Currency>absent());
-
       }
 
       transactionInfo.setAmountFiat(amountFiat);
 
-      log.trace("Created TransactionInfo: {}", transactionInfo.toString());
-      transactionInfoMap.put(transactionSeenEvent.getTransactionId(), transactionInfo);
+      // Double check it's not in the transactionInfoMap to minimise raciness
+      if (transactionInfoMap.get(transactionSeenEvent.getTransactionId()) == null) {
+        transactionInfoMap.putIfAbsent(transactionSeenEvent.getTransactionId(), transactionInfo);
+        log.debug("Created TransactionInfo: {}", transactionInfo);
+      } else {
+        log.debug("Not adding transactionInfo - another process has already added transactionInfo: {}", transactionInfo);
+      }
     }
   }
 

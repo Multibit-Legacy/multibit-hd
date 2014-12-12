@@ -228,7 +228,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
         }
         int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
         PaymentData paymentData = ((PaymentTableModel) paymentsTable.getModel()).getPaymentData().get(selectedModelRow);
-        //log.debug("getDetailsAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow + ", paymentData = " + paymentData.toString());
+        log.debug("getDetailsAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow + ", paymentData = " + paymentData.toString());
 
         PaymentsWizard wizard = Wizards.newPaymentsWizard(paymentData);
         // If the payment is a transaction, then fetch the matching payment request data and put them in the model

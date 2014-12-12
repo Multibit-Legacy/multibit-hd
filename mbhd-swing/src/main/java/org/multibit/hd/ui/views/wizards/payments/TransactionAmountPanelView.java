@@ -10,6 +10,9 @@ import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.WalletService;
+import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -161,8 +164,20 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
       if (paymentData instanceof TransactionData) {
         TransactionData transactionData = (TransactionData) paymentData;
 
+        // Get the transaction info again directly from the WalletService to make sure the minging fee is up to date
+        // Otherwise use sentBySelf on corresponding transactionInfo
+        Optional<Coin> miningFee = Optional.absent();
+
+        Optional<WalletService> walletService = CoreServices.getCurrentWalletService();
+        if (walletService.isPresent()) {
+          TransactionInfo transactionInfo = walletService.get().getTransactionInfoByHash(transactionData.getTransactionId());
+
+          if (transactionInfo != null) {
+            miningFee = transactionInfo.getMinerFee();
+          }
+        }
         // Miner's fee
-        updateMiningFee(languageConfiguration, bitcoinConfiguration, transactionData);
+        updateMiningFee(languageConfiguration, bitcoinConfiguration, miningFee);
 
         // Client fee
         updateClientFee(languageConfiguration, bitcoinConfiguration, transactionData);
@@ -186,7 +201,7 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
         }
       }
 
-      if (paymentData.getAmountFiat().getCurrency().isPresent()) {
+      if (paymentData.getAmountFiat() != null && paymentData.getAmountFiat().getCurrency().isPresent()) {
         // Add bitcoin unit to exchange rate label
         LabelDecorator.applyBitcoinSymbolLabel(
                 exchangeRateLabel,
@@ -197,13 +212,15 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
         exchangeRateLabel.setText(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
       }
 
-      String exchangeRateText;
-      if (Strings.isNullOrEmpty(paymentData.getAmountFiat().getRate().or("")) || Strings.isNullOrEmpty(paymentData.getAmountFiat().getExchangeName().or(""))) {
-        exchangeRateText = Languages.safeText(MessageKey.NOT_AVAILABLE);
-      } else {
-         // Convert the exchange rate (which is always stored as fiat currency per bitcoin)to match the unit of bitcoin being used
-        String convertedExchangeRateText = Formats.formatExchangeRate(paymentData.getAmountFiat().getRate(), languageConfiguration, bitcoinConfiguration);
-        exchangeRateText = convertedExchangeRateText + " (" + paymentData.getAmountFiat().getExchangeName().or("") + ")";
+      String exchangeRateText = "";
+      if (paymentData.getAmountFiat() != null) {
+        if (Strings.isNullOrEmpty(paymentData.getAmountFiat().getRate().or("")) || Strings.isNullOrEmpty(paymentData.getAmountFiat().getExchangeName().or(""))) {
+          exchangeRateText = Languages.safeText(MessageKey.NOT_AVAILABLE);
+        } else {
+          // Convert the exchange rate (which is always stored as fiat currency per bitcoin) to match the unit of bitcoin being used
+          String convertedExchangeRateText = Formats.formatExchangeRate(paymentData.getAmountFiat().getRate(), languageConfiguration, bitcoinConfiguration);
+          exchangeRateText = convertedExchangeRateText + " (" + paymentData.getAmountFiat().getExchangeName().or("") + ")";
+        }
       }
       exchangeRateValue.setText(exchangeRateText);
     }
@@ -219,8 +236,7 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
     }
   }
 
-  private void updateMiningFee(LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration, TransactionData transactionData) {
-    Optional<Coin> miningFee = transactionData.getMiningFee();
+  private void updateMiningFee(LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration,  Optional<Coin> miningFee) {
     if (miningFee.isPresent()) {
       String[] minerFeePaidArray = Formats.formatCoinAsSymbolic(miningFee.get().negate(), languageConfiguration, bitcoinConfiguration, true);
       miningFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
@@ -246,7 +262,7 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
 
   private void updateAmountFiat(PaymentData paymentData, LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration) {
     FiatPayment amountFiat = paymentData.getAmountFiat();
-    if (amountFiat.getAmount().isPresent()) {
+    if (amountFiat != null && amountFiat.getAmount().isPresent()) {
       amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount().get(), languageConfiguration.getLocale(), bitcoinConfiguration, true)));
     } else {
       amountFiatValue.setText("");
@@ -254,7 +270,7 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
 
     MessageKey messageKey = getMessageKeyForAmount(paymentData);
 
-    if (amountFiat.getCurrency().isPresent()) {
+    if (amountFiat != null && amountFiat.getCurrency().isPresent()) {
       amountFiatLabel = Labels.newValueLabel(Languages.safeText(messageKey) + " " + amountFiat.getCurrency().get().getCurrencyCode());
     } else {
       amountFiatLabel = Labels.newValueLabel(Languages.safeText(messageKey));
