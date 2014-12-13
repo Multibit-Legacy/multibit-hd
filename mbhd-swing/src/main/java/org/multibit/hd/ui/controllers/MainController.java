@@ -729,7 +729,7 @@ public class MainController extends AbstractController implements
     switch (event.getEventType()) {
       case SHOW_DEVICE_STOPPED:
       case SHOW_DEVICE_DETACHED:
-        // Rely on the view status event to inform the user
+        // Rely on the hardware wallet wizard to inform the user
         // An alert tends to stack and gets messy/irrelevant
         deferredCredentialsRequestType = CredentialsRequestType.PASSWORD;
         break;
@@ -748,8 +748,7 @@ public class MainController extends AbstractController implements
         deferredCredentialsRequestType = CredentialsRequestType.TREZOR_CIPHER_KEY;
         break;
       default:
-        // The AbstractHardwareWalletWizard handles specific cases
-        // No view event
+        // The AbstractHardwareWalletWizard handles everything when a wizard is showing
         return;
     }
 
@@ -759,10 +758,6 @@ public class MainController extends AbstractController implements
     if (mainView != null) {
       mainView.setCredentialsRequestType(deferredCredentialsRequestType);
     }
-
-    // Must have a view event (device ready/not ready) to be here
-    // See the AbstractHardwareWalletWizard for more fine detailed handling
-    ViewEvents.fireHardwareWalletStatusChangedEvent(event.getEventType());
 
   }
 
