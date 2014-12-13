@@ -46,7 +46,13 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public void newPanelModel() {
 
-    currentSelection = CREATE_WALLET_PREPARATION;
+    WelcomeWizardMode mode = getWizardModel().getMode();
+    if (WelcomeWizardMode.TREZOR.equals(mode)) {
+      currentSelection = TREZOR_CREATE_WALLET_PREPARATION;
+    } else {
+      currentSelection = CREATE_WALLET_PREPARATION;
+    }
+
     setPanelModel(currentSelection);
 
     // Bind this to the wizard model
@@ -64,19 +70,11 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
         "[]" // Row constraints
       ));
 
-    final String createCommand;
-    WelcomeWizardMode mode = getWizardModel().getMode();
-    if (WelcomeWizardMode.TREZOR.equals(mode)) {
-      createCommand = TREZOR_CREATE_WALLET_PREPARATION.name();
-    } else {
-      createCommand = CREATE_WALLET_PREPARATION.name();
-    }
-
     contentPanel.add(
       Panels.newWalletSelector(
-        mode,
+        getWizardModel().getMode(),
         this,
-        createCommand,
+        currentSelection.name(), // Relies on create being default
         SELECT_EXISTING_WALLET.name(),
         RESTORE_PASSWORD_SEED_PHRASE.name(),
         RESTORE_WALLET_SEED_PHRASE.name()

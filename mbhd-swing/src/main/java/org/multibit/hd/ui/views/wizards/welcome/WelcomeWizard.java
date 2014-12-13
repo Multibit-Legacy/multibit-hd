@@ -3,6 +3,8 @@ package org.multibit.hd.ui.views.wizards.welcome;
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletPreparationPanelView;
+import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletSelectBackupLocationPanelView;
 import org.multibit.hd.ui.views.wizards.welcome.create_wallet.*;
 import org.multibit.hd.ui.views.wizards.welcome.restore_wallet.*;
 
@@ -67,6 +69,49 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
     wizardViewMap.put(
       CREATE_WALLET_REPORT.name(),
       new CreateWalletReportPanelView(this, CREATE_WALLET_REPORT.name()));
+
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_PREPARATION.name(),
+      new CreateTrezorWalletPreparationPanelView(this, TREZOR_CREATE_WALLET_PREPARATION.name()));
+
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION.name(),
+      new CreateTrezorWalletSelectBackupLocationPanelView(this, TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION.name()));
+
+    // TODO Implement this
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET.name(),
+      new CreateTrezorWalletPreparationPanelView(this, TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET.name()));
+
+    // TODO Implement this
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET.name(),
+      new CreateTrezorWalletPreparationPanelView(this, TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET.name()));
+
+    // TODO Implement this
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_CONFIRM_ENTROPY.name(),
+      new CreateTrezorWalletPreparationPanelView(this, TREZOR_CREATE_WALLET_CONFIRM_ENTROPY.name()));
+
+    // TODO Implement this
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_ENTER_NEW_PIN.name(),
+      new CreateTrezorWalletPreparationPanelView(this, TREZOR_CREATE_WALLET_ENTER_NEW_PIN.name()));
+
+    // TODO Implement this
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name(),
+      new CreateTrezorWalletPreparationPanelView(this, TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()));
+
+    // TODO Implement this
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_CONFIRM_WORD.name(),
+      new CreateTrezorWalletPreparationPanelView(this, TREZOR_CREATE_WALLET_CONFIRM_WORD.name()));
+
+    // TODO Implement this
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_REPORT.name(),
+      new CreateTrezorWalletPreparationPanelView(this, TREZOR_CREATE_WALLET_REPORT.name()));
 
     wizardViewMap.put(
       RESTORE_PASSWORD_SEED_PHRASE.name(),
