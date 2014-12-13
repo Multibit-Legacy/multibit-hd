@@ -264,9 +264,16 @@ public class CoreServices {
   private static void shutdownApplicationSupportServices(ShutdownEvent.ShutdownType shutdownType) {
 
     // Allow graceful shutdown in the correct order
-    configurationService.shutdownNow(shutdownType);
-    securityCheckingService.shutdownNow(shutdownType);
-    applicationEventService.shutdownNow(shutdownType);
+    if (configurationService !=null) {
+      configurationService.shutdownNow(shutdownType);
+    }
+    if (securityCheckingService != null) {
+      securityCheckingService.shutdownNow(shutdownType);
+    }
+
+    if (applicationEventService != null) {
+      applicationEventService.shutdownNow(shutdownType);
+    }
 
     // Do not clear references since it leads to complex behaviour during shutdown
 
