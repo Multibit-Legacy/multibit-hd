@@ -15,6 +15,7 @@ import org.multibit.hd.ui.views.components.panels.RoundedPanel;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -365,6 +366,7 @@ public class Panels {
   /**
    * <p>A "wallet selector" panel provides a means of choosing how a wallet is to be created/accessed</p>
    *
+   * @param mode                   The mode (e.g. standard, Trezor etc)
    * @param listener               The action listener
    * @param createCommand          The create command name
    * @param existingWalletCommand  The existing wallet command name
@@ -374,6 +376,7 @@ public class Panels {
    * @return A new "wallet selector" panel
    */
   public static JPanel newWalletSelector(
+    WelcomeWizardMode mode,
     ActionListener listener,
     String createCommand,
     String existingWalletCommand,
@@ -383,7 +386,10 @@ public class Panels {
 
     JPanel panel = Panels.newPanel();
 
-    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.CREATE_WALLET);
+    JRadioButton radio1 = RadioButtons.newRadioButton(
+      listener,
+      WelcomeWizardMode.TREZOR.equals(mode) ? MessageKey.TREZOR_CREATE_WALLET : MessageKey.CREATE_WALLET
+    );
     radio1.setSelected(true);
     radio1.setActionCommand(createCommand);
 

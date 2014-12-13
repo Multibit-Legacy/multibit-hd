@@ -49,6 +49,7 @@ import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1046,8 +1047,14 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingWelcomeWizard(true);
     mainView.setShowExitingCredentialsWizard(false);
 
+    // Determine if we are in Trezor mode for the welcome wizard
+    WelcomeWizardMode mode = CredentialsRequestType.TREZOR_CIPHER_KEY.equals(deferredCredentialsRequestType) ? WelcomeWizardMode.TREZOR: WelcomeWizardMode.STANDARD;
+
     // Start building the wizard on the EDT to prevent UI updates
-    final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET);
+    final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
+      WelcomeWizardState.WELCOME_SELECT_WALLET,
+      mode
+    );
 
     // Use a new thread to handle the new wizard so that the handover can complete
     handoverExecutorService.execute(

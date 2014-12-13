@@ -16,6 +16,7 @@ import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,13 +161,16 @@ public class MainView extends JFrame {
 
       // This section must come after a deferred hide has completed
 
+      // Determine if we are in Trezor mode for the welcome wizard
+      WelcomeWizardMode mode = CredentialsRequestType.TREZOR_CIPHER_KEY.equals(credentialsRequestType) ? WelcomeWizardMode.TREZOR: WelcomeWizardMode.STANDARD;
+
       // Determine the appropriate starting screen for the welcome wizard
       if (Configurations.currentConfiguration.isLicenceAccepted()) {
         log.debug("Showing exiting welcome wizard (select language)");
-        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
+        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE, mode).getWizardScreenHolder());
       } else {
         log.debug("Showing exiting welcome wizard (licence agreement)");
-        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_LICENCE).getWizardScreenHolder());
+        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_LICENCE, mode).getWizardScreenHolder());
       }
 
     } else if (showExitingCredentialsWizard) {

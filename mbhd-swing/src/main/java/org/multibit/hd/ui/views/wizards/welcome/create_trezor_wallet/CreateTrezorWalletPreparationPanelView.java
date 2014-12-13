@@ -54,7 +54,7 @@ public class CreateTrezorWalletPreparationPanelView extends AbstractWizardPanelV
    */
   public CreateTrezorWalletPreparationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.CREATE_WALLET_PREPARATION_TITLE, AwesomeIcon.EDIT);
+    super(wizard, panelName, MessageKey.CREATE_WALLET_PREPARATION_TITLE, AwesomeIcon.SHIELD);
 
     // Timer needs to be fairly fast to appear responsive
     timer = new Timer(500, new ActionListener() {

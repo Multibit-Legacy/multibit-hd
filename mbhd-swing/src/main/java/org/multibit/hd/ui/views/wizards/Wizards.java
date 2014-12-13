@@ -86,6 +86,7 @@ import org.multibit.hd.ui.views.wizards.wallet_details.WalletDetailsState;
 import org.multibit.hd.ui.views.wizards.wallet_details.WalletDetailsWizard;
 import org.multibit.hd.ui.views.wizards.wallet_details.WalletDetailsWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
@@ -211,13 +212,13 @@ public class Wizards {
   /**
    * @return A new "welcome" wizard for the initial set up
    */
-  public static WelcomeWizard newExitingWelcomeWizard(WelcomeWizardState initialState) {
+  public static WelcomeWizard newExitingWelcomeWizard(WelcomeWizardState initialState, WelcomeWizardMode mode) {
 
     log.debug("New 'Exiting welcome wizard'");
 
     Preconditions.checkNotNull(initialState, "'initialState' must be present");
 
-    return new WelcomeWizard(new WelcomeWizardModel(initialState), true);
+    return new WelcomeWizard(new WelcomeWizardModel(initialState, mode), true);
 
   }
 

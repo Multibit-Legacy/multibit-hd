@@ -38,7 +38,6 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<WelcomeWizardState> {
 
@@ -81,25 +80,28 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private List<String> restoreWalletSeedPhrase = Lists.newArrayList();
 
   private final boolean restoring;
+  private final WelcomeWizardMode mode;
 
   private String actualSeedTimestamp;
-
   // Backup summaries for restoring a wallet
   private List<BackupSummary> backupSummaries = Lists.newArrayList();
   private SelectBackupSummaryModel selectBackupSummaryModel;
   private EnterSeedPhraseModel restoreWalletEnterTimestampModel;
+
   private ConfirmPasswordModel restoreWalletConfirmPasswordModel;
 
   /**
    * @param state The state object
+   * @param mode The mode (e.g. standard, Trezor etc)
    */
-  public WelcomeWizardModel(WelcomeWizardState state) {
+  public WelcomeWizardModel(WelcomeWizardState state, WelcomeWizardMode mode) {
     super(state);
 
     log.debug("Welcome wizard starting in state '{}'", state.name());
 
     this.seedPhraseGenerator = CoreServices.newSeedPhraseGenerator();
     this.restoring = WelcomeWizardState.WELCOME_SELECT_WALLET.equals(state);
+    this.mode = mode;
 
   }
 
@@ -135,8 +137,36 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         break;
       case CREATE_WALLET_REPORT:
         throw new IllegalStateException("'Next' is not permitted here");
+      case TREZOR_CREATE_WALLET_PREPARATION:
+        state = TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION;
+        break;
+      case TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION:
+        state = TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET;
+        break;
+      case TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET:
+        state = TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET;
+        break;
+      case TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET:
+        state = TREZOR_CREATE_WALLET_CONFIRM_ENTROPY;
+        break;
+      case TREZOR_CREATE_WALLET_CONFIRM_ENTROPY:
+        state = TREZOR_CREATE_WALLET_ENTER_NEW_PIN;
+        break;
+      case TREZOR_CREATE_WALLET_ENTER_NEW_PIN:
+        state = TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN;
+        break;
+      case TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN:
+        state = TREZOR_CREATE_WALLET_CONFIRM_WORD;
+        break;
+      case TREZOR_CREATE_WALLET_CONFIRM_WORD:
+        state = TREZOR_CREATE_WALLET_REPORT;
+        break;
+      case TREZOR_CREATE_WALLET_REPORT:
+        break;
       case RESTORE_PASSWORD_SEED_PHRASE:
         state = RESTORE_PASSWORD_REPORT;
+        break;
+      case RESTORE_PASSWORD_REPORT:
         break;
       case RESTORE_WALLET_SEED_PHRASE:
         if (!isLocalZipBackupPresent()) {
@@ -164,6 +194,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         throw new IllegalStateException("'Next' is not permitted here");
       case SELECT_WALLET_HARDWARE:
         state = selectWalletChoice;
+        break;
+      case SELECT_EXISTING_WALLET:
         break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
@@ -515,6 +547,13 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
    */
   public boolean isRestoring() {
     return restoring;
+  }
+
+  /**
+   * @return The welcome wizard mode (e.g. standard, Trezor etc)
+   */
+  public WelcomeWizardMode getMode() {
+    return mode;
   }
 
 }
