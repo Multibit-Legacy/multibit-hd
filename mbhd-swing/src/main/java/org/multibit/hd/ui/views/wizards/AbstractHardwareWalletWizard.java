@@ -38,6 +38,122 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
   }
 
   /**
+   * <p>Inform the wizard model of a "device failed"</p>
+   *
+   * @param event The originating event containing payload and context
+   */
+  public void handleDeviceFailed(final HardwareWalletEvent event) {
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          // Ensure the panel updates its model (the button is outside of the panel itself)
+          if (getWizardModel().getPanelName() != null) {
+            if (getWizardPanelView(getWizardModel().getPanelName()) != null) {
+              getWizardPanelView(getWizardModel().getPanelName()).updateFromComponentModels(Optional.absent());
+            }
+          }
+
+          // Move to the "device failed" state
+          getWizardModel().showDeviceFailed(event);
+
+          // Show the panel
+          show(getWizardModel().getPanelName());
+
+        }
+      });
+
+  }
+
+  /**
+   * <p>Inform the wizard model of a "device ready"</p>
+   *
+   * @param event The originating event containing payload and context
+   */
+  public void handleDeviceReady(final HardwareWalletEvent event) {
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          // Ensure the panel updates its model (the button is outside of the panel itself)
+          if (getWizardModel().getPanelName() != null) {
+            if (getWizardPanelView(getWizardModel().getPanelName()) != null) {
+              getWizardPanelView(getWizardModel().getPanelName()).updateFromComponentModels(Optional.absent());
+            }
+          }
+
+          // Move to the "device ready" state
+          getWizardModel().showDeviceReady(event);
+
+          // Show the panel
+          show(getWizardModel().getPanelName());
+
+        }
+      });
+
+  }
+
+  /**
+   * <p>Inform the wizard model of a "device detached"</p>
+   *
+   * @param event The originating event containing payload and context
+   */
+  public void handleDeviceDetached(final HardwareWalletEvent event) {
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          // Ensure the panel updates its model (the button is outside of the panel itself)
+          if (getWizardModel().getPanelName() != null) {
+            if (getWizardPanelView(getWizardModel().getPanelName()) != null) {
+              getWizardPanelView(getWizardModel().getPanelName()).updateFromComponentModels(Optional.absent());
+            }
+          }
+
+          // Move to the "device detached" state
+          getWizardModel().showDeviceDetached(event);
+
+          // Show the panel
+          show(getWizardModel().getPanelName());
+
+        }
+      });
+
+  }
+
+  /**
+   * <p>Inform the wizard model of a "device stopped"</p>
+   *
+   * @param event The originating event containing payload and context
+   */
+  public void handleDeviceStopped(final HardwareWalletEvent event) {
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          // Ensure the panel updates its model (the button is outside of the panel itself)
+          if (getWizardModel().getPanelName() != null) {
+            if (getWizardPanelView(getWizardModel().getPanelName()) != null) {
+              getWizardPanelView(getWizardModel().getPanelName()).updateFromComponentModels(Optional.absent());
+            }
+          }
+
+          // Move to the "device stopped" state
+          getWizardModel().showDeviceStopped(event);
+
+          // Show the panel
+          show(getWizardModel().getPanelName());
+
+        }
+      });
+
+  }
+
+  /**
    * <p>Inform the wizard model of a "PIN entry"</p>
    *
    * @param event The originating event containing payload and context
@@ -304,6 +420,18 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
     log.debug("Received hardware event: '{}'.{}", event.getEventType().name(), event.getMessage());
 
     switch (event.getEventType()) {
+      case SHOW_DEVICE_FAILED:
+        handleDeviceFailed(event);
+        break;
+      case SHOW_DEVICE_READY:
+        handleDeviceReady(event);
+        break;
+      case SHOW_DEVICE_DETACHED:
+        handleDeviceDetached(event);
+        break;
+      case SHOW_DEVICE_STOPPED:
+        handleDeviceStopped(event);
+        break;
       case SHOW_PIN_ENTRY:
         handlePINEntry(event);
         break;
@@ -331,8 +459,10 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
       case MESSAGE_SIGNATURE:
         handleReceivedMessageSignature(event);
         break;
+      case SHOW_WORD_ENTRY:
+        break;
       default:
-        log.debug("Ignoring SHOW_DEVICE_* events");
+        log.warn("Unknown hardware wallet event type: {}", event.getEventType().name());
         break;
     }
   }

@@ -27,6 +27,63 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   }
 
   /**
+   * Handles state transition to a "device failed" panel
+   *
+   * Usually this will be an "Report" panel following a "Request" and the
+   * panel will show a report indicating that Trezor communication has failed
+   *
+   * Clicking "Next" or "Finish" will trigger the end of the wizard or a transition
+   * to a fallback (e.g. password entry)
+   *
+   * @param event The hardware wallet event containing payload and context
+   */
+  public void showDeviceFailed(HardwareWalletEvent event) {
+    // Do nothing
+  }
+
+  /**
+   * Handles state transition to a "device ready" panel
+   *
+   * Usually this will be an "use Trezor" panel which will show a collection
+   * of options to determine what happens next
+   *
+   * Clicking "Next" will trigger the next step
+   *
+   * @param event The hardware wallet event containing payload and context
+   */
+  public void showDeviceReady(HardwareWalletEvent event) {
+    // Do nothing
+  }
+
+  /**
+   * Handles state transition to a "device detached" panel
+   *
+   * Usually this will be an "Report" panel which will show a report
+   * indicating that Trezor communication has been detached
+   *
+   * Clicking "Next" will trigger the next step
+   *
+   * @param event The hardware wallet event containing payload and context
+   */
+  public void showDeviceDetached(HardwareWalletEvent event) {
+    // Do nothing
+  }
+
+  /**
+   * Handles state transition to a "device stopped" panel
+   *
+   * Usually this will be seen during a switch wallet operation where a
+   * device has been shut down
+   *
+   * There may be no user interaction required
+   *
+   * @param event The hardware wallet event containing payload and context
+   */
+  public void showDeviceStopped(HardwareWalletEvent event) {
+    // Do nothing
+  }
+
+  /**
    * Handles state transition to a "PIN entry" panel
    *
    * Usually this will be an "EnterCurrentPin" panel following a "Request" and the
