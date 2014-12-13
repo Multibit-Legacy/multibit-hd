@@ -282,7 +282,7 @@ public class MainController extends AbstractController implements
     // Ensure everyone is aware of the update
     ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
 
-    // Ensure that the header shows the header after a sync
+    // Ensure that the header shows the header after a sync (if the configuration permits)
     if (BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus())) {
       ViewEvents.fireViewChangedEvent(ViewKey.HEADER, Configurations.currentConfiguration.getAppearance().isShowBalance());
     }

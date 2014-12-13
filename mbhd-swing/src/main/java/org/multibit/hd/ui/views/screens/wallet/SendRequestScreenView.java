@@ -275,8 +275,10 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
         // Enable on GREEN
         newEnabled = true;
         break;
+      case PINK:
       case EMPTY:
-        // No RAG status info - do nothing
+        // Maintain the status quo
+        newEnabled = currentEnabled;
         break;
       default:
         // Unknown status

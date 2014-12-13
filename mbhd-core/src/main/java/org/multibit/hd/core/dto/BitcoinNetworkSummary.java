@@ -112,7 +112,7 @@ public class BitcoinNetworkSummary {
       Optional.of(CoreMessageKey.PEER_COUNT),
       Optional.of(new Object[]{peerCount}),
       Optional.of(peerCount),
-      -1, /* Do not show the progress bar when the peer count changes - confusing */
+      -1, // Do not show the progress bar when the peer count changes - confusing
       0
     );
   }

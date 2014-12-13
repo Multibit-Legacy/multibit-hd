@@ -182,6 +182,9 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    * Called when we are done downloading the block chain.
    */
   protected void doneDownload() {
+
+    log.info("Download of block chain complete");
+
     // Fire that we have completed the sync
     lastPercent = 100;
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(100, 0));

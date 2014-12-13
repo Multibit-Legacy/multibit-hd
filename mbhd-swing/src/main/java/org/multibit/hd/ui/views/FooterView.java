@@ -195,6 +195,7 @@ public class FooterView extends AbstractView {
               // No earlier activity so hide immediately
               progressBar.setVisible(false);
             }
+            return;
           }
 
           if (amber.contains(event.getPercent())) {
@@ -203,7 +204,7 @@ public class FooterView extends AbstractView {
             NimbusDecorator.applyThemeColor(Themes.currentTheme.statusAmber(), progressBar);
             progressBar.setValue(event.getPercent());
             progressBar.setVisible(true);
-
+            return;
           }
 
           if (green.contains(event.getPercent())) {
@@ -220,6 +221,7 @@ public class FooterView extends AbstractView {
             hideProgressFutures.add(scheduleHideProgressBar());
 
           }
+
         }
       });
 
