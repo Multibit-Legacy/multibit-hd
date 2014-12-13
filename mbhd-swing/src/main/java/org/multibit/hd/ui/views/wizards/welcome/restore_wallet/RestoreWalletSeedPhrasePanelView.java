@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.welcome;
+package org.multibit.hd.ui.views.wizards.welcome.restore_wallet;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -18,6 +18,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 
 import javax.swing.*;
 import java.util.List;

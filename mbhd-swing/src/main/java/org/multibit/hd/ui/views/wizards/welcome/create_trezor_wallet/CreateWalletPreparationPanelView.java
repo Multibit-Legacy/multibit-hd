@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.welcome;
+package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -13,6 +13,7 @@ import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

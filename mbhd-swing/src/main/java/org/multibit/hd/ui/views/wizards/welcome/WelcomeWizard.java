@@ -1,8 +1,10 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
-import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.welcome.create_wallet.*;
+import org.multibit.hd.ui.views.wizards.welcome.restore_wallet.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -21,7 +23,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
  * @since 0.0.1
  *
  */
-public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
+public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardModel> {
 
   public WelcomeWizard(WelcomeWizardModel model, boolean isExiting) {
     super(model, isExiting, Optional.absent());

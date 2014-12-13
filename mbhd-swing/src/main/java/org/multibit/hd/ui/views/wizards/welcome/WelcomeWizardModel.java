@@ -20,7 +20,7 @@ import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
-import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
  * @since 0.0.1
  *
  */
-public class WelcomeWizardModel extends AbstractWizardModel<WelcomeWizardState> {
+public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<WelcomeWizardState> {
 
   private static final Logger log = LoggerFactory.getLogger(WelcomeWizardModel.class);
 

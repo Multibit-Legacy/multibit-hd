@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.welcome;
+package org.multibit.hd.ui.views.wizards.welcome.restore_wallet;
 
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;

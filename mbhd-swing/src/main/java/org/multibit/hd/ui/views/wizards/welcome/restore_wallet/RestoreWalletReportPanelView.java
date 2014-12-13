@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.welcome;
+package org.multibit.hd.ui.views.wizards.welcome.restore_wallet;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
@@ -41,6 +41,8 @@ import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import javax.swing.*;
