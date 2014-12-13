@@ -44,8 +44,12 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   /**
    * Handles state transition to a "device ready" panel
    *
-   * Usually this will be an "use Trezor" panel which will show a collection
+   * Usually this will be a "use Trezor" panel which will show a collection
    * of options to determine what happens next
+   *
+   * Note that an "operation failure" will reset the device back to its
+   * initialised state leading to a "device ready" so implementers should be
+   * aware of the context
    *
    * Clicking "Next" will trigger the next step
    *

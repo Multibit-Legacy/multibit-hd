@@ -20,6 +20,7 @@ import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.fsm.HardwareWalletContext;
@@ -99,6 +100,12 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    * True if a Trezor failure has occurred that necessitates a switch to password entry
    */
   private boolean switchToPassword;
+
+  /**
+   * Ignore a "device ready" event occurring before this time to simplify the logic
+   * in dealing with a cancellation request followed by replacement of device
+   */
+  private DateTime ignoreDeviceReadyTimeout = Dates.nowUtc();
 
   public CredentialsWizardModel(CredentialsState credentialsState, CredentialsRequestType credentialsRequestType) {
     super(credentialsState);
@@ -197,16 +204,17 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         // Fall through to "press confirm for unlock"
       case CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK:
 
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
 
-            confirmCipherKeyPanelView.getTrezorDisplayView().setOperationText(MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION);
-            confirmCipherKeyPanelView.setDisplayVisible(false);
-            confirmCipherKeyPanelView.getTrezorDisplayView().setSpinnerVisible(true);
+              confirmCipherKeyPanelView.getTrezorDisplayView().setOperationText(MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION);
+              confirmCipherKeyPanelView.setDisplayVisible(false);
+              confirmCipherKeyPanelView.getTrezorDisplayView().setSpinnerVisible(true);
 
-          }
-        });
+            }
+          });
 
         if (event.getMessage().get() instanceof Success) {
 
@@ -214,9 +222,9 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           String message = ((Success) event.getMessage().get()).getMessage();
 
           log.info(
-                  "Message:'{}'\nPayload length: {}",
-                  message,
-                  payload == null ? 0 : payload.length
+            "Message:'{}'\nPayload length: {}",
+            message,
+            payload == null ? 0 : payload.length
           );
 
           log.debug("Using the payload as entropy");
@@ -230,8 +238,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       default:
         // TODO Fill in the other states and provide success feedback
         log.info(
-                "Message:'Operation succeeded'\n{}",
-                event.getMessage().get()
+          "Message:'Operation succeeded'\n{}",
+          event.getMessage().get()
         );
     }
 
@@ -251,14 +259,18 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
     }
 
+    ignoreDeviceReadyTimeout = Dates.nowUtc().plusSeconds(1);
+
   }
 
   @Override
   public void showDeviceReady(HardwareWalletEvent event) {
 
-    // User attached an operational device in place of whatever
-    // they are currently doing so start again
-    state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
+    if (Dates.nowUtc().isAfter(ignoreDeviceReadyTimeout)) {
+      // User attached an operational device in place of whatever
+      // they are currently doing so start again
+      state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
+    }
 
   }
 
@@ -275,8 +287,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       default:
         // TODO Fill in the other states and provide success feedback
         log.info(
-                "Message:'Operation succeeded'\n{}",
-                event.getMessage().get()
+          "Message:'Operation succeeded'\n{}",
+          event.getMessage().get()
         );
     }
 
@@ -289,44 +301,44 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
     // Communicate with the device off the EDT
     hardwareWalletRequestService.submit(
-            new Runnable() {
-              @Override
-              public void run() {
-                log.debug("Performing a request cipher key to Trezor");
+      new Runnable() {
+        @Override
+        public void run() {
+          log.debug("Performing a request cipher key to Trezor");
 
-                // Provide a short delay to allow UI to update
-                Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+          // Provide a short delay to allow UI to update
+          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
-                // A 'requestCipherKey' is performed in which the user presses the OK button to encrypt a set text
-                // (the result of which will be used to decrypt the wallet)
-                Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          // A 'requestCipherKey' is performed in which the user presses the OK button to encrypt a set text
+          // (the result of which will be used to decrypt the wallet)
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
-                // Check if there is a wallet present
-                if (hardwareWalletService.isPresent()) {
+          // Check if there is a wallet present
+          if (hardwareWalletService.isPresent()) {
 
-                  // Use this layout to ensure line wrapping occurs on a V1 Trezor
-                  byte[] key = "MultiBit HD     Unlock".getBytes();
-                  byte[] keyValue = "0123456789abcdef".getBytes();
+            // Use this layout to ensure line wrapping occurs on a V1 Trezor
+            byte[] key = "MultiBit HD     Unlock".getBytes();
+            byte[] keyValue = "0123456789abcdef".getBytes();
 
-                  // Request a cipher key against 0'/0/0
-                  // AbstractHardwareWalletWizard will deal with the responses
-                  hardwareWalletService.get().requestCipherKey(
-                          0,
-                          KeyChain.KeyPurpose.RECEIVE_FUNDS,
-                          0,
-                          key,
-                          keyValue,
-                          true,
-                          true,
-                          true
-                  );
+            // Request a cipher key against 0'/0/0
+            // AbstractHardwareWalletWizard will deal with the responses
+            hardwareWalletService.get().requestCipherKey(
+              0,
+              KeyChain.KeyPurpose.RECEIVE_FUNDS,
+              0,
+              key,
+              keyValue,
+              true,
+              true,
+              true
+            );
 
-                } else {
-                  requestCipherKeyPanelView.setOperationText(MessageKey.TREZOR_NO_WALLET_OPERATION);
-                }
+          } else {
+            requestCipherKeyPanelView.setOperationText(MessageKey.TREZOR_NO_WALLET_OPERATION);
+          }
 
-              }
-            });
+        }
+      });
 
   }
 
@@ -336,46 +348,46 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   public void requestPinCheck(final String pinPositions) {
 
     ListenableFuture<Boolean> pinCheckFuture = hardwareWalletRequestService.submit(
-            new Callable<Boolean>() {
+      new Callable<Boolean>() {
 
-              @Override
-              public Boolean call() {
+        @Override
+        public Boolean call() {
 
-                log.debug("Performing a PIN check");
+          log.debug("Performing a PIN check");
 
-                // Talk to the Trezor and get it to check the PIN
-                // This call to the Trezor will (sometime later) fire a
-                // HardwareWalletEvent containing the encrypted text (or a PIN failure)
-                // Expect a SHOW_OPERATION_SUCCEEDED or SHOW_OPERATION_FAILED
-                Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-                hardwareWalletService.get().providePIN(pinPositions);
+          // Talk to the Trezor and get it to check the PIN
+          // This call to the Trezor will (sometime later) fire a
+          // HardwareWalletEvent containing the encrypted text (or a PIN failure)
+          // Expect a SHOW_OPERATION_SUCCEEDED or SHOW_OPERATION_FAILED
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          hardwareWalletService.get().providePIN(pinPositions);
 
-                // Must have successfully send the message to be here
-                return true;
+          // Must have successfully send the message to be here
+          return true;
 
-              }
-            });
+        }
+      });
     Futures.addCallback(
-            pinCheckFuture, new FutureCallback<Boolean>() {
+      pinCheckFuture, new FutureCallback<Boolean>() {
 
-              @Override
-              public void onSuccess(Boolean result) {
+        @Override
+        public void onSuccess(Boolean result) {
 
-                // Do nothing - message was successfully relayed to the device
+          // Do nothing - message was successfully relayed to the device
 
-              }
+        }
 
-              @Override
-              public void onFailure(Throwable t) {
+        @Override
+        public void onFailure(Throwable t) {
 
-                // Device failed to receive the message
+          // Device failed to receive the message
 
-                getEnterPinPanelView().setPinStatus(false, true);
+          getEnterPinPanelView().setPinStatus(false, true);
 
-                // Should not have seen an error
-                ExceptionHandler.handleThrowable(t);
-              }
-            }
+          // Should not have seen an error
+          ExceptionHandler.handleThrowable(t);
+        }
+      }
     );
 
   }
@@ -388,60 +400,60 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
     // Start the requestRootNode
     ListenableFuture future = hardwareWalletRequestService.submit(
-            new Callable<Boolean>() {
+      new Callable<Boolean>() {
 
-              @Override
-              public Boolean call() throws Exception {
+        @Override
+        public Boolean call() throws Exception {
 
-                Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
 
-                if (hardwareWalletServiceOptional.isPresent()) {
+          if (hardwareWalletServiceOptional.isPresent()) {
 
-                  HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
+            HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
 
-                  if (hardwareWalletService.isWalletPresent()) {
+            if (hardwareWalletService.isWalletPresent()) {
 
-                    log.debug("Request the deterministic hierarchy for the Trezor account");
-                    hardwareWalletService.requestDeterministicHierarchy(
-                            Lists.newArrayList(
-                                    new ChildNumber(44 | ChildNumber.HARDENED_BIT),
-                                    ChildNumber.ZERO_HARDENED,
-                                    ChildNumber.ZERO_HARDENED
-                            ));
+              log.debug("Request the deterministic hierarchy for the Trezor account");
+              hardwareWalletService.requestDeterministicHierarchy(
+                Lists.newArrayList(
+                  new ChildNumber(44 | ChildNumber.HARDENED_BIT),
+                  ChildNumber.ZERO_HARDENED,
+                  ChildNumber.ZERO_HARDENED
+                ));
 
-                    log.debug("Request deterministic hierarchy has been performed");
+              log.debug("Request deterministic hierarchy has been performed");
 
-                    // The "receivedDeterministicHierarchy" response is dealt with in the wizard model
+              // The "receivedDeterministicHierarchy" response is dealt with in the wizard model
 
-                  } else {
-                    log.debug("No wallet present");
-                  }
-                } else {
-                  log.error("No hardware wallet service");
-                }
-                return true;
+            } else {
+              log.debug("No wallet present");
+            }
+          } else {
+            log.error("No hardware wallet service");
+          }
+          return true;
 
-              }
+        }
 
-            });
+      });
 
     Futures.addCallback(
-            future, new FutureCallback() {
-              @Override
-              public void onSuccess(@Nullable Object result) {
+      future, new FutureCallback() {
+        @Override
+        public void onSuccess(@Nullable Object result) {
 
-                // Succeeded in sending the root node message
+          // Succeeded in sending the root node message
 
-              }
+        }
 
-              @Override
-              public void onFailure(Throwable t) {
+        @Override
+        public void onFailure(Throwable t) {
 
-                // Failed to send the message
-                requestCipherKeyPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
-              }
+          // Failed to send the message
+          requestCipherKeyPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
+        }
 
-            });
+      });
   }
 
   /**
@@ -450,82 +462,87 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   private void unlockWalletWithEntropy() {
 
     // Start the spinner (we are deferring the hide)
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
-        ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
+          ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
 
-        // Ensure the view shows the spinner and disables components
-        confirmCipherKeyPanelView.disableForUnlock();
+          // Ensure the view shows the spinner and disables components
+          confirmCipherKeyPanelView.disableForUnlock();
 
-      }
-    });
+        }
+      });
 
     // Check the password (might take a while so do it asynchronously while showing a spinner)
-    ListenableFuture<Optional<WalletSummary>> passwordFuture = unlockWalletService.submit(new Callable<Optional<WalletSummary>>() {
+    ListenableFuture<Optional<WalletSummary>> passwordFuture = unlockWalletService.submit(
+      new Callable<Optional<WalletSummary>>() {
 
-      @Override
-      public Optional<WalletSummary> call() {
+        @Override
+        public Optional<WalletSummary> call() {
 
-        // Need a very short delay here to allow the UI thread to update
-        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+          // Need a very short delay here to allow the UI thread to update
+          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
-        return getOrCreateTrezorWallet();
+          return getOrCreateTrezorWallet();
 
-      }
-    });
-    Futures.addCallback(passwordFuture, new FutureCallback<Optional<WalletSummary>>() {
+        }
+      });
+    Futures.addCallback(
+      passwordFuture, new FutureCallback<Optional<WalletSummary>>() {
 
-              @Override
-              public void onSuccess(Optional<WalletSummary> result) {
-                // Check the result
-                if (result.isPresent()) {
+        @Override
+        public void onSuccess(Optional<WalletSummary> result) {
+          // Check the result
+          if (result.isPresent()) {
 
-                  // Maintain the spinner while the initialisation continues
+            // Maintain the spinner while the initialisation continues
 
-                  // Trigger the deferred hide
-                  ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
+            // Trigger the deferred hide
+            ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
 
-                } else {
+          } else {
 
-                  // Wait just long enough to be annoying (anything below 2 seconds is comfortable)
-                  Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+            // Wait just long enough to be annoying (anything below 2 seconds is comfortable)
+            Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
 
-                  // Failed
-                  Sounds.playBeep();
+            // Failed
+            Sounds.playBeep();
 
-                  // Ensure the view hides the spinner and enables components
-                  SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
+            // Ensure the view hides the spinner and enables components
+            SwingUtilities.invokeLater(
+              new Runnable() {
+                @Override
+                public void run() {
 
-                      confirmCipherKeyPanelView.incorrectEntropy();
-                      confirmCipherKeyPanelView.enableForFailedUnlock();
-
-                    }
-                  });
+                  confirmCipherKeyPanelView.incorrectEntropy();
+                  confirmCipherKeyPanelView.enableForFailedUnlock();
 
                 }
+              });
 
-              }
+          }
 
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          // Ensure the view hides the spinner and enables components
+          SwingUtilities.invokeLater(
+            new Runnable() {
               @Override
-              public void onFailure(Throwable t) {
+              public void run() {
 
-                // Ensure the view hides the spinner and enables components
-                SwingUtilities.invokeLater(new Runnable() {
-                  @Override
-                  public void run() {
-
-                    enterPasswordPanelView.enableForFailedUnlock();
-                  }
-                });
-
-                // Should not have seen an error
-                ExceptionHandler.handleThrowable(t);
+                enterPasswordPanelView.enableForFailedUnlock();
               }
-            }
+            });
+
+          // Should not have seen an error
+          ExceptionHandler.handleThrowable(t);
+        }
+      }
     );
 
   }
@@ -537,85 +554,90 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   public void unlockWalletWithPassword() {
 
     // Start the spinner (we are deferring the hide)
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
 
-        // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
-        ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+          // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
+          ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
 
-        // Ensure the view shows the spinner and disables components
-        enterPasswordPanelView.disableForUnlock();
+          // Ensure the view shows the spinner and disables components
+          enterPasswordPanelView.disableForUnlock();
 
-      }
-    });
+        }
+      });
 
     // Check the password (might take a while so do it asynchronously while showing a spinner)
     // Tar pit (must be in a separate thread to ensure UI updates)
-    ListenableFuture<Boolean> passwordFuture = unlockWalletService.submit(new Callable<Boolean>() {
+    ListenableFuture<Boolean> passwordFuture = unlockWalletService.submit(
+      new Callable<Boolean>() {
 
-      @Override
-      public Boolean call() {
+        @Override
+        public Boolean call() {
 
-        // Need a very short delay here to allow the UI thread to update
-        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+          // Need a very short delay here to allow the UI thread to update
+          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
-        return checkPasswordAndLoadWallet();
+          return checkPasswordAndLoadWallet();
 
-      }
-    });
-    Futures.addCallback(passwordFuture, new FutureCallback<Boolean>() {
+        }
+      });
+    Futures.addCallback(
+      passwordFuture, new FutureCallback<Boolean>() {
 
-              @Override
-              public void onSuccess(Boolean result) {
-                // Check the result
-                if (result) {
+        @Override
+        public void onSuccess(Boolean result) {
+          // Check the result
+          if (result) {
 
-                  // Maintain the spinner while the initialisation continues
+            // Maintain the spinner while the initialisation continues
 
-                  // Trigger the deferred hide
-                  ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
+            // Trigger the deferred hide
+            ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
 
-                } else {
+          } else {
 
-                  // Wait just long enough to be annoying (anything below 2 seconds is comfortable)
-                  Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+            // Wait just long enough to be annoying (anything below 2 seconds is comfortable)
+            Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
 
-                  // Failed
-                  Sounds.playBeep();
+            // Failed
+            Sounds.playBeep();
 
-                  // Ensure the view hides the spinner and enables components
-                  SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
+            // Ensure the view hides the spinner and enables components
+            SwingUtilities.invokeLater(
+              new Runnable() {
+                @Override
+                public void run() {
 
-                      enterPasswordPanelView.incorrectPassword();
-                      enterPasswordPanelView.enableForFailedUnlock();
-
-                    }
-                  });
+                  enterPasswordPanelView.incorrectPassword();
+                  enterPasswordPanelView.enableForFailedUnlock();
 
                 }
+              });
 
-              }
+          }
 
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+
+          SwingUtilities.invokeLater(
+            new Runnable() {
               @Override
-              public void onFailure(Throwable t) {
+              public void run() {
+                // Ensure the view hides the spinner and enables components
+                enterPasswordPanelView.enableForFailedUnlock();
 
-
-                SwingUtilities.invokeLater(new Runnable() {
-                  @Override
-                  public void run() {
-                    // Ensure the view hides the spinner and enables components
-                    enterPasswordPanelView.enableForFailedUnlock();
-
-                  }
-                });
-
-                // Should not have seen an error
-                ExceptionHandler.handleThrowable(t);
               }
-            }
+            });
+
+          // Should not have seen an error
+          ExceptionHandler.handleThrowable(t);
+        }
+      }
     );
 
   }
@@ -692,12 +714,12 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         // In this case 0/0 from a parent of M/44'/0'/0'
         DeterministicHierarchy hierarchy = hardwareWalletContext.getDeterministicHierarchy().get();
         DeterministicKey childKey = hierarchy.deriveChild(
-                Lists.newArrayList(
-                        ChildNumber.ZERO
-                ),
-                true,
-                true,
-                ChildNumber.ZERO
+          Lists.newArrayList(
+            ChildNumber.ZERO
+          ),
+          true,
+          true,
+          ChildNumber.ZERO
         );
 
         // Calculate the address
@@ -732,13 +754,14 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
           // Must be OK to be here
 
-          return Optional.fromNullable(WalletManager.INSTANCE.getOrCreateTrezorHardWalletSummaryFromRootNode(
-                  applicationDataDirectory,
-                  parentKey,
-                  // There is no reliable timestamp for a 'new' wallet as it could exist elsewhere
-                  DateTime.parse(WalletManager.EARLIEST_HD_WALLET_DATE).getMillis() / 1000,
-                  newWalletPassword,
-                  label, "Trezor"));
+          return Optional.fromNullable(
+            WalletManager.INSTANCE.getOrCreateTrezorHardWalletSummaryFromRootNode(
+              applicationDataDirectory,
+              parentKey,
+              // There is no reliable timestamp for a 'new' wallet as it could exist elsewhere
+              DateTime.parse(WalletManager.EARLIEST_HD_WALLET_DATE).getMillis() / 1000,
+              newWalletPassword,
+              label, "Trezor"));
 
         } catch (Exception e) {
 
