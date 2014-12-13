@@ -489,7 +489,7 @@ public enum WalletManager implements WalletEventListener {
       }
 
       // Trezor uses BIP-44
-      // BIP-44 starts from M/44'/0'/0' for soft wallets
+      // BIP-44 starts from M/44h/0h/0h for soft wallets
       List<ChildNumber> trezorRootNodePathList = new ArrayList<>();
       trezorRootNodePathList.add(new ChildNumber(44 | ChildNumber.HARDENED_BIT));
       trezorRootNodePathList.add(new ChildNumber(ChildNumber.HARDENED_BIT));
