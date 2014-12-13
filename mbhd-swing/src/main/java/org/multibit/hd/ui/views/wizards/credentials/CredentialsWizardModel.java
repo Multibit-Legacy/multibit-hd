@@ -262,7 +262,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         } else {
           // Something has gone wrong with the device
           state=CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
-          requestCipherKeyPanelView.setFailureType(failure.getType());
         }
     }
 
@@ -277,7 +276,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       // User attached an operational device in place of whatever
       // they are currently doing so start again
       state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
-      requestCipherKeyPanelView.setFailureType(null);
     }
 
   }
@@ -341,8 +339,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
               true
             );
 
-          } else {
-            requestCipherKeyPanelView.setFailureType(FailureType.NOT_INITIALIZED);
           }
 
         }

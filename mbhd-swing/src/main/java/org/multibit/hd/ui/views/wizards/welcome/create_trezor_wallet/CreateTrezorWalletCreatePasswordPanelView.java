@@ -29,7 +29,7 @@ import javax.swing.*;
  *         
  */
 
-public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView<WelcomeWizardModel, ConfirmPasswordModel> {
+public class CreateTrezorWalletCreatePasswordPanelView extends AbstractWizardPanelView<WelcomeWizardModel, ConfirmPasswordModel> {
 
   private ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> confirmPasswordMaV;
 
@@ -37,7 +37,7 @@ public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView
    * @param wizard The wizard managing the states
    * @param panelName   The panel name to filter events from components
    */
-  public CreateWalletCreatePasswordPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateTrezorWalletCreatePasswordPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.CREATE_WALLET_PASSWORD_TITLE, AwesomeIcon.KEY);
 

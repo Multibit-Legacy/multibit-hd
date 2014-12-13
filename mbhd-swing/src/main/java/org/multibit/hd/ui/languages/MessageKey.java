@@ -352,6 +352,8 @@ public enum MessageKey {
   CREATE_WALLET_PASSWORD_TITLE("create_wallet_password_title"),
   CREATE_WALLET_REPORT_TITLE("create_wallet_report_title"),
 
+  CREATE_TREZOR_WALLET_PREPARATION_TITLE("create_trezor_wallet_preparation_title"),
+
   RESTORE_PASSWORD_SEED_PHRASE_TITLE("restore_password_seed_phrase_title"),
   RESTORE_PASSWORD_BACKUP_LOCATION_TITLE("restore_password_backup_location_title"),
   RESTORE_PASSWORD_SELECT_BACKUP_TITLE("restore_password_select_backup_title"),
@@ -640,6 +642,13 @@ public enum MessageKey {
   PREPARATION_NOTE_4("preparation_note_4"),
   PREPARATION_NOTE_5("preparation_note_5"),
   PREPARATION_NOTE_6("preparation_note_6"),
+
+  TREZOR_PREPARATION_NOTE_1("trezor_preparation_note_1"),
+  TREZOR_PREPARATION_NOTE_2("trezor_preparation_note_2"),
+  TREZOR_PREPARATION_NOTE_3("trezor_preparation_note_3"),
+  TREZOR_PREPARATION_NOTE_4("trezor_preparation_note_4"),
+  TREZOR_PREPARATION_NOTE_5("trezor_preparation_note_5"),
+  TREZOR_PREPARATION_NOTE_6("trezor_preparation_note_6"),
 
   SELECT_BACKUP_LOCATION_NOTE_1("select_backup_location_note_1"),
   SELECT_BACKUP_LOCATION_NOTE_2("select_backup_location_note_2"),

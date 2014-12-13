@@ -3,7 +3,6 @@ package org.multibit.hd.ui.views.wizards.credentials;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.hardware.core.messages.FailureType;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -33,7 +32,6 @@ import javax.swing.*;
 public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelView<CredentialsWizardModel, String> {
 
   private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
-  private Optional<FailureType> failureType = Optional.absent();
 
   /**
    * @param wizard The wizard managing the states
@@ -98,31 +96,17 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
     final MessageKey operationKey;
     final boolean nextEnabled;
 
-    if (failureType.isPresent()) {
-      switch (failureType.get()) {
-
-        case NOT_INITIALIZED:
-          operationKey = MessageKey.TREZOR_NO_WALLET_OPERATION;
-          nextEnabled = true;
-          break;
-        default:
-          operationKey = MessageKey.TREZOR_FAILURE_OPERATION;
-          nextEnabled = true;
-      }
+    if (!features.isPresent()) {
+      operationKey = MessageKey.TREZOR_FAILURE_OPERATION;
+      nextEnabled = true;
     } else {
-
-      if (!features.isPresent()) {
-        operationKey = MessageKey.TREZOR_FAILURE_OPERATION;
-        nextEnabled = true;
+      if (features.get().isInitialized()) {
+        operationKey = MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION;
+        // May take some time
+        nextEnabled = false;
       } else {
-        if (features.get().isInitialized()) {
-          operationKey = MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION;
-          // May take some time
-          nextEnabled = false;
-        } else {
-          operationKey = MessageKey.TREZOR_NO_WALLET_OPERATION;
-          nextEnabled = true;
-        }
+        operationKey = MessageKey.TREZOR_NO_WALLET_OPERATION;
+        nextEnabled = true;
       }
     }
 
@@ -135,18 +119,11 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
           trezorDisplayMaV.getView().setOperationText(operationKey);
 
           if (nextEnabled) {
-            trezorDisplayMaV.getView().setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
-          }
-
-          if (!failureType.isPresent()) {
-            // This could take a while (device may tarpit after failed PINs etc)
-            trezorDisplayMaV.getView().setSpinnerVisible(!nextEnabled);
-            trezorDisplayMaV.getView().setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
-          } else {
-            // No spinner on a failure
-            trezorDisplayMaV.getView().setSpinnerVisible(false);
             trezorDisplayMaV.getView().setRecoveryText(MessageKey.TREZOR_FAILURE_RECOVERY);
           }
+
+          // No spinner on a failure
+          trezorDisplayMaV.getView().setSpinnerVisible(!nextEnabled);
 
           // Override the earlier button enable setting
           ViewEvents.fireWizardButtonEnabledEvent(
@@ -161,7 +138,7 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
     // Update the wizard model so we can change state
     getWizardModel().setSwitchToPassword(nextEnabled);
 
-    if (!failureType.isPresent() && !nextEnabled) {
+    if (!nextEnabled) {
 
       // Start the wallet access process by requesting a cipher key
       // to get a deterministic wallet ID
@@ -189,13 +166,4 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
     this.trezorDisplayMaV.getView().setOperationText(key);
   }
 
-  /**
-   * Sometimes a wiped Trezor will still indicate that it is initialised leading to an infinite loop
-   * having a failure type allows this to be detected
-   *
-   * @param failureType The device failure type
-   */
-  public void setFailureType(FailureType failureType) {
-    this.failureType = Optional.fromNullable(failureType);
-  }
 }

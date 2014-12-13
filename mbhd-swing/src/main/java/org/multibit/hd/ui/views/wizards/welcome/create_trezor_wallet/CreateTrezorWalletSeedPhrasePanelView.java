@@ -31,7 +31,7 @@ import java.util.List;
  * @since 0.0.1
  *
  */
-public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
+public class CreateTrezorWalletSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
 
   private ModelAndView<DisplaySeedPhraseModel, DisplaySeedPhraseView> displaySeedPhraseMaV;
 
@@ -39,7 +39,7 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public CreateWalletSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateTrezorWalletSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.CREATE_WALLET_SEED_PHRASE_TITLE, AwesomeIcon.KEY);
 

@@ -31,7 +31,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.CREATE
  *
  */
 
-public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
+public class CreateTrezorWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelView<WelcomeWizardModel, List<String>> {
 
   private ModelAndView<EnterSeedPhraseModel, EnterSeedPhraseView> enterSeedPhraseMaV;
 
@@ -39,7 +39,7 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public CreateWalletConfirmSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateTrezorWalletConfirmSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.CONFIRM_WALLET_SEED_PHRASE_TITLE, AwesomeIcon.KEY);
 

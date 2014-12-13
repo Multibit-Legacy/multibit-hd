@@ -27,7 +27,7 @@ import java.awt.event.ActionListener;
  *
  * @since 0.0.1
  */
-public class CreateWalletPreparationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
+public class CreateTrezorWalletPreparationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
 
   /**
    * Handles periodic increments of rotation
@@ -52,7 +52,7 @@ public class CreateWalletPreparationPanelView extends AbstractWizardPanelView<We
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public CreateWalletPreparationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateTrezorWalletPreparationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.CREATE_WALLET_PREPARATION_TITLE, AwesomeIcon.EDIT);
 
@@ -94,45 +94,45 @@ public class CreateWalletPreparationPanelView extends AbstractWizardPanelView<We
     // Note 1
     note1Icon = Labels.newIconLabel(AwesomeIcon.EDIT, Optional.<MessageKey>absent(), null);
     contentPanel.add(note1Icon, "shrink");
-    note1Label = Labels.newNoteLabel(MessageKey.PREPARATION_NOTE_1, null);
+    note1Label = Labels.newNoteLabel(MessageKey.TREZOR_PREPARATION_NOTE_1, null);
     contentPanel.add(note1Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     // Note 2
     note2Icon = Labels.newIconLabel(AwesomeIcon.FOLDER_OPEN, Optional.<MessageKey>absent(), null);
     contentPanel.add(note2Icon, "shrink");
-    note2Label = Labels.newNoteLabel(MessageKey.PREPARATION_NOTE_2, null);
+    note2Label = Labels.newNoteLabel(MessageKey.TREZOR_PREPARATION_NOTE_2, null);
     contentPanel.add(note2Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     note2Icon.setVisible(false);
     note2Label.setVisible(false);
 
     // Note 3
-    note3Icon = Labels.newIconLabel(AwesomeIcon.PENCIL, Optional.<MessageKey>absent(), null);
+    note3Icon = Labels.newIconLabel(AwesomeIcon.TH, Optional.<MessageKey>absent(), null);
     contentPanel.add(note3Icon, "shrink");
-    note3Label = Labels.newNoteLabel(MessageKey.PREPARATION_NOTE_3, null);
+    note3Label = Labels.newNoteLabel(MessageKey.TREZOR_PREPARATION_NOTE_3, null);
     contentPanel.add(note3Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     note3Icon.setVisible(false);
     note3Label.setVisible(false);
 
     // Note 4
-    note4Icon = Labels.newIconLabel(AwesomeIcon.MAGIC, Optional.<MessageKey>absent(), null);
+    note4Icon = Labels.newIconLabel(AwesomeIcon.PENCIL, Optional.<MessageKey>absent(), null);
     contentPanel.add(note4Icon, "shrink");
-    note4Label = Labels.newNoteLabel(MessageKey.PREPARATION_NOTE_4, null);
+    note4Label = Labels.newNoteLabel(MessageKey.TREZOR_PREPARATION_NOTE_4, null);
     contentPanel.add(note4Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     note4Icon.setVisible(false);
     note4Label.setVisible(false);
 
     // Note 5
-    note5Icon = Labels.newIconLabel(AwesomeIcon.WARNING, Optional.<MessageKey>absent(), null);
+    note5Icon = Labels.newIconLabel(AwesomeIcon.MAGIC, Optional.<MessageKey>absent(), null);
     contentPanel.add(note5Icon, "shrink");
-    note5Label = Labels.newNoteLabel(MessageKey.PREPARATION_NOTE_5, null);
+    note5Label = Labels.newNoteLabel(MessageKey.TREZOR_PREPARATION_NOTE_5, null);
     contentPanel.add(note5Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     note5Icon.setVisible(false);
     note5Label.setVisible(false);
 
     // Note 6
-    note6Icon = Labels.newIconLabel(AwesomeIcon.LOCK, Optional.<MessageKey>absent(), null);
+    note6Icon = Labels.newIconLabel(AwesomeIcon.WARNING, Optional.<MessageKey>absent(), null);
     contentPanel.add(note6Icon, "shrink,align center");
-    note6Label = Labels.newNoteLabel(MessageKey.PREPARATION_NOTE_6, null);
+    note6Label = Labels.newNoteLabel(MessageKey.TREZOR_PREPARATION_NOTE_6, null);
     contentPanel.add(note6Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     note6Icon.setVisible(false);
     note6Label.setVisible(false);

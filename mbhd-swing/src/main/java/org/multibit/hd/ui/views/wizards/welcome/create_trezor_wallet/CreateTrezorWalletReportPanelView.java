@@ -48,7 +48,7 @@ import java.util.concurrent.TimeUnit;
  * @since 0.0.1
  *
  */
-public class CreateWalletReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
+public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
 
   // View
   private JLabel seedPhraseCreatedStatusLabel;
@@ -63,7 +63,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public CreateWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateTrezorWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.CREATE_WALLET_REPORT_TITLE, AwesomeIcon.FILE_TEXT);
 

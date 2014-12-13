@@ -28,7 +28,7 @@ import javax.swing.*;
  * @since 0.0.1
  *
  */
-public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, SelectFileModel> {
+public class CreateTrezorWalletSelectBackupLocationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, SelectFileModel> {
 
   private ModelAndView<SelectFileModel, SelectFileView> selectFileMaV;
 
@@ -36,7 +36,7 @@ public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPan
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public CreateWalletSelectBackupLocationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateTrezorWalletSelectBackupLocationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.SELECT_BACKUP_LOCATION_TITLE, AwesomeIcon.FOLDER_OPEN);
 
