@@ -254,6 +254,15 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   }
 
   @Override
+  public void showDeviceReady(HardwareWalletEvent event) {
+
+    // User attached an operational device in place of whatever
+    // they are currently doing so start again
+    state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
+
+  }
+
+  @Override
   public void receivedDeterministicHierarchy(HardwareWalletEvent event) {
 
     switch (state) {
