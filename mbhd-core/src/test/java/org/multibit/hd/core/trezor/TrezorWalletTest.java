@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -42,19 +44,21 @@ public class TrezorWalletTest {
 
   private static final DateTime TREZOR_WALLET_CREATION_DATE = new DateTime("2014-08-12T16:23:32");
 
-  // m/44'/0'/0'/0/0
+  // These addresses were taken directly from myTrezor.com for a wallet with the TREZOR_SEED_PHRASE
+
+  // m/44h/0h/0h/0/0
   private static final String EXPECTED_ADDRESS_0 = "1MkTpZN4TpLwJjZt9zHBXREJA8avUHXB3q";
 
-  // m/44'/0'/0'/0/1
+  // m/44h/0h/0h/0/1
   private static final String EXPECTED_ADDRESS_1 = "1WGmwv86m1fFNVDRQ2YagdAFCButd36SV";
 
-  // m/44'/0'/0'/0/2
+  // m/44h/0h/0h/0/2
   private static final String EXPECTED_ADDRESS_2 = "1PP1BvDeXjUcPDiEHBPWptQBAukhAwsLFt";
 
-  // m/44'/0'/0'/0/3
+  // m/44h/0h/0h/0/3
   private static final String EXPECTED_ADDRESS_3 = "128f69V7GRqNSKwrjMkcuB6dbFKKEPtaLC";
 
-  // m/44'/0'/0'/0/4
+  // m/44h/0h/0h/0/4
   private static final String EXPECTED_ADDRESS_4 = "18dxk72otf2amyAsjiKnEWhox5CJGQHYGA";
 
   @Before
@@ -78,7 +82,7 @@ public class TrezorWalletTest {
     DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed);
 
     // Trezor uses BIP-44
-    // BIP-44 starts from M/44'/0'/0'
+    // BIP-44 starts from M/44h/0h
     DeterministicKey trezorRootNode = WalletManager.generateTrezorWalletRootNode(privateMasterKey);
 
     DeterministicHierarchy deterministicHierarchy = new DeterministicHierarchy(trezorRootNode);
@@ -121,12 +125,11 @@ public class TrezorWalletTest {
   /**
    * Create a wallet that derives addresses using BIP 44 - this is the HD account structure used by Trezor
    *
-   * Even though it uses the private master key is is actually a read only wallet - no private keys.
-   * This is because bitcoinj currently only supports adding watch only keychains
+   * This is a Trezor hard wallet, based on a pubkey only root node
    *
    * The wallet is roundtripped through protobuf and the expected keys/ addresses checked
    */
-  public void testCreateWalletWithTrezorAccountUsingMasterPrivateKey() throws Exception {
+  public void testCreateTrezorHardWalletFromRootNode() throws Exception {
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
     networkParameters = BitcoinNetwork.current().get();
 
@@ -140,7 +143,7 @@ public class TrezorWalletTest {
     DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed);
 
     // Trezor uses BIP-44
-    // BIP-44 starts from M/44'/0'
+    // BIP-44 starts from M/44h/0h/0h
     // Create a root node from which all addresses will be generated
     DeterministicKey trezorRootNode = WalletManager.generateTrezorWalletRootNode(privateMasterKey);
 
@@ -155,13 +158,15 @@ public class TrezorWalletTest {
                     trezorRootNode,
                     TREZOR_WALLET_CREATION_DATE.getMillis() / 1000,
                     (String) PASSWORD,
-                    "trezor-example",
-                    "trezor-example"
+                    "trezor-hard-example",
+                    "trezor-hard-example"
             );
 
-    assertThat(WalletType.TREZOR_SOFT_WALLET.equals(walletSummary.getWalletType()));
+    assertThat(WalletType.TREZOR_HARD_WALLET.equals(walletSummary.getWalletType()));
 
     Wallet wallet = walletSummary.getWallet();
+
+    log.debug("Trezor hard wallet: {}", wallet);
 
     // Get the first five keys and addresses
     DeterministicKey key0 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
@@ -216,4 +221,114 @@ public class TrezorWalletTest {
     log.debug("Wallet at end of test = " + walletSummary.getWallet().toString());
 
   }
+
+  @Test
+   /**
+    * Create a wallet that derives addresses using BIP 44 - this is the HD account structure used by Trezor
+    *
+    * This is a Trezor soft wallet, based on a seed.
+    * It has the private keys available for signing
+    *
+    * The wallet is roundtripped through protobuf and the expected keys/ addresses checked
+    */
+   public void testCreateTrezorSoftWalletFromSeed() throws Exception {
+     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+     networkParameters = BitcoinNetwork.current().get();
+
+     // Create a random temporary directory where the wallet directory will be written
+     File temporaryDirectory = SecureFiles.createTemporaryDirectory();
+
+     // Create a wallet from a seed phrase
+
+     // Trezor uses BIP-44
+     // BIP-44 starts from M/44h/0h/0h
+
+     BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
+     InstallationManager.setCurrentApplicationDataDirectory(temporaryDirectory);
+
+     // Create a Trezor soft wallet using the test root node, using a BIP44 account structure
+     WalletSummary walletSummary = WalletManager
+             .INSTANCE
+             .getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
+                     temporaryDirectory,
+                     TREZOR_SEED_PHRASE,
+                     TREZOR_WALLET_CREATION_DATE.getMillis() / 1000,
+                     (String) PASSWORD,
+                     "trezor-soft-example",
+                     "trezor-soft-example"
+             );
+
+     assertThat(WalletType.TREZOR_SOFT_WALLET.equals(walletSummary.getWalletType()));
+
+     Wallet wallet = walletSummary.getWallet();
+
+     log.debug("Trezor soft wallet: {}", wallet);
+
+     assertThat(wallet.getActiveKeychain()).isNotNull();
+     assertThat(wallet.getActiveKeychain().getRootKey()).isNotNull();
+     assertThat(wallet.getActiveKeychain().getRootKey().getPath()).isNotNull();
+
+     // Check that the root node has path M/44h/0h/0h
+     List<ChildNumber> expectedRootNodePathList = new ArrayList<>();
+     expectedRootNodePathList.add(new ChildNumber(44 | ChildNumber.HARDENED_BIT));
+     expectedRootNodePathList.add(new ChildNumber(ChildNumber.HARDENED_BIT));
+     //expectedRootNodePathList.add(new ChildNumber(ChildNumber.HARDENED_BIT));
+
+     assertThat(expectedRootNodePathList.equals(wallet.getActiveKeychain().getRootKey().getPath())).isTrue();
+
+     // Get the first five keys and addresses
+     DeterministicKey key0 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+     String address0 = key0.toAddress(networkParameters).toString();
+     log.debug("key0: {}", key0);
+
+     DeterministicKey key1 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+     String address1 = key1.toAddress(networkParameters).toString();
+
+     DeterministicKey key2 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+     String address2 = key2.toAddress(networkParameters).toString();
+
+     DeterministicKey key3 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+     String address3 = key3.toAddress(networkParameters).toString();
+
+     DeterministicKey key4 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+     String address4 = key4.toAddress(networkParameters).toString();
+
+     // Ensure it is saved with the newly generated addresses
+     File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(temporaryDirectory).get();
+
+     wallet.saveToFile(walletFile);
+     EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, PASSWORD);
+
+     log.debug("address 0  = " + address0);
+     log.debug("address 1  = " + address1);
+     log.debug("address 2  = " + address2);
+     log.debug("address 3  = " + address3);
+     log.debug("address 4  = " + address4);
+
+     assertThat(address0).isEqualTo(EXPECTED_ADDRESS_0);
+     assertThat(address1).isEqualTo(EXPECTED_ADDRESS_1);
+     assertThat(address2).isEqualTo(EXPECTED_ADDRESS_2);
+     assertThat(address3).isEqualTo(EXPECTED_ADDRESS_3);
+     assertThat(address4).isEqualTo(EXPECTED_ADDRESS_4);
+
+     // Load the wallet up again to check it loads ok
+     Optional<WalletSummary> rereadWalletSummary = WalletManager.INSTANCE.openWalletFromWalletId(temporaryDirectory, walletSummary.getWalletId(), PASSWORD);
+     assertThat(rereadWalletSummary.isPresent());
+
+     // Check the root node path is the same
+     assertThat(expectedRootNodePathList.equals(rereadWalletSummary.get().getWallet().getActiveKeychain().getRootKey().getPath())).isTrue();
+
+     // Check the newly read in wallet has all the expected addresses
+     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key0.getPubKey())).isNotNull();
+     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key1.getPubKey())).isNotNull();
+     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key2.getPubKey())).isNotNull();
+     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key3.getPubKey())).isNotNull();
+     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key4.getPubKey())).isNotNull();
+
+     // Remove comment if you want to: Sync the wallet to get the wallet transactions
+     // syncWallet();
+
+     //log.debug("Wallet at end of test = " + walletSummary.getWallet().toString());
+
+   }
 }
