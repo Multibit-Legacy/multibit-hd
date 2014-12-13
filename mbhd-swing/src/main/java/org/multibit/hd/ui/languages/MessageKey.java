@@ -401,6 +401,9 @@ public enum MessageKey {
   TREZOR_FAILURE_OPERATION("trezor_failure_operation"),
   TREZOR_REMOVE_PIN_OPERATION("trezor_remove_pin_operation"),
 
+  // Recovery
+  TREZOR_FAILURE_RECOVERY("trezor_failure_recovery"),
+
   // Reports
   TREZOR_CHANGE_PIN_SUCCESS("trezor_change_pin_success"),
   TREZOR_REMOVE_PIN_SUCCESS("trezor_remove_pin_success"),
@@ -433,6 +436,7 @@ public enum MessageKey {
 
   SEARCHING_FOR_A_CONNECTED_TREZOR_OPERATION("searching_for_a_connected_trezor_operation"),
   COMMUNICATING_WITH_TREZOR_OPERATION("communicating_with_trezor_operation"),
+
   TREZOR_FOUND("trezor_found"),
   NO_TREZOR_FOUND("no_trezor_found"),
 

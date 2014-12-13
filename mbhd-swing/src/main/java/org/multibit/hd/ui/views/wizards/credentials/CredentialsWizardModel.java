@@ -24,9 +24,7 @@ import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.fsm.HardwareWalletContext;
-import org.multibit.hd.hardware.core.messages.ButtonRequest;
-import org.multibit.hd.hardware.core.messages.Features;
-import org.multibit.hd.hardware.core.messages.Success;
+import org.multibit.hd.hardware.core.messages.*;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -248,6 +246,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
 
+    final Failure failure = (Failure) event.getMessage().get();
+
     switch (state) {
 
       case CREDENTIALS_ENTER_PIN:
@@ -255,8 +255,15 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
         break;
       default:
-        // User is backing out of using their device (switch to password)
-        state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+
+        if (FailureType.ACTION_CANCELLED.equals(failure.getType())) {
+          // User is backing out of using their device (switch to password)
+          state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+        } else {
+          // Something has gone wrong with the device
+          state=CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
+          requestCipherKeyPanelView.setFailureType(failure.getType());
+        }
     }
 
     ignoreDeviceReadyTimeout = Dates.nowUtc().plusSeconds(1);
@@ -270,6 +277,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       // User attached an operational device in place of whatever
       // they are currently doing so start again
       state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
+      requestCipherKeyPanelView.setFailureType(null);
     }
 
   }
@@ -314,7 +322,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
           // Check if there is a wallet present
-          if (hardwareWalletService.isPresent()) {
+          if (hardwareWalletService.get().isWalletPresent()) {
 
             // Use this layout to ensure line wrapping occurs on a V1 Trezor
             byte[] key = "MultiBit HD     Unlock".getBytes();
@@ -334,7 +342,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             );
 
           } else {
-            requestCipherKeyPanelView.setOperationText(MessageKey.TREZOR_NO_WALLET_OPERATION);
+            requestCipherKeyPanelView.setFailureType(FailureType.NOT_INITIALIZED);
           }
 
         }
