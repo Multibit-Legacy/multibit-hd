@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
@@ -13,7 +12,6 @@ import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
-import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 
 import javax.swing.*;
@@ -21,7 +19,7 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Create wallet: Request secure create</li>
+ * <li>Create Trezor wallet: Transitional screen to request secure create</li>
  * </ul>
  *
  * @since 0.0.5
@@ -68,18 +66,6 @@ public class CreateTrezorWalletRequestCreateWalletPanelView extends AbstractWiza
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
     PanelDecorator.addExitCancelNext(this, wizard);
-
-  }
-
-  @Override
-  public void fireInitialStateViewEvents() {
-
-    // Initialise with "Unlock" disabled to force users to enter credentials
-    ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.NEXT,
-      false
-    );
 
   }
 

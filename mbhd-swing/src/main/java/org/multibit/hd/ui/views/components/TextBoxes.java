@@ -29,7 +29,10 @@ import java.util.Collection;
  */
 public class TextBoxes {
 
-  private static final int TREZOR_MAX_COLUMNS = 50;
+  /**
+   * The maximum display width of a V1 Trezor device (allowing for icon)
+   */
+  private static final int TREZOR_MAX_COLUMNS = 22;
 
   /**
    * Utilities have no public constructor
@@ -662,10 +665,10 @@ public class TextBoxes {
   }
 
   /**
-   * @return A text area with similar dimensions to a V1 Trezor
+   * @return A text area with similar dimensions to a V1 Trezor after MiG resizing
    */
   public static JTextArea newTrezorV1Display() {
-    return newReadOnlyTextArea(5, TREZOR_MAX_COLUMNS);
+    return newReadOnlyTextArea(5, 50);
   }
 
   /**

@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.brit.exceptions.SeedPhraseException;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
@@ -15,6 +16,8 @@ import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.messages.ButtonRequest;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
@@ -23,12 +26,14 @@ import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSum
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletConfirmCreateWalletPanelView;
 import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletConfirmNewPinPanelView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
 
@@ -95,6 +100,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private SeedPhraseSize trezorSeedSize = SeedPhraseSize.TWELVE_WORDS;
   private CreateTrezorWalletConfirmNewPinPanelView confirmNewPinPanelView;
   private String mostRecentPin;
+  private CreateTrezorWalletConfirmCreateWalletPanelView trezorConfirmCreateWalletPanelView;
 
   /**
    * @param state The state object
@@ -293,23 +299,71 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
    */
   public void requestCreateWallet() {
 
-    // Force creation of the wallet (wipe then reset)
-    // Select the use of PIN protection and displaying entropy on the device
-    // This is the most secure way to create a wallet
-    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-    if (hardwareWalletService.isPresent()) {
+    // Communicate with the device off the EDT
+    hardwareWalletRequestService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.debug("Performing a request for secure wallet creation to Trezor");
 
-      int entropy = getSeedPhraseSize().getEntropyBytesSize();
+          // Provide a short delay to allow UI to update
+          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
-      // We deliberately ignore the passphrase option to ensure
-      // only the seed phrase needs to be secured to protect the wallet
-      hardwareWalletService.get().secureCreateWallet(
-        "english", // For now the Trezor UI is fixed at English
-        getTrezorWalletLabel(),
-        false, // For now we ignore supplied entropy (too confusing for mainstream)
-        true, // A PIN is mandatory for mainstream
-        entropy
-      );
+          // A 'requestCipherKey' is performed in which the user presses the OK button to encrypt a set text
+          // (the result of which will be used to decrypt the wallet)
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+
+          // We deliberately ignore the passphrase option to ensure
+          // only the seed phrase needs to be secured to protect the wallet
+          hardwareWalletService.get().secureCreateWallet(
+            "english", // For now the Trezor UI is fixed at English
+            getTrezorWalletLabel(),
+            false, // For now we ignore supplied entropy (too confusing for mainstream)
+            true, // A PIN is mandatory for mainstream
+            getSeedPhraseSize().getStrength()
+          );
+
+        }
+      });
+
+  }
+
+  @Override
+  public void showButtonPress(HardwareWalletEvent event) {
+
+    log.debug("Received hardwareWalletEvent {}", event);
+
+    ButtonRequest buttonRequest = (ButtonRequest) event.getMessage().get();
+
+    switch (state) {
+      case TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET:
+        switch (buttonRequest.getButtonRequestType()) {
+          case WIPE_DEVICE:
+            // Device requires confirmation to wipe device
+            state = TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET;
+            break;
+          default:
+            throw new IllegalStateException("Unexpected button: " + buttonRequest.getButtonRequestType().name());
+        }
+        break;
+      default:
+        throw new IllegalStateException("Unknown state: " + state.name());
+    }
+
+  }
+
+  @Override
+  public void showOperationFailed(HardwareWalletEvent event) {
+
+    log.debug("Received hardwareWalletEvent {}", event);
+
+    switch (state) {
+
+      case TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET:
+        // User does not want to create a new wallet
+        state = WELCOME_SELECT_WALLET;
+        break;
+      default:
     }
 
   }
@@ -643,5 +697,9 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   public void setMostRecentPin(String mostRecentPin) {
     this.mostRecentPin = mostRecentPin;
+  }
+
+  public void setTrezorConfirmCreateWalletPanelView(CreateTrezorWalletConfirmCreateWalletPanelView trezorConfirmCreateWalletPanelView) {
+    this.trezorConfirmCreateWalletPanelView = trezorConfirmCreateWalletPanelView;
   }
 }
