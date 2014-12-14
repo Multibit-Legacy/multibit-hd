@@ -422,6 +422,7 @@ public enum MessageKey {
   TREZOR_ADD_PIN_DISPLAY("trezor_add_pin_display"),
   TREZOR_CHANGE_PIN_DISPLAY("trezor_change_pin_display"),
   TREZOR_REMOVE_PIN_DISPLAY("trezor_remove_pin_display"),
+  TREZOR_WORD_DISPLAY("trezor_word_display"),
 
   USE_TREZOR_REPORT_TITLE("use_trezor_report_title"),
   USE_TREZOR_REPORT_MESSAGE_SUCCESS("use_trezor_report_message_success"),

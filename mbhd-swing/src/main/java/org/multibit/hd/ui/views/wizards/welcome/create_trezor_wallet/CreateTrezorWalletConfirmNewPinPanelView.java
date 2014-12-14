@@ -16,7 +16,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.multibit.hd.ui.views.wizards.change_pin.ChangePinEnterPinPanelModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 
 import javax.swing.*;
@@ -29,7 +28,7 @@ import javax.swing.*;
  *
  * @since 0.0.5
  */
-public class CreateTrezorWalletConfirmNewPinPanelView extends AbstractWizardPanelView<WelcomeWizardModel, ChangePinEnterPinPanelModel> {
+public class CreateTrezorWalletConfirmNewPinPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
 
   // Panel specific components
   private ModelAndView<EnterPinModel, EnterPinView> enterPinMaV;
@@ -48,13 +47,6 @@ public class CreateTrezorWalletConfirmNewPinPanelView extends AbstractWizardPane
   public void newPanelModel() {
 
     enterPinMaV = Components.newEnterPinMaV(getPanelName());
-
-    // Configure the panel model
-    final ChangePinEnterPinPanelModel panelModel = new ChangePinEnterPinPanelModel(
-      getPanelName(),
-      enterPinMaV.getModel()
-    );
-    setPanelModel(panelModel);
 
     // Bind it to the wizard model
     getWizardModel().setConfirmNewPinPanelView(this);
@@ -84,7 +76,7 @@ public class CreateTrezorWalletConfirmNewPinPanelView extends AbstractWizardPane
   @Override
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
-    PanelDecorator.addCancelNext(this, wizard);
+    PanelDecorator.addExitCancelNext(this, wizard);
 
   }
 

@@ -4,6 +4,9 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.brit.exceptions.SeedPhraseException;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
@@ -18,8 +21,11 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
+import org.multibit.hd.hardware.core.messages.PinMatrixRequest;
+import org.multibit.hd.hardware.core.messages.PinMatrixRequestType;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseModel;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
@@ -28,11 +34,14 @@ import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletConfirmCreateWalletPanelView;
 import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletConfirmNewPinPanelView;
+import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletConfirmWordPanelView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
@@ -99,8 +108,12 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private String trezorWalletLabel = "multibit.org";
   private SeedPhraseSize trezorSeedSize = SeedPhraseSize.TWELVE_WORDS;
   private CreateTrezorWalletConfirmNewPinPanelView confirmNewPinPanelView;
+
   private String mostRecentPin;
   private CreateTrezorWalletConfirmCreateWalletPanelView trezorConfirmCreateWalletPanelView;
+  private CreateTrezorWalletConfirmWordPanelView trezorConfirmWordPanelView;
+  private MessageKey reportMessageKey;
+  private boolean reportMessageStatus;
 
   /**
    * @param state The state object
@@ -299,11 +312,12 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
    */
   public void requestCreateWallet() {
 
-    // Communicate with the device off the EDT
-    hardwareWalletRequestService.submit(
-      new Runnable() {
+    // Start the request
+    ListenableFuture future = hardwareWalletRequestService.submit(
+      new Callable<Boolean>() {
+
         @Override
-        public void run() {
+        public Boolean call() throws Exception {
           log.debug("Performing a request for secure wallet creation to Trezor");
 
           // Provide a short delay to allow UI to update
@@ -323,15 +337,95 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
             getSeedPhraseSize().getStrength()
           );
 
+          // Must have successfully sent the message to be here
+          return true;
+
         }
+      });
+    Futures.addCallback(
+      future, new FutureCallback() {
+        @Override
+        public void onSuccess(@Nullable Object result) {
+
+          // We successfully made the request so wait for the result
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          // Have a failure
+          switch (state) {
+
+            case TREZOR_CREATE_WALLET_ENTER_NEW_PIN:
+            case TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN:
+              state = TREZOR_CREATE_WALLET_REPORT;
+              reportMessageKey = MessageKey.TREZOR_INCORRECT_PIN_FAILURE;
+              reportMessageStatus = false;
+              break;
+            default:
+              throw new IllegalStateException("Should not reach here from " + state.name());
+          }
+        }
+
+      });
+
+
+  }
+
+  /**
+   * @param pinPositions The PIN positions providing some obfuscation
+   */
+  public void providePin(final String pinPositions) {
+
+    // Start the request
+    ListenableFuture future = hardwareWalletRequestService.submit(
+      new Callable<Boolean>() {
+
+        @Override
+        public Boolean call() throws Exception {
+
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+
+          log.debug("Provide a PIN");
+          hardwareWalletService.get().providePIN(pinPositions);
+
+          // Must have successfully sent the message to be here
+          return true;
+
+        }
+
+      });
+    Futures.addCallback(
+      future, new FutureCallback() {
+        @Override
+        public void onSuccess(@Nullable Object result) {
+
+          // We successfully made the request so wait for the result
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          // Have a failure
+          switch (state) {
+            case TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET:
+              state = TREZOR_CREATE_WALLET_REPORT;
+              reportMessageKey = MessageKey.TREZOR_INCORRECT_PIN_FAILURE;
+              reportMessageStatus = false;
+              break;
+            default:
+              throw new IllegalStateException("Should not reach here from " + state.name());
+          }
+        }
+
       });
 
   }
 
   @Override
   public void showButtonPress(HardwareWalletEvent event) {
-
-    log.debug("Received hardwareWalletEvent {}", event);
 
     ButtonRequest buttonRequest = (ButtonRequest) event.getMessage().get();
 
@@ -355,8 +449,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
 
-    log.debug("Received hardwareWalletEvent {}", event);
-
     switch (state) {
 
       case TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET:
@@ -365,6 +457,97 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         break;
       default:
     }
+
+  }
+
+  @Override
+  public void showPINEntry(HardwareWalletEvent event) {
+
+    // Determine if this is the first or second PIN entry
+    PinMatrixRequest request = (PinMatrixRequest) event.getMessage().get();
+    PinMatrixRequestType requestType = request.getPinMatrixRequestType();
+
+    // The PIN entry could have come about from many possible paths
+    switch (state) {
+      case TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET:
+        // User has confirmed the wipe and should next enter new PIN
+        switch (requestType) {
+          case NEW_FIRST:
+            state = TREZOR_CREATE_WALLET_ENTER_NEW_PIN;
+            break;
+          default:
+            throw new IllegalStateException("Should not reach here from " + requestType.name());
+        }
+        break;
+      case TREZOR_CREATE_WALLET_ENTER_NEW_PIN:
+        // User has entered the new PIN and should next confirm it
+        switch (requestType) {
+          case NEW_SECOND:
+            state = TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN;
+            break;
+          default:
+            throw new IllegalStateException("Should not reach here from " + requestType.name());
+        }
+        break;
+      case TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN:
+        // User has confirmed the new PIN
+        switch (requestType) {
+          case NEW_SECOND:
+            state = TREZOR_CREATE_WALLET_CONFIRM_WORD;
+            break;
+          default:
+            throw new IllegalStateException("Should not reach here from " + requestType.name());
+        }
+        break;
+      default:
+        throw new IllegalStateException("Should not reach here from " + state.name());
+    }
+
+
+  }
+
+  @Override
+  public void showProvideEntropy(HardwareWalletEvent event) {
+
+    // Start the request
+    ListenableFuture future = hardwareWalletRequestService.submit(
+      new Callable<Boolean>() {
+
+        @Override
+        public Boolean call() throws Exception {
+
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+
+          byte[] entropy = hardwareWalletService.get().generateEntropy();
+
+          log.debug("Provide entropy");
+          hardwareWalletService.get().provideEntropy(entropy);
+
+          // Must have successfully sent the message to be here
+          return true;
+
+        }
+
+      });
+    Futures.addCallback(
+      future, new FutureCallback() {
+        @Override
+        public void onSuccess(@Nullable Object result) {
+
+          // We successfully made the request so wait for the result
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          // Have a failure
+          state = TREZOR_CREATE_WALLET_REPORT;
+          reportMessageKey = MessageKey.TREZOR_FAILURE_OPERATION;
+          reportMessageStatus = false;
+        }
+
+      });
 
   }
 
@@ -695,11 +878,22 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     this.confirmNewPinPanelView = confirmNewPinPanelView;
   }
 
+  /**
+   * @return The most recent PIN
+   */
+  public String getMostRecentPin() {
+    return mostRecentPin;
+  }
+
   public void setMostRecentPin(String mostRecentPin) {
     this.mostRecentPin = mostRecentPin;
   }
 
   public void setTrezorConfirmCreateWalletPanelView(CreateTrezorWalletConfirmCreateWalletPanelView trezorConfirmCreateWalletPanelView) {
     this.trezorConfirmCreateWalletPanelView = trezorConfirmCreateWalletPanelView;
+  }
+
+  public void setTrezorConfirmWordPanelView(CreateTrezorWalletConfirmWordPanelView trezorConfirmWordPanelView) {
+    this.trezorConfirmWordPanelView = trezorConfirmWordPanelView;
   }
 }
