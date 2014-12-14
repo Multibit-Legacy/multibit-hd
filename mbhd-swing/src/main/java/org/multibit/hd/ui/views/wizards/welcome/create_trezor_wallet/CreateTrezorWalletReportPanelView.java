@@ -72,9 +72,6 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
   @Override
   public void newPanelModel() {
 
-    String model = "TODO replace with a proper model";
-    setPanelModel(model);
-
     // No need to bind this to the wizard model
 
   }

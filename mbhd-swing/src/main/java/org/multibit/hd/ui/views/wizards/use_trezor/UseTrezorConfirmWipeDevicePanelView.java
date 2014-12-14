@@ -114,6 +114,7 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
   }
 
   /**
+   * TODO Remove dead code
    * @return The Trezor display view to avoid method duplication
    */
   public TrezorDisplayView getTrezorDisplayView() {
@@ -121,12 +122,16 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
   }
 
   /**
+   * TODO Remove dead code
    * @param visible True if the display should not be visible
    */
   public void setDisplayVisible(boolean visible) {
     this.trezorDisplayMaV.getView().setDisplayVisible(visible);
   }
 
+  /**
+   * TODO Remove dead code
+   */
   public void disableForUnlock() {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
@@ -139,6 +144,9 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
 
   }
 
+  /**
+   * TODO Remove dead code
+   */
   public void enableForFailedUnlock() {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
@@ -151,6 +159,9 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
 
   }
 
+  /**
+   * TODO Remove dead code
+   */
   public void incorrectEntropy() {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");

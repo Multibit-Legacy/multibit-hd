@@ -88,12 +88,10 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
       TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET.name(),
       new CreateTrezorWalletConfirmCreateWalletPanelView(this, TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET.name()));
 
-    // TODO Implement this
     wizardViewMap.put(
       TREZOR_CREATE_WALLET_ENTER_NEW_PIN.name(),
       new CreateTrezorWalletEnterNewPinPanelView(this, TREZOR_CREATE_WALLET_ENTER_NEW_PIN.name()));
 
-    // TODO Implement this
     wizardViewMap.put(
       TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name(),
       new CreateTrezorWalletConfirmNewPinPanelView(this, TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()));
@@ -106,7 +104,7 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
     // TODO Implement this
     wizardViewMap.put(
       TREZOR_CREATE_WALLET_REPORT.name(),
-      new CreateTrezorWalletPreparationPanelView(this, TREZOR_CREATE_WALLET_REPORT.name()));
+      new CreateTrezorWalletReportPanelView(this, TREZOR_CREATE_WALLET_REPORT.name()));
 
     wizardViewMap.put(
       RESTORE_PASSWORD_SEED_PHRASE.name(),

@@ -21,6 +21,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
+import org.multibit.hd.hardware.core.messages.Failure;
 import org.multibit.hd.hardware.core.messages.PinMatrixRequest;
 import org.multibit.hd.hardware.core.messages.PinMatrixRequestType;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
@@ -114,6 +115,9 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private CreateTrezorWalletConfirmWordPanelView trezorConfirmWordPanelView;
   private MessageKey reportMessageKey;
   private boolean reportMessageStatus;
+
+  private int trezorWordCount = 0;
+  private boolean trezorChecking = false;
 
   /**
    * @param state The state object
@@ -312,6 +316,10 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
    */
   public void requestCreateWallet() {
 
+    // Reset the Trezor seed phrase flags in case we're coming back through
+    trezorWordCount = 0;
+    trezorChecking = false;
+
     // Start the request
     ListenableFuture future = hardwareWalletRequestService.submit(
       new Callable<Boolean>() {
@@ -323,8 +331,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
           // Provide a short delay to allow UI to update
           Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
-          // A 'requestCipherKey' is performed in which the user presses the OK button to encrypt a set text
-          // (the result of which will be used to decrypt the wallet)
           Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
           // We deliberately ignore the passphrase option to ensure
@@ -440,6 +446,24 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
             throw new IllegalStateException("Unexpected button: " + buttonRequest.getButtonRequestType().name());
         }
         break;
+      case TREZOR_CREATE_WALLET_CONFIRM_WORD:
+        switch (buttonRequest.getButtonRequestType()) {
+          case CONFIRM_WORD:
+            trezorWordCount++;
+            if (trezorWordCount > trezorSeedSize.getSize()) {
+              log.debug("Reset word count for confirm phase");
+              trezorWordCount = 1;
+              trezorChecking = true;
+            }
+            // Device requires confirmation of word in seed phrase
+            // See "operation succeeded" for next state transition
+            state = TREZOR_CREATE_WALLET_CONFIRM_WORD;
+            trezorConfirmWordPanelView.updateDisplay(trezorWordCount, trezorChecking);
+            break;
+          default:
+            throw new IllegalStateException("Unexpected button: " + buttonRequest.getButtonRequestType().name());
+        }
+        break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
     }
@@ -449,11 +473,38 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
 
+    Failure failure = (Failure) event.getMessage().get();
+
     switch (state) {
 
+      case TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET:
+        switch (failure.getType()) {
+          case UNEXPECTED_MESSAGE:
+            // Device was in the middle of something and needs to be re-initialised
+            state = WELCOME_SELECT_WALLET;
+            break;
+          default:
+            // User does not want to create a new wallet
+            state = WELCOME_SELECT_WALLET;
+        }
+        break;
       case TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET:
         // User does not want to create a new wallet
         state = WELCOME_SELECT_WALLET;
+        break;
+      default:
+    }
+
+  }
+
+  @Override
+  public void showOperationSucceeded(HardwareWalletEvent event) {
+
+    switch (state) {
+
+      case TREZOR_CREATE_WALLET_CONFIRM_WORD:
+        // User does not want to create a new wallet
+        state = TREZOR_CREATE_WALLET_REPORT;
         break;
       default:
     }
@@ -508,6 +559,9 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   @Override
   public void showProvideEntropy(HardwareWalletEvent event) {
+
+    // Progress the state
+    state = TREZOR_CREATE_WALLET_CONFIRM_WORD;
 
     // Start the request
     ListenableFuture future = hardwareWalletRequestService.submit(

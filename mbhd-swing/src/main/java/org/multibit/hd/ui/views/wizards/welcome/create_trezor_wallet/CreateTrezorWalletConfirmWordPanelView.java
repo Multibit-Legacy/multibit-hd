@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
@@ -38,7 +39,7 @@ public class CreateTrezorWalletConfirmWordPanelView extends AbstractWizardPanelV
    */
   public CreateTrezorWalletConfirmWordPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_PRESS_CONFIRM_TITLE, AwesomeIcon.SHIELD);
+    super(wizard, panelName, MessageKey.TREZOR_PRESS_NEXT_TITLE, AwesomeIcon.EDIT);
 
   }
 
@@ -76,28 +77,6 @@ public class CreateTrezorWalletConfirmWordPanelView extends AbstractWizardPanelV
   }
 
   @Override
-  public void afterShow() {
-
-    SwingUtilities.invokeLater(new Runnable() {
-
-      @Override public void run() {
-
-        // Set the confirm text
-        trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
-
-        // Show unlock message
-        trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY);
-
-        // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
-        getFinishButton().setEnabled(false);
-
-      }
-
-    });
-
-  }
-
-  @Override
   public boolean beforeHide(boolean isExitCancel) {
 
     // Don't block an exit
@@ -130,35 +109,44 @@ public class CreateTrezorWalletConfirmWordPanelView extends AbstractWizardPanelV
     this.trezorDisplayMaV.getView().setDisplayVisible(visible);
   }
 
-  public void disableForUnlock() {
+  public void disableForNext() {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
-    getFinishButton().setEnabled(false);
+    getNextButton().setEnabled(false);
     getExitButton().setEnabled(false);
-    getRestoreButton().setEnabled(false);
 
     trezorDisplayMaV.getView().setSpinnerVisible(true);
 
   }
 
-  public void enableForFailedUnlock() {
+  public void enableForFailure() {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
-    getFinishButton().setEnabled(false);
+    getNextButton().setEnabled(false);
     getExitButton().setEnabled(true);
-    getRestoreButton().setEnabled(true);
 
     trezorDisplayMaV.getView().setSpinnerVisible(false);
 
   }
 
-  public void incorrectEntropy() {
+  /**
+   *
+   * @param wordCount The word count
+   * @param checking True if the checking phrasing should be used
+   */
+  public void updateDisplay(int wordCount, boolean checking) {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
-    trezorDisplayMaV.getView().incorrectEntropy();
+    String wordCountOrdinal = Languages.getOrdinalFor(wordCount);
+
+    if (checking) {
+      trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_CHECK_WORD_DISPLAY, wordCountOrdinal);
+    } else {
+      trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WORD_DISPLAY, wordCountOrdinal);
+    }
 
   }
 }

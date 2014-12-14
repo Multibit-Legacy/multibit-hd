@@ -225,4 +225,27 @@ public class Languages {
     return ComponentOrientation.getOrientation(currentLocale()).isLeftToRight();
   }
 
+  /**
+   * Note: This approach is currently limited to English to support Trezor
+   *
+   * @param value The value represented as a simple string
+   *
+   * @return The value with its ordinal in the idiom for the language (e.g. English "1st", "2nd", "3rd", "4th" etc)
+   */
+  public static String getOrdinalFor(int value) {
+
+    String ordinal = String.valueOf(value);
+    if (ordinal.endsWith("11") || ordinal.endsWith("12") || ordinal.endsWith("13")) {
+      ordinal = ordinal + "th";
+    } else if (ordinal.endsWith("1")) {
+      ordinal = ordinal + "st";
+    } else if (ordinal.endsWith("2")) {
+      ordinal = ordinal + "nd";
+    } else if (ordinal.endsWith("3")) {
+      ordinal = ordinal + "rd";
+    } else {
+      ordinal = ordinal + "th";
+    }
+    return ordinal;
+  }
 }
