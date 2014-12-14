@@ -3,7 +3,9 @@ package org.multibit.hd.ui.views.wizards.welcome;
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletEnterDetailsPanelView;
 import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletPreparationPanelView;
+import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletRequestCreateWalletPanelView;
 import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletSelectBackupLocationPanelView;
 import org.multibit.hd.ui.views.wizards.welcome.create_wallet.*;
 import org.multibit.hd.ui.views.wizards.welcome.restore_wallet.*;
@@ -80,8 +82,13 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
 
     // TODO Implement this
     wizardViewMap.put(
+      TREZOR_CREATE_WALLET_ENTER_DETAILS.name(),
+      new CreateTrezorWalletEnterDetailsPanelView(this, TREZOR_CREATE_WALLET_ENTER_DETAILS.name()));
+
+    // TODO Implement this
+    wizardViewMap.put(
       TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET.name(),
-      new CreateTrezorWalletPreparationPanelView(this, TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET.name()));
+      new CreateTrezorWalletRequestCreateWalletPanelView(this, TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET.name()));
 
     // TODO Implement this
     wizardViewMap.put(

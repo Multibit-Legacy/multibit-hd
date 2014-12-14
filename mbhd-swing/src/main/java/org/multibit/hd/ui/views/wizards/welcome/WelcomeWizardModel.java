@@ -14,6 +14,7 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
@@ -22,6 +23,7 @@ import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSum
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletConfirmNewPinPanelView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,10 +91,14 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private EnterSeedPhraseModel restoreWalletEnterTimestampModel;
 
   private ConfirmPasswordModel restoreWalletConfirmPasswordModel;
+  private String trezorWalletLabel = "multibit.org";
+  private SeedPhraseSize trezorSeedSize = SeedPhraseSize.TWELVE_WORDS;
+  private CreateTrezorWalletConfirmNewPinPanelView confirmNewPinPanelView;
+  private String mostRecentPin;
 
   /**
    * @param state The state object
-   * @param mode The mode (e.g. standard, Trezor etc)
+   * @param mode  The mode (e.g. standard, Trezor etc)
    */
   public WelcomeWizardModel(WelcomeWizardState state, WelcomeWizardMode mode) {
     super(state);
@@ -141,6 +147,9 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         state = TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION;
         break;
       case TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION:
+        state = TREZOR_CREATE_WALLET_ENTER_DETAILS;
+        break;
+      case TREZOR_CREATE_WALLET_ENTER_DETAILS:
         state = TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET;
         break;
       case TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET:
@@ -230,6 +239,26 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         break;
       case CREATE_WALLET_REPORT:
         state = CREATE_WALLET_SEED_PHRASE;
+      case TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION:
+        state = TREZOR_CREATE_WALLET_PREPARATION;
+        break;
+      case TREZOR_CREATE_WALLET_ENTER_DETAILS:
+        state = TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION;
+        break;
+      case TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET:
+        throw new IllegalStateException("'Previous' is not permitted here - user is committed to creating wallet");
+      case TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET:
+        throw new IllegalStateException("'Previous' is not permitted here - user is committed to creating wallet");
+      case TREZOR_CREATE_WALLET_CONFIRM_ENTROPY:
+        throw new IllegalStateException("'Previous' is not permitted here - user is committed to creating wallet");
+      case TREZOR_CREATE_WALLET_ENTER_NEW_PIN:
+        throw new IllegalStateException("'Previous' is not permitted here - user is committed to creating wallet");
+      case TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN:
+        throw new IllegalStateException("'Previous' is not permitted here - user is committed to creating wallet");
+      case TREZOR_CREATE_WALLET_CONFIRM_WORD:
+        throw new IllegalStateException("'Previous' is not permitted here - user is committed to creating wallet");
+      case TREZOR_CREATE_WALLET_REPORT:
+        throw new IllegalStateException("'Previous' is not permitted here - user is committed to creating wallet");
       case RESTORE_PASSWORD_SEED_PHRASE:
         state = WELCOME_SELECT_WALLET;
         break;
@@ -257,6 +286,36 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
     }
+  }
+
+  /**
+   * Request that the Trezor begin the process of creating a wallet
+   */
+  public void requestCreateWallet() {
+
+    // Force creation of the wallet (wipe then reset)
+    // Select the use of PIN protection and displaying entropy on the device
+    // This is the most secure way to create a wallet
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    if (hardwareWalletService.isPresent()) {
+
+      int entropy = getSeedPhraseSize().getEntropyBytesSize();
+
+      // We deliberately ignore the passphrase option to ensure
+      // only the seed phrase needs to be secured to protect the wallet
+      hardwareWalletService.get().secureCreateWallet(
+        "english", // For now the Trezor UI is fixed at English
+        getTrezorWalletLabel(),
+        false, // For now we ignore supplied entropy (too confusing for mainstream)
+        true, // A PIN is mandatory for mainstream
+        entropy
+      );
+    }
+
+  }
+
+  private SeedPhraseSize getSeedPhraseSize() {
+    return SeedPhraseSize.TWELVE_WORDS;
   }
 
   @Override
@@ -556,4 +615,33 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     return mode;
   }
 
+  /**
+   * @return The Trezor wallet label (appears on device startup)
+   */
+  public String getTrezorWalletLabel() {
+    return trezorWalletLabel;
+  }
+
+  public void setTrezorWalletLabel(String trezorWalletLabel) {
+    this.trezorWalletLabel = trezorWalletLabel;
+  }
+
+  /**
+   * @return The Trezor wallet seed size (12, 18, 24 words)
+   */
+  public SeedPhraseSize getTrezorSeedSize() {
+    return trezorSeedSize;
+  }
+
+  public void setTrezorSeedSize(SeedPhraseSize trezorSeedSize) {
+    this.trezorSeedSize = trezorSeedSize;
+  }
+
+  public void setConfirmNewPinPanelView(CreateTrezorWalletConfirmNewPinPanelView confirmNewPinPanelView) {
+    this.confirmNewPinPanelView = confirmNewPinPanelView;
+  }
+
+  public void setMostRecentPin(String mostRecentPin) {
+    this.mostRecentPin = mostRecentPin;
+  }
 }

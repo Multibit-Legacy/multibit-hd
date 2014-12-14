@@ -352,7 +352,10 @@ public enum MessageKey {
   CREATE_WALLET_PASSWORD_TITLE("create_wallet_password_title"),
   CREATE_WALLET_REPORT_TITLE("create_wallet_report_title"),
 
+  // Trezor
   CREATE_TREZOR_WALLET_PREPARATION_TITLE("create_trezor_wallet_preparation_title"),
+  CREATE_TREZOR_WALLET_ENTER_DETAILS_TITLE("create_trezor_wallet_enter_details_title"),
+  CREATE_TREZOR_WALLET_REQUEST_CREATE_WALLET_TITLE("create_trezor_wallet_request_create_wallet_title"),
 
   RESTORE_PASSWORD_SEED_PHRASE_TITLE("restore_password_seed_phrase_title"),
   RESTORE_PASSWORD_BACKUP_LOCATION_TITLE("restore_password_backup_location_title"),
@@ -447,6 +450,9 @@ public enum MessageKey {
   TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY("trezor_transaction_output_confirm_display"),
   TREZOR_SIGN_CONFIRM_DISPLAY("trezor_sign_confirm_display"),
   TREZOR_TRANSACTION_CREATED_OPERATION("trezor_transaction_created"),
+
+  ENTER_TREZOR_LABEL("enter_trezor_label"),
+  ENTER_TREZOR_LABEL_TOOLTIP("enter_trezor_label_tooltip"),
 
   // Settings titles
 

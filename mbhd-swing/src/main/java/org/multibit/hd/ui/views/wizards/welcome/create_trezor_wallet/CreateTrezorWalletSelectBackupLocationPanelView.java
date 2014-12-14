@@ -20,7 +20,7 @@ import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import javax.swing.*;
 
 /**
- * <p>Wizard to provide the following to UI:</p>
+ * <p>Panel view to provide the following to UI:</p>
  * <ul>
  * <li>Select the backup location</li>
  * </ul>

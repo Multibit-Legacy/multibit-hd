@@ -784,6 +784,13 @@ public class Labels {
   }
 
   /**
+   * @return A new "Trezor device label" label
+   */
+  public static JLabel newEnterTrezorLabel() {
+    return newLabel(MessageKey.ENTER_TREZOR_LABEL);
+  }
+
+  /**
    * @return A new "Press Confirm on device" label
    */
   public static JLabel newPressConfirmOnDevice() {
