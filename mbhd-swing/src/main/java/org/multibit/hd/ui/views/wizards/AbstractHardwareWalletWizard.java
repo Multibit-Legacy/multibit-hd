@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.slf4j.Logger;
@@ -418,6 +419,11 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
   public void onHardwareWalletEvent(HardwareWalletEvent event) {
 
     log.debug("Received hardware event: '{}'.{}", event.getEventType().name(), event.getMessage());
+
+    if (!Dates.nowUtc().isAfter(getWizardModel().getIgnoreHardwareWalletEventsThreshold())) {
+      log.debug("Ignoring device event due to 'ignore threshold' still in force", event);
+      return;
+    }
 
     switch (event.getEventType()) {
       case SHOW_DEVICE_FAILED:

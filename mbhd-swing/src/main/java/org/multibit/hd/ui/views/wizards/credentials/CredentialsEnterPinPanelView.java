@@ -105,13 +105,6 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
       false
     );
 
-    // Initialise with "Restore" disabled to prevent PIN problems
-    ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.RESTORE,
-      false
-    );
-
   }
 
   @Override
