@@ -505,6 +505,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
       case TREZOR_CREATE_WALLET_CONFIRM_WORD:
         // User does not want to create a new wallet
         state = TREZOR_CREATE_WALLET_REPORT;
+        reportMessageKey = MessageKey.USE_TREZOR_REPORT_MESSAGE_SUCCESS;
+        reportMessageStatus = true;
         break;
       default:
     }
@@ -949,5 +951,21 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   public void setTrezorConfirmWordPanelView(CreateTrezorWalletConfirmWordPanelView trezorConfirmWordPanelView) {
     this.trezorConfirmWordPanelView = trezorConfirmWordPanelView;
+  }
+
+  public MessageKey getReportMessageKey() {
+    return reportMessageKey;
+  }
+
+  public void setReportMessageKey(MessageKey reportMessageKey) {
+    this.reportMessageKey = reportMessageKey;
+  }
+
+  public boolean isReportMessageStatus() {
+    return reportMessageStatus;
+  }
+
+  public void setReportMessageStatus(boolean reportMessageStatus) {
+    this.reportMessageStatus = reportMessageStatus;
   }
 }
