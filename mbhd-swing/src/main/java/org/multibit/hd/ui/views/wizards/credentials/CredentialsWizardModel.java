@@ -99,12 +99,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    */
   private boolean switchToPassword;
 
-  /**
-   * Ignore a "device ready" event occurring before this time to simplify the logic
-   * in dealing with a cancellation request followed by replacement of device
-   */
-  private DateTime ignoreDeviceReadyTimeout = Dates.nowUtc();
-
   public CredentialsWizardModel(CredentialsState credentialsState, CredentialsRequestType credentialsRequestType) {
     super(credentialsState);
     this.credentialsRequestType = credentialsRequestType;
@@ -261,18 +255,18 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
         } else {
           // Something has gone wrong with the device
-          state=CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
+          state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
         }
     }
 
-    ignoreDeviceReadyTimeout = Dates.nowUtc().plusSeconds(1);
+    setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
 
   }
 
   @Override
   public void showDeviceReady(HardwareWalletEvent event) {
 
-    if (Dates.nowUtc().isAfter(ignoreDeviceReadyTimeout)) {
+    if (Dates.nowUtc().isAfter(getIgnoreHardwareWalletEventsThreshold())) {
       // User attached an operational device in place of whatever
       // they are currently doing so start again
       state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
@@ -811,4 +805,5 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   public void setEnterPasswordPanelView(CredentialsEnterPasswordPanelView enterPasswordPanelView) {
     this.enterPasswordPanelView = enterPasswordPanelView;
   }
+
 }

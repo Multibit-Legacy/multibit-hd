@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -8,8 +9,8 @@ import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
-import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordView;
+import org.multibit.hd.ui.views.components.enter_pin.EnterPinModel;
+import org.multibit.hd.ui.views.components.enter_pin.EnterPinView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -20,39 +21,36 @@ import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import javax.swing.*;
 
 /**
- * <p>Wizard to provide the following to UI:</p>
+ * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Create and confirm a master credentials</li>
+ * <li>Enter new PIN</li>
  * </ul>
  *
- * @since 0.0.1
- *         
+ * @since 0.0.5
+ *
  */
+public class CreateTrezorWalletEnterNewPinPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
 
-public class CreateTrezorWalletCreatePasswordPanelView extends AbstractWizardPanelView<WelcomeWizardModel, ConfirmPasswordModel> {
-
-  private ModelAndView<ConfirmPasswordModel, ConfirmPasswordView> confirmPasswordMaV;
+  // Panel specific components
+  private ModelAndView<EnterPinModel, EnterPinView> enterPinMaV;
 
   /**
    * @param wizard The wizard managing the states
-   * @param panelName   The panel name to filter events from components
    */
-  public CreateTrezorWalletCreatePasswordPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateTrezorWalletEnterNewPinPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.CREATE_WALLET_PASSWORD_TITLE, AwesomeIcon.KEY);
+    // Need to use the LOCK icon here because TH is visually confusing
+    super(wizard, panelName, MessageKey.CHANGE_PIN_ENTER_NEW_PIN_TITLE, AwesomeIcon.LOCK);
 
   }
 
   @Override
   public void newPanelModel() {
 
-    confirmPasswordMaV = Components.newConfirmPasswordMaV(getPanelName());
-    setPanelModel(confirmPasswordMaV.getModel());
-
-    getWizardModel().setConfirmPasswordModel(confirmPasswordMaV.getModel());
+    enterPinMaV = Components.newEnterPinMaV(getPanelName());
 
     // Register components
-    registerComponents(confirmPasswordMaV);
+    registerComponents(enterPinMaV);
 
   }
 
@@ -62,11 +60,14 @@ public class CreateTrezorWalletCreatePasswordPanelView extends AbstractWizardPan
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[]", // Column constraints
-      "[]10[]" // Row constraints
+      "[][]10[]" // Row constraints
     ));
 
-    contentPanel.add(Labels.newWalletPasswordNote(), "wrap");
-    contentPanel.add(confirmPasswordMaV.getView().newComponentPanel(), "wrap");
+    // Use the initial state to set this
+
+    contentPanel.add(Labels.newEnterNewPin(), "align center,wrap");
+    contentPanel.add(Labels.newEnterPinLookAtDevice(), "align center,wrap");
+    contentPanel.add(enterPinMaV.getView().newComponentPanel(), "align center,wrap");
 
   }
 
@@ -83,7 +84,9 @@ public class CreateTrezorWalletCreatePasswordPanelView extends AbstractWizardPan
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        confirmPasswordMaV.getView().requestInitialFocus();
+
+        enterPinMaV.getView().requestInitialFocus();
+
       }
     });
 
@@ -92,14 +95,14 @@ public class CreateTrezorWalletCreatePasswordPanelView extends AbstractWizardPan
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    // No need to update the wizard it has the references
-
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
       WizardButton.NEXT,
       isNextEnabled()
     );
+
+    getWizardModel().setMostRecentPin(enterPinMaV.getModel().getValue());
 
   }
 
@@ -108,7 +111,7 @@ public class CreateTrezorWalletCreatePasswordPanelView extends AbstractWizardPan
    */
   private boolean isNextEnabled() {
 
-    return confirmPasswordMaV.getModel().comparePasswords();
+    return !Strings.isNullOrEmpty(enterPinMaV.getModel().getValue());
 
   }
 

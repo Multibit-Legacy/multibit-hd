@@ -152,6 +152,7 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
 
   }
 
+  // TODO Check is this is correct
   public void incorrectEntropy() {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");

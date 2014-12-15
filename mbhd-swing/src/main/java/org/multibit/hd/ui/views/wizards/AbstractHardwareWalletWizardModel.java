@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 
 /**
@@ -20,6 +22,12 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
    * Trezor requests have their own executor service
    */
   protected final ListeningExecutorService hardwareWalletRequestService = SafeExecutors.newSingleThreadExecutor("trezor-requests");
+
+  /**
+   * Ignore a device event occurring before this time to simplify the logic
+   * in dealing with a cancellation request followed by replacement of device
+   */
+  private DateTime ignoreHardwareWalletEventsThreshold = Dates.nowUtc();
 
   protected AbstractHardwareWalletWizardModel(S state) {
     super(state);
@@ -192,4 +200,17 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
     // Do nothing
   }
 
+  /**
+   * @return The instant at which a device events will be acted upon once more
+   */
+  public DateTime getIgnoreHardwareWalletEventsThreshold() {
+    return ignoreHardwareWalletEventsThreshold;
+  }
+
+  /**
+   * @param ignoreHardwareWalletEventsThreshold The instant at which a device events will be acted upon once more
+   */
+  public void setIgnoreHardwareWalletEventsThreshold(DateTime ignoreHardwareWalletEventsThreshold) {
+    this.ignoreHardwareWalletEventsThreshold = ignoreHardwareWalletEventsThreshold;
+  }
 }

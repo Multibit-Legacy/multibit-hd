@@ -30,6 +30,11 @@ import java.util.Collection;
 public class TextBoxes {
 
   /**
+   * The maximum display width of a V1 Trezor device (allowing for icon)
+   */
+  private static final int TREZOR_MAX_COLUMNS = 22;
+
+  /**
    * Utilities have no public constructor
    */
   private TextBoxes() {
@@ -660,7 +665,7 @@ public class TextBoxes {
   }
 
   /**
-   * @return A text area with similar dimensions to a V1 Trezor
+   * @return A text area with similar dimensions to a V1 Trezor after MiG resizing
    */
   public static JTextArea newTrezorV1Display() {
     return newReadOnlyTextArea(5, 50);
@@ -689,5 +694,24 @@ public class TextBoxes {
    */
   public static char getPasswordEchoChar() {
     return '\u2022';
+  }
+
+  /**
+   * @return A new "enter Trezor label" limited length text field
+   */
+  public static JTextField newEnterTrezorLabel() {
+
+    JTextField textField = newTextField(TREZOR_MAX_COLUMNS);
+
+    // Limit the length of the underlying document
+    DefaultStyledDocument doc = new DefaultStyledDocument();
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(TREZOR_MAX_COLUMNS));
+    textField.setDocument(doc);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.ENTER_TREZOR_LABEL, MessageKey.ENTER_TREZOR_LABEL_TOOLTIP);
+
+    return textField;
+
   }
 }

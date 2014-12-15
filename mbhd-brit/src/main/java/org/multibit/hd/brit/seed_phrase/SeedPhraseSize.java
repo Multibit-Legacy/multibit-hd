@@ -45,11 +45,18 @@ public enum SeedPhraseSize {
   }
 
   /**
-   * @return The size of the entropy bytes that correspond to this phrase size.
+   * @return The size of the entropy bytes that correspond to this phrase size
    * (4 bytes of entropy are encoded into 3 words)
    */
   public int getEntropyBytesSize() {
     return 4 * size / 3;
+  }
+
+  /**
+   * @return The entropy strength in bits (128, 192, 256)
+   */
+  public int getStrength() {
+    return getEntropyBytesSize() * 8;
   }
 
   /**

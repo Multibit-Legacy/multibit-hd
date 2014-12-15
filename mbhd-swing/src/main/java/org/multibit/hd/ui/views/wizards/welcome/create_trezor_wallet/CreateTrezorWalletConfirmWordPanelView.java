@@ -1,8 +1,9 @@
-package org.multibit.hd.ui.views.wizards.use_trezor;
+package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
@@ -13,19 +14,22 @@ import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsConfirmCipherKeyPanelModel;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 
 import javax.swing.*;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Ask the user to press Confirm on their Trezor in response to a Wipe Device message</li>
+ * <li>Ask the user to press "confirm" on their Trezor in response to a Word message</li>
  * </ul>
  *
- * @since 0.0.5
- *         
+ * @since 0.0.1
+ *  
  */
-public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorPressConfirmForEncryptCodePanelModel> {
+
+public class CreateTrezorWalletConfirmWordPanelView extends AbstractWizardPanelView<WelcomeWizardModel, CredentialsConfirmCipherKeyPanelModel> {
 
   private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
 
@@ -33,9 +37,9 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public UseTrezorConfirmWipeDevicePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
+  public CreateTrezorWalletConfirmWordPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_PRESS_CONFIRM_TITLE, AwesomeIcon.ERASER);
+    super(wizard, panelName, MessageKey.TREZOR_PRESS_NEXT_TITLE, AwesomeIcon.EDIT);
 
   }
 
@@ -43,7 +47,7 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
   public void newPanelModel() {
 
     // Bind it to the wizard model in case of failure
-    getWizardModel().setConfirmWipeDevicePanelView(this);
+    getWizardModel().setTrezorConfirmWordPanelView(this);
 
   }
 
@@ -66,31 +70,9 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
     PanelDecorator.addExitCancelNext(this, wizard);
-
-  }
-
-  @Override
-  public void afterShow() {
-
-    SwingUtilities.invokeLater(new Runnable() {
-
-      @Override public void run() {
-
-        // Set the confirm text
-        trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
-
-        // Show unlock message
-        trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
-
-        // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
-        getNextButton().setEnabled(false);
-
-      }
-
-    });
 
   }
 
@@ -114,7 +96,6 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
   }
 
   /**
-   * TODO Remove dead code
    * @return The Trezor display view to avoid method duplication
    */
   public TrezorDisplayView getTrezorDisplayView() {
@@ -122,52 +103,50 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
   }
 
   /**
-   * TODO Remove dead code
    * @param visible True if the display should not be visible
    */
   public void setDisplayVisible(boolean visible) {
     this.trezorDisplayMaV.getView().setDisplayVisible(visible);
   }
 
-  /**
-   * TODO Remove dead code
-   */
-  public void disableForUnlock() {
+  public void disableForNext() {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
-    getFinishButton().setEnabled(false);
+    getNextButton().setEnabled(false);
     getExitButton().setEnabled(false);
-    getRestoreButton().setEnabled(false);
 
     trezorDisplayMaV.getView().setSpinnerVisible(true);
 
   }
 
-  /**
-   * TODO Remove dead code
-   */
-  public void enableForFailedUnlock() {
+  public void enableForFailure() {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
-    getFinishButton().setEnabled(false);
+    getNextButton().setEnabled(false);
     getExitButton().setEnabled(true);
-    getRestoreButton().setEnabled(true);
 
     trezorDisplayMaV.getView().setSpinnerVisible(false);
 
   }
 
   /**
-   * TODO Remove dead code
+   *
+   * @param wordCount The word count
+   * @param checking True if the checking phrasing should be used
    */
-  public void incorrectEntropy() {
+  public void updateDisplay(int wordCount, boolean checking) {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
-    trezorDisplayMaV.getView().incorrectEntropy();
+    String wordCountOrdinal = Languages.getOrdinalFor(wordCount);
+
+    if (checking) {
+      trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_CHECK_WORD_DISPLAY, wordCountOrdinal);
+    } else {
+      trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WORD_DISPLAY, wordCountOrdinal);
+    }
 
   }
-
 }

@@ -48,39 +48,43 @@ public enum WelcomeWizardState {
    */
   CREATE_WALLET_REPORT,
   /**
-   * Trezor Create wallet: Preparation instructions
+   * Trezor create wallet: Preparation instructions
    */
   TREZOR_CREATE_WALLET_PREPARATION,
   /**
-   * Trezor Create wallet: Select backup location
+   * Trezor create wallet: Select backup location
    */
   TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION,
   /**
-   * Trezor Create wallet: Request secure create wallet (wipe)
+   * Trezor create wallet: Enter details (label, seed size)
+   */
+  TREZOR_CREATE_WALLET_ENTER_DETAILS,
+  /**
+   * Trezor create wallet: Request secure create wallet (wipe, PIN and create)
    */
   TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET,
   /**
-   * Trezor Create wallet: Display confirm wipe
+   * Trezor create wallet: Display confirm wipe
    */
   TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET,
   /**
-   * Trezor Create wallet: Confirm supplied entropy
+   * Trezor create wallet: Confirm supplied entropy
    */
   TREZOR_CREATE_WALLET_CONFIRM_ENTROPY,
   /**
-   * Trezor Create wallet: Enter new PIN
+   * Trezor create wallet: Enter new PIN
    */
   TREZOR_CREATE_WALLET_ENTER_NEW_PIN,
   /**
-   * Trezor Create wallet: Confirm new PIN
+   * Trezor create wallet: Confirm new PIN
    */
   TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN,
   /**
-   * Trezor Create wallet: Confirm next word from Trezor (seed phrase)
+   * Trezor create wallet: Confirm next word from Trezor (seed phrase)
    */
   TREZOR_CREATE_WALLET_CONFIRM_WORD,
   /**
-   * Trezor Create wallet: Report on the outcome
+   * Trezor create wallet: Report on the outcome
    */
   TREZOR_CREATE_WALLET_REPORT,
   /**

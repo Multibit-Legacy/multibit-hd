@@ -352,7 +352,10 @@ public enum MessageKey {
   CREATE_WALLET_PASSWORD_TITLE("create_wallet_password_title"),
   CREATE_WALLET_REPORT_TITLE("create_wallet_report_title"),
 
+  // Trezor
   CREATE_TREZOR_WALLET_PREPARATION_TITLE("create_trezor_wallet_preparation_title"),
+  CREATE_TREZOR_WALLET_ENTER_DETAILS_TITLE("create_trezor_wallet_enter_details_title"),
+  CREATE_TREZOR_WALLET_REQUEST_CREATE_WALLET_TITLE("create_trezor_wallet_request_create_wallet_title"),
 
   RESTORE_PASSWORD_SEED_PHRASE_TITLE("restore_password_seed_phrase_title"),
   RESTORE_PASSWORD_BACKUP_LOCATION_TITLE("restore_password_backup_location_title"),
@@ -396,12 +399,16 @@ public enum MessageKey {
   TREZOR_CONFIRM_CHANGE_PIN_TITLE("trezor_confirm_change_pin_title"),
   TREZOR_CONFIRM_REMOVE_PIN_TITLE("trezor_confirm_remove_pin_title"),
   TREZOR_PRESS_CONFIRM_TITLE("trezor_press_confirm_title"),
+  TREZOR_PRESS_NEXT_TITLE("trezor_press_next_title"),
 
   // Operations
   TREZOR_PRESS_CONFIRM_OPERATION("trezor_press_confirm_operation"),
+  TREZOR_PRESS_NEXT_OPERATION("trezor_press_next_operation"),
   TREZOR_NO_WALLET_OPERATION("trezor_no_wallet_operation"),
   TREZOR_FAILURE_OPERATION("trezor_failure_operation"),
   TREZOR_REMOVE_PIN_OPERATION("trezor_remove_pin_operation"),
+  SEARCHING_FOR_A_CONNECTED_TREZOR_OPERATION("searching_for_a_connected_trezor_operation"),
+  COMMUNICATING_WITH_TREZOR_OPERATION("communicating_with_trezor_operation"),
 
   // Recovery
   TREZOR_FAILURE_RECOVERY("trezor_failure_recovery"),
@@ -419,6 +426,11 @@ public enum MessageKey {
   TREZOR_ADD_PIN_DISPLAY("trezor_add_pin_display"),
   TREZOR_CHANGE_PIN_DISPLAY("trezor_change_pin_display"),
   TREZOR_REMOVE_PIN_DISPLAY("trezor_remove_pin_display"),
+  TREZOR_WORD_DISPLAY("trezor_word_display"),
+  TREZOR_CHECK_WORD_DISPLAY("trezor_check_word_display"),
+  TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY("trezor_transaction_output_confirm_display"),
+  TREZOR_SIGN_CONFIRM_DISPLAY("trezor_sign_confirm_display"),
+  TREZOR_WIPE_CONFIRM_DISPLAY("trezor_wipe_confirm_display"),
 
   USE_TREZOR_REPORT_TITLE("use_trezor_report_title"),
   USE_TREZOR_REPORT_MESSAGE_SUCCESS("use_trezor_report_message_success"),
@@ -436,17 +448,13 @@ public enum MessageKey {
   BUY_TREZOR("buy_trezor"),
   BUY_TREZOR_TOOLTIP("buy_trezor_tooltip"),
 
-  SEARCHING_FOR_A_CONNECTED_TREZOR_OPERATION("searching_for_a_connected_trezor_operation"),
-  COMMUNICATING_WITH_TREZOR_OPERATION("communicating_with_trezor_operation"),
-
   TREZOR_FOUND("trezor_found"),
   NO_TREZOR_FOUND("no_trezor_found"),
 
-  TREZOR_WIPE_CONFIRM_DISPLAY("trezor_wipe_confirm_display"),
-
-  TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY("trezor_transaction_output_confirm_display"),
-  TREZOR_SIGN_CONFIRM_DISPLAY("trezor_sign_confirm_display"),
   TREZOR_TRANSACTION_CREATED_OPERATION("trezor_transaction_created"),
+
+  ENTER_TREZOR_LABEL("enter_trezor_label"),
+  ENTER_TREZOR_LABEL_TOOLTIP("enter_trezor_label_tooltip"),
 
   // Settings titles
 
