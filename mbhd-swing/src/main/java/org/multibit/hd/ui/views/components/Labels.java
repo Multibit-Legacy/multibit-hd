@@ -1285,6 +1285,17 @@ public class Labels {
   }
 
   /**
+   * @return A new "timestamp" note
+   */
+  public static JLabel newTimestampNote() {
+
+    return newNoteLabel(new MessageKey[]{
+        MessageKey.TIMESTAMP_NOTE_1,
+        MessageKey.TIMESTAMP_NOTE_2
+      }, new Object[][]{});
+  }
+
+  /**
    * @return A new "restore from timestamp" note
    */
   public static JLabel newRestoreFromTimestampNote() {

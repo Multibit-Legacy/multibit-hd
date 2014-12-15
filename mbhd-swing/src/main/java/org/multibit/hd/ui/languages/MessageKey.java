@@ -542,8 +542,13 @@ public enum MessageKey {
 
   SEED_PHRASE("seed_phrase"),
   SEED_PHRASE_TOOLTIP("seed_phrase_tooltip"),
+
   TIMESTAMP("timestamp"),
   TIMESTAMP_TOOLTIP("timestamp_tooltip"),
+
+  TIMESTAMP_NOTE_1("timestamp_note_1"),
+  TIMESTAMP_NOTE_2("timestamp_note_2"),
+
   MULTI_EDIT_NOTE("multi_edit_note"),
 
   TRANSACTION_CONSTRUCTION_STATUS_SUMMARY("transaction_construction_status_summary"),
