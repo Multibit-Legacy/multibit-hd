@@ -979,6 +979,9 @@ public class WalletService extends AbstractService {
         CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(true, CoreMessageKey.CHANGE_PASSWORD_SUCCESS, null));
       } catch (Exception e) {
         e.printStackTrace();
+        if (e.getCause() != null) {
+          e.getCause().printStackTrace();
+        }
         CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_ERROR, new Object[]{e.getMessage()}));
       }
     } else {

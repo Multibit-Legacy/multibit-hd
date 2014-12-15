@@ -495,6 +495,7 @@ public enum WalletManager implements WalletEventListener {
       trezorRootNodePathList.add(new ChildNumber(ChildNumber.HARDENED_BIT));
 
       DeterministicKey trezorRootNode = HDKeyDerivation.createRootNodeWithPrivateKey(ImmutableList.copyOf(trezorRootNodePathList), seed);
+      log.debug("Creating Trezor soft wallet with root node with path {}", trezorRootNode.getPath());
 
       // Create a KeyCrypter to encrypt the waller
       KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));

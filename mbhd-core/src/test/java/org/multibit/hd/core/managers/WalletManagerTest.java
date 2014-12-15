@@ -71,19 +71,19 @@ public class WalletManagerTest {
   private final static String LONGEST_PASSWORD = "abcefghijklmnopqrstuvwxyzabcefghijklmnopqrstuvwxyz"; // 52
 
   /**
-   * The seed phrase for the Trezor 'Insecure' wallet
+   * The seed phrase for the Trezor 'Abandon' wallet
    */
-  private final static String TREZOR_SEED_PHRASE = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+  public final static String TREZOR_SEED_PHRASE = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
 
   // The generated Trezor addresses for the 'Abandon' wallet
-  private final static String TREZOR_ADDRESS_M_44H_0H_0H_0_0 = "1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA";  // Receiving funds
-  private final static String TREZOR_ADDRESS_M_44H_0H_0H_1_0 = "1J3J6EvPrv8q6AC3VCjWV45Uf3nssNMRtH";  // Change
-  private final static String TREZOR_ADDRESS_M_44H_0H_0H_0_1 = "1Ak8PffB2meyfYnbXZR9EGfLfFZVpzJvQP";
-  private final static String TREZOR_ADDRESS_M_44H_0H_0H_1_1 = "13vKxXzHXXd8HquAYdpkJoi9ULVXUgfpS5";
-  private final static String TREZOR_ADDRESS_M_44H_0H_0H_0_2 = "1MNF5RSaabFwcbtJirJwKnDytsXXEsVsNb";
-  private final static String TREZOR_ADDRESS_M_44H_0H_0H_1_2 = "1M21Wx1nGrHMPaz52N2En7c624nzL4MYTk";
-  private final static String TREZOR_ADDRESS_M_44H_0H_0H_0_3 = "1MVGa13XFvvpKGZdX389iU8b3qwtmAyrsJ";
-  private final static String TREZOR_ADDRESS_M_44H_0H_0H_1_3 = "1DzVLMA4HzjXPAr6aZoaacDPHXXntsZ2zL";
+  public final static String TREZOR_ADDRESS_M_44H_0H_0H_0_0 = "1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA";  // Receiving funds
+  public final static String TREZOR_ADDRESS_M_44H_0H_0H_1_0 = "1J3J6EvPrv8q6AC3VCjWV45Uf3nssNMRtH";  // Change
+  public final static String TREZOR_ADDRESS_M_44H_0H_0H_0_1 = "1Ak8PffB2meyfYnbXZR9EGfLfFZVpzJvQP";
+  public final static String TREZOR_ADDRESS_M_44H_0H_0H_1_1 = "13vKxXzHXXd8HquAYdpkJoi9ULVXUgfpS5";
+  public final static String TREZOR_ADDRESS_M_44H_0H_0H_0_2 = "1MNF5RSaabFwcbtJirJwKnDytsXXEsVsNb";
+  public final static String TREZOR_ADDRESS_M_44H_0H_0H_1_2 = "1M21Wx1nGrHMPaz52N2En7c624nzL4MYTk";
+  public final static String TREZOR_ADDRESS_M_44H_0H_0H_0_3 = "1MVGa13XFvvpKGZdX389iU8b3qwtmAyrsJ";
+  public final static String TREZOR_ADDRESS_M_44H_0H_0H_1_3 = "1DzVLMA4HzjXPAr6aZoaacDPHXXntsZ2zL";
 
   @Before
   public void setUp() throws Exception {
@@ -176,9 +176,8 @@ public class WalletManagerTest {
   @Test
   /**
    * Test creation of a Trezor (soft) wallet.
-   * This matches the 'Insecure' wallet used in the multibit-hardware project TrezorV1WipeAndLoadWalletExample test
    */
-  public void testCreateTrezorWallet() throws Exception {
+  public void testCreateSoftTrezorWallet() throws Exception {
 
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
