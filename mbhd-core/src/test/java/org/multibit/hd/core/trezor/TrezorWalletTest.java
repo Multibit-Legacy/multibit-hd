@@ -344,10 +344,10 @@ public class TrezorWalletTest {
 
   @Test
    /**
-    * Decrypt a Trezor soft wallet.
-    * This is not actually used in MBHD on the UIbut is used in the change password
+    * Decrypt and hen encrypt a Trezor soft wallet.
+    * This is not actually used in MBHD on the UI but is used in the change password
     */
-   public void testDecryptTrezorSoftWallet() throws Exception {
+   public void testDecryptAndEncryptTrezorSoftWallet() throws Exception {
      Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
      networkParameters = BitcoinNetwork.current().get();
 
@@ -374,7 +374,13 @@ public class TrezorWalletTest {
 
      assertThat(walletSummary.getWallet().isEncrypted()).isFalse();
 
+     // Encrypt it again
+     walletSummary.getWallet().encrypt("BLAH BLAH BLAH DI BLAH");
+
+     assertThat(walletSummary.getWallet().isEncrypted()).isTrue();
    }
+
+
   @Test
   /**
    * Change the password on a Trezor soft wallet
@@ -412,5 +418,7 @@ public class TrezorWalletTest {
     Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
 
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD)).isTrue();
+
+    // TODO check wallet roundtrips via protobuf
   }
 }

@@ -49,9 +49,6 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
       backupService.rememberWalletSummaryAndPasswordForRollingBackup(walletSummary.get(), password);
       backupService.rememberWalletIdAndPasswordForLocalZipBackup(walletSummary.get().getWalletId(), password);
       backupService.rememberWalletIdAndPasswordForCloudZipBackup(walletSummary.get().getWalletId(), password);
-
-      log.debug("Have just saved wallet: " + walletSummary.get().getWallet());
-
     } else {
       log.error("No AES wallet encryption nor backups created as there was no wallet data to backup.");
     }
