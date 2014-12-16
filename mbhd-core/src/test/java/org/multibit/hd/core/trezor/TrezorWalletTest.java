@@ -344,7 +344,7 @@ public class TrezorWalletTest {
 
   @Test
    /**
-    * Decrypt and hen encrypt a Trezor soft wallet.
+    * Decrypt and then encrypt a Trezor soft wallet.
     * This is not actually used in MBHD on the UI but is used in the change password
     */
    public void testDecryptAndEncryptTrezorSoftWallet() throws Exception {
