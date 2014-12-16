@@ -961,7 +961,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     this.reportMessageKey = reportMessageKey;
   }
 
-  public boolean isReportMessageStatus() {
+  public boolean getReportMessageStatus() {
     return reportMessageStatus;
   }
 
