@@ -40,4 +40,12 @@ public class SystemStatusChangedEvent implements ViewEvent {
   public RAGStatus getSeverity() {
     return severity;
   }
+
+  @Override
+  public String toString() {
+    return "SystemStatusChangedEvent{" +
+            "localisedMessage='" + localisedMessage + '\'' +
+            ", severity=" + severity +
+            '}';
+  }
 }

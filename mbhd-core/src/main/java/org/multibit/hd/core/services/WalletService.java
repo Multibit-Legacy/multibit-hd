@@ -718,7 +718,7 @@ public class WalletService extends AbstractService {
     try {
 
       log.debug("Writing payments to '{}'", backingStoreFile.getAbsolutePath());
-      log.debug("Writing TransactionInfoMap: {}", transactionInfoMap);
+      log.trace("Writing TransactionInfoMap: {}", transactionInfoMap);
 
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
       Payments payments = new Payments();

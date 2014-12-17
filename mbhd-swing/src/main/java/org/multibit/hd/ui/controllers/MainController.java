@@ -451,7 +451,7 @@ public class MainController extends AbstractController implements
 
           // Build a new MainView
 //          mainView = new MainView();
-//          mainView.setRepeatLatestEvents(false);
+          mainView.setRepeatLatestEvents(false);
 
           // Check for any pre-existing wallets in the application directory
           File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
@@ -477,7 +477,7 @@ public class MainController extends AbstractController implements
               public void run() {
                 // Provide a backdrop to the user and trigger the showing of the wizard
                 mainView.refresh();
-
+                mainView.setRepeatLatestEvents(true);
               }
             });
 

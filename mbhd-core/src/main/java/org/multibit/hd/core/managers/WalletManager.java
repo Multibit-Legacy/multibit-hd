@@ -696,7 +696,7 @@ public enum WalletManager implements WalletEventListener {
     wallet.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
 
     // Too much information is revealed for debug
-    System.out.println("WalletManager#loadWalletFromfile: Just loaded wallet:\n" + wallet.toString());
+    //System.out.println("WalletManager#loadWalletFromFile: Just loaded wallet:\n" + wallet.toString());
 
     return wallet;
   }

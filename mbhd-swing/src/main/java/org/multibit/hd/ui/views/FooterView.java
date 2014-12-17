@@ -127,6 +127,7 @@ public class FooterView extends AbstractView {
   @Subscribe
   public void onSystemStatusChangeEvent(final SystemStatusChangedEvent event) {
 
+    System.out.println("FooterView#onSystemStatusChangeEvent saw SystemStatusChangedEvent: " + event);
     if (statusLabel == null) {
       return;
     }
