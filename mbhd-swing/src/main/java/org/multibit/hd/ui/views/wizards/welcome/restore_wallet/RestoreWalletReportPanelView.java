@@ -418,10 +418,9 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
               Dates.formatDeliveryDateLocal(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
       );
 
-      WalletSummary currentWalletSummary;
       if (isRestoreTrezor) {
-        // Trezor soft wallet
-        currentWalletSummary = WalletManager.INSTANCE.getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
+        // Create Trezor soft wallet
+        WalletManager.INSTANCE.getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
                 applicationDataDirectory,
                 Joiner.on(" ").join(seedPhrase),
                 Dates.thenInSeconds(replayDate),
@@ -430,25 +429,11 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
                 notes
         );
       } else {
-        // MBHD soft wallet
-        currentWalletSummary = WalletManager.INSTANCE.getOrCreateMBHDSoftWalletSummaryFromSeed(applicationDataDirectory, seed, Dates.thenInSeconds(replayDate), password, name, notes);
+        // Create MBHD soft wallet
+        WalletManager.INSTANCE.getOrCreateMBHDSoftWalletSummaryFromSeed(applicationDataDirectory, seed, Dates.thenInSeconds(replayDate), password, name, notes);
       }
 
-      // Initialise the WalletService with the newly created wallet, which provides transaction information from the wallet
-      WalletManager.writeEncryptedPasswordAndBackupKey(currentWalletSummary, seed, password);
-
-      String walletRoot = WalletManager.createWalletRoot(currentWalletSummary.getWalletId());
-      File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
-
-      File walletSummaryFile = WalletManager.getOrCreateWalletSummaryFile(walletDirectory);
-      WalletManager.updateWalletSummary(walletSummaryFile, currentWalletSummary);
-
-      // Create a wallet service
-      CoreServices.getOrCreateWalletService(currentWalletSummary.getWalletId());
-
-      // Start the Bitcoin network to synchronize
-      CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()));
-
+      // Must have succeeded to get here
       return true;
 
     } catch (Exception e) {

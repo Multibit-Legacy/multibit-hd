@@ -118,7 +118,9 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
     reportStatusLabel.setVisible(true);
 
     if (reportMessageStatus) {
-      timestampText.setText(Dates.newSeedTimestamp());
+      String nowTimestamp = Dates.newSeedTimestamp();
+      log.debug("The timestamp for the new wallet is {}", nowTimestamp);
+      timestampText.setText(nowTimestamp);
       timestampLabel.setVisible(true);
       timestampText.setVisible(true);
       timestampNote.setVisible(true);

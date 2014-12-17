@@ -1165,8 +1165,6 @@ public enum WalletManager implements WalletEventListener {
     }
     walletSummary.setWalletId(walletId);
 
-    log.debug("Wallet info: The number of external keys is now {}", walletSummary.getWallet() == null ? 0 : walletSummary.getWallet().getActiveKeychain().getIssuedExternalKeys());
-
     return walletSummary;
 
   }
