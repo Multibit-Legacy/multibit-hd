@@ -67,10 +67,12 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
 
     contentPanel.add(Labels.newVerifyNetworkNote(), "span 3," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
-    peerCountLabel = Labels.newValueLabel(String.valueOf(CoreServices.getOrCreateBitcoinNetworkService().getNumberOfConnectedPeers()));
+    int currentPeerCount = CoreServices.getOrCreateBitcoinNetworkService().getNumberOfConnectedPeers();
+    peerCountLabel = Labels.newValueLabel(String.valueOf(currentPeerCount));
     peerCountStatusLabel = Labels.newPeerCount();
+    decoratePeerCountStatusLabel(currentPeerCount);
 
-    blocksLeftLabel = Labels.newValueLabel("0");
+    blocksLeftLabel = Labels.newValueLabel("");
     blocksLeftStatusLabel = Labels.newBlocksLeft();
 
     contentPanel.add(peerCountStatusLabel, "");
@@ -120,21 +122,7 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
     Optional<Integer> peerCount = event.getSummary().getPeerCount();
     if (peerCount.isPresent()) {
       peerCountLabel.setText(String.valueOf(summary.getPeerCount().get()));
-      if (peerCount.get() > 0) {
-        AwesomeDecorator.applyIcon(
-                AwesomeIcon.CHECK,
-                peerCountStatusLabel,
-                true,
-                MultiBitUI.NORMAL_ICON_SIZE
-        );
-      } else {
-        AwesomeDecorator.applyIcon(
-                AwesomeIcon.TIMES,
-                peerCountStatusLabel,
-                true,
-                MultiBitUI.NORMAL_ICON_SIZE
-        );
-      }
+      decoratePeerCountStatusLabel(summary.getPeerCount().get());
     }
 
     // Blocks left
@@ -148,13 +136,14 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
       );
       blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
     } else if (blocksLeft < 0) {
-      AwesomeDecorator.applyIcon(
-              AwesomeIcon.TIMES,
-              blocksLeftStatusLabel,
-              true,
-              MultiBitUI.NORMAL_ICON_SIZE
-      );
-      blocksLeftLabel.setText("");
+      // No block info - do nothing (this could be a peer count event
+//      AwesomeDecorator.applyIcon(
+//              AwesomeIcon.TIMES,
+//              blocksLeftStatusLabel,
+//              true,
+//              MultiBitUI.NORMAL_ICON_SIZE
+//      );
+//      blocksLeftLabel.setText("");
     } else {
       AwesomeDecorator.applyIcon(
               AwesomeIcon.EXCHANGE,
@@ -163,6 +152,24 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
               MultiBitUI.NORMAL_ICON_SIZE
       );
       blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
+    }
+  }
+
+  private void decoratePeerCountStatusLabel(int peerCount) {
+    if (peerCount > 0) {
+      AwesomeDecorator.applyIcon(
+              AwesomeIcon.CHECK,
+              peerCountStatusLabel,
+              true,
+              MultiBitUI.NORMAL_ICON_SIZE
+      );
+    } else {
+      AwesomeDecorator.applyIcon(
+              AwesomeIcon.TIMES,
+              peerCountStatusLabel,
+              true,
+              MultiBitUI.NORMAL_ICON_SIZE
+      );
     }
   }
 }
