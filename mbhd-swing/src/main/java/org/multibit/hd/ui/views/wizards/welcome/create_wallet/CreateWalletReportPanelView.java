@@ -33,6 +33,8 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
@@ -49,6 +51,8 @@ import java.util.concurrent.TimeUnit;
  *
  */
 public class CreateWalletReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
+
+  private static final Logger log = LoggerFactory.getLogger(CreateWalletReportPanelView.class);
 
   // View
   private JLabel seedPhraseCreatedStatusLabel;

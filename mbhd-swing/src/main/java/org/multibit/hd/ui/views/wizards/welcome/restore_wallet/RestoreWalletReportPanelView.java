@@ -43,6 +43,8 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import javax.swing.*;
@@ -59,6 +61,8 @@ import java.util.concurrent.TimeUnit;
  * @since 0.0.1
  */
 public class RestoreWalletReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
+
+  private static final Logger log = LoggerFactory.getLogger(RestoreWalletReportPanelView.class);
 
   // View
   private JLabel walletCreatedStatusLabel;
@@ -97,11 +101,11 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     restoreWalletExecutorService = SafeExecutors.newSingleThreadExecutor("restore-wallet");
 
     contentPanel.setLayout(
-            new MigLayout(
-                    Panels.migXYLayout(),
-                    "[][][]", // Column constraints
-                    "[]10[]10[]10[]10[]" // Row constraints
-            ));
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[][][]", // Column constraints
+        "[]10[]10[]10[]10[]" // Row constraints
+      ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -157,14 +161,14 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     getFinishButton().requestFocusInWindow();
 
     restoreWalletExecutorService.submit(
-            new Runnable() {
-              @Override
-              public void run() {
+      new Runnable() {
+        @Override
+        public void run() {
 
-                handleRestoreWallet();
+          handleRestoreWallet();
 
-              }
-            });
+        }
+      });
   }
 
   /**
@@ -180,88 +184,88 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     final BitcoinNetworkSummary summary = event.getSummary();
 
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
+      new Runnable() {
+        @Override
+        public void run() {
 
-                // If the event is about peer group counts then ignore it - we are only interested in block count related events
-                if (!summary.getPeerCount().isPresent()) {
-                  // Blocks left
-                  int blocksLeft = event.getSummary().getBlocksLeft();
-                  if (blocksLeft < 0) {
-                    blocksLeftLabel.setVisible(false);
-                    blocksLeftStatusLabel.setVisible(false);
-                  } else {
-                    // Synchronizing
-                    blocksLeftLabel.setVisible(true);
-                    blocksLeftStatusLabel.setVisible(true);
-                    AwesomeDecorator.applyIcon(
-                            AwesomeIcon.EXCHANGE,
-                            blocksLeftStatusLabel,
-                            true,
-                            MultiBitUI.NORMAL_ICON_SIZE
-                    );
-                    blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
-                  }
+          // If the event is about peer group counts then ignore it - we are only interested in block count related events
+          if (!summary.getPeerCount().isPresent()) {
+            // Blocks left
+            int blocksLeft = event.getSummary().getBlocksLeft();
+            if (blocksLeft < 0) {
+              blocksLeftLabel.setVisible(false);
+              blocksLeftStatusLabel.setVisible(false);
+            } else {
+              // Synchronizing
+              blocksLeftLabel.setVisible(true);
+              blocksLeftStatusLabel.setVisible(true);
+              AwesomeDecorator.applyIcon(
+                AwesomeIcon.EXCHANGE,
+                blocksLeftStatusLabel,
+                true,
+                MultiBitUI.NORMAL_ICON_SIZE
+              );
+              blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
+            }
 
-                  if (blocksLeft == 0) {
+            if (blocksLeft == 0) {
 
-                    // Completed
+              // Completed
 
-                    // Update the status
-                    AwesomeDecorator.applyIcon(
-                            AwesomeIcon.CHECK,
-                            blocksLeftStatusLabel,
-                            true,
-                            MultiBitUI.NORMAL_ICON_SIZE
-                    );
+              // Update the status
+              AwesomeDecorator.applyIcon(
+                AwesomeIcon.CHECK,
+                blocksLeftStatusLabel,
+                true,
+                MultiBitUI.NORMAL_ICON_SIZE
+              );
 
-                    // Looks ugly but is semantically correct
-                    blocksLeftLabel.setText("0");
+              // Looks ugly but is semantically correct
+              blocksLeftLabel.setText("0");
 
-                  }
+            }
 
-                  boolean currentEnabled = getFinishButton().isEnabled();
+            boolean currentEnabled = getFinishButton().isEnabled();
 
-                  final boolean newEnabled;
+            final boolean newEnabled;
 
-                  // NOTE: Finish is kept disabled until fully synchronized
-                  switch (event.getSummary().getSeverity()) {
-                    case RED:
-                      // Always disabled on RED
-                      newEnabled = false;
-                      break;
-                    case AMBER:
-                      // Enable on AMBER only if unrestricted
-                      newEnabled = InstallationManager.unrestricted;
-                      break;
-                    case GREEN:
-                      // Enable on GREEN only if synchronized or unrestricted (to speed up FEST tests)
-                      newEnabled = BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus()) || InstallationManager.unrestricted || blocksLeft == 0;
-                      break;
-                    default:
-                      // Unknown status
-                      throw new IllegalStateException("Unknown event severity " + event.getSummary().getStatus());
-                  }
+            // NOTE: Finish is kept disabled until fully synchronized
+            switch (event.getSummary().getSeverity()) {
+              case RED:
+                // Always disabled on RED
+                newEnabled = false;
+                break;
+              case AMBER:
+                // Enable on AMBER only if unrestricted
+                newEnabled = InstallationManager.unrestricted;
+                break;
+              case GREEN:
+                // Enable on GREEN only if synchronized or unrestricted (to speed up FEST tests)
+                newEnabled = BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus()) || InstallationManager.unrestricted || blocksLeft == 0;
+                break;
+              default:
+                // Unknown status
+                throw new IllegalStateException("Unknown event severity " + event.getSummary().getStatus());
+            }
 
-                  // Test for a change in condition
-                  if (currentEnabled != newEnabled) {
+            // Test for a change in condition
+            if (currentEnabled != newEnabled) {
 
-                    getFinishButton().setEnabled(newEnabled);
+              getFinishButton().setEnabled(newEnabled);
 
-                    if (newEnabled) {
+              if (newEnabled) {
 
-                      // Stop the Bitcoin network to release resources
-                      CoreServices.stopBitcoinNetworkService();
-
-                    }
-
-                  }
-
-                }
+                // Stop the Bitcoin network to release resources
+                CoreServices.stopBitcoinNetworkService();
 
               }
-            });
+
+            }
+
+          }
+
+        }
+      });
 
   }
 
@@ -282,6 +286,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     // Locate the installation directory
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
+    log.debug("Cloud backup...");
     File cloudBackupLocation = null;
     if (Configurations.currentConfiguration != null) {
       String cloudBackupLocationString = Configurations.currentConfiguration.getAppearance().getCloudBackupLocation();
@@ -290,104 +295,122 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       }
     }
 
+    log.debug("Backup manager...");
     // Initialise backup (must be before Bitcoin network starts and on the main thread)
     BackupManager.INSTANCE.initialise(applicationDataDirectory, cloudBackupLocation == null ? Optional.<File>absent() : Optional.of(cloudBackupLocation));
 
-     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
 
-                // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
-                ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+          // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
+          ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
 
-              }
-            });
+        }
+      });
 
     final boolean walletCreatedStatus;
 
     // Attempt to create the wallet
-    if (WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP.equals(model.getRestoreMethod())) {
+    switch (model.getRestoreMethod()) {
 
-      log.debug("Performing a restore from a seed phrase and a wallet backup.");
+      case RESTORE_WALLET_SELECT_BACKUP:
+        log.debug("Performing a restore from a seed phrase and a wallet backup.");
 
-      EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
+        EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
 
-      // Determine if the create wallet status is valid
-      // Starts the wallet synchronization if OK
-      walletCreatedStatus = createWalletFromSeedPhrase(restoreWalletEnterSeedPhraseModel.getSeedPhrase());
+        // Determine if the create wallet status is valid
+        // Starts the wallet synchronization if OK
+        walletCreatedStatus = createWalletFromSeedPhrase(restoreWalletEnterSeedPhraseModel.getSeedPhrase());
+        break;
+      case RESTORE_WALLET_TIMESTAMP:
+        log.debug("Performing a restore from a seed phrase and a timestamp.");
 
-    } else if (WelcomeWizardState.RESTORE_WALLET_TIMESTAMP.equals(model.getRestoreMethod())) {
+        EnterSeedPhraseModel restoreEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
+        EnterSeedPhraseModel restoreEnterTimestampModel = model.getRestoreWalletEnterTimestampModel();
+        ConfirmPasswordModel confirmPasswordModel = model.getRestoreWalletConfirmPasswordModel();
+        log.debug("Timestamp: {}", restoreEnterTimestampModel.getSeedTimestamp());
 
-      log.debug("Performing a restore from a seed phrase and a timestamp.");
-
-      EnterSeedPhraseModel restoreEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
-      EnterSeedPhraseModel restoreEnterTimestampModel = model.getRestoreWalletEnterTimestampModel();
-      ConfirmPasswordModel confirmPasswordModel = model.getRestoreWalletConfirmPasswordModel();
-      log.debug("Timestamp: {}", restoreEnterTimestampModel.getSeedTimestamp());
-
-      // Start the wallet replay if successful
-      walletCreatedStatus = createWalletFromSeedPhraseAndTimestamp(
-              restoreEnterSeedPhraseModel.getSeedPhrase(),
-              restoreEnterSeedPhraseModel.isRestoreAsTrezor(),
-              restoreEnterTimestampModel.getSeedTimestamp(),
-              confirmPasswordModel.getValue()
-      );
-    } else {
-      throw new IllegalStateException("Cannot perform a restore - unknown method of restore: '" + model.getRestoreMethod() + "'");
+        // Start the wallet replay if successful
+        walletCreatedStatus = createWalletFromSeedPhraseAndTimestamp(
+          restoreEnterSeedPhraseModel.getSeedPhrase(),
+          restoreEnterSeedPhraseModel.isRestoreAsTrezor(),
+          restoreEnterTimestampModel.getSeedTimestamp(),
+          confirmPasswordModel.getValue()
+        );
+        break;
+      default:
+        log.error("Unknown welcome wizard state: {}", model.getRestoreMethod());
+        // Create wallet from seed phrase should always be OK
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              Labels.decorateStatusLabel(walletCreatedStatusLabel, Optional.of(false));
+              walletCreatedStatusLabel.setVisible(true);
+            }
+          });
+        return;
     }
+
+    log.debug("Wallet created...");
 
     ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
 
     // Create wallet from seed phrase should always be OK
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
-                Labels.decorateStatusLabel(walletCreatedStatusLabel, Optional.of(walletCreatedStatus));
-                walletCreatedStatusLabel.setVisible(true);
-              }
-            });
+      new Runnable() {
+        @Override
+        public void run() {
+          Labels.decorateStatusLabel(walletCreatedStatusLabel, Optional.of(walletCreatedStatus));
+          walletCreatedStatusLabel.setVisible(true);
+        }
+      });
 
     // Give the user the impression of work being done
     Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
+
+    log.debug("Installing SSL certificates...");
 
     // Attempt to install the CA certifications for the exchanges and MultiBit.org
     // Configure SSL certificates without forcing
     SSLManager.INSTANCE.installCACertificates(
-            InstallationManager.getOrCreateApplicationDataDirectory(),
-            InstallationManager.CA_CERTS_NAME,
-            false);
+      InstallationManager.getOrCreateApplicationDataDirectory(),
+      InstallationManager.CA_CERTS_NAME,
+      false);
 
     // Update the UI after the BRIT exchange completes
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
+      new Runnable() {
+        @Override
+        public void run() {
 
-                // No errors so assume they are OK
-                AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, cacertsInstalledStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-                cacertsInstalledStatusLabel.setVisible(true);
+          // No errors so assume they are OK
+          AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, cacertsInstalledStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+          cacertsInstalledStatusLabel.setVisible(true);
 
-              }
-            });
+        }
+      });
 
     // Give the user the impression of work being done
     Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
+
+    log.debug("Synchronizing...");
 
     final boolean synchronizationStatus = CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
 
     // Let the user know that they're waiting for synchronization to complete
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
+      new Runnable() {
+        @Override
+        public void run() {
 
-                Labels.decorateStatusLabel(synchronizationStatusLabel, Optional.of(synchronizationStatus));
-                synchronizationStatusLabel.setVisible(true);
+          Labels.decorateStatusLabel(synchronizationStatusLabel, Optional.of(synchronizationStatus));
+          synchronizationStatusLabel.setVisible(true);
 
-              }
-            });
+        }
+      });
 
   }
 
@@ -414,19 +437,19 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
       // Display in the system timezone
       String notes = Languages.safeText(
-              MessageKey.WALLET_DEFAULT_NOTES,
-              Dates.formatDeliveryDateLocal(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
+        MessageKey.WALLET_DEFAULT_NOTES,
+        Dates.formatDeliveryDateLocal(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
       );
 
       if (isRestoreTrezor) {
         // Create Trezor soft wallet
         WalletManager.INSTANCE.getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
-                applicationDataDirectory,
-                Joiner.on(" ").join(seedPhrase),
-                Dates.thenInSeconds(replayDate),
-                password,
-                name,
-                notes
+          applicationDataDirectory,
+          Joiner.on(" ").join(seedPhrase),
+          Dates.thenInSeconds(replayDate),
+          password,
+          name,
+          notes
         );
       } else {
         // Create MBHD soft wallet
@@ -459,7 +482,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     SelectBackupSummaryModel selectedBackupSummaryModel = getWizardModel().getSelectBackupSummaryModel();
 
     if (selectedBackupSummaryModel == null || selectedBackupSummaryModel.getValue() == null ||
-            selectedBackupSummaryModel.getValue().getFile() == null) {
+      selectedBackupSummaryModel.getValue().getFile() == null) {
       log.debug("No wallet backup to use from the model");
       return false;
     }
@@ -481,9 +504,9 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
       KeyParameter backupAESKey = AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
       byte[] decryptedPaddedWalletPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(
-              walletSummary.getEncryptedPassword(),
-              backupAESKey,
-              WalletManager.AES_INITIALISATION_VECTOR);
+        walletSummary.getEncryptedPassword(),
+        backupAESKey,
+        WalletManager.AES_INITIALISATION_VECTOR);
       byte[] decryptedWalletPasswordBytes = WalletManager.unpadPasswordBytes(decryptedPaddedWalletPasswordBytes);
       String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, "UTF8");
 
@@ -492,9 +515,9 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
       // Open the wallet and synchronize the wallet
       WalletManager.INSTANCE.openWalletFromWalletId(
-              InstallationManager.getOrCreateApplicationDataDirectory(),
-              loadedWalletId,
-              decryptedWalletPassword);
+        InstallationManager.getOrCreateApplicationDataDirectory(),
+        loadedWalletId,
+        decryptedWalletPassword);
 
       // Start the Bitcoin network and synchronize the wallet
       return bitcoinNetworkService.isStartedOk();

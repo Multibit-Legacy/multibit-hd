@@ -21,6 +21,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -34,6 +36,8 @@ import javax.swing.*;
  *
  */
 public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, SendBitcoinReportPanelModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(SendBitcoinReportPanelView.class);
 
   private JLabel transactionConstructionStatusSummary;
   private JLabel transactionConstructionStatusDetail;

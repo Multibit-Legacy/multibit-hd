@@ -21,6 +21,8 @@ import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -37,6 +39,8 @@ import java.io.IOException;
  *
  */
 public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
+
+  private static final Logger log = LoggerFactory.getLogger(WelcomeLicencePanelView.class);
 
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
 

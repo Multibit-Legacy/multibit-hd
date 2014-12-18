@@ -39,9 +39,9 @@ import java.util.List;
 public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> {
 
   /**
-   * Provide logging facilities to views
+   * Avoid sharing this logger since the naming becomes confusing
    */
-  protected static final Logger log = LoggerFactory.getLogger(AbstractWizardPanelView.class);
+  private static final Logger log = LoggerFactory.getLogger(AbstractWizardPanelView.class);
 
   /**
    * The overall wizard model

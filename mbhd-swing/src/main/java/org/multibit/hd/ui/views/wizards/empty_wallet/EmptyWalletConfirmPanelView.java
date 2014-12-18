@@ -21,6 +21,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -34,6 +36,8 @@ import javax.swing.*;
  *
  */
 public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, String> {
+
+  private static final Logger log = LoggerFactory.getLogger(EmptyWalletConfirmPanelView.class);
 
   // View components
   private ModelAndView<DisplayAmountModel, DisplayAmountView> transactionDisplayAmountMaV;

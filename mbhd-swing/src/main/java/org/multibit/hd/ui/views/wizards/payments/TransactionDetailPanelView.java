@@ -16,6 +16,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +34,8 @@ import java.net.URI;
  *
  */
 public class TransactionDetailPanelView extends AbstractWizardPanelView<PaymentsWizardModel, TransactionDetailPanelModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(TransactionDetailPanelView.class);
 
   private static final String BLOCKCHAIN_INFO_PREFIX = "https://blockchain.info/tx-index/";
 
