@@ -116,6 +116,11 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
   @Subscribe
   public void onBitcoinNetworkChangedEvent(BitcoinNetworkChangedEvent event) {
 
+    // Avoid NPEs with early events
+    if (!isInitialised()) {
+      return;
+    }
+
     BitcoinNetworkSummary summary = event.getSummary();
 
     // Peer count
@@ -135,15 +140,6 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
               MultiBitUI.NORMAL_ICON_SIZE
       );
       blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
-    } else if (blocksLeft < 0) {
-      // No block info - do nothing (this could be a peer count event
-//      AwesomeDecorator.applyIcon(
-//              AwesomeIcon.TIMES,
-//              blocksLeftStatusLabel,
-//              true,
-//              MultiBitUI.NORMAL_ICON_SIZE
-//      );
-//      blocksLeftLabel.setText("");
     } else {
       AwesomeDecorator.applyIcon(
               AwesomeIcon.EXCHANGE,
