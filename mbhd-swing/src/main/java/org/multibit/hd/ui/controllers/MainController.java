@@ -447,7 +447,26 @@ public class MainController extends AbstractController implements
 
           log.debug("Using switch wallet view refresh");
 
-          // Dispose of the MainView
+          // Sleep for a short time to reduce UI jolt
+          Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+
+          // Hide the application frame to prevent user interacting with the detail
+          // panels after the exit panel view has hidden
+          // It is very tricky to get the timing right so hiding the UI is the safest
+          // course of action here
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+                Panels.applicationFrame.setVisible(false);
+              }
+            });
+
+          // Sleep for a short time to allow UI events to occur
+          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+          // Close the supporting services
+          // This can take some time
           shutdownCurrentWallet(ShutdownEvent.ShutdownType.SWITCH);
 
           // Avoiding repeating latest events which will leave traces of the earlier wallet
