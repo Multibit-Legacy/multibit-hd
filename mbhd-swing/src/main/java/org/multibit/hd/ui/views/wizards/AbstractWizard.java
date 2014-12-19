@@ -427,6 +427,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
         public void run() {
 
           // Require some extra time to get the rest of the UI started for credentials wizard
+          // There is no chance of the system showing a light box during this time so this
+          // operation is safe
           if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(panelName)) {
 
             log.trace("Blocking to allow UI startup to complete");
