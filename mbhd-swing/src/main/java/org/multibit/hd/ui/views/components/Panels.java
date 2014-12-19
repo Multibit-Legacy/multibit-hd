@@ -224,7 +224,11 @@ public class Panels {
     log.debug("Show light box");
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "LightBox requires the EDT");
-    Preconditions.checkState(!lightBoxPanel.isPresent(), "Light box should never be called twice");
+
+    // Do not override this to replace the existing light box
+    // The problem is that the new light box is tripping up due to a race condition in the code
+    // which needs to be dealt with rather than masked behind deferred clean up
+    Preconditions.checkState(!lightBoxPanel.isPresent(), "Light box should never be called twice ");
 
     // Prevent focus
     allowFocus(Panels.applicationFrame, false);
