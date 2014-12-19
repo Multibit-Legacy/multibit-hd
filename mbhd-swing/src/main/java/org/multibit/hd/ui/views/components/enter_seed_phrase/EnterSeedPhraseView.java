@@ -5,6 +5,8 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +14,8 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -22,7 +25,6 @@ import java.awt.event.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseModel> {
 
@@ -31,7 +33,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
   // View components
   private JTextArea seedPhraseTextArea;
   private JTextField seedTimestampText;
-  private JCheckBox restoreAsTrezor;
+  private JComboBox<String> restoreAsTrezor;
 
   private JLabel verificationStatusLabel;
 
@@ -67,11 +69,12 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     EnterSeedPhraseModel model = getModel().get();
     String panelName = model.getPanelName();
 
-    panel = Panels.newPanel(new MigLayout(
-      "insets 0", // Layout
-      "[][][]", // Columns
-      "[][]" // Rows
-    ));
+    panel = Panels.newPanel(
+      new MigLayout(
+        "insets 0", // Layout
+        "[][][]", // Columns
+        "[][]" // Rows
+      ));
 
     // Create view components
     seedPhraseTextArea = TextBoxes.newEnterSeedPhrase();
@@ -84,49 +87,42 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     seedPhraseTextArea.setText(model.displaySeedPhrase());
 
     // Bind document listener to allow instant update of UI to mismatched seed phrase
-    seedPhraseTextArea.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        updateModelFromView();
-      }
+    seedPhraseTextArea.getDocument().addDocumentListener(
+      new DocumentListener() {
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+          updateModelFromView();
+        }
 
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        updateModelFromView();
-      }
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+          updateModelFromView();
+        }
 
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        updateModelFromView();
-      }
-    });
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+          updateModelFromView();
+        }
+      });
 
     // Bind document listener to allow instant update of UI to invalid date
-    seedTimestampText.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        updateModelFromView();
-      }
+    seedTimestampText.getDocument().addDocumentListener(
+      new DocumentListener() {
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+          updateModelFromView();
+        }
 
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        updateModelFromView();
-      }
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+          updateModelFromView();
+        }
 
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        updateModelFromView();
-      }
-    });
-
-    restoreAsTrezor = new JCheckBox("Restore as Trezor soft wallet");
-    final EnterSeedPhraseModel finalModel = model;
-    restoreAsTrezor.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        finalModel.setRestoreAsTrezor(((JCheckBox)e.getSource()).isSelected());
-      }
-    });
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+          updateModelFromView();
+        }
+      });
 
     // Create a new verification status panel (initially invisible)
     verificationStatusLabel = Labels.newVerificationStatus(panelName + componentName, true);
@@ -146,8 +142,11 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
       panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink,wrap");
     }
 
+    // Wallet type selector
+    restoreAsTrezor = ComboBoxes.newRestoreWalletTypeComboBox(getSelectWalletTypeAction());
     if (!showTimestamp && showSeedPhrase) {
-      panel.add(restoreAsTrezor, "span 3,wrap");
+      panel.add(Labels.newValueLabel(Languages.safeText(MessageKey.SELECT_WALLET_TYPE)), "wmax 150");
+      panel.add(restoreAsTrezor, "span 2,wrap");
     }
 
     panel.add(verificationStatusLabel, "span 3,push,wrap");
@@ -158,7 +157,12 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
   @Override
   public void requestInitialFocus() {
-    seedTimestampText.requestFocusInWindow();
+
+    if (showTimestamp) {
+      seedTimestampText.requestFocusInWindow();
+    } else if (showSeedPhrase) {
+      seedPhraseTextArea.requestFocusInWindow();
+    }
   }
 
   @Override
@@ -183,7 +187,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
       }
     }
 
-    getModel().get().setRestoreAsTrezor(restoreAsTrezor.isSelected());
+    getModel().get().setRestoreAsTrezor(restoreAsTrezor.getSelectedIndex() == 1);
 
   }
 
@@ -245,6 +249,21 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
       }
 
     };
+  }
+
+  /**
+   * @return A new action for selecting the wallet type for the seed phrase (BIP32, BIP44 etc)
+   */
+  private ActionListener getSelectWalletTypeAction() {
+
+    return new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        getModel().get().setRestoreAsTrezor(((JComboBox) e.getSource()).getSelectedIndex() == 1);
+      }
+    };
+
   }
 
 }

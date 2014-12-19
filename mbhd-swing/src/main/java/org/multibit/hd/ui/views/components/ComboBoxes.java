@@ -754,6 +754,29 @@ public class ComboBoxes {
   }
 
   /**
+   * @param listener The action listener
+   *
+   * @return A new "restore wallet type" combo box
+   */
+  public static JComboBox<String> newRestoreWalletTypeComboBox(ActionListener listener) {
+
+    JComboBox<String> comboBox = newReadOnlyComboBox(new String[]{
+        Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP32),
+        Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP44)
+      });
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_WALLET_TYPE, MessageKey.SELECT_WALLET_TYPE_TOOLTIP);
+
+    comboBox.setSelectedIndex(0);
+
+    // Add the listener at the end to avoid false events
+    comboBox.addActionListener(listener);
+
+    return comboBox;
+  }
+
+  /**
    * @param comboBox The combo box to set the selection on
    * @param items    The items in the model
    * @param item     the item that should be matched using a case-sensitive "starts with" approach
@@ -776,5 +799,4 @@ public class ComboBoxes {
     }
 
   }
-
 }

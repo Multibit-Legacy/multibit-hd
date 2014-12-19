@@ -101,7 +101,8 @@ public class Labels {
    */
   public static JLabel newValueLabel(String value) {
 
-    JLabel label = new JLabel(value);
+    String htmlText = HtmlUtils.localiseWithLineBreaks(new String[]{value});
+    JLabel label = new JLabel(htmlText);
 
     // Apply theme
     label.setForeground(Themes.currentTheme.text());
@@ -524,7 +525,7 @@ public class Labels {
     label.setIcon(rotatingIcon);
 
     // Require a small border when placing in a central position
-    label.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+    label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
     return label;
   }
@@ -1303,9 +1304,18 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.RESTORE_TIMESTAMP_NOTE_1,
       MessageKey.RESTORE_TIMESTAMP_NOTE_2,
-      MessageKey.RESTORE_TIMESTAMP_NOTE_3,
-      MessageKey.RESTORE_TIMESTAMP_NOTE_4,
+      MessageKey.RESTORE_TIMESTAMP_NOTE_3
     }, new Object[][]{});
+  }
+
+  /**
+   * @return A new "restore password" note
+   */
+  public static JLabel newRestorePasswordNote() {
+
+    return newNoteLabel(new MessageKey[]{
+        MessageKey.RESTORE_PASSWORD_NOTE_1
+      }, new Object[][]{});
   }
 
   /**

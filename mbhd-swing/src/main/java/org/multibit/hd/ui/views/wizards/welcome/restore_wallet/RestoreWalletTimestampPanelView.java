@@ -6,6 +6,7 @@ import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
@@ -75,11 +76,14 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
     contentPanel.setLayout(new MigLayout(
       Panels.migLayout("fill,insets 0,hidemode 1"),
       "[]", // Column constraints
-      "[][]" // Row constraints
+      "[][][][]" // Row constraints
     ));
 
-    contentPanel.add(Panels.newRestoreFromTimestamp(), "wrap");
+    // Add to the panel
+    contentPanel.add(Labels.newRestoreFromTimestampNote(), "grow,push,wrap");
     contentPanel.add(enterSeedPhraseMaV.getView().newComponentPanel(), "wrap");
+
+    contentPanel.add(Labels.newRestorePasswordNote(), "grow,push,wrap");
     contentPanel.add(confirmPasswordMaV.getView().newComponentPanel(), "wrap");
 
   }

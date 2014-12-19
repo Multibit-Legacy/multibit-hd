@@ -537,6 +537,11 @@ public enum MessageKey {
   SELECT_LANGUAGE("select_language"),
   SELECT_LANGUAGE_TOOLTIP("select_language_tooltip"),
 
+  SELECT_WALLET_TYPE("select_wallet_type"),
+  SELECT_WALLET_TYPE_TOOLTIP("select_wallet_type_tooltip"),
+  SELECT_WALLET_TYPE_BIP32("select_wallet_type_bip32"),
+  SELECT_WALLET_TYPE_BIP44("select_wallet_type_bip44"),
+
   SEED_SIZE("seed_size"),
   SEED_SIZE_TOOLTIP("seed_size_tooltip"),
 
@@ -699,7 +704,8 @@ public enum MessageKey {
   RESTORE_TIMESTAMP_NOTE_1("restore_timestamp_note_1"),
   RESTORE_TIMESTAMP_NOTE_2("restore_timestamp_note_2"),
   RESTORE_TIMESTAMP_NOTE_3("restore_timestamp_note_3"),
-  RESTORE_TIMESTAMP_NOTE_4("restore_timestamp_note_4"),
+
+  RESTORE_PASSWORD_NOTE_1("restore_password_note_1"),
 
   PASSWORD_NOTE_1("password_note_1"),
 
