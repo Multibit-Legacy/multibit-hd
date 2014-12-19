@@ -144,7 +144,7 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
             MultiBitUI.NORMAL_ICON_SIZE
           );
           blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
-        } else {
+        } else if (blocksLeft > 0) {
           AwesomeDecorator.applyIcon(
             AwesomeIcon.EXCHANGE,
             blocksLeftStatusLabel,
@@ -153,7 +153,7 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
           );
           blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
         }
-
+        // blocksLeft can be -1 if no blocks left information is set
       }
     });
 
