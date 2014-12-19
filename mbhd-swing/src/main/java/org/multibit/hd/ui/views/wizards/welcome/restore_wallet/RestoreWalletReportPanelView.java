@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.welcome.restore_wallet;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -87,9 +88,6 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public void newPanelModel() {
 
-    String model = "TODO replace with a proper model";
-    setPanelModel(model);
-
     // No need to bind this to the wizard model
 
   }
@@ -158,7 +156,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public void afterShow() {
 
-    getFinishButton().requestFocusInWindow();
+    Preconditions.checkNotNull(restoreWalletExecutorService,"'restoreWalletExecutorService' must be present");
 
     restoreWalletExecutorService.submit(
       new Runnable() {
