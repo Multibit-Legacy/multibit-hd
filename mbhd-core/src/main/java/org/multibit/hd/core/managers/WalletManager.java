@@ -680,13 +680,20 @@ public enum WalletManager implements WalletEventListener {
     Preconditions.checkNotNull(encryptedWalletBytes, "'encryptedWalletBytes' must be present");
 
     log.trace("Encrypted wallet bytes after load:\n{}", Utils.HEX.encode(encryptedWalletBytes));
-    log.debug("Loaded bytes: {}", encryptedWalletBytes.length);
+    log.debug("Loaded the encrypted wallet bytes with length: {}", encryptedWalletBytes.length);
 
     KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(SCRYPT_SALT));
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
 
     // Decrypt the wallet bytes
     byte[] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, AES_INITIALISATION_VECTOR);
+
+    log.debug("Successfully decrypted wallet bytes, length is now: {}", decryptedBytes.length);
+    final int walletSampleLength = 128;
+    if (decryptedBytes.length >= walletSampleLength) {
+      log.debug("The first 128 bytes of the wallet are\n{}",  Utils.HEX.encode(Arrays.copyOfRange(decryptedBytes, 0, walletSampleLength)));
+      log.debug("The last 128 bytes of the wallet are\n{}",  Utils.HEX.encode(Arrays.copyOfRange(decryptedBytes, decryptedBytes.length - walletSampleLength, decryptedBytes.length)));
+    }
 
     InputStream inputStream = new ByteArrayInputStream(decryptedBytes);
 
@@ -696,7 +703,6 @@ public enum WalletManager implements WalletEventListener {
     Wallet wallet = new WalletProtobufSerializer().readWallet(BitcoinNetwork.current().get(), walletExtensions, walletProto);
     wallet.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
 
-    // Too much information is revealed for debug
     //System.out.println("WalletManager#loadWalletFromFile: Just loaded wallet:\n" + wallet.toString());
 
     return wallet;
