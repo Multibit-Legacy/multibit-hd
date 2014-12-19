@@ -114,41 +114,49 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
   }
 
   @Subscribe
-  public void onBitcoinNetworkChangedEvent(BitcoinNetworkChangedEvent event) {
+  public void onBitcoinNetworkChangedEvent(final BitcoinNetworkChangedEvent event) {
 
     // Avoid NPEs with early events
     if (!isInitialised()) {
       return;
     }
 
-    BitcoinNetworkSummary summary = event.getSummary();
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
 
-    // Peer count
-    Optional<Integer> peerCount = event.getSummary().getPeerCount();
-    if (peerCount.isPresent()) {
-      peerCountLabel.setText(String.valueOf(summary.getPeerCount().get()));
-      decoratePeerCountStatusLabel(summary.getPeerCount().get());
-    }
+        BitcoinNetworkSummary summary = event.getSummary();
 
-    // Blocks left
-    int blocksLeft = event.getSummary().getBlocksLeft();
-    if (blocksLeft == 0) {
-      AwesomeDecorator.applyIcon(
-              AwesomeIcon.CHECK,
-              blocksLeftStatusLabel,
-              true,
-              MultiBitUI.NORMAL_ICON_SIZE
-      );
-      blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
-    } else {
-      AwesomeDecorator.applyIcon(
-              AwesomeIcon.EXCHANGE,
-              blocksLeftStatusLabel,
-              true,
-              MultiBitUI.NORMAL_ICON_SIZE
-      );
-      blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
-    }
+        // Peer count
+        Optional<Integer> peerCount = event.getSummary().getPeerCount();
+        if (peerCount.isPresent()) {
+          peerCountLabel.setText(String.valueOf(summary.getPeerCount().get()));
+          decoratePeerCountStatusLabel(summary.getPeerCount().get());
+        }
+
+        // Blocks left
+        int blocksLeft = event.getSummary().getBlocksLeft();
+        if (blocksLeft == 0) {
+          AwesomeDecorator.applyIcon(
+            AwesomeIcon.CHECK,
+            blocksLeftStatusLabel,
+            true,
+            MultiBitUI.NORMAL_ICON_SIZE
+          );
+          blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
+        } else {
+          AwesomeDecorator.applyIcon(
+            AwesomeIcon.EXCHANGE,
+            blocksLeftStatusLabel,
+            true,
+            MultiBitUI.NORMAL_ICON_SIZE
+          );
+          blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
+        }
+
+      }
+    });
+
   }
 
   private void decoratePeerCountStatusLabel(int peerCount) {

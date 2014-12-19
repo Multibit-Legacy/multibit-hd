@@ -476,6 +476,7 @@ public enum WalletManager implements WalletEventListener {
         walletSummary = loadFromWalletDirectory(walletDirectory, password);
       } catch (WalletLoadException e) {
         // Failed to decrypt the existing wallet/backups
+        // TODO (JB) This causes an NPE later on load fails
         log.error("Failed to load from wallet directory.");
       }
     } else {
