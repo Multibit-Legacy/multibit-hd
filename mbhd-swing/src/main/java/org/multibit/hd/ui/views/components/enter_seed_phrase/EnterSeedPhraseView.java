@@ -61,6 +61,9 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
       componentName = ".seedphrase";
     }
 
+    // Initialise to BIP32
+    getModel().get().setRestoreAsTrezor(false);
+
   }
 
   @Override
@@ -186,8 +189,6 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
       }
     }
-
-    getModel().get().setRestoreAsTrezor(restoreAsTrezor.getSelectedIndex() == 1);
 
   }
 
