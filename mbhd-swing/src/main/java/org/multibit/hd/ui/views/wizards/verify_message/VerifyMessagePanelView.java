@@ -240,6 +240,6 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
     VerifyMessageResult verifyMessageResult = WalletManager.INSTANCE.verifyMessage(addressText, messageText, signatureText);
 
     reportLabel.setText(Languages.safeText(verifyMessageResult.getVerifyKey(), verifyMessageResult.getVerifyData()));
-    Labels.decorateStatusLabel(reportLabel, Optional.of(verifyMessageResult.isVerifyWasSuccessful()));
+    LabelDecorator.applyStatusLabel(reportLabel, Optional.of(verifyMessageResult.isVerifyWasSuccessful()));
   }
 }

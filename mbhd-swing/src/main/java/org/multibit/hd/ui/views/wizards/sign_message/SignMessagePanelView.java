@@ -233,7 +233,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
     SignMessageResult signMessageResult = WalletManager.INSTANCE.signMessage(addressText, messageText, walletPassword);
 
     reportLabel.setText(Languages.safeText(signMessageResult.getSignatureKey(), signMessageResult.getSignatureData()));
-    Labels.decorateStatusLabel(reportLabel, Optional.of(signMessageResult.isSigningWasSuccessful()));
+    LabelDecorator.applyStatusLabel(reportLabel, Optional.of(signMessageResult.isSigningWasSuccessful()));
 
     if (signMessageResult.isSigningWasSuccessful() && signMessageResult.getSignature().isPresent()) {
       signature.setText(signMessageResult.getSignature().get());

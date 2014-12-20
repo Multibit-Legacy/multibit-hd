@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
@@ -9,6 +10,7 @@ import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.utils.HtmlUtils;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -180,7 +182,7 @@ public class LabelDecorator {
         label,
         reportMessageKey.get()
       );
-      Labels.decorateStatusLabel(
+      applyStatusLabel(
         label,
         Optional.of(reportMessageStatus)
       );
@@ -190,6 +192,38 @@ public class LabelDecorator {
       label.setVisible(false);
     }
 
+
+  }
+
+  /**
+   * <p>Decorate a label with HTML-wrapped text respecting LTR/RTL to ensure line breaks occur predictably</p>
+   *
+   * @param label The label to decorate
+   * @param value The text to show (will be wrapped in HTML)
+   */
+  public static void applyWrappingLabel(JLabel label, String value) {
+
+    Preconditions.checkNotNull(value, "'value' must be present");
+
+    String htmlText = HtmlUtils.localiseWithLineBreaks(value.split("\n"));
+
+    label.setText(htmlText);
+
+  }
+
+  /**
+   * @param statusLabel The status label to decorate
+   * @param status      True for check, false for cross, absent for nothing (useful for initial message)
+   */
+  public static void applyStatusLabel(JLabel statusLabel, Optional<Boolean> status) {
+
+    if (status.isPresent()) {
+      if (status.get()) {
+        AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, statusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+      } else {
+        AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, statusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+      }
+    }
 
   }
 }

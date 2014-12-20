@@ -269,7 +269,7 @@ public class Labels {
       label = newBlankLabel();
     }
 
-    decorateStatusLabel(label, status);
+    LabelDecorator.applyStatusLabel(label, status);
 
     return label;
   }
@@ -293,41 +293,9 @@ public class Labels {
       label = newBlankLabel();
     }
 
-    decorateStatusLabel(label, status);
+    LabelDecorator.applyStatusLabel(label, status);
 
     return label;
-  }
-
-  /**
-   * <p>Decorate a label with HTML-wrapped text respecting LTR/RTL to ensure line breaks occur predictably</p>
-   *
-   * @param label The label to decorate
-   * @param value The text to show (will be wrapped in HTML)
-   */
-  public static void decorateWrappingLabel(JLabel label, String value) {
-
-    Preconditions.checkNotNull(value, "'value' must be present");
-
-    String htmlText = HtmlUtils.localiseWithLineBreaks(value.split("\n"));
-
-    label.setText(htmlText);
-
-  }
-
-  /**
-   * @param statusLabel The status label to decorate
-   * @param status      True for check, false for cross, absent for nothing (useful for initial message)
-   */
-  public static void decorateStatusLabel(JLabel statusLabel, Optional<Boolean> status) {
-
-    if (status.isPresent()) {
-      if (status.get()) {
-        AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, statusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-      } else {
-        AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, statusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-      }
-    }
-
   }
 
   /**
