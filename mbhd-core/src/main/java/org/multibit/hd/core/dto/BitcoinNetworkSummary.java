@@ -1,6 +1,7 @@
 package org.multibit.hd.core.dto;
 
 import com.google.common.base.Optional;
+import org.multibit.hd.core.services.CoreServices;
 
 /**
  * <p>Value object to provide the following to Core API:</p>
@@ -87,12 +88,13 @@ public class BitcoinNetworkSummary {
     */
    public static BitcoinNetworkSummary newChainDownloadCompleted() {
 
+     // Also include peer count so that that can be used by the footer if needed
      return new BitcoinNetworkSummary(
        BitcoinNetworkStatus.SYNCHRONIZED,
        RAGStatus.GREEN,
        Optional.of(CoreMessageKey.CHAIN_DOWNLOAD),
        Optional.of(new Object[]{100}),
-       Optional.<Integer>absent(),
+       Optional.of(CoreServices.getOrCreateBitcoinNetworkService().getNumberOfConnectedPeers()),
        100,
        0
      );

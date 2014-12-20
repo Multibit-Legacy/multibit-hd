@@ -59,6 +59,13 @@ public enum BitcoinSymbol {
    */
   UXBT("\u00b5XBT", "µXBT", new BigDecimal(1_000_000), 2),
   /**
+   * Subject of much debate (see <a href="http://www.reddit.com/r/Bitcoin/comments/1rmto3/its_bits/">this Reddit article</a>)
+   * However, a "bit" is already used for measuring data transmission and reusing it here would be confusing
+   *
+   * Jim - added in due to popular demand
+   */
+  BITS("bits", "bits", new BigDecimal(1_000_000), 2),
+  /**
    * The <a href="http://bitcoinsymbol.org">Ecogex alternative symbol</a>
    */
   ECO("\u0243", "\u0243", BigDecimal.ONE, 8),
@@ -70,11 +77,7 @@ public enum BitcoinSymbol {
    * A micro with the Ecogex alternative symbol
    */
   UECO("\u00b5\u0243", "\u00b5\u0243", new BigDecimal(1_000_000), 2),
-  /**
-   * Subject of much debate (see <a href="http://www.reddit.com/r/Bitcoin/comments/1rmto3/its_bits/">this Reddit article</a>)
-   * However, a "bit" is already used for measuring data transmission and reusing it here would be confusing
-   */
-  //BIT,
+
   /**
    * The smallest possible unit in the current version of Bitcoin
    */

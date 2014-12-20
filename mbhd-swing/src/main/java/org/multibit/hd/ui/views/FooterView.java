@@ -7,11 +7,13 @@ import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ProgressChangedEvent;
 import org.multibit.hd.ui.events.view.SystemStatusChangedEvent;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.AccessibilityDecorator;
 import org.multibit.hd.ui.views.components.Labels;
@@ -147,6 +149,9 @@ public class FooterView extends AbstractView {
               break;
             case GREEN:
               statusIcon.setForeground(Themes.currentTheme.statusGreen());
+
+              // Show the peer count directly if synced
+              statusLabel.setText(Languages.safeText(CoreMessageKey.PEER_COUNT, CoreServices.getOrCreateBitcoinNetworkService().getNumberOfConnectedPeers()));
               break;
             case EMPTY:
               // The event did not specify a RAG status
@@ -219,7 +224,6 @@ public class FooterView extends AbstractView {
 
             // Schedule the new hide
             hideProgressFutures.add(scheduleHideProgressBar());
-
           }
 
         }
