@@ -271,7 +271,7 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
     MessageKey messageKey = getMessageKeyForAmount(paymentData);
 
     if (amountFiat != null && amountFiat.getCurrency().isPresent()) {
-      amountFiatLabel = Labels.newValueLabel(Languages.safeText(messageKey) + " " + amountFiat.getCurrency().get().getCurrencyCode());
+      amountFiatLabel = Labels.newValueLabel(Languages.safeText(messageKey) + "  " + amountFiat.getCurrency().get().getCurrencyCode());
     } else {
       amountFiatLabel = Labels.newValueLabel(Languages.safeText(messageKey));
     }

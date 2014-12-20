@@ -45,7 +45,7 @@ public class UseTrezorRequestWipeDevicePanelView extends AbstractWizardPanelView
   public void newPanelModel() {
 
     // Bind it to the wizard model in case of failure
-    getWizardModel().setRequestWipeDevicePanelView(this);
+    //getWizardModel().setRequestWipeDevicePanelView(this);
 
   }
 
@@ -106,6 +106,7 @@ public class UseTrezorRequestWipeDevicePanelView extends AbstractWizardPanelView
         showReportView = true;
       }
     }
+    getWizardModel().setReportMessageKey(operationKey);
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -132,7 +133,7 @@ public class UseTrezorRequestWipeDevicePanelView extends AbstractWizardPanelView
     });
 
     // Update the wizard model so we can change state
-    getWizardModel().setShowReportView(showReportView);
+    //getWizardModel().setShowReportView(showReportView);
 
     if (!showReportView) {
 

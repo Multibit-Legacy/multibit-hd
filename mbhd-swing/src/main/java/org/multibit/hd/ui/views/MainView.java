@@ -283,7 +283,7 @@ public class MainView extends JFrame {
     MigLayout layout = new MigLayout(
       Panels.migXYLayout(),
       "[]", // Columns
-      "0[]0[]0[]"  // Rows
+      "0[]0[]0[33:33:33]"  // Rows
     );
     JPanel mainPanel = Panels.newPanel(layout);
 
@@ -360,7 +360,7 @@ public class MainView extends JFrame {
     // Add the supporting panels
     mainPanel.add(headerView.getContentPanel(), "growx,shrink,wrap"); // Ensure header size remains fixed
     mainPanel.add(splitPane, "grow,push,wrap");
-    mainPanel.add(footerView.getContentPanel(), "growx,shrink"); // Ensure footer size remains fixed
+    mainPanel.add(footerView.getContentPanel(), "growx, growy"); // Ensure footer size remains fixed using row height sizing
 
     return mainPanel;
   }

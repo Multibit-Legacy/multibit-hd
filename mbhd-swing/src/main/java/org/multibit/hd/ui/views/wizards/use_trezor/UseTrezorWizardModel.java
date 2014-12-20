@@ -4,8 +4,6 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -39,14 +37,9 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   private static final Logger log = LoggerFactory.getLogger(UseTrezorWizardModel.class);
 
   /**
-   * Wallet creation has its own executor service
-   */
-  private final ListeningExecutorService trezorCreateWalletService = SafeExecutors.newSingleThreadExecutor("trezor-wallet-create");
-
-  /**
    * The current selection option as a state
    */
-  private UseTrezorState currentSelection = UseTrezorState.USE_TREZOR_WALLET;
+  private UseTrezorState currentSelection = UseTrezorState.BUY_TREZOR;
 
   /**
    * The features of the attached Trezor
@@ -61,11 +54,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   private UseTrezorRequestCipherKeyPanelView requestCipherKeyPanelView;
 
   private UseTrezorReportPanelView reportPanelView;
-  private UseTrezorConfirmWipeDevicePanelView confirmWipeDevicePanelView;
-  private UseTrezorRequestWipeDevicePanelView requestWipeDevicePanelView;
-  private boolean showReportView;
-  private MessageKey reportMessageKey;
-  private boolean reportMessageStatus;
 
   public UseTrezorWizardModel(UseTrezorState useTrezorState) {
     super(useTrezorState);
@@ -84,33 +72,8 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     this.enterPinPanelView = enterPinPanelView;
   }
 
-
-  public UseTrezorRequestCipherKeyPanelView getRequestCipherKeyPanelView() {
-    return requestCipherKeyPanelView;
-  }
-
   public void setRequestCipherKeyPanelView(UseTrezorRequestCipherKeyPanelView requestCipherKeyPanelView) {
     this.requestCipherKeyPanelView = requestCipherKeyPanelView;
-  }
-
-  public UseTrezorReportPanelView getReportPanelView() {
-    return reportPanelView;
-  }
-
-  public void setReportPanelView(UseTrezorReportPanelView reportPanelView) {
-    this.reportPanelView = reportPanelView;
-  }
-
-  public void setConfirmWipeDevicePanelView(UseTrezorConfirmWipeDevicePanelView confirmWipeDevicePanelView) {
-    this.confirmWipeDevicePanelView = confirmWipeDevicePanelView;
-  }
-
-  public void setRequestWipeDevicePanelView(UseTrezorRequestWipeDevicePanelView requestWipeDevicePanelView) {
-    this.requestWipeDevicePanelView = requestWipeDevicePanelView;
-  }
-
-  public void setShowReportView(boolean showReportView) {
-    this.showReportView = showReportView;
   }
 
   @Override
@@ -234,8 +197,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       case CONFIRM_WIPE_TREZOR:
         // Indicate a successful wipe
         state=UseTrezorState.USE_TREZOR_REPORT_PANEL;
-        reportMessageKey = MessageKey.TREZOR_WIPE_DEVICE_SUCCESS;
-        reportMessageStatus = true;
         break;
       default:
         // TODO Fill in the other states and provide success feedback
@@ -260,8 +221,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       case CONFIRM_WIPE_TREZOR:
         // Indicate a cancelled wipe
         state=UseTrezorState.USE_TREZOR_REPORT_PANEL;
-        reportMessageKey = MessageKey.TREZOR_WIPE_DEVICE_FAILURE;
-        reportMessageStatus = false;
         break;
       default:
         // TODO Fill in the other states and provide failure feedback
@@ -370,6 +329,9 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
           // We now wiped the device so throw a ComponentChangedEvent for the UI to update
           ViewEvents.fireComponentChangedEvent(UseTrezorState.REQUEST_WIPE_TREZOR.name(), Optional.absent());
 
+          setReportMessageKey(MessageKey.TREZOR_WIPE_DEVICE_SUCCESS);
+          setReportMessageStatus(true);
+
         }
 
         @Override
@@ -377,6 +339,9 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
           // Have a failure
           t.printStackTrace();
+
+          setReportMessageKey(MessageKey.TREZOR_WIPE_DEVICE_FAILURE);
+          setReportMessageStatus(false);
         }
       });
 
@@ -412,9 +377,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
         @Override
         public void onSuccess(Boolean result) {
-
           // Do nothing - message was successfully relayed to the device
-
         }
 
         @Override
@@ -429,7 +392,5 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
         }
       }
     );
-
   }
-
 }
