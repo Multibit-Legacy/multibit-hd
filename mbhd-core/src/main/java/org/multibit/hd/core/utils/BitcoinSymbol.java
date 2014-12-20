@@ -78,7 +78,7 @@ public enum BitcoinSymbol {
    * Jim - added in due to popular demand
    */
   BITS("bits", "bits", new BigDecimal(1_000_000), 2),
-  
+
   /**
    * The smallest possible unit in the current version of Bitcoin
    */
