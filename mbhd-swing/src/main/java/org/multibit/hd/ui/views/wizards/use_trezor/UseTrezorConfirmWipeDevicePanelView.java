@@ -43,7 +43,7 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
   public void newPanelModel() {
 
     // Bind it to the wizard model in case of failure
-    getWizardModel().setConfirmWipeDevicePanelView(this);
+    //getWizardModel().setConfirmWipeDevicePanelView(this);
 
   }
 

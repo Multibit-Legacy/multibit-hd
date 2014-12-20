@@ -28,7 +28,7 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   /**
    * The hardware wallet report message key
    */
-  private Optional<MessageKey> reportMessageKey;
+  private Optional<MessageKey> reportMessageKey = Optional.absent();
   /**
    * The hardware wallet message status (true if successful, false if failed)
    */
