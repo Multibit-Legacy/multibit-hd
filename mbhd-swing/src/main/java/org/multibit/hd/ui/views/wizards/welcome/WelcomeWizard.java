@@ -149,8 +149,7 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
         wizardPanelView.updateFromComponentModels(Optional.absent());
 
         switch (getWizardModel().getState()) {
-
-          case SELECT_EXISTING_WALLET:
+          case WELCOME_SELECT_WALLET:
             // Treat as a Finish
             hide(getWizardModel().getPanelName(), false);
             break;

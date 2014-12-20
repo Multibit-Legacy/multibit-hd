@@ -145,6 +145,9 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
       case WELCOME_SELECT_WALLET:
         state = selectWalletChoice;
         break;
+      case SELECT_WALLET_HARDWARE:
+        state = selectWalletChoice;
+        break;
       case CREATE_WALLET_PREPARATION:
         state = CREATE_WALLET_SELECT_BACKUP_LOCATION;
         break;
@@ -222,11 +225,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         break;
       case RESTORE_WALLET_REPORT:
         throw new IllegalStateException("'Next' is not permitted here");
-      case SELECT_WALLET_HARDWARE:
-        state = selectWalletChoice;
-        break;
-      case SELECT_EXISTING_WALLET:
-        break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
     }

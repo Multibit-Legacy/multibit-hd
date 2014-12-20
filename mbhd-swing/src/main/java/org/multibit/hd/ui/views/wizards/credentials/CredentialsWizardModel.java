@@ -15,7 +15,6 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -300,10 +299,10 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   public void requestCipherKey() {
 
     // Communicate with the device off the EDT
-    hardwareWalletRequestService.submit(
-      new Runnable() {
+    ListenableFuture<Boolean> requestCipherKeyFuture = hardwareWalletRequestService.submit(
+      new Callable<Boolean>() {
         @Override
-        public void run() {
+        public Boolean call() {
           log.debug("Performing a request cipher key to Trezor");
 
           // Provide a short delay to allow UI to update
@@ -335,8 +334,29 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
           }
 
+          // Completed
+          return true;
+
         }
       });
+    Futures.addCallback(
+      requestCipherKeyFuture, new FutureCallback<Boolean>() {
+
+        @Override
+        public void onSuccess(Boolean result) {
+
+          // Do nothing - message was successfully relayed to the device
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          // Failed to send the message
+          requestCipherKeyPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
+        }
+      }
+    );
 
   }
 
@@ -378,12 +398,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         @Override
         public void onFailure(Throwable t) {
 
-          // Device failed to receive the message
-
-          getEnterPinPanelView().setPinStatus(false, true);
-
-          // Should not have seen an error
-          ExceptionHandler.handleThrowable(t);
+          // Failed to send the message
+          enterPinPanelView.failedPin();
         }
       }
     );
@@ -391,7 +407,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   }
 
   /**
-   * TODO Pull this (and others) up into base class and use the ListenableFuture for responses
    * Request the root node for the Trezor HD wallet as a deterministic hierarchy
    */
   public void requestRootNode() {
@@ -533,12 +548,12 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
               @Override
               public void run() {
 
-                enterPasswordPanelView.enableForFailedUnlock();
+                confirmCipherKeyPanelView.incorrectEntropy();
+                confirmCipherKeyPanelView.enableForFailedUnlock();
+
               }
             });
 
-          // Should not have seen an error
-          ExceptionHandler.handleThrowable(t);
         }
       }
     );
@@ -632,8 +647,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
               }
             });
 
-          // Should not have seen an error
-          ExceptionHandler.handleThrowable(t);
         }
       }
     );

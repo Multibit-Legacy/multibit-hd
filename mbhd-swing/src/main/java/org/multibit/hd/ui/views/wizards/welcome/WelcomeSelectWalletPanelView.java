@@ -75,7 +75,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
         getWizardModel().getMode(),
         this,
         currentSelection.name(), // Relies on create being default
-        SELECT_EXISTING_WALLET.name(),
+        WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
         RESTORE_PASSWORD_SEED_PHRASE.name(),
         RESTORE_WALLET_SEED_PHRASE.name()
       ), "wrap");

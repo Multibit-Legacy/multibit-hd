@@ -1,10 +1,6 @@
 package org.multibit.hd.ui.views.wizards.credentials;
 
 import com.google.common.base.Optional;
-import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.utils.Dates;
-import org.multibit.hd.hardware.core.HardwareWalletService;
-import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
@@ -60,26 +56,8 @@ public class CredentialsWizard extends AbstractHardwareWalletWizard<CredentialsW
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        // See if the attached trezor is initialised - no need to perform a cancel if there is no wallet
-        final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-        Optional<Features> features = hardwareWalletService.get().getContext().getFeatures();
-        boolean trezorIsInitialised = features.isPresent() && features.get().isInitialized();
-
-        switch (getWizardModel().getState()) {
-
-          case CREDENTIALS_REQUEST_CIPHER_KEY:
-          case CREDENTIALS_ENTER_PIN:
-            if (trezorIsInitialised) {
-              // Cancel the current Trezor operation
-
-              // Set the threshold
-              getWizardModel().setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(2));
-
-              // Cancel the operation
-              hardwareWalletService.get().requestCancel();
-            }
-            break;
-        }
+        // Ensure we cancel any ongoing hardware wallet operations
+        getWizardModel().requestCancel();
 
         // The UI will lock up during handover so prevent further events
         JButton source = (JButton) e.getSource();

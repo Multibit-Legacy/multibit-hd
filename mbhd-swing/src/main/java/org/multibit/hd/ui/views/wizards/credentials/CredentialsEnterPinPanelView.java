@@ -216,7 +216,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   /**
    * Show the PIN entry as incorrect
    */
-  public void incorrectPin() {
+  public void failedPin() {
 
     setPinStatus(false, true);
   }

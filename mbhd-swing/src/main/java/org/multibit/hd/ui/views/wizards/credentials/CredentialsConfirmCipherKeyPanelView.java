@@ -29,6 +29,7 @@ import javax.swing.*;
 public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelView<CredentialsWizardModel, CredentialsConfirmCipherKeyPanelModel> {
 
   private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
+  private MessageKey operationText;
 
   /**
    * @param wizard    The wizard managing the states

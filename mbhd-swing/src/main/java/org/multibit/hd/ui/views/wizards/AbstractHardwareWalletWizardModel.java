@@ -1,12 +1,22 @@
 package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.base.Optional;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nullable;
+import java.util.concurrent.Callable;
 
 /**
  * <p>Abstract base class wizard model:</p>
@@ -20,10 +30,12 @@ import org.multibit.hd.ui.languages.MessageKey;
  */
 public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizardModel<S> {
 
+  private static final Logger log = LoggerFactory.getLogger(AbstractHardwareWalletWizardModel.class);
+
   /**
-   * Trezor requests have their own executor service
+   * Trezor requests have their own executor service which is shared across all wizards
    */
-  protected final ListeningExecutorService hardwareWalletRequestService = SafeExecutors.newSingleThreadExecutor("trezor-requests");
+  protected static final ListeningExecutorService hardwareWalletRequestService = SafeExecutors.newSingleThreadExecutor("trezor-requests");
 
   /**
    * The hardware wallet report message key
@@ -252,4 +264,64 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   public void setReportMessageStatus(boolean reportMessageStatus) {
     this.reportMessageStatus = reportMessageStatus;
   }
+
+  /**
+   * Request cancellation of current operation
+   * Only sent if the hardware wallet is present
+   */
+  public void requestCancel() {
+
+    // Attempt the cancellation operation on a separate thread to avoid UI lockup
+    // if a hardware wallet is not present
+
+    // Start the request
+    ListenableFuture future = hardwareWalletRequestService.submit(
+      new Callable<Boolean>() {
+
+        @Override
+        public Boolean call() throws Exception {
+
+          // See if the attached trezor is initialised - no need to perform a cancel if there is no wallet
+          final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          if (hardwareWalletService.isPresent()) {
+
+            // Cancel the current Trezor operation
+
+            // The Trezor should respond quickly to a cancel
+            setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
+
+            log.debug("Sending 'request cancel'");
+
+            // Cancel the operation
+            hardwareWalletService.get().requestCancel();
+
+            log.debug("Request was successful");
+
+          }
+
+          // Must have successfully sent the message to be here
+          return true;
+
+        }
+
+      });
+    Futures.addCallback(
+      future, new FutureCallback() {
+        @Override
+        public void onSuccess(@Nullable Object result) {
+
+          // We successfully made the request so wait for the result
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          log.warn("Hardware wallet cancel failed", t);
+
+        }
+
+      });
+  }
+
 }
