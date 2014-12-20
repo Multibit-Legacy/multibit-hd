@@ -188,6 +188,7 @@ public enum BitcoinSymbol {
         return "21,000,000,000.00000".length();
       case UICON:
       case UBTC:
+      case BITS:
       case UXBT:
       case UECO:
         return "21,000,000,000,000.00".length();
