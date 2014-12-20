@@ -85,15 +85,15 @@ public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinW
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
     // Use the outcome from the previous operations to decorate the existing status label
-    final MessageKey reportMessageKey = getWizardModel().getReportMessageKey();
-    reportStatusLabel.setText(Languages.safeText(reportMessageKey));
+    final Optional<MessageKey> reportMessageKey = getWizardModel().getReportMessageKey();
+    reportStatusLabel.setText(Languages.safeText(reportMessageKey.get()));
     AccessibilityDecorator.apply(
       reportStatusLabel,
-      reportMessageKey
+      reportMessageKey.get()
     );
     Labels.decorateStatusLabel(
       reportStatusLabel,
-      Optional.of(getWizardModel().isReportMessageStatus())
+      Optional.of(getWizardModel().getReportMessageStatus())
     );
     reportStatusLabel.setVisible(true);
 

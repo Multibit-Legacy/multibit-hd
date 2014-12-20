@@ -1,10 +1,12 @@
 package org.multibit.hd.ui.views.wizards;
 
+import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.ui.languages.MessageKey;
 
 /**
  * <p>Abstract base class wizard model:</p>
@@ -22,6 +24,15 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
    * Trezor requests have their own executor service
    */
   protected final ListeningExecutorService hardwareWalletRequestService = SafeExecutors.newSingleThreadExecutor("trezor-requests");
+
+  /**
+   * The hardware wallet report message key
+   */
+  private Optional<MessageKey> reportMessageKey;
+  /**
+   * The hardware wallet message status (true if successful, false if failed)
+   */
+  private boolean reportMessageStatus = false;
 
   /**
    * Ignore a device event occurring before this time to simplify the logic
@@ -212,5 +223,33 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
    */
   public void setIgnoreHardwareWalletEventsThreshold(DateTime ignoreHardwareWalletEventsThreshold) {
     this.ignoreHardwareWalletEventsThreshold = ignoreHardwareWalletEventsThreshold;
+  }
+
+  /**
+   * @return The report panel view message key for the hardware wallet operation
+   */
+  public Optional<MessageKey> getReportMessageKey() {
+    return reportMessageKey;
+  }
+
+  /**
+   * @param reportMessageKey The report panel view message key for the hardware wallet operation
+   */
+  public void setReportMessageKey(MessageKey reportMessageKey) {
+    this.reportMessageKey = Optional.fromNullable(reportMessageKey);
+  }
+
+  /**
+   * @return True if the operation was successful
+   */
+  public boolean getReportMessageStatus() {
+    return reportMessageStatus;
+  }
+
+  /**
+   * @param reportMessageStatus True if the operation was successful
+   */
+  public void setReportMessageStatus(boolean reportMessageStatus) {
+    this.reportMessageStatus = reportMessageStatus;
   }
 }

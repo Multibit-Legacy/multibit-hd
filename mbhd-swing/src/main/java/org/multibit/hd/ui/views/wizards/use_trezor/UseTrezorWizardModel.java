@@ -432,19 +432,4 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
   }
 
-  public MessageKey getReportMessageKey() {
-    return reportMessageKey;
-  }
-
-  public void setReportMessageKey(MessageKey reportMessageKey) {
-    this.reportMessageKey = reportMessageKey;
-  }
-
-  public boolean isReportMessageStatus() {
-    return reportMessageStatus;
-  }
-
-  public void setReportMessageStatus(boolean reportMessageStatus) {
-    this.reportMessageStatus = reportMessageStatus;
-  }
 }

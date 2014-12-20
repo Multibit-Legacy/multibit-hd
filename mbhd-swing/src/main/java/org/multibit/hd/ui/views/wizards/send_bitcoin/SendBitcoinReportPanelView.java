@@ -143,7 +143,9 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+
         getFinishButton().requestFocusInWindow();
+
         if (lastTransactionCreationEvent != null) {
           onTransactionCreationEvent(lastTransactionCreationEvent);
           lastTransactionCreationEvent = null;
@@ -155,6 +157,11 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
         if (lastTransactionSeenEvent != null) {
           onTransactionSeenEvent(lastTransactionSeenEvent);
           lastTransactionSeenEvent = null;
+        }
+
+        // Check for cancellation
+        if (getWizardModel().getReportMessageKey().isPresent()) {
+
         }
       }
     });

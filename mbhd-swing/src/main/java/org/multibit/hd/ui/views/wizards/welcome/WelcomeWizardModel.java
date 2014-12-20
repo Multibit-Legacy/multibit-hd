@@ -113,8 +113,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private String mostRecentPin;
   private CreateTrezorWalletConfirmCreateWalletPanelView trezorConfirmCreateWalletPanelView;
   private CreateTrezorWalletConfirmWordPanelView trezorConfirmWordPanelView;
-  private MessageKey reportMessageKey;
-  private boolean reportMessageStatus;
 
   private int trezorWordCount = 0;
   private boolean trezorChecking = false;
@@ -366,8 +364,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
             case TREZOR_CREATE_WALLET_ENTER_NEW_PIN:
             case TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN:
               state = TREZOR_CREATE_WALLET_REPORT;
-              reportMessageKey = MessageKey.TREZOR_INCORRECT_PIN_FAILURE;
-              reportMessageStatus = false;
+              setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+              setReportMessageStatus(false);
               break;
             default:
               throw new IllegalStateException("Should not reach here from " + state.name());
@@ -418,8 +416,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
           switch (state) {
             case TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET:
               state = TREZOR_CREATE_WALLET_REPORT;
-              reportMessageKey = MessageKey.TREZOR_INCORRECT_PIN_FAILURE;
-              reportMessageStatus = false;
+              setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+              setReportMessageStatus(false);
               break;
             default:
               throw new IllegalStateException("Should not reach here from " + state.name());
@@ -505,8 +503,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
       case TREZOR_CREATE_WALLET_CONFIRM_WORD:
         // User does not want to create a new wallet
         state = TREZOR_CREATE_WALLET_REPORT;
-        reportMessageKey = MessageKey.USE_TREZOR_REPORT_MESSAGE_SUCCESS;
-        reportMessageStatus = true;
+        setReportMessageKey(MessageKey.USE_TREZOR_REPORT_MESSAGE_SUCCESS);
+        setReportMessageStatus(true);
         break;
       default:
     }
@@ -599,8 +597,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
           // Have a failure
           state = TREZOR_CREATE_WALLET_REPORT;
-          reportMessageKey = MessageKey.TREZOR_FAILURE_OPERATION;
-          reportMessageStatus = false;
+          setReportMessageKey(MessageKey.TREZOR_FAILURE_OPERATION);
+          setReportMessageStatus(false);
         }
 
       });
@@ -953,19 +951,4 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     this.trezorConfirmWordPanelView = trezorConfirmWordPanelView;
   }
 
-  public MessageKey getReportMessageKey() {
-    return reportMessageKey;
-  }
-
-  public void setReportMessageKey(MessageKey reportMessageKey) {
-    this.reportMessageKey = reportMessageKey;
-  }
-
-  public boolean getReportMessageStatus() {
-    return reportMessageStatus;
-  }
-
-  public void setReportMessageStatus(boolean reportMessageStatus) {
-    this.reportMessageStatus = reportMessageStatus;
-  }
 }

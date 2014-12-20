@@ -56,34 +56,10 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
   private ChangePinRequestRemovePinPanelView requestRemovePinPanelView;
 
   /**
-   * The "enter current PIN" view
-   */
-  private ChangePinEnterCurrentPinPanelView enterCurrentPinPanelView;
-
-  /**
-   * The "enter new PIN" view
-   */
-  private ChangePinEnterNewPinPanelView enterNewPinPanelView;
-
-  /**
-   * The "confirm new PIN" view
-   */
-  private ChangePinConfirmNewPinPanelView confirmNewPinPanelView;
-
-  /**
    * The most recent PIN entered by the user
    */
   private String mostRecentPin;
 
-  /**
-   * True if the report message indicates a success
-   */
-  private boolean reportMessageStatus = false;
-
-  /**
-   * The report message key
-   */
-  private MessageKey reportMessageKey;
   /**
    * True if the device currently has PIN protection
    */
@@ -120,37 +96,11 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
     this.requestRemovePinPanelView = requestRemovePinPanelView;
   }
 
-  public void setEnterCurrentPinPanelView(ChangePinEnterCurrentPinPanelView enterCurrentPinPanelView) {
-    this.enterCurrentPinPanelView = enterCurrentPinPanelView;
-  }
-
-  public void setEnterNewPinPanelView(ChangePinEnterNewPinPanelView enterNewPinPanelView) {
-    this.enterNewPinPanelView = enterNewPinPanelView;
-  }
-
-  public void setConfirmNewPinPanelView(ChangePinConfirmNewPinPanelView confirmNewPinPanelView) {
-    this.confirmNewPinPanelView = confirmNewPinPanelView;
-  }
-
   /**
    * @param removePin True if the user selected the "remove PIN" option
    */
   public void setRemovePin(boolean removePin) {
     this.removePin = removePin;
-  }
-
-  /**
-   * @return True if the report message indicates success
-   */
-  public boolean isReportMessageStatus() {
-    return reportMessageStatus;
-  }
-
-  /**
-   * @return The key to the report message
-   */
-  public MessageKey getReportMessageKey() {
-    return reportMessageKey;
   }
 
   /**
@@ -406,8 +356,8 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
             case ENTER_NEW_PIN:
             case CONFIRM_NEW_PIN:
               state = ChangePinState.SHOW_REPORT;
-              reportMessageKey = MessageKey.TREZOR_INCORRECT_PIN_FAILURE;
-              reportMessageStatus = false;
+              setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+              setReportMessageStatus(false);
               break;
             default:
               throw new IllegalStateException("Should not reach here from " + state.name());
@@ -428,8 +378,8 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
       case ENTER_CURRENT_PIN:
         if (removePin) {
           state = ChangePinState.SHOW_REPORT;
-          reportMessageKey = MessageKey.TREZOR_REMOVE_PIN_SUCCESS;
-          reportMessageStatus = true;
+          setReportMessageKey(MessageKey.TREZOR_REMOVE_PIN_SUCCESS);
+          setReportMessageStatus(true);
         }
         // Update the features for next time
         CoreServices.getOrCreateHardwareWalletService().get().getContext().resetToAttached();
@@ -439,8 +389,8 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
         break;
       case CONFIRM_NEW_PIN:
         state = ChangePinState.SHOW_REPORT;
-        reportMessageKey = MessageKey.TREZOR_CHANGE_PIN_SUCCESS;
-        reportMessageStatus = true;
+        setReportMessageKey(MessageKey.TREZOR_CHANGE_PIN_SUCCESS);
+        setReportMessageStatus(true);
         // Update the features for next time
         CoreServices.getOrCreateHardwareWalletService().get().getContext().resetToAttached();
         break;
@@ -470,8 +420,8 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
       case ENTER_NEW_PIN:
       case CONFIRM_NEW_PIN:
         state = ChangePinState.SHOW_REPORT;
-        reportMessageKey = MessageKey.TREZOR_INCORRECT_PIN_FAILURE;
-        reportMessageStatus = false;
+        setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+        setReportMessageStatus(false);
         break;
       default:
         throw new IllegalStateException("Should not reach here from " + state.name());

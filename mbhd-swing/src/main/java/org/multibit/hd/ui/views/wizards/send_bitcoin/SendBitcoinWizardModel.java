@@ -549,8 +549,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     switch (state) {
 
       case SEND_CONFIRM_TREZOR:
-        // TODO Fill out the error report
         state = SendBitcoinState.SEND_REPORT;
+
         break;
       default:
         throw new IllegalStateException("Should not reach here from " + state.name());

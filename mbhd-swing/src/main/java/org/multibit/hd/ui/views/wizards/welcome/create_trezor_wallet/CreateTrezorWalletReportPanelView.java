@@ -107,13 +107,13 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
     // Use the outcome from the previous operations to decorate the existing status label
-    final MessageKey reportMessageKey = getWizardModel().getReportMessageKey();
+    final Optional<MessageKey> reportMessageKey = getWizardModel().getReportMessageKey();
     final boolean reportMessageStatus = getWizardModel().getReportMessageStatus();
 
-    reportStatusLabel.setText(Languages.safeText(reportMessageKey));
+    reportStatusLabel.setText(Languages.safeText(reportMessageKey.get()));
     AccessibilityDecorator.apply(
       reportStatusLabel,
-      reportMessageKey
+      reportMessageKey.get()
     );
     Labels.decorateStatusLabel(
       reportStatusLabel,
