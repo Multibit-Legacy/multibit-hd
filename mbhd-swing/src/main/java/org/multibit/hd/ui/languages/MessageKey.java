@@ -421,6 +421,8 @@ public enum MessageKey {
   TREZOR_INCORRECT_PIN_FAILURE("trezor_incorrect_pin_failure"),
   TREZOR_WIPE_DEVICE_FAILURE("trezor_wipe_device_failure"),
 
+  TREZOR_SIGN_FAILURE("trezor_sign_failure"),
+
   // Trezor display text
   TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY("trezor_encrypt_multibit_hd_unlock_display"),
   TREZOR_ADD_PIN_DISPLAY("trezor_add_pin_display"),

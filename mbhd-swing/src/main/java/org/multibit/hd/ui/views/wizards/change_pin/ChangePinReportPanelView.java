@@ -3,9 +3,8 @@ package org.multibit.hd.ui.views.wizards.change_pin;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.AccessibilityDecorator;
+import org.multibit.hd.ui.views.components.LabelDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -84,18 +83,7 @@ public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinW
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
-    // Use the outcome from the previous operations to decorate the existing status label
-    final Optional<MessageKey> reportMessageKey = getWizardModel().getReportMessageKey();
-    reportStatusLabel.setText(Languages.safeText(reportMessageKey.get()));
-    AccessibilityDecorator.apply(
-      reportStatusLabel,
-      reportMessageKey.get()
-    );
-    Labels.decorateStatusLabel(
-      reportStatusLabel,
-      Optional.of(getWizardModel().getReportMessageStatus())
-    );
-    reportStatusLabel.setVisible(true);
+    LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
 
     return true;
   }

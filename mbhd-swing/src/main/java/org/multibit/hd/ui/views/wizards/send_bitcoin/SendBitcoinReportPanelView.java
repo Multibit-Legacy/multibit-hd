@@ -47,6 +47,8 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   private JLabel transactionConfirmationStatus;
 
+  private JLabel reportStatusLabel;
+
   private TransactionCreationEvent lastTransactionCreationEvent;
   private BitcoinSentEvent lastBitcoinSentEvent;
   private TransactionSeenEvent lastTransactionSeenEvent;
@@ -70,9 +72,6 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
       getPanelName()
     );
     setPanelModel(panelModel);
-
-    // Bind it to the wizard model
-    getWizardModel().setReportPanelModel(panelModel);
 
     lastTransactionCreationEvent = null;
     lastBitcoinSentEvent = null;
@@ -106,6 +105,12 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
     transactionConfirmationStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
     AccessibilityDecorator.apply(transactionConfirmationStatus, MessageKey.TRANSACTION_CONFIRMATION_STATUS);
+
+    // Provide an empty status label (populated after show)
+    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.TREZOR_FAILURE_OPERATION), null, Optional.<Boolean>absent());
+    reportStatusLabel.setVisible(false);
+
+    contentPanel.add(reportStatusLabel, "aligny top,wrap");
 
     // Ensure the labels wrap if the error messages are too wide
     // Note changes here should be reflected in EmptyWalletReportPanelView which has similar behaviour
@@ -159,10 +164,8 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
           lastTransactionSeenEvent = null;
         }
 
-        // Check for cancellation
-        if (getWizardModel().getReportMessageKey().isPresent()) {
-
-        }
+        // Check for report message from hardware wallet
+        LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
       }
     });
 

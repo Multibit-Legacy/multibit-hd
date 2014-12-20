@@ -57,11 +57,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   private SendBitcoinConfirmPanelModel confirmPanelModel;
 
   /**
-   * The "report" panel model
-   */
-  private SendBitcoinReportPanelModel reportPanelModel;
-
-  /**
    * Keep track of which transaction output is being signed
    * Start with -1 to allow for initial increment
    */
@@ -219,15 +214,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    */
   void setConfirmPanelModel(SendBitcoinConfirmPanelModel confirmPanelModel) {
     this.confirmPanelModel = confirmPanelModel;
-  }
-
-  /**
-   * <p>Reduced visibility for panel models only</p>
-   *
-   * @param reportPanelModel The "report" panel model
-   */
-  void setReportPanelModel(SendBitcoinReportPanelModel reportPanelModel) {
-    this.reportPanelModel = reportPanelModel;
   }
 
   /**
@@ -505,7 +491,15 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
           // Check the signatures are canonical
           for (TransactionInput txInput : deviceTx.getInputs()) {
             byte[] signature = txInput.getScriptSig().getChunks().get(0).data;
-            log.debug("Is signature canonical test result '{}' for txInput '{}', signature '{}'", TransactionSignature.isEncodingCanonical(signature), txInput.toString(), Utils.HEX.encode(signature));
+            if (signature != null) {
+              log.debug(
+                "Is signature canonical test result '{}' for txInput '{}', signature '{}'",
+                TransactionSignature.isEncodingCanonical(signature),
+                txInput.toString(),
+                Utils.HEX.encode(signature));
+            } else {
+              log.warn("No signature data");
+            }
           }
 
           log.debug("Committing and broadcasting the last tx");
@@ -550,7 +544,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
       case SEND_CONFIRM_TREZOR:
         state = SendBitcoinState.SEND_REPORT;
-
+        setReportMessageKey(MessageKey.TREZOR_SIGN_FAILURE);
+        setReportMessageStatus(false);
         break;
       default:
         throw new IllegalStateException("Should not reach here from " + state.name());
