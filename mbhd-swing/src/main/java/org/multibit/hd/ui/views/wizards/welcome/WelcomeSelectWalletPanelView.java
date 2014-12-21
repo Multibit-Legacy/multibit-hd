@@ -31,7 +31,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   // Model
   private WelcomeWizardState currentSelection;
 
-  // View components
+  private final boolean isTrezorHardWallet;
 
   /**
    * @param wizard    The wizard managing the states
@@ -41,13 +41,14 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
 
     super(wizard, panelName, MessageKey.SELECT_WALLET_TITLE, AwesomeIcon.MAGIC);
 
+    isTrezorHardWallet = WelcomeWizardMode.TREZOR.equals(getWizardModel().getMode());
   }
 
   @Override
   public void newPanelModel() {
 
-    WelcomeWizardMode mode = getWizardModel().getMode();
-    if (WelcomeWizardMode.TREZOR.equals(mode)) {
+    // Determine the initial selection
+    if (isTrezorHardWallet) {
       currentSelection = TREZOR_CREATE_WALLET_PREPARATION;
     } else {
       currentSelection = CREATE_WALLET_PREPARATION;
@@ -70,16 +71,26 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
         "[]" // Row constraints
       ));
 
-    contentPanel.add(
-      Panels.newWalletSelector(
-        getWizardModel().getMode(),
-        this,
-        currentSelection.name(), // Relies on create being default
-        WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
-        RESTORE_PASSWORD_SEED_PHRASE.name(),
-        RESTORE_WALLET_SEED_PHRASE.name()
-      ), "wrap");
-
+    if (isTrezorHardWallet) {
+      contentPanel.add(
+        Panels.newHardwareWalletSelector(
+          getWizardModel().getMode(),
+          this,
+          currentSelection.name(), // Relies on create being default
+          WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
+          RESTORE_WALLET_SEED_PHRASE.name() // Triggers a transition to backups
+        ), "wrap");
+    } else {
+      contentPanel.add(
+        Panels.newWalletSelector(
+          getWizardModel().getMode(),
+          this,
+          currentSelection.name(), // Relies on create being default
+          WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
+          RESTORE_PASSWORD_SEED_PHRASE.name(),
+          RESTORE_WALLET_SEED_PHRASE.name()
+        ), "wrap");
+    }
   }
 
   @Override
