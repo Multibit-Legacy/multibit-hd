@@ -238,9 +238,11 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    * @return True if the transaction was prepared OK
    */
   private boolean prepareTransaction() {
+
     Preconditions.checkNotNull(enterAmountPanelModel);
     Preconditions.checkNotNull(confirmPanelModel);
 
+    // Ensure Bitcoin network service is started
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
@@ -269,7 +271,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     } else {
       fiatPayment = Optional.absent();
     }
-    // Prepare the transaction i.e work out the fee sizes
+
+    // Prepare the transaction i.e work out the fee sizes (not empty wallet)
     sendRequestSummary = new SendRequestSummary(
       bitcoinAddress,
       coin,
