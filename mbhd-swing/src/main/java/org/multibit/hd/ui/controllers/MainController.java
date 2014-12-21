@@ -457,7 +457,7 @@ public class MainController extends AbstractController implements
         @Override
         public Boolean call() {
 
-          log.debug("Using switch wallet view refresh");
+          log.trace("Using switch wallet view refresh");
 
           // Sleep for a short time to reduce UI jolt
           Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
