@@ -61,6 +61,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -440,10 +441,11 @@ public class MainController extends AbstractController implements
 
     // Run this in a separate thread to ensure the original event returns promptly
     // and that the switch panel view is able to close before the MainView resets
-    handoverExecutorService.submit(
-      new Runnable() {
+    final ListenableFuture<Boolean> future = handoverExecutorService.submit(
+      new Callable<Boolean>() {
+
         @Override
-        public void run() {
+        public Boolean call() {
 
           log.debug("Using switch wallet view refresh");
 
@@ -465,13 +467,19 @@ public class MainController extends AbstractController implements
           // Sleep for a short time to allow UI events to occur
           Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
-          // Close the supporting services
-          // This can take some time
-          shutdownCurrentWallet(ShutdownEvent.ShutdownType.SWITCH);
+          try {
+            // Close the supporting services
+            // This can take some time
+            shutdownCurrentWallet(ShutdownEvent.ShutdownType.SWITCH);
+          } catch (Exception e) {
+            log.error("Failed to shutdown current wallet", e);
+          }
 
           // Avoiding repeating latest events which will leave traces of the earlier wallet
           // on the MainView during unlock
           mainView.setRepeatLatestEvents(false);
+
+          log.debug("Find existing wallet directories");
 
           // Check for any pre-existing wallets in the application directory
           File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
@@ -491,6 +499,8 @@ public class MainController extends AbstractController implements
 
           }
 
+          log.debug("Perform MainView refresh");
+
           SwingUtilities.invokeLater(
             new Runnable() {
               @Override
@@ -504,14 +514,50 @@ public class MainController extends AbstractController implements
           // Sleep for a short time to allow UI events to occur
           Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
+          return true;
         }
       });
+
+    Futures.addCallback(
+      future, new FutureCallback<Boolean>() {
+        @Override
+        public void onSuccess(@Nullable Boolean result) {
+
+          // We successfully switched the wallet
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          // Show the application frame to provide some assistance to user
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+                Panels.applicationFrame.setVisible(false);
+              }
+            });
+
+          // Sleep for a short time to allow UI events to occur
+          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+          // Use the generic handler since we're all over the place at this point
+          ExceptionHandler.handleThrowable(t);
+
+        }
+
+      }
+
+    );
+
 
   }
 
   /**
    * Handles the process of shutting down the current wallet support services
    */
+
   private void shutdownCurrentWallet(ShutdownEvent.ShutdownType shutdownType) {
 
     log.debug("Shutdown current wallet...");
@@ -1066,7 +1112,7 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingCredentialsWizard(false);
 
     // Determine if we are in Trezor mode for the welcome wizard
-    WelcomeWizardMode mode = CredentialsRequestType.TREZOR_CIPHER_KEY.equals(deferredCredentialsRequestType) ? WelcomeWizardMode.TREZOR: WelcomeWizardMode.STANDARD;
+    WelcomeWizardMode mode = CredentialsRequestType.TREZOR_CIPHER_KEY.equals(deferredCredentialsRequestType) ? WelcomeWizardMode.TREZOR : WelcomeWizardMode.STANDARD;
 
     // Start building the wizard on the EDT to prevent UI updates
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
