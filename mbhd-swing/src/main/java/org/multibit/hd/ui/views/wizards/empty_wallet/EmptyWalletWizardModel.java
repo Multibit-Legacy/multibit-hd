@@ -1,10 +1,10 @@
 package org.multibit.hd.ui.views.wizards.empty_wallet;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Transaction;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.Recipient;
@@ -16,7 +16,7 @@ import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ import static org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletState.EMP
  * @since 0.0.1
  *
  */
-public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState> {
+public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<EmptyWalletState> {
 
   private static final Logger log = LoggerFactory.getLogger(EmptyWalletWizardModel.class);
 

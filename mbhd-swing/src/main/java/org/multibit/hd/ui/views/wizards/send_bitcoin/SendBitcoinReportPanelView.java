@@ -238,7 +238,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   }
 
   @Subscribe
-  public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
+  public void onTransactionSeenEvent(final TransactionSeenEvent transactionSeenEvent) {
     log.debug("Seen transactionSeenEvent {}", transactionSeenEvent);
 
     lastTransactionSeenEvent = transactionSeenEvent;
@@ -251,19 +251,34 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     // If so, update the UI
     if (getPanelModel().get() != null) {
       if (transactionSeenEvent.getTransactionId().equals(currentTransactionId)) {
-        PaymentStatus paymentStatus = WalletService.calculateStatus(
+        final PaymentStatus paymentStatus = WalletService.calculateStatus(
           transactionSeenEvent.getConfidenceType(),
           transactionSeenEvent.getDepthInBlocks(),
           transactionSeenEvent.getNumberOfPeers()
         );
-        transactionConfirmationStatus.setText(
-          Languages.safeText(
-            paymentStatus.getStatusKey(),
-            transactionSeenEvent.getNumberOfPeers()
-          )
-        );
 
-        LabelDecorator.applyPaymentStatusIconAndColor(paymentStatus, transactionConfirmationStatus, transactionSeenEvent.isCoinbase(), MultiBitUI.NORMAL_ICON_SIZE);
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+
+              transactionConfirmationStatus.setText(
+                Languages.safeText(
+                  paymentStatus.getStatusKey(),
+                  transactionSeenEvent.getNumberOfPeers()
+                )
+              );
+
+              LabelDecorator.applyPaymentStatusIconAndColor(
+                paymentStatus,
+                transactionConfirmationStatus,
+                transactionSeenEvent.isCoinbase(),
+                MultiBitUI.NORMAL_ICON_SIZE
+              );
+
+            }
+          });
+
       }
     }
   }

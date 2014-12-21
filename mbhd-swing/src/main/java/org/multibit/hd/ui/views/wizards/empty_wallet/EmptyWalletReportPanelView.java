@@ -48,6 +48,8 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
   private JLabel transactionConfirmationStatus;
 
+  private JLabel reportStatusLabel;
+
   private TransactionCreationEvent lastTransactionCreationEvent;
   private BitcoinSentEvent lastBitcoinSentEvent;
   private TransactionSeenEvent lastTransactionSeenEvent;
@@ -103,6 +105,12 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     transactionConfirmationStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
     AccessibilityDecorator.apply(transactionConfirmationStatus, MessageKey.TRANSACTION_CONFIRMATION_STATUS);
 
+    // Provide an empty status label (populated after show)
+    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.TREZOR_FAILURE_OPERATION), null, Optional.<Boolean>absent());
+    reportStatusLabel.setVisible(false);
+
+    contentPanel.add(reportStatusLabel, "aligny top,wrap");
+
     // Ensure the labels wrap if the error messages are too wide
     contentPanel.add(transactionConstructionStatusSummary, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     contentPanel.add(transactionConstructionStatusDetail, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
@@ -120,6 +128,21 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
   }
 
+
+  @Override
+  public boolean beforeShow() {
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+
+          LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
+          transactionConstructionStatusDetail.setText("");
+        }
+      });
+    return true;
+  }
+
   @Override
   public void afterShow() {
 
@@ -127,15 +150,28 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
       new Runnable() {
         @Override
         public void run() {
-          getFinishButton().requestFocusInWindow();
-          if (lastTransactionCreationEvent != null) {
-            onTransactionCreationEvent(lastTransactionCreationEvent);
-          }
-          if (lastBitcoinSentEvent != null) {
-            onBitcoinSentEvent(lastBitcoinSentEvent);
-          }
-          if (lastTransactionSeenEvent != null) {
-            onTransactionSeenEvent(lastTransactionSeenEvent);
+
+          // Check for report message from hardware wallet
+          LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
+
+          if (getWizardModel().getReportMessageKey().isPresent() && !getWizardModel().getReportMessageStatus()) {
+            // Hardware wallet report indicates cancellation
+            transactionConstructionStatusSummary.setVisible(false);
+            transactionConstructionStatusDetail.setVisible(false);
+          } else {
+            // Transaction must be progressing in some manner
+            if (lastTransactionCreationEvent != null) {
+              onTransactionCreationEvent(lastTransactionCreationEvent);
+              lastTransactionCreationEvent = null;
+            }
+            if (lastBitcoinSentEvent != null) {
+              onBitcoinSentEvent(lastBitcoinSentEvent);
+              lastBitcoinSentEvent = null;
+            }
+            if (lastTransactionSeenEvent != null) {
+              onTransactionSeenEvent(lastTransactionSeenEvent);
+              lastTransactionSeenEvent = null;
+            }
           }
         }
       });
