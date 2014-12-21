@@ -248,42 +248,39 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
       return;
     }
 
+    currentTransactionId = transactionSeenEvent.getTransactionId();
+
     // Is this an event about the transaction that was just sent ?
-    // If so, update the UI
-    if (getPanelModel().get() != null) {
+    if (transactionSeenEvent.getTransactionId().equals(currentTransactionId)) {
 
-      currentTransactionId = transactionSeenEvent.getTransactionId();
+      final PaymentStatus paymentStatus = WalletService.calculateStatus(
+        transactionSeenEvent.getConfidenceType(),
+        transactionSeenEvent.getDepthInBlocks(),
+        transactionSeenEvent.getNumberOfPeers()
+      );
 
-      if (transactionSeenEvent.getTransactionId().equals(currentTransactionId)) {
-        final PaymentStatus paymentStatus = WalletService.calculateStatus(
-          transactionSeenEvent.getConfidenceType(),
-          transactionSeenEvent.getDepthInBlocks(),
-          transactionSeenEvent.getNumberOfPeers()
-        );
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
 
-        SwingUtilities.invokeLater(
-          new Runnable() {
-            @Override
-            public void run() {
+            transactionConfirmationStatus.setText(
+              Languages.safeText(
+                paymentStatus.getStatusKey(),
+                transactionSeenEvent.getNumberOfPeers()
+              )
+            );
 
-              transactionConfirmationStatus.setText(
-                Languages.safeText(
-                  paymentStatus.getStatusKey(),
-                  transactionSeenEvent.getNumberOfPeers()
-                )
-              );
+            LabelDecorator.applyPaymentStatusIconAndColor(
+              paymentStatus,
+              transactionConfirmationStatus,
+              transactionSeenEvent.isCoinbase(),
+              MultiBitUI.NORMAL_ICON_SIZE
+            );
 
-              LabelDecorator.applyPaymentStatusIconAndColor(
-                paymentStatus,
-                transactionConfirmationStatus,
-                transactionSeenEvent.isCoinbase(),
-                MultiBitUI.NORMAL_ICON_SIZE
-              );
+          }
+        });
 
-            }
-          });
-
-      }
     }
   }
 }

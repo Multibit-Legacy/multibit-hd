@@ -3,6 +3,9 @@ package org.multibit.hd.ui.views.wizards.empty_wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.WalletType;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
@@ -18,6 +21,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -28,9 +33,10 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, EmptyWalletEnterDetailsPanelModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(EmptyWalletEnterDetailsPanelView.class);
 
   // Panel specific components
   private ModelAndView<EnterRecipientModel, EnterRecipientView> enterRecipientMaV;
@@ -39,12 +45,22 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
   private JLabel isAddressMineStatusLabel;
 
   /**
+   * True if this is a hard wallet so has no password to unlock it
+   */
+  private final boolean isTrezorHardWallet;
+
+  /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name
    */
   public EmptyWalletEnterDetailsPanelView(AbstractWizard<EmptyWalletWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.EMPTY_WALLET_TITLE, AwesomeIcon.FIRE);
+
+    // Work out the wallet type (may not require a password entry)
+    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+    isTrezorHardWallet = currentWalletSummary.isPresent()
+      && WalletType.TREZOR_HARD_WALLET.equals(currentWalletSummary.get().getWalletType());
 
   }
 
@@ -74,18 +90,22 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
-    contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[]", // Column constraints
-      "[]10[]" // Row constraints
-    ));
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[]", // Column constraints
+        "[]10[]" // Row constraints
+      ));
 
     isAddressMineStatusLabel = Labels.newAddressIsMineStatusLabel(getPanelModel().get().isAddressMine());
     // Only show if the address shown is in the wallet
     isAddressMineStatusLabel.setVisible(getPanelModel().get().isAddressMine());
 
     contentPanel.add(enterRecipientMaV.getView().newComponentPanel(), "wrap");
-    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "wrap");
+    // Only add the password MaV if using a soft wallet
+    if (!isTrezorHardWallet) {
+      contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "wrap");
+    }
     contentPanel.add(isAddressMineStatusLabel, "wrap");
 
   }
@@ -107,14 +127,15 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        // Only show if the address shown is in the wallet
-        isAddressMineStatusLabel.setVisible(getPanelModel().get().isAddressMine());
-        enterRecipientMaV.getView().requestInitialFocus();
-      }
-    });
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          // Only show if the address shown is in the wallet
+          isAddressMineStatusLabel.setVisible(getPanelModel().get().isAddressMine());
+          enterRecipientMaV.getView().requestInitialFocus();
+        }
+      });
 
   }
 
@@ -144,10 +165,16 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
       .getRecipient()
       .isPresent();
 
+    // No password required for a hard wallet
+    if (isTrezorHardWallet) {
+      return recipientOK;
+    }
+
     // Password only has to contain something to qualify
-    boolean passwordOK = !Strings.isNullOrEmpty(getPanelModel().get()
-      .getEnterPasswordModel()
-      .getValue());
+    boolean passwordOK = !Strings.isNullOrEmpty(
+      getPanelModel().get()
+        .getEnterPasswordModel()
+        .getValue());
 
     return recipientOK && passwordOK;
   }

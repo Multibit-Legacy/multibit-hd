@@ -248,38 +248,36 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     }
 
     // Is this an event about the transaction that was just sent ?
-    // If so, update the UI
-    if (getPanelModel().get() != null) {
-      if (transactionSeenEvent.getTransactionId().equals(currentTransactionId)) {
-        final PaymentStatus paymentStatus = WalletService.calculateStatus(
-          transactionSeenEvent.getConfidenceType(),
-          transactionSeenEvent.getDepthInBlocks(),
-          transactionSeenEvent.getNumberOfPeers()
-        );
+    if (transactionSeenEvent.getTransactionId().equals(currentTransactionId)) {
 
-        SwingUtilities.invokeLater(
-          new Runnable() {
-            @Override
-            public void run() {
+      final PaymentStatus paymentStatus = WalletService.calculateStatus(
+        transactionSeenEvent.getConfidenceType(),
+        transactionSeenEvent.getDepthInBlocks(),
+        transactionSeenEvent.getNumberOfPeers()
+      );
 
-              transactionConfirmationStatus.setText(
-                Languages.safeText(
-                  paymentStatus.getStatusKey(),
-                  transactionSeenEvent.getNumberOfPeers()
-                )
-              );
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
 
-              LabelDecorator.applyPaymentStatusIconAndColor(
-                paymentStatus,
-                transactionConfirmationStatus,
-                transactionSeenEvent.isCoinbase(),
-                MultiBitUI.NORMAL_ICON_SIZE
-              );
+            transactionConfirmationStatus.setText(
+              Languages.safeText(
+                paymentStatus.getStatusKey(),
+                transactionSeenEvent.getNumberOfPeers()
+              )
+            );
 
-            }
-          });
+            LabelDecorator.applyPaymentStatusIconAndColor(
+              paymentStatus,
+              transactionConfirmationStatus,
+              transactionSeenEvent.isCoinbase(),
+              MultiBitUI.NORMAL_ICON_SIZE
+            );
 
-      }
+          }
+        });
+
     }
   }
 }

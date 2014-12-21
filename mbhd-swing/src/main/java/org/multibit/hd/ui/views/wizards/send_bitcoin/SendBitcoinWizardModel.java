@@ -123,8 +123,11 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
         break;
 
       case SEND_CONFIRM_TREZOR:
-        // Move to send report
+        // Move to report
         state = SEND_REPORT;
+        break;
+      default:
+        // Do nothing
     }
   }
 

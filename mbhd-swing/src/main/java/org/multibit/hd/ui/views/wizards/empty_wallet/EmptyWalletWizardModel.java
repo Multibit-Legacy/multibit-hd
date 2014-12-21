@@ -9,9 +9,7 @@ import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
-import org.multibit.hd.core.dto.FiatPayment;
-import org.multibit.hd.core.dto.Recipient;
-import org.multibit.hd.core.dto.SendRequestSummary;
+import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
@@ -117,10 +115,33 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
       case EMPTY_WALLET_CONFIRM:
 
         // The user has confirmed the send details and pressed the next button
-        emptyWallet();
+        // For a non-Trezor wallet navigate directly to the send screen
+        // Get the current wallet
+        Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+        if (currentWalletSummary.isPresent()) {
+          if (WalletType.TREZOR_HARD_WALLET.equals(currentWalletSummary.get().getWalletType())) {
+            log.debug("Sending using a Trezor hard wallet");
+            state = EMPTY_WALLET_CONFIRM_TREZOR;
+            emptyWallet();
+          } else {
+            log.debug("Not sending from a Trezor hard wallet - send directly");
+            emptyWallet();
 
-        state = EmptyWalletState.EMPTY_WALLET_REPORT;
+            state = EMPTY_WALLET_REPORT;
+          }
+        } else {
+          log.debug("No wallet summary - cannot send");
+        }
+
         break;
+      case EMPTY_WALLET_CONFIRM_TREZOR:
+        // Move to report
+        state = EMPTY_WALLET_REPORT;
+        break;
+
+      default:
+        // Do nothing
+
     }
   }
 
@@ -435,16 +456,10 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
 
-    switch (state) {
-
-      case EMPTY_WALLET_CONFIRM_TREZOR:
-        state = EMPTY_WALLET_REPORT;
-        setReportMessageKey(MessageKey.TREZOR_SIGN_FAILURE);
-        setReportMessageStatus(false);
-        break;
-      default:
-        throw new IllegalStateException("Should not reach here from " + state.name());
-    }
+    // Always transition to report
+    state = EMPTY_WALLET_REPORT;
+    setReportMessageKey(MessageKey.TREZOR_SIGN_FAILURE);
+    setReportMessageStatus(false);
 
   }
 
