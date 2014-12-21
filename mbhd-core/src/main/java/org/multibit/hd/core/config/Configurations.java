@@ -66,6 +66,8 @@ public class Configurations {
    */
   public static synchronized void switchConfiguration(Configuration newConfiguration) {
 
+    log.debug("Switching configuration");
+
     // Keep track of the previous configuration
     previousConfiguration = currentConfiguration;
 
@@ -92,6 +94,8 @@ public class Configurations {
    * <p>No locale change or event takes place (see {@link #switchConfiguration(Configuration)})</p>
    */
   public static synchronized void persistCurrentConfiguration() {
+
+    log.debug("Persisting current configuration");
 
     // Get the configuration file
     // This approach allows for easy debugging of persisting over live configuration
