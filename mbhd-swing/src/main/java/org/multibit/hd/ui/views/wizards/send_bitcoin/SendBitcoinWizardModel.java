@@ -62,12 +62,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    */
   private int txOutputIndex = -1;
 
-  /**
-   * The FeeService used to calculate the FeeState
-   */
-  //private FeeService feeService;
-
-  private final boolean emptyWallet;
   private final Optional<BitcoinURI> bitcoinURI;
 
   /**
@@ -84,7 +78,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     super(state);
 
     this.bitcoinURI = parameter.getBitcoinURI();
-    this.emptyWallet = parameter.isEmptyWallet();
 
   }
 
@@ -285,7 +278,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       BitcoinNetworkService.DEFAULT_FEE_PER_KB,
       null,
       feeState,
-      emptyWallet);
+      false);
 
     log.debug("Just about to prepare transaction for sendRequestSummary: {}", sendRequestSummary);
     return bitcoinNetworkService.prepareTransaction(sendRequestSummary);

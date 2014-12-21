@@ -87,7 +87,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        SendBitcoinParameter parameter = new SendBitcoinParameter(Optional.<BitcoinURI>absent(), false);
+        SendBitcoinParameter parameter = new SendBitcoinParameter(Optional.<BitcoinURI>absent());
 
         Panels.showLightBox(Wizards.newSendBitcoinWizard(parameter).getWizardScreenHolder());
       }

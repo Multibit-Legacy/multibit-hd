@@ -27,7 +27,7 @@ import static org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletState.EMP
 
 
 /**
- * <p>Model object to provide the following to "send bitcoin wizard":</p>
+ * <p>Model object to provide the following to "empty wallet wizard":</p>
  * <ul>
  * <li>Storage of panel data</li>
  * <li>State transition management</li>

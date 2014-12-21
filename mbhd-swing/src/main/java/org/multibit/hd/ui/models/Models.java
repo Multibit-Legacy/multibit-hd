@@ -103,7 +103,7 @@ public class Models {
 
         ControllerEvents.fireRemoveAlertEvent();
 
-        SendBitcoinParameter parameter = new SendBitcoinParameter(Optional.fromNullable(bitcoinURI), false);
+        SendBitcoinParameter parameter = new SendBitcoinParameter(Optional.fromNullable(bitcoinURI));
 
         Panels.showLightBox(Wizards.newSendBitcoinWizard(parameter).getWizardScreenHolder());
 

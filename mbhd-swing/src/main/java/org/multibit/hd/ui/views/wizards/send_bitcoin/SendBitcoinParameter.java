@@ -15,22 +15,17 @@ import com.google.common.base.Optional;
 public class SendBitcoinParameter {
 
   private final Optional<BitcoinURI> bitcoinURI;
-  private final boolean emptyWallet;
 
   /**
    * @param bitcoinURI  The Bitcoin URI
-   * @param emptyWallet True if the wallet should be emptied and all payable fees paid
+   *
    */
-  public SendBitcoinParameter(Optional<BitcoinURI> bitcoinURI, boolean emptyWallet) {
+  public SendBitcoinParameter(Optional<BitcoinURI> bitcoinURI) {
     this.bitcoinURI = bitcoinURI;
-    this.emptyWallet = emptyWallet;
   }
 
   public Optional<BitcoinURI> getBitcoinURI() {
     return bitcoinURI;
   }
 
-  public boolean isEmptyWallet() {
-    return emptyWallet;
-  }
 }
