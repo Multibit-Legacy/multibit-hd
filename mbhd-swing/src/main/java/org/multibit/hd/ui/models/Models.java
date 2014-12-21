@@ -174,10 +174,6 @@ public class Models {
 
             // Perform a switch wallet, which will close down the old wallet and then fire up a credentials wizard
             ViewEvents.fireSwitchWalletEvent();
-
-            // Open the Credentials wizard, asking for a Trezor PIN entry screen
-            //Panels.showLightBox(Wizards.newExitingCredentialsWizard(CredentialsRequestType.TREZOR_CIPHER_KEY).getWizardScreenHolder());
-
           }
         },
           // Considered using Shield + Trezor tools wizard message but screen
