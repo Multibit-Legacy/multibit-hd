@@ -7,6 +7,7 @@ import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -148,7 +149,7 @@ public class Models {
   /**
    * @param event The hardware wallet event (e.g. SHOW_PIN_ENTRY etc)
    *
-   * @return An alert model suitable for use for displaying the information, absent if the Bitcoin URI does not contain sufficient information
+   * @return An alert model suitable for use for displaying the information
    */
   public static AlertModel newHardwareWalletAlertModel(HardwareWalletEvent event) {
 
@@ -171,8 +172,11 @@ public class Models {
             // Remove the alert since it's been dealt with
             ControllerEvents.fireRemoveAlertEvent();
 
+            // Perform a switch wallet, which will close down the old wallet and then fire up a credentials wizard
+            ViewEvents.fireSwitchWalletEvent();
+
             // Open the Credentials wizard, asking for a Trezor PIN entry screen
-            Panels.showLightBox(Wizards.newUseTrezorWizard().getWizardScreenHolder());
+            //Panels.showLightBox(Wizards.newExitingCredentialsWizard(CredentialsRequestType.TREZOR_CIPHER_KEY).getWizardScreenHolder());
 
           }
         },

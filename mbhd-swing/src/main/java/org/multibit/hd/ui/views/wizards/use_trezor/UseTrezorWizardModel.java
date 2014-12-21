@@ -112,14 +112,10 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
         state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
         break;
       case ENTER_PIN:
-//        state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
         break;
       case NO_PIN_REQUIRED:
-//        state = UseTrezorState.PRESS_CONFIRM_FOR_UNLOCK;
         break;
-//      case PRESS_CONFIRM_FOR_UNLOCK:
-//        state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
-//        break;
+
       default:
         throw new IllegalStateException("Cannot showNext with a state of " + state);
     }
@@ -145,9 +141,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     // Device is PIN protected
 
     switch (state) {
-//      case REQUEST_CIPHER_KEY:
-//        state = UseTrezorState.ENTER_PIN;
-//        break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
     }

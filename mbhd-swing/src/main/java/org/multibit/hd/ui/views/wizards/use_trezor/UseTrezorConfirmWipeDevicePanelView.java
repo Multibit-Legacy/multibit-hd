@@ -41,10 +41,6 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
 
   @Override
   public void newPanelModel() {
-
-    // Bind it to the wizard model in case of failure
-    //getWizardModel().setConfirmWipeDevicePanelView(this);
-
   }
 
   @Override

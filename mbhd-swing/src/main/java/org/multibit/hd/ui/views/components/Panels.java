@@ -468,6 +468,7 @@ public class Panels {
    * <p>A "Trezor tool selector" panel provides a means of choosing which Trezor tool to run</p>
    *
    * @param listener            The action listener
+   * @param buyTrezorCommand    The buy trezor command
    * @param verifyDeviceCommand The verify device command name
    * @param wipeDeviceCommand   The wipe device command name
    *
@@ -475,7 +476,6 @@ public class Panels {
    */
   public static JPanel newUseTrezorSelector(
     ActionListener listener,
-    /* String useTrezorWalletCommand, */
     String buyTrezorCommand,
     String verifyDeviceCommand,
     String wipeDeviceCommand
@@ -483,32 +483,26 @@ public class Panels {
 
     JPanel panel = Panels.newPanel();
 
-    //JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.USE_TREZOR_WALLET);
-    //radio1.setActionCommand(useTrezorWalletCommand);
-    //radio1.setSelected(true);
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.BUY_TREZOR);
+    radio1.setActionCommand(buyTrezorCommand);
+    radio1.setSelected(true);
 
-    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.BUY_TREZOR);
-    radio2.setActionCommand(buyTrezorCommand);
-    radio2.setSelected(true);
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.VERIFY_DEVICE);
+    radio2.setActionCommand(verifyDeviceCommand);
 
-    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.VERIFY_DEVICE);
-    radio3.setActionCommand(verifyDeviceCommand);
-
-    JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.WIPE_DEVICE);
-    radio4.setActionCommand(wipeDeviceCommand);
+    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.WIPE_DEVICE);
+    radio3.setActionCommand(wipeDeviceCommand);
 
     // Action selection is mutually exclusive
     ButtonGroup group = new ButtonGroup();
-    //group.add(radio1);
+    group.add(radio1);
     group.add(radio2);
     group.add(radio3);
-    group.add(radio4);
 
     // Add to the panel
-    //panel.add(radio1, "wrap");
+    panel.add(radio1, "wrap");
     panel.add(radio2, "wrap");
     panel.add(radio3, "wrap");
-    panel.add(radio4, "wrap");
 
     return panel;
   }

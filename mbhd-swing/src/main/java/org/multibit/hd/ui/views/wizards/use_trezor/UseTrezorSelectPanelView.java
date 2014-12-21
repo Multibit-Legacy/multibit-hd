@@ -60,7 +60,6 @@ public class UseTrezorSelectPanelView extends AbstractWizardPanelView<UseTrezorW
     contentPanel.add(
       Panels.newUseTrezorSelector(
               this,
-              /* UseTrezorState.USE_TREZOR_WALLET.name(), */
               UseTrezorState.BUY_TREZOR.name(),
               UseTrezorState.VERIFY_TREZOR.name(),
               UseTrezorState.REQUEST_WIPE_TREZOR.name()
