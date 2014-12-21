@@ -34,7 +34,7 @@ import javax.swing.*;
  *
  * @since 0.0.1
  */
-public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, SendBitcoinReportPanelModel> {
+public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, String> {
 
   private static final Logger log = LoggerFactory.getLogger(SendBitcoinReportPanelView.class);
 
@@ -54,6 +54,9 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   private boolean initialised = false;
 
+  // The current transaction ID - can be null
+  private String currentTransactionId;
+
   /**
    * @param wizard The wizard managing the states
    */
@@ -65,12 +68,6 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   @Override
   public void newPanelModel() {
-
-    // Configure the panel model
-    SendBitcoinReportPanelModel panelModel = new SendBitcoinReportPanelModel(
-      getPanelName()
-    );
-    setPanelModel(panelModel);
 
     lastTransactionCreationEvent = null;
     lastBitcoinSentEvent = null;
@@ -201,7 +198,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
     if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
       // We now have a transactionId so keep that in the panel model for filtering TransactionSeenEvents later
-      getPanelModel().get().setTransactionId(transactionCreationEvent.getTransactionId());
+      currentTransactionId = transactionCreationEvent.getTransactionId();
       LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
       LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, "");
       LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
@@ -253,7 +250,6 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     // Is this an event about the transaction that was just sent ?
     // If so, update the UI
     if (getPanelModel().get() != null) {
-      String currentTransactionId = getPanelModel().get().getTransactionId();
       if (transactionSeenEvent.getTransactionId().equals(currentTransactionId)) {
         PaymentStatus paymentStatus = WalletService.calculateStatus(
           transactionSeenEvent.getConfidenceType(),
