@@ -305,7 +305,6 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
 
       Wallet wallet = bitcoinNetworkService.getLastWalletOptional().get();
 
-      Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
 

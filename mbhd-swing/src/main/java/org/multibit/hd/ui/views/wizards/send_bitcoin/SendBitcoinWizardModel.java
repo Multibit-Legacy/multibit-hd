@@ -388,7 +388,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
       Wallet wallet = bitcoinNetworkService.getLastWalletOptional().get();
 
-      Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
 

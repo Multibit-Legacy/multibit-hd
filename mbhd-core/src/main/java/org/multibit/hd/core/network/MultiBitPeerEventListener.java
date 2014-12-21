@@ -126,7 +126,13 @@ public class MultiBitPeerEventListener implements PeerEventListener {
                       currentWalletSummary.get().getWalletId(),
                       transaction.toString()
                     );
-                    currentWallet.receivePending(transaction, null);
+
+                    try {
+                      currentWallet.receivePending(transaction, null);
+                    } catch (IllegalStateException e) {
+                      log.warn("Illegal state receiving pending transaction", e);
+                      // Carry on regardless to give user confidence that something happened
+                    }
 
                     // Emit an event so that GUI elements can update as required
                     Coin value = transaction.getValue(currentWallet);
