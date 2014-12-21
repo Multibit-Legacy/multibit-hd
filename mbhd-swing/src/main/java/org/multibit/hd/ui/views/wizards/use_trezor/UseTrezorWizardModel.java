@@ -9,8 +9,6 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
-import org.multibit.hd.hardware.core.messages.Failure;
-import org.multibit.hd.hardware.core.messages.FailureType;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -197,6 +195,8 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       case CONFIRM_WIPE_TREZOR:
         // Indicate a successful wipe
         state=UseTrezorState.USE_TREZOR_REPORT_PANEL;
+        setReportMessageKey(MessageKey.TREZOR_WIPE_DEVICE_SUCCESS);
+        setReportMessageStatus(true);
         break;
       default:
         // TODO Fill in the other states and provide success feedback
@@ -211,27 +211,10 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
 
-    switch (state) {
-      case ENTER_PIN:
-        // Indicate a failed PIN
-        getEnterPinPanelView().setPinStatus(false, true);
-        break;
-      case REQUEST_WIPE_TREZOR:
-        // Device communication has failed during requesting the wipe
-      case CONFIRM_WIPE_TREZOR:
-        // Indicate a cancelled wipe
-        state=UseTrezorState.USE_TREZOR_REPORT_PANEL;
-        break;
-      default:
-        // TODO Fill in the other states and provide failure feedback
-        FailureType failureType = ((Failure) event.getMessage().get()).getType();
-        log.info(
-          "Message:'Failure'\nFailure type: {}",
-          failureType.name()
-          // TODO feed back to user if Failure type = PIN_INVALID
-        );
-    }
-
+    // In all cases move to the report panel with a failure message
+    state=UseTrezorState.USE_TREZOR_REPORT_PANEL;
+    setReportMessageKey(MessageKey.TREZOR_WIPE_DEVICE_FAILURE);
+    setReportMessageStatus(false);
 
   }
 
