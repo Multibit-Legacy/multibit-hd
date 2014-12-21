@@ -563,7 +563,7 @@ public class MainController extends AbstractController implements
     log.debug("Shutdown current wallet...");
 
     if (!shutdownType.equals(ShutdownEvent.ShutdownType.SWITCH)) {
-      // Hide the UI
+      // Hide the UI if not switching
       shutdownMainView();
     }
 
@@ -1069,7 +1069,7 @@ public class MainController extends AbstractController implements
     mainView.setCredentialsRequestType(deferredCredentialsRequestType);
 
     // Start building the wizard on the EDT to prevent UI updates
-    final CredentialsWizard credentialsWizard = Wizards.newExitingCredentialsWizard(mainView.getCredentialsRequestType());
+    final CredentialsWizard credentialsWizard = Wizards.newExitingCredentialsWizard(deferredCredentialsRequestType);
 
     // Use a new thread to handle the new wizard so that the handover can complete
     handoverExecutorService.execute(

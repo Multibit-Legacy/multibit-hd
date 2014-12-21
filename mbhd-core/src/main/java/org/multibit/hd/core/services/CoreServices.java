@@ -232,11 +232,6 @@ public class CoreServices {
    */
   private static void shutdownWalletSupportServices(ShutdownEvent.ShutdownType shutdownType) {
 
-    // Shutdown non-managed services
-    if (hardwareWalletService.isPresent()) {
-      hardwareWalletService.get().stopAndWait();
-    }
-
     // Allow graceful shutdown of managed services in the correct order
     shutdownService(contactService, shutdownType);
     shutdownService(historyService, shutdownType);
@@ -248,7 +243,6 @@ public class CoreServices {
 
     // Clear the references
     bitcoinNetworkService = Optional.absent();
-    hardwareWalletService = Optional.absent();
     contactService = Optional.absent();
     walletService = Optional.absent();
     historyService = Optional.absent();
@@ -262,6 +256,11 @@ public class CoreServices {
    * @param shutdownType The shutdown type providing context
    */
   private static void shutdownApplicationSupportServices(ShutdownEvent.ShutdownType shutdownType) {
+
+    // Shutdown non-managed services
+    if (hardwareWalletService.isPresent()) {
+      hardwareWalletService.get().stopAndWait();
+    }
 
     // Allow graceful shutdown in the correct order
     if (configurationService !=null) {
