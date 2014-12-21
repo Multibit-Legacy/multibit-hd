@@ -45,8 +45,7 @@ public class CreateTrezorWalletConfirmCreateWalletPanelView extends AbstractWiza
   @Override
   public void newPanelModel() {
 
-    // Bind it to the wizard model in case of failure
-    getWizardModel().setTrezorConfirmCreateWalletPanelView(this);
+    // No need to bind this
 
   }
 

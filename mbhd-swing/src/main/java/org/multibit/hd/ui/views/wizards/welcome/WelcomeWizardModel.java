@@ -33,8 +33,6 @@ import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSum
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletConfirmCreateWalletPanelView;
-import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletConfirmNewPinPanelView;
 import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletConfirmWordPanelView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,10 +106,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private ConfirmPasswordModel restoreWalletConfirmPasswordModel;
   private String trezorWalletLabel = "multibit.org";
   private SeedPhraseSize trezorSeedSize = SeedPhraseSize.TWELVE_WORDS;
-  private CreateTrezorWalletConfirmNewPinPanelView confirmNewPinPanelView;
 
   private String mostRecentPin;
-  private CreateTrezorWalletConfirmCreateWalletPanelView trezorConfirmCreateWalletPanelView;
   private CreateTrezorWalletConfirmWordPanelView trezorConfirmWordPanelView;
 
   private int trezorWordCount = 0;
@@ -258,6 +254,9 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         break;
       case CREATE_WALLET_REPORT:
         state = CREATE_WALLET_SEED_PHRASE;
+      case TREZOR_CREATE_WALLET_PREPARATION:
+        state = WELCOME_SELECT_WALLET;
+        break;
       case TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION:
         state = TREZOR_CREATE_WALLET_PREPARATION;
         break;
@@ -926,10 +925,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     this.trezorSeedSize = trezorSeedSize;
   }
 
-  public void setConfirmNewPinPanelView(CreateTrezorWalletConfirmNewPinPanelView confirmNewPinPanelView) {
-    this.confirmNewPinPanelView = confirmNewPinPanelView;
-  }
-
   /**
    * @return The most recent PIN
    */
@@ -939,10 +934,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   public void setMostRecentPin(String mostRecentPin) {
     this.mostRecentPin = mostRecentPin;
-  }
-
-  public void setTrezorConfirmCreateWalletPanelView(CreateTrezorWalletConfirmCreateWalletPanelView trezorConfirmCreateWalletPanelView) {
-    this.trezorConfirmCreateWalletPanelView = trezorConfirmCreateWalletPanelView;
   }
 
   public void setTrezorConfirmWordPanelView(CreateTrezorWalletConfirmWordPanelView trezorConfirmWordPanelView) {
