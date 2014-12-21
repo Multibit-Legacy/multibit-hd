@@ -36,7 +36,7 @@ import javax.swing.*;
  *
  * @since 0.0.1
  */
-public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, EmptyWalletReportPanelModel> {
+public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, String> {
 
   private static final Logger log = LoggerFactory.getLogger(EmptyWalletReportPanelView.class);
 
@@ -48,11 +48,16 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
   private JLabel transactionConfirmationStatus;
 
+  private JLabel reportStatusLabel;
+
   private TransactionCreationEvent lastTransactionCreationEvent;
   private BitcoinSentEvent lastBitcoinSentEvent;
   private TransactionSeenEvent lastTransactionSeenEvent;
 
   private boolean initialised = false;
+
+  // The current transaction ID
+  private String currentTransactionId;
 
   /**
    * @param wizard The wizard managing the states
@@ -65,15 +70,6 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
   @Override
   public void newPanelModel() {
-
-    // Configure the panel model
-    EmptyWalletReportPanelModel panelModel = new EmptyWalletReportPanelModel(
-      getPanelName()
-    );
-    setPanelModel(panelModel);
-
-    // Bind it to the wizard model
-    getWizardModel().setReportPanelModel(panelModel);
 
     lastTransactionCreationEvent = null;
     lastBitcoinSentEvent = null;
@@ -109,6 +105,12 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     transactionConfirmationStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
     AccessibilityDecorator.apply(transactionConfirmationStatus, MessageKey.TRANSACTION_CONFIRMATION_STATUS);
 
+    // Provide an empty status label (populated after show)
+    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.TREZOR_FAILURE_OPERATION), null, Optional.<Boolean>absent());
+    reportStatusLabel.setVisible(false);
+
+    contentPanel.add(reportStatusLabel, "aligny top,wrap");
+
     // Ensure the labels wrap if the error messages are too wide
     contentPanel.add(transactionConstructionStatusSummary, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     contentPanel.add(transactionConstructionStatusDetail, "grow,push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
@@ -126,6 +128,21 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
   }
 
+
+  @Override
+  public boolean beforeShow() {
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+
+          LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
+          transactionConstructionStatusDetail.setText("");
+        }
+      });
+    return true;
+  }
+
   @Override
   public void afterShow() {
 
@@ -133,15 +150,28 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
       new Runnable() {
         @Override
         public void run() {
-          getFinishButton().requestFocusInWindow();
-          if (lastTransactionCreationEvent != null) {
-            onTransactionCreationEvent(lastTransactionCreationEvent);
-          }
-          if (lastBitcoinSentEvent != null) {
-            onBitcoinSentEvent(lastBitcoinSentEvent);
-          }
-          if (lastTransactionSeenEvent != null) {
-            onTransactionSeenEvent(lastTransactionSeenEvent);
+
+          // Check for report message from hardware wallet
+          LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
+
+          if (getWizardModel().getReportMessageKey().isPresent() && !getWizardModel().getReportMessageStatus()) {
+            // Hardware wallet report indicates cancellation
+            transactionConstructionStatusSummary.setVisible(false);
+            transactionConstructionStatusDetail.setVisible(false);
+          } else {
+            // Transaction must be progressing in some manner
+            if (lastTransactionCreationEvent != null) {
+              onTransactionCreationEvent(lastTransactionCreationEvent);
+              lastTransactionCreationEvent = null;
+            }
+            if (lastBitcoinSentEvent != null) {
+              onBitcoinSentEvent(lastBitcoinSentEvent);
+              lastBitcoinSentEvent = null;
+            }
+            if (lastTransactionSeenEvent != null) {
+              onTransactionSeenEvent(lastTransactionSeenEvent);
+              lastTransactionSeenEvent = null;
+            }
           }
         }
       });
@@ -167,7 +197,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
     if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
       // We now have a transactionId so keep that in the panel model for filtering TransactionSeenEvents later
-      getPanelModel().get().setTransactionId(transactionCreationEvent.getTransactionId());
+      currentTransactionId = transactionCreationEvent.getTransactionId();
 
       LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
       transactionConstructionStatusDetail.setText("");
@@ -218,42 +248,39 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
       return;
     }
 
+    currentTransactionId = transactionSeenEvent.getTransactionId();
+
     // Is this an event about the transaction that was just sent ?
-    // If so, update the UI
-    if (getPanelModel().get() != null) {
+    if (transactionSeenEvent.getTransactionId().equals(currentTransactionId)) {
 
-      String currentTransactionId = getPanelModel().get().getTransactionId();
+      final PaymentStatus paymentStatus = WalletService.calculateStatus(
+        transactionSeenEvent.getConfidenceType(),
+        transactionSeenEvent.getDepthInBlocks(),
+        transactionSeenEvent.getNumberOfPeers()
+      );
 
-      if (transactionSeenEvent.getTransactionId().equals(currentTransactionId)) {
-        final PaymentStatus paymentStatus = WalletService.calculateStatus(
-          transactionSeenEvent.getConfidenceType(),
-          transactionSeenEvent.getDepthInBlocks(),
-          transactionSeenEvent.getNumberOfPeers()
-        );
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
 
-        SwingUtilities.invokeLater(
-          new Runnable() {
-            @Override
-            public void run() {
+            transactionConfirmationStatus.setText(
+              Languages.safeText(
+                paymentStatus.getStatusKey(),
+                transactionSeenEvent.getNumberOfPeers()
+              )
+            );
 
-              transactionConfirmationStatus.setText(
-                Languages.safeText(
-                  paymentStatus.getStatusKey(),
-                  transactionSeenEvent.getNumberOfPeers()
-                )
-              );
+            LabelDecorator.applyPaymentStatusIconAndColor(
+              paymentStatus,
+              transactionConfirmationStatus,
+              transactionSeenEvent.isCoinbase(),
+              MultiBitUI.NORMAL_ICON_SIZE
+            );
 
-              LabelDecorator.applyPaymentStatusIconAndColor(
-                paymentStatus,
-                transactionConfirmationStatus,
-                transactionSeenEvent.isCoinbase(),
-                MultiBitUI.NORMAL_ICON_SIZE
-              );
+          }
+        });
 
-            }
-          });
-
-      }
     }
   }
 }

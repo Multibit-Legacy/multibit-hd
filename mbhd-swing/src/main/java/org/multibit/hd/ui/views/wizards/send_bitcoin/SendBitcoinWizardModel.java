@@ -62,12 +62,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    */
   private int txOutputIndex = -1;
 
-  /**
-   * The FeeService used to calculate the FeeState
-   */
-  //private FeeService feeService;
-
-  private final boolean emptyWallet;
   private final Optional<BitcoinURI> bitcoinURI;
 
   /**
@@ -84,7 +78,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     super(state);
 
     this.bitcoinURI = parameter.getBitcoinURI();
-    this.emptyWallet = parameter.isEmptyWallet();
 
   }
 
@@ -130,8 +123,11 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
         break;
 
       case SEND_CONFIRM_TREZOR:
-        // Move to send report
+        // Move to report
         state = SEND_REPORT;
+        break;
+      default:
+        // Do nothing
     }
   }
 
@@ -245,9 +241,11 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    * @return True if the transaction was prepared OK
    */
   private boolean prepareTransaction() {
+
     Preconditions.checkNotNull(enterAmountPanelModel);
     Preconditions.checkNotNull(confirmPanelModel);
 
+    // Ensure Bitcoin network service is started
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
@@ -276,7 +274,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     } else {
       fiatPayment = Optional.absent();
     }
-    // Prepare the transaction i.e work out the fee sizes
+
+    // Prepare the transaction i.e work out the fee sizes (not empty wallet)
     sendRequestSummary = new SendRequestSummary(
       bitcoinAddress,
       coin,
@@ -285,7 +284,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       BitcoinNetworkService.DEFAULT_FEE_PER_KB,
       null,
       feeState,
-      emptyWallet);
+      false);
 
     log.debug("Just about to prepare transaction for sendRequestSummary: {}", sendRequestSummary);
     return bitcoinNetworkService.prepareTransaction(sendRequestSummary);
