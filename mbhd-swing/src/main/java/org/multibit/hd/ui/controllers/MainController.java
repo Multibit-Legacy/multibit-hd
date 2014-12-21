@@ -24,6 +24,7 @@ import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.view.SwitchWalletEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
 import org.multibit.hd.ui.languages.Languages;
@@ -226,6 +227,15 @@ public class MainController extends AbstractController implements
       hideAsExitCancel(event.getPanelName());
 
     }
+  }
+
+
+  @Subscribe
+  public void onSwitchWalletEvent(SwitchWalletEvent event) {
+
+    log.debug("Switch Wallet event: '{}'", event);
+
+     handleSwitchWallet();
   }
 
   /**

@@ -90,6 +90,14 @@ public class ViewEvents {
   }
 
   /**
+    * <p>Broadcast a new "switch wallet" event</p>
+    */
+   public static void fireSwitchWalletEvent() {
+     log.debug("Firing 'switch wallet' event");
+     CoreServices.uiEventBus.post(new SwitchWalletEvent());
+   }
+
+  /**
    * <p>Broadcast a new "alert removed" event</p>
    */
   public static void fireAlertRemovedEvent() {
