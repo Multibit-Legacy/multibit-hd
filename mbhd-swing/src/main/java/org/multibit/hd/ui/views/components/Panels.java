@@ -15,7 +15,6 @@ import org.multibit.hd.ui.views.components.panels.RoundedPanel;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -368,9 +367,8 @@ public class Panels {
   }
 
   /**
-   * <p>A "wallet selector" panel provides a means of choosing how a wallet is to be created/accessed</p>
+   * <p>A standard "wallet selector" panel provides a means of choosing how a wallet is to be created/accessed</p>
    *
-   * @param mode                   The mode (e.g. standard, Trezor etc)
    * @param listener               The action listener
    * @param createCommand          The create command name
    * @param existingWalletCommand  The existing wallet command name
@@ -380,7 +378,6 @@ public class Panels {
    * @return A new "wallet selector" panel
    */
   public static JPanel newWalletSelector(
-    WelcomeWizardMode mode,
     ActionListener listener,
     String createCommand,
     String existingWalletCommand,
@@ -390,10 +387,7 @@ public class Panels {
 
     JPanel panel = Panels.newPanel();
 
-    JRadioButton radio1 = RadioButtons.newRadioButton(
-      listener,
-      WelcomeWizardMode.TREZOR.equals(mode) ? MessageKey.TREZOR_CREATE_WALLET : MessageKey.CREATE_WALLET
-    );
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.CREATE_WALLET);
     radio1.setSelected(true);
     radio1.setActionCommand(createCommand);
 
@@ -424,6 +418,55 @@ public class Panels {
     panel.add(radio2, "wrap");
     panel.add(radio3, "wrap");
     panel.add(radio4, "wrap");
+
+    return panel;
+  }
+
+  /**
+   * <p>A "hardware wallet selector" panel provides a means of choosing how a hardware wallet is to be created/accessed</p>
+   *
+   * @param listener              The action listener
+   * @param createCommand         The create command name
+   * @param existingWalletCommand The existing wallet command name
+   * @param restoreWalletCommand  The restore wallet command name
+   *
+   * @return A new "wallet selector" panel
+   */
+  public static JPanel newHardwareWalletSelector(
+    ActionListener listener,
+    String createCommand,
+    String existingWalletCommand,
+    String restoreWalletCommand
+  ) {
+
+    JPanel panel = Panels.newPanel();
+
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.TREZOR_CREATE_WALLET);
+    radio1.setSelected(true);
+    radio1.setActionCommand(createCommand);
+
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.USE_EXISTING_WALLET);
+    radio2.setActionCommand(existingWalletCommand);
+
+    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_WALLET);
+    radio3.setActionCommand(restoreWalletCommand);
+
+    // Check for existing wallets
+    if (WalletManager.getWalletSummaries(false).isEmpty()) {
+      radio2.setEnabled(false);
+      radio2.setForeground(UIManager.getColor("RadioButton.disabledText"));
+    }
+
+    // Wallet selection is mutually exclusive
+    ButtonGroup group = new ButtonGroup();
+    group.add(radio1);
+    group.add(radio2);
+    group.add(radio3);
+
+    // Add to the panel
+    panel.add(radio1, "wrap");
+    panel.add(radio2, "wrap");
+    panel.add(radio3, "wrap");
 
     return panel;
   }

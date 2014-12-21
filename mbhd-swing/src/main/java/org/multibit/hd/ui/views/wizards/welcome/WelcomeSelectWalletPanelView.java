@@ -31,8 +31,6 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   // Model
   private WelcomeWizardState currentSelection;
 
-  // View components
-
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
@@ -46,8 +44,8 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public void newPanelModel() {
 
-    WelcomeWizardMode mode = getWizardModel().getMode();
-    if (WelcomeWizardMode.TREZOR.equals(mode)) {
+    // Use the wizard model to determine the mode (don't store the result due to thread safety)
+    if (WelcomeWizardMode.TREZOR.equals(getWizardModel().getMode())) {
       currentSelection = TREZOR_CREATE_WALLET_PREPARATION;
     } else {
       currentSelection = CREATE_WALLET_PREPARATION;
@@ -70,16 +68,25 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
         "[]" // Row constraints
       ));
 
-    contentPanel.add(
-      Panels.newWalletSelector(
-        getWizardModel().getMode(),
-        this,
-        currentSelection.name(), // Relies on create being default
-        WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
-        RESTORE_PASSWORD_SEED_PHRASE.name(),
-        RESTORE_WALLET_SEED_PHRASE.name()
-      ), "wrap");
-
+    // Use the wizard model to determine the mode (don't store the result due to thread safety)
+    if (WelcomeWizardMode.TREZOR.equals(getWizardModel().getMode())) {
+      contentPanel.add(
+        Panels.newHardwareWalletSelector(
+          this,
+          TREZOR_CREATE_WALLET_PREPARATION.name(), // Relies on create being default
+          WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
+          RESTORE_WALLET_SELECT_BACKUP.name() // Triggers a transition to backups
+        ), "wrap");
+    } else {
+      contentPanel.add(
+        Panels.newWalletSelector(
+          this,
+          CREATE_WALLET_PREPARATION.name(), // Relies on create being default
+          WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
+          RESTORE_PASSWORD_SEED_PHRASE.name(),
+          RESTORE_WALLET_SEED_PHRASE.name()
+        ), "wrap");
+    }
   }
 
   @Override
@@ -137,6 +144,9 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
     JRadioButton source = (JRadioButton) e.getSource();
 
     currentSelection = WelcomeWizardState.valueOf(source.getActionCommand());
+
+    // Bind this to the wizard model
+    getWizardModel().setSelectWalletChoice(currentSelection);
 
   }
 }

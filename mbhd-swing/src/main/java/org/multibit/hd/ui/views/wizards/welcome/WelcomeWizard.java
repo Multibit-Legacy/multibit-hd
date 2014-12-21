@@ -150,8 +150,24 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
 
         switch (getWizardModel().getState()) {
           case WELCOME_SELECT_WALLET:
-            // Treat as a Finish
-            hide(getWizardModel().getPanelName(), false);
+
+            // Radio buttons indicate the next state
+            switch (getWizardModel().getSelectWalletChoice()) {
+              case WELCOME_SELECT_WALLET:
+                // Transition to credentials
+                hide(getWizardModel().getPanelName(), false);
+                break;
+              default:
+                // Treat as a Next
+
+                // Move to the next state
+                getWizardModel().showNext();
+
+                // Show the panel based on the state
+                show(getWizardModel().getPanelName());
+                break;
+            }
+
             break;
           case TREZOR_CREATE_WALLET_ENTER_NEW_PIN:
           case TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN:

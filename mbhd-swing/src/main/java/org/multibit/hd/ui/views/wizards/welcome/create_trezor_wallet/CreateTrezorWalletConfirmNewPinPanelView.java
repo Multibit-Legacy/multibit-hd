@@ -48,9 +48,6 @@ public class CreateTrezorWalletConfirmNewPinPanelView extends AbstractWizardPane
 
     enterPinMaV = Components.newEnterPinMaV(getPanelName());
 
-    // Bind it to the wizard model
-    getWizardModel().setConfirmNewPinPanelView(this);
-
     // Register components
     registerComponents(enterPinMaV);
 
