@@ -36,7 +36,7 @@ import javax.swing.*;
  *
  * @since 0.0.1
  */
-public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, EmptyWalletReportPanelModel> {
+public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, String> {
 
   private static final Logger log = LoggerFactory.getLogger(EmptyWalletReportPanelView.class);
 
@@ -54,6 +54,9 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
   private boolean initialised = false;
 
+  // The current transaction ID
+  private String currentTransactionId;
+
   /**
    * @param wizard The wizard managing the states
    */
@@ -65,15 +68,6 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
   @Override
   public void newPanelModel() {
-
-    // Configure the panel model
-    EmptyWalletReportPanelModel panelModel = new EmptyWalletReportPanelModel(
-      getPanelName()
-    );
-    setPanelModel(panelModel);
-
-    // Bind it to the wizard model
-    getWizardModel().setReportPanelModel(panelModel);
 
     lastTransactionCreationEvent = null;
     lastBitcoinSentEvent = null;
@@ -167,7 +161,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
     if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
       // We now have a transactionId so keep that in the panel model for filtering TransactionSeenEvents later
-      getPanelModel().get().setTransactionId(transactionCreationEvent.getTransactionId());
+      currentTransactionId = transactionCreationEvent.getTransactionId();
 
       LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
       transactionConstructionStatusDetail.setText("");
@@ -222,7 +216,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     // If so, update the UI
     if (getPanelModel().get() != null) {
 
-      String currentTransactionId = getPanelModel().get().getTransactionId();
+      currentTransactionId = transactionSeenEvent.getTransactionId();
 
       if (transactionSeenEvent.getTransactionId().equals(currentTransactionId)) {
         final PaymentStatus paymentStatus = WalletService.calculateStatus(

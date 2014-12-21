@@ -46,11 +46,6 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   private EmptyWalletEnterDetailsPanelModel enterDetailsPanelModel;
 
   /**
-   * The "report" panel model
-   */
-  private EmptyWalletReportPanelModel reportPanelModel;
-
-  /**
    * The current wallet balance in coins
    */
   private final Optional<Coin> coinAmount;
@@ -62,6 +57,7 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
    * The prepared tx
    */
   private SendRequestSummary sendRequestSummary;
+  private EmptyWalletConfirmTrezorPanelView emptyWalletConfirmTrezorPanelView;
 
   /**
    * @param state The state object
@@ -159,15 +155,6 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
   }
 
   /**
-   * <p>Reduced visibility for panel models only</p>
-   *
-   * @param reportPanelModel The "confirm" panel model
-   */
-  void setReportPanelModel(EmptyWalletReportPanelModel reportPanelModel) {
-    this.reportPanelModel = reportPanelModel;
-  }
-
-  /**
    * @return The current wallet balance in coins
    */
   public Optional<Coin> getCoinAmount() {
@@ -247,4 +234,8 @@ public class EmptyWalletWizardModel extends AbstractWizardModel<EmptyWalletState
 
      // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
    }
+
+  public void setEmptyWalletConfirmTrezorPanelView(EmptyWalletConfirmTrezorPanelView emptyWalletConfirmTrezorPanelView) {
+    this.emptyWalletConfirmTrezorPanelView = emptyWalletConfirmTrezorPanelView;
+  }
 }
