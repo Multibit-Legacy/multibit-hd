@@ -222,6 +222,10 @@ public class BitcoinNetworkService extends AbstractService {
         public void run() {
           Preconditions.checkNotNull(peerGroup, "'peerGroup' must be present");
 
+          // Recalculate the bloom filter before every sync
+          log.debug("Recalculating bloom filter ...");
+          recalculateFastCatchupAndFilter();
+
           log.debug("Downloading block chain...");
 
           // This method blocks until completed but fires events along the way
