@@ -2,10 +2,12 @@ package org.multibit.hd.ui.views.wizards.empty_wallet;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
@@ -152,6 +154,17 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
       isNextEnabled()
     );
 
+  }
+
+  @Subscribe
+  public void onComponentChangedEvent(ComponentChangedEvent event) {
+    if (getPanelName().equals(event.getPanelName())) {
+      ViewEvents.fireWizardButtonEnabledEvent(
+           getPanelName(),
+           WizardButton.NEXT,
+           isNextEnabled()
+         );
+    }
   }
 
   /**

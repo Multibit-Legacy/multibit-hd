@@ -5,11 +5,14 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Address;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.Addresses;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.views.components.*;
@@ -17,6 +20,8 @@ import org.multibit.hd.ui.views.components.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 /**
@@ -80,6 +85,21 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
           updateModelFromView();
         }
       });
+
+    // Extra listener to cater for direct paste into recipientComboBox using ctrl-V
+    recipientComboBox.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent event) {
+        if (event.getKeyChar() == 'v' && event.isMetaDown()) {
+          performPaste();
+
+          // Consume the event to stop a double paste
+          event.consume();
+
+          // Fire a component change event so that handlers for things like button enabling get to run
+          ViewEvents.fireComponentChangedEvent(getModel().get().getPanelName(), getModel());
+        }
+      }
+    });
 
     panel.add(Labels.newRecipient());
     // Specify minimum width for consistent appearance across contact names and locales
@@ -207,18 +227,28 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
       @Override
       public void actionPerformed(ActionEvent e) {
-
-        Optional<String> pastedText = ClipboardUtils.pasteStringFromClipboard();
-
-        if (pastedText.isPresent()) {
-
-          recipientComboBox.getEditor().setItem(pastedText.get());
-          updateModelFromView();
-
-        }
-
+      performPaste();
       }
     };
+  }
+
+  private void performPaste() {
+    Optional<String> pastedText = ClipboardUtils.pasteStringFromClipboard();
+    if (pastedText.isPresent()) {
+      Optional<Address> address = Addresses.parse(pastedText.get());
+      if (address.isPresent()) {
+        Recipient recipient = new Recipient(address.get());
+        recipientComboBox.getEditor().setItem(recipient);
+      } else {
+        recipientComboBox.getEditor().setItem(pastedText.get());
+      }
+
+      // Clear the gravatar
+      imageLabel.setVisible(false);
+      
+      updateModelFromView();
+
+    }
   }
 
 }
