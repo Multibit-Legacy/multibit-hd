@@ -151,7 +151,9 @@ public class FooterView extends AbstractView {
               statusIcon.setForeground(Themes.currentTheme.statusGreen());
 
               // Show the peer count directly if synced
-              statusLabel.setText(Languages.safeText(CoreMessageKey.PEER_COUNT, CoreServices.getOrCreateBitcoinNetworkService().getNumberOfConnectedPeers()));
+              String peerCountMessage = Languages.safeText(CoreMessageKey.PEER_COUNT, CoreServices.getOrCreateBitcoinNetworkService().getNumberOfConnectedPeers());
+              statusLabel.setText(peerCountMessage);
+              statusIcon.setToolTipText(peerCountMessage);
               break;
             case EMPTY:
               // The event did not specify a RAG status

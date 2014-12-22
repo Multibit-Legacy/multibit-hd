@@ -245,7 +245,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
       // Clear the gravatar
       imageLabel.setVisible(false);
-      
+
       updateModelFromView();
 
     }

@@ -440,6 +440,9 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
+   * Work out if a client fee is required to be added.
+   * If the client fee is smaller than the dust level then it is never added
+   *
    * @param sendRequestSummary The information required to send bitcoin
    *
    * @return True if no error was encountered
@@ -448,12 +451,17 @@ public class BitcoinNetworkService extends AbstractService {
 
     log.debug("Appending client fee (if required)");
 
-    final boolean isClientFeeRequired;
+    boolean isClientFeeRequired;
     if (sendRequestSummary.getFeeState().isPresent()) {
       int currentNumberOfSends = sendRequestSummary.getFeeState().get().getCurrentNumberOfSends();
       int nextFeeSendCount = sendRequestSummary.getFeeState().get().getNextFeeSendCount();
 
       isClientFeeRequired = (currentNumberOfSends == nextFeeSendCount) || forceNow;
+
+      // Never send a client fee that is dust
+      if (isClientFeeRequired && sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) <0) {
+        isClientFeeRequired = false;
+      }
 
     } else {
       // Nothing more to be done
@@ -547,8 +555,8 @@ public class BitcoinNetworkService extends AbstractService {
           return false;
         }
 
-        // Add a tx output to pay the client fee if it is greater than the dust level
-        if (sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) <= 0) {
+        // Add a tx output to pay the client fee if it is greater than or equal to the dust level
+        if (sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) < 0) {
           log.debug("Not adding client fee as it is smaller than dust : {}", sendRequestSummary.getFeeState().get().getFeeOwed());
           sendRequestSummary.setClientFeeAdded(Optional.<Coin>absent());
         } else {

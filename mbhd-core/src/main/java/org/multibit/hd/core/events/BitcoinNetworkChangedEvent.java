@@ -27,4 +27,11 @@ public class BitcoinNetworkChangedEvent implements CoreEvent {
   public BitcoinNetworkSummary getSummary() {
     return summary;
   }
+
+  @Override
+  public String toString() {
+    return "BitcoinNetworkChangedEvent{" +
+            "summary=" + summary +
+            '}';
+  }
 }

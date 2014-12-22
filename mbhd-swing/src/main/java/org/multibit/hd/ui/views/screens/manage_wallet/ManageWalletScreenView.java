@@ -6,6 +6,7 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
@@ -109,7 +110,7 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
   public void afterShow() {
 
     // Ensure any unprocessed bitcoin network change events are dealt with
-    if (isInitialised() && unprocessedBitcoinNetworkChangedEvent.isPresent()) {
+    if (unprocessedBitcoinNetworkChangedEvent.isPresent()) {
       updateEmptyButton(unprocessedBitcoinNetworkChangedEvent.get());
       unprocessedBitcoinNetworkChangedEvent = Optional.absent();
     }
@@ -120,10 +121,11 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
    */
   @Subscribe
   public void onBitcoinNetworkChangeEvent(final BitcoinNetworkChangedEvent event) {
-
     if (!isInitialised()) {
-      // Remember the last bitcoin change event if the panel is not initialised
-      unprocessedBitcoinNetworkChangedEvent = Optional.of(event);
+      // Remember the last bitcoin change event if the panel is not initialised and it has severity information
+      if (!event.getSummary().getSeverity().equals(RAGStatus.EMPTY)) {
+        unprocessedBitcoinNetworkChangedEvent = Optional.of(event);
+      }
       log.trace("Not initialised so remembering the the unprocessed Bitcoin network change event " + event.getSummary());
       return;
     }
@@ -308,7 +310,7 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
         new Runnable() {
           @Override
           public void run() {
-            log.trace("Changing button enable state, newEnabled = " + finalNewEnabled);
+            log.debug("Changing button enable state, newEnabled = " + finalNewEnabled);
 
             showEmptyWalletButton.setEnabled(finalNewEnabled);
           }

@@ -255,18 +255,8 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
 
     sendRequestSummary.setNotes(Optional.of(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE)));
 
-    // Work out if a client fee is being paid now
-    if (feeState.isPresent()) {
-      // With an empty wallet you always pay the client fee now (if above the dust level)
-      if (feeState.get().getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) > 0) {
-        // The fee is due now
-        sendRequestSummary.setClientFeeAdded(Optional.of(feeState.get().getFeeOwed()));
-      }
-    }
-
     log.debug("Just about to prepare empty wallet transaction for sendRequestSummary: {}", sendRequestSummary);
     return bitcoinNetworkService.prepareTransaction(sendRequestSummary);
-
   }
 
   /**

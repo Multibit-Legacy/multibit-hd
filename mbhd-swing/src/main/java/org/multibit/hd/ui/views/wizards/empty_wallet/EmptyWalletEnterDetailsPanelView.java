@@ -159,6 +159,9 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
   @Subscribe
   public void onComponentChangedEvent(ComponentChangedEvent event) {
     if (getPanelName().equals(event.getPanelName())) {
+      // Only show if the address shown is in the wallet
+      isAddressMineStatusLabel.setVisible(getPanelModel().get().isAddressMine());
+
       ViewEvents.fireWizardButtonEnabledEvent(
            getPanelName(),
            WizardButton.NEXT,
