@@ -269,6 +269,7 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
    */
   private void updateEmptyButton(BitcoinNetworkChangedEvent event) {
 
+    log.debug("Event: {}", event);
     boolean currentEnabled = showEmptyWalletButton.isEnabled();
 
     boolean newEnabled = currentEnabled;

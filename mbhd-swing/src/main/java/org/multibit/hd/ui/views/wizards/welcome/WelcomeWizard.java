@@ -96,12 +96,10 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
       TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name(),
       new CreateTrezorWalletConfirmNewPinPanelView(this, TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()));
 
-    // TODO Implement this
     wizardViewMap.put(
       TREZOR_CREATE_WALLET_CONFIRM_WORD.name(),
       new CreateTrezorWalletConfirmWordPanelView(this, TREZOR_CREATE_WALLET_CONFIRM_WORD.name()));
 
-    // TODO Implement this
     wizardViewMap.put(
       TREZOR_CREATE_WALLET_REPORT.name(),
       new CreateTrezorWalletReportPanelView(this, TREZOR_CREATE_WALLET_REPORT.name()));

@@ -68,7 +68,7 @@ public class WalletId {
   /**
    * Create an wallet id from the given seed and salt
    *
-   * You can use this to generate a wallet id for a Trezor wallet passing in WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS
+   * You can use this to generate a wallet id for a Trezor soft wallet passing in WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS
    * This produces a wallet id from the seed using various trapdoor functions.
    * The seed is typically generated from the SeedPhraseGenerator#convertToSeed method.
    *

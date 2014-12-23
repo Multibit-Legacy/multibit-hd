@@ -484,7 +484,8 @@ public enum BackupManager {
     }
     WalletId walletId = new WalletId(walletRoot);
 
-    // Make a backup of all the current file in the wallet root directory if it exists
+    // TODO  Make a backup of all the current file in the wallet root directory if it exists
+
     File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
 
     File temporaryFile = null;
