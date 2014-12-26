@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.LabelDecorator;
@@ -112,6 +113,20 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
       String nowTimestamp = Dates.newSeedTimestamp();
       log.debug("The timestamp for the new wallet is {}", nowTimestamp);
       timestampText.setText(nowTimestamp);
+
+      // Remember the timestamp and walletId for use later
+      // (specifically for setting the fast catch up when this wallet first syncs when it is opened)
+      if (Configurations.currentConfiguration != null &&
+              Configurations.currentConfiguration.getWallet() != null &&
+              getWizardModel().getWalletId().get() != null
+              ) {
+        String formattedWalletId = getWizardModel().getWalletId().get().toFormattedString();
+        Configurations.currentConfiguration.getWallet().setRecentWalletId(formattedWalletId);
+        Configurations.currentConfiguration.getWallet().setRecentWalletTimestamp(nowTimestamp);
+        log.debug("Saving recent timestamp of {} for wallet with id {}", nowTimestamp, formattedWalletId);
+      } else {
+        log.debug("Could not save the recent timestamp of {} to current configuration as it is not set up yet", nowTimestamp);
+      }
       timestampLabel.setVisible(true);
       timestampText.setVisible(true);
       timestampNote.setVisible(true);
