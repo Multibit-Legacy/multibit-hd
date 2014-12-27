@@ -23,9 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.WindowAdapter;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -74,13 +72,57 @@ public class MainView extends JFrame {
     Panels.applicationFrame = this;
 
     // Add a glass pane which dims the whole screen - used for switch (MainController#handleSwitchWallet)
-    getRootPane().setGlassPane(new JComponent() {
-        public void paintComponent(Graphics g) {
-            g.setColor(new Color(0, 0, 0, 50));
-            g.fillRect(0, 0, getWidth(), getHeight());
-            super.paintComponent(g);
-        }
+    // It also absorbs keystrokes and mouse events
+    JComponent glassPane = new JComponent() {
+            public void paintComponent(Graphics g) {
+                g.setColor(new Color(0, 0, 0, 50));
+                g.fillRect(0, 0, getWidth(), getHeight());
+                super.paintComponent(g);
+            }
+    };
+    glassPane.addKeyListener(new KeyListener() {
+      @Override
+      public void keyTyped(KeyEvent e) {
+
+      }
+
+      @Override
+      public void keyPressed(KeyEvent e) {
+
+      }
+
+      @Override
+      public void keyReleased(KeyEvent e) {
+
+      }
     });
+    glassPane.addMouseListener(new MouseListener() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+
+      }
+
+      @Override
+      public void mousePressed(MouseEvent e) {
+
+      }
+
+      @Override
+      public void mouseReleased(MouseEvent e) {
+
+      }
+
+      @Override
+      public void mouseEntered(MouseEvent e) {
+
+      }
+
+      @Override
+      public void mouseExited(MouseEvent e) {
+
+      }
+    });
+    getRootPane().setGlassPane(glassPane);
 
     addWindowListener(
       new WindowAdapter() {
