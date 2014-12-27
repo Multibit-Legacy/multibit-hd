@@ -401,7 +401,7 @@ public class Panels {
     radio4.setActionCommand(restoreWalletCommand);
 
     // Check for existing wallets
-    if (WalletManager.getWalletSummaries(false).isEmpty()) {
+    if (WalletManager.getWalletSummaries().isEmpty()) {
       radio2.setEnabled(false);
       radio2.setForeground(UIManager.getColor("RadioButton.disabledText"));
     }
@@ -452,7 +452,7 @@ public class Panels {
     radio3.setActionCommand(restoreWalletCommand);
 
     // Check for existing wallets
-    if (WalletManager.getWalletSummaries(false).isEmpty()) {
+    if (WalletManager.getWalletSummaries().isEmpty()) {
       radio2.setEnabled(false);
       radio2.setForeground(UIManager.getColor("RadioButton.disabledText"));
     }

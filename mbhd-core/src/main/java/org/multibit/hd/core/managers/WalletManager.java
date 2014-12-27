@@ -551,8 +551,11 @@ public enum WalletManager implements WalletEventListener {
       WalletManager.updateWalletSummary(walletSummaryFile, walletSummary);
     }
 
-    if (Configurations.currentConfiguration != null) {
-      Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
+    // Remember the current soft wallet root
+    if (WalletType.TREZOR_HARD_WALLET != walletSummary.getWalletType()) {
+      if (Configurations.currentConfiguration != null) {
+        Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
+      }
     }
 
     // See if there is a checkpoints file - if not then get the InstallationManager to copy one in
@@ -899,11 +902,9 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * @param filterHardWallets True if "hard" wallets are to be filtered out
-   *
    * @return A list of wallet summaries based on the current application directory contents (never null)
    */
-  public static List<WalletSummary> getWalletSummaries(boolean filterHardWallets) {
+  public static List<WalletSummary> getWalletSummaries() {
 
     List<File> walletDirectories = findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
     Optional<String> walletRoot = INSTANCE.getCurrentWalletRoot();

@@ -31,6 +31,10 @@ public class WalletConfiguration {
     return currentWalletRoot;
   }
 
+  /**
+   * The current soft wallet root
+   * @param currentWalletRoot
+   */
   public void setCurrentWalletRoot(String currentWalletRoot) {
     this.currentWalletRoot = currentWalletRoot;
   }
