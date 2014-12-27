@@ -29,6 +29,8 @@ sound:
   receiveSound: true
 wallet:
   currentWalletRoot: null
+  recentWalletDataValidity: 1419692967155
+  recentWalletLabel: "multibit.org 178"
 licenceAccepted: false
 tor: false
 trezor: true
