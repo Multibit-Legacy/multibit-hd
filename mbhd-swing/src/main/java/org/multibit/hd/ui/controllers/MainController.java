@@ -470,7 +470,8 @@ public class MainController extends AbstractController implements
             new Runnable() {
               @Override
               public void run() {
-                Panels.applicationFrame.setVisible(false);
+                // Dim the application using the glass pane
+                Panels.applicationFrame.getRootPane().getGlassPane().setVisible(true);
               }
             });
 
@@ -515,7 +516,8 @@ public class MainController extends AbstractController implements
             new Runnable() {
               @Override
               public void run() {
-                // Provide a backdrop to the user and trigger the showing of the wizard
+                // Switch off the background dimming and trigger the showing of the wizard
+                Panels.applicationFrame.getRootPane().getGlassPane().setVisible(false);
                 mainView.refresh();
                 mainView.setRepeatLatestEvents(true);
               }

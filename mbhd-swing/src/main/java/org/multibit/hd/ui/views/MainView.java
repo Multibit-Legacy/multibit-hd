@@ -72,6 +72,16 @@ public class MainView extends JFrame {
 
     // Provide all panels with a reference to the main frame
     Panels.applicationFrame = this;
+
+    // Add a glass pane which dims the whole screen - used for switch (MainController#handleSwitchWallet)
+    getRootPane().setGlassPane(new JComponent() {
+        public void paintComponent(Graphics g) {
+            g.setColor(new Color(0, 0, 0, 50));
+            g.fillRect(0, 0, getWidth(), getHeight());
+            super.paintComponent(g);
+        }
+    });
+
     addWindowListener(
       new WindowAdapter() {
         @Override
