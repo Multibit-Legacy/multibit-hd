@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -94,6 +95,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private List<String> createWalletSeedPhrase = Lists.newArrayList();
   private List<String> restoreWalletSeedPhrase = Lists.newArrayList();
 
+  private final Random random = new Random();
   private final boolean restoring;
   private final WelcomeWizardMode mode;
 
@@ -104,7 +106,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private EnterSeedPhraseModel restoreWalletEnterTimestampModel;
 
   private ConfirmPasswordModel restoreWalletConfirmPasswordModel;
-  private String trezorWalletLabel = "multibit.org";
+  private String trezorWalletLabel = "multibit.org " + random.nextInt(1000);
   private SeedPhraseSize trezorSeedSize = SeedPhraseSize.TWELVE_WORDS;
 
   private String mostRecentPin;

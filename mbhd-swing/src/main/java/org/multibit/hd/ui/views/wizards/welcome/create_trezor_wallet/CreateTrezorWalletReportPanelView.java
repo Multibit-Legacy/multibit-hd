@@ -3,8 +3,13 @@ package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
+import org.multibit.hd.hardware.core.HardwareWalletService;
+import org.multibit.hd.hardware.core.fsm.HardwareWalletContext;
+import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.LabelDecorator;
 import org.multibit.hd.ui.views.components.Labels;
@@ -116,16 +121,25 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
 
       // Remember the timestamp and walletId for use later
       // (specifically for setting the fast catch up when this wallet first syncs when it is opened)
-      if (Configurations.currentConfiguration != null &&
-              Configurations.currentConfiguration.getWallet() != null &&
-              getWizardModel().getWalletId().get() != null
-              ) {
-        String formattedWalletId = getWizardModel().getWalletId().get().toFormattedString();
-        Configurations.currentConfiguration.getWallet().setRecentWalletId(formattedWalletId);
-        Configurations.currentConfiguration.getWallet().setRecentWalletTimestamp(nowTimestamp);
-        log.debug("Saving recent timestamp of {} for wallet with id {}", nowTimestamp, formattedWalletId);
-      } else {
-        log.debug("Could not save the recent timestamp of {} to current configuration as it is not set up yet", nowTimestamp);
+      Configuration currentConfiguration = Configurations.currentConfiguration;
+
+      Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+      if (hardwareWalletService.isPresent()) {
+        HardwareWalletContext context = hardwareWalletService.get().getContext();
+        log.debug("HardwareWalletContext: {}" + context);
+
+        if (currentConfiguration != null &&
+                currentConfiguration.getWallet() != null &&
+                context != null
+                ) {
+          Optional<Features> features = context.getFeatures();
+          if (features.isPresent()) {
+            long now = System.currentTimeMillis();
+            Configurations.currentConfiguration.getWallet().setRecentWalletDataValidity(now);
+            Configurations.currentConfiguration.getWallet().setRecentWalletLabel(getWizardModel().getTrezorWalletLabel());
+            log.debug("Saving for wallet with label {} the data validity time {}", getWizardModel().getTrezorWalletLabel(), now);
+          }
+        }
       }
       timestampLabel.setVisible(true);
       timestampText.setVisible(true);

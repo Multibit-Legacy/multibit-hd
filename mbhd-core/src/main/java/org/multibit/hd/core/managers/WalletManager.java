@@ -160,6 +160,7 @@ public enum WalletManager implements WalletEventListener {
   public static final String MBHD_SUMMARY_NAME = MBHD_WALLET_PREFIX + MBHD_SUMMARY_SUFFIX;
 
   public static final int LOOK_AHEAD_SIZE = 50; // A smaller look ahead size than the bitcoinj default of 100 (speeds up syncing as te bloom filters are smaller)
+  public static final long MAXIMUM_WALLET_CREATION_DELTA = 180 * 1000; // 3 minutes in millis
 
   private Optional<WalletSummary> currentWalletSummary = Optional.absent();
 
@@ -608,7 +609,7 @@ public enum WalletManager implements WalletEventListener {
           }
           log.debug("The blockStore is at height {}", blockStoreBlockHeight);
           if (walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) {
-            // Regular sync is ok - no need to checkpoint
+            // Regular sync is ok - no need to use checkpoints
             log.debug("Will perform a regular sync");
             performRegularSync = true;
           }

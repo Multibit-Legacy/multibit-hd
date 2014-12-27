@@ -763,6 +763,19 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           // Locate the installation directory
           final File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
+          // Work out if the wallet is a brand new Trezor wallet
+          // if the label is the same and the data validity time is within a few minutes of now then we use the
+          // data validity time as the replay date
+          long replayDateInMillis = DateTime.parse(WalletManager.EARLIEST_HD_WALLET_DATE).getMillis();
+          if (label.equals(Configurations.currentConfiguration.getWallet().getRecentWalletLabel())) {
+            long now = System.currentTimeMillis();
+            long dataValidityTime = Configurations.currentConfiguration.getWallet().getRecentWalletDataValidity();
+            if (now - dataValidityTime <= WalletManager.MAXIMUM_WALLET_CREATION_DELTA) {
+              replayDateInMillis = dataValidityTime;
+              log.debug("Using a replayDate for brand new Trezor of {}", replayDateInMillis);
+            }
+          }
+
           // Must be OK to be here
 
           return Optional.fromNullable(
@@ -770,7 +783,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
               applicationDataDirectory,
               parentKey,
               // There is no reliable timestamp for a 'new' wallet as it could exist elsewhere
-              DateTime.parse(WalletManager.EARLIEST_HD_WALLET_DATE).getMillis() / 1000,
+              replayDateInMillis / 1000,
               newWalletPassword,
               label, "Trezor"));
 

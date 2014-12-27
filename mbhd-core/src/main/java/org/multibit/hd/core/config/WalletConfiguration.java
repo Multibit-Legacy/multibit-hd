@@ -14,14 +14,15 @@ public class WalletConfiguration {
   private String currentWalletRoot;
 
   /**
-   * The timestamp of the recent wallet id (note is not related to the current wallet root)
+   * The time at which the recent wallet data was stored/ valid (milliseconds since epoch)
    */
-  private String recentWalletTimestamp;
+  private long recentWalletDataValidity;
 
   /**
-   * The WalletId in string form (e.g 11111111-22222222-33333333-44444444-55555555) of the wallet matching the recentWalletTimestamp
+   * The label of the recent Trezor wallet
    */
-  private String recentWalletId;
+  private String recentWalletLabel;
+
 
   /**
    * @return The current wallet root (e.g. "mbhd-11111111-22222222-33333333-44444444-55555555")
@@ -34,20 +35,20 @@ public class WalletConfiguration {
     this.currentWalletRoot = currentWalletRoot;
   }
 
-  public String getRecentWalletTimestamp() {
-    return recentWalletTimestamp;
+  public long getRecentWalletDataValidity() {
+    return recentWalletDataValidity;
   }
 
-  public void setRecentWalletTimestamp(String recentWalletTimestamp) {
-    this.recentWalletTimestamp = recentWalletTimestamp;
+  public void setRecentWalletDataValidity(long recentWalletDataValidity) {
+    this.recentWalletDataValidity = recentWalletDataValidity;
   }
 
-  public String getRecentWalletId() {
-    return recentWalletId;
+  public String getRecentWalletLabel() {
+    return recentWalletLabel;
   }
 
-  public void setRecentWalletId(String recentWalletId) {
-    this.recentWalletId = recentWalletId;
+  public void setRecentWalletLabel(String recentWalletLabel) {
+    this.recentWalletLabel = recentWalletLabel;
   }
 
   /**
@@ -58,8 +59,8 @@ public class WalletConfiguration {
     WalletConfiguration configuration = new WalletConfiguration();
 
     configuration.setCurrentWalletRoot(getCurrentWalletRoot());
-    configuration.setRecentWalletId(getRecentWalletId());
-    configuration.setRecentWalletTimestamp(getRecentWalletTimestamp());
+    configuration.setRecentWalletDataValidity(getRecentWalletDataValidity());
+    configuration.setRecentWalletLabel(getRecentWalletLabel());
 
     return configuration;
   }
