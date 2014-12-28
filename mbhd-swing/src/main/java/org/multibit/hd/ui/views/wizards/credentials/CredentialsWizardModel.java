@@ -69,6 +69,11 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   private CredentialsEnterPinPanelView enterPinPanelView;
 
   /**
+   * The "request master public key" panel node
+   */
+  private CredentialsRequestMasterPublicKeyPanelView requestMasterPublicKeyPanelView;
+
+  /**
    * The "request cipher key" panel view
    */
   private CredentialsRequestCipherKeyPanelView requestCipherKeyPanelView;
@@ -120,6 +125,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
     switch (state) {
       case CREDENTIALS_ENTER_PASSWORD:
+        break;
+      case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
         break;
       case CREDENTIALS_REQUEST_CIPHER_KEY:
         if (switchToPassword) {
@@ -188,6 +195,10 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   public void showOperationSucceeded(HardwareWalletEvent event) {
 
     switch (state) {
+      case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
+        // A successful get master public key has been performed
+        log.debug("CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY was successful");
+        break;
       case CREDENTIALS_ENTER_PIN:
         // Indicate a successful PIN
         getEnterPinPanelView().setPinStatus(true, true);
@@ -221,9 +232,9 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           log.debug("Using the payload as entropy");
           entropy = Optional.fromNullable(payload);
 
-          log.debug("Request the root node of the device");
-          requestRootNode();
-
+          // Ready to unlock the device wallet
+          log.debug("Calling unlockWalletWithEntropy");
+          unlockWalletWithEntropy();
         }
         break;
       default:
@@ -240,9 +251,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   public void showOperationFailed(HardwareWalletEvent event) {
 
     final Failure failure = (Failure) event.getMessage().get();
+    log.debug("A failure event has occurred {}", failure);
 
     switch (state) {
-
+      case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
+        // An unsuccessful get master public key has been performed
+        log.debug("CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY was unsuccessful");
+        break;
       case CREDENTIALS_ENTER_PIN:
         // User entered incorrect PIN so should start again
         state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
@@ -268,7 +283,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     if (Dates.nowUtc().isAfter(getIgnoreHardwareWalletEventsThreshold())) {
       // User attached an operational device in place of whatever
       // they are currently doing so start again
-      state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
+      state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
     }
 
   }
@@ -277,12 +292,15 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   public void receivedDeterministicHierarchy(HardwareWalletEvent event) {
 
     switch (state) {
-      case CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK:
+      case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
+        // A successful get master public key has been performed
+        log.debug("CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY was successful");
 
-        // Ready to unlock the device wallet
-        unlockWalletWithEntropy();
-
+        // Transition to request a cipher key (to provide entropy).
+        // This will most likely trigger a PIN request
+        state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;;
         break;
+
       default:
         // TODO Fill in the other states and provide success feedback
         log.info(
@@ -507,6 +525,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
         @Override
         public void onSuccess(Optional<WalletSummary> result) {
+          log.debug("Result: {}", result);
           // Check the result
           if (result.isPresent()) {
 
@@ -541,6 +560,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
         @Override
         public void onFailure(Throwable t) {
+          t.printStackTrace();
 
           // Ensure the view hides the spinner and enables components
           SwingUtilities.invokeLater(
@@ -818,6 +838,10 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
   public void setEnterPinPanelView(CredentialsEnterPinPanelView enterPinPanelView) {
     this.enterPinPanelView = enterPinPanelView;
+  }
+
+  public void setRequestMasterPublicKeyPanelView(CredentialsRequestMasterPublicKeyPanelView requestMasterPublicKeyPanelView) {
+    this.requestMasterPublicKeyPanelView = requestMasterPublicKeyPanelView;
   }
 
   public void setRequestCipherKeyPanelView(CredentialsRequestCipherKeyPanelView requestCipherKeyPanelView) {

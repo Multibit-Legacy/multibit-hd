@@ -214,7 +214,7 @@ public class MainView extends JFrame {
       // This section must come after a deferred hide has completed
 
       // Determine if we are in Trezor mode for the welcome wizard
-      WelcomeWizardMode mode = CredentialsRequestType.TREZOR_CIPHER_KEY.equals(credentialsRequestType) ? WelcomeWizardMode.TREZOR: WelcomeWizardMode.STANDARD;
+      WelcomeWizardMode mode = CredentialsRequestType.TREZOR.equals(credentialsRequestType) ? WelcomeWizardMode.TREZOR: WelcomeWizardMode.STANDARD;
 
       // Determine the appropriate starting screen for the welcome wizard
       if (Configurations.currentConfiguration.isLicenceAccepted()) {

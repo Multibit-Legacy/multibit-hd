@@ -20,6 +20,7 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.fsm.HardwareWalletContext;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
 import org.multibit.hd.hardware.core.messages.Failure;
 import org.multibit.hd.hardware.core.messages.PinMatrixRequest;
@@ -141,6 +142,15 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         state = WELCOME_SELECT_WALLET;
         break;
       case WELCOME_SELECT_WALLET:
+        if (RESTORE_WALLET_SEED_PHRASE.equals(selectWalletChoice)) {
+          // User has selected restore wallet - see if wallet is hard Trezor wallet
+          // If so no need to enter a seed phrase - use the rootNode from the master public key to work out the wallet id
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          if (hardwareWalletService.isPresent() && hardwareWalletService.get().isWalletPresent()) {
+            HardwareWalletContext context = hardwareWalletService.get().getContext();
+            log.debug("Hardware wallet context : {}", context);
+          }
+        }
         state = selectWalletChoice;
         break;
       case SELECT_WALLET_HARDWARE:

@@ -22,21 +22,21 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Credentials: Request cipher key</li>
+ * <li>Credentials: Request master public key</li>
  * </ul>
  * <p>This is the first step in getting the extended public key from a Trezor device</p>
  *
  * @since 0.0.1
  *  
  */
-public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelView<CredentialsWizardModel, String> {
+public class CredentialsRequestMasterPublicKeyPanelView extends AbstractWizardPanelView<CredentialsWizardModel, String> {
 
   private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
 
   /**
    * @param wizard The wizard managing the states
    */
-  public CredentialsRequestCipherKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
+  public CredentialsRequestMasterPublicKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.TREZOR_UNLOCK_TITLE, AwesomeIcon.LOCK);
 
@@ -46,7 +46,7 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
   public void newPanelModel() {
 
     // Bind it to the wizard model in case of failure
-    getWizardModel().setRequestCipherKeyPanelView(this);
+    getWizardModel().setRequestMasterPublicKeyPanelView(this);
 
   }
 
@@ -140,13 +140,13 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
 
     if (!nextEnabled) {
 
-      // Continue the wallet access process by requesting a cipher key
-      // to get the entropy for the password to unlock the wallet
+      // Start the wallet access process by requesting a cipher key
+      // to get a deterministic wallet ID
       //
       // This is done as a transitional panel to allow for a device
       // failure at each stage with the user having the option to
       // easily escape
-      getWizardModel().requestCipherKey();
+      getWizardModel().requestRootNode();
 
     }
 

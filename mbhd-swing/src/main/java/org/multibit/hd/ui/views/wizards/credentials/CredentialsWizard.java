@@ -32,6 +32,10 @@ public class CredentialsWizard extends AbstractHardwareWalletWizard<CredentialsW
       new CredentialsEnterPasswordPanelView(this, CredentialsState.CREDENTIALS_ENTER_PASSWORD.name()));
 
     wizardViewMap.put(
+      CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY.name(),
+      new CredentialsRequestMasterPublicKeyPanelView(this, CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY.name()));
+
+    wizardViewMap.put(
       CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY.name(),
       new CredentialsRequestCipherKeyPanelView(this, CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY.name()));
 

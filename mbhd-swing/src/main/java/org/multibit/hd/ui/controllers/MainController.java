@@ -822,7 +822,7 @@ public class MainController extends AbstractController implements
           ControllerEvents.fireAddAlertEvent(alertModel);
         }
         // Set the deferred credentials request type
-        deferredCredentialsRequestType = CredentialsRequestType.TREZOR_CIPHER_KEY;
+        deferredCredentialsRequestType = CredentialsRequestType.TREZOR;
         break;
       default:
         // The AbstractHardwareWalletWizard handles everything when a wizard is showing
@@ -1124,7 +1124,7 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingCredentialsWizard(false);
 
     // Determine if we are in Trezor mode for the welcome wizard
-    WelcomeWizardMode mode = CredentialsRequestType.TREZOR_CIPHER_KEY.equals(deferredCredentialsRequestType) ? WelcomeWizardMode.TREZOR : WelcomeWizardMode.STANDARD;
+    WelcomeWizardMode mode = CredentialsRequestType.TREZOR.equals(deferredCredentialsRequestType) ? WelcomeWizardMode.TREZOR : WelcomeWizardMode.STANDARD;
 
     // Start building the wizard on the EDT to prevent UI updates
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(

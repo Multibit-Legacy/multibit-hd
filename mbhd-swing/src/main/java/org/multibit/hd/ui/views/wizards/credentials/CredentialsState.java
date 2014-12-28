@@ -17,6 +17,11 @@ public enum CredentialsState {
   CREDENTIALS_ENTER_PASSWORD,
 
   /**
+   * Request the master public key from the Trezor (does not trigger PIN request)
+   */
+  CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY,
+
+  /**
    * Request a cipher key from the Trezor (most likely triggers a PIN request)
    */
   CREDENTIALS_REQUEST_CIPHER_KEY,
