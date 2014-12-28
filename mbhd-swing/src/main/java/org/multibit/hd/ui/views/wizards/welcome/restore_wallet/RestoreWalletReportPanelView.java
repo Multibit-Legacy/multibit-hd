@@ -535,6 +535,4 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
     return true;
   }
-
-
 }

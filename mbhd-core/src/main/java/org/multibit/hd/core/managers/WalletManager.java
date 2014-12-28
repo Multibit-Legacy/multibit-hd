@@ -415,6 +415,12 @@ public enum WalletManager implements WalletEventListener {
       setCurrentWalletSummary(walletSummary);
     }
 
+    try {
+          // The entropy based password from the Trezor is used for both the wallet password and for the backup's password
+          WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, password.getBytes(Charsets.UTF_8), password);
+        } catch (NoSuchAlgorithmException e) {
+          throw new WalletLoadException("Could not store encrypted credentials and backup AES key", e);
+        }
     // Wallet is now created - finish off other configuration and check if wallet needs syncing
     // (Always save the wallet yaml as there was a bug in early Trezor wallets where it was not written out)
     updateConfigurationAndCheckSync(walletRoot, walletDirectory, walletSummary, true);
@@ -1182,18 +1188,18 @@ public enum WalletManager implements WalletEventListener {
    * Write the encrypted wallet credentials and backup AES key to the wallet configuration.
    * You probably want to save it afterwards with an updateSummary
    */
-  public static void writeEncryptedPasswordAndBackupKey(WalletSummary walletSummary, byte[] seed, String password) throws NoSuchAlgorithmException {
-    // Save the wallet credentials, AES encrypted with a key derived from the wallet seed
-    KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, SCRYPT_SALT);
+  public static void writeEncryptedPasswordAndBackupKey(WalletSummary walletSummary, byte[] entropy, String password) throws NoSuchAlgorithmException {
+    // Save the wallet credentials, AES encrypted with a key derived from the wallet seed/ entropy
+    KeyParameter entropyDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(entropy, SCRYPT_SALT);
     byte[] passwordBytes = password.getBytes(Charsets.UTF_8);
 
     byte[] paddedPasswordBytes = padPasswordBytes(passwordBytes);
-    byte[] encryptedPaddedPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(paddedPasswordBytes, seedDerivedAESKey, AES_INITIALISATION_VECTOR);
+    byte[] encryptedPaddedPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(paddedPasswordBytes, entropyDerivedAESKey, AES_INITIALISATION_VECTOR);
     walletSummary.setEncryptedPassword(encryptedPaddedPassword);
 
-    // Save the backupAESKey, AES encrypted with a key generated from the wallet credentials
+    // Save the backupAESKey, AES encrypted with a key generated from the wallet password
     KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(passwordBytes, SCRYPT_SALT);
-    byte[] encryptedBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(seedDerivedAESKey.getKey(), walletPasswordDerivedAESKey, AES_INITIALISATION_VECTOR);
+    byte[] encryptedBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(entropyDerivedAESKey.getKey(), walletPasswordDerivedAESKey, AES_INITIALISATION_VECTOR);
     walletSummary.setEncryptedBackupKey(encryptedBackupAESKey);
   }
 

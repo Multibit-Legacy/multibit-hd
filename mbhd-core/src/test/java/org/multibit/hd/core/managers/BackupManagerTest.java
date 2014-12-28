@@ -62,7 +62,7 @@ public class BackupManagerTest {
     CoreServices.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
 
     InstallationManager.reset();
-    BackupManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.HARD);
+    BackupManager.INSTANCE.shutdownNow();
     WalletManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.HARD);
   }
 

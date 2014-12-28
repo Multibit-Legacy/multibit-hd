@@ -18,7 +18,6 @@ import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
@@ -73,7 +72,7 @@ public enum BackupManager {
   private static final Logger log = LoggerFactory.getLogger(BackupManager.class);
 
   // Where wallets are stored
-  private File applicationDataDirectory;
+  private File applicationDataDirectory = null;
 
   // Where the cloud backups are stored (this is typically specified by the user and is a SpiderOak etc sync directory)
   private Optional<File> cloudBackupDirectory;
@@ -97,9 +96,8 @@ public enum BackupManager {
   }
 
   /**
-   * @param shutdownType The shutdown type
    */
-  public void shutdownNow(ShutdownEvent.ShutdownType shutdownType) {
+  public void shutdownNow() {
 
     this.applicationDataDirectory = null;
     this.cloudBackupDirectory = Optional.absent();
@@ -127,6 +125,11 @@ public enum BackupManager {
    * Get all the backups available in the local zip backup directory for the wallet id specified.
    */
   public List<BackupSummary> getLocalZipBackups(WalletId walletId) {
+    if (applicationDataDirectory == null) {
+      // Locate the standard installation directory
+      applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+      log.debug("Setting the application data directory to {}", applicationDataDirectory);
+    }
 
     // Find the wallet root directory for this wallet id
     File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
@@ -192,6 +195,7 @@ public enum BackupManager {
       }
     }
 
+    log.debug("For the walletId {}, looking in directory {}, there were {} backups", walletId, directoryName, walletBackups.size());
     return walletBackups;
   }
 

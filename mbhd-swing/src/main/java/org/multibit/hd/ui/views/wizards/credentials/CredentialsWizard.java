@@ -59,10 +59,6 @@ public class CredentialsWizard extends AbstractHardwareWalletWizard<CredentialsW
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-
-        // Ensure we cancel any ongoing hardware wallet operations
-        getWizardModel().requestCancel();
-
         // The UI will lock up during handover so prevent further events
         JButton source = (JButton) e.getSource();
         source.setEnabled(false);
