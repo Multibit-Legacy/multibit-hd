@@ -678,7 +678,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
         // Store this wallet in the current configuration
         String walletRoot = WalletManager.createWalletRoot(walletId);
-        Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
+        Configurations.currentConfiguration.getWallet().setLastSoftWalletRoot(walletRoot);
 
         // Update the wallet data
         WalletSummary walletSummary = currentWalletSummary.get();

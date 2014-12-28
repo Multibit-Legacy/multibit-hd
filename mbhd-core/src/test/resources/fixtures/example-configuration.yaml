@@ -28,7 +28,7 @@ sound:
   alertSound: true
   receiveSound: true
 wallet:
-  currentWalletRoot: null
+  lastSoftWalletRoot: null
   recentWalletDataValidity: 1419692967155
   recentWalletLabel: "multibit.org 178"
 licenceAccepted: false

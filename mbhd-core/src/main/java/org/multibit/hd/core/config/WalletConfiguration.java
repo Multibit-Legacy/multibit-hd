@@ -11,7 +11,7 @@ package org.multibit.hd.core.config;
  */
 public class WalletConfiguration {
 
-  private String currentWalletRoot;
+  private String lastSoftWalletRoot;
 
   /**
    * The time at which the recent wallet data was stored/ valid (milliseconds since epoch)
@@ -25,18 +25,19 @@ public class WalletConfiguration {
 
 
   /**
-   * @return The current wallet root (e.g. "mbhd-11111111-22222222-33333333-44444444-55555555")
+   * @return The last/current soft wallet root (e.g. "mbhd-11111111-22222222-33333333-44444444-55555555")
+   * (This is only updated for soft wallets so it will not give you the a plugged in Trezor's wallet root)
    */
-  public String getCurrentWalletRoot() {
-    return currentWalletRoot;
+  public String getLastSoftWalletRoot() {
+    return lastSoftWalletRoot;
   }
 
   /**
    * The current soft wallet root
-   * @param currentWalletRoot
+   * @param lastSoftWalletRoot
    */
-  public void setCurrentWalletRoot(String currentWalletRoot) {
-    this.currentWalletRoot = currentWalletRoot;
+  public void setLastSoftWalletRoot(String lastSoftWalletRoot) {
+    this.lastSoftWalletRoot = lastSoftWalletRoot;
   }
 
   public long getRecentWalletDataValidity() {
@@ -62,7 +63,7 @@ public class WalletConfiguration {
 
     WalletConfiguration configuration = new WalletConfiguration();
 
-    configuration.setCurrentWalletRoot(getCurrentWalletRoot());
+    configuration.setLastSoftWalletRoot(getLastSoftWalletRoot());
     configuration.setRecentWalletDataValidity(getRecentWalletDataValidity());
     configuration.setRecentWalletLabel(getRecentWalletLabel());
 

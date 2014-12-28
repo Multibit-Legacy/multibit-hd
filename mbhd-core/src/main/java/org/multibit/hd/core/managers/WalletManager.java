@@ -554,7 +554,7 @@ public enum WalletManager implements WalletEventListener {
     // Remember the current soft wallet root
     if (WalletType.TREZOR_HARD_WALLET != walletSummary.getWalletType()) {
       if (Configurations.currentConfiguration != null) {
-        Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
+        Configurations.currentConfiguration.getWallet().setLastSoftWalletRoot(walletRoot);
       }
     }
 
@@ -1116,7 +1116,7 @@ public enum WalletManager implements WalletEventListener {
    * @return The current wallet root as defined in the configuration, or absent
    */
   public Optional<String> getCurrentWalletRoot() {
-    return Optional.fromNullable(Configurations.currentConfiguration.getWallet().getCurrentWalletRoot());
+    return Optional.fromNullable(Configurations.currentConfiguration.getWallet().getLastSoftWalletRoot());
   }
 
   /**

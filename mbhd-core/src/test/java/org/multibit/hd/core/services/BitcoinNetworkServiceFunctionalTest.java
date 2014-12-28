@@ -168,7 +168,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     Coin walletBalance2 = walletSummary2.getWallet().getBalance();
 
     // Set the current wallet to be wallet1 and synchronize that
-    Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot1);
+    Configurations.currentConfiguration.getWallet().setLastSoftWalletRoot(walletRoot1);
     walletManager.setCurrentWalletSummary(walletSummary1);
     replayWallet(timestamp1);
 
@@ -202,7 +202,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     }
 
     // Ensure MBHD has the correct current wallet (which will be used for the send)
-    Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
+    Configurations.currentConfiguration.getWallet().setLastSoftWalletRoot(walletRoot);
     walletManager.setCurrentWalletSummary(sourceWalletSummary);
 
     // Start up the bitcoin network connection
