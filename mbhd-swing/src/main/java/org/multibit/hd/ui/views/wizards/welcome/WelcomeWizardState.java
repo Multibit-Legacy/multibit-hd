@@ -104,6 +104,10 @@ public enum WelcomeWizardState {
    */
   RESTORE_WALLET_SELECT_BACKUP_LOCATION,
   /**
+   * Restore wallet: Use a hard trezor backup
+   */
+  RESTORE_WALLET_HARD_TREZOR,
+  /**
    * Restore wallet: Select the backup (if multiple found)
    */
   RESTORE_WALLET_SELECT_BACKUP,

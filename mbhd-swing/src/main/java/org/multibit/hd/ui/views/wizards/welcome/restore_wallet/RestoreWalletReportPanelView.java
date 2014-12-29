@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.welcome.restore_wallet;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -319,8 +320,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
         EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
 
-        // Determine if the create wallet status is valid
-        // Starts the wallet synchronization if OK
+        // Create the wallet
         walletCreatedStatus = createWalletFromSeedPhrase(restoreWalletEnterSeedPhraseModel.getSeedPhrase());
         break;
       case RESTORE_WALLET_TIMESTAMP:
@@ -331,7 +331,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         ConfirmPasswordModel confirmPasswordModel = model.getRestoreWalletConfirmPasswordModel();
         log.debug("Timestamp: {}", restoreEnterTimestampModel.getSeedTimestamp());
 
-        // Start the wallet replay if successful
+        // Create the wallet
         walletCreatedStatus = createWalletFromSeedPhraseAndTimestamp(
           restoreEnterSeedPhraseModel.getSeedPhrase(),
           restoreEnterSeedPhraseModel.isRestoreAsTrezor(),
@@ -339,9 +339,12 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
           confirmPasswordModel.getValue()
         );
         break;
+      case RESTORE_WALLET_HARD_TREZOR:
+        log.debug("Performing a restore of a hard trezor.");
+        walletCreatedStatus = createTrezorHardWallet();
+        break;
       default:
         log.error("Unknown welcome wizard state: {}", model.getRestoreMethod());
-        // Create wallet from seed phrase should always be OK
         SwingUtilities.invokeLater(
           new Runnable() {
             @Override
@@ -353,7 +356,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         return;
     }
 
-    log.debug("Wallet created...");
+    log.debug("Wallet created status: " + walletCreatedStatus);
 
     ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
 
@@ -417,7 +420,6 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
    * Create a wallet from a seed phrase, timestamp and credentials
    */
   private boolean createWalletFromSeedPhraseAndTimestamp(List<String> seedPhrase, boolean isRestoreTrezor, String timestamp, String password) {
-
     if (!verifySeedPhrase(seedPhrase)) {
       return false;
     }
@@ -472,7 +474,6 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
    * Create a wallet from a seed phrase and a backup summary (chosen by the user)
    */
   private boolean createWalletFromSeedPhrase(List<String> seedPhrase) {
-
     if (!verifySeedPhrase(seedPhrase)) {
       return false;
     }
@@ -518,7 +519,6 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         loadedWalletId,
         decryptedWalletPassword);
 
-      // Start the Bitcoin network and synchronize the wallet
       return bitcoinNetworkService.isStartedOk();
     } catch (Exception e) {
       log.error("Failed to restore wallet. Error was '" + e.getMessage() + "'.");
@@ -526,6 +526,47 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     }
   }
 
+  /**
+    * Create a Trezor hard wallet from a backup summary, decrypting it with a password created from the Trezor supplied entropy
+    */
+   private boolean createTrezorHardWallet() {
+     // Get the model that contains the selected wallet backup to use
+     SelectBackupSummaryModel selectedBackupSummaryModel = getWizardModel().getSelectBackupSummaryModel();
+
+     if (selectedBackupSummaryModel == null || selectedBackupSummaryModel.getValue() == null ||
+       selectedBackupSummaryModel.getValue().getFile() == null) {
+       log.debug("No wallet backup to use from the model");
+       return false;
+     }
+
+     log.debug("Loading wallet backup '" + selectedBackupSummaryModel.getValue().getFile() + "'");
+     try {
+       // For Trezor hard wallets the backups are encrypted with the entropy derived password
+       String walletPassword = null; // TODO from Trezor supplied entropy (typically in CredentialsWizardModel when populated but wouldn't yet be done for a restore)
+
+       // Check there is a wallet password - if not then cannot decrypt backup
+       if (walletPassword == null) {
+         return false;
+       }
+       KeyParameter backupAESKey = AESUtils.createAESKey(walletPassword.getBytes(Charsets.UTF_8), WalletManager.SCRYPT_SALT);
+
+       WalletId loadedWalletId = BackupManager.INSTANCE.loadZipBackup(selectedBackupSummaryModel.getValue().getFile(), backupAESKey);
+
+       // Start the Bitcoin network and synchronize the wallet
+       BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
+
+       // Open the wallet and synchronize the wallet
+       WalletManager.INSTANCE.openWalletFromWalletId(
+         InstallationManager.getOrCreateApplicationDataDirectory(),
+         loadedWalletId,
+         walletPassword);
+
+       return bitcoinNetworkService.isStartedOk();
+     } catch (Exception e) {
+       log.error("Failed to restore wallet. Error was '" + e.getMessage() + "'.");
+       return false;
+     }
+   }
   private boolean verifySeedPhrase(List<String> seedPhrase) {
 
     if (seedPhrase == null || seedPhrase.size() == 0) {

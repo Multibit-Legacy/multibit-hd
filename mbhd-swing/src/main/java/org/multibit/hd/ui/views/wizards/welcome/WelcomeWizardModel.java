@@ -156,12 +156,14 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
             // Ensure Trezor is cancelled
             hardwareWalletService.get().requestCancel();
 
+            restoreMethod = RESTORE_WALLET_HARD_TREZOR;
             if (!isLocalZipBackupPresent()) {
-              restoreMethod = RESTORE_WALLET_SELECT_BACKUP_LOCATION;
+              // Next ask for the cloud backup location
+              state = RESTORE_WALLET_SELECT_BACKUP_LOCATION;
             } else {
-              restoreMethod = RESTORE_WALLET_SELECT_BACKUP;
+              // Next select one of the local backups
+              state = RESTORE_WALLET_SELECT_BACKUP;
             }
-            state = restoreMethod;
             break;
           }
         } else {

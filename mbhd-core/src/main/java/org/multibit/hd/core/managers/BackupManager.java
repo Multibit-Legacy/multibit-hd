@@ -87,8 +87,8 @@ public enum BackupManager {
    */
   public void initialise(File applicationDataDirectory, Optional<File> cloudBackupDirectory) {
 
-    Preconditions.checkNotNull(applicationDataDirectory,"'applicationDataDirectory' must be present");
-    Preconditions.checkNotNull(cloudBackupDirectory,"'cloudBackupDirectory' must not be null");
+    Preconditions.checkNotNull(applicationDataDirectory, "'applicationDataDirectory' must be present");
+    Preconditions.checkNotNull(cloudBackupDirectory, "'cloudBackupDirectory' must not be null");
 
     this.applicationDataDirectory = applicationDataDirectory;
     this.cloudBackupDirectory = cloudBackupDirectory;
@@ -415,8 +415,8 @@ public enum BackupManager {
    * Load a rolling backup file.
    * A BackupWalletLoadedEvent is emitted
    *
-   * @param walletId  The walletId of the wallet
-   * @param password  The credentials used to decrypt the encrypted wallet backup
+   * @param walletId The walletId of the wallet
+   * @param password The credentials used to decrypt the encrypted wallet backup
    * @throws WalletLoadException if no rolling backup could be loaded successfully, or none are available
    */
   public Wallet loadRollingBackup(final WalletId walletId, CharSequence password) throws WalletLoadException {
@@ -439,7 +439,7 @@ public enum BackupManager {
           break;
         } catch (Exception e) {
           // Log the initial error (and then carry on to the next rolling backup
-          log.error("Could not load rolling backup:\n'{}'",rollingBackupFiles.get(i - 1).getAbsolutePath(), e);
+          log.error("Could not load rolling backup:\n'{}'", rollingBackupFiles.get(i - 1).getAbsolutePath(), e);
         }
       }
 
@@ -467,40 +467,54 @@ public enum BackupManager {
 
   /**
    * Load a zip backup file, copying all the backup files to the appropriate wallet root directory
+   *
+   * @param backupFileToLoad The encrypted backup file to load
+   * @param seedPhrase       The seed phrase to use to decrypt the backup file
    */
   public WalletId loadZipBackup(File backupFileToLoad, List<String> seedPhrase) throws IOException {
-
-    SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
-
-    // Work out the walletId of the backup file being loaded
-    String backupFilename = backupFileToLoad.getName();
-
-    // Remove "mbhd-" prefix
-    String walletRoot = backupFilename.replace(WalletManager.WALLET_DIRECTORY_PREFIX + WALLET_ID_SEPARATOR, "");
-
-    // Remove  ".zip.aes" suffix
-    walletRoot = walletRoot.replace(ENCRYPTED_BACKUP_FILE_EXTENSION, "");
-
-    // Remove the timestamp
-    if (walletRoot.length() > LENGTH_OF_FORMATTED_WALLET_ID) {
-      walletRoot = walletRoot.substring(0, LENGTH_OF_FORMATTED_WALLET_ID);
-    }
-    WalletId walletId = new WalletId(walletRoot);
-
-    // TODO  Make a backup of all the current file in the wallet root directory if it exists
-
-    File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
-
-    File temporaryFile = null;
     try {
-      // Read the encrypted file in.
-      byte[] encryptedBytes = Files.toByteArray(new File(backupFileToLoad.getAbsolutePath()));
+      SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
+      byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
 
       KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
 
+      return loadZipBackup(backupFileToLoad, seedDerivedAESKey);
+    } catch (Exception e) {
+      throw new EncryptedFileReaderWriterException("Cannot read and decrypt the backup file '" + backupFileToLoad.getAbsolutePath() + "'", e);
+    }
+  }
+
+  /**
+   * Load a zip backup file, copying all the backup files to the appropriate wallet root directory
+   *
+   * @param backupFileToLoad The encrypted backup file to load
+   * @param backupAESKey     The AES key to use to decrypt the backup file
+   */
+  public WalletId loadZipBackup(File backupFileToLoad, KeyParameter backupAESKey) throws IOException {
+    File temporaryFile = null;
+    try {
+      // Work out the walletId of the backup file being loaded
+      String backupFilename = backupFileToLoad.getName();
+
+      // Remove "mbhd-" prefix
+      String walletRoot = backupFilename.replace(WalletManager.WALLET_DIRECTORY_PREFIX + WALLET_ID_SEPARATOR, "");
+
+      // Remove  ".zip.aes" suffix
+      walletRoot = walletRoot.replace(ENCRYPTED_BACKUP_FILE_EXTENSION, "");
+
+      // Remove the timestamp
+      if (walletRoot.length() > LENGTH_OF_FORMATTED_WALLET_ID) {
+        walletRoot = walletRoot.substring(0, LENGTH_OF_FORMATTED_WALLET_ID);
+      }
+      WalletId walletId = new WalletId(walletRoot);
+
+      File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
+
+      // Read the encrypted file in.
+      byte[] encryptedBytes = Files.toByteArray(new File(backupFileToLoad.getAbsolutePath()));
+
       // Decrypt the backup bytes
-      byte[] decryptedBytes = AESUtils.decrypt(encryptedBytes, seedDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+      byte[] decryptedBytes = AESUtils.decrypt(encryptedBytes, backupAESKey, WalletManager.AES_INITIALISATION_VECTOR);
 
       File tempDirectory = Files.createTempDir();
       temporaryFile = File.createTempFile("backup", "zip", tempDirectory);
