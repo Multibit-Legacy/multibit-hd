@@ -272,7 +272,7 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
     log.debug("Event: {}", event);
     boolean currentEnabled = showEmptyWalletButton.isEnabled();
 
-    boolean newEnabled = currentEnabled;
+    boolean newEnabled;
 
     // NOTE: Show empty wallet is disabled when the network is not available
     // because it is possible that a second wallet is generating transactions using
@@ -295,8 +295,10 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
         newEnabled = true;
         log.trace("Severity = GREEN, newEnabled = " + true);
         break;
+      case PINK:
       case EMPTY:
-        // If no status notification info do nothing
+        // Maintain the status quo unless unrestricted
+        newEnabled = currentEnabled || InstallationManager.unrestricted;
         break;
       default:
         // Unknown status
