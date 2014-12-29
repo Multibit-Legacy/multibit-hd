@@ -260,6 +260,8 @@ public class CoreServices {
     // Shutdown non-managed services
     if (hardwareWalletService.isPresent()) {
       hardwareWalletService.get().stopAndWait();
+      // Need a fresh instance for correct restart
+      hardwareWalletService = Optional.absent();
     }
 
     // Allow graceful shutdown in the correct order
@@ -274,7 +276,7 @@ public class CoreServices {
       applicationEventService.shutdownNow(shutdownType);
     }
 
-    // Do not clear references since it leads to complex behaviour during shutdown
+    // Be judicious when clearing references since it leads to complex behaviour during shutdown
 
   }
 
