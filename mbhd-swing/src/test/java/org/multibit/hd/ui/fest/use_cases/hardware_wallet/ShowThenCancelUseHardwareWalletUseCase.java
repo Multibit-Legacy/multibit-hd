@@ -1,9 +1,8 @@
 package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
-import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.multibit.hd.hardware.core.messages.Features;
+import org.multibit.hd.testing.HardwareWalletEventFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -30,14 +29,9 @@ public class ShowThenCancelUseHardwareWalletUseCase extends AbstractFestUseCase 
     Features features = new Features();
     features.setLabel("Aardvark");
 
-    // Simulate the insertion of a device
-    HardwareWalletEvents.fireHardwareWalletEvent(
-      HardwareWalletEventType.SHOW_DEVICE_READY,
-      features
-    );
+    // Start the attach use case
+    HardwareWalletEventFixtures.newAttachUseCase(features);
 
-    // TODO the above hardware wallet event does not do anything to the UI now
-    // not sure what the expected behaviour is so commenting out test in
     // Allow time for the view to react
     pauseForViewReset();
 
