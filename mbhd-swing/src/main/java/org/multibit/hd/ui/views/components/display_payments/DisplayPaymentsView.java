@@ -29,7 +29,6 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsModel> {
 
@@ -53,11 +52,12 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
   @Override
   public JPanel newComponentPanel() {
 
-    panel = Panels.newPanel(new MigLayout(
-      "insets 0", // Layout
-      "[]10[]10[]", // Columns
-      "[][]" // Rows
-    ));
+    panel = Panels.newPanel(
+      new MigLayout(
+        "insets 0", // Layout
+        "[]10[]10[]", // Columns
+        "[][]" // Rows
+      ));
 
     // Populate components
     createView();
@@ -75,84 +75,92 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
 
       if (getModel().isPresent()) {
 
-        String panelName = getModel().get().getPanelName();
+        final String panelName = getModel().get().getPanelName();
 
-        // Clear the panel
-        List<PaymentData> paymentDataList = getModel().get().getValue();
-        panel.removeAll();
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
 
-        // Deregister any previous entries from UI events since
-        // this view is never closed unless the application exits
-        for (ModelAndView<DisplayAmountModel, DisplayAmountView> mav : displayAmountMaVList) {
-          mav.close();
-        }
+              // Clear the panel
+              List<PaymentData> paymentDataList = getModel().get().getValue();
+              panel.removeAll();
 
-        // Reset the list
-        displayAmountMaVList.clear();
+              // Deregister any previous entries from UI events since
+              // this view is never closed unless the application exits
+              for (ModelAndView<DisplayAmountModel, DisplayAmountView> mav : displayAmountMaVList) {
+                mav.close();
+              }
 
-        log.trace("Displaying {} payment(s) for {}", paymentDataList.size(), panelName);
+              // Reset the list
+              displayAmountMaVList.clear();
 
-        // Work through the list of payment data entries
-        int count = 0;
-        for (PaymentData paymentData : paymentDataList) {
+              log.trace("Displaying {} payment(s) for {}", paymentDataList.size(), panelName);
 
-          // TODO Address the EDT violation occurring here
+              // Work through the list of payment data entries
+              int count = 0;
+              for (PaymentData paymentData : paymentDataList) {
 
-          // Time label
-          JLabel timeLabel = Labels.newBlankLabel();
-          // Display in the system timezone
-          timeLabel.setText(Dates.formatShortTimeLocal(paymentData.getDate()));
+                // TODO Address the EDT violation occurring here
 
-          // Payment icon label and text ("sending", "receiving" etc)
-          JLabel paymentDataLabel = Labels.newBlankLabel();
-          paymentDataLabel.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
-          LabelDecorator.applyPaymentStatusIcon(paymentData.getStatus(), paymentDataLabel, paymentData.isCoinBase(), MultiBitUI.NORMAL_ICON_SIZE);
+                // Time label
+                JLabel timeLabel = Labels.newBlankLabel();
+                // Display in the system timezone
+                timeLabel.setText(Dates.formatShortTimeLocal(paymentData.getDate()));
 
-          // Create a unique FEST name to ensure accessibility
-          String festName = panelName + "." + paymentData.getType().name().toLowerCase(Locale.UK) + "." + count;
+                // Payment icon label and text ("sending", "receiving" etc)
+                JLabel paymentDataLabel = Labels.newBlankLabel();
+                paymentDataLabel.setText(Languages.safeText(paymentData.getType().getLocalisationKey()));
+                LabelDecorator.applyPaymentStatusIcon(paymentData.getStatus(), paymentDataLabel, paymentData.isCoinBase(), MultiBitUI.NORMAL_ICON_SIZE);
 
-          // Amount MaV (ensure it is accessible)
-          ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN, false, festName);
-          if (CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent()) {
-            Optional<String> rateProvider = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().get().getRateProvider();
-            paymentAmountMaV.getModel().setRateProvider(rateProvider);
-            paymentAmountMaV.getModel().setLocalAmountVisible(rateProvider.isPresent());
-          }
+                // Create a unique FEST name to ensure accessibility
+                String festName = panelName + "." + paymentData.getType().name().toLowerCase(Locale.UK) + "." + count;
 
-          // Show the local currency if we have fiat currency information
-          boolean showLocalCurrency =  paymentData.getAmountFiat() != null && paymentData.getAmountFiat().getCurrency().isPresent();
-          // Don't show the fiat amount if the currency on the fiat payment is different to that in the bitcoin configuration (it's misleading)
-          if (showLocalCurrency && !paymentData.getAmountFiat().getCurrency().get().getCurrencyCode().equals(Configurations.currentConfiguration.getBitcoin().getLocalCurrencyCode())) {
-            showLocalCurrency = false;
-          }
-          paymentAmountMaV.getModel().setLocalAmountVisible(showLocalCurrency);
+                // Amount MaV (ensure it is accessible)
+                ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN, false, festName);
+                if (CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent()) {
+                  Optional<String> rateProvider = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().get().getRateProvider();
+                  paymentAmountMaV.getModel().setRateProvider(rateProvider);
+                  paymentAmountMaV.getModel().setLocalAmountVisible(rateProvider.isPresent());
+                }
 
-          paymentAmountMaV.getView().setVisible(true);
-          paymentAmountMaV.getModel().setCoinAmount(paymentData.getAmountCoin());
-          if (paymentData.getAmountFiat() != null && paymentData.getAmountFiat().getAmount().isPresent()) {
-            paymentAmountMaV.getModel().setLocalAmount(paymentData.getAmountFiat().getAmount().get());
-          } else {
-            paymentAmountMaV.getModel().setLocalAmount(null);
-          }
+                // Show the local currency if we have fiat currency information
+                boolean showLocalCurrency = paymentData.getAmountFiat() != null && paymentData.getAmountFiat().getCurrency().isPresent();
+                // Don't show the fiat amount if the currency on the fiat payment is different to that in the bitcoin configuration (it's misleading)
+                if (showLocalCurrency && !paymentData.getAmountFiat().getCurrency().get().getCurrencyCode().equals(Configurations.currentConfiguration.getBitcoin().getLocalCurrencyCode())) {
+                  showLocalCurrency = false;
+                }
+                paymentAmountMaV.getModel().setLocalAmountVisible(showLocalCurrency);
 
-          displayAmountMaVList.add(paymentAmountMaV);
+                paymentAmountMaV.getView().setVisible(true);
+                paymentAmountMaV.getModel().setCoinAmount(paymentData.getAmountCoin());
+                if (paymentData.getAmountFiat() != null && paymentData.getAmountFiat().getAmount().isPresent()) {
+                  paymentAmountMaV.getModel().setLocalAmount(paymentData.getAmountFiat().getAmount().get());
+                } else {
+                  paymentAmountMaV.getModel().setLocalAmount(null);
+                }
 
-          // Add to the panel
-          panel.add(timeLabel, "shrink");
-          panel.add(paymentDataLabel, "shrink");
-          JPanel amountPanel = paymentAmountMaV.getView().newComponentPanel();
-          amountPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
-          panel.add(amountPanel, "shrink, wrap");
+                displayAmountMaVList.add(paymentAmountMaV);
 
-          count++;
-        }
+                // Add to the panel
+                panel.add(timeLabel, "shrink");
+                panel.add(paymentDataLabel, "shrink");
+                JPanel amountPanel = paymentAmountMaV.getView().newComponentPanel();
+                amountPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+                panel.add(amountPanel, "shrink, wrap");
 
-        // Redraw
-        panel.invalidate();
-        panel.validate();
-        panel.repaint();
+                count++;
+              }
 
-        initialised = true;
+              // Redraw
+              panel.invalidate();
+              panel.validate();
+              panel.repaint();
+
+              initialised = true;
+
+            }
+          });
       }
     }
   }
@@ -164,14 +172,22 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
         return;
       }
 
-      if (displayAmountMaVList != null) {
-        for (ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV : displayAmountMaVList) {
-          paymentAmountMaV.getView().updateView(Configurations.currentConfiguration);
-        }
-      }
-      panel.invalidate();
-      panel.validate();
-      panel.repaint();
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            if (displayAmountMaVList != null) {
+              for (ModelAndView<DisplayAmountModel, DisplayAmountView> paymentAmountMaV : displayAmountMaVList) {
+                paymentAmountMaV.getView().updateView(Configurations.currentConfiguration);
+              }
+            }
+            panel.invalidate();
+            panel.validate();
+            panel.repaint();
+
+          }
+        });
+
     }
   }
 

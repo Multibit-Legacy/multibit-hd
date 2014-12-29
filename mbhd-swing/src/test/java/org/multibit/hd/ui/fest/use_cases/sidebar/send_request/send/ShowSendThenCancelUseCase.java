@@ -31,6 +31,7 @@ public class ShowSendThenCancelUseCase extends AbstractFestUseCase {
     window
       .button(MessageKey.SHOW_SEND_WIZARD.getKey())
         // Allow time for the Bitcoin network to initialise
+        // This should occur quickly since we're in test mode
       .requireEnabled(Timeout.timeout(5, TimeUnit.SECONDS))
       .click();
 

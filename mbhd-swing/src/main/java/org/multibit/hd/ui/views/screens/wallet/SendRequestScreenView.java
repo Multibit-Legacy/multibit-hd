@@ -256,7 +256,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
     boolean currentEnabled = sendBitcoin.isEnabled();
 
-    boolean newEnabled = currentEnabled;
+    boolean newEnabled;
 
     // NOTE: Both send and request are disabled when the network is not available
     // because it is possible that a second wallet is generating transactions using
@@ -277,8 +277,8 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
         break;
       case PINK:
       case EMPTY:
-        // Maintain the status quo
-        newEnabled = currentEnabled;
+        // Maintain the status quo unless unrestricted
+        newEnabled = currentEnabled || InstallationManager.unrestricted;
         break;
       default:
         // Unknown status

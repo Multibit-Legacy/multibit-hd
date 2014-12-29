@@ -185,7 +185,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   }
 
   @Subscribe
-  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+  public void onTransactionCreationEvent(final TransactionCreationEvent transactionCreationEvent) {
 
     log.debug("Received the TransactionCreationEvent: " + transactionCreationEvent);
 
@@ -196,22 +196,31 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
       return;
     }
 
-    if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
-      // We now have a transactionId so keep that in the panel model for filtering TransactionSeenEvents later
-      currentTransactionId = transactionCreationEvent.getTransactionId();
-      LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
-      LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, "");
-      LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
-    } else {
-      String detailMessage = Languages.safeText(
-        transactionCreationEvent.getTransactionCreationFailureReasonKey(),
-        (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData()
-      );
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
 
-      LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
-      LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, detailMessage);
-      LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
-    }
+          if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+            // We now have a transactionId so keep that in the panel model for filtering TransactionSeenEvents later
+            currentTransactionId = transactionCreationEvent.getTransactionId();
+            LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
+            LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, "");
+            LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
+          } else {
+            String detailMessage = Languages.safeText(
+              transactionCreationEvent.getTransactionCreationFailureReasonKey(),
+              (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData()
+            );
+
+            LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
+            LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, detailMessage);
+            LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
+          }
+
+        }
+      });
+
 
   }
 
@@ -239,7 +248,9 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   @Subscribe
   public void onTransactionSeenEvent(final TransactionSeenEvent transactionSeenEvent) {
-    log.debug("Seen transactionSeenEvent {}", transactionSeenEvent);
+
+    // Very high volume so keep logging to a minimum
+    log.trace("Seen transactionSeenEvent {}", transactionSeenEvent);
 
     lastTransactionSeenEvent = transactionSeenEvent;
     // The event may be fired before the UI has initialised
