@@ -292,9 +292,15 @@ public class SidebarView extends AbstractView {
    */
   public void requestFocus() {
 
-    lastSelectionDateTime = Dates.nowUtc();
-    sidebarTree.setFocusable(true);
-    sidebarTree.requestFocusInWindow();
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          lastSelectionDateTime = Dates.nowUtc();
+          sidebarTree.setFocusable(true);
+          sidebarTree.requestFocusInWindow();
+        }
+      });
 
   }
 

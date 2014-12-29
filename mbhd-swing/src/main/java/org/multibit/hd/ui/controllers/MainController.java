@@ -157,7 +157,7 @@ public class MainController extends AbstractController implements
   @Subscribe
   public void onWizardHideEvent(WizardHideEvent event) {
 
-    log.debug("Wizard hide: '{}'", event.getPanelName());
+    log.debug("Wizard hide: '{}' Exit/Cancel: {}", event.getPanelName(), event.isExitCancel());
 
     if (!event.isExitCancel()) {
 
@@ -1052,8 +1052,9 @@ public class MainController extends AbstractController implements
 
   private void hideAsExitCancel(String panelName) {
 
-    // The exit dialog has no detail screen so focus defers to the sidebar
-    if (ExitState.SELECT_RESET_OPTION.name().equals(panelName)) {
+    // The exit dialog state is determined by the radio button selection
+    if (ExitState.CONFIRM_EXIT.name().equals(panelName)
+      || ExitState.SWITCH_WALLET.name().equals(panelName)) {
       mainView.sidebarRequestFocus();
     }
 

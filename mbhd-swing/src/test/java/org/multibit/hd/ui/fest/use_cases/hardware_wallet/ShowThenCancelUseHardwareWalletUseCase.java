@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.testing.HardwareWalletEventFixtures;
@@ -7,6 +8,7 @@ import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -33,7 +35,7 @@ public class ShowThenCancelUseHardwareWalletUseCase extends AbstractFestUseCase 
     HardwareWalletEventFixtures.newAttachUseCase(features);
 
     // Allow time for the view to react
-    pauseForViewReset();
+    Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
 
     // Check that an alert message is present
     assertLabelContainsValue("alert_message_label", "Aardvark");
