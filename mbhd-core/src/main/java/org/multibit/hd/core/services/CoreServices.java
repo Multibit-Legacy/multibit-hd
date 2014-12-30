@@ -265,7 +265,7 @@ public class CoreServices {
     }
 
     // Allow graceful shutdown in the correct order
-    if (configurationService !=null) {
+    if (configurationService != null) {
       configurationService.shutdownNow(shutdownType);
     }
     if (securityCheckingService != null) {
@@ -346,6 +346,16 @@ public class CoreServices {
 
     return hardwareWalletService;
 
+  }
+
+  /**
+   * Simplify FEST testing for hardware wallets
+   *
+   * @param service The hardware wallet service to use
+   */
+  public static void setHardwareWalletService(HardwareWalletService service) {
+    Preconditions.checkState(InstallationManager.unrestricted, "The hardware wallet service should only be set in the context of testing");
+    hardwareWalletService = Optional.of(service);
   }
 
   /**

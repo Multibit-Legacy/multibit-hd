@@ -3,7 +3,7 @@ package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.hardware.core.messages.Features;
-import org.multibit.hd.testing.HardwareWalletEventFixtures;
+import org.multibit.hd.testing.hardware_wallet.HardwareWalletEventFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
