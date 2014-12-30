@@ -49,7 +49,7 @@ public class InstallationManager {
   /**
    * The current application data directory
    */
-  public static File currentApplicationDataDirectory = null;
+  private static File currentApplicationDataDirectory = null;
 
   /**
    * A test flag to allow FEST tests to run efficiently
@@ -61,6 +61,8 @@ public class InstallationManager {
    * @param shutdownType The shutdown type
    */
   public static void shutdownNow(ShutdownEvent.ShutdownType shutdownType) {
+
+    log.debug("Received shutdown: {}", shutdownType.name());
 
     switch (shutdownType) {
 
@@ -76,7 +78,6 @@ public class InstallationManager {
     }
 
     // Reset of the unrestricted field causes problems during FEST tests
-
 
   }
 

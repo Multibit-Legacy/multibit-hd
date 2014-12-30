@@ -15,7 +15,6 @@ import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exchanges.ExchangeKey;
-import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
@@ -385,10 +384,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     log.info("Arranging fresh environment...");
 
-    // Create a random temporary directory to write the wallets
-    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
-    InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
-
     // Continue with the set up
     setUpAfterArrange(false);
 
@@ -403,17 +398,16 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     log.info("Arranging empty wallet fixture environment...");
 
-    // Create a random temporary directory to write the wallets
-    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
-    InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
+    // Get the temporary application directory
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Copy the MBHD cacerts
     InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/" + InstallationManager.CA_CERTS_NAME);
-    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/" + InstallationManager.CA_CERTS_NAME));
+    OutputStream target = new FileOutputStream(new File(applicationDirectory + "/" + InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
     // Initialise the backup manager
-    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
+    BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     // Add the empty wallet fixture
     WalletFixtures.createEmptyWalletFixture();
@@ -434,17 +428,16 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     log.info("Arranging empty hardware wallet fixture environment...");
 
-    // Create a random temporary directory to write the wallets
-    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
-    InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
+    // Get the temporary application directory
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Copy the MBHD cacerts
     InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/" + InstallationManager.CA_CERTS_NAME);
-    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/" + InstallationManager.CA_CERTS_NAME));
+    OutputStream target = new FileOutputStream(new File(applicationDirectory + "/" + InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
     // Initialise the backup manager
-    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
+    BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     // Add the empty wallet fixture
     WalletFixtures.createEmptyWalletFixture();
@@ -469,17 +462,16 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     log.info("Arranging standard wallet fixture environment...");
 
-    // Create a random temporary directory to write the wallets
-    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
-    InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
+    // Get the temporary application directory
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Copy the MBHD cacerts
     InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/" + InstallationManager.CA_CERTS_NAME);
-    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/" + InstallationManager.CA_CERTS_NAME));
+    OutputStream target = new FileOutputStream(new File(applicationDirectory + "/" + InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
     // Initialise the backup manager to use the temporary directory
-    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
+    BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     // Add the restored wallet fixture
     WalletFixtures.createStandardWalletFixture();

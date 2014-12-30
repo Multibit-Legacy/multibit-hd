@@ -167,8 +167,9 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
             break;
           }
         } else {
-          // Ensure Trezor is reset
-          if (hardwareWalletService.isPresent()) {
+          // Ensure Trezor is reset if it is attached and initialised
+          if (hardwareWalletService.isPresent()
+            && hardwareWalletService.get().getContext().getFeatures().isPresent()) {
             hardwareWalletService.get().requestCancel();
             hardwareWalletService.get().getContext().resetToConnected();
           }
