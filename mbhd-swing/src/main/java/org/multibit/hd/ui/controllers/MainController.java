@@ -817,9 +817,17 @@ public class MainController extends AbstractController implements
         // - the current wallet is not a "hard" Trezor wallet
         Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
         if (walletSummary.isPresent() && !WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
-          // Attempt to create a suitable alert model in addition to view event
-          AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
-          ControllerEvents.fireAddAlertEvent(alertModel);
+
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+                // Attempt to create a suitable alert model in addition to view event
+                AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+                ControllerEvents.fireAddAlertEvent(alertModel);
+              }
+            });
+
         }
         // Set the deferred credentials request type
         deferredCredentialsRequestType = CredentialsRequestType.TREZOR;

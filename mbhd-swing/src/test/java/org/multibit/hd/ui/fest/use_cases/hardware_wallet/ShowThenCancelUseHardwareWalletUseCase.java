@@ -2,7 +2,6 @@ package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.testing.HardwareWalletEventFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -28,17 +27,14 @@ public class ShowThenCancelUseHardwareWalletUseCase extends AbstractFestUseCase 
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    Features features = new Features();
-    features.setLabel("Aardvark");
-
     // Start the attach use case
-    HardwareWalletEventFixtures.newAttachUseCase(features);
+    HardwareWalletEventFixtures.newAttachUseCase();
 
     // Allow time for the view to react
-    Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Check that an alert message is present
-    assertLabelContainsValue("alert_message_label", "Aardvark");
+    assertLabelContainsValue("alert_message_label", HardwareWalletEventFixtures.STANDARD_LABEL);
 
     // Check the 'Yes' button on the alert is present and click it
     window
