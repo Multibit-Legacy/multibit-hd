@@ -132,6 +132,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   @Override
   public void showNext() {
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
     switch (state) {
       case WELCOME_LICENCE:
@@ -142,7 +143,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         break;
       case WELCOME_SELECT_WALLET:
         if (RESTORE_WALLET_SELECT_BACKUP.equals(selectWalletChoice)) {
-          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
           if (hardwareWalletService.isPresent() && hardwareWalletService.get().isWalletPresent()) {
             // User has selected restore wallet - see if wallet is hard Trezor wallet
             // If so no need to enter a seed phrase - use the rootNode from the master public key to work out the wallet id
@@ -167,6 +167,11 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
             break;
           }
         } else {
+          // Ensure Trezor is reset
+          if (hardwareWalletService.isPresent()) {
+            hardwareWalletService.get().requestCancel();
+            hardwareWalletService.get().getContext().resetToConnected();
+          }
           state = selectWalletChoice;
         }
         break;

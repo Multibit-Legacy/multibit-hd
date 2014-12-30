@@ -787,7 +787,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           // if the label is the same and the data validity time is within a few minutes of now then we use the
           // data validity time as the replay date
           long replayDateInMillis = DateTime.parse(WalletManager.EARLIEST_HD_WALLET_DATE).getMillis();
-          if (label.equals(Configurations.currentConfiguration.getWallet().getRecentWalletLabel())) {
+          String recentWalletLabel = Configurations.currentConfiguration.getWallet().getRecentWalletLabel();
+          if (label.equals(recentWalletLabel)) {
             long now = System.currentTimeMillis();
             long dataValidityTime = Configurations.currentConfiguration.getWallet().getRecentWalletDataValidity();
             if (now - dataValidityTime <= WalletManager.MAXIMUM_WALLET_CREATION_DELTA) {
