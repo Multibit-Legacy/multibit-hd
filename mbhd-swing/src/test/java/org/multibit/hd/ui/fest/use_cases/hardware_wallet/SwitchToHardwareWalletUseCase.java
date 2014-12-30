@@ -13,14 +13,14 @@ import java.util.concurrent.TimeUnit;
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
  * <li>Verify an alert is shown when a hardware wallet is connected</li>
- * <li>Verify selecting Yes will show the "hardware wallet" wizard</li>
+ * <li>Verify selecting Yes will switch to the "credentials" wizard</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.5
  */
-public class ShowThenCancelUseHardwareWalletUseCase extends AbstractFestUseCase {
+public class SwitchToHardwareWalletUseCase extends AbstractFestUseCase {
 
-  public ShowThenCancelUseHardwareWalletUseCase(FrameFixture window) {
+  public SwitchToHardwareWalletUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -41,39 +41,14 @@ public class ShowThenCancelUseHardwareWalletUseCase extends AbstractFestUseCase 
       .button(MessageKey.YES.getKey())
       .click();
 
-    // Verify the "use hardware wallet" wizard appears
+    // Allow time for the switch to take place
+    pauseForWalletSwitch();
 
-    // Verify that the title appears
-    assertLabelText(MessageKey.USE_TREZOR_TITLE);
+    // Verify the "credentials" wizard appears after a switch in Trezor mode
 
     window
-      .radioButton(MessageKey.USE_TREZOR_WALLET.getKey())
-      .requireSelected()
-      .requireEnabled()
+      .label(MessageKey.TREZOR_UNLOCK_TITLE.getKey())
       .requireVisible();
-
-    window
-      .radioButton(MessageKey.BUY_TREZOR.getKey())
-      .requireNotSelected()
-      .requireEnabled()
-      .requireVisible();
-
-    window
-      .radioButton(MessageKey.VERIFY_DEVICE.getKey())
-      .requireNotSelected()
-      .requireEnabled()
-      .requireVisible();
-
-    window
-      .radioButton(MessageKey.WIPE_DEVICE.getKey())
-      .requireNotSelected()
-      .requireEnabled()
-      .requireVisible();
-
-    // Cancel
-    window
-      .button(MessageKey.CANCEL.getKey())
-      .click();
 
   }
 }

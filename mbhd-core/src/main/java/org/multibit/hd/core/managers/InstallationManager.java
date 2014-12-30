@@ -2,7 +2,6 @@ package org.multibit.hd.core.managers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
-import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
@@ -57,26 +56,16 @@ public class InstallationManager {
   public static boolean unrestricted = false;
 
   /**
-   * @param shutdownType The shutdown type
+   * <p>Handle any shutdown code</p>
    */
-  public static void shutdownNow(ShutdownEvent.ShutdownType shutdownType) {
+  public static void shutdownNow() {
 
-    reset();
+    // Do nothing
 
-  }
+    // Reset of the unrestricted field causes problems during FEST tests
 
-  /**
-   * Resets the installation manager back to its starting state
-   * Use this during shutdown events and for integration tests involving the filesystem
-   */
-  public static synchronized void reset() {
-
-    log.debug("Installation manager reset");
-
-    currentApplicationDataDirectory = null;
-
-    // Do not change the unrestricted setting as it leads to
-    // inconsistent behaviour
+    // Reset of the current application directory causes problems during
+    // switch and is not required in normal operation
 
   }
 

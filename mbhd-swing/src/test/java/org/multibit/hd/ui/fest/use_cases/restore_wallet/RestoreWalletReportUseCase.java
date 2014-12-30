@@ -34,7 +34,7 @@ public class RestoreWalletReportUseCase extends AbstractFestUseCase {
 
     // Require a few seconds to allow wallet creation to complete
     // due to extensive crypto operations and CA cert lookups
-    pauseForWalletCreation();
+    pauseForWalletRestore();
 
     window
       .label(MessageKey.BACKUP_LOCATION_STATUS.getKey())

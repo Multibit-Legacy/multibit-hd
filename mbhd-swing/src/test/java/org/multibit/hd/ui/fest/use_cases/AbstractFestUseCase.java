@@ -319,10 +319,17 @@ public abstract class AbstractFestUseCase {
   }
 
   /**
-   * The standard length of time for a wallet to be restored (at least 15 seconds with CA certs which take at least 6 seconds on broadband)
+   * The standard length of time for a wallet to be restored (at least 20 seconds with CA certs which take at least 6 seconds on broadband)
    */
   protected void pauseForWalletRestore() {
     Pause.pause(20, TimeUnit.SECONDS);
+  }
+
+  /**
+   * The standard length of time for a wallet to be switched (at least 5 seconds)
+   */
+  protected void pauseForWalletSwitch() {
+    Pause.pause(5, TimeUnit.SECONDS);
   }
 
   /**

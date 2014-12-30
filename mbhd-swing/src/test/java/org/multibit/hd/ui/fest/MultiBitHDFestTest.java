@@ -62,9 +62,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Before
   public void setUp() {
 
-    // Ensure we clear any starting state
-    InstallationManager.reset();
-
     // Allow unrestricted operation
     // This will force the use of a temporary directory for application configuration
     // ensuring that existing configurations and wallets are untouched
@@ -91,7 +88,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     window.cleanUp();
 
     // Reset the installation manager
-    InstallationManager.reset();
+    InstallationManager.shutdownNow();
 
   }
 

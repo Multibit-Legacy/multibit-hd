@@ -589,7 +589,7 @@ public class MainController extends AbstractController implements
     BackupManager.INSTANCE.shutdownNow();
 
     // Reset the installation manager
-    InstallationManager.shutdownNow(shutdownType);
+    InstallationManager.shutdownNow();
 
   }
 
