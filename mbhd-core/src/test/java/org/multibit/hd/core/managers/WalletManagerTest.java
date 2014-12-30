@@ -102,7 +102,7 @@ public class WalletManagerTest {
     // Order is important here
     CoreServices.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
 
-    InstallationManager.shutdownNow();
+    InstallationManager.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
     BackupManager.INSTANCE.shutdownNow();
     WalletManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 

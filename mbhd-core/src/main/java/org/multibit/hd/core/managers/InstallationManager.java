@@ -2,6 +2,7 @@ package org.multibit.hd.core.managers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
@@ -57,15 +58,25 @@ public class InstallationManager {
 
   /**
    * <p>Handle any shutdown code</p>
+   * @param shutdownType The shutdown type
    */
-  public static void shutdownNow() {
+  public static void shutdownNow(ShutdownEvent.ShutdownType shutdownType) {
 
-    // Do nothing
+    switch (shutdownType) {
+
+      case HARD:
+      case SOFT:
+        // Force a reset of the application directory (useful for persistence tests)
+        currentApplicationDataDirectory = null;
+        break;
+      case SWITCH:
+        // Reset of the current application directory causes problems during
+        // switch and is not required in normal operation
+        break;
+    }
 
     // Reset of the unrestricted field causes problems during FEST tests
 
-    // Reset of the current application directory causes problems during
-    // switch and is not required in normal operation
 
   }
 

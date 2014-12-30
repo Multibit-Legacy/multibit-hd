@@ -588,8 +588,8 @@ public class MainController extends AbstractController implements
     // Close the backup manager for the wallet
     BackupManager.INSTANCE.shutdownNow();
 
-    // Reset the installation manager
-    InstallationManager.shutdownNow();
+    // Close the installation manager
+    InstallationManager.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
 
   }
 

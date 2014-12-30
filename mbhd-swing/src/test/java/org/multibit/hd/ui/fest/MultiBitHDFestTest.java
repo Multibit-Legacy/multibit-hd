@@ -88,7 +88,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     window.cleanUp();
 
     // Reset the installation manager
-    InstallationManager.shutdownNow();
+    InstallationManager.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
 
   }
 
