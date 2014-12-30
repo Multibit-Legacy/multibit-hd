@@ -73,7 +73,6 @@ import static org.multibit.hd.core.dto.WalletId.*;
  * <li>tracks the current wallet and the list of wallet directories</li>
  * </ul>
  * <p/>
- * TODO (GR) Consider renaming/restructuring this to Wallets since it provides tools for multiple wallets and allow for BitcoinNetwork injection
  */
 public enum WalletManager implements WalletEventListener {
 

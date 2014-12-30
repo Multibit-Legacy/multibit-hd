@@ -132,6 +132,8 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     log.trace("Received a TransactionSeenEvent: {}", transactionSeenEvent);
 
     if (transactionSeenEvent.isFirstAppearanceInWallet()) {
+      log.debug("Firing an alert for a new transaction");
+      transactionSeenEvent.setFirstAppearanceInWallet(false);
       Sounds.playPaymentReceived();
       AlertModel alertModel = Models.newPaymentReceivedAlertModel(transactionSeenEvent);
       ControllerEvents.fireAddAlertEvent(alertModel);

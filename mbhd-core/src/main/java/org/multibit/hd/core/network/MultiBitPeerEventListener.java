@@ -85,7 +85,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     numberOfConnectedPeers = peerCount;
 
     CoreEvents.fireBitcoinNetworkChangedEvent(
-      BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
+            BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
   }
 
   @Override
@@ -98,7 +98,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     numberOfConnectedPeers = peerCount;
 
     CoreEvents.fireBitcoinNetworkChangedEvent(
-      BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
+            BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
   }
 
   @Override
@@ -109,47 +109,62 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   @Override
   public void onTransaction(Peer peer, Transaction transaction) {
 
-    // Loop through all the wallets, seeing if the transaction is relevant and adding them as pending if so.
+    // See if the transaction is relevant and adding them as pending if so.
     if (transaction != null) {
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-      if (currentWalletSummary.isPresent()) {
-        if (currentWalletSummary.get() != null) {
-          Wallet currentWallet = currentWalletSummary.get().getWallet();
-          if (currentWallet != null) {
-            try {
-              if (currentWallet.isTransactionRelevant(transaction)) {
-                if (!(transaction.isTimeLocked() && transaction.getConfidence().getSource() != TransactionConfidence.Source.SELF)) {
-                  if (currentWallet.getTransaction(transaction.getHash()) == null) {
+      if (currentWalletSummary.isPresent() && currentWalletSummary.get() != null) {
+        Wallet currentWallet = currentWalletSummary.get().getWallet();
+        if (currentWallet != null) {
+          try {
+            if (currentWallet.isTransactionRelevant(transaction)) {
+              if (!(transaction.isTimeLocked() && transaction.getConfidence().getSource() != TransactionConfidence.Source.SELF)) {
+                Sha256Hash transactionHash = transaction.getHash();
+                if (currentWallet.getTransaction(transactionHash) == null) {
+                  int transactionIdentityHashCode = System.identityHashCode(transaction);
 
-                    log.debug(
-                      "MultiBitHD adding a new pending transaction for the wallet '{}'\n{}",
-                      currentWalletSummary.get().getWalletId(),
-                      transaction.toString()
-                    );
+                  log.debug(
+                          "MultiBitHD adding a new pending transaction for the wallet '{}'\n{}",
+                          currentWalletSummary.get().getWalletId(),
+                          transaction.toString()
+                  );
 
-                    try {
+                  try {
+                    // If this transaction is zero confirmations, add it to the wallet
+                    if (transaction.isPending()) {
                       currentWallet.receivePending(transaction, null);
-                    } catch (IllegalStateException e) {
-                      log.warn("Illegal state receiving pending transaction", e);
-                      // Carry on regardless to give user confidence that something happened
+
+                      // Emit an event so that GUI elements can update as required
+                      Coin value = transaction.getValue(currentWallet);
+                      TransactionSeenEvent transactionSeenEvent = new TransactionSeenEvent(transaction, value);
+
+                      // Check this is the first time we have seen this transaction
+
+                      // Check the transaction in the wallet is the same object we put in
+                      // If it is different then some other thread put this tx in so this one is not the first.
+                      // (Probably this tx was reported by another peer)
+                      Transaction transactionInWallet = currentWallet.getTransaction(transactionHash);
+                      if (transactionInWallet != null) {
+                        int transactionInWalletIdentityHashCode = System.identityHashCode(transactionInWallet);
+                        if (transactionIdentityHashCode == transactionInWalletIdentityHashCode) {
+                          // This is the first time we have seen this transaction
+                          transactionSeenEvent.setFirstAppearanceInWallet(true);
+                          CoreEvents.fireTransactionSeenEvent(transactionSeenEvent);
+                          log.debug("Firing transaction seen event {}", transactionSeenEvent);
+                        }
+                      }
                     }
-
-                    // Emit an event so that GUI elements can update as required
-                    Coin value = transaction.getValue(currentWallet);
-                    TransactionSeenEvent transactionSeenEvent = new TransactionSeenEvent(transaction, value);
-                    transactionSeenEvent.setFirstAppearanceInWallet(true);
-
-                    CoreEvents.fireTransactionSeenEvent(transactionSeenEvent);
+                  } catch (IllegalStateException e) {
+                    log.warn("Illegal state receiving pending transaction", e);
+                    // Carry on regardless to give user confidence that something happened
                   }
                 }
               }
-            } catch (ScriptException se) {
-              // Cannot understand this transaction - carry on
             }
+          } catch (ScriptException se) {
+            // Cannot understand this transaction - carry on
           }
         }
       }
-
     }
   }
 
@@ -166,11 +181,11 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    */
   protected void progress(double pct, int blocksSoFar, Date date) {
     log.trace(
-      String.format(
-        "Chain download %d%% done with %d blocks to go, block date %s",
-        (int) pct,
-        blocksSoFar,
-        DateFormat.getDateTimeInstance().format(date))
+            String.format(
+                    "Chain download %d%% done with %d blocks to go, block date %s",
+                    (int) pct,
+                    blocksSoFar,
+                    DateFormat.getDateTimeInstance().format(date))
     );
   }
 
@@ -200,7 +215,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
     // Then fire the number of connected peers
     CoreEvents.fireBitcoinNetworkChangedEvent(
-         BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
+            BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
 
   }
 }

@@ -196,8 +196,9 @@ public class HeaderView extends AbstractView {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        // Hide the alert panel
+        // Hide the alert panel and clear the label
         alertPanel.setVisible(false);
+        alertMessageLabel.setText("");
       }
     });
 

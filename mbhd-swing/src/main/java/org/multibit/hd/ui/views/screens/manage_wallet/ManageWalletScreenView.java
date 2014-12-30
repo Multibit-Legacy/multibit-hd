@@ -256,10 +256,7 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
       File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
       final File currentWalletSummaryFile = WalletManager.INSTANCE.getCurrentWalletSummaryFile(applicationDataDirectory).get();
       WalletManager.updateWalletSummary(currentWalletSummaryFile, walletSummary);
-
     }
-
-
   }
 
   /**
@@ -269,7 +266,6 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
    */
   private void updateEmptyButton(BitcoinNetworkChangedEvent event) {
 
-    log.debug("Event: {}", event);
     boolean currentEnabled = showEmptyWalletButton.isEnabled();
 
     boolean newEnabled;

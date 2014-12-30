@@ -33,7 +33,7 @@ public class TransactionSeenEvent implements CoreEvent {
   /**
    * This is the first time this transaction has been seen in the wallet
    */
-  private boolean firstAppearanceInWallet = false;
+  private boolean firstAppearanceInWallet;
 
   public static final int DEPTH_IN_BLOCKS_IS_UNDEFINED = -1;
 
@@ -59,6 +59,8 @@ public class TransactionSeenEvent implements CoreEvent {
     numberOfPeers = confidence.numBroadcastPeers();
 
     this.amount = amount;
+
+    firstAppearanceInWallet = false;
 
   }
 

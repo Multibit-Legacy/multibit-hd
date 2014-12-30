@@ -445,7 +445,7 @@ public class WalletService extends AbstractService {
         return paymentStatus;
 
       } else if (TransactionConfidence.ConfidenceType.PENDING.equals(confidenceType)) {
-        if (numberOfPeers >= 2) {
+        if (numberOfPeers >= 1) {
           // Seen by the network but not confirmed yet
           PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER, CoreMessageKey.BROADCAST);
           paymentStatus.setStatusData(new Object[]{numberOfPeers});
@@ -699,8 +699,6 @@ public class WalletService extends AbstractService {
         }
       }
 
-      log.debug("Reading payments completed. TransactionInfoMap: {}", transactionInfoMap);
-
     } catch (EncryptedFileReaderWriterException e) {
       ExceptionHandler.handleThrowable(new PaymentsLoadException("Could not load payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'."));
     }
@@ -750,7 +748,6 @@ public class WalletService extends AbstractService {
   }
 
   public void addTransactionInfo(TransactionInfo transactionInfo) {
-    log.debug("Adding transactionInfo {}", transactionInfo);
     transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
   }
 
