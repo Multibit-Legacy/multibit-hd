@@ -281,8 +281,8 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
     log.trace("Empty button status is " + currentEnabled);
     switch (event.getSummary().getSeverity()) {
       case RED:
-        // Always disabled on RED
-        newEnabled = false;
+        // Enable on RED only if unrestricted (allows FEST tests without a network)
+        newEnabled = InstallationManager.unrestricted;
         log.trace("Severity = red");
         break;
       case AMBER:

@@ -264,8 +264,8 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     // address being used twice.
     switch (event.getSummary().getSeverity()) {
       case RED:
-        // Always disabled on RED
-        newEnabled = false;
+        // Enable on RED only if unrestricted (allows FEST tests without a network)
+        newEnabled = InstallationManager.unrestricted;
         break;
       case AMBER:
         // Enable on AMBER only if unrestricted
