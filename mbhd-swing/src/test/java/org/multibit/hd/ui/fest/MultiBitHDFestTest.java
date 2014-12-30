@@ -8,7 +8,6 @@ import org.fest.swing.edt.GuiQuery;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.testing.FestSwingTestCaseTemplate;
 import org.junit.*;
-import org.mockito.Mock;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Yaml;
@@ -22,6 +21,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
+import org.multibit.hd.testing.HardwareWalletFixtures;
 import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.fest.requirements.*;
@@ -42,7 +42,6 @@ import static org.fest.swing.timing.Pause.pause;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 @Ignore
 public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
@@ -52,9 +51,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   private FrameFixture window;
 
   private MultiBitHD testObject;
-
-  @Mock
-  private AbstractTrezorHardwareWalletClient mockClient;
 
   @BeforeClass
   public static void setUpOnce() throws Exception {
@@ -367,11 +363,11 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <li>Exercise the Trezor events</li>
    * </ul>
    */
-  @Ignore
+  @Test
   public void verifyHardwareWalletEvents() throws Exception {
 
     // Start with the empty hardware wallet fixture
-    arrangeEmptyHardware();
+    arrangeEmptyWithAttachedHardwareWallet();
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -433,9 +429,11 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   /**
    * <p>Starts MultiBit HD with an application directory containing the empty hardware wallet fixture and an accepted licence</p>
    *
+   * <p>All calls into the hardware wallet service will result in successful responses</p>
+   *
    * @throws Exception If something goes wrong
    */
-  private void arrangeEmptyHardware() throws Exception {
+  private void arrangeEmptyWithAttachedHardwareWallet() throws Exception {
 
     log.info("Arranging empty hardware wallet fixture environment...");
 
@@ -453,6 +451,9 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     // Add the empty wallet fixture
     WalletFixtures.createEmptyWalletFixture();
+
+    // Arrange the hardware client responses
+    AbstractTrezorHardwareWalletClient mockClient = HardwareWalletFixtures.createAttachedClient();
 
     // Setup the mock hardware wallet service
     HardwareWalletService hardwareWalletService = new HardwareWalletService(mockClient);
@@ -523,14 +524,15 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     testObject = new MultiBitHD();
     testObject.start(null);
 
-    MainView frame = GuiActionRunner.execute(new GuiQuery<MainView>() {
-      protected MainView executeInEDT() {
+    MainView frame = GuiActionRunner.execute(
+      new GuiQuery<MainView>() {
+        protected MainView executeInEDT() {
 
-        InstallationManager.getOrCreateApplicationDataDirectory();
+          InstallationManager.getOrCreateApplicationDataDirectory();
 
-        return testObject.initialiseUIViews();
-      }
-    });
+          return testObject.initialiseUIViews();
+        }
+      });
 
     log.info("Creating FEST frame fixture");
 
