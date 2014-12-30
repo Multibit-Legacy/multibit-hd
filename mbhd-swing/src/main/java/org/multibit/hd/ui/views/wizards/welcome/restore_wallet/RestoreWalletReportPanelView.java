@@ -68,8 +68,9 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   private static final Logger log = LoggerFactory.getLogger(RestoreWalletReportPanelView.class);
 
   // View
+  private JLabel backupLocationStatusLabel;
   private JLabel walletCreatedStatusLabel;
-  private JLabel cacertsInstalledStatusLabel;
+  private JLabel caCertificateStatusLabel;
   private JLabel synchronizationStatusLabel;
 
   private JLabel blocksLeftLabel;
@@ -111,8 +112,9 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Initialise to failure
+    backupLocationStatusLabel = Labels.newBackupLocationStatus(false);
     walletCreatedStatusLabel = Labels.newWalletCreatedStatus(false);
-    cacertsInstalledStatusLabel = Labels.newCACertsInstalledStatus(false);
+    caCertificateStatusLabel = Labels.newCACertsInstalledStatus(false);
     synchronizationStatusLabel = Labels.newSynchronizingStatus(false);
 
     // Start invisible (activates after CA certs completes)
@@ -120,14 +122,16 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     blocksLeftStatusLabel = Labels.newBlocksLeft();
 
     // Make all labels invisible initially
+    backupLocationStatusLabel.setVisible(false);
     walletCreatedStatusLabel.setVisible(false);
-    cacertsInstalledStatusLabel.setVisible(false);
+    caCertificateStatusLabel.setVisible(false);
     synchronizationStatusLabel.setVisible(false);
     blocksLeftLabel.setVisible(false);
     blocksLeftStatusLabel.setVisible(false);
 
+    contentPanel.add(backupLocationStatusLabel, "wrap");
     contentPanel.add(walletCreatedStatusLabel, "wrap");
-    contentPanel.add(cacertsInstalledStatusLabel, "wrap");
+    contentPanel.add(caCertificateStatusLabel, "wrap");
     contentPanel.add(synchronizationStatusLabel, "wrap");
 
     contentPanel.add(blocksLeftStatusLabel, "");
@@ -158,7 +162,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public void afterShow() {
 
-    Preconditions.checkNotNull(restoreWalletExecutorService,"'restoreWalletExecutorService' must be present");
+    Preconditions.checkNotNull(restoreWalletExecutorService, "'restoreWalletExecutorService' must be present");
 
     restoreWalletExecutorService.submit(
       new Runnable() {
@@ -243,6 +247,11 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
                 // Enable on GREEN only if synchronized or unrestricted (to speed up FEST tests)
                 newEnabled = BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus()) || InstallationManager.unrestricted || blocksLeft == 0;
                 break;
+              case PINK:
+              case EMPTY:
+                // Maintain the status quo unless unrestricted
+                newEnabled = currentEnabled || InstallationManager.unrestricted;
+                break;
               default:
                 // Unknown status
                 throw new IllegalStateException("Unknown event severity " + event.getSummary().getStatus());
@@ -283,26 +292,15 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     // RESTORE_WALLET_SEED_PHRASE = restore from a seed phrase and timestamp (MBHD soft wallet or Trezor soft wallet)
     // RESTORE_WALLET_BACKUP = restore from a seed phrase and wallet backup
 
-    // Locate the installation directory
-    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-
-    log.debug("Cloud backup...");
-    File cloudBackupLocation = null;
-    if (Configurations.currentConfiguration != null) {
-      String cloudBackupLocationString = Configurations.currentConfiguration.getAppearance().getCloudBackupLocation();
-      if (cloudBackupLocationString != null && !"".equals(cloudBackupLocationString)) {
-        cloudBackupLocation = new File(cloudBackupLocationString);
-      }
-    }
-
-    log.debug("Backup manager...");
-    // Initialise backup (must be before Bitcoin network starts and on the main thread)
-    BackupManager.INSTANCE.initialise(applicationDataDirectory, cloudBackupLocation == null ? Optional.<File>absent() : Optional.of(cloudBackupLocation));
+    final boolean backupLocationStatus = handleBackupLocation();
 
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
         public void run() {
+
+          LabelDecorator.applyStatusLabel(backupLocationStatusLabel, Optional.of(backupLocationStatus));
+          backupLocationStatusLabel.setVisible(true);
 
           // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
           ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
@@ -310,55 +308,10 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         }
       });
 
-    final boolean walletCreatedStatus;
+    // Give the user the impression of work being done
+    Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
 
-    // Attempt to create the wallet
-    switch (model.getRestoreMethod()) {
-
-      case RESTORE_WALLET_SELECT_BACKUP:
-        log.debug("Performing a restore from a seed phrase and a wallet backup.");
-
-        EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
-
-        // Create the wallet
-        walletCreatedStatus = createWalletFromSeedPhrase(restoreWalletEnterSeedPhraseModel.getSeedPhrase());
-        break;
-      case RESTORE_WALLET_TIMESTAMP:
-        log.debug("Performing a restore from a seed phrase and a timestamp.");
-
-        EnterSeedPhraseModel restoreEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
-        EnterSeedPhraseModel restoreEnterTimestampModel = model.getRestoreWalletEnterTimestampModel();
-        ConfirmPasswordModel confirmPasswordModel = model.getRestoreWalletConfirmPasswordModel();
-        log.debug("Timestamp: {}", restoreEnterTimestampModel.getSeedTimestamp());
-
-        // Create the wallet
-        walletCreatedStatus = createWalletFromSeedPhraseAndTimestamp(
-          restoreEnterSeedPhraseModel.getSeedPhrase(),
-          restoreEnterSeedPhraseModel.isRestoreAsTrezor(),
-          restoreEnterTimestampModel.getSeedTimestamp(),
-          confirmPasswordModel.getValue()
-        );
-        break;
-      case RESTORE_WALLET_HARD_TREZOR:
-        log.debug("Performing a restore of a hard trezor.");
-        walletCreatedStatus = createTrezorHardWallet();
-        break;
-      default:
-        log.error("Unknown welcome wizard state: {}", model.getRestoreMethod());
-        SwingUtilities.invokeLater(
-          new Runnable() {
-            @Override
-            public void run() {
-              LabelDecorator.applyStatusLabel(walletCreatedStatusLabel, Optional.of(false));
-              walletCreatedStatusLabel.setVisible(true);
-            }
-          });
-        return;
-    }
-
-    log.debug("Wallet created status: " + walletCreatedStatus);
-
-    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
+    final boolean walletCreatedStatus = handleCreateWalletStatus(model);
 
     // Create wallet from seed phrase should always be OK
     SwingUtilities.invokeLater(
@@ -373,24 +326,16 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     // Give the user the impression of work being done
     Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
 
-    log.debug("Installing SSL certificates...");
+    final boolean caCertificatesStatus = handleCACertificateStatus();
 
-    // Attempt to install the CA certifications for the exchanges and MultiBit.org
-    // Configure SSL certificates without forcing
-    SSLManager.INSTANCE.installCACertificates(
-      InstallationManager.getOrCreateApplicationDataDirectory(),
-      InstallationManager.CA_CERTS_NAME,
-      false);
-
-    // Update the UI after the BRIT exchange completes
+    // Update the UI
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
         public void run() {
 
-          // No errors so assume they are OK
-          AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, cacertsInstalledStatusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-          cacertsInstalledStatusLabel.setVisible(true);
+          LabelDecorator.applyStatusLabel(caCertificateStatusLabel, Optional.of(caCertificatesStatus));
+          caCertificateStatusLabel.setVisible(true);
 
         }
       });
@@ -398,17 +343,18 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     // Give the user the impression of work being done
     Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
 
-    log.debug("Synchronizing...");
+    // Allow the Finish button at this point since the Bitcoin network may fail and the user will be trapped
+    ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.RESTORE_WALLET_REPORT.name(), WizardButton.FINISH, true);
 
-    final boolean synchronizationStatus = CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
+    final boolean walletSynchronizationStatus = handleSynchronizationStatus();
 
-    // Let the user know that they're waiting for synchronization to complete
+    // Update the UI
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
         public void run() {
 
-          LabelDecorator.applyStatusLabel(synchronizationStatusLabel, Optional.of(synchronizationStatus));
+          LabelDecorator.applyStatusLabel(synchronizationStatusLabel, Optional.of(walletSynchronizationStatus));
           synchronizationStatusLabel.setVisible(true);
 
         }
@@ -417,9 +363,138 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   }
 
   /**
+   * @return True if the backup location was created successfully
+   */
+  private boolean handleBackupLocation() {
+
+    try {
+      // Locate the installation directory
+      File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+      log.debug("Cloud backup...");
+      File cloudBackupLocation = null;
+      if (Configurations.currentConfiguration != null) {
+        String cloudBackupLocationString = Configurations.currentConfiguration.getAppearance().getCloudBackupLocation();
+        if (cloudBackupLocationString != null && !"".equals(cloudBackupLocationString)) {
+          cloudBackupLocation = new File(cloudBackupLocationString);
+        }
+      }
+
+      log.debug("Backup manager...");
+      // Initialise backup (must be before Bitcoin network starts and on the main thread)
+      BackupManager.INSTANCE.initialise(applicationDataDirectory, cloudBackupLocation == null ? Optional.<File>absent() : Optional.of(cloudBackupLocation));
+
+      return true;
+
+    } catch (Exception e) {
+      log.error("Failed to create backup location.", e);
+    }
+
+    // Must have failed to be here
+    return false;
+
+  }
+
+  /**
+   * @param model The wizard model
+   *
+   * @return True if the wallet creation was successful
+   */
+  private boolean handleCreateWalletStatus(WelcomeWizardModel model) {
+
+    // Attempt to create the wallet
+    switch (model.getRestoreMethod()) {
+
+      case RESTORE_WALLET_SELECT_BACKUP:
+        log.debug("Performing a restore from a seed phrase and a wallet backup.");
+
+        EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
+
+        // Create the wallet
+        return createWalletFromSeedPhrase(restoreWalletEnterSeedPhraseModel.getSeedPhrase());
+      case RESTORE_WALLET_TIMESTAMP:
+        log.debug("Performing a restore from a seed phrase and a timestamp.");
+
+        EnterSeedPhraseModel restoreEnterSeedPhraseModel = model.getRestoreWalletEnterSeedPhraseModel();
+        EnterSeedPhraseModel restoreEnterTimestampModel = model.getRestoreWalletEnterTimestampModel();
+        ConfirmPasswordModel confirmPasswordModel = model.getRestoreWalletConfirmPasswordModel();
+        log.debug("Timestamp: {}", restoreEnterTimestampModel.getSeedTimestamp());
+
+        // Create the wallet
+        return createWalletFromSeedPhraseAndTimestamp(
+          restoreEnterSeedPhraseModel.getSeedPhrase(),
+          restoreEnterSeedPhraseModel.isRestoreAsTrezor(),
+          restoreEnterTimestampModel.getSeedTimestamp(),
+          confirmPasswordModel.getValue()
+        );
+      case RESTORE_WALLET_HARD_TREZOR:
+        log.debug("Performing a restore of a hard trezor.");
+        return createTrezorHardWallet();
+      default:
+        log.error("Unknown welcome wizard state: {}", model.getRestoreMethod());
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              LabelDecorator.applyStatusLabel(walletCreatedStatusLabel, Optional.of(false));
+              walletCreatedStatusLabel.setVisible(true);
+            }
+          });
+        return true;
+    }
+
+  }
+
+  /**
+   * @return True if the CA certificates were installed correctly
+   */
+  private boolean handleCACertificateStatus() {
+
+    log.debug("Installing SSL certificates...");
+
+    try {
+      // Attempt to install the CA certifications for the exchanges and MultiBit.org
+      // Configure SSL certificates without forcing
+      SSLManager.INSTANCE.installCACertificates(
+        InstallationManager.getOrCreateApplicationDataDirectory(),
+        InstallationManager.CA_CERTS_NAME,
+        false);
+
+      return true;
+
+    } catch (Exception e) {
+      log.error("Failed to create CA certificates.", e);
+    }
+
+    // Must have failed to be here
+    return false;
+  }
+
+  /**
+   * @return True if synchronization is occurring correctly
+   */
+  private boolean handleSynchronizationStatus() {
+
+    log.debug("Synchronizing...");
+
+    try {
+
+      return CoreServices.getOrCreateBitcoinNetworkService().isStartedOk();
+
+    } catch (Exception e) {
+      log.error("Failed to start Bitcoin network.", e);
+    }
+
+    // Must have failed to be here
+    return false;
+
+  }
+
+  /**
    * Create a wallet from a seed phrase, timestamp and credentials
    */
   private boolean createWalletFromSeedPhraseAndTimestamp(List<String> seedPhrase, boolean isRestoreTrezor, String timestamp, String password) {
+
     if (!verifySeedPhrase(seedPhrase)) {
       return false;
     }
@@ -461,8 +536,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       return true;
 
     } catch (Exception e) {
-      e.printStackTrace();
-      log.error("Failed to restore wallet. Error was '" + e.getMessage() + "'.");
+      log.error("Failed to restore wallet.", e);
     }
 
     // Must have failed to be here
@@ -474,6 +548,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
    * Create a wallet from a seed phrase and a backup summary (chosen by the user)
    */
   private boolean createWalletFromSeedPhrase(List<String> seedPhrase) {
+
     if (!verifySeedPhrase(seedPhrase)) {
       return false;
     }
@@ -520,53 +595,63 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         decryptedWalletPassword);
 
       return bitcoinNetworkService.isStartedOk();
+
     } catch (Exception e) {
-      log.error("Failed to restore wallet. Error was '" + e.getMessage() + "'.");
-      return false;
+      log.error("Failed to restore wallet from seed phrase.", e);
     }
+
+    // Must have failed to be here
+    return false;
+
   }
 
   /**
-    * Create a Trezor hard wallet from a backup summary, decrypting it with a password created from the Trezor supplied entropy
-    */
-   private boolean createTrezorHardWallet() {
-     // Get the model that contains the selected wallet backup to use
-     SelectBackupSummaryModel selectedBackupSummaryModel = getWizardModel().getSelectBackupSummaryModel();
+   * Create a Trezor hard wallet from a backup summary, decrypting it with a password created from the Trezor supplied entropy
+   */
+  private boolean createTrezorHardWallet() {
 
-     if (selectedBackupSummaryModel == null || selectedBackupSummaryModel.getValue() == null ||
-       selectedBackupSummaryModel.getValue().getFile() == null) {
-       log.debug("No wallet backup to use from the model");
-       return false;
-     }
+    // Get the model that contains the selected wallet backup to use
+    SelectBackupSummaryModel selectedBackupSummaryModel = getWizardModel().getSelectBackupSummaryModel();
 
-     log.debug("Loading wallet backup '" + selectedBackupSummaryModel.getValue().getFile() + "'");
-     try {
-       // For Trezor hard wallets the backups are encrypted with the entropy derived password
-       String walletPassword = null; // TODO from Trezor supplied entropy (typically in CredentialsWizardModel when populated but wouldn't yet be done for a restore)
+    if (selectedBackupSummaryModel == null || selectedBackupSummaryModel.getValue() == null ||
+      selectedBackupSummaryModel.getValue().getFile() == null) {
+      log.debug("No wallet backup to use from the model");
+      return false;
+    }
 
-       // Check there is a wallet password - if not then cannot decrypt backup
-       if (walletPassword == null) {
-         return false;
-       }
-       KeyParameter backupAESKey = AESUtils.createAESKey(walletPassword.getBytes(Charsets.UTF_8), WalletManager.SCRYPT_SALT);
+    log.debug("Loading wallet backup '" + selectedBackupSummaryModel.getValue().getFile() + "'");
+    try {
+      // For Trezor hard wallets the backups are encrypted with the entropy derived password
+      String walletPassword = null; // TODO from Trezor supplied entropy (typically in CredentialsWizardModel when populated but wouldn't yet be done for a restore)
 
-       WalletId loadedWalletId = BackupManager.INSTANCE.loadZipBackup(selectedBackupSummaryModel.getValue().getFile(), backupAESKey);
+      // Check there is a wallet password - if not then cannot decrypt backup
+      if (walletPassword == null) {
+        return false;
+      }
+      KeyParameter backupAESKey = AESUtils.createAESKey(walletPassword.getBytes(Charsets.UTF_8), WalletManager.SCRYPT_SALT);
 
-       // Start the Bitcoin network and synchronize the wallet
-       BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
+      WalletId loadedWalletId = BackupManager.INSTANCE.loadZipBackup(selectedBackupSummaryModel.getValue().getFile(), backupAESKey);
 
-       // Open the wallet and synchronize the wallet
-       WalletManager.INSTANCE.openWalletFromWalletId(
-         InstallationManager.getOrCreateApplicationDataDirectory(),
-         loadedWalletId,
-         walletPassword);
+      // Start the Bitcoin network and synchronize the wallet
+      BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
 
-       return bitcoinNetworkService.isStartedOk();
-     } catch (Exception e) {
-       log.error("Failed to restore wallet. Error was '" + e.getMessage() + "'.");
-       return false;
-     }
-   }
+      // Open the wallet and synchronize the wallet
+      WalletManager.INSTANCE.openWalletFromWalletId(
+        InstallationManager.getOrCreateApplicationDataDirectory(),
+        loadedWalletId,
+        walletPassword);
+
+      return bitcoinNetworkService.isStartedOk();
+
+    } catch (Exception e) {
+      log.error("Failed to restore Trezor hard wallet.", e);
+    }
+
+    // Must have failed to be here
+    return false;
+
+  }
+
   private boolean verifySeedPhrase(List<String> seedPhrase) {
 
     if (seedPhrase == null || seedPhrase.size() == 0) {
