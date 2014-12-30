@@ -595,10 +595,12 @@ public enum WalletManager implements WalletEventListener {
         try {
           // Get the bitcoin network service
           BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
-          log.debug("bitcoinNetworkService = {}", bitcoinNetworkService);
+          log.debug("bitcoinNetworkService: {}", bitcoinNetworkService);
 
           int walletBlockHeight = walletBeingReturned.getLastBlockSeenHeight();
-          log.debug("Wallet lastBlockSeenHeight is {}", walletBlockHeight);
+          Date walletLastSeenBlockTime = walletBeingReturned.getLastBlockSeenTime();
+
+          log.debug("Wallet lastBlockSeenHeight: {}, lastSeenBlockTime: {}, earliestKeyCreationTime: {}", walletBlockHeight, walletLastSeenBlockTime, walletBeingReturned.getEarliestKeyCreationTime());
 
           // See if the bitcoinNetworkService already has an open blockstore
           blockStore = bitcoinNetworkService.getBlockStore();
@@ -616,7 +618,11 @@ public enum WalletManager implements WalletEventListener {
 
           }
           log.debug("The blockStore is at height {}", blockStoreBlockHeight);
-          if (walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) {
+
+          if ((walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) &&
+                  (walletLastSeenBlockTime != null && walletBeingReturned.getEarliestKeyCreationTime() != -1 &&
+                  walletLastSeenBlockTime.getTime()/1000 > walletBeingReturned.getEarliestKeyCreationTime() )
+                  ) {
             // Regular sync is ok - no need to use checkpoints
             log.debug("Will perform a regular sync");
             performRegularSync = true;
@@ -639,14 +645,13 @@ public enum WalletManager implements WalletEventListener {
           synchroniseWallet(Optional.<Date>absent());
         } else {
           // Work out the date to sync from from the last block seen, the earliest key creation date and the earliest HD wallet date
-          log.debug("The lastBlockSeenTime = {}. EarliestKeyCreationDate = {}", walletBeingReturned.getLastBlockSeenTime(), walletBeingReturned.getEarliestKeyCreationTime());
           DateTime syncDate = null;
 
           if (walletBeingReturned.getLastBlockSeenTime() != null) {
             syncDate = new DateTime(walletBeingReturned.getLastBlockSeenTime());
           }
           if (walletBeingReturned.getEarliestKeyCreationTime() != -1) {
-            DateTime keyCreationTime = new DateTime(walletBeingReturned.getEarliestKeyCreationTime());
+            DateTime keyCreationTime = new DateTime(walletBeingReturned.getEarliestKeyCreationTime() * 1000);
             if (syncDate == null) {
               syncDate = keyCreationTime;
             } else {
