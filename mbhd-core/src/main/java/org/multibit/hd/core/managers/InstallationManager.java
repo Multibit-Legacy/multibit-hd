@@ -74,7 +74,9 @@ public class InstallationManager {
     log.debug("Installation manager reset");
 
     currentApplicationDataDirectory = null;
-    unrestricted = false;
+
+    // Do not change the unrestricted setting as it leads to
+    // inconsistent behaviour
 
   }
 
@@ -153,7 +155,7 @@ public class InstallationManager {
       applicationDataDirectoryName = System.getProperty("user.home") + "/." + MBHD_APP_NAME;
     }
 
-    log.debug("Application data directory is '{}'", applicationDataDirectoryName);
+    log.debug("Application data directory is\n'{}'", applicationDataDirectoryName);
 
     // Create the application data directory if it does not exist
     File applicationDataDirectory = new File(applicationDataDirectoryName);

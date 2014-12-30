@@ -2,13 +2,13 @@ package org.multibit.hd.ui.fest;
 
 import com.google.common.base.Optional;
 import com.google.common.io.ByteStreams;
-import com.google.common.io.Files;
 import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiQuery;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.testing.FestSwingTestCaseTemplate;
 import org.junit.*;
+import org.mockito.Mock;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Yaml;
@@ -19,6 +19,9 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.hardware.core.HardwareWalletService;
+import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
 import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.fest.requirements.*;
@@ -50,6 +53,9 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
   private MultiBitHD testObject;
 
+  @Mock
+  private AbstractTrezorHardwareWalletClient mockClient;
+
   @BeforeClass
   public static void setUpOnce() throws Exception {
 
@@ -63,13 +69,13 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Ensure we clear any starting state
     InstallationManager.reset();
 
-    // Reset the configuration
-    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
-
     // Allow unrestricted operation
     // This will force the use of a temporary directory for application configuration
     // ensuring that existing configurations and wallets are untouched
     InstallationManager.unrestricted = true;
+
+    // Reset the configuration
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
   }
 
@@ -364,8 +370,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Ignore
   public void verifyHardwareWalletEvents() throws Exception {
 
-    // Start with the standard wallet fixture
-    arrangeEmpty();
+    // Start with the empty hardware wallet fixture
+    arrangeEmptyHardware();
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -387,7 +393,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     log.info("Arranging fresh environment...");
 
     // Create a random temporary directory to write the wallets
-    File temporaryDirectory = makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
     InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
 
     // Continue with the set up
@@ -405,7 +411,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     log.info("Arranging empty wallet fixture environment...");
 
     // Create a random temporary directory to write the wallets
-    File temporaryDirectory = makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
     InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
 
     // Copy the MBHD cacerts
@@ -425,6 +431,38 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   }
 
   /**
+   * <p>Starts MultiBit HD with an application directory containing the empty hardware wallet fixture and an accepted licence</p>
+   *
+   * @throws Exception If something goes wrong
+   */
+  private void arrangeEmptyHardware() throws Exception {
+
+    log.info("Arranging empty hardware wallet fixture environment...");
+
+    // Create a random temporary directory to write the wallets
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
+    InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
+
+    // Copy the MBHD cacerts
+    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/" + InstallationManager.CA_CERTS_NAME);
+    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/" + InstallationManager.CA_CERTS_NAME));
+    ByteStreams.copy(cacerts, target);
+
+    // Initialise the backup manager
+    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
+
+    // Add the empty wallet fixture
+    WalletFixtures.createEmptyWalletFixture();
+
+    // Setup the mock hardware wallet service
+    HardwareWalletService hardwareWalletService = new HardwareWalletService(mockClient);
+    CoreServices.setHardwareWalletService(hardwareWalletService);
+
+    // Continue with the set up
+    setUpAfterArrange(true);
+  }
+
+  /**
    * <p>Starts MultiBit HD with an application directory containing a standard wallet fixture containing real transactions and contacts</p>
    *
    * @throws Exception If something goes wrong
@@ -434,7 +472,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     log.info("Arranging standard wallet fixture environment...");
 
     // Create a random temporary directory to write the wallets
-    File temporaryDirectory = makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
     InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
 
     // Copy the MBHD cacerts
@@ -502,20 +540,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     window.show();
 
     log.info("FEST setup complete");
-
-  }
-
-  /**
-   * @return A random temporary directory suitable for use as an application directory
-   *
-   * @throws java.io.IOException If something goes wrong
-   */
-  private File makeRandomTemporaryApplicationDirectory() throws IOException {
-
-    File temporaryDirectory = Files.createTempDir();
-    temporaryDirectory.deleteOnExit();
-
-    return temporaryDirectory;
 
   }
 

@@ -47,29 +47,25 @@ public class ShowSendThenCancelUseCase extends AbstractFestUseCase {
     // Verify empty fields to start
     window
       .comboBox(MessageKey.RECIPIENT.getKey())
-      .requireVisible()
-      .requireEnabled()
+      .requireEnabled(Timeout.timeout(5, TimeUnit.SECONDS))
       .requireEditable()
       .requireNoSelection();
 
     window
       .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
-      .requireVisible()
-      .requireEnabled()
+      .requireEnabled(Timeout.timeout(5, TimeUnit.SECONDS))
       .requireEmpty();
 
     // Click Cancel
     window
       .button(MessageKey.CANCEL.getKey())
-      .requireVisible()
-      .requireEnabled()
+      .requireEnabled(Timeout.timeout(5, TimeUnit.SECONDS))
       .click();
 
     // Verify the underlying screen is back
     window
       .button(MessageKey.SHOW_SEND_WIZARD.getKey())
-      .requireVisible()
-      .requireEnabled();
+      .requireVisible();
 
   }
 

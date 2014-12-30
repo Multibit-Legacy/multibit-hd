@@ -17,7 +17,6 @@ import static org.fest.swing.timing.Timeout.timeout;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class RestoreWalletReportUseCase extends AbstractFestUseCase {
 
@@ -33,8 +32,13 @@ public class RestoreWalletReportUseCase extends AbstractFestUseCase {
     // Verify that the title appears
     assertLabelText(MessageKey.RESTORE_WALLET_REPORT_TITLE);
 
-    // Restoring the wallet can take time
-    pauseForWalletRestore();
+    // Require a few seconds to allow wallet creation to complete
+    // due to extensive crypto operations and CA cert lookups
+    pauseForWalletCreation();
+
+    window
+      .label(MessageKey.BACKUP_LOCATION_STATUS.getKey())
+      .requireVisible();
 
     window
       .label(MessageKey.WALLET_CREATED_STATUS.getKey())
@@ -48,7 +52,8 @@ public class RestoreWalletReportUseCase extends AbstractFestUseCase {
       .label(MessageKey.SYNCHRONIZING_STATUS.getKey())
       .requireVisible();
 
-    // OK to proceed
+    // By the time the messages have appeared the Finish button
+    // should be ready
     window
       .button(MessageKey.FINISH.getKey())
       .requireEnabled(timeout(2, TimeUnit.SECONDS))
@@ -70,7 +75,7 @@ public class RestoreWalletReportUseCase extends AbstractFestUseCase {
       .requireSelection(0)
       .requireNotEditable();
 
-    String description =window
+    String description = window
       .textBox(MessageKey.DESCRIPTION.getKey())
       .text();
 
