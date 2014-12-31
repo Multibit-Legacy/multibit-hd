@@ -2,6 +2,7 @@ package org.multibit.hd.ui.fest;
 
 import com.google.common.base.Optional;
 import com.google.common.io.ByteStreams;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiQuery;
@@ -424,6 +425,9 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     HardwareWalletService hardwareWalletService = new HardwareWalletService(mockClient);
     CoreServices.setHardwareWalletService(hardwareWalletService);
 
+    // Prepare an initialised and attached Trezor device
+    HardwareWalletEventFixtures.newInitialiseTrezorUseCase();
+
     // Continue with the set up
     setUpAfterArrange(false, false);
 
@@ -557,8 +561,11 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
       new GuiQuery<MainView>() {
         protected MainView executeInEDT() {
 
-          // Start the attach use case
+          // Start the hardware wallet events
+          log.info("FEST firing hardware wallet event...");
           HardwareWalletEventFixtures.fireNextEvent();
+
+          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
           InstallationManager.getOrCreateApplicationDataDirectory();
 

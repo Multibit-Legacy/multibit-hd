@@ -46,7 +46,7 @@ public class HardwareWalletEventFixtures {
           HardwareWalletEvent event = hardwareWalletEvents.pop();
           HardwareWalletEvents.fireHardwareWalletEvent(event.getEventType(), (HardwareWalletMessage) event.getMessage());
         }
-      }, 1, TimeUnit.MILLISECONDS);
+      }, 10, TimeUnit.MILLISECONDS);
 
   }
 
