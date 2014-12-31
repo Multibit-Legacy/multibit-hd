@@ -1,12 +1,16 @@
 package org.multibit.hd.testing;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.multibit.hd.hardware.core.messages.Features;
+import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
 
+import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,22 +31,37 @@ public class HardwareWalletEventFixtures {
    */
   public static final String STANDARD_LABEL = "Example";
 
+  private static Stack<HardwareWalletEvent> hardwareWalletEvents = new Stack<>();
+
   /**
-   * <p>Perform a sequence of events corresponding to a device attach</p>
+   * Control when the next event in the use case will be fired
    */
-  public static void newAttachUseCase() {
+  public static void fireNextEvent() {
 
     eventScheduler.schedule(
       new Runnable() {
         @Override
         public void run() {
 
-          HardwareWalletEvents.fireHardwareWalletEvent(
-            HardwareWalletEventType.SHOW_DEVICE_READY,
-            newStandardFeatures()
-          );
+          HardwareWalletEvent event = hardwareWalletEvents.pop();
+          HardwareWalletEvents.fireHardwareWalletEvent(event.getEventType(), (HardwareWalletMessage) event.getMessage());
         }
-      }, 100, TimeUnit.MILLISECONDS);
+      }, 1, TimeUnit.MILLISECONDS);
+
+  }
+
+  /**
+   * <p>Perform a sequence of events corresponding to a device attach</p>
+   */
+  public static void newAttachUseCase() {
+
+    HardwareWalletEvent event = new HardwareWalletEvent(
+      HardwareWalletEventType.SHOW_DEVICE_READY,
+      Optional.<HardwareWalletMessage>of(
+        newStandardFeatures()
+      ));
+
+    hardwareWalletEvents.add(event);
 
   }
 
@@ -51,17 +70,13 @@ public class HardwareWalletEventFixtures {
    */
   public static void newInitialiseTrezorUseCase() {
 
-    eventScheduler.schedule(
-      new Runnable() {
-        @Override
-        public void run() {
+    HardwareWalletEvent event = new HardwareWalletEvent(
+      HardwareWalletEventType.SHOW_DEVICE_READY,
+      Optional.<HardwareWalletMessage>of(
+        newStandardFeatures()
+      ));
 
-          HardwareWalletEvents.fireHardwareWalletEvent(
-            HardwareWalletEventType.SHOW_DEVICE_READY,
-            newStandardFeatures()
-          );
-        }
-      }, 100, TimeUnit.MILLISECONDS);
+    hardwareWalletEvents.add(event);
 
   }
 
@@ -88,5 +103,4 @@ public class HardwareWalletEventFixtures {
     return features;
 
   }
-
 }

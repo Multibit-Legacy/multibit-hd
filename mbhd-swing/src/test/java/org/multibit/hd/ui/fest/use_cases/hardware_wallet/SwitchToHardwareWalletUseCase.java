@@ -29,6 +29,7 @@ public class SwitchToHardwareWalletUseCase extends AbstractFestUseCase {
 
     // Start the attach use case
     HardwareWalletEventFixtures.newAttachUseCase();
+    HardwareWalletEventFixtures.fireNextEvent();
 
     // Allow time for the view to react
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);

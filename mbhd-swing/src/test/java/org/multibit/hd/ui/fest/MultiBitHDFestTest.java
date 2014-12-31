@@ -20,6 +20,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
+import org.multibit.hd.testing.HardwareWalletEventFixtures;
 import org.multibit.hd.testing.HardwareWalletFixtures;
 import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.MultiBitHD;
@@ -403,7 +404,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     log.info("Arranging fresh environment...");
 
     // Continue with the set up
-    setUpAfterArrange(false);
+    setUpAfterArrange(false, false);
 
   }
 
@@ -424,7 +425,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     CoreServices.setHardwareWalletService(hardwareWalletService);
 
     // Continue with the set up
-    setUpAfterArrange(false);
+    setUpAfterArrange(false, false);
 
   }
 
@@ -452,7 +453,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     WalletFixtures.createEmptyWalletFixture();
 
     // Continue with the set up
-    setUpAfterArrange(true);
+    setUpAfterArrange(true, false);
 
   }
 
@@ -489,7 +490,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     CoreServices.setHardwareWalletService(hardwareWalletService);
 
     // Continue with the set up
-    setUpAfterArrange(true);
+    setUpAfterArrange(true, false);
   }
 
   /**
@@ -516,7 +517,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     WalletFixtures.createStandardWalletFixture();
 
     // Continue with the set up
-    setUpAfterArrange(true);
+    setUpAfterArrange(true, false);
 
   }
 
@@ -525,7 +526,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    *
    * @throws Exception If something goes wrong
    */
-  private void setUpAfterArrange(boolean licenceAccepted) throws Exception {
+  private void setUpAfterArrange(boolean licenceAccepted, final boolean hardwareWalletAttached) throws Exception {
 
     log.info("Reset locale to en_US");
 
@@ -548,7 +549,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     log.info("Starting MultiBit HD...");
 
-    // Start MultiBit HD within FEST
+    // Start MultiBit HD within FEST (mimic main method but split sequence)
     testObject = new MultiBitHD();
     testObject.start(null);
 
@@ -556,8 +557,12 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
       new GuiQuery<MainView>() {
         protected MainView executeInEDT() {
 
+          // Start the attach use case
+          HardwareWalletEventFixtures.fireNextEvent();
+
           InstallationManager.getOrCreateApplicationDataDirectory();
 
+          log.info("FEST initialising UI...");
           return testObject.initialiseUIViews();
         }
       });
