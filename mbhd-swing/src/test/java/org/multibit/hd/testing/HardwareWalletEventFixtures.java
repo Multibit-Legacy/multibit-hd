@@ -38,6 +38,10 @@ public class HardwareWalletEventFixtures {
    */
   public static void fireNextEvent() {
 
+    if (hardwareWalletEvents.isEmpty()) {
+      return;
+    }
+
     eventScheduler.schedule(
       new Runnable() {
         @Override
