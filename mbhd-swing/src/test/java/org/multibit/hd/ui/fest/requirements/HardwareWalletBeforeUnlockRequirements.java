@@ -1,10 +1,14 @@
 package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.hardware_wallet.SwitchToHardwareWalletUseCase;
+import org.multibit.hd.testing.HardwareWalletEventFixtures;
+import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
+import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>FEST Swing UI test to provide:</p>
@@ -20,10 +24,18 @@ public class HardwareWalletBeforeUnlockRequirements {
 
     Map<String, Object> parameters = Maps.newHashMap();
 
-    // Verify the "device connected" alert triggers a switch wallet
-    new SwitchToHardwareWalletUseCase(window).execute(parameters);
+    // Start the attach use case
+    HardwareWalletEventFixtures.newInitialiseTrezorUseCase();
 
-    // TODO Exercise the UseTrezor wizard
+    // Allow time for the view to react
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
+    // Work through the licence and language panels
+    new AcceptLicenceUseCase(window).execute(parameters);
+    new WelcomeSelectLanguage_en_US_UseCase(window).execute(parameters);
+
+    // Preparation
+//    new TrezorPreparationUseCase(window).execute(parameters);
 
   }
 }

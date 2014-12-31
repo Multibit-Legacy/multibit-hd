@@ -13,27 +13,19 @@ import java.util.concurrent.TimeUnit;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the user can initialise a wiped Trezor</li>
+ * <li>Verify the Trezor preparation screen</li>
  * </ul>
- *
- * <p>Part of the overall "wiped Trezor attached at cold start" use case</p>
  *
  * @since 0.0.5
  */
-public class InitialiseTrezorUseCase extends AbstractFestUseCase {
+public class TrezorPreparationUseCase extends AbstractFestUseCase {
 
-  public InitialiseTrezorUseCase(FrameFixture window) {
+  public TrezorPreparationUseCase(FrameFixture window) {
     super(window);
   }
 
   @Override
   public void execute(Map<String, Object> parameters) {
-
-    // Start the attach use case
-    HardwareWalletEventFixtures.newInitialiseTrezorUseCase();
-
-    // Allow time for the view to react
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Check that the Trezor preparation screen is showing
     window
