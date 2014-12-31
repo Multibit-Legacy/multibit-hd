@@ -176,7 +176,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
           state = selectWalletChoice;
         }
         break;
-      case SELECT_WALLET_HARDWARE:
+      case WELCOME_SELECT_WALLET_HARDWARE:
         state = selectWalletChoice;
         break;
       case CREATE_WALLET_PREPARATION:
@@ -333,7 +333,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
       case RESTORE_WALLET_REPORT:
         state = restoreMethod;
         break;
-      case SELECT_WALLET_HARDWARE:
+      case WELCOME_SELECT_WALLET_HARDWARE:
         state = WELCOME_SELECT_WALLET;
         break;
       default:

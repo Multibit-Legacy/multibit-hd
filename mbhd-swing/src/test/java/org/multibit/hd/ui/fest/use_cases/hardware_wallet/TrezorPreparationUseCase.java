@@ -1,9 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
-import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.timing.Timeout;
-import org.multibit.hd.testing.HardwareWalletEventFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -30,6 +28,30 @@ public class TrezorPreparationUseCase extends AbstractFestUseCase {
     // Check that the Trezor preparation screen is showing
     window
       .label(MessageKey.CREATE_TREZOR_WALLET_PREPARATION_TITLE.getKey())
+      .requireVisible();
+
+    window
+      .label(MessageKey.TREZOR_PREPARATION_NOTE_1.getKey())
+      .requireVisible();
+
+    window
+      .label(MessageKey.TREZOR_PREPARATION_NOTE_2.getKey())
+      .requireVisible();
+
+    window
+      .label(MessageKey.TREZOR_PREPARATION_NOTE_3.getKey())
+      .requireVisible();
+
+    window
+      .label(MessageKey.TREZOR_PREPARATION_NOTE_4.getKey())
+      .requireVisible();
+
+    window
+      .label(MessageKey.TREZOR_PREPARATION_NOTE_5.getKey())
+      .requireVisible();
+
+    window
+      .label(MessageKey.TREZOR_PREPARATION_NOTE_6.getKey())
       .requireVisible();
 
     // Check the 'Next' button is present and click it
