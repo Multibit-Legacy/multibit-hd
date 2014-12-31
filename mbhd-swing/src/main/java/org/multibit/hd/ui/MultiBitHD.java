@@ -1,6 +1,7 @@
 package org.multibit.hd.ui;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -18,7 +19,6 @@ import org.multibit.hd.ui.services.BitcoinURIListeningService;
 import org.multibit.hd.ui.views.MainView;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
-import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +28,7 @@ import javax.swing.text.DefaultEditorKit;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Main entry point to the application</p>
@@ -90,6 +91,9 @@ public class MultiBitHD {
     // Prepare the JVM (Nimbus, system properties etc)
     initialiseJVM();
 
+    // Start core services (logging, security alerts, configuration, Bitcoin URI handling etc)
+    initialiseCore(args);
+
     // Create controllers so that the generic app can access listeners
     if (!initialiseUIControllers(args)) {
 
@@ -100,9 +104,6 @@ public class MultiBitHD {
 
     // Prepare platform-specific integration (protocol handlers, quit events etc)
     initialiseGenericApp();
-
-    // Start core services (logging, security alerts, configuration, Bitcoin URI handling etc)
-    initialiseCore(args);
 
     // Must be OK to be here
     return true;
@@ -197,6 +198,12 @@ public class MultiBitHD {
       new SidebarController()
     );
 
+    // Start the hardware wallet support to allow credentials screen to be selected
+    mainController.handleHardwareWallets();
+
+    // Allow time for hardware wallet to produce events
+    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
     // Set the tooltip delay to be slightly longer
     ToolTipManager.sharedInstance().setInitialDelay(1000);
 
@@ -250,9 +257,6 @@ public class MultiBitHD {
     // Pre-loadContacts sound library
     Sounds.initialise();
 
-    // Start the hardware wallet support to allow credentials screen to be selected
-    mainController.handleHardwareWallets();
-
   }
 
   /**
@@ -279,7 +283,7 @@ public class MultiBitHD {
     Themes.switchTheme(themeKey.theme());
 
     // Build a new MainView
-    final MainView mainView = new MainView(CredentialsRequestType.PASSWORD);
+    final MainView mainView = new MainView();
     mainController.setMainView(mainView);
 
     // Check for any pre-existing wallets in the application directory

@@ -27,7 +27,7 @@ public class PersistentHistoryServiceTest {
 
   @Before
   public void setUp() throws Exception {
-    InstallationManager.reset();
+
     InstallationManager.unrestricted = true;
 
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
@@ -65,7 +65,7 @@ public class PersistentHistoryServiceTest {
     // Order is important here
     CoreServices.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
 
-    InstallationManager.reset();
+    InstallationManager.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
     BackupManager.INSTANCE.shutdownNow();
     WalletManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.HARD);
   }

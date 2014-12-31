@@ -235,7 +235,7 @@ public class MainController extends AbstractController implements
 
     log.debug("Switch Wallet event: '{}'", event);
 
-     handleSwitchWallet();
+    handleSwitchWallet();
   }
 
   /**
@@ -431,11 +431,12 @@ public class MainController extends AbstractController implements
   }
 
   /**
-   * @param mainView The current main view
+   * @param mainView The main view (the deferred credentials request type will also be set)
    */
   public void setMainView(MainView mainView) {
 
     this.mainView = mainView;
+    mainView.setCredentialsRequestType(deferredCredentialsRequestType);
 
   }
 
@@ -588,7 +589,7 @@ public class MainController extends AbstractController implements
     // Close the backup manager for the wallet
     BackupManager.INSTANCE.shutdownNow();
 
-    // Reset the installation manager
+    // Close the installation manager
     InstallationManager.shutdownNow(shutdownType);
 
   }
@@ -817,9 +818,17 @@ public class MainController extends AbstractController implements
         // - the current wallet is not a "hard" Trezor wallet
         Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
         if (walletSummary.isPresent() && !WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
-          // Attempt to create a suitable alert model in addition to view event
-          AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
-          ControllerEvents.fireAddAlertEvent(alertModel);
+
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+                // Attempt to create a suitable alert model in addition to view event
+                AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+                ControllerEvents.fireAddAlertEvent(alertModel);
+              }
+            });
+
         }
         // Set the deferred credentials request type
         deferredCredentialsRequestType = CredentialsRequestType.TREZOR;
@@ -989,6 +998,8 @@ public class MainController extends AbstractController implements
 
     // Check if the service is running and is allowed
     if (hardwareWalletService.isPresent() && !isServiceAllowed) {
+      log.debug("Stopping hardware service");
+
       // Stop the service, all listeners and clear the CoreServices reference
       CoreServices.stopHardwareWalletService(Lists.<Object>newArrayList(this));
       // Clear our reference

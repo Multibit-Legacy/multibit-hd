@@ -724,8 +724,6 @@ public enum WalletManager implements WalletEventListener {
     Wallet wallet = new WalletProtobufSerializer().readWallet(BitcoinNetwork.current().get(), walletExtensions, walletProto);
     wallet.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
 
-    //System.out.println("WalletManager#loadWalletFromFile: Just loaded wallet:\n" + wallet.toString());
-
     return wallet;
   }
 
@@ -771,8 +769,7 @@ public enum WalletManager implements WalletEventListener {
         throw wve;
       } catch (Exception e) {
         // Log the initial error
-        log.error(e.getClass().getCanonicalName() + " " + e.getMessage(), e);
-        System.out.println("WalletManager error: " + e.getClass().getCanonicalName() + " " + e.getMessage());
+        log.error("WalletManager error: "+e.getClass().getCanonicalName() + " " + e.getMessage(), e);
 
         // Try loading one of the rolling backups - this will send a BackupWalletLoadedEvent containing the initial error
         // If the rolling backups don't load then loadRollingBackup will throw a WalletLoadException which will propagate out

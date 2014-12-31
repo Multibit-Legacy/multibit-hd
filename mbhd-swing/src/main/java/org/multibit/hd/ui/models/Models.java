@@ -165,20 +165,15 @@ public class Models {
         // Provide action to allow user to enter PIN
         // (required if device prompts when providing
         // encrypted info to unlock wallet)
-        JButton button = Buttons.newAlertPanelButton(new AbstractAction() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
 
-            // Remove the alert since it's been dealt with
-            ControllerEvents.fireRemoveAlertEvent();
-
-            // Perform a switch wallet, which will close down the old wallet and then fire up a credentials wizard
-            ViewEvents.fireSwitchWalletEvent();
-          }
-        },
+        JButton button = Buttons.newAlertPanelButton(
+          getAlertButtonAction(),
           // Considered using Shield + Trezor tools wizard message but screen
           // gets cluttered with shields everywhere and looks confused
-          MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);
+          MessageKey.YES,
+          MessageKey.YES_TOOLTIP,
+          AwesomeIcon.CHECK
+        );
 
         return Models.newAlertModel(
           Languages.safeText(MessageKey.TREZOR_ATTACHED_ALERT, label),
@@ -193,6 +188,26 @@ public class Models {
       default:
         throw new IllegalStateException("Unknown hardware wallet system event");
     }
+
+  }
+
+  /**
+   *
+   * @return A suitable action for the alert button
+   */
+  private static AbstractAction getAlertButtonAction() {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        // Remove the alert since it's been dealt with
+        ControllerEvents.fireRemoveAlertEvent();
+
+        // Perform a switch wallet, which will close down the old wallet and then fire up a credentials wizard
+        ViewEvents.fireSwitchWalletEvent();
+      }
+    };
 
   }
 

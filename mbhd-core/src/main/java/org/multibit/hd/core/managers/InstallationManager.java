@@ -49,7 +49,7 @@ public class InstallationManager {
   /**
    * The current application data directory
    */
-  public static File currentApplicationDataDirectory = null;
+  private static File currentApplicationDataDirectory = null;
 
   /**
    * A test flag to allow FEST tests to run efficiently
@@ -57,26 +57,27 @@ public class InstallationManager {
   public static boolean unrestricted = false;
 
   /**
+   * <p>Handle any shutdown code</p>
    * @param shutdownType The shutdown type
    */
   public static void shutdownNow(ShutdownEvent.ShutdownType shutdownType) {
 
-    reset();
+    log.debug("Received shutdown: {}", shutdownType.name());
 
-  }
+    switch (shutdownType) {
 
-  /**
-   * Resets the installation manager back to its starting state
-   * Use this during shutdown events and for integration tests involving the filesystem
-   */
-  public static synchronized void reset() {
+      case HARD:
+      case SOFT:
+        // Force a reset of the application directory (useful for persistence tests)
+        currentApplicationDataDirectory = null;
+        break;
+      case SWITCH:
+        // Reset of the current application directory causes problems during
+        // switch and is not required in normal operation
+        break;
+    }
 
-    log.debug("Installation manager reset");
-
-    currentApplicationDataDirectory = null;
-
-    // Do not change the unrestricted setting as it leads to
-    // inconsistent behaviour
+    // Reset of the unrestricted field causes problems during FEST tests
 
   }
 

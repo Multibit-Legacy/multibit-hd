@@ -2,13 +2,13 @@ package org.multibit.hd.ui.fest;
 
 import com.google.common.base.Optional;
 import com.google.common.io.ByteStreams;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiQuery;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.testing.FestSwingTestCaseTemplate;
 import org.junit.*;
-import org.mockito.Mock;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Yaml;
@@ -16,12 +16,13 @@ import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exchanges.ExchangeKey;
-import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
+import org.multibit.hd.testing.HardwareWalletEventFixtures;
+import org.multibit.hd.testing.HardwareWalletFixtures;
 import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.fest.requirements.*;
@@ -42,7 +43,6 @@ import static org.fest.swing.timing.Pause.pause;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 @Ignore
 public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
@@ -53,9 +53,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
   private MultiBitHD testObject;
 
-  @Mock
-  private AbstractTrezorHardwareWalletClient mockClient;
-
   @BeforeClass
   public static void setUpOnce() throws Exception {
 
@@ -65,9 +62,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
   @Before
   public void setUp() {
-
-    // Ensure we clear any starting state
-    InstallationManager.reset();
 
     // Allow unrestricted operation
     // This will force the use of a temporary directory for application configuration
@@ -95,7 +89,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     window.cleanUp();
 
     // Reset the installation manager
-    InstallationManager.reset();
+    InstallationManager.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
 
   }
 
@@ -363,21 +357,39 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with empty wallet fixture</li>
-   * <li>Unlock wallet</li>
-   * <li>Exercise the Trezor events</li>
+   * <li>Exercise the Trezor events outside of an unlocked wallet (e.g. startup/restore etc)</li>
    * </ul>
    */
-  @Ignore
-  public void verifyHardwareWalletEvents() throws Exception {
+  @Test
+  public void verifyHardwareWalletBeforeUnlock() throws Exception {
+
+    // Start with a fresh environment
+    arrangeFreshWithAttachedHardwareWallet();
+
+    // Verify
+    HardwareWalletBeforeUnlockRequirements.verifyUsing(window);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with empty wallet fixture</li>
+   * <li>Unlock wallet</li>
+   * <li>Exercise the Trezor events within the context of an unlocked wallet</li>
+   * </ul>
+   */
+  @Test
+  public void verifyHardwareWalletAfterUnlock() throws Exception {
 
     // Start with the empty hardware wallet fixture
-    arrangeEmptyHardware();
+    arrangeEmptyWithAttachedHardwareWallet();
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
     // Verify
-    HardwareWalletEventRequirements.verifyUsing(window);
+    HardwareWalletAfterUnlockRequirements.verifyUsing(window);
 
   }
 
@@ -392,12 +404,32 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     log.info("Arranging fresh environment...");
 
-    // Create a random temporary directory to write the wallets
-    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
-    InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
+    // Continue with the set up
+    setUpAfterArrange(false, false);
+
+  }
+
+  /**
+   * <p>Starts MultiBit HD with an empty application directory and an attached hardware wallet</p>
+   *
+   * @throws Exception If something goes wrong
+   */
+  private void arrangeFreshWithAttachedHardwareWallet() throws Exception {
+
+    log.info("Arranging fresh environment with attached hardware wallet...");
+
+    // Arrange the hardware client responses
+    AbstractTrezorHardwareWalletClient mockClient = HardwareWalletFixtures.createAttachedClient();
+
+    // Setup the mock hardware wallet service
+    HardwareWalletService hardwareWalletService = new HardwareWalletService(mockClient);
+    CoreServices.setHardwareWalletService(hardwareWalletService);
+
+    // Prepare an initialised and attached Trezor device
+    HardwareWalletEventFixtures.newInitialiseTrezorUseCase();
 
     // Continue with the set up
-    setUpAfterArrange(false);
+    setUpAfterArrange(false, false);
 
   }
 
@@ -410,56 +442,59 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     log.info("Arranging empty wallet fixture environment...");
 
-    // Create a random temporary directory to write the wallets
-    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
-    InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
+    // Get the temporary application directory
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Copy the MBHD cacerts
     InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/" + InstallationManager.CA_CERTS_NAME);
-    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/" + InstallationManager.CA_CERTS_NAME));
+    OutputStream target = new FileOutputStream(new File(applicationDirectory + "/" + InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
     // Initialise the backup manager
-    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
+    BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     // Add the empty wallet fixture
     WalletFixtures.createEmptyWalletFixture();
 
     // Continue with the set up
-    setUpAfterArrange(true);
+    setUpAfterArrange(true, false);
 
   }
 
   /**
    * <p>Starts MultiBit HD with an application directory containing the empty hardware wallet fixture and an accepted licence</p>
    *
+   * <p>All calls into the hardware wallet service will result in successful responses</p>
+   *
    * @throws Exception If something goes wrong
    */
-  private void arrangeEmptyHardware() throws Exception {
+  private void arrangeEmptyWithAttachedHardwareWallet() throws Exception {
 
     log.info("Arranging empty hardware wallet fixture environment...");
 
-    // Create a random temporary directory to write the wallets
-    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
-    InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
+    // Get the temporary application directory
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Copy the MBHD cacerts
     InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/" + InstallationManager.CA_CERTS_NAME);
-    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/" + InstallationManager.CA_CERTS_NAME));
+    OutputStream target = new FileOutputStream(new File(applicationDirectory + "/" + InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
     // Initialise the backup manager
-    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
+    BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     // Add the empty wallet fixture
     WalletFixtures.createEmptyWalletFixture();
+
+    // Arrange the hardware client responses
+    AbstractTrezorHardwareWalletClient mockClient = HardwareWalletFixtures.createAttachedClient();
 
     // Setup the mock hardware wallet service
     HardwareWalletService hardwareWalletService = new HardwareWalletService(mockClient);
     CoreServices.setHardwareWalletService(hardwareWalletService);
 
     // Continue with the set up
-    setUpAfterArrange(true);
+    setUpAfterArrange(true, false);
   }
 
   /**
@@ -471,23 +506,22 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     log.info("Arranging standard wallet fixture environment...");
 
-    // Create a random temporary directory to write the wallets
-    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
-    InstallationManager.currentApplicationDataDirectory = SecureFiles.verifyOrCreateDirectory(temporaryDirectory);
+    // Get the temporary application directory
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Copy the MBHD cacerts
     InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/" + InstallationManager.CA_CERTS_NAME);
-    OutputStream target = new FileOutputStream(new File(temporaryDirectory + "/" + InstallationManager.CA_CERTS_NAME));
+    OutputStream target = new FileOutputStream(new File(applicationDirectory + "/" + InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
     // Initialise the backup manager to use the temporary directory
-    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
+    BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     // Add the restored wallet fixture
     WalletFixtures.createStandardWalletFixture();
 
     // Continue with the set up
-    setUpAfterArrange(true);
+    setUpAfterArrange(true, false);
 
   }
 
@@ -496,7 +530,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    *
    * @throws Exception If something goes wrong
    */
-  private void setUpAfterArrange(boolean licenceAccepted) throws Exception {
+  private void setUpAfterArrange(boolean licenceAccepted, final boolean hardwareWalletAttached) throws Exception {
 
     log.info("Reset locale to en_US");
 
@@ -519,18 +553,26 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     log.info("Starting MultiBit HD...");
 
-    // Start MultiBit HD within FEST
+    // Start MultiBit HD within FEST (mimic main method but split sequence)
     testObject = new MultiBitHD();
     testObject.start(null);
 
-    MainView frame = GuiActionRunner.execute(new GuiQuery<MainView>() {
-      protected MainView executeInEDT() {
+    MainView frame = GuiActionRunner.execute(
+      new GuiQuery<MainView>() {
+        protected MainView executeInEDT() {
 
-        InstallationManager.getOrCreateApplicationDataDirectory();
+          // Start the hardware wallet events
+          log.info("FEST firing hardware wallet event...");
+          HardwareWalletEventFixtures.fireNextEvent();
 
-        return testObject.initialiseUIViews();
-      }
-    });
+          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+          InstallationManager.getOrCreateApplicationDataDirectory();
+
+          log.info("FEST initialising UI...");
+          return testObject.initialiseUIViews();
+        }
+      });
 
     log.info("Creating FEST frame fixture");
 

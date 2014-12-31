@@ -24,6 +24,10 @@ public enum WelcomeWizardState {
    */
   WELCOME_SELECT_WALLET,
   /**
+   * Select wallet: Select a hardware wallet (Trezor etc)
+   */
+  WELCOME_SELECT_WALLET_HARDWARE,
+  /**
    * Create wallet: Preparation instructions
    */
   CREATE_WALLET_PREPARATION,
@@ -119,10 +123,6 @@ public enum WelcomeWizardState {
    * Restore wallet: Report on the restoration outcome
    */
   RESTORE_WALLET_REPORT,
-  /**
-   * Select wallet: Select a hardware wallet (Trezor etc)
-   */
-  SELECT_WALLET_HARDWARE,
 
   // End of enum
   ;
