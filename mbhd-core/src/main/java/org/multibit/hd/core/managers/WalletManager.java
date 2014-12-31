@@ -128,6 +128,11 @@ public enum WalletManager implements WalletEventListener {
 
   public static final String EARLIEST_HD_WALLET_DATE = "2014-10-01"; // TODO refine this
 
+  /**
+   * How much a block time might drift
+   */
+  public static final int DRIFT_TIME = 3600; // seconds
+
   public static final String WALLET_DIRECTORY_PREFIX = "mbhd";
   // The format of the wallet directories is WALLET_DIRECTORY_PREFIX + a wallet id.
   // A wallet id is 5 groups of 4 bytes in lowercase hex, with a "-' separator e.g. mbhd-11111111-22222222-33333333-44444444-55555555
@@ -619,13 +624,15 @@ public enum WalletManager implements WalletEventListener {
           }
           log.debug("The blockStore is at height {}", blockStoreBlockHeight);
 
-          if ((walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) &&
-                  (walletLastSeenBlockTime != null && walletBeingReturned.getEarliestKeyCreationTime() != -1 &&
-                  walletLastSeenBlockTime.getTime()/1000 > walletBeingReturned.getEarliestKeyCreationTime() )
-                  ) {
-            // Regular sync is ok - no need to use checkpoints
-            log.debug("Will perform a regular sync");
-            performRegularSync = true;
+          long earliestKeyCreationTimeInSeconds = walletBeingReturned.getEarliestKeyCreationTime();
+          if (walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) {
+            if (walletLastSeenBlockTime == null ||
+                    earliestKeyCreationTimeInSeconds == -1 ||
+                    (walletLastSeenBlockTime.getTime() / 1000 > earliestKeyCreationTimeInSeconds - DRIFT_TIME)) {
+              // Regular sync is ok - no need to use checkpoints
+              log.debug("Will perform a regular sync");
+              performRegularSync = true;
+            }
           }
         } catch (BlockStoreException bse) {
           // Carry on - it's just logging
