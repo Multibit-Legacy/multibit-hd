@@ -9,12 +9,12 @@ import java.util.Map;
 /**
  * <p>FEST Swing UI test to provide:</p>
  * <ul>
- * <li>Exercise the "hardware wallet system events" to verify its wizards and alerts show correctly</li>
+ * <li>Exercise the responses to hardware wallet events in the context of an unlocked wallet</li>
  * </ul>
  *
  * @since 0.0.1
  */
-public class HardwareWalletEventRequirements {
+public class HardwareWalletAfterUnlockRequirements {
 
   public static void verifyUsing(FrameFixture window) {
 
@@ -23,9 +23,7 @@ public class HardwareWalletEventRequirements {
     // Verify the "device connected" alert triggers a switch wallet
     new SwitchToHardwareWalletUseCase(window).execute(parameters);
 
-    // TODO Implement this
-    // Require mocking capability on HardwareWalletService (perhaps use emulator)
-    // Verify the PIN matrix
-    //new ShowPINMatrixUseCase(window).execute(parameters);
+    // TODO Exercise the UseTrezor wizard
+
   }
 }

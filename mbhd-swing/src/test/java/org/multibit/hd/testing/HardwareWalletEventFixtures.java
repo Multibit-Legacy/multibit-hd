@@ -47,6 +47,25 @@ public class HardwareWalletEventFixtures {
   }
 
   /**
+   * <p>Perform a sequence of events corresponding to initialising a Trezor</p>
+   */
+  public static void newInitialiseTrezorUseCase() {
+
+    eventScheduler.schedule(
+      new Runnable() {
+        @Override
+        public void run() {
+
+          HardwareWalletEvents.fireHardwareWalletEvent(
+            HardwareWalletEventType.SHOW_DEVICE_READY,
+            newStandardFeatures()
+          );
+        }
+      }, 100, TimeUnit.MILLISECONDS);
+
+  }
+
+  /**
    * @return A default Features for use with FEST testing
    */
   public static Features newStandardFeatures() {

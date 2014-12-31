@@ -355,12 +355,30 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with empty wallet fixture</li>
-   * <li>Unlock wallet</li>
-   * <li>Exercise the Trezor events</li>
+   * <li>Exercise the Trezor events outside of an unlocked wallet (e.g. startup/restore etc)</li>
    * </ul>
    */
   @Test
-  public void verifyHardwareWalletEvents() throws Exception {
+  public void verifyHardwareWalletBeforeUnlock() throws Exception {
+
+    // Start with a fresh environment
+    arrangeFreshWithAttachedHardwareWallet();
+
+    // Verify
+    HardwareWalletBeforeUnlockRequirements.verifyUsing(window);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with empty wallet fixture</li>
+   * <li>Unlock wallet</li>
+   * <li>Exercise the Trezor events within the context of an unlocked wallet</li>
+   * </ul>
+   */
+  @Test
+  public void verifyHardwareWalletAfterUnlock() throws Exception {
 
     // Start with the empty hardware wallet fixture
     arrangeEmptyWithAttachedHardwareWallet();
@@ -369,7 +387,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
     // Verify
-    HardwareWalletEventRequirements.verifyUsing(window);
+    HardwareWalletAfterUnlockRequirements.verifyUsing(window);
 
   }
 
@@ -383,6 +401,27 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   private void arrangeFresh() throws Exception {
 
     log.info("Arranging fresh environment...");
+
+    // Continue with the set up
+    setUpAfterArrange(false);
+
+  }
+
+  /**
+   * <p>Starts MultiBit HD with an empty application directory and an attached hardware wallet</p>
+   *
+   * @throws Exception If something goes wrong
+   */
+  private void arrangeFreshWithAttachedHardwareWallet() throws Exception {
+
+    log.info("Arranging fresh environment with attached hardware wallet...");
+
+    // Arrange the hardware client responses
+    AbstractTrezorHardwareWalletClient mockClient = HardwareWalletFixtures.createAttachedClient();
+
+    // Setup the mock hardware wallet service
+    HardwareWalletService hardwareWalletService = new HardwareWalletService(mockClient);
+    CoreServices.setHardwareWalletService(hardwareWalletService);
 
     // Continue with the set up
     setUpAfterArrange(false);
