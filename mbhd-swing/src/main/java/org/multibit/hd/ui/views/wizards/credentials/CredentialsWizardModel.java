@@ -136,6 +136,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       case CREDENTIALS_ENTER_PIN:
         break;
       case CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK:
+        // Show the wallet load report
+        state = CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT;
         break;
       case CREDENTIALS_RESTORE:
         break;
@@ -492,17 +494,15 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    */
   private void unlockWalletWithEntropy() {
 
-    // Start the spinner (we are deferring the hide)
+    // Set the state to move to the load wallet report form
+    state = CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT;
+
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
         public void run() {
           // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
           ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
-
-          // Ensure the view shows the spinner and disables components
-          confirmCipherKeyPanelView.disableForUnlock();
-
         }
       });
 
@@ -532,7 +532,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             // Maintain the spinner while the initialisation continues
 
             // Trigger the deferred hide
-            ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
+            //ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
 
           } else {
 

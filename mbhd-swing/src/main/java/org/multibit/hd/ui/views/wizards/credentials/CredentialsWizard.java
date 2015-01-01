@@ -47,6 +47,12 @@ public class CredentialsWizard extends AbstractHardwareWalletWizard<CredentialsW
       CredentialsState.CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK.name(),
       new CredentialsConfirmCipherKeyPanelView(this, CredentialsState.CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK.name()));
 
+
+    wizardViewMap.put(
+      CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT.name(),
+      new CredentialsLoadWalletReportPanelView(this, CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT.name()));
+
+
     // Transition panel that is never shown
     wizardViewMap.put(
       CredentialsState.CREDENTIALS_RESTORE.name(),

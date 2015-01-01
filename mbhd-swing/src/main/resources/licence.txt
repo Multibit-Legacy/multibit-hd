@@ -1,4 +1,4 @@
-Copyright (c) 2014 MultiBit Developers
+Copyright (c) 2015 MultiBit Developers
 
 1) This software and associated documentation files is denoted
 the "Software".

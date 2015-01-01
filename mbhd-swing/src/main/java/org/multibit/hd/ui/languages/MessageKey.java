@@ -352,6 +352,8 @@ public enum MessageKey {
   CREATE_WALLET_PASSWORD_TITLE("create_wallet_password_title"),
   CREATE_WALLET_REPORT_TITLE("create_wallet_report_title"),
 
+  LOAD_WALLET_REPORT_TITLE("load_wallet_report_title"),
+
   // Trezor
   CREATE_TREZOR_WALLET_PREPARATION_TITLE("create_trezor_wallet_preparation_title"),
   CREATE_TREZOR_WALLET_ENTER_DETAILS_TITLE("create_trezor_wallet_enter_details_title"),
