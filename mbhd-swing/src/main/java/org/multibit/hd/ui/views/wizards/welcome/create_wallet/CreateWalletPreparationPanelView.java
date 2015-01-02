@@ -85,7 +85,7 @@ public class CreateWalletPreparationPanelView extends AbstractWizardPanelView<We
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[]20[]", // Column constraints
-      "[][][][][][]" // Row constraints
+      "10[40]10[40]10[40]10[40]10[40]10[40]10" // Row constraints
     ));
 
     // Apply the theme
