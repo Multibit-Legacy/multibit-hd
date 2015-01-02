@@ -1,7 +1,6 @@
 package org.multibit.hd.ui;
 
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -28,7 +27,6 @@ import javax.swing.text.DefaultEditorKit;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Main entry point to the application</p>
@@ -201,9 +199,6 @@ public class MultiBitHD {
     // Start the hardware wallet support to allow credentials screen to be selected
     mainController.handleHardwareWallets();
 
-    // Allow time for hardware wallet to produce events
-    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
-
     // Set the tooltip delay to be slightly longer
     ToolTipManager.sharedInstance().setInitialDelay(1000);
 
@@ -278,13 +273,19 @@ public class MultiBitHD {
 
     Preconditions.checkNotNull(mainController, "'mainController' must be present. FEST will cause this if another instance is running.");
 
+    log.debug("Switching theme...");
+
     // Ensure that we are using the configured theme
     ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme());
     Themes.switchTheme(themeKey.theme());
 
+    log.debug("Building MainView...");
+
     // Build a new MainView
     final MainView mainView = new MainView();
     mainController.setMainView(mainView);
+
+    log.debug("Checking for pre-existing wallets...");
 
     // Check for any pre-existing wallets in the application directory
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();

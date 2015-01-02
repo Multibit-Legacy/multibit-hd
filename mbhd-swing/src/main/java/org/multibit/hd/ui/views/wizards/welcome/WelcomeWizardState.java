@@ -21,12 +21,9 @@ public enum WelcomeWizardState {
   WELCOME_SELECT_LANGUAGE,
   /**
    * Select how the wallet will be referenced (created, restored, hardware, switch etc)
+   * Depending on the mode (standard, Trezor etc) different options will be presented
    */
   WELCOME_SELECT_WALLET,
-  /**
-   * Select wallet: Select a hardware wallet (Trezor etc)
-   */
-  WELCOME_SELECT_WALLET_HARDWARE,
   /**
    * Create wallet: Preparation instructions
    */

@@ -25,6 +25,9 @@ public class TrezorPreparationUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
+    // Wait for the display to complete
+    pauseForPreparationDisplay();
+
     // Check that the Trezor preparation screen is showing
     window
       .label(MessageKey.CREATE_TREZOR_WALLET_PREPARATION_TITLE.getKey())

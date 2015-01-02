@@ -436,6 +436,8 @@ public class MainController extends AbstractController implements
   public void setMainView(MainView mainView) {
 
     this.mainView = mainView;
+
+    log.debug("Setting MainView credentials type: {}", deferredCredentialsRequestType.name());
     mainView.setCredentialsRequestType(deferredCredentialsRequestType);
 
   }
@@ -985,7 +987,7 @@ public class MainController extends AbstractController implements
   }
 
   /**
-   * <p>Restart the hardware wallet service if necessary</p>
+   * <p>Restart the hardware wallet service if necessary and subscribe to hardware wallet events</p>
    */
   public void handleHardwareWallets() {
 
@@ -1014,11 +1016,20 @@ public class MainController extends AbstractController implements
       hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
       if (hardwareWalletService.isPresent()) {
+
+        log.debug("Environment supports hardware wallets so subscribing to hardware events");
+
         // Subscribe to hardware wallet events
         HardwareWalletService.hardwareWalletEventBus.register(this);
 
         // Start the service
         hardwareWalletService.get().start();
+
+        log.debug("Pausing for hardware wallet events");
+
+        // Allow time for hardware wallet to produce events
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
       }
 
     }
