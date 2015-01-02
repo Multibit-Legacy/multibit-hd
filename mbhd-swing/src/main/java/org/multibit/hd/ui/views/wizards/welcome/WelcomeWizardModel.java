@@ -137,11 +137,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         state = WELCOME_SELECT_LANGUAGE;
         break;
       case WELCOME_SELECT_LANGUAGE:
-        if (WelcomeWizardMode.TREZOR.equals(mode)) {
-          state = WELCOME_SELECT_WALLET_HARDWARE;
-        } else {
-          state = WELCOME_SELECT_WALLET;
-        }
+        state = WELCOME_SELECT_WALLET;
         break;
       case WELCOME_SELECT_WALLET:
         if (RESTORE_WALLET_SELECT_BACKUP.equals(selectWalletChoice)) {
@@ -177,9 +173,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
           }
           state = selectWalletChoice;
         }
-        break;
-      case WELCOME_SELECT_WALLET_HARDWARE:
-        state = selectWalletChoice;
         break;
       case CREATE_WALLET_PREPARATION:
         state = CREATE_WALLET_SELECT_BACKUP_LOCATION;
@@ -334,9 +327,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         break;
       case RESTORE_WALLET_REPORT:
         state = restoreMethod;
-        break;
-      case WELCOME_SELECT_WALLET_HARDWARE:
-        state = WELCOME_SELECT_WALLET;
         break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());

@@ -360,4 +360,10 @@ public abstract class AbstractFestUseCase {
     Pause.pause(1, TimeUnit.SECONDS);
   }
 
+  /**
+   * The standard length of time for a preparation view to occur (e.g. wallet create notes)
+   */
+  protected void pauseForPreparationDisplay() {
+    Pause.pause(4, TimeUnit.SECONDS);
+  }
 }
