@@ -337,30 +337,6 @@ public class PanelDecorator {
    }
 
   /**
-   * <p>Add an exit/cancel, restore, next button combination</p>
-   *
-   * @param view   The view containing the panel to decorate
-   * @param wizard The wizard providing the actions
-   * @param <M>    The wizard model type
-   * @param <P>    The wizard panel model type
-   */
-  public static <M extends AbstractWizardModel, P> void addExitCancelRestoreNext(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
-
-    Preconditions.checkNotNull(view, "'view' must be present");
-    Preconditions.checkNotNull(view, "'wizard' must be present");
-    Preconditions.checkNotNull(view.getWizardScreenPanel(false), "'wizardScreenPanel' must be present");
-
-    // Use the current panel
-    JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
-
-    // Cancel always leads
-    addExitCancel(view, wizard, wizardScreenPanel);
-    addRestore(view, wizard, wizardScreenPanel);
-    addNext(view, wizard, wizardScreenPanel);
-
-  }
-
-  /**
    * <p>Add a cancel, previous, send(next) button combination</p>
    *
    * @param view   The view containing the panel to decorate

@@ -71,7 +71,7 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractWizardPa
   @Override
   protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelRestoreNext(this, wizard);
+    PanelDecorator.addExitCancelNext(this, wizard);
 
   }
 
