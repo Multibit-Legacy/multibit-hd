@@ -30,7 +30,7 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
 
   private static final Logger log = LoggerFactory.getLogger(CredentialsLoadWalletReportPanelView.class);
 
-  // View
+  // The
   private JLabel walletLoadedStatusLabel;
 
   /**
