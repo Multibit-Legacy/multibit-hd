@@ -1,7 +1,11 @@
 package org.multibit.hd.testing;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
@@ -9,9 +13,11 @@ import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Stack;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Callable;
 
 /**
  * <p>Test hardware wallet event fixtures to provide the following to FEST tests:</p>
@@ -23,6 +29,8 @@ import java.util.concurrent.TimeUnit;
  *  
  */
 public class HardwareWalletEventFixtures {
+
+  private static final Logger log = LoggerFactory.getLogger(HardwareWalletEventFixtures.class);
 
   private static final ListeningScheduledExecutorService eventScheduler = SafeExecutors.newSingleThreadScheduledExecutor("fest-events");
 
@@ -38,26 +46,48 @@ public class HardwareWalletEventFixtures {
    */
   public static void fireNextEvent() {
 
-    if (hardwareWalletEvents.isEmpty()) {
-      return;
-    }
+    Preconditions.checkState(!hardwareWalletEvents.isEmpty(), "Unexpected call to empty stack. The test should know when the last event has been fired.");
 
-    eventScheduler.schedule(
-      new Runnable() {
+    final ListenableFuture<Boolean> future = eventScheduler.submit(
+      new Callable<Boolean>() {
         @Override
-        public void run() {
+        public Boolean call() {
 
           HardwareWalletEvent event = hardwareWalletEvents.pop();
-          HardwareWalletEvents.fireHardwareWalletEvent(event.getEventType(), (HardwareWalletMessage) event.getMessage());
+
+          if (event.getMessage().isPresent()) {
+            HardwareWalletEvents.fireHardwareWalletEvent(event.getEventType(), event.getMessage().get());
+          } else {
+            HardwareWalletEvents.fireHardwareWalletEvent(event.getEventType());
+          }
+
+          return true;
         }
-      }, 10, TimeUnit.MILLISECONDS);
+      });
+    Futures.addCallback(
+      future, new FutureCallback<Boolean>() {
+        @Override
+        public void onSuccess(Boolean result) {
+
+          // Must have successfully fired the event to be here
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          log.error("Fail to fire hardware wallet event", t);
+
+        }
+      });
 
   }
 
   /**
-   * <p>Perform a sequence of events corresponding to a device attach</p>
+   * <p>Prepare a sequence of events corresponding to a device attach</p>
    */
-  public static void newAttachUseCase() {
+  public static void prepareAttachUseCaseEvents() {
+
+    hardwareWalletEvents.clear();
 
     HardwareWalletEvent event = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_DEVICE_READY,
@@ -70,9 +100,11 @@ public class HardwareWalletEventFixtures {
   }
 
   /**
-   * <p>Perform a sequence of events corresponding to initialising a Trezor</p>
+   * <p>Prepare a sequence of events corresponding to initialising a Trezor</p>
    */
-  public static void newInitialiseTrezorUseCase() {
+  public static void prepareInitialiseTrezorUseCaseEvents() {
+
+    hardwareWalletEvents.clear();
 
     HardwareWalletEvent event = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_DEVICE_READY,

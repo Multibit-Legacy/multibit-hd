@@ -426,7 +426,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     CoreServices.setHardwareWalletService(hardwareWalletService);
 
     // Prepare an initialised and attached Trezor device
-    HardwareWalletEventFixtures.newInitialiseTrezorUseCase();
+    HardwareWalletEventFixtures.prepareInitialiseTrezorUseCaseEvents();
 
     // Continue with the set up
     setUpAfterArrange(false, false);
