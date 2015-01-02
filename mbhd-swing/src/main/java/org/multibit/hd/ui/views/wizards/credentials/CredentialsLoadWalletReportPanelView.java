@@ -1,9 +1,14 @@
 package org.multibit.hd.ui.views.wizards.credentials;
 
 import com.google.common.base.Optional;
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.events.WalletLoadEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.LabelDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -24,13 +29,12 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelView<CredentialsWizardModel, String> {
 
   private static final Logger log = LoggerFactory.getLogger(CredentialsLoadWalletReportPanelView.class);
 
-  // The
+  // The status of whether the wallet loaded ok
   private JLabel walletLoadedStatusLabel;
 
   /**
@@ -56,19 +60,19 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
+            Panels.migXYLayout(),
+            "[][][]", // Column constraints
+            "[]10[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    // Initialise to failure
-    walletLoadedStatusLabel = Labels.newWalletCreatedStatus(false);
+    // Initialise to loading
+    walletLoadedStatusLabel = Labels.newCoreStatusLabel(Optional.of(CoreMessageKey.WALLET_LOADING), new Object[0], Optional.<Boolean>absent());
 
-    // Make all labels invisible initially
-    walletLoadedStatusLabel.setVisible(false);
+    // Make all labels visible initially
+    walletLoadedStatusLabel.setVisible(true);
 
     contentPanel.add(walletLoadedStatusLabel, "wrap");
 
@@ -95,7 +99,60 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
   }
 
   @Override
-  public void afterShow() {
+  public boolean beforeShow() {
+//    SwingUtilities.invokeLater(
+//            new Runnable() {
+//              @Override
+//              public void run() {
+//
+//                LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_LOADING));
+//              }
+//            });
+    return true;
+  }
 
+  @Override
+  public void afterShow() {
+    SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+
+                getFinishButton().requestFocusInWindow();
+
+                // Check for report message from hardware wallet
+//                LabelDecorator.applyReportMessage(walletLoadedStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
+//
+//                if (getWizardModel().getReportMessageKey().isPresent() && !getWizardModel().getReportMessageStatus()) {
+//                  // Hardware wallet report indicates cancellation
+//                  // TODO
+//                  log.debug("Cancel from hardware wallet");
+//                } else {
+//                  log.debug("Load is progressing");
+//                }
+
+              }
+            });
+  }
+
+  @Subscribe
+  public void onWalletLoadEvent(final WalletLoadEvent walletLoadEvent) {
+    SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+
+                log.debug("Saw a wallet load event {}", walletLoadEvent);
+                if (walletLoadEvent.isWalletLoadWasSuccessful()) {
+                  // Wallet loaded ok
+                  LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_LOADED_OK));
+                  LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.TRUE));
+                } else {
+                  // Wallet failed to load
+                  LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_FAILED_TO_LOAD));
+                  LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.FALSE));
+                }
+              }
+            });
   }
 }

@@ -15,6 +15,8 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.WalletLoadEvent;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -809,6 +811,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
               label, "Trezor"));
 
         } catch (Exception e) {
+          CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, "core_wallet_failed_to_load", e));
 
           log.error(e.getMessage(), e);
 
@@ -819,6 +822,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         log.debug("No wallet present");
       }
     } else {
+      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, "core_wallet_failed_to_load", new IllegalStateException("No hardware wallet service available")));
+
       log.error("No hardware wallet service");
     }
     return Optional.absent();

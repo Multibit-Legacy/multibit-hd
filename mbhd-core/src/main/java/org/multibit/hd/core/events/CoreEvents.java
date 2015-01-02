@@ -124,6 +124,23 @@ public class CoreEvents {
   }
 
   /**
+    * <p>Broadcast WalletLoadEvent</p>
+    *
+    * @param walletLoadEvent containing walletLoad information
+    */
+   public static void fireWalletLoadEvent(final WalletLoadEvent walletLoadEvent) {
+
+     eventExecutor.submit(
+       new Runnable() {
+         @Override
+         public void run() {
+           log.trace("Firing 'walletLoadEvent' event");
+           CoreServices.uiEventBus.post(walletLoadEvent);
+         }
+       });
+   }
+
+   /**
    * Broadcast ChangePasswordResultEvent
    */
   public static void fireChangePasswordResultEvent(final ChangePasswordResultEvent changePasswordResultEvent) {

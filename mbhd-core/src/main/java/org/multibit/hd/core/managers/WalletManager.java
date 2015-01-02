@@ -38,6 +38,7 @@ import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
+import org.multibit.hd.core.events.WalletLoadEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
@@ -389,7 +390,9 @@ public enum WalletManager implements WalletEventListener {
       // Create the containing directory if it does not exist
       if (!walletDirectory.exists()) {
         if (!walletDirectory.mkdir()) {
-          throw new IllegalStateException("The directory for the wallet '" + walletDirectory.getAbsoluteFile() + "' could not be created");
+          IllegalStateException error = new IllegalStateException("The directory for the wallet '" + walletDirectory.getAbsoluteFile() + "' could not be created");
+          CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, "core_wallet_failed_to_load", error));
+          throw error;
         }
       }
 
@@ -423,7 +426,9 @@ public enum WalletManager implements WalletEventListener {
           // The entropy based password from the Trezor is used for both the wallet password and for the backup's password
           WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, password.getBytes(Charsets.UTF_8), password);
         } catch (NoSuchAlgorithmException e) {
-          throw new WalletLoadException("Could not store encrypted credentials and backup AES key", e);
+          WalletLoadException error = new WalletLoadException("Could not store encrypted credentials and backup AES key", e);
+          CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, "core_wallet_failed_to_load", error));
+          throw error;
         }
     // Wallet is now created - finish off other configuration and check if wallet needs syncing
     // (Always save the wallet yaml as there was a bug in early Trezor wallets where it was not written out)
@@ -710,11 +715,6 @@ public enum WalletManager implements WalletEventListener {
     byte[] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, AES_INITIALISATION_VECTOR);
 
     log.debug("Successfully decrypted wallet bytes, length is now: {}", decryptedBytes.length);
-    final int walletSampleLength = 128;
-    if (decryptedBytes.length >= walletSampleLength) {
-      log.debug("The first 128 bytes of the wallet are\n{}",  Utils.HEX.encode(Arrays.copyOfRange(decryptedBytes, 0, walletSampleLength)));
-      log.debug("The last 128 bytes of the wallet are\n{}",  Utils.HEX.encode(Arrays.copyOfRange(decryptedBytes, decryptedBytes.length - walletSampleLength, decryptedBytes.length)));
-    }
 
     InputStream inputStream = new ByteArrayInputStream(decryptedBytes);
 
@@ -769,7 +769,7 @@ public enum WalletManager implements WalletEventListener {
         throw wve;
       } catch (Exception e) {
         // Log the initial error
-        log.error("WalletManager error: "+e.getClass().getCanonicalName() + " " + e.getMessage(), e);
+        log.error("WalletManager error: " + e.getClass().getCanonicalName() + " " + e.getMessage(), e);
 
         // Try loading one of the rolling backups - this will send a BackupWalletLoadedEvent containing the initial error
         // If the rolling backups don't load then loadRollingBackup will throw a WalletLoadException which will propagate out
@@ -784,6 +784,8 @@ public enum WalletManager implements WalletEventListener {
 
       log.debug("Loaded the wallet successfully from \n{}", walletDirectory);
       log.debug("Wallet:{}", wallet);
+
+      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), true, "core_wallet_loaded_ok", null));
 
       return walletSummary;
 

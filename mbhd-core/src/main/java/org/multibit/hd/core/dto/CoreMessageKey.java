@@ -106,6 +106,10 @@ public enum CoreMessageKey {
   WALLET_CAPABILITY_TREZOR_HARD("core_wallet_capability_trezor_hard"),
   WALLET_CAPABILITY_TREZOR_SOFT("core_wallet_capability_trezor_soft"),
 
+  WALLET_LOADING("core_wallet_loading"),
+  WALLET_LOADED_OK("core_wallet_loaded_ok"),
+  WALLET_FAILED_TO_LOAD("core_wallet_failed_to_load"),
+
   // End of enum
   ;
 
