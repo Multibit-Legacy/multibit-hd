@@ -91,7 +91,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   @Override
   protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelRestoreUnlock(this, wizard);
+    PanelDecorator.addExitCancelUnlock(this, wizard);
 
   }
 

@@ -91,7 +91,7 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
   @Override
   protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelRestoreUnlock(this, wizard);
+    PanelDecorator.addExitCancelUnlock(this, wizard);
 
   }
 

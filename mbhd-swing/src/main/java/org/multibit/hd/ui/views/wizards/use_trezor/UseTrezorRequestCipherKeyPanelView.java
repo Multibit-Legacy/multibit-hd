@@ -67,7 +67,7 @@ public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<
   @Override
   protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelRestoreUnlock(this, wizard);
+    PanelDecorator.addExitCancelUnlock(this, wizard);
 
   }
 

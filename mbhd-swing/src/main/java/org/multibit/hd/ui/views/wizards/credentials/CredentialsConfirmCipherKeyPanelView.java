@@ -70,7 +70,7 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
   @Override
   protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelRestoreUnlock(this, wizard);
+    PanelDecorator.addExitCancelUnlock(this, wizard);
 
   }
 

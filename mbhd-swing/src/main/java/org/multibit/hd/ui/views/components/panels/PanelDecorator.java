@@ -269,6 +269,28 @@ public class PanelDecorator {
   }
 
   /**
+    * <p>Add an exit/cancel, finish button combination</p>
+    *
+    * @param view   The view containing the panel to decorate
+    * @param wizard The wizard providing the actions
+    * @param <M>    The wizard model type
+    * @param <P>    The wizard panel model type
+    */
+   public static <M extends AbstractWizardModel, P> void addExitCancelUnlock(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+
+     Preconditions.checkNotNull(view, "'view' must be present");
+     Preconditions.checkNotNull(view, "'wizard' must be present");
+     Preconditions.checkNotNull(view.getWizardScreenPanel(false), "'wizardScreenPanel' must be present");
+
+     // Use the current panel
+     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
+
+     // Cancel always leads
+     addExitCancel(view, wizard, wizardScreenPanel);
+     addUnlock(view, wizard, wizardScreenPanel);
+
+   }
+  /**
    * <p>Add an exit/cancel, restore, finish button combination</p>
    *
    * @param view   The view containing the panel to decorate
@@ -291,6 +313,28 @@ public class PanelDecorator {
     addUnlock(view, wizard, wizardScreenPanel);
 
   }
+
+  /**
+    * <p>Add a restore and finish button combination</p>
+    *
+    * @param view   The view containing the panel to decorate
+    * @param wizard The wizard providing the actions
+    * @param <M>    The wizard model type
+    * @param <P>    The wizard panel model type
+    */
+   public static <M extends AbstractWizardModel, P> void addExitRestoreFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+
+     Preconditions.checkNotNull(view, "'view' must be present");
+     Preconditions.checkNotNull(view, "'wizard' must be present");
+     Preconditions.checkNotNull(view.getWizardScreenPanel(false), "'wizardScreenPanel' must be present");
+
+     // Use the current panel
+     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
+
+     addRestore(view, wizard, wizardScreenPanel);
+     addFinish(view, wizard, wizardScreenPanel);
+
+   }
 
   /**
    * <p>Add an exit/cancel, restore, next button combination</p>

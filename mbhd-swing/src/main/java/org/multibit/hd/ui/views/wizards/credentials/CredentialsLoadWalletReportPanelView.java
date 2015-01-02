@@ -79,7 +79,7 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
     contentPanel.setLayout(new MigLayout(
             Panels.migXYLayout(),
             "[][][]", // Column constraints
-            "[]10[]10[]10[]" // Row constraints
+            "[20]10[20]10[20]10[20]10" // Row constraints
     ));
 
     // Apply the theme
@@ -111,7 +111,7 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
   @Override
   protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
 
-    PanelDecorator.addFinish(this, wizard);
+    PanelDecorator.addExitRestoreFinish(this, wizard);
 
   }
 
