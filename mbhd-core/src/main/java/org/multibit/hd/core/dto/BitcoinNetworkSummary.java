@@ -115,7 +115,7 @@ public class BitcoinNetworkSummary {
       Optional.of(new Object[]{peerCount}),
       Optional.of(peerCount),
       -1, // Do not show the progress bar when the peer count changes - confusing
-      0
+      -1  // No block information
     );
   }
 

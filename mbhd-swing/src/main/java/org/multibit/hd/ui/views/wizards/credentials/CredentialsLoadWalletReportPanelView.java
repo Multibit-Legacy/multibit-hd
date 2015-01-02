@@ -3,7 +3,9 @@ package org.multibit.hd.ui.views.wizards.credentials;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.events.WalletLoadEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -36,6 +38,21 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
 
   // The status of whether the wallet loaded ok
   private JLabel walletLoadedStatusLabel;
+  private boolean loadedOk = false;
+
+  // The status of whether you are connected to the bitcoin network (i.e. at least one peer)
+  private JLabel connectedStatusLabel;
+
+  private boolean connected = false;
+
+  // The status of synchronisation
+  private JLabel synchronisationStatusLabel;
+
+  // Alabel indicating that the wallet is ready to use
+  private JLabel walletIsReadyToUseStatusLabel;
+
+  private boolean startedSync = false;
+
 
   /**
    * @param wizard    The wizard managing the states
@@ -68,13 +85,26 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    // Initialise to loading
+    // Initialise wallet load status to loading
     walletLoadedStatusLabel = Labels.newCoreStatusLabel(Optional.of(CoreMessageKey.WALLET_LOADING), new Object[0], Optional.<Boolean>absent());
-
-    // Make all labels visible initially
     walletLoadedStatusLabel.setVisible(true);
 
+    // Initialise connected status to invisible
+    connectedStatusLabel = Labels.newCoreStatusLabel(Optional.<CoreMessageKey>absent(), new Object[0], Optional.<Boolean>absent());
+    connectedStatusLabel.setVisible(false);
+
+    // Initialise synchronisation status to invisible
+    synchronisationStatusLabel = Labels.newCoreStatusLabel(Optional.<CoreMessageKey>absent(), new Object[0], Optional.<Boolean>absent());
+    synchronisationStatusLabel.setVisible(false);
+
+    // Initialise wallet is ready to use status to invisible
+    walletIsReadyToUseStatusLabel = Labels.newCoreStatusLabel(Optional.<CoreMessageKey>absent(), new Object[0], Optional.<Boolean>absent());
+    walletIsReadyToUseStatusLabel.setVisible(false);
+
     contentPanel.add(walletLoadedStatusLabel, "wrap");
+    contentPanel.add(connectedStatusLabel, "wrap");
+    contentPanel.add(synchronisationStatusLabel, "wrap");
+    contentPanel.add(walletIsReadyToUseStatusLabel, "wrap");
 
   }
 
@@ -100,14 +130,6 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
 
   @Override
   public boolean beforeShow() {
-//    SwingUtilities.invokeLater(
-//            new Runnable() {
-//              @Override
-//              public void run() {
-//
-//                LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_LOADING));
-//              }
-//            });
     return true;
   }
 
@@ -145,6 +167,7 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
                 log.debug("Saw a wallet load event {}", walletLoadEvent);
                 if (walletLoadEvent.isWalletLoadWasSuccessful()) {
                   // Wallet loaded ok
+                  loadedOk = true;
                   LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_LOADED_OK));
                   LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.TRUE));
                 } else {
@@ -152,6 +175,96 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
                   LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_FAILED_TO_LOAD));
                   LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.FALSE));
                 }
+                if (!connected) {
+                  connectedStatusLabel.setVisible(true);
+                  LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTING_TO_BITCOIN_NETWORK));
+                }
+              }
+            });
+  }
+
+  @Subscribe
+  public void onBitcoinChangeEvent(final BitcoinNetworkChangedEvent bitcoinNetworkChangedEvent) {
+    SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+
+                log.debug("Saw a Bitcoin network changed event {}", bitcoinNetworkChangedEvent);
+                BitcoinNetworkSummary summary = bitcoinNetworkChangedEvent.getSummary();
+
+                switch (summary.getStatus()) {
+                  case NOT_CONNECTED:
+                    startedSync = false;
+                    break;
+
+                  case CONNECTING:
+                    startedSync = false;
+                    connectedStatusLabel.setVisible(true);
+                    LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTING_TO_BITCOIN_NETWORK));
+                    break;
+
+                  case CONNECTED:
+                    connectedStatusLabel.setVisible(true);
+                    LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTED_TO_BITCOIN_NETWORK));
+                    LabelDecorator.applyStatusLabel(connectedStatusLabel, Optional.of(Boolean.TRUE));
+
+                    if (!startedSync) {
+                      synchronisationStatusLabel.setVisible(true);
+                      LabelDecorator.applyWrappingLabel(synchronisationStatusLabel, Languages.safeText(CoreMessageKey.PREPARING_TO_SYNCHRONISE));
+                    }
+                    break;
+
+                  case DOWNLOADING_BLOCKCHAIN:
+                    startedSync = true;
+                    synchronisationStatusLabel.setVisible(true);
+                    LabelDecorator.applyWrappingLabel(synchronisationStatusLabel, Languages.safeText(CoreMessageKey.SYNCHRONISING));
+                    break;
+
+                  case SYNCHRONIZED:
+                    startedSync = true;
+                    synchronisationStatusLabel.setVisible(true);
+                    LabelDecorator.applyWrappingLabel(synchronisationStatusLabel, Languages.safeText(CoreMessageKey.SYNCHRONISED));
+                    LabelDecorator.applyStatusLabel(synchronisationStatusLabel, Optional.of(Boolean.TRUE));
+
+                    if (loadedOk) {
+                      // Wallet is ready to use
+                      walletIsReadyToUseStatusLabel.setVisible(true);
+                      LabelDecorator.applyWrappingLabel(walletIsReadyToUseStatusLabel, Languages.safeText(CoreMessageKey.WALLET_IS_READY_TO_USE));
+                      LabelDecorator.applyStatusLabel(walletIsReadyToUseStatusLabel, Optional.of(Boolean.TRUE));                    }
+                    break;
+
+                  default:
+
+
+                }
+//                 if (summary.getPeerCount().isPresent()) {
+//                   // Peer count information
+//                   if (summary.getPeerCount().get() > 0) {
+//                     // Connected
+//                     connected = true;
+//                     connectedStatusLabel.setVisible(true);
+//                     LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTED_TO_BITCOIN_NETWORK));
+//                     LabelDecorator.applyStatusLabel(connectedStatusLabel, Optional.of(Boolean.TRUE));
+//
+//                     if (!startedSync) {
+//                       synchronisationStatusLabel.setVisible(true);
+//                       LabelDecorator.applyWrappingLabel(synchronisationStatusLabel, Languages.safeText(CoreMessageKey.PREPARING_TO_SYNCHRONISE));
+//                     }
+//                   }
+//                 }
+//                 if (summary.getBlocksLeft() > -1) {
+//                   // block information
+//                   synchronisationStatusLabel.setVisible(true);
+//                   if (summary.getBlocksLeft() == 0) {
+//                     // Synchronised
+//                     LabelDecorator.applyWrappingLabel(synchronisationStatusLabel, Languages.safeText(CoreMessageKey.SYNCHRONISED));
+//                   } else {
+//                     // Synchronising
+//                     startedSync = true;
+//                     LabelDecorator.applyWrappingLabel(synchronisationStatusLabel, Languages.safeText(CoreMessageKey.SYNCHRONISING));
+//                   }
+//                 }
               }
             });
   }

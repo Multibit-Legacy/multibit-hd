@@ -178,6 +178,7 @@ public class MainController extends AbstractController implements
 
       if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(event.getPanelName())
         || CredentialsState.CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK.name().equals(event.getPanelName())
+              || CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT.name().equals(event.getPanelName())
         ) {
 
         // We have just finished the credentials wizard and want the wallet details screen
@@ -1204,7 +1205,7 @@ public class MainController extends AbstractController implements
       });
 
     // Allow time for MainView to refresh
-    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
     // Start the backup manager
     log.debug("Starting backup manager...");

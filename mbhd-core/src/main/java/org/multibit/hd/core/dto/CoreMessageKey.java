@@ -43,10 +43,16 @@ public enum CoreMessageKey {
   SECURITY_ADVICE("core_security_advice"),
   BACKUP_WALLET_WAS_LOADED("core_backup_wallet_was_loaded"),
 
-  // Errors
+  // Connection / Sync
   THE_ERROR_WAS("core_the_error_was"),
   COULD_NOT_CONNECT_TO_BITCOIN_NETWORK("core_could_not_connect_to_bitcoin_network"),
+  CONNECTING_TO_BITCOIN_NETWORK("core_connecting_to_bitcoin_network"),
+  CONNECTED_TO_BITCOIN_NETWORK("core_connected_to_bitcoin_network"),
   NO_ACTIVE_WALLET("core_no_active_wallet"),
+  PREPARING_TO_SYNCHRONISE("core_preparing_to_synchronise"),
+  SYNCHRONISING("core_synchronising"),
+  SYNCHRONISED("core_synchronised"),
+  WALLET_IS_READY_TO_USE("core_wallet_is_ready_to_use"),
 
   // Transaction/Payment adaption
   PAYMENT_REQUESTED("core_payment_requested"),
