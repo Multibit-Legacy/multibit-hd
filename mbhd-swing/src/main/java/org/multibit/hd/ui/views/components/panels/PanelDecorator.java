@@ -331,6 +331,7 @@ public class PanelDecorator {
      // Use the current panel
      JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
 
+     addExitCancel(view, wizard, wizardScreenPanel);
      addRestore(view, wizard, wizardScreenPanel);
      addFinish(view, wizard, wizardScreenPanel);
 
