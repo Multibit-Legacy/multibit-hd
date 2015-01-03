@@ -137,6 +137,7 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
         // Blocks left
         int blocksLeft = event.getSummary().getBlocksLeft();
         if (blocksLeft == 0) {
+          // Sync has completed
           AwesomeDecorator.applyIcon(
             AwesomeIcon.CHECK,
             blocksLeftStatusLabel,
@@ -145,6 +146,7 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
           );
           blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
         } else if (blocksLeft > 0) {
+          // Sync is in progress
           AwesomeDecorator.applyIcon(
             AwesomeIcon.EXCHANGE,
             blocksLeftStatusLabel,
