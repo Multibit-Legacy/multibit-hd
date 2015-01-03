@@ -127,12 +127,10 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
 
         BitcoinNetworkSummary summary = event.getSummary();
 
-        // Peer count
-        Optional<Integer> peerCount = event.getSummary().getPeerCount();
-        if (peerCount.isPresent()) {
-          peerCountLabel.setText(String.valueOf(summary.getPeerCount().get()));
-          decoratePeerCountStatusLabel(summary.getPeerCount().get());
-        }
+        // Get peer count directly from services so it always matches footer
+        int peerCount = CoreServices.getOrCreateBitcoinNetworkService().getNumberOfConnectedPeers();
+        peerCountLabel.setText(String.valueOf(peerCount));
+        decoratePeerCountStatusLabel(peerCount);
 
         // Blocks left
         int blocksLeft = event.getSummary().getBlocksLeft();
