@@ -92,7 +92,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   @Override
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
-    if (wizard.getWizardModel().isRestoring()) {
+    if (wizard.getWizardModel().isRestoringSoftWallet()) {
       // Do not allow a return to the credentials wizard
       // The logic is too complex to justify the operation
       // It is much easier to just have the user either

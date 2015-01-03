@@ -191,7 +191,7 @@ public class MainController extends AbstractController implements
 
         // We are exiting the credentials wizard via the restore button and want the welcome wizard
 
-        handoverToWelcomeWizard();
+        handoverToWelcomeWizardRestore();
 
       }
 
@@ -1137,9 +1137,9 @@ public class MainController extends AbstractController implements
 
 
   /**
-   * Password wizard needs to perform a restore so hand over to the welcome wizard
+   * Credentials wizard needs to perform a restore so hand over to the welcome wizard
    */
-  private void handoverToWelcomeWizard() {
+  private void handoverToWelcomeWizardRestore() {
 
     log.debug("Hand over to welcome wizard");
 
@@ -1150,10 +1150,11 @@ public class MainController extends AbstractController implements
     // Determine if we are in Trezor mode for the welcome wizard
     WelcomeWizardMode mode = CredentialsRequestType.TREZOR.equals(deferredCredentialsRequestType) ? WelcomeWizardMode.TREZOR : WelcomeWizardMode.STANDARD;
 
+    // For soft wallets the restore goes to the select wallet screen, for Trezor hard wallets go directly to the restore
+    final WelcomeWizardState initialState = WelcomeWizardMode.STANDARD.equals(mode) ? WelcomeWizardState.WELCOME_SELECT_WALLET : WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP;
     // Start building the wizard on the EDT to prevent UI updates
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
-      WelcomeWizardState.WELCOME_SELECT_WALLET,
-      mode
+            initialState, mode
     );
 
     // Use a new thread to handle the new wizard so that the handover can complete

@@ -94,7 +94,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private List<String> createWalletSeedPhrase = Lists.newArrayList();
 
   private final Random random = new Random();
-  private final boolean restoring;
+  private final boolean restoringSoftWallet;
   private final WelcomeWizardMode mode;
 
   private String actualSeedTimestamp;
@@ -123,15 +123,18 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     log.debug("Welcome wizard starting in state '{}' with mode '{}'", state.name(), mode.name());
 
     this.seedPhraseGenerator = CoreServices.newSeedPhraseGenerator();
-    this.restoring = WelcomeWizardState.WELCOME_SELECT_WALLET.equals(state);
+    this.restoringSoftWallet = WelcomeWizardState.WELCOME_SELECT_WALLET.equals(state);
     this.mode = mode;
 
+    // If restoring a Trezor hard wallet, work out the initial screen to show
+    if (WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP.equals(state)) {
+      calculateRestoreMethod();
+      log.debug("Starting hard wallet restore with state: {}", state);
+    }
   }
 
   @Override
   public void showNext() {
-    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-
     switch (state) {
       case WELCOME_LICENCE:
         state = WELCOME_SELECT_LANGUAGE;
@@ -140,34 +143,17 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         state = WELCOME_SELECT_WALLET;
         break;
       case WELCOME_SELECT_WALLET:
+        Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
         if (RESTORE_WALLET_SELECT_BACKUP.equals(selectWalletChoice)) {
           if (hardwareWalletService.isPresent() && hardwareWalletService.get().isWalletPresent()) {
-            // User has selected restore wallet - see if wallet is hard Trezor wallet
-            // If so no need to enter a seed phrase - use the rootNode from the master public key to work out the wallet id
-            HardwareWalletContext context = hardwareWalletService.get().getContext();
-            // Create a wallet id from the rootNode to work out the wallet root directory
-            if (context.getDeterministicKey().isPresent()) {
-              walletId = Optional.of(new WalletId(context.getDeterministicKey().get().getIdentifier()));
-              String walletRoot = WalletManager.createWalletRoot(walletId.get());
-              log.debug("Hardware wallet root : {}", walletRoot);
-            }
-            // Ensure Trezor is cancelled
-            hardwareWalletService.get().requestCancel();
+            calculateRestoreMethod();
 
-            restoreMethod = RESTORE_WALLET_HARD_TREZOR;
-            if (!isLocalZipBackupPresent()) {
-              // Next ask for the cloud backup location
-              state = RESTORE_WALLET_SELECT_BACKUP_LOCATION;
-            } else {
-              // Next select one of the local backups
-              state = RESTORE_WALLET_SELECT_BACKUP;
-            }
             break;
           }
         } else {
           // Ensure Trezor is reset if it is attached and initialised
           if (hardwareWalletService.isPresent()
-            && hardwareWalletService.get().getContext().getFeatures().isPresent()) {
+                  && hardwareWalletService.get().getContext().getFeatures().isPresent()) {
             hardwareWalletService.get().requestCancel();
             hardwareWalletService.get().getContext().resetToConnected();
           }
@@ -334,8 +320,36 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   }
 
   /**
+   * Work out which restore method to use, depending on if it is a Trezor wallet or not and what backups there are
+   */
+  public void calculateRestoreMethod() {
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    // User has selected restore wallet - see if wallet is hard Trezor wallet
+    // If so no need to enter a seed phrase - use the rootNode from the master public key to work out the wallet id
+    HardwareWalletContext context = hardwareWalletService.get().getContext();
+    // Create a wallet id from the rootNode to work out the wallet root directory
+    if (context.getDeterministicKey().isPresent()) {
+      walletId = Optional.of(new WalletId(context.getDeterministicKey().get().getIdentifier()));
+      String walletRoot = WalletManager.createWalletRoot(walletId.get());
+      log.debug("Hardware wallet root : {}", walletRoot);
+    }
+    // Ensure Trezor is cancelled
+    hardwareWalletService.get().requestCancel();
+
+    restoreMethod = RESTORE_WALLET_HARD_TREZOR;
+    if (!isLocalZipBackupPresent()) {
+      // Next ask for the cloud backup location
+      state = RESTORE_WALLET_SELECT_BACKUP_LOCATION;
+    } else {
+      // Next select one of the local backups
+      state = RESTORE_WALLET_SELECT_BACKUP;
+    }
+  }
+
+  /**
    * Request that the Trezor begin the process of creating a wallet
    */
+
   public void requestCreateWallet() {
 
     // Reset the Trezor seed phrase flags in case we're coming back through
@@ -344,59 +358,59 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
     // Start the request
     ListenableFuture future = hardwareWalletRequestService.submit(
-      new Callable<Boolean>() {
+            new Callable<Boolean>() {
 
-        @Override
-        public Boolean call() throws Exception {
-          log.debug("Performing a request for secure wallet creation to Trezor");
+              @Override
+              public Boolean call() throws Exception {
+                log.debug("Performing a request for secure wallet creation to Trezor");
 
-          // Provide a short delay to allow UI to update
-          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+                // Provide a short delay to allow UI to update
+                Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
-          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+                Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
-          // We deliberately ignore the passphrase option to ensure
-          // only the seed phrase needs to be secured to protect the wallet
-          hardwareWalletService.get().secureCreateWallet(
-            "english", // For now the Trezor UI is fixed at English
-            getTrezorWalletLabel(),
-            false, // For now we ignore supplied entropy (too confusing for mainstream)
-            true, // A PIN is mandatory for mainstream
-            getSeedPhraseSize().getStrength()
-          );
+                // We deliberately ignore the passphrase option to ensure
+                // only the seed phrase needs to be secured to protect the wallet
+                hardwareWalletService.get().secureCreateWallet(
+                        "english", // For now the Trezor UI is fixed at English
+                        getTrezorWalletLabel(),
+                        false, // For now we ignore supplied entropy (too confusing for mainstream)
+                        true, // A PIN is mandatory for mainstream
+                        getSeedPhraseSize().getStrength()
+                );
 
-          // Must have successfully sent the message to be here
-          return true;
+                // Must have successfully sent the message to be here
+                return true;
 
-        }
-      });
+              }
+            });
     Futures.addCallback(
-      future, new FutureCallback() {
-        @Override
-        public void onSuccess(@Nullable Object result) {
+            future, new FutureCallback() {
+              @Override
+              public void onSuccess(@Nullable Object result) {
 
-          // We successfully made the request so wait for the result
+                // We successfully made the request so wait for the result
 
-        }
+              }
 
-        @Override
-        public void onFailure(Throwable t) {
+              @Override
+              public void onFailure(Throwable t) {
 
-          // Have a failure
-          switch (state) {
+                // Have a failure
+                switch (state) {
 
-            case TREZOR_CREATE_WALLET_ENTER_NEW_PIN:
-            case TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN:
-              state = TREZOR_CREATE_WALLET_REPORT;
-              setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
-              setReportMessageStatus(false);
-              break;
-            default:
-              throw new IllegalStateException("Should not reach here from " + state.name());
-          }
-        }
+                  case TREZOR_CREATE_WALLET_ENTER_NEW_PIN:
+                  case TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN:
+                    state = TREZOR_CREATE_WALLET_REPORT;
+                    setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+                    setReportMessageStatus(false);
+                    break;
+                  default:
+                    throw new IllegalStateException("Should not reach here from " + state.name());
+                }
+              }
 
-      });
+            });
 
 
   }
@@ -408,47 +422,47 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
     // Start the request
     ListenableFuture future = hardwareWalletRequestService.submit(
-      new Callable<Boolean>() {
+            new Callable<Boolean>() {
 
-        @Override
-        public Boolean call() throws Exception {
+              @Override
+              public Boolean call() throws Exception {
 
-          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+                Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
-          log.debug("Provide a PIN");
-          hardwareWalletService.get().providePIN(pinPositions);
+                log.debug("Provide a PIN");
+                hardwareWalletService.get().providePIN(pinPositions);
 
-          // Must have successfully sent the message to be here
-          return true;
+                // Must have successfully sent the message to be here
+                return true;
 
-        }
+              }
 
-      });
+            });
     Futures.addCallback(
-      future, new FutureCallback() {
-        @Override
-        public void onSuccess(@Nullable Object result) {
+            future, new FutureCallback() {
+              @Override
+              public void onSuccess(@Nullable Object result) {
 
-          // We successfully made the request so wait for the result
+                // We successfully made the request so wait for the result
 
-        }
+              }
 
-        @Override
-        public void onFailure(Throwable t) {
+              @Override
+              public void onFailure(Throwable t) {
 
-          // Have a failure
-          switch (state) {
-            case TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET:
-              state = TREZOR_CREATE_WALLET_REPORT;
-              setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
-              setReportMessageStatus(false);
-              break;
-            default:
-              throw new IllegalStateException("Should not reach here from " + state.name());
-          }
-        }
+                // Have a failure
+                switch (state) {
+                  case TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET:
+                    state = TREZOR_CREATE_WALLET_REPORT;
+                    setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+                    setReportMessageStatus(false);
+                    break;
+                  default:
+                    throw new IllegalStateException("Should not reach here from " + state.name());
+                }
+              }
 
-      });
+            });
 
   }
 
@@ -589,43 +603,43 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
     // Start the request
     ListenableFuture future = hardwareWalletRequestService.submit(
-      new Callable<Boolean>() {
+            new Callable<Boolean>() {
 
-        @Override
-        public Boolean call() throws Exception {
+              @Override
+              public Boolean call() throws Exception {
 
-          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+                Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
-          byte[] entropy = hardwareWalletService.get().generateEntropy();
+                byte[] entropy = hardwareWalletService.get().generateEntropy();
 
-          log.debug("Provide entropy");
-          hardwareWalletService.get().provideEntropy(entropy);
+                log.debug("Provide entropy");
+                hardwareWalletService.get().provideEntropy(entropy);
 
-          // Must have successfully sent the message to be here
-          return true;
+                // Must have successfully sent the message to be here
+                return true;
 
-        }
+              }
 
-      });
+            });
     Futures.addCallback(
-      future, new FutureCallback() {
-        @Override
-        public void onSuccess(@Nullable Object result) {
+            future, new FutureCallback() {
+              @Override
+              public void onSuccess(@Nullable Object result) {
 
-          // We successfully made the request so wait for the result
+                // We successfully made the request so wait for the result
 
-        }
+              }
 
-        @Override
-        public void onFailure(Throwable t) {
+              @Override
+              public void onFailure(Throwable t) {
 
-          // Have a failure
-          state = TREZOR_CREATE_WALLET_REPORT;
-          setReportMessageKey(MessageKey.TREZOR_FAILURE_OPERATION);
-          setReportMessageStatus(false);
-        }
+                // Have a failure
+                state = TREZOR_CREATE_WALLET_REPORT;
+                setReportMessageKey(MessageKey.TREZOR_FAILURE_OPERATION);
+                setReportMessageStatus(false);
+              }
 
-      });
+            });
 
   }
 
@@ -664,6 +678,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
       }
       backupSummaries = BackupManager.INSTANCE.getLocalZipBackups(walletId.get());
 
+      log.debug("There are {} local zip backups available", backupSummaries.size());
       return !backupSummaries.isEmpty();
     } catch (SeedPhraseException spe) {
       log.error("The seed phrase is incorrect.");
@@ -690,6 +705,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
       }
       backupSummaries = BackupManager.INSTANCE.getCloudBackups(walletId.get(), new File(getRestoreLocation()));
 
+      log.debug("There are {} cloud zip backups available", backupSummaries.size());
       return !backupSummaries.isEmpty();
     } catch (SeedPhraseException spe) {
       log.error("The seed phrase is incorrect.");
@@ -796,6 +812,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   /**
    * <p>Reduced visibility for panel models</p>
    * TODO Check if this can be removed (it is not used)
+   *
    * @param createWalletEnterSeedPhraseModel The "create wallet enter seed phrase" model
    */
   public void setCreateWalletEnterSeedPhraseModel(EnterSeedPhraseModel createWalletEnterSeedPhraseModel) {
@@ -889,10 +906,10 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   }
 
   /**
-   * @return True if this wizard was created as the result of a restore operation
+   * @return True if this wizard was created as the result of a soft wallet restore operation
    */
-  public boolean isRestoring() {
-    return restoring;
+  public boolean isRestoringSoftWallet() {
+    return restoringSoftWallet;
   }
 
   /**
