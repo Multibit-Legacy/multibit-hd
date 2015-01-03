@@ -236,6 +236,12 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           log.debug("Using the payload as entropy");
           entropy = Optional.fromNullable(payload);
 
+          // Store the entropy in the HardwareWalletContext
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          if (hardwareWalletService.isPresent()) {
+            hardwareWalletService.get().getContext().setEntropy(entropy);
+          }
+
           // Ready to unlock the device wallet
           log.debug("Calling unlockWalletWithEntropy");
           unlockWalletWithEntropy();

@@ -26,6 +26,7 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -49,6 +50,7 @@ import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
+import org.spongycastle.util.encoders.Hex;
 
 import javax.swing.*;
 import java.io.File;
@@ -313,7 +315,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
     final boolean walletCreatedStatus = handleCreateWalletStatus(model);
 
-    // Create wallet from seed phrase should always be OK
+    // Update created wallet status
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
@@ -622,10 +624,15 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     log.debug("Loading wallet backup '" + selectedBackupSummaryModel.getValue().getFile() + "'");
     try {
       // For Trezor hard wallets the backups are encrypted with the entropy derived password
-      String walletPassword = null; // TODO from Trezor supplied entropy (typically in CredentialsWizardModel when populated but wouldn't yet be done for a restore)
+      String walletPassword = null;
+      Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+      if (hardwareWalletService.isPresent()) {
+        walletPassword = Hex.toHexString(hardwareWalletService.get().getContext().getEntropy().get());
+      }
 
       // Check there is a wallet password - if not then cannot decrypt backup
       if (walletPassword == null) {
+        log.debug("Cannot work out the password to decrypt the backup - there is no entropy form the Trezor");
         return false;
       }
       KeyParameter backupAESKey = AESUtils.createAESKey(walletPassword.getBytes(Charsets.UTF_8), WalletManager.SCRYPT_SALT);
