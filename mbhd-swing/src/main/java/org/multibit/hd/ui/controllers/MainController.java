@@ -173,7 +173,6 @@ public class MainController extends AbstractController implements
         // We have just finished the welcome wizard and want the credentials screen
 
         handoverToCredentialsWizard();
-
       }
 
       if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(event.getPanelName())
@@ -184,7 +183,6 @@ public class MainController extends AbstractController implements
         // We have just finished the credentials wizard and want the wallet details screen
 
         hideCredentialsWizard();
-
       }
 
       if (CredentialsState.CREDENTIALS_RESTORE.name().equals(event.getPanelName())) {
@@ -192,9 +190,15 @@ public class MainController extends AbstractController implements
         // We are exiting the credentials wizard via the restore button and want the welcome wizard
 
         handoverToWelcomeWizardRestore();
-
       }
 
+      if (CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY.name().equals(event.getPanelName()) ||
+              CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY.name().equals(event.getPanelName())) {
+
+         // We are exiting the credentials wizard as the Trezor is uninitialised and want the welcome wizard
+
+         handoverToWelcomeWizardCreateTrezorWallet();
+      }
       if (EditWalletState.EDIT_WALLET.name().equals(event.getPanelName())) {
 
         // We are exiting the edit wallet wizard and want the details screen to update with changes
@@ -202,7 +206,6 @@ public class MainController extends AbstractController implements
         // Update the details screen (title etc)
         String walletName = ((EditWalletWizardModel) event.getWizardModel()).getWalletSummary().getName();
         hideEditWalletWizard(walletName);
-
       }
 
       if (ExitState.SWITCH_WALLET.equals(event.getWizardModel().getState())) {
@@ -210,7 +213,6 @@ public class MainController extends AbstractController implements
         // We have just finished with the exit wizard and want the credentials screen
 
         handleSwitchWallet();
-
       }
 
       if (ExitState.CONFIRM_EXIT.equals(event.getWizardModel().getState())) {
@@ -226,7 +228,6 @@ public class MainController extends AbstractController implements
 
       // Shift focus depending on what was cancelled
       hideAsExitCancel(event.getPanelName());
-
     }
   }
 
@@ -1155,6 +1156,50 @@ public class MainController extends AbstractController implements
     // Start building the wizard on the EDT to prevent UI updates
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
             initialState, mode
+    );
+
+    // Use a new thread to handle the new wizard so that the handover can complete
+    handoverExecutorService.execute(
+      new Runnable() {
+        @Override
+        public void run() {
+
+          // Allow time for the other wizard to finish hiding (200ms is the minimum)
+          Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+
+          // Must execute on the EDT
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+
+                Panels.hideLightBoxIfPresent();
+
+                log.debug("Showing exiting welcome wizard after handover");
+                Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
+
+              }
+            });
+
+        }
+      });
+
+  }
+
+  /**
+   * Credentials wizard needs to perform a create new Trezor wallet over to the welcome wizard
+   */
+  private void handoverToWelcomeWizardCreateTrezorWallet() {
+
+    log.debug("Hand over to welcome wizard");
+
+    // Handover
+    mainView.setShowExitingWelcomeWizard(true);
+    mainView.setShowExitingCredentialsWizard(false);
+
+    // Start building the wizard on the EDT to prevent UI updates
+    final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
+            WelcomeWizardState.TREZOR_CREATE_WALLET_PREPARATION, WelcomeWizardMode.TREZOR
     );
 
     // Use a new thread to handle the new wizard so that the handover can complete

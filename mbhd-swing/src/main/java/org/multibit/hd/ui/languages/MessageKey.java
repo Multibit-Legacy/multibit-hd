@@ -407,6 +407,7 @@ public enum MessageKey {
   TREZOR_PRESS_CONFIRM_OPERATION("trezor_press_confirm_operation"),
   TREZOR_PRESS_NEXT_OPERATION("trezor_press_next_operation"),
   TREZOR_NO_WALLET_OPERATION("trezor_no_wallet_operation"),
+  TREZOR_NO_WALLET_RECOVERY("trezor_no_wallet_recovery"),
   TREZOR_FAILURE_OPERATION("trezor_failure_operation"),
   TREZOR_REMOVE_PIN_OPERATION("trezor_remove_pin_operation"),
   SEARCHING_FOR_A_CONNECTED_TREZOR_OPERATION("searching_for_a_connected_trezor_operation"),

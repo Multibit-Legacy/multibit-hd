@@ -95,18 +95,23 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractWizardPa
 
     final MessageKey operationKey;
     final boolean nextEnabled;
-
+    final boolean createNewTrezorWallet;
     if (!features.isPresent()) {
       operationKey = MessageKey.TREZOR_FAILURE_OPERATION;
       nextEnabled = true;
+      createNewTrezorWallet = false;
     } else {
       if (features.get().isInitialized()) {
         operationKey = MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION;
         // May take some time
         nextEnabled = false;
+        createNewTrezorWallet = false;
       } else {
         operationKey = MessageKey.TREZOR_NO_WALLET_OPERATION;
         nextEnabled = true;
+
+        // Tell user that there is no wallet on the device and that they can create a wallet by clicking next
+        createNewTrezorWallet = true;
       }
     }
 
@@ -119,7 +124,11 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractWizardPa
           trezorDisplayMaV.getView().setOperationText(operationKey);
 
           if (nextEnabled) {
-            trezorDisplayMaV.getView().setRecoveryText(MessageKey.TREZOR_FAILURE_RECOVERY);
+            if (createNewTrezorWallet) {
+              trezorDisplayMaV.getView().setRecoveryText(MessageKey.TREZOR_NO_WALLET_RECOVERY);
+            } else {
+              trezorDisplayMaV.getView().setRecoveryText(MessageKey.TREZOR_FAILURE_RECOVERY);
+            }
           }
 
           // No spinner on a failure
@@ -136,7 +145,8 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractWizardPa
       });
 
     // Update the wizard model so we can change state
-    getWizardModel().setSwitchToPassword(nextEnabled);
+    getWizardModel().setSwitchToPassword(nextEnabled && !createNewTrezorWallet);
+    getWizardModel().setCreateNewTrezorWallet(createNewTrezorWallet);
 
     if (!nextEnabled) {
 
@@ -147,9 +157,7 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractWizardPa
       // failure at each stage with the user having the option to
       // easily escape
       getWizardModel().requestRootNode();
-
     }
-
   }
 
   @Override

@@ -105,6 +105,11 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    */
   private boolean switchToPassword;
 
+  /**
+   * True if an uninitialised Trezor is present and the user needs to progress to create new wallet wizard
+   */
+  private boolean createNewTrezorWallet = false;
+
   public CredentialsWizardModel(CredentialsState credentialsState, CredentialsRequestType credentialsRequestType) {
     super(credentialsState);
     this.credentialsRequestType = credentialsRequestType;
@@ -122,6 +127,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     this.switchToPassword = switchToPassword;
   }
 
+  /**
+    * @param createNewTrezorWallet True if there is a need to switch to password entry through showNext()
+    */
+   public void setCreateNewTrezorWallet(boolean createNewTrezorWallet) {
+     this.createNewTrezorWallet = createNewTrezorWallet;
+   }
+
   @Override
   public void showNext() {
 
@@ -129,10 +141,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       case CREDENTIALS_ENTER_PASSWORD:
         break;
       case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
-        break;
       case CREDENTIALS_REQUEST_CIPHER_KEY:
         if (switchToPassword) {
           state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+        }
+        // createNewTrezorWallet dealt with in MainController as it is in WelcomeWizard
+        if (createNewTrezorWallet) {
+          ViewEvents.fireWizardHideEvent(getPanelName(), this, false);
         }
         break;
       case CREDENTIALS_ENTER_PIN:

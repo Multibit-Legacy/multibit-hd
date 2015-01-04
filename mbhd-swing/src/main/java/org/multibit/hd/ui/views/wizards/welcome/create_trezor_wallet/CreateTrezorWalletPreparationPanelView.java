@@ -142,7 +142,7 @@ public class CreateTrezorWalletPreparationPanelView extends AbstractWizardPanelV
   @Override
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelPreviousNext(this, wizard);
+    PanelDecorator.addExitCancelNext(this, wizard);
 
   }
 
