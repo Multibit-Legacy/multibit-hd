@@ -11,6 +11,8 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
+import org.multibit.hd.hardware.core.messages.ButtonRequest;
+import org.multibit.hd.hardware.core.messages.ButtonRequestType;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
 import org.slf4j.Logger;
@@ -106,13 +108,21 @@ public class HardwareWalletEventFixtures {
 
     hardwareWalletEvents.clear();
 
-    HardwareWalletEvent event = new HardwareWalletEvent(
+    final HardwareWalletEvent event1 = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_DEVICE_READY,
       Optional.<HardwareWalletMessage>of(
         newStandardFeatures()
       ));
 
-    hardwareWalletEvents.add(event);
+    hardwareWalletEvents.add(event1);
+
+    final HardwareWalletEvent event2 = new HardwareWalletEvent(
+      HardwareWalletEventType.SHOW_BUTTON_PRESS,
+      Optional.<HardwareWalletMessage>of(
+        newWipeButtonPress()
+      ));
+
+    hardwareWalletEvents.add(event2);
 
   }
 
@@ -137,6 +147,15 @@ public class HardwareWalletEventFixtures {
     features.setImported(false);
 
     return features;
+
+  }
+
+  private static ButtonRequest newWipeButtonPress() {
+
+    return new ButtonRequest(
+      ButtonRequestType.RESET_DEVICE,
+      ""
+    );
 
   }
 }

@@ -216,8 +216,16 @@ public class MainView extends JFrame {
 
       // Determine the appropriate starting screen for the welcome wizard
       if (Configurations.currentConfiguration.isLicenceAccepted()) {
-        log.debug("Showing exiting welcome wizard (select language)");
-        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE, mode).getWizardScreenHolder());
+
+        // Must have run before so perform some additional checks
+        if (WelcomeWizardMode.TREZOR.equals(mode)) {
+          // Starting with an uninitialised Trezor
+          log.debug("Showing exiting welcome wizard (select wallet)");
+          Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET, mode).getWizardScreenHolder());
+        } else {
+          log.debug("Showing exiting welcome wizard (select language)");
+          Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE, mode).getWizardScreenHolder());
+        }
       } else {
         log.debug("Showing exiting welcome wizard (licence agreement)");
         Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_LICENCE, mode).getWizardScreenHolder());

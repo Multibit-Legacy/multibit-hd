@@ -1,6 +1,7 @@
 package org.multibit.hd.ui;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -8,6 +9,7 @@ import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.OSUtils;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
@@ -27,6 +29,7 @@ import javax.swing.text.DefaultEditorKit;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Main entry point to the application</p>
@@ -60,14 +63,15 @@ public class MultiBitHD {
     } else {
 
       // Initialise the UI views in the EDT
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
 
-          multiBitHD.initialiseUIViews();
+            multiBitHD.initialiseUIViews();
 
-        }
-      });
+          }
+        });
 
     }
 
@@ -184,7 +188,8 @@ public class MultiBitHD {
 
     if (OSUtils.isWindowsXPOrEarlier()) {
       log.error("Windows XP or earlier detected. Forcing shutdown.");
-      JOptionPane.showMessageDialog(null, "This version of Windows is not supported for security reasons.\nPlease upgrade.", "Error",
+      JOptionPane.showMessageDialog(
+        null, "This version of Windows is not supported for security reasons.\nPlease upgrade.", "Error",
         JOptionPane.ERROR_MESSAGE);
       return false;
     }
@@ -291,15 +296,39 @@ public class MultiBitHD {
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
 
-    if (walletDirectories.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted()) {
+    // Allow a moment for hardware wallet events to settle
+    Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
-      log.debug("No wallets in the directory or licence not accepted - showing the welcome wizard");
+    // Check for fresh install
+    boolean showWelcomeWizard = walletDirectories.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted();
+
+    if (showWelcomeWizard) {
+      log.debug("Wallet directory is empty or no licence accepted");
+    }
+
+    // Check for fresh hardware wallet
+    if (CoreServices.getOrCreateHardwareWalletService().isPresent()) {
+
+      HardwareWalletService hardwareWalletService = CoreServices.getOrCreateHardwareWalletService().get();
+      hardwareWalletService.isWalletPresent();
+
+      log.debug("Uninitialised hardware wallet detected");
+
+      // Must show the welcome wizard in hardware wallet mode
+      // regardless of wallet or licence situation
+      showWelcomeWizard = true;
+
+    }
+
+    if (showWelcomeWizard) {
+
+      log.debug("Showing the welcome wizard");
       mainView.setShowExitingWelcomeWizard(true);
       mainView.setShowExitingCredentialsWizard(false);
 
     } else {
 
-      log.debug("Wallets are present - showing the credentials wizard");
+      log.debug("Showing the credentials wizard");
       mainView.setShowExitingCredentialsWizard(true);
       mainView.setShowExitingWelcomeWizard(false);
 

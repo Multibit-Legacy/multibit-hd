@@ -2,6 +2,8 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.ui.fest.use_cases.create_wallet.CreateWalletSelectBackupLocationWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorConfirmWipeUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorPreparationUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectCreateTrezorWalletUseCase;
@@ -32,6 +34,12 @@ public class HardwareWalletBeforeUnlockRequirements {
 
     // Verify the Trezor preparation
     new TrezorPreparationUseCase(window).execute(parameters);
+
+    // Select a backup location
+    new CreateWalletSelectBackupLocationWalletUseCase(window).execute(parameters);
+
+    // Confirm device wipe
+    new TrezorConfirmWipeUseCase(window).execute(parameters);
 
   }
 }
