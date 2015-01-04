@@ -665,10 +665,17 @@ public class TextBoxes {
   }
 
   /**
+   * @param panelName The panel name used as the basis for the FEST name
+   *
    * @return A text area with similar dimensions to a V1 Trezor after MiG resizing
    */
-  public static JTextArea newTrezorV1Display() {
-    return newReadOnlyTextArea(5, 50);
+  public static JTextArea newTrezorV1Display(String panelName) {
+
+    JTextArea trezorDisplay = newReadOnlyTextArea(5, 50);
+    trezorDisplay.setName(panelName+".trezor_display");
+
+    return trezorDisplay;
+
   }
 
   /**

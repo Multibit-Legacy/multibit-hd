@@ -72,17 +72,18 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
 
 
     // Arrange PIN matrix buttons to mimic a numeric keypad (1 bottom left, 9 top right)
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(7)), MultiBitUI.SMALL_BUTTON_MIG);
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(8)), MultiBitUI.SMALL_BUTTON_MIG);
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(9)), MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(4)), MultiBitUI.SMALL_BUTTON_MIG);
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(5)), MultiBitUI.SMALL_BUTTON_MIG);
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(6)), MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(1)), MultiBitUI.SMALL_BUTTON_MIG);
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(2)), MultiBitUI.SMALL_BUTTON_MIG);
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(3)), MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(7), getModel().get().getPanelName() + ".button_7"), MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(8), getModel().get().getPanelName() + ".button_8"), MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(9), getModel().get().getPanelName() + ".button_9"), MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(4), getModel().get().getPanelName() + ".button_4"), MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(5), getModel().get().getPanelName() + ".button_5"), MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(6), getModel().get().getPanelName() + ".button_6"), MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(1), getModel().get().getPanelName() + ".button_1"), MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(2), getModel().get().getPanelName() + ".button_2"), MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(3), getModel().get().getPanelName() + ".button_3"), MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
 
     pinText = TextBoxes.newReadOnlyTextField(10);
+    pinText.setName(getModel().get().getPanelName()+".textbox");
     TitleFontDecorator.apply(pinText, (float) (MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE * 0.6));
 
     pinStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());

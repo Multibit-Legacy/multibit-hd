@@ -49,7 +49,7 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
     // Initialise the components
     operationText = Labels.newCommunicatingWithTrezor();
     recoveryText = Labels.newBlankLabel();
-    deviceDisplayTextArea = TextBoxes.newTrezorV1Display();
+    deviceDisplayTextArea = TextBoxes.newTrezorV1Display(getModel().get().getPanelName());
 
     // Provide an invisible tar pit spinner
     spinner = Labels.newSpinner(Themes.currentTheme.fadedText(), MultiBitUI.NORMAL_PLUS_ICON_SIZE);

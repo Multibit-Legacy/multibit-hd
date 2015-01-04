@@ -33,7 +33,6 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
 
@@ -66,7 +65,8 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
-    contentPanel.setLayout(new MigLayout(
+    contentPanel.setLayout(
+      new MigLayout(
         Panels.migXYLayout(),
         "[][]", // Column constraints
         "[][]" // Row constraints
@@ -126,19 +126,19 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
       Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
       if (hardwareWalletService.isPresent()) {
         HardwareWalletContext context = hardwareWalletService.get().getContext();
-        log.debug("HardwareWalletContext: {}" + context);
 
-        if (currentConfiguration != null &&
-                currentConfiguration.getWallet() != null &&
-                context != null
-                ) {
+        if (currentConfiguration != null
+          && currentConfiguration.getWallet() != null
+          && context != null) {
+
           Optional<Features> features = context.getFeatures();
           if (features.isPresent()) {
             long now = System.currentTimeMillis();
             Configurations.currentConfiguration.getWallet().setRecentWalletDataValidity(now);
             Configurations.currentConfiguration.getWallet().setRecentWalletLabel(getWizardModel().getTrezorWalletLabel());
-            log.debug("Saving for wallet with label {} the data validity time {}", getWizardModel().getTrezorWalletLabel(), now);
+            log.debug("Saving for wallet with label '{}' the data validity time '{}'", getWizardModel().getTrezorWalletLabel(), now);
           }
+
         }
       }
       timestampLabel.setVisible(true);

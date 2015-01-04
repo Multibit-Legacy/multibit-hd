@@ -3,6 +3,7 @@ package org.multibit.hd.testing;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -11,14 +12,11 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
-import org.multibit.hd.hardware.core.messages.ButtonRequest;
-import org.multibit.hd.hardware.core.messages.ButtonRequestType;
-import org.multibit.hd.hardware.core.messages.Features;
-import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
+import org.multibit.hd.hardware.core.messages.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Stack;
+import java.util.Queue;
 import java.util.concurrent.Callable;
 
 /**
@@ -41,7 +39,7 @@ public class HardwareWalletEventFixtures {
    */
   public static final String STANDARD_LABEL = "Example";
 
-  private static Stack<HardwareWalletEvent> hardwareWalletEvents = new Stack<>();
+  private static Queue<HardwareWalletEvent> hardwareWalletEvents = Queues.newArrayBlockingQueue(100);
 
   /**
    * Control when the next event in the use case will be fired
@@ -55,7 +53,8 @@ public class HardwareWalletEventFixtures {
         @Override
         public Boolean call() {
 
-          HardwareWalletEvent event = hardwareWalletEvents.pop();
+          // Get the head of the queue
+          HardwareWalletEvent event = hardwareWalletEvents.remove();
 
           if (event.getMessage().isPresent()) {
             HardwareWalletEvents.fireHardwareWalletEvent(event.getEventType(), event.getMessage().get());
@@ -119,10 +118,45 @@ public class HardwareWalletEventFixtures {
     final HardwareWalletEvent event2 = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_BUTTON_PRESS,
       Optional.<HardwareWalletMessage>of(
-        newWipeButtonPress()
+        newConfirmWipeButtonRequest()
       ));
 
     hardwareWalletEvents.add(event2);
+
+    final HardwareWalletEvent event3 = new HardwareWalletEvent(
+      HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED,
+      Optional.<HardwareWalletMessage>of(
+        newDeviceWipedSuccess()
+      ));
+
+    hardwareWalletEvents.add(event3);
+
+    final HardwareWalletEvent event4 = new HardwareWalletEvent(
+      HardwareWalletEventType.SHOW_PIN_ENTRY,
+      Optional.<HardwareWalletMessage>of(
+        newNewFirstPinMatrix()
+      ));
+
+    hardwareWalletEvents.add(event4);
+
+    final HardwareWalletEvent event5 = new HardwareWalletEvent(
+      HardwareWalletEventType.SHOW_PIN_ENTRY,
+      Optional.<HardwareWalletMessage>of(
+        newNewSecondPinMatrix()
+      ));
+
+    hardwareWalletEvents.add(event5);
+
+    // Next 12 words, confirm 12 words
+    for (int i = 0; i < 23; i++) {
+      final HardwareWalletEvent event = new HardwareWalletEvent(
+        HardwareWalletEventType.PROVIDE_ENTROPY,
+        Optional.<HardwareWalletMessage>of(
+          newConfirmWordButtonRequest()
+        ));
+
+      hardwareWalletEvents.add(event);
+    }
 
   }
 
@@ -150,12 +184,58 @@ public class HardwareWalletEventFixtures {
 
   }
 
-  private static ButtonRequest newWipeButtonPress() {
+  /**
+   * @return A new operation successful
+   */
+  private static Success newDeviceWipedSuccess() {
+
+    return new Success(
+      "Device wiped",
+      new byte[]{}
+    );
+
+  }
+
+  /**
+   * @return A new confirm wipe button request
+   */
+  private static ButtonRequest newConfirmWipeButtonRequest() {
 
     return new ButtonRequest(
-      ButtonRequestType.RESET_DEVICE,
+      ButtonRequestType.WIPE_DEVICE,
       ""
     );
 
   }
+
+  /**
+   * @return A new confirm word button request
+   */
+  private static ButtonRequest newConfirmWordButtonRequest() {
+
+    return new ButtonRequest(
+      ButtonRequestType.CONFIRM_WORD,
+      ""
+    );
+
+  }
+
+  /**
+   * @return A new PIN matrix for "new first" (set)
+   */
+  private static PinMatrixRequest newNewFirstPinMatrix() {
+
+    return new PinMatrixRequest(PinMatrixRequestType.NEW_FIRST);
+
+  }
+
+  /**
+   * @return A new PIN matrix for "new second" (confirm)
+   */
+  private static PinMatrixRequest newNewSecondPinMatrix() {
+
+    return new PinMatrixRequest(PinMatrixRequestType.NEW_SECOND);
+
+  }
+
 }

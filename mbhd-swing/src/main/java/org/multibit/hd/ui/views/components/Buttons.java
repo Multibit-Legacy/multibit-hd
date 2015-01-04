@@ -262,6 +262,9 @@ public class Buttons {
 
     JButton button = newButton(action);
 
+    // Ensure FEST can find it
+    button.setName(MessageKey.DELETE.getKey());
+
     AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ARROW_CIRCLE_O_LEFT, AwesomeIcon.ARROW_CIRCLE_O_RIGHT);
     AwesomeDecorator.applyIcon(icon, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -1138,11 +1141,15 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @param festName
    * @return A new "PIN matrix" button with icon
    */
-  public static JButton newPinMatixButton(Action action) {
+  public static JButton newPinMatixButton(Action action, String festName) {
 
     JButton button = newButton(action);
+
+    // Ensure FEST can find it
+    button.setName(festName);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.QUESTION,

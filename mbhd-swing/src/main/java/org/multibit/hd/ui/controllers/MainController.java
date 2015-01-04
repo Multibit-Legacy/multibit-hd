@@ -177,7 +177,7 @@ public class MainController extends AbstractController implements
 
       if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(event.getPanelName())
         || CredentialsState.CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK.name().equals(event.getPanelName())
-              || CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT.name().equals(event.getPanelName())
+        || CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT.name().equals(event.getPanelName())
         ) {
 
         // We have just finished the credentials wizard and want the wallet details screen
@@ -193,11 +193,11 @@ public class MainController extends AbstractController implements
       }
 
       if (CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY.name().equals(event.getPanelName()) ||
-              CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY.name().equals(event.getPanelName())) {
+        CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY.name().equals(event.getPanelName())) {
 
-         // We are exiting the credentials wizard as the Trezor is uninitialised and want the welcome wizard
+        // We are exiting the credentials wizard as the Trezor is uninitialised and want the welcome wizard
 
-         handoverToWelcomeWizardCreateTrezorWallet();
+        handoverToWelcomeWizardCreateTrezorWallet();
       }
       if (EditWalletState.EDIT_WALLET.name().equals(event.getPanelName())) {
 
@@ -1155,7 +1155,7 @@ public class MainController extends AbstractController implements
     final WelcomeWizardState initialState = WelcomeWizardMode.STANDARD.equals(mode) ? WelcomeWizardState.WELCOME_SELECT_WALLET : WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP;
     // Start building the wizard on the EDT to prevent UI updates
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
-            initialState, mode
+      initialState, mode
     );
 
     // Use a new thread to handle the new wizard so that the handover can complete
@@ -1199,7 +1199,7 @@ public class MainController extends AbstractController implements
 
     // Start building the wizard on the EDT to prevent UI updates
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
-            WelcomeWizardState.TREZOR_CREATE_WALLET_PREPARATION, WelcomeWizardMode.TREZOR
+      WelcomeWizardState.TREZOR_CREATE_WALLET_PREPARATION, WelcomeWizardMode.TREZOR
     );
 
     // Use a new thread to handle the new wizard so that the handover can complete
@@ -1337,5 +1337,12 @@ public class MainController extends AbstractController implements
         }
       });
 
+  }
+
+  /**
+   * @return The deferred credentials request type
+   */
+  public CredentialsRequestType getDeferredCredentialsRequestType() {
+    return deferredCredentialsRequestType;
   }
 }

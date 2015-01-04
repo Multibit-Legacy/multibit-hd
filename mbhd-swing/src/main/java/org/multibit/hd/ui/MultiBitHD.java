@@ -308,15 +308,17 @@ public class MultiBitHD {
 
     // Check for fresh hardware wallet
     if (CoreServices.getOrCreateHardwareWalletService().isPresent()) {
-
       HardwareWalletService hardwareWalletService = CoreServices.getOrCreateHardwareWalletService().get();
-      hardwareWalletService.isWalletPresent();
 
-      log.debug("Uninitialised hardware wallet detected");
+      if (hardwareWalletService.isDeviceReady() && !hardwareWalletService.isWalletPresent()) {
 
-      // Must show the welcome wizard in hardware wallet mode
-      // regardless of wallet or licence situation
-      showWelcomeWizard = true;
+        log.debug("Uninitialised hardware wallet detected");
+
+        // Must show the welcome wizard in hardware wallet mode
+        // regardless of wallet or licence situation
+        showWelcomeWizard = true;
+
+      }
 
     }
 

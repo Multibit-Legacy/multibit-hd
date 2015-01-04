@@ -2,9 +2,9 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.testing.HardwareWalletEventFixtures;
 import org.multibit.hd.ui.fest.use_cases.create_wallet.CreateWalletSelectBackupLocationWalletUseCase;
-import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorConfirmWipeUseCase;
-import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorPreparationUseCase;
+import org.multibit.hd.ui.fest.use_cases.hardware_wallet.*;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectCreateTrezorWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
@@ -38,8 +38,29 @@ public class HardwareWalletBeforeUnlockRequirements {
     // Select a backup location
     new CreateWalletSelectBackupLocationWalletUseCase(window).execute(parameters);
 
+    // Enter wallet details
+    new TrezorEnterWalletDetailsUseCase(window).execute(parameters);
+
     // Confirm device wipe
+    HardwareWalletEventFixtures.fireNextEvent();
     new TrezorConfirmWipeUseCase(window).execute(parameters);
+
+    // Enter new PIN
+    HardwareWalletEventFixtures.fireNextEvent();
+    new TrezorEnterNewPinUseCase(window).execute(parameters);
+
+    // Confirm new PIN
+    HardwareWalletEventFixtures.fireNextEvent();
+    new TrezorConfirmNewPinUseCase(window).execute(parameters);
+
+    // Enter next words
+    new TrezorEnterNextWordUseCase(window).execute(parameters);
+
+    // Confirm words
+    new TrezorConfirmNextWordUseCase(window).execute(parameters);
+
+    // Verify report
+    new TrezorCreateWalletReportUseCase(window).execute(parameters);
 
   }
 }
