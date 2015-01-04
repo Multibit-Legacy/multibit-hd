@@ -53,6 +53,8 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
 
   private boolean startedSync = false;
 
+  private WalletLoadEvent unprocessedWalletLoadEvent;
+
 
   /**
    * @param wizard    The wizard managing the states
@@ -142,16 +144,9 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
 
                 getFinishButton().requestFocusInWindow();
 
-                // Check for report message from hardware wallet
-//                LabelDecorator.applyReportMessage(walletLoadedStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
-//
-//                if (getWizardModel().getReportMessageKey().isPresent() && !getWizardModel().getReportMessageStatus()) {
-//                  // Hardware wallet report indicates cancellation
-//                  // TODO
-//                  log.debug("Cancel from hardware wallet");
-//                } else {
-//                  log.debug("Load is progressing");
-//                }
+                if (unprocessedWalletLoadEvent != null) {
+                  onWalletLoadEvent(unprocessedWalletLoadEvent);
+                }
 
               }
             });
@@ -165,19 +160,24 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
               public void run() {
 
                 log.debug("Saw a wallet load event {}", walletLoadEvent);
-                if (walletLoadEvent.isWalletLoadWasSuccessful()) {
-                  // Wallet loaded ok
-                  loadedOk = true;
-                  LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_LOADED_OK));
-                  LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.TRUE));
+                if (isInitialised()) {
+                  unprocessedWalletLoadEvent = null;
+                  if (walletLoadEvent.isWalletLoadWasSuccessful()) {
+                    // Wallet loaded ok
+                    loadedOk = true;
+                    LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_LOADED_OK));
+                    LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.TRUE));
+                  } else {
+                    // Wallet failed to load
+                    LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_FAILED_TO_LOAD));
+                    LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.FALSE));
+                  }
+                  if (!connected) {
+                    connectedStatusLabel.setVisible(true);
+                    LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTING_TO_BITCOIN_NETWORK));
+                  }
                 } else {
-                  // Wallet failed to load
-                  LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_FAILED_TO_LOAD));
-                  LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.FALSE));
-                }
-                if (!connected) {
-                  connectedStatusLabel.setVisible(true);
-                  LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTING_TO_BITCOIN_NETWORK));
+                  unprocessedWalletLoadEvent = walletLoadEvent;
                 }
               }
             });

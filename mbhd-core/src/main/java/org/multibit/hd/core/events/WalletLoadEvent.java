@@ -61,4 +61,14 @@ public class WalletLoadEvent implements CoreEvent {
   public Optional<Throwable> getError() {
     return error;
   }
+
+  @Override
+  public String toString() {
+    return "WalletLoadEvent{" +
+            "walletId=" + walletId +
+            ", walletLoadWasSuccessful=" + walletLoadWasSuccessful +
+            ", walletLoadMessageKey='" + walletLoadMessageKey + '\'' +
+            ", error=" + error +
+            '}';
+  }
 }

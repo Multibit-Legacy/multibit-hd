@@ -422,7 +422,7 @@ public class CoreServices {
    * @return The Bitcoin network service - note that this is NOT started
    */
   public static synchronized BitcoinNetworkService getOrCreateBitcoinNetworkService() {
-    log.debug("Get Bitcoin network service ");
+    log.trace("Get Bitcoin network service ");
 
     // Require session singleton so only a null will create a new instance
     if (!bitcoinNetworkService.isPresent()) {
