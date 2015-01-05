@@ -58,17 +58,12 @@ public class FeeService {
   /**
    * The lower limit of the gap from one fee send to the next
    */
-  public final static int NEXT_SEND_DELTA_LOWER_LIMIT = 20;
+  public final static int NEXT_SEND_DELTA_LOWER_LIMIT = 15;
 
   /**
    * The upper limit of the gap from one fee send to the next
    */
-  public final static int NEXT_SEND_DELTA_UPPER_LIMIT = 30;
-
-  /**
-   * The multiplicative factor used in determining the first SEND DELTA
-   */
-  public final static double FIRST_SEND_DELTA_FACTOR = 0.5;
+  public final static int NEXT_SEND_DELTA_UPPER_LIMIT = 25;
 
   private TransactionSentBySelfProvider transactionSentBySelfProvider;
 
@@ -236,14 +231,9 @@ public class FeeService {
       // Work out the count of the sends at which the next payment will be made
       // The first nextSendFeeCount is earlier than others by a factor of FIRST_SEND_DELTA_FACTOR
       int numberOfSendCountsPaidFor = (int)feePaid.divide(FEE_PER_SEND);
-      if (feePaid.equals(Coin.ZERO)) {
-        // This is the first fee payment
-        nextSendFeeCount = (int)Math.floor(FIRST_SEND_DELTA_FACTOR *
-                (NEXT_SEND_DELTA_LOWER_LIMIT + secureRandom.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT)));
-      } else {
-        nextSendFeeCount = numberOfSendCountsPaidFor +
+
+      nextSendFeeCount = numberOfSendCountsPaidFor +
                 + NEXT_SEND_DELTA_LOWER_LIMIT + secureRandom.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT);
-      }
 
       // If we already have more sends than that then mark the next send as a fee send ie send a fee ASAP
       if (currentNumberOfSends >= nextSendFeeCount) {

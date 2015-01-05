@@ -193,6 +193,7 @@ public enum MessageKey {
   CLIENT_FEE_LATER_PLURAL("client_fee_later_plural"),
   CLIENT_FEE_LATER_SINGULAR("client_fee_later_singular"),
   CLIENT_FEE_OVERPAID("client_fee_overpaid"),
+  CLIENT_FEE_RUNNING_TOTAL("client_fee_running_total"),
 
   COINBASE("coinbase"),
 

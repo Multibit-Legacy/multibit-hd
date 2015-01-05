@@ -7,6 +7,7 @@ import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Wallet;
 import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.hd.brit.dto.FeeState;
+import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletType;
@@ -44,11 +45,13 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   private ModelAndView<DisplayAmountModel, DisplayAmountView> transactionDisplayAmountMaV;
   private ModelAndView<DisplayAmountModel, DisplayAmountView> transactionFeeDisplayAmountMaV;
   private ModelAndView<DisplayAmountModel, DisplayAmountView> clientFeeDisplayAmountMaV;
+  private ModelAndView<DisplayAmountModel, DisplayAmountView> runningTotalClientFeeDisplayAmountMaV;
   private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
 
   private JLabel recipientSummaryLabel;
 
   private JLabel clientFeeInfoLabel;
+  private JLabel runningTotalClientFeeInfoLabel;
 
   private SendBitcoinConfirmPanelModel panelModel;
 
@@ -102,11 +105,16 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
       true,
       SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".client_fee"
     );
-
+    runningTotalClientFeeDisplayAmountMaV = Components.newDisplayAmountMaV(
+       DisplayAmountStyle.PLAIN,
+       true,
+       SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".running_total_client_fee"
+     );
     // Ensure visibility
     transactionDisplayAmountMaV.getView().setVisible(true);
     transactionFeeDisplayAmountMaV.getView().setVisible(true);
     clientFeeDisplayAmountMaV.getView().setVisible(true);
+    runningTotalClientFeeDisplayAmountMaV.getView().setVisible(true);
 
     // Blank labels populated from wizard model later
     recipientSummaryLabel = Labels.newRecipientSummary(getWizardModel().getRecipient());
@@ -131,7 +139,6 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
         notes += uri.getMessage();
       }
       notesTextArea.setText(notes);
-
     }
 
     contentPanel.setLayout(
@@ -144,28 +151,38 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     clientFeeInfoLabel = Labels.newBlankLabel();
     AccessibilityDecorator.apply(clientFeeInfoLabel, MessageKey.CLIENT_FEE);
 
-    contentPanel.add(Labels.newConfirmSendAmount(), "span 4,push,wrap");
+    runningTotalClientFeeInfoLabel = Labels.newLabel(MessageKey.CLIENT_FEE_RUNNING_TOTAL);
+    AccessibilityDecorator.apply(runningTotalClientFeeInfoLabel, MessageKey.CLIENT_FEE_RUNNING_TOTAL);
+
+    contentPanel.add(Labels.newConfirmSendAmount(), "span 5,push,wrap");
 
     contentPanel.add(Labels.newRecipient());
-    contentPanel.add(recipientSummaryLabel, "span 3,wrap");
+    contentPanel.add(recipientSummaryLabel, "span 4,wrap");
 
     contentPanel.add(Labels.newAmount(), "baseline");
-    contentPanel.add(transactionDisplayAmountMaV.getView().newComponentPanel(), "span 3,wrap");
+    contentPanel.add(transactionDisplayAmountMaV.getView().newComponentPanel(), "span 4,wrap");
 
     contentPanel.add(Labels.newTransactionFee(), "top");
-    contentPanel.add(transactionFeeDisplayAmountMaV.getView().newComponentPanel(), "span 3,wrap");
+    contentPanel.add(transactionFeeDisplayAmountMaV.getView().newComponentPanel(), "span 4,wrap");
 
     contentPanel.add(Labels.newDeveloperFee(), "top");
     contentPanel.add(clientFeeDisplayAmountMaV.getView().newComponentPanel(), "top");
-    contentPanel.add(clientFeeInfoLabel, "top");
+    contentPanel.add(clientFeeInfoLabel, "top, span 2");
+
+    contentPanel.add(Labels.newBlankLabel(), "top, growx, push,wrap");
+    contentPanel.add(Labels.newBlankLabel(), "top");
+    contentPanel.add(Labels.newBlankLabel(), "top");
+
+    contentPanel.add(runningTotalClientFeeInfoLabel, "top");
+    contentPanel.add(runningTotalClientFeeDisplayAmountMaV.getView().newComponentPanel(), "top");
 
     contentPanel.add(Labels.newBlankLabel(), "top, growx, push,wrap");
 
     contentPanel.add(Labels.newNotes());
-    contentPanel.add(notesTextArea, "span 3,growx,push,wrap");
+    contentPanel.add(notesTextArea, "span 4,growx,push,wrap");
 
     if (!isTrezorWallet()) {
-      contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 4,align right,wrap");
+      contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 5,align right,wrap");
     }
 
     // Register components
@@ -221,23 +238,36 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     if (feeStateOptional.isPresent()) {
       FeeState feeState = feeStateOptional.get();
 
+      // The amount of fee to show - if paid later the singular client fee, if paid now, the total payable
+      Coin feeToShow = FeeService.FEE_PER_SEND;
+
       if (feeState.getCurrentNumberOfSends() == feeState.getNextFeeSendCount()) {
         // The fee is due at the next send e.g. current number of sends = 20, nextFeeSendCount = 20 (the 21st send i.e. the coming one)
         feeText = Languages.safeText(MessageKey.CLIENT_FEE_NOW);
+        feeToShow = feeState.getFeeOwed();
+        runningTotalClientFeeDisplayAmountMaV.getView().setVisible(false);
+        runningTotalClientFeeInfoLabel.setVisible(false);
       } else if (feeState.getFeeOwed().compareTo(Coin.ZERO) < 0) {
         // The user has overpaid
         feeText = Languages.safeText(MessageKey.CLIENT_FEE_OVERPAID);
+        runningTotalClientFeeDisplayAmountMaV.getView().setVisible(false);
+        runningTotalClientFeeInfoLabel.setVisible(false);
       } else {
         // It is due later
         int dueLater = feeState.getNextFeeSendCount() - feeState.getCurrentNumberOfSends();
         if (dueLater == 1) {
-          feeText = Languages.safeText(MessageKey.CLIENT_FEE_LATER_SINGULAR, dueLater);
+          feeText = Languages.safeText(MessageKey.CLIENT_FEE_LATER_SINGULAR);
         } else {
           feeText = Languages.safeText(MessageKey.CLIENT_FEE_LATER_PLURAL, dueLater);
         }
+        runningTotalClientFeeDisplayAmountMaV.getModel().setCoinAmount(feeState.getFeeOwed());
+        runningTotalClientFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
+        runningTotalClientFeeDisplayAmountMaV.getView().updateView(configuration);
+        runningTotalClientFeeDisplayAmountMaV.getView().setVisible(true);
+        runningTotalClientFeeInfoLabel.setVisible(true);
       }
 
-      clientFeeDisplayAmountMaV.getModel().setCoinAmount(feeState.getFeeOwed());
+      clientFeeDisplayAmountMaV.getModel().setCoinAmount(feeToShow);
       clientFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
       clientFeeDisplayAmountMaV.getView().updateView(configuration);
 
