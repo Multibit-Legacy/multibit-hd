@@ -113,7 +113,7 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     contentPanel.add(Labels.newTransactionFee(), "top");
     contentPanel.add(transactionFeeDisplayAmountMaV.getView().newComponentPanel(), "span 3,wrap");
 
-    contentPanel.add(Labels.newDeveloperFee(), "top");
+    contentPanel.add(Labels.newClientFee(), "top");
     contentPanel.add(clientFeeDisplayAmountMaV.getView().newComponentPanel(), "top");
     contentPanel.add(clientFeeInfoLabel, "top");
 

@@ -185,6 +185,10 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
 
   @Subscribe
   public void onBitcoinChangeEvent(final BitcoinNetworkChangedEvent bitcoinNetworkChangedEvent) {
+
+    if (!isInitialised()) {
+      return;
+    }
     SwingUtilities.invokeLater(
             new Runnable() {
               @Override

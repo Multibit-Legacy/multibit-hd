@@ -506,10 +506,10 @@ public class Labels {
     JLabel label = Labels.newLabel(MessageKey.DISPLAY_LANGUAGE);
 
     AwesomeDecorator.applyIcon(
-      AwesomeIcon.GLOBE,
-      label,
-      true,
-      MultiBitUI.NORMAL_PLUS_ICON_SIZE
+            AwesomeIcon.GLOBE,
+            label,
+            true,
+            MultiBitUI.NORMAL_PLUS_ICON_SIZE
     );
 
     return label;
@@ -919,10 +919,17 @@ public class Labels {
   }
 
   /**
-   * @return A new "developer fee" message
+   * @return A new "client fee" message
    */
-  public static JLabel newDeveloperFee() {
+  public static JLabel newClientFee() {
     return newLabel(MessageKey.CLIENT_FEE);
+  }
+
+  /**
+   * @return A new "running total" message
+   */
+  public static JLabel newClientFeeRunningTotal() {
+    return newLabel(MessageKey.CLIENT_FEE_RUNNING_TOTAL);
   }
 
   /**
