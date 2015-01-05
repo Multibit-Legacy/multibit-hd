@@ -152,7 +152,6 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
           // Ensure the view disables components
           getFinishButton().setEnabled(false);
           getExitButton().setEnabled(false);
-          getRestoreButton().setEnabled(false);
 
         }
       });
@@ -195,7 +194,6 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
 
           // Ensure the view enables the escape components
           getExitButton().setEnabled(true);
-          getRestoreButton().setEnabled(true);
         }
       });
   }
