@@ -357,17 +357,17 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with empty wallet fixture</li>
-   * <li>Exercise the Trezor events outside of an unlocked wallet (e.g. startup/restore etc)</li>
+   * <li>Create a new hardware wallet</li>
    * </ul>
    */
   @Test
-  public void verifyHardwareWalletBeforeUnlock() throws Exception {
+  public void verifyHardwareWalletCreateWallet() throws Exception {
 
     // Start with a fresh environment
     arrangeFreshWithAttachedHardwareWallet();
 
     // Verify
-    HardwareWalletBeforeUnlockRequirements.verifyUsing(window);
+    HardwareWalletCreateWalletRequirements.verifyUsing(window);
 
   }
 

@@ -19,7 +19,7 @@ import java.util.Map;
  *
  * @since 0.0.1
  */
-public class HardwareWalletBeforeUnlockRequirements {
+public class HardwareWalletCreateWalletRequirements {
 
   public static void verifyUsing(FrameFixture window) {
 
