@@ -56,7 +56,7 @@ public class ZipFiles {
       if (new File(srcFolder).list() != null) {
         for (String fileName : new File(srcFolder).list()) {
           if (!includeBlockStore && fileName.endsWith(InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX)) {
-            // Do not include the block writeContacts (to save space)
+            // Do not include the block chain (to save space)
             continue;
           }
           addFileToZip(srcFolder, fileName, zip, includeBlockStore);
