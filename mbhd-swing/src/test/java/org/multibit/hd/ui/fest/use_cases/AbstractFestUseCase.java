@@ -366,4 +366,12 @@ public abstract class AbstractFestUseCase {
   protected void pauseForPreparationDisplay() {
     Pause.pause(4, TimeUnit.SECONDS);
   }
+
+  /**
+   * The standard length of time for a hardware wallet event to be processed
+   */
+  protected void pauseForHardwareEvent() {
+    Pause.pause(500, TimeUnit.MILLISECONDS);
+  }
+
 }

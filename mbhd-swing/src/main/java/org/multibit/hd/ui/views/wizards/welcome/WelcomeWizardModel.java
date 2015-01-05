@@ -539,7 +539,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     switch (state) {
 
       case TREZOR_CREATE_WALLET_CONFIRM_WORD:
-        // User does not want to create a new wallet
+        // User has created a new wallet
         state = TREZOR_CREATE_WALLET_REPORT;
         setReportMessageKey(MessageKey.USE_TREZOR_REPORT_MESSAGE_SUCCESS);
         setReportMessageStatus(true);

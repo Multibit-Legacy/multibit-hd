@@ -26,9 +26,6 @@ public class TrezorConfirmNewPinUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Allow time for any hardware wallet events to propagate
-    pauseForViewReset();
-
     // Check that the Trezor confirm new PIN panel view is showing
     window
       .label(MessageKey.CHANGE_PIN_CONFIRM_NEW_PIN_TITLE.getKey())
@@ -36,21 +33,21 @@ public class TrezorConfirmNewPinUseCase extends AbstractFestUseCase {
 
     // Click some buttons
     window
-      .button(WelcomeWizardState.TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()+"button_1")
+      .button(WelcomeWizardState.TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".button_1")
       .click();
     window
-      .button(WelcomeWizardState.TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()+"button_2")
+      .button(WelcomeWizardState.TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".button_2")
       .click();
     window
-      .button(WelcomeWizardState.TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()+"button_3")
+      .button(WelcomeWizardState.TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".button_3")
       .click();
     window
-      .button(WelcomeWizardState.TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()+"button_4")
+      .button(WelcomeWizardState.TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".button_4")
       .click();
 
     // Check that the PIN entry has populated
     window
-      .textBox(WelcomeWizardState.TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()+"textbox")
+      .textBox(WelcomeWizardState.TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".textbox")
       .requireText("****");
 
     // Check the 'Next' button is present and click it

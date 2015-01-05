@@ -25,9 +25,6 @@ public class TrezorCreateWalletReportUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Allow time for any hardware wallet events to propagate
-    pauseForViewReset();
-
     // Check that the Trezor enter next word view is showing
     window
       .label(MessageKey.USE_TREZOR_REPORT_TITLE.getKey())
@@ -43,10 +40,6 @@ public class TrezorCreateWalletReportUseCase extends AbstractFestUseCase {
 
     window
       .label(MessageKey.TIMESTAMP_NOTE_1.getKey())
-      .requireVisible();
-
-    window
-      .label(MessageKey.TIMESTAMP_NOTE_2.getKey())
       .requireVisible();
 
     // Check the 'Finish' button is present and click it

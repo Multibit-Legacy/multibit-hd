@@ -41,19 +41,34 @@ public class HardwareWalletBeforeUnlockRequirements {
     // Enter wallet details
     new TrezorEnterWalletDetailsUseCase(window).execute(parameters);
 
-    // Confirm device wipe
+    // Request create wallet
+    new TrezorRequestCreateWalletUseCase(window).execute(parameters);
+
+    // Wipe device button request
     HardwareWalletEventFixtures.fireNextEvent();
+
+    // Confirm wipe
     new TrezorConfirmWipeUseCase(window).execute(parameters);
 
-    // Enter new PIN
+    // Request first PIN
     HardwareWalletEventFixtures.fireNextEvent();
+
+    // Enter new PIN
     new TrezorEnterNewPinUseCase(window).execute(parameters);
 
-    // Confirm new PIN
+    // Request second PIN
     HardwareWalletEventFixtures.fireNextEvent();
+
+    // Confirm new PIN
     new TrezorConfirmNewPinUseCase(window).execute(parameters);
 
-    // Enter next words
+    // Request entropy
+    HardwareWalletEventFixtures.fireNextEvent();
+
+    // Confirm first word
+    HardwareWalletEventFixtures.fireNextEvent();
+
+    // Confirm next words
     new TrezorEnterNextWordUseCase(window).execute(parameters);
 
     // Confirm words

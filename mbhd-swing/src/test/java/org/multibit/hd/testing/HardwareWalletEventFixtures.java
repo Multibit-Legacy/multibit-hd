@@ -4,10 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningScheduledExecutorService;
+import com.google.common.util.concurrent.*;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
@@ -18,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Queue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Test hardware wallet event fixtures to provide the following to FEST tests:</p>
@@ -81,6 +79,8 @@ public class HardwareWalletEventFixtures {
         }
       });
 
+    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+
   }
 
   /**
@@ -107,6 +107,7 @@ public class HardwareWalletEventFixtures {
 
     hardwareWalletEvents.clear();
 
+    // Attach device
     final HardwareWalletEvent event1 = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_DEVICE_READY,
       Optional.<HardwareWalletMessage>of(
@@ -115,48 +116,60 @@ public class HardwareWalletEventFixtures {
 
     hardwareWalletEvents.add(event1);
 
+    // Confirm wipe
     final HardwareWalletEvent event2 = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_BUTTON_PRESS,
       Optional.<HardwareWalletMessage>of(
-        newConfirmWipeButtonRequest()
+        newWipeDeviceButtonRequest()
       ));
 
     hardwareWalletEvents.add(event2);
 
+    // Request PIN (first)
     final HardwareWalletEvent event3 = new HardwareWalletEvent(
-      HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED,
-      Optional.<HardwareWalletMessage>of(
-        newDeviceWipedSuccess()
-      ));
-
-    hardwareWalletEvents.add(event3);
-
-    final HardwareWalletEvent event4 = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_PIN_ENTRY,
       Optional.<HardwareWalletMessage>of(
         newNewFirstPinMatrix()
       ));
 
-    hardwareWalletEvents.add(event4);
+    hardwareWalletEvents.add(event3);
 
-    final HardwareWalletEvent event5 = new HardwareWalletEvent(
+    // Request PIN (second)
+    final HardwareWalletEvent event4 = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_PIN_ENTRY,
       Optional.<HardwareWalletMessage>of(
         newNewSecondPinMatrix()
       ));
 
+    hardwareWalletEvents.add(event4);
+
+    // Request entropy
+    final HardwareWalletEvent event5 = new HardwareWalletEvent(
+      HardwareWalletEventType.PROVIDE_ENTROPY,
+      Optional.<HardwareWalletMessage>absent()
+      );
+
     hardwareWalletEvents.add(event5);
 
     // Next 12 words, confirm 12 words
-    for (int i = 0; i < 23; i++) {
+    for (int i = 0; i < 24; i++) {
       final HardwareWalletEvent event = new HardwareWalletEvent(
-        HardwareWalletEventType.PROVIDE_ENTROPY,
+        HardwareWalletEventType.SHOW_BUTTON_PRESS,
         Optional.<HardwareWalletMessage>of(
           newConfirmWordButtonRequest()
         ));
 
       hardwareWalletEvents.add(event);
     }
+
+    // Operation successful
+    final HardwareWalletEvent event6 = new HardwareWalletEvent(
+      HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED,
+      Optional.<HardwareWalletMessage>of(
+        newDeviceResetSuccess()
+      ));
+
+    hardwareWalletEvents.add(event6);
 
   }
 
@@ -185,7 +198,17 @@ public class HardwareWalletEventFixtures {
   }
 
   /**
-   * @return A new operation successful
+   * @return A new device reset success (wallet created)
+   */
+  private static Success newDeviceResetSuccess() {
+    return new Success(
+      "Device reset",
+      new byte[]{}
+    );
+  }
+
+  /**
+   * @return A new device wiped success
    */
   private static Success newDeviceWipedSuccess() {
 
@@ -199,7 +222,7 @@ public class HardwareWalletEventFixtures {
   /**
    * @return A new confirm wipe button request
    */
-  private static ButtonRequest newConfirmWipeButtonRequest() {
+  private static ButtonRequest newWipeDeviceButtonRequest() {
 
     return new ButtonRequest(
       ButtonRequestType.WIPE_DEVICE,
