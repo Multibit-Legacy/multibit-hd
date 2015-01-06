@@ -166,6 +166,24 @@ public class MainView extends JFrame {
    * <p>Rebuild the contents of the main view based on the current configuration and theme</p>
    */
   public void refresh() {
+    if (SwingUtilities.isEventDispatchThread()) {
+      refreshOnEventThread();
+    } else {
+      // Start the main view refresh on the EDT
+      SwingUtilities.invokeLater(
+              new Runnable() {
+                @Override
+                public void run() {
+                  refreshOnEventThread();
+                }
+              });
+    }
+  }
+
+  /**
+   * <p>Rebuild the contents of the main view based on the current configuration and theme on the Swing Event thread</p>
+   */
+  private void refreshOnEventThread() {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
 
