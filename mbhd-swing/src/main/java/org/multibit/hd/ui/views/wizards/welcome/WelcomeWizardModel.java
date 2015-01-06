@@ -270,6 +270,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         break;
       case CREATE_WALLET_REPORT:
         state = CREATE_WALLET_SEED_PHRASE;
+        break;
       case TREZOR_CREATE_WALLET_PREPARATION:
         state = WELCOME_SELECT_WALLET;
         break;
