@@ -34,7 +34,7 @@ public class CreateWalletPreparationPanelView extends AbstractWizardPanelView<We
    */
   private final Timer timer;
 
-  private volatile int timerCount = 1;
+  private int timerCount = 1;
   private JLabel note1Icon;
   private JLabel note1Label;
   private JLabel note2Icon;
