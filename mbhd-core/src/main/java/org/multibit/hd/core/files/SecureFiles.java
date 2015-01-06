@@ -122,8 +122,11 @@ public class SecureFiles {
 
     log.debug("Verify or create directory:\n'{}'", directory.getAbsolutePath());
 
+    if (!parentDirectory.exists()) {
+      Preconditions.checkState(parentDirectory.mkdir(), "Could not create parentDirectory: '" + parentDirectory + "'");
+    }
     if (!directory.exists()) {
-      Preconditions.checkState(directory.mkdirs(), "Could not create directory: '" + directory + "'");
+      Preconditions.checkState(directory.mkdir(), "Could not create directory: '" + directory + "'");
     }
 
     Preconditions.checkState(directory.isDirectory(), "Incorrectly identified the directory of '" + directory + " as a file.");

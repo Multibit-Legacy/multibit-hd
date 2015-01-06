@@ -176,6 +176,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         // Should be catered for by finish
         state = CredentialsState.CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK;
         break;
+      case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
       case CREDENTIALS_REQUEST_CIPHER_KEY:
         switch (buttonRequest.getButtonRequestType()) {
           case OTHER:
@@ -308,7 +309,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
     if (Dates.nowUtc().isAfter(getIgnoreHardwareWalletEventsThreshold())) {
       // User attached an operational device in place of whatever
-      // they are currently doing so start again
+      // they are currently doing so start again.
+
       state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
     }
 
@@ -442,6 +444,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         @Override
         public void onFailure(Throwable t) {
 
+          log.error(t.getMessage(), t);
           // Failed to send the message
           enterPinPanelView.failedPin();
         }
