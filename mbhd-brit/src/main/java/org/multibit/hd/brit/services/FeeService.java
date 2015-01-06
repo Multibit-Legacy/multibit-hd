@@ -19,10 +19,7 @@ import org.multibit.hd.brit.payer.Payers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
@@ -321,12 +318,7 @@ public class FeeService {
 
     // Get all the wallets transactions and sort by date
     ArrayList<Transaction> transactions = new ArrayList<>(wallet.getTransactions(false));
-    Collections.sort(
-      transactions, new Comparator<Transaction>() {
-        public int compare(Transaction t1, Transaction t2) {
-          return t1.getUpdateTime().compareTo(t2.getUpdateTime());
-        }
-      });
+    Collections.sort(transactions, new TransactionUpdateTimeComparator());
 
     // Iterate over all transactions sorted by date, looking for transaction outputs that are sends
     List<Transaction> sendTransactions = Lists.newArrayList();
@@ -412,8 +404,6 @@ public class FeeService {
     URLConnection urlConn;
     DataOutputStream postOutputStream;
 
-    ByteArrayOutputStream responseOutputStream = new ByteArrayOutputStream(1024);
-
     // URL connection channel.
     urlConn = url.openConnection();
 
@@ -434,7 +424,8 @@ public class FeeService {
     postOutputStream.close();
 
     // Get response data
-    try (DataInputStream responseInputStream = new DataInputStream(urlConn.getInputStream())) {
+    try (DataInputStream responseInputStream = new DataInputStream(urlConn.getInputStream());
+         ByteArrayOutputStream responseOutputStream = new ByteArrayOutputStream(1024)) {
 
       byte readByte;
 
@@ -448,9 +439,9 @@ public class FeeService {
           keepGoing = false;
         }
       }
+      return responseOutputStream.toByteArray();
     }
 
-    return responseOutputStream.toByteArray();
   }
 
   /**
@@ -467,14 +458,15 @@ public class FeeService {
       return Optional.absent();
     }
 
-    // Sort the transactions by date
-    Collections.sort(
-      transactions, new Comparator<Transaction>() {
-        public int compare(Transaction t1, Transaction t2) {
-          return t1.getUpdateTime().compareTo(t2.getUpdateTime());
-        }
-      });
+    // Sort the transactions
+    Collections.sort(transactions, new TransactionUpdateTimeComparator());
 
     return Optional.of(transactions.get(0).getUpdateTime());
+  }
+
+  private static class TransactionUpdateTimeComparator implements Comparator<Transaction>, Serializable {
+    public int compare(Transaction t1, Transaction t2) {
+      return t1.getUpdateTime().compareTo(t2.getUpdateTime());
+    }
   }
 }
