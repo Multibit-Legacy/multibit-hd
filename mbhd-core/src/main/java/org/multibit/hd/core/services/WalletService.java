@@ -8,13 +8,34 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
-import org.bitcoinj.core.*;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionConfidence;
+import org.bitcoinj.core.TransactionOutput;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.core.Wallet;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
-import org.multibit.hd.core.dto.*;
-import org.multibit.hd.core.events.*;
+import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.dto.FiatPayment;
+import org.multibit.hd.core.dto.PaymentData;
+import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.PaymentStatus;
+import org.multibit.hd.core.dto.PaymentType;
+import org.multibit.hd.core.dto.RAGStatus;
+import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.events.ChangePasswordResultEvent;
+import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
@@ -36,8 +57,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Currency;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
@@ -108,7 +140,10 @@ public class WalletService extends AbstractService {
    */
   private List<PaymentData> lastSeenPaymentDataList = Lists.newArrayList();
 
-  private static ExecutorService executorService;
+  /**
+   * Handles wallet operations
+   */
+  private static final ExecutorService executorService = SafeExecutors.newSingleThreadExecutor("wallet-service");
 
   public WalletService(NetworkParameters networkParameters) {
 
@@ -499,9 +534,8 @@ public class WalletService extends AbstractService {
     Coin amountBTC
   ) {
 
-    String description;
+    StringBuilder description = new StringBuilder();
     if (paymentType == PaymentType.RECEIVING || paymentType == PaymentType.RECEIVED) {
-      description = "";
       String addresses = "";
 
       boolean descriptiveTextIsAvailable = false;
@@ -523,11 +557,15 @@ public class WalletService extends AbstractService {
 
               if (paymentRequestData.getLabel() != null && paymentRequestData.getLabel().length() > 0) {
                 descriptiveTextIsAvailable = true;
-                description = description + paymentRequestData.getLabel() + " ";
+                description
+                  .append(paymentRequestData.getLabel())
+                  .append(" ");
               }
               if (paymentRequestData.getNote() != null && paymentRequestData.getNote().length() > 0) {
                 descriptiveTextIsAvailable = true;
-                description = description + paymentRequestData.getNote() + " ";
+                description
+                  .append(paymentRequestData.getNote())
+                  .append(" ");
               }
             }
           }
@@ -536,20 +574,28 @@ public class WalletService extends AbstractService {
 
       if (!descriptiveTextIsAvailable) {
         // TODO localise
-        description = "By" + PREFIX_SEPARATOR + addresses.trim();
+        description
+          .append("By")
+          .append(PREFIX_SEPARATOR)
+          .append(addresses.trim());
       }
     } else {
       // Sent
       // TODO localise
-      description = "To" + PREFIX_SEPARATOR;
+      description
+        .append("To")
+        .append(PREFIX_SEPARATOR);
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           // TODO Beef up description for other cases
-          description = description + " " + transactionOutput.getScriptPubKey().getToAddress(networkParameters);
+          description
+            .append(description)
+            .append(" ")
+            .append(transactionOutput.getScriptPubKey().getToAddress(networkParameters));
         }
       }
     }
-    return description;
+    return description.toString();
   }
 
   private List<Address> calculateOutputAddresses(Transaction transaction) {
@@ -878,10 +924,6 @@ public class WalletService extends AbstractService {
    */
   public static void changeWalletPassword(final WalletSummary walletSummary, final String oldPassword, final String newPassword) {
 
-    if (executorService == null) {
-      executorService = SafeExecutors.newSingleThreadExecutor("wallet-service");
-    }
-
     executorService.submit(
       new Runnable() {
         @Override
@@ -1032,9 +1074,8 @@ public class WalletService extends AbstractService {
 
       transactionInfo.setAmountFiat(amountFiat);
 
-      // Double check it's not in the transactionInfoMap to minimise raciness
-      if (transactionInfoMap.get(transactionSeenEvent.getTransactionId()) == null) {
-        transactionInfoMap.putIfAbsent(transactionSeenEvent.getTransactionId(), transactionInfo);
+      // Use the atomic putIfAbsent to ensure we don't overwrite
+      if (transactionInfoMap.putIfAbsent(transactionSeenEvent.getTransactionId(), transactionInfo) == null) {
         log.debug("Created TransactionInfo: {}", transactionInfo);
       } else {
         log.debug("Not adding transactionInfo - another process has already added transactionInfo: {}", transactionInfo);
@@ -1042,10 +1083,10 @@ public class WalletService extends AbstractService {
     }
   }
 
-  class PaymentComparator implements Comparator<PaymentData> {
+  static class PaymentComparator implements Comparator<PaymentData>, Serializable {
     @Override
     public int compare(PaymentData o1, PaymentData o2) {
-      int dateSort = -o1.getDate().compareTo(o2.getDate()); // note inverse sort
+      int dateSort = o2.getDate().compareTo(o1.getDate()); // note inverse sort
       if (dateSort != 0) {
         return dateSort;
       } else {

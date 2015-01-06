@@ -76,7 +76,7 @@ public class SendFeeDtoWalletExtension implements WalletExtension {
   @Override
   public void deserializeWalletExtension(Wallet containingWallet, byte[] data) throws Exception {
 
-    String serialisedString = new String(data);
+    String serialisedString = new String(data, Charsets.UTF_8);
     log.debug("Parsing string '{}'", serialisedString);
 
     String[] tokens = Strings.split(serialisedString, SEPARATOR);

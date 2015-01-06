@@ -1,5 +1,7 @@
 package org.multibit.hd.core.sntp;
 
+import com.google.common.base.Charsets;
+
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -409,7 +411,7 @@ public class NtpMessage {
     // or stratum-1 (primary) servers, this is a four-character ASCII
     // string, left justified and zero padded to 32 bits.
     if (stratum == 0 || stratum == 1) {
-      return new String(ref);
+      return new String(ref, Charsets.UTF_8);
     }
 
     // In NTP Version 3 secondary servers, this is the 32-bit IPv4
