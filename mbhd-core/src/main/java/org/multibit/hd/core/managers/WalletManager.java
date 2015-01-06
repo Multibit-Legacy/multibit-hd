@@ -580,6 +580,9 @@ public enum WalletManager implements WalletEventListener {
     // Set up auto-save on the wallet.
     addAutoSaveListener(walletSummary.getWallet(), walletSummary.getWalletFile());
 
+    // Wallet loaded successfully
+    CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletSummary.getWalletId()), true, "core_wallet_loaded_ok", null));
+
     // Check if the wallet needs to sync
     checkIfWalletNeedsToSync(walletSummary);
   }
@@ -784,8 +787,6 @@ public enum WalletManager implements WalletEventListener {
 
       log.debug("Loaded the wallet successfully from \n{}", walletDirectory);
       log.debug("Wallet:{}", wallet);
-
-      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), true, "core_wallet_loaded_ok", null));
 
       return walletSummary;
 

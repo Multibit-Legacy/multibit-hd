@@ -1241,14 +1241,7 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingWelcomeWizard(false);
     mainView.setShowExitingCredentialsWizard(false);
 
-    // Start the main view refresh on the EDT
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          mainView.refresh();
-        }
-      });
+    mainView.refresh();
 
     // Allow time for MainView to refresh
     Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
