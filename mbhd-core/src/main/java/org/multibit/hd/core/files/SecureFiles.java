@@ -3,13 +3,19 @@ package org.multibit.hd.core.files;
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
-import org.bitcoinj.core.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.security.SecureRandom;
 
 /**
@@ -38,6 +44,7 @@ public class SecureFiles {
    * futex_wait_queue_me error on Linux systems (related to /dev/random usage)
    *
    * @param file The file to secure delete
+   *
    * @throws java.io.IOException if the operation fails for any reason
    */
   public static synchronized void secureDelete(File file) throws IOException {
@@ -83,7 +90,9 @@ public class SecureFiles {
 
   /**
    * @param directory The directory to verify or create
+   *
    * @return The directory
+   *
    * @throws java.lang.IllegalStateException If the file could not be created
    */
   public static File verifyOrCreateDirectory(File directory) {
@@ -102,7 +111,9 @@ public class SecureFiles {
   /**
    * @param parentDirectory The parent directory
    * @param childDirectory  The child directory (will be created if absent)
+   *
    * @return The child directory
+   *
    * @throws java.lang.IllegalStateException If the file could not be created
    */
   public static File verifyOrCreateDirectory(File parentDirectory, String childDirectory) {
@@ -125,7 +136,9 @@ public class SecureFiles {
    *
    * @param parentDirectory The parent directory
    * @param filename        The filename
+   *
    * @return A File referring to the existent file
+   *
    * @throws java.lang.IllegalStateException If the file could not be created
    */
   public static File verifyOrCreateFile(File parentDirectory, String filename) {
@@ -157,6 +170,7 @@ public class SecureFiles {
    * <p>Atomically create a temporary directory that will be removed when the JVM exits</p>
    *
    * @return A random temporary directory
+   *
    * @throws java.io.IOException If something goes wrong
    */
   public static File createTemporaryDirectory() throws IOException {
@@ -171,7 +185,7 @@ public class SecureFiles {
     }
 
     // Must have failed to be here
-    throw new IOException("Did not create '"+temporaryDirectory.getAbsolutePath()+"' with RW permissions");
+    throw new IOException("Did not create '" + temporaryDirectory.getAbsolutePath() + "' with RW permissions");
   }
 
   /**
@@ -180,22 +194,27 @@ public class SecureFiles {
   public static void writeFile(InputStream inputStream, File tempFile, File destFile) throws IOException {
 
     try (OutputStream tempStream = new FileOutputStream(tempFile)) {
-      //tempStream = new FileOutputStream(temp);
+      // Copy the original to the temporary location
       ByteStreams.copy(inputStream, tempStream);
       // Attempt to force the bits to hit the disk. In reality the OS or hard disk itself may still decide
       // to not write through to physical media for at least a few seconds, but this is the best we can do.
-      if (Utils.isWindows()) {
-        // Work around an issue on Windows whereby you can't rename over existing files.
-        File canonical = destFile.getCanonicalFile();
-        if (canonical.exists() && !canonical.delete()) {
-          throw new IOException("Failed to delete canonical wallet file for replacement with auto save");
-        }
-        if (tempFile.renameTo(canonical)) return; // else fall through.
-        throw new IOException("Failed to rename '" + tempFile + "' to " + canonical);
-      } else if (!tempFile.renameTo(destFile)) {
-        throw new IOException("Failed to rename '" + tempFile + "' to " + destFile);
-      }
+      tempStream.flush();
     }
+
+    // Use JDK7 NIO Files to move the file since it offers the following benefits:
+    // * best chance at an atomic operation
+    // * relies on native code
+    // * ensures destination is deleted
+    // * performs a rename where possible to reduce data corruption if power fails
+    // * works on Windows
+    Path tempFilePath = tempFile.toPath();
+    Path destFilePath = destFile.toPath();
+    java.nio.file.Files.move(
+      tempFilePath,
+      destFilePath,
+      StandardCopyOption.REPLACE_EXISTING
+    );
+
   }
 
 }
