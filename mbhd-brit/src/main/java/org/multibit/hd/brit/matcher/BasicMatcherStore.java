@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.params.MainNetParams;
@@ -147,6 +148,7 @@ public class BasicMatcherStore implements MatcherStore {
 
   }
 
+  @SuppressFBWarnings({"PATH_TRAVERSAL_IN"})
   private void buildEncounterMaps() {
 
     encounterDateToBitcoinAddressesMap = Maps.newHashMap();
