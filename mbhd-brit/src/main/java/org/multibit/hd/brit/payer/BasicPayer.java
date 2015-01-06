@@ -6,14 +6,23 @@ import org.bitcoinj.crypto.KeyCrypterException;
 import org.bouncycastle.openpgp.PGPException;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
-import org.multibit.hd.brit.dto.*;
+import org.multibit.hd.brit.dto.BRITWalletId;
+import org.multibit.hd.brit.dto.EncryptedMatcherResponse;
+import org.multibit.hd.brit.dto.EncryptedPayerRequest;
+import org.multibit.hd.brit.dto.MatcherResponse;
+import org.multibit.hd.brit.dto.PayerRequest;
 import org.multibit.hd.brit.exceptions.MatcherResponseException;
 import org.multibit.hd.brit.exceptions.PayerRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -68,12 +77,18 @@ public class BasicPayer implements Payer {
       File tempFile = File.createTempFile("req", "tmp");
 
       // Write serialised payerRequest to the temporary file
-      ByteStreams.copy(new ByteArrayInputStream(serialisedPayerRequest), new FileOutputStream(tempFile));
+      try (OutputStream tempStream = new FileOutputStream(tempFile)) {
+        // Copy the original to the temporary location
+        ByteStreams.copy(new ByteArrayInputStream(serialisedPayerRequest), tempStream);
+        // Attempt to force the bits to hit the disk. In reality the OS or hard disk itself may still decide
+        // to not write through to physical media for at least a few seconds, but this is the best we can do.
+        tempStream.flush();
+      }
 
       // PGP encrypt the file
       PGPUtils.encryptFile(encryptedBytesOutputStream, tempFile, payerConfig.getMatcherPublicKey());
 
-      // TODO Secure file delete (or avoid File altogether)
+      // TODO Secure file delete (or avoid File altogether) - consider recommendations from #295 (MultiBit Common)
       if (!tempFile.delete()) {
         throw new IOException("Could not delete file + '" + tempFile.getAbsolutePath() + "'");
       }
@@ -99,4 +114,5 @@ public class BasicPayer implements Payer {
       throw new MatcherResponseException("Could not decrypt MatcherResponse", e);
     }
   }
+
 }

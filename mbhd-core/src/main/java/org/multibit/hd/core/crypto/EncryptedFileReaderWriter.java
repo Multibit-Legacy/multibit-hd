@@ -149,6 +149,7 @@ public class EncryptedFileReaderWriter {
         ByteArrayInputStream encryptedWalletByteArrayInputStream = new ByteArrayInputStream(encryptedBytes);
         FileOutputStream encryptedWalletOutputStream = new FileOutputStream(encryptedFilename);
         ByteStreams.copy(encryptedWalletByteArrayInputStream, encryptedWalletOutputStream);
+        encryptedWalletOutputStream.flush();
 
         if (encryptedFilename.length() == encryptedBytes.length) {
           SecureFiles.secureDelete(fileToEncrypt);
