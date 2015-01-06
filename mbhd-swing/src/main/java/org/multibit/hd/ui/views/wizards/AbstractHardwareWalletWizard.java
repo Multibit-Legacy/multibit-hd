@@ -85,11 +85,16 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
             }
           }
 
+          String oldPanel = getWizardModel().getPanelName();
+
           // Move to the "device ready" state
           getWizardModel().showDeviceReady(event);
 
-          // Show the panel
-          show(getWizardModel().getPanelName());
+          // Show the panel if different
+          String newPanel = getWizardModel().getPanelName();
+          if (oldPanel == null || !oldPanel.equals(newPanel)) {
+            show(getWizardModel().getPanelName());
+          }
 
         }
       });

@@ -203,6 +203,9 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
    */
   private boolean isFinishEnabled() {
 
+    log.debug("PIN= {}", getPanelModel().get()
+            .getEnterPinModel()
+            .getValue());
     return !Strings.isNullOrEmpty(
       getPanelModel().get()
         .getEnterPinModel()
@@ -216,6 +219,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
    */
   public void failedPin() {
 
+    log.debug("Failed PIN called");
     setPinStatus(false, true);
   }
 }
