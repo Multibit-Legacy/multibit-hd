@@ -8,7 +8,11 @@ import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.security.Permission;
@@ -58,6 +62,7 @@ public class InstallationManager {
 
   /**
    * <p>Handle any shutdown code</p>
+   *
    * @param shutdownType The shutdown type
    */
   public static void shutdownNow(ShutdownEvent.ShutdownType shutdownType) {
@@ -199,15 +204,21 @@ public class InstallationManager {
       }
 
       // Create the output stream
-      FileOutputStream sinkCheckpointsStream = new FileOutputStream(destinationCheckpointsFile);
+      long bytes;
+      try (FileOutputStream sinkCheckpointsStream = new FileOutputStream(destinationCheckpointsFile)) {
 
-      // Copy the checkpoints
-      long bytes = ByteStreams.copy(sourceCheckpointsStream, sinkCheckpointsStream);
+        // Copy the checkpoints
+        bytes = ByteStreams.copy(sourceCheckpointsStream, sinkCheckpointsStream);
 
-      // Clean up
-      sourceCheckpointsStream.close();
-      sinkCheckpointsStream.flush();
-      sinkCheckpointsStream.close();
+        // Clean up
+        sourceCheckpointsStream.close();
+        sinkCheckpointsStream.flush();
+        sinkCheckpointsStream.close();
+      } finally {
+        if (sourceCheckpointsStream != null) {
+          sourceCheckpointsStream.close();
+        }
+      }
 
       log.debug("New checkpoints are {} bytes in length.", bytes);
 
