@@ -92,7 +92,7 @@ public class BasicMatcher implements Matcher {
 
     lastPayerRequest = payerRequest;
 
-    WalletToEncounterDateLink previousEncounter = matcherStore.lookupWalletToEncounterDateLink(payerRequest.getBRITWalletId());
+    WalletToEncounterDateLink previousEncounter = matcherStore.lookupWalletToEncounterDateLink(payerRequest.getBritWalletId());
 
     // The replay date is the earliest of:
     // + the payerRequest.firstTreatmentDate in the PayerRequest (if available)
@@ -114,7 +114,7 @@ public class BasicMatcher implements Matcher {
 
     // If the previousEncounter was null then store this encounter
     if (previousEncounter == null) {
-      WalletToEncounterDateLink thisEncounter = new WalletToEncounterDateLink(payerRequest.getBRITWalletId(), Optional.of(new Date()), Optional.of(replayDate));
+      WalletToEncounterDateLink thisEncounter = new WalletToEncounterDateLink(payerRequest.getBritWalletId(), Optional.of(new Date()), Optional.of(replayDate));
       matcherStore.storeWalletToEncounterDateLink(thisEncounter);
     }
     // Lookup the current valid set of Bitcoin addresses to return to the payer
@@ -162,7 +162,7 @@ public class BasicMatcher implements Matcher {
   @Override
   public EncryptedMatcherResponse encryptMatcherResponse(MatcherResponse matcherResponse) throws NoSuchAlgorithmException {
     // Stretch the 20 byte britWalletId to 32 bytes (256 bits)
-    byte[] stretchedBritWalletId = MessageDigest.getInstance("SHA-256").digest(lastPayerRequest.getBRITWalletId().getBytes());
+    byte[] stretchedBritWalletId = MessageDigest.getInstance("SHA-256").digest(lastPayerRequest.getBritWalletId().getBytes());
 
     // Create an AES key from the stretchedBritWalletId and the sessionKey and decrypt the payload
     byte[] encryptedMatcherResponsePayload = AESUtils.encrypt(matcherResponse.serialise(), new KeyParameter(stretchedBritWalletId), lastPayerRequest.getSessionKey());

@@ -59,7 +59,7 @@ public class PayerRequest {
   /**
    * @return The BRIT wallet ID
    */
-  public BRITWalletId getBRITWalletId() {
+  public BRITWalletId getBritWalletId() {
     return britWalletId;
   }
 
@@ -160,7 +160,7 @@ public class PayerRequest {
   public int hashCode() {
 
     int result = britWalletId != null ? britWalletId.hashCode() : 0;
-    result = 31 * result + (sessionKey != null ? Arrays.hashCode(sessionKey) : 0);
+    result = 31 * result + (Arrays.hashCode(sessionKey));
     result = 31 * result + (firstTransactionDate != null ? firstTransactionDate.hashCode() : 0);
     return result;
 
