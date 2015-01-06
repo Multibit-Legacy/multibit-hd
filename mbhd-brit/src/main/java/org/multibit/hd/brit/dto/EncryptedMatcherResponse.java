@@ -17,14 +17,22 @@ public class EncryptedMatcherResponse {
   private byte[] payload;
 
   public EncryptedMatcherResponse(byte[] payload) {
-    this.payload = payload;
+
+    byte[] copy = new byte[payload.length];
+    System.arraycopy(payload, 0, copy, 0, payload.length);
+
+    this.payload = copy;
   }
 
   /**
    * @return The payload
    */
   public byte[] getPayload() {
-    return payload;
+
+    byte[] copy = new byte[payload.length];
+    System.arraycopy(payload, 0, copy, 0, payload.length);
+
+    return copy;
   }
 
   @Override
