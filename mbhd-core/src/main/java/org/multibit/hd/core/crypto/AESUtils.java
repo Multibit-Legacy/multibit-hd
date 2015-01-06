@@ -74,9 +74,8 @@ public class AESUtils {
     byte[] publicKey = point.getEncoded();
 
     // SHA256RIPE160 to generate final walletId bytes from the 'public key'
-    byte[] entropy = Utils.sha256hash160(publicKey);
 
-    return entropy;
+    return Utils.sha256hash160(publicKey);
   }
 
   /**

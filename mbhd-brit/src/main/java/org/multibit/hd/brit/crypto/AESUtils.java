@@ -2,6 +2,7 @@ package org.multibit.hd.brit.crypto;
 
 import org.bitcoinj.crypto.KeyCrypterException;
 import org.spongycastle.crypto.BufferedBlockCipher;
+import org.spongycastle.crypto.InvalidCipherTextException;
 import org.spongycastle.crypto.engines.AESFastEngine;
 import org.spongycastle.crypto.modes.CBCBlockCipher;
 import org.spongycastle.crypto.paddings.PaddedBufferedBlockCipher;
@@ -56,18 +57,19 @@ public class AESUtils {
     checkNotNull(initialisationVector);
     checkState(initialisationVector.length == BLOCK_LENGTH, "The initialisationVector must be " + BLOCK_LENGTH + " bytes long.");
 
-    try {
-      ParametersWithIV keyWithIv = new ParametersWithIV(aesKey, initialisationVector);
+    ParametersWithIV keyWithIv = new ParametersWithIV(aesKey, initialisationVector);
 
+    try {
       // Encrypt using AES
       BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new AESFastEngine()));
       cipher.init(true, keyWithIv);
       byte[] encryptedBytes = new byte[cipher.getOutputSize(plainBytes.length)];
       final int processLength = cipher.processBytes(plainBytes, 0, plainBytes.length, encryptedBytes, 0);
-      final int doFinalLength = cipher.doFinal(encryptedBytes, processLength);
+      final int doFinalLength;
 
+      doFinalLength = cipher.doFinal(encryptedBytes, processLength);
       return Arrays.copyOf(encryptedBytes, processLength + doFinalLength);
-    } catch (Exception e) {
+    } catch (RuntimeException | InvalidCipherTextException e) {
       throw new KeyCrypterException("Could not encrypt bytes.", e);
     }
 
@@ -108,10 +110,9 @@ public class AESUtils {
       System.arraycopy(outputBuffer, 0, decryptedBytes, 0, actualLength);
 
       return decryptedBytes;
-    } catch (Exception e) {
+    } catch (RuntimeException | InvalidCipherTextException e) {
       // Most likely a bad password
-      throw new KeyCrypterException("Could not decrypt: "+e.getMessage());
+      throw new KeyCrypterException("Could not decrypt: " + e.getMessage());
     }
   }
-
 }
