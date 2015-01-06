@@ -135,7 +135,6 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
 
     getFinishButton().setEnabled(false);
     getExitButton().setEnabled(false);
-    getRestoreButton().setEnabled(false);
 
     trezorDisplayMaV.getView().setSpinnerVisible(true);
 
@@ -147,7 +146,6 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
 
     getFinishButton().setEnabled(false);
     getExitButton().setEnabled(true);
-    getRestoreButton().setEnabled(true);
 
     trezorDisplayMaV.getView().setSpinnerVisible(false);
 
