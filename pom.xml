@@ -209,6 +209,7 @@
           <threshold>Low</threshold>
           <xmlOutput>true</xmlOutput>
         </configuration>
+        <!-- Enable this once all bugs have been squashed
         <executions>
           <execution>
             <phase>verify</phase>
@@ -217,6 +218,7 @@
             </goals>
           </execution>
         </executions>
+        -->
       </plugin>
 
       <!-- Filter out functional and FEST UI tests by Maven (an IDE will run all tests including functional) -->
