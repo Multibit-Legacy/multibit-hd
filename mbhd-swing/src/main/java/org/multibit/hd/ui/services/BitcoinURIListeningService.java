@@ -182,7 +182,7 @@ public class BitcoinURIListeningService extends AbstractService {
       try (OutputStream out = clientSocket.getOutputStream()) {
 
         // Write out the raw Bitcoin URI
-        out.write(MESSAGE_START.getBytes());
+        out.write(MESSAGE_START.getBytes(Charsets.UTF_8));
         out.write(rawURI.get().getBytes());
         out.write(MESSAGE_END.getBytes());
 

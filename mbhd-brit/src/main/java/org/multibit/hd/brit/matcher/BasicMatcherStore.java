@@ -189,6 +189,7 @@ public class BasicMatcherStore implements MatcherStore {
     // Append link data to backing file
     try {
       // true = append file
+      // TODO Check for a possible String/byte conversion occurring here
       FileWriter fileWriter = new FileWriter(walletToEncounterDateFile, true);
       BufferedWriter bufferWriter = new BufferedWriter(fileWriter);
       bufferWriter.write(walletToEncounterDateLink.serialise() + "\n");

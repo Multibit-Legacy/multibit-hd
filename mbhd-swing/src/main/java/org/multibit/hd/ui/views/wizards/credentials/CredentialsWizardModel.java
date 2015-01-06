@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.wizards.credentials;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.*;
@@ -359,8 +360,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           if (hardwareWalletService.get().isWalletPresent()) {
 
             // Use this layout to ensure line wrapping occurs on a V1 Trezor
-            byte[] key = "MultiBit HD     Unlock".getBytes();
-            byte[] keyValue = "0123456789abcdef".getBytes();
+            byte[] key = "MultiBit HD     Unlock".getBytes(Charsets.UTF_8);
+            byte[] keyValue = "0123456789abcdef".getBytes(Charsets.UTF_8);
 
             // Request a cipher key against 0'/0/0
             // AbstractHardwareWalletWizard will deal with the responses
