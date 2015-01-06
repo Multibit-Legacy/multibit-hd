@@ -199,6 +199,26 @@
         </configuration>
       </plugin>
 
+      <!-- Findbugs -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <effort>Max</effort>
+          <threshold>Low</threshold>
+          <xmlOutput>true</xmlOutput>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- Filter out functional and FEST UI tests by Maven (an IDE will run all tests including functional) -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
