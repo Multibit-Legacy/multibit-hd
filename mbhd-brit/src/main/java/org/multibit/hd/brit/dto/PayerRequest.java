@@ -1,8 +1,8 @@
 package org.multibit.hd.brit.dto;
 
-import org.bitcoinj.core.Utils;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
+import org.bitcoinj.core.Utils;
 import org.multibit.hd.brit.exceptions.PayerRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ public class PayerRequest {
   public PayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Optional<Date> firstTransactionDate) {
 
     this.britWalletId = britWalletId;
-    this.sessionKey = sessionKey;
+    this.sessionKey = Arrays.copyOf(sessionKey, sessionKey.length);
     this.firstTransactionDate = firstTransactionDate;
 
   }
@@ -53,7 +53,7 @@ public class PayerRequest {
    * @return The session key
    */
   public byte[] getSessionKey() {
-    return sessionKey;
+    return Arrays.copyOf(sessionKey, sessionKey.length);
   }
 
   /**
@@ -79,12 +79,12 @@ public class PayerRequest {
   public byte[] serialise() {
 
     StringBuilder builder = new StringBuilder()
-            .append(getVersion())
-            .append(SEPARATOR)
-            .append(Utils.HEX.encode(britWalletId.getBytes()))
-            .append(SEPARATOR)
-            .append(Utils.HEX.encode(sessionKey))
-            .append(SEPARATOR);
+      .append(getVersion())
+      .append(SEPARATOR)
+      .append(Utils.HEX.encode(britWalletId.getBytes()))
+      .append(SEPARATOR)
+      .append(Utils.HEX.encode(sessionKey))
+      .append(SEPARATOR);
 
     if (firstTransactionDate.isPresent()) {
       builder.append(firstTransactionDate.get().getTime());
@@ -100,6 +100,7 @@ public class PayerRequest {
    * <p>Parse the serialised Payer request</p>
    *
    * @param serialisedPayerRequest The serialised payer request
+   *
    * @return The Payer request
    */
   public static PayerRequest parse(byte[] serialisedPayerRequest) {
@@ -134,8 +135,12 @@ public class PayerRequest {
   @Override
   public boolean equals(Object o) {
 
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
 
     PayerRequest that = (PayerRequest) o;
 
@@ -165,9 +170,9 @@ public class PayerRequest {
   public String toString() {
 
     return "PayerRequest{" +
-            "britWalletId=" + britWalletId +
-            ", sessionKey=" + Arrays.toString(sessionKey) +
-            ", firstTransactionDate=" + firstTransactionDate +
-            '}';
+      "britWalletId=" + britWalletId +
+      ", sessionKey=" + Arrays.toString(sessionKey) +
+      ", firstTransactionDate=" + firstTransactionDate +
+      '}';
   }
 }

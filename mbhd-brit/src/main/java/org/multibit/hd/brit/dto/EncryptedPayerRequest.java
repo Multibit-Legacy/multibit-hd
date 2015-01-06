@@ -17,14 +17,14 @@ public class EncryptedPayerRequest {
   private byte[] payload;
 
   public EncryptedPayerRequest(byte[] payload) {
-    this.payload = payload;
+    this.payload = Arrays.copyOf(payload, payload.length);
   }
 
   /**
    * @return The payload
    */
   public byte[] getPayload() {
-    return payload;
+    return Arrays.copyOf(payload, payload.length);
   }
 
   @Override

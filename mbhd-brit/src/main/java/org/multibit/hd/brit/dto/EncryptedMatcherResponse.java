@@ -18,10 +18,7 @@ public class EncryptedMatcherResponse {
 
   public EncryptedMatcherResponse(byte[] payload) {
 
-    byte[] copy = new byte[payload.length];
-    System.arraycopy(payload, 0, copy, 0, payload.length);
-
-    this.payload = copy;
+    this.payload = Arrays.copyOf(payload, payload.length);
   }
 
   /**
@@ -29,10 +26,8 @@ public class EncryptedMatcherResponse {
    */
   public byte[] getPayload() {
 
-    byte[] copy = new byte[payload.length];
-    System.arraycopy(payload, 0, copy, 0, payload.length);
+    return Arrays.copyOf(payload, payload.length);
 
-    return copy;
   }
 
   @Override

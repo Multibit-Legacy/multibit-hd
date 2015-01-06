@@ -6,26 +6,18 @@ import org.bitcoinj.crypto.KeyCrypterException;
 import org.bouncycastle.openpgp.PGPException;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
-import org.multibit.hd.brit.dto.BRITWalletId;
-import org.multibit.hd.brit.dto.EncryptedMatcherResponse;
-import org.multibit.hd.brit.dto.EncryptedPayerRequest;
-import org.multibit.hd.brit.dto.MatcherResponse;
-import org.multibit.hd.brit.dto.PayerRequest;
+import org.multibit.hd.brit.dto.*;
 import org.multibit.hd.brit.exceptions.MatcherResponseException;
 import org.multibit.hd.brit.exceptions.PayerRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -59,7 +51,7 @@ public class BasicPayer implements Payer {
   public PayerRequest newPayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Optional<Date> firstTransactionDate) {
 
     this.britWalletId = britWalletId;
-    this.sessionKey = sessionKey;
+    this.sessionKey = Arrays.copyOf(sessionKey, sessionKey.length);
     return new PayerRequest(britWalletId, sessionKey, firstTransactionDate);
 
   }

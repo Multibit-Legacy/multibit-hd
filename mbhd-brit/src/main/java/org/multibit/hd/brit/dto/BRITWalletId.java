@@ -81,9 +81,8 @@ public class BRITWalletId {
    * @return the raw wallet id as a byte[]
    */
   public byte[] getBytes() {
-    byte[] copy = new byte[britWalletId.length];
-    System.arraycopy(britWalletId, 0, copy, 0, britWalletId.length);
-    return copy;
+
+    return Arrays.copyOf(britWalletId, britWalletId.length);
   }
 
   @Override

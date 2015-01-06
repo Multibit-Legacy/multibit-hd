@@ -1,6 +1,7 @@
 package org.multibit.hd.brit.matcher;
 
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * <p>Value object to provide the following to BRIT API:</p>
@@ -24,7 +25,7 @@ public class MatcherConfig {
 
   public MatcherConfig(File matcherSecretKeyringFile, char[] password) {
     this.matcherSecretKeyringFile = matcherSecretKeyringFile;
-    this.password = password;
+    this.password = Arrays.copyOf(password, password.length);
   }
 
   public File getMatcherSecretKeyringFile() {
@@ -32,7 +33,7 @@ public class MatcherConfig {
   }
 
   public char[] getPassword() {
-    return password;
+    return Arrays.copyOf(password, password.length);
   }
 
 }
