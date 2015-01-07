@@ -57,6 +57,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class BackupService extends AbstractService {
 
+  private static final Logger log = LoggerFactory.getLogger(BackupService.class);
+
   /**
    * Initial delay in seconds after startup before making a backup
    * This delay is so that the wallet can sync
@@ -68,22 +70,22 @@ public class BackupService extends AbstractService {
    * Everything else is done on a multiple of this
    */
   private static final int TICK_TIME_SECONDS = 120;
+
   /**
    * The slowdown rate for performing local zip backups
    */
   private static final int LOCAL_ZIP_BACKUP_MODULO = 5;
+
   /**
    * The slowdown rate for performing local zip backups
    */
-
   private static final int CLOUD_ZIP_BACKUP_MODULO = 15;
-
-  private static final Logger log = LoggerFactory.getLogger(BackupService.class);
 
   /**
    * The number of times the backup main loop has incremented
+   * We expect this service to be a singleton
    */
-  private static int tickCount;
+  private int tickCount;
 
   /**
    * The wallet summary to use for the next rolling backup
