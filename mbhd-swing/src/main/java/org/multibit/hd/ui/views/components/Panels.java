@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.managers.WalletManager;
@@ -38,6 +39,7 @@ public class Panels {
   /**
    * A global reference to the application frame
    */
+  @SuppressFBWarnings({"MS_CANNOT_BE_FINAL"})
   public static JFrame applicationFrame;
 
   private static Optional<LightBoxPanel> lightBoxPanel = Optional.absent();
