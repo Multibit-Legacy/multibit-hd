@@ -446,14 +446,22 @@ public class WalletManagerTest {
       // This ensures that the existence of short passwords is not leaked from the length of the encrypted credentials
       assertThat(foundEncryptedPaddedPassword.length).isGreaterThanOrEqualTo(48);
 
-      KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
+      KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, WalletManager.scryptSalt());
       byte[] passwordBytes = passwordToCheck.getBytes(Charsets.UTF_8);
-      byte[] decryptedFoundPaddedPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(foundEncryptedPaddedPassword, seedDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+      byte[] decryptedFoundPaddedPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+        foundEncryptedPaddedPassword,
+        seedDerivedAESKey,
+        WalletManager.aesInitialisationVector()
+      );
       byte[] decryptedFoundPasswordBytes = WalletManager.unpadPasswordBytes(decryptedFoundPaddedPasswordBytes);
       assertThat(Arrays.equals(passwordBytes, decryptedFoundPasswordBytes)).isTrue();
 
-      KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(passwordBytes, WalletManager.SCRYPT_SALT);
-      byte[] decryptedFoundBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(foundEncryptedBackupKey, walletPasswordDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+      KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(passwordBytes, WalletManager.scryptSalt());
+      byte[] decryptedFoundBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+        foundEncryptedBackupKey,
+        walletPasswordDerivedAESKey,
+        WalletManager.aesInitialisationVector()
+      );
       assertThat(Arrays.equals(seedDerivedAESKey.getKey(), decryptedFoundBackupAESKey)).isTrue();
 
       // Perform a unit test cycle to ensure we reset all services correctly

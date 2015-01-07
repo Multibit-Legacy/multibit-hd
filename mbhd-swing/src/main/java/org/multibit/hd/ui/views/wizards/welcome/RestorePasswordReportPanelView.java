@@ -181,7 +181,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     // Read the encrypted wallet credentials and decrypt with an AES key derived from the seed
     KeyParameter backupAESKey;
     try {
-      backupAESKey = AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
+      backupAESKey = AESUtils.createAESKey(seed, WalletManager.scryptSalt());
     } catch (final NoSuchAlgorithmException e) {
       SwingUtilities.invokeLater(
         new Runnable() {
@@ -202,7 +202,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
       // Get the padded credentials out of the wallet summary. This is put in when a wallet is created.
       walletSummary.getEncryptedPassword(),
       backupAESKey,
-      WalletManager.AES_INITIALISATION_VECTOR
+      WalletManager.aesInitialisationVector()
     );
 
     try {

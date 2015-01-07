@@ -65,16 +65,16 @@ public class EncryptedFileReaderWriter {
    */
   public static void encryptAndWrite(byte[] unencryptedBytes, CharSequence password, File outputFile) throws EncryptedFileReaderWriterException {
     try {
-      KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(WalletManager.SCRYPT_SALT));
+      KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(WalletManager.scryptSalt()));
       KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
 
       // Create an AES encoded version of the unencryptedBytes, using the credentials
-      byte[] encryptedBytes = AESUtils.encrypt(unencryptedBytes, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
+      byte[] encryptedBytes = AESUtils.encrypt(unencryptedBytes, keyParameter, WalletManager.aesInitialisationVector());
 
       //log.debug("Encrypted wallet bytes (original):\n" + Utils.HEX.encode(encryptedBytes));
 
       // Check that the encryption is reversible
-      byte[] rebornBytes = AESUtils.decrypt(encryptedBytes, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
+      byte[] rebornBytes = AESUtils.decrypt(encryptedBytes, keyParameter, WalletManager.aesInitialisationVector());
 
       if (Arrays.equals(unencryptedBytes, rebornBytes)) {
         // Save encrypted bytes
@@ -103,11 +103,11 @@ public class EncryptedFileReaderWriter {
      Preconditions.checkNotNull(encryptedBackupAESKey);
      try {
        // Decrypt the backup AES key stored in the wallet summary
-       KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(password.getBytes(Charsets.UTF_8), WalletManager.SCRYPT_SALT);
-       byte[] backupAESKeyBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(encryptedBackupAESKey, walletPasswordDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+       KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(password.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
+       byte[] backupAESKeyBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(encryptedBackupAESKey, walletPasswordDerivedAESKey, WalletManager.aesInitialisationVector());
        KeyParameter backupAESKey = new KeyParameter(backupAESKeyBytes);
 
-       return encryptAndDeleteOriginal(fileToEncrypt, backupAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+       return encryptAndDeleteOriginal(fileToEncrypt, backupAESKey, WalletManager.aesInitialisationVector());
      } catch (Exception e) {
        throw new EncryptedFileReaderWriterException("Could not decrypt backup AES key", e);
      }
@@ -125,9 +125,9 @@ public class EncryptedFileReaderWriter {
     Preconditions.checkNotNull(fileToEncrypt);
     Preconditions.checkNotNull(password);
 
-    KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(WalletManager.SCRYPT_SALT));
+    KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(WalletManager.scryptSalt()));
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
-    return encryptAndDeleteOriginal(fileToEncrypt, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
+    return encryptAndDeleteOriginal(fileToEncrypt, keyParameter, WalletManager.aesInitialisationVector());
   }
 
   private static File encryptAndDeleteOriginal(File fileToEncrypt, KeyParameter keyParameter, byte[] initialisationVector) throws EncryptedFileReaderWriterException {

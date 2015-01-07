@@ -175,17 +175,31 @@ public enum WalletManager implements WalletEventListener {
    * The initialisation vector to use for AES encryption of output files (such as wallets)
    * There is no particular significance to the value of these bytes
    */
-  public static final byte[] AES_INITIALISATION_VECTOR = new byte[]{(byte) 0xa3, (byte) 0x44, (byte) 0x39, (byte) 0x1f, (byte) 0x53, (byte) 0x83, (byte) 0x11,
+  private static final byte[] AES_INITIALISATION_VECTOR = new byte[]{(byte) 0xa3, (byte) 0x44, (byte) 0x39, (byte) 0x1f, (byte) 0x53, (byte) 0x83, (byte) 0x11,
     (byte) 0xb3, (byte) 0x29, (byte) 0x54, (byte) 0x86, (byte) 0x16, (byte) 0xc4, (byte) 0x89, (byte) 0x72, (byte) 0x3e};
 
   /**
    * The salt used for deriving the KeyParameter from the credentials in AES encryption for wallets
    */
-  public static final byte[] SCRYPT_SALT = new byte[]{(byte) 0x35, (byte) 0x51, (byte) 0x03, (byte) 0x80, (byte) 0x75, (byte) 0xa3, (byte) 0xb0, (byte) 0xc5};
+  private static final byte[] SCRYPT_SALT = new byte[]{(byte) 0x35, (byte) 0x51, (byte) 0x03, (byte) 0x80, (byte) 0x75, (byte) 0xa3, (byte) 0xb0, (byte) 0xc5};
 
   private FeeService feeService;
 
   private ListeningExecutorService walletExecutorService = null;
+
+  /**
+   * @return A copy of the AES initialisation vector
+   */
+  public static byte[] aesInitialisationVector() {
+    return Arrays.copyOf(AES_INITIALISATION_VECTOR, AES_INITIALISATION_VECTOR.length);
+  }
+
+  /**
+   * @return A copy of the Scrypt salt
+   */
+  public static byte[] scryptSalt() {
+    return Arrays.copyOf(SCRYPT_SALT, SCRYPT_SALT.length);
+  }
 
   /**
    * Open the given wallet and hook it up to the blockchain and peergroup so that it receives notifications
@@ -560,6 +574,11 @@ public enum WalletManager implements WalletEventListener {
    * Update configuration with new wallet information
    */
   private void updateConfigurationAndCheckSync(String walletRoot, File walletDirectory, WalletSummary walletSummary, boolean saveWalletYaml) throws IOException {
+
+    Preconditions.checkNotNull(walletRoot, "'walletRoot' must be present");
+    Preconditions.checkNotNull(walletDirectory, "'walletDirectory' must be present");
+    Preconditions.checkNotNull(walletSummary, "'walletSummary' must be present");
+
     if (saveWalletYaml) {
       File walletSummaryFile = WalletManager.getOrCreateWalletSummaryFile(walletDirectory);
       log.debug("Writing wallet YAML to file:\n'{}'", walletSummaryFile.getAbsolutePath());
@@ -1489,9 +1508,13 @@ public enum WalletManager implements WalletEventListener {
         walletSummary.getWallet().saveToFile(currentWalletFile);
         File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(currentWalletFile, walletSummary.getPassword());
 
-        log.debug(
-          "Created AES encrypted wallet as file:\n'{}'\nSize: {} bytes", encryptedAESCopy == null ? "null" : encryptedAESCopy.getAbsolutePath(),
-          encryptedAESCopy == null ? "null" : encryptedAESCopy.length());
+        if (log.isDebugEnabled()) {
+          // Provide extra information in debug mode
+          log.debug(
+            "Created AES encrypted wallet as file:\n'{}'\nSize: {} bytes",
+            encryptedAESCopy == null ? "null" : encryptedAESCopy.getAbsolutePath(),
+            encryptedAESCopy == null ? "null" : encryptedAESCopy.length());
+        }
 
         BackupService backupService = CoreServices.getOrCreateBackupService();
         backupService.rememberWalletSummaryAndPasswordForRollingBackup(walletSummary, walletSummary.getPassword());

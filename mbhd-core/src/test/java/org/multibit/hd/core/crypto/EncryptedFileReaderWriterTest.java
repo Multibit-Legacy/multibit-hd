@@ -72,7 +72,12 @@ public class EncryptedFileReaderWriterTest {
     File outputFile = new File(temporaryDirectory + File.separator + "outputFile.aes");
 
     EncryptedFileReaderWriter.encryptAndWrite(TEST_BYTES1, PASSWORD1, outputFile);
-    InputStream decryptedInputstream = EncryptedFileReaderWriter.readAndDecrypt(outputFile, PASSWORD1, WalletManager.SCRYPT_SALT, WalletManager.AES_INITIALISATION_VECTOR);
+    InputStream decryptedInputstream = EncryptedFileReaderWriter.readAndDecrypt(
+      outputFile,
+      PASSWORD1,
+      WalletManager.scryptSalt(),
+      WalletManager.aesInitialisationVector()
+    );
 
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 

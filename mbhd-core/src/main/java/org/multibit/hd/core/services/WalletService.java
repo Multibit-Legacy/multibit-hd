@@ -724,8 +724,8 @@ public class WalletService extends AbstractService {
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
         backingStoreFile,
         WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
-        WalletManager.SCRYPT_SALT,
-        WalletManager.AES_INITIALISATION_VECTOR);
+        WalletManager.scryptSalt(),
+        WalletManager.aesInitialisationVector());
       Payments payments = protobufSerializer.readPayments(decryptedInputStream);
 
       // For quick access payment requests and transaction infos are stored in maps
@@ -950,23 +950,23 @@ public class WalletService extends AbstractService {
         // Decrypt the seedDerivedAESKey using the old credentials and encrypt it with the new one
         byte[] encryptedOldBackupAESKey = walletSummary.getEncryptedBackupKey();
 
-        KeyParameter oldWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(oldPassword.getBytes(Charsets.UTF_8), WalletManager.SCRYPT_SALT);
+        KeyParameter oldWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(oldPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
         byte[] decryptedOldBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(
           encryptedOldBackupAESKey,
           oldWalletPasswordDerivedAESKey,
-          WalletManager.AES_INITIALISATION_VECTOR);
+          WalletManager.aesInitialisationVector());
 
-        KeyParameter newWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(newPassword.getBytes(Charsets.UTF_8), WalletManager.SCRYPT_SALT);
+        KeyParameter newWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(newPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
         byte[] encryptedNewBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(
           decryptedOldBackupAESKey,
           newWalletPasswordDerivedAESKey,
-          WalletManager.AES_INITIALISATION_VECTOR);
+          WalletManager.aesInitialisationVector());
 
         // Check the encryption is reversible
         byte[] decryptedRebornBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(
           encryptedNewBackupAESKey,
           newWalletPasswordDerivedAESKey,
-          WalletManager.AES_INITIALISATION_VECTOR);
+          WalletManager.aesInitialisationVector());
 
         if (!Arrays.equals(decryptedOldBackupAESKey, decryptedRebornBackupAESKey)) {
           throw new IllegalStateException("The encryption of the backup AES key was not reversible. Aborting change of wallet credentials");
@@ -979,13 +979,13 @@ public class WalletService extends AbstractService {
         byte[] encryptedPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(
           paddedNewPassword,
           new KeyParameter(decryptedOldBackupAESKey),
-          WalletManager.AES_INITIALISATION_VECTOR);
+          WalletManager.aesInitialisationVector());
 
         // Check the encryption is reversible
         byte[] decryptedRebornPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.decrypt(
           encryptedPaddedNewPassword,
           new KeyParameter(decryptedOldBackupAESKey),
-          WalletManager.AES_INITIALISATION_VECTOR);
+          WalletManager.aesInitialisationVector());
 
         if (!Arrays.equals(newPasswordBytes, WalletManager.unpadPasswordBytes(decryptedRebornPaddedNewPassword))) {
           throw new IllegalStateException("The encryption of the new credentials was not reversible. Aborting change of wallet credentials");

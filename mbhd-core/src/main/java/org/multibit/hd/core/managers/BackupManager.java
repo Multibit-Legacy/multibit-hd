@@ -476,7 +476,7 @@ public enum BackupManager {
       SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
       byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
 
-      KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
+      KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, WalletManager.scryptSalt());
 
       return loadZipBackup(backupFileToLoad, seedDerivedAESKey);
     } catch (Exception e) {
@@ -514,7 +514,7 @@ public enum BackupManager {
       byte[] encryptedBytes = Files.toByteArray(new File(backupFileToLoad.getAbsolutePath()));
 
       // Decrypt the backup bytes
-      byte[] decryptedBytes = AESUtils.decrypt(encryptedBytes, backupAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+      byte[] decryptedBytes = AESUtils.decrypt(encryptedBytes, backupAESKey, WalletManager.aesInitialisationVector());
 
       File tempDirectory = Files.createTempDir();
       temporaryFile = File.createTempFile("backup", "zip", tempDirectory);

@@ -579,11 +579,11 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       String walletRoot = applicationDataDirectory.getAbsolutePath() + File.separator + WalletManager.createWalletRoot(loadedWalletId);
       WalletSummary walletSummary = WalletManager.getOrCreateWalletSummary(new File(walletRoot), loadedWalletId);
 
-      KeyParameter backupAESKey = AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
+      KeyParameter backupAESKey = AESUtils.createAESKey(seed, WalletManager.scryptSalt());
       byte[] decryptedPaddedWalletPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(
         walletSummary.getEncryptedPassword(),
         backupAESKey,
-        WalletManager.AES_INITIALISATION_VECTOR);
+        WalletManager.aesInitialisationVector());
       byte[] decryptedWalletPasswordBytes = WalletManager.unpadPasswordBytes(decryptedPaddedWalletPasswordBytes);
       String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, "UTF8");
 
@@ -635,7 +635,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         log.debug("Cannot work out the password to decrypt the backup - there is no entropy form the Trezor");
         return false;
       }
-      KeyParameter backupAESKey = AESUtils.createAESKey(walletPassword.getBytes(Charsets.UTF_8), WalletManager.SCRYPT_SALT);
+      KeyParameter backupAESKey = AESUtils.createAESKey(walletPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
 
       WalletId loadedWalletId = BackupManager.INSTANCE.loadZipBackup(selectedBackupSummaryModel.getValue().getFile(), backupAESKey);
 
