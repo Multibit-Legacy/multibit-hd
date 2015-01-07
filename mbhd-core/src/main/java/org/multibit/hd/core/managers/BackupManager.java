@@ -252,10 +252,10 @@ public enum BackupManager {
 
     List<File> walletBackups = Lists.newArrayList();
 
-    for (Long key : mapOfTimeToFile.keySet()) {
-      // Note that these are added in order of creation time, oldest first
-      // log.debug("Adding rolling backup '" + mapOfTimeToFile.get(key).getAbsoluteFile() + "' to rolling backup results");
-      walletBackups.add(mapOfTimeToFile.get(key));
+    // Iterate over entry set for efficiency
+    for (Map.Entry<Long, File> entry : mapOfTimeToFile.entrySet()) {
+      // Note that these are added in order of creation time, oldest first (tree map)
+      walletBackups.add(entry.getValue());
     }
 
     return walletBackups;
@@ -303,7 +303,7 @@ public enum BackupManager {
     log.debug("Created rolling-backup successfully. Size = " + walletBackupFile.length() + " bytes");
 
     File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletBackupFile, password);
-    log.debug("Created rolling-backup AES copy successfully as file:\n'{}'", encryptedAESCopy == null ? "null" : encryptedAESCopy.getAbsolutePath());
+    log.debug("Created rolling-backup AES copy successfully as file:\n'{}'", encryptedAESCopy.getAbsolutePath());
 
     List<File> rollingBackups = getRollingBackups(walletSummary.getWalletId());
 
