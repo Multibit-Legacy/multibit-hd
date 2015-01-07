@@ -363,6 +363,9 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifyHardwareWalletCreateWallet() throws Exception {
 
+    // Prepare an empty and attached Trezor device that will be initialised
+    HardwareWalletEventFixtures.prepareInitialiseTrezorUseCaseEvents();
+
     // Start with a fresh environment
     arrangeFreshWithAttachedHardwareWallet();
 
@@ -381,6 +384,9 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    */
   @Test
   public void verifyHardwareWalletAfterUnlock() throws Exception {
+
+    // Prepare an initialised and attached Trezor device that will be unlocked
+    HardwareWalletEventFixtures.prepareUnlockTrezorUseCaseEvents();
 
     // Start with the empty hardware wallet fixture
     arrangeEmptyWithAttachedHardwareWallet();
@@ -411,6 +417,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
   /**
    * <p>Starts MultiBit HD with an empty application directory and an attached hardware wallet</p>
+   * <p>Callers should ensure that the <code>HardwareWalletEventFixture</code> has been prepared in advance</p>
    *
    * @throws Exception If something goes wrong
    */
@@ -424,9 +431,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Setup the mock hardware wallet service
     HardwareWalletService hardwareWalletService = new HardwareWalletService(mockClient);
     CoreServices.setHardwareWalletService(hardwareWalletService);
-
-    // Prepare an initialised and attached Trezor device
-    HardwareWalletEventFixtures.prepareInitialiseTrezorUseCaseEvents();
 
     // Continue with the set up and fire the hardware wallet event
     setUpAfterArrange(false, true);
@@ -464,7 +468,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   /**
    * <p>Starts MultiBit HD with an application directory containing the empty hardware wallet fixture and an accepted licence</p>
    *
-   * <p>All calls into the hardware wallet service will result in successful responses</p>
+   * <p>Callers should ensure that the <code>HardwareWalletEventFixture</code> has been prepared in advance</p>
    *
    * @throws Exception If something goes wrong
    */

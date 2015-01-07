@@ -84,9 +84,9 @@ public class HardwareWalletEventFixtures {
   }
 
   /**
-   * <p>Prepare a sequence of events corresponding to a device attach</p>
+   * <p>Prepare a sequence of events corresponding to unlocking an initialised Trezor</p>
    */
-  public static void prepareAttachUseCaseEvents() {
+  public static void prepareUnlockTrezorUseCaseEvents() {
 
     hardwareWalletEvents.clear();
 

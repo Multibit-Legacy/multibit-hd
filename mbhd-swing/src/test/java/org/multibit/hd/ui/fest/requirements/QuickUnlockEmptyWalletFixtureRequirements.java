@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.fest.requirements;
 
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.password.QuickUnlockWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.credentials.QuickUnlockWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
 
 /**
@@ -20,7 +20,6 @@ public class QuickUnlockEmptyWalletFixtureRequirements {
     new CloseDebugSecurityPopoverUseCase(window).execute(null);
 
     new QuickUnlockWalletUseCase(window).execute(null);
-
 
   }
 }

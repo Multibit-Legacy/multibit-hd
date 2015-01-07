@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.password;
+package org.multibit.hd.ui.fest.use_cases.credentials;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.testing.WalletFixtures;
@@ -55,6 +55,14 @@ public class QuickUnlockWalletUseCase extends AbstractFestUseCase {
 
     // Fixed time to unlock
     pauseForWalletUnlock();
+
+    // Wait for Finish button to appear
+    window
+      .button(MessageKey.FINISH.getKey())
+      .requireVisible()
+        // Allow a short time to overcome initialisation delays
+      .requireEnabled(timeout(1, TimeUnit.SECONDS))
+      .click();
 
   }
 

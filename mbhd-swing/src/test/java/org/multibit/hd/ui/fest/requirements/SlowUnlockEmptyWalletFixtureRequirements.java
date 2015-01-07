@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.fest.requirements;
 
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.password.SlowUnlockWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.credentials.SlowUnlockWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
 
 /**

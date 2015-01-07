@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.password;
+package org.multibit.hd.ui.fest.use_cases.credentials;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
