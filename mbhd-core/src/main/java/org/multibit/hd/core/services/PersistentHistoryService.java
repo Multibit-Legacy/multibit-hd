@@ -245,30 +245,33 @@ public class PersistentHistoryService extends AbstractService implements History
     }
   }
 
-  @Override
-  public void addDemoHistory() {
+  /**
+   * Provided for test purposes
+   */
+  /* package */ void addDemoHistory() {
 
     // Only add the demo history if there are none present
     if (!history.isEmpty()) {
       return;
     }
 
+    // Expect filter inclusion on "1"
     HistoryEntry history1 = newHistoryEntry("Something happened 1");
     history1.setNotes("This is a really long note that should span over several lines when finally rendered to the screen. It began with Alice Capital.");
 
     HistoryEntry history2 = newHistoryEntry("Something happened 2");
     history2.setNotes("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
-    HistoryEntry history3 = newHistoryEntry("Something happened 2");
-    history2.setNotes("Charles Capital's note 1\n\nCharles Capital's note 2");
+    // Expect filter inclusion on "1"
+    HistoryEntry history3 = newHistoryEntry("Something happened 3");
+    history3.setNotes("Charles Capital's note 1\n\nCharles Capital's note 3");
 
-    // No email for Derek
-    HistoryEntry history4 = newHistoryEntry("Something happened 2");
-    history2.setNotes("Derek Capital's note 1\n\nDerek Capital's note 2");
+    HistoryEntry history4 = newHistoryEntry("Something happened 4");
+    history4.setNotes("Derek Capital's note 2\n\nDerek Capital's note 4");
 
-    HistoryEntry history5 = newHistoryEntry("Something happened 2");
+    newHistoryEntry("Something happened 5");
 
-    HistoryEntry history6 = newHistoryEntry("Something happened 2");
+    newHistoryEntry("Something happened 6");
 
   }
 

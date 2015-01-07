@@ -12,8 +12,21 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import org.bitcoinj.core.*;
-import org.bitcoinj.crypto.*;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.StoredBlock;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.core.Wallet;
+import org.bitcoinj.core.WalletEventListener;
+import org.bitcoinj.core.WalletExtension;
+import org.bitcoinj.crypto.ChildNumber;
+import org.bitcoinj.crypto.DeterministicKey;
+import org.bitcoinj.crypto.HDKeyDerivation;
+import org.bitcoinj.crypto.KeyCrypterException;
+import org.bitcoinj.crypto.KeyCrypterScrypt;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
@@ -34,7 +47,12 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Yaml;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
-import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.dto.SignMessageResult;
+import org.multibit.hd.core.dto.VerifyMessageResult;
+import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
@@ -52,7 +70,13 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import javax.annotation.Nullable;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -63,7 +87,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import static org.multibit.hd.core.dto.WalletId.*;
+import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS;
+import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SEPARATOR;
+import static org.multibit.hd.core.dto.WalletId.parseWalletFilename;
 
 /**
  * <p>Manager to provide the following to core users:</p>
@@ -387,7 +413,7 @@ public enum WalletManager implements WalletEventListener {
     final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
     final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
 
-    WalletSummary walletSummary = null;
+    final WalletSummary walletSummary;
 
     if (walletFileWithAES.exists()) {
       try {
@@ -397,6 +423,9 @@ public enum WalletManager implements WalletEventListener {
       } catch (WalletLoadException e) {
         // Failed to decrypt the existing wallet/backups
         log.error("Failed to load from wallet directory.");
+        IllegalStateException error = new IllegalStateException("The directory for the wallet '" + walletDirectory.getAbsoluteFile() + "' could not be created");
+        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, "core_wallet_failed_to_load", error));
+        throw error;
       }
     } else {
       log.debug("Wallet file does not exist. Creating...");
@@ -426,24 +455,23 @@ public enum WalletManager implements WalletEventListener {
       walletSummary = new WalletSummary(walletId, walletToReturn);
     }
 
-    if (walletSummary != null) {
-      walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
-      walletSummary.setWalletFile(walletFile);
-      walletSummary.setName(name);
-      walletSummary.setNotes(notes);
-      walletSummary.setPassword(password);
+    // Wallet summary cannot be null at this point
+    walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
+    walletSummary.setWalletFile(walletFile);
+    walletSummary.setName(name);
+    walletSummary.setNotes(notes);
+    walletSummary.setPassword(password);
 
-      setCurrentWalletSummary(walletSummary);
-    }
+    setCurrentWalletSummary(walletSummary);
 
     try {
-          // The entropy based password from the Trezor is used for both the wallet password and for the backup's password
-          WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, password.getBytes(Charsets.UTF_8), password);
-        } catch (NoSuchAlgorithmException e) {
-          WalletLoadException error = new WalletLoadException("Could not store encrypted credentials and backup AES key", e);
-          CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, "core_wallet_failed_to_load", error));
-          throw error;
-        }
+      // The entropy based password from the Trezor is used for both the wallet password and for the backup's password
+      WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, password.getBytes(Charsets.UTF_8), password);
+    } catch (NoSuchAlgorithmException e) {
+      WalletLoadException error = new WalletLoadException("Could not store encrypted credentials and backup AES key", e);
+      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, "core_wallet_failed_to_load", error));
+      throw error;
+    }
     // Wallet is now created - finish off other configuration and check if wallet needs syncing
     // (Always save the wallet yaml as there was a bug in early Trezor wallets where it was not written out)
     updateConfigurationAndCheckSync(walletRoot, walletDirectory, walletSummary, true);
@@ -497,7 +525,7 @@ public enum WalletManager implements WalletEventListener {
     final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
     final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
 
-    WalletSummary walletSummary = null;
+    final WalletSummary walletSummary;
 
     if (walletFileWithAES.exists()) {
       try {
@@ -506,8 +534,11 @@ public enum WalletManager implements WalletEventListener {
         walletSummary = loadFromWalletDirectory(walletDirectory, password);
       } catch (WalletLoadException e) {
         // Failed to decrypt the existing wallet/backups
-        // TODO (JB) This causes an NPE later on load fails
         log.error("Failed to load from wallet directory.");
+        IllegalStateException error = new IllegalStateException("The wallet could not be opened");
+        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, "core_wallet_failed_to_load", error));
+        throw error;
+
       }
     } else {
       log.debug("Wallet file does not exist. Creating...");
@@ -546,15 +577,14 @@ public enum WalletManager implements WalletEventListener {
       walletSummary = new WalletSummary(walletId, walletToReturn);
     }
 
-    if (walletSummary != null) {
-      walletSummary.setWalletType(WalletType.TREZOR_SOFT_WALLET);
-      walletSummary.setWalletFile(walletFile);
-      walletSummary.setName(name);
-      walletSummary.setNotes(notes);
-      walletSummary.setPassword(password);
+    // Wallet summary cannot be null
+    walletSummary.setWalletType(WalletType.TREZOR_SOFT_WALLET);
+    walletSummary.setWalletFile(walletFile);
+    walletSummary.setName(name);
+    walletSummary.setNotes(notes);
+    walletSummary.setPassword(password);
 
-      setCurrentWalletSummary(walletSummary);
-    }
+    setCurrentWalletSummary(walletSummary);
 
     try {
       WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, seed, password);
@@ -654,8 +684,8 @@ public enum WalletManager implements WalletEventListener {
           long earliestKeyCreationTimeInSeconds = walletBeingReturned.getEarliestKeyCreationTime();
           if (walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) {
             if (walletLastSeenBlockTime == null ||
-                    earliestKeyCreationTimeInSeconds == -1 ||
-                    (walletLastSeenBlockTime.getTime() / 1000 > earliestKeyCreationTimeInSeconds - DRIFT_TIME)) {
+              earliestKeyCreationTimeInSeconds == -1 ||
+              (walletLastSeenBlockTime.getTime() / 1000 > earliestKeyCreationTimeInSeconds - DRIFT_TIME)) {
               // Regular sync is ok - no need to use checkpoints
               log.debug("Will perform a regular sync");
               performRegularSync = true;
@@ -859,20 +889,20 @@ public enum WalletManager implements WalletEventListener {
       });
     Futures.addCallback(
       future, new FutureCallback() {
-        @Override
-        public void onSuccess(@Nullable Object result) {
-          // Do nothing this just means that the block chain download has begun
-          log.debug("Sync has begun");
+      @Override
+      public void onSuccess(@Nullable Object result) {
+        // Do nothing this just means that the block chain download has begun
+        log.debug("Sync has begun");
 
-        }
+      }
 
-        @Override
-        public void onFailure(Throwable t) {
-          // Have a failure
-          log.debug("Sync failed, error was " + t.getClass().getCanonicalName() + " " + t.getMessage());
+      @Override
+      public void onFailure(Throwable t) {
+        // Have a failure
+        log.debug("Sync failed, error was " + t.getClass().getCanonicalName() + " " + t.getMessage());
 
-        }
-      });
+      }
+    });
   }
 
   /**
@@ -913,6 +943,9 @@ public enum WalletManager implements WalletEventListener {
    * @return A wallet root
    */
   public static String createWalletRoot(WalletId walletId) {
+
+    Preconditions.checkNotNull(walletId, "'walletId' must be present");
+
     return WALLET_DIRECTORY_PREFIX + WALLET_ID_SEPARATOR + walletId.toFormattedString();
   }
 
@@ -1031,9 +1064,10 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
+   * @param includeOneExtraFee include an extra fee to include a tx currently being constructed that isn't in the wallet yet
+   *
    * @return The BRIT fee state for the current wallet - this includes things like how much is
    * currently owed to BRIT
-   * @param includeOneExtraFee include an extra fee to include a tx currently being constructed that isn't in the wallet yet
    */
   public Optional<FeeState> calculateBRITFeeState(boolean includeOneExtraFee) {
 
@@ -1219,6 +1253,11 @@ public enum WalletManager implements WalletEventListener {
    * You probably want to save it afterwards with an updateSummary
    */
   public static void writeEncryptedPasswordAndBackupKey(WalletSummary walletSummary, byte[] entropy, String password) throws NoSuchAlgorithmException {
+
+    Preconditions.checkNotNull(walletSummary, "'walletSummary' must be present");
+    Preconditions.checkNotNull(entropy, "'entropy' must be present");
+    Preconditions.checkNotNull(password, "'password' must be present");
+
     // Save the wallet credentials, AES encrypted with a key derived from the wallet seed/ entropy
     KeyParameter entropyDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(entropy, SCRYPT_SALT);
     byte[] passwordBytes = password.getBytes(Charsets.UTF_8);
