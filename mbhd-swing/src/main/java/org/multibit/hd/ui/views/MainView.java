@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
@@ -57,6 +58,8 @@ public class MainView extends JFrame {
   private CredentialsRequestType credentialsRequestType = CredentialsRequestType.PASSWORD;
   private boolean repeatLatestEvents = true;
 
+  // The Panel.applicationFrame is a global singleton in nature
+  @SuppressFBWarnings({"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"})
   public MainView() {
 
     // Ensure we can respond to UI events
@@ -395,7 +398,7 @@ public class MainView extends JFrame {
 
     int sidebarWidth = MultiBitUI.SIDEBAR_LHS_PREF_WIDTH;
     try {
-      sidebarWidth = Integer.valueOf(Configurations.currentConfiguration.getAppearance().getSidebarWidth());
+      sidebarWidth = Integer.parseInt(Configurations.currentConfiguration.getAppearance().getSidebarWidth());
     } catch (NumberFormatException e) {
       log.warn("Sidebar width configuration is not a number - using default");
     }
@@ -456,10 +459,10 @@ public class MainView extends JFrame {
         log.debug("Using absolute coordinates");
 
         try {
-          int x = Integer.valueOf(lastFrameDimension[0]);
-          int y = Integer.valueOf(lastFrameDimension[1]);
-          int w = Integer.valueOf(lastFrameDimension[2]);
-          int h = Integer.valueOf(lastFrameDimension[3]);
+          int x = Integer.parseInt(lastFrameDimension[0]);
+          int y = Integer.parseInt(lastFrameDimension[1]);
+          int w = Integer.parseInt(lastFrameDimension[2]);
+          int h = Integer.parseInt(lastFrameDimension[3]);
           Rectangle newBounds = new Rectangle(x, y, w, h);
 
           // Not centered
