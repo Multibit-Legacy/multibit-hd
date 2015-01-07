@@ -1545,15 +1545,9 @@ public enum WalletManager implements WalletEventListener {
         File currentWalletFile = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get();
 
         walletSummary.getWallet().saveToFile(currentWalletFile);
-        File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(currentWalletFile, walletSummary.getPassword());
 
-        if (log.isDebugEnabled()) {
-          // Provide extra information in debug mode
-          log.debug(
-            "Created AES encrypted wallet as file:\n'{}'\nSize: {} bytes",
-            encryptedAESCopy == null ? "null" : encryptedAESCopy.getAbsolutePath(),
-            encryptedAESCopy == null ? "null" : encryptedAESCopy.length());
-        }
+        File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(currentWalletFile, walletSummary.getPassword());
+        log.debug("Created AES encrypted wallet as file:\n'{}'\nSize: {} bytes",encryptedAESCopy.getAbsolutePath(), encryptedAESCopy.length());
 
         BackupService backupService = CoreServices.getOrCreateBackupService();
         backupService.rememberWalletSummaryAndPasswordForRollingBackup(walletSummary, walletSummary.getPassword());
