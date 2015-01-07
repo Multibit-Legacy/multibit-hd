@@ -87,8 +87,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS;
 import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SEPARATOR;
+import static org.multibit.hd.core.dto.WalletId.getWalletIdSaltUsedInScryptForTrezorSoftWallets;
 import static org.multibit.hd.core.dto.WalletId.parseWalletFilename;
 
 /**
@@ -518,7 +518,7 @@ public enum WalletManager implements WalletEventListener {
     List<String> seedPhraseList = Bip39SeedPhraseGenerator.split(seedPhrase);
     byte[] seed = seedGenerator.convertToSeed(seedPhraseList);
 
-    final WalletId walletId = new WalletId(seed, WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS);
+    final WalletId walletId = new WalletId(seed, getWalletIdSaltUsedInScryptForTrezorSoftWallets());
     String walletRoot = createWalletRoot(walletId);
 
     final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);

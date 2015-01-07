@@ -1,5 +1,6 @@
 package org.multibit.hd.core.events;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.dto.CoreMessageKey;
 
 /**
@@ -21,6 +22,13 @@ public class ExportPerformedEvent implements CoreEvent {
 
   private final CoreMessageKey exportFailureReasonKey;
 
+  /**
+   * TODO Consider using List<String> instead
+   */
+  private final String[] exportFailureReasonData;
+
+  // The fix for this is more complex than leaving it in place
+  @SuppressFBWarnings({"EI_EXPOSE_REP2"})
   public ExportPerformedEvent(
     String transactionsExportFilename,
     String paymentRequestsExportFilename,
@@ -36,8 +44,6 @@ public class ExportPerformedEvent implements CoreEvent {
 
   }
 
-  private final String[] exportFailureReasonData;
-
   public boolean isExportWasSuccessful() {
     return exportWasSuccessful;
   }
@@ -46,6 +52,8 @@ public class ExportPerformedEvent implements CoreEvent {
     return exportFailureReasonKey;
   }
 
+  // The fix for this is more complex than leaving it in place
+  @SuppressFBWarnings({"EI_EXPOSE_REP"})
   public String[] getExportFailureReasonData() {
     return exportFailureReasonData;
   }
