@@ -44,7 +44,7 @@ public class Formats {
   /**
    * <p>Provide a split representation for the Bitcoin balance display.</p>
    * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
-   * <p>The amount will be adjusted by the symbolic multiplier from the current confiuration</p>
+   * <p>The amount will be adjusted by the symbolic multiplier from the current configuration</p>
    *
    * @param coin                  The amount in coins
    * @param languageConfiguration The  language configuration to use as the basis for presentation
