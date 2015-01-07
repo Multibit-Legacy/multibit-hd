@@ -2,6 +2,7 @@ package org.multibit.hd.core.managers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.utils.OSUtils;
@@ -58,6 +59,8 @@ public class InstallationManager {
   /**
    * A test flag to allow FEST tests to run efficiently
    */
+  // This arises from the global nature of the flag - consider deriving it from test classpath presence
+  @SuppressFBWarnings({"MS_SHOULD_BE_FINAL"})
   public static boolean unrestricted = false;
 
   /**

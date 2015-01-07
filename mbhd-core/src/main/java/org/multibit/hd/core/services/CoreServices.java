@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.utils.Threading;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.multibit.hd.brit.crypto.PGPUtils;
@@ -67,6 +68,8 @@ public class CoreServices {
   /**
    * Send or register events to the user interface subscribers
    */
+  // This arises from the global nature of the UI event bus
+  @SuppressFBWarnings({"MS_CANNOT_BE_FINAL"})
   public static EventBus uiEventBus = new EventBus(ExceptionHandler.newSubscriberExceptionHandler());
 
   /**
