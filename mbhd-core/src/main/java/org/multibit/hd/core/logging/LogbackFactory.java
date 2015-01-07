@@ -11,6 +11,7 @@ import ch.qos.logback.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import ch.qos.logback.core.spi.FilterAttachable;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.config.LoggingConfiguration;
 
 /**
@@ -46,6 +47,8 @@ public class LogbackFactory {
     return appender;
   }
 
+  // There are restricted possibilities for the rolling file appender
+  @SuppressFBWarnings({"BC_UNCONFIRMED_CAST"})
   public static FileAppender<ILoggingEvent> buildFileAppender(LoggingConfiguration.FileConfiguration file,
                                                               LoggerContext context,
                                                               String logFormat) {
