@@ -3,6 +3,10 @@
 
 package org.multibit.hd.core.protobuf;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+// This class is auto-generated so is exempt from findbugs
+@SuppressFBWarnings
 public final class MBHDHistoryProtos {
   private MBHDHistoryProtos() {}
   public static void registerAllExtensions(

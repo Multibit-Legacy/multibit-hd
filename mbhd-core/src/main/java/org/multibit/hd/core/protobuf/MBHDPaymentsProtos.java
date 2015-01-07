@@ -3,6 +3,10 @@
 
 package org.multibit.hd.core.protobuf;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+// This class is auto-generated so is exempt from findbugs
+@SuppressFBWarnings
 public final class MBHDPaymentsProtos {
   private MBHDPaymentsProtos() {}
   public static void registerAllExtensions(
@@ -604,6 +608,7 @@ public final class MBHDPaymentsProtos {
      * A fiat amount, together with exchange details of how it was generated
      * </pre>
      */
+    @SuppressFBWarnings({"UCF_USELESS_CONTROL_FLOW"})
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
        implements org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPaymentOrBuilder {
