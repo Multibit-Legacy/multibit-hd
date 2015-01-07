@@ -57,7 +57,7 @@ public class RotatingIcon implements Icon {
   /**
    * The number of steps to make per rotation (power of 2)
    */
-  private final int maxStepCount = 16;
+  private final static int maxStepCount = 16;
 
   /**
    * Starting position is "North"
