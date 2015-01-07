@@ -428,8 +428,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Prepare an initialised and attached Trezor device
     HardwareWalletEventFixtures.prepareInitialiseTrezorUseCaseEvents();
 
-    // Continue with the set up
-    setUpAfterArrange(false, false);
+    // Continue with the set up and fire the hardware wallet event
+    setUpAfterArrange(false, true);
 
   }
 
@@ -493,8 +493,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     HardwareWalletService hardwareWalletService = new HardwareWalletService(mockClient);
     CoreServices.setHardwareWalletService(hardwareWalletService);
 
-    // Continue with the set up
-    setUpAfterArrange(true, false);
+    // Continue with the set up and fire the hardware wallet event
+    setUpAfterArrange(true, true);
   }
 
   /**
@@ -561,9 +561,11 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
       new GuiQuery<MainView>() {
         protected MainView executeInEDT() {
 
-          // Start the hardware wallet events
-          log.info("FEST firing hardware wallet event...");
-          HardwareWalletEventFixtures.fireNextEvent();
+          if (hardwareWalletAttached) {
+            // Start the hardware wallet events
+            log.info("FEST firing hardware wallet event...");
+            HardwareWalletEventFixtures.fireNextEvent();
+          }
 
           Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
