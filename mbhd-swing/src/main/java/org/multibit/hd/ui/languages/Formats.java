@@ -34,12 +34,12 @@ public class Formats {
   /**
    * The separator character to use between currencies in an exchange rate
    */
-  public static String EXCHANGE_RATE_SEPARATOR = " / ";
+  public static final String EXCHANGE_RATE_SEPARATOR = " / ";
 
   /**
    * The number of decimal places for showing the exchange rate depends on the bitcoin symbol used, with this offset
    */
-  public static int EXCHANGE_RATE_DECIMAL_PLACES_OFFSET = 2;
+  public static final int EXCHANGE_RATE_DECIMAL_PLACES_OFFSET = 2;
 
   /**
    * <p>Provide a split representation for the Bitcoin balance display.</p>
