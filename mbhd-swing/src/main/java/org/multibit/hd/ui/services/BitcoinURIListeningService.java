@@ -185,7 +185,7 @@ public class BitcoinURIListeningService extends AbstractService {
         // Write out the raw Bitcoin URI
         out.write(MESSAGE_START.getBytes(Charsets.UTF_8));
         out.write(rawURI.get().getBytes(Charsets.UTF_8));
-        out.write(MESSAGE_END.getBytes());
+        out.write(MESSAGE_END.getBytes(Charsets.UTF_8));
 
         out.close();
       }
