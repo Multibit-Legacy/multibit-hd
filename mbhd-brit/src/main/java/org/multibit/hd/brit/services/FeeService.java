@@ -488,6 +488,9 @@ public class FeeService {
   }
 
   private static class TransactionUpdateTimeComparator implements Comparator<Transaction>, Serializable {
+
+    private static final long serialVersionUID = 1251024601073024138L;
+
     public int compare(Transaction t1, Transaction t2) {
       return t1.getUpdateTime().compareTo(t2.getUpdateTime());
     }
