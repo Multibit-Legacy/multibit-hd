@@ -7,7 +7,12 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.ModelAndView;
+import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.ScrollPanes;
+import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
@@ -27,7 +32,6 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizardModel, SelectFileModel> {
 
@@ -52,13 +56,13 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
   public void newPanelModel() {
 
     selectFileMaV = Components.newSelectFileMaV(getPanelName());
-      setPanelModel(selectFileMaV.getModel());
-      if (Configurations.currentConfiguration != null) {
-        selectFileMaV.getModel().setValue(Configurations.currentConfiguration.getAppearance().getCloudBackupLocation());
-      }
+    setPanelModel(selectFileMaV.getModel());
+    if (Configurations.currentConfiguration != null) {
+      selectFileMaV.getModel().setValue(Configurations.currentConfiguration.getAppearance().getCloudBackupLocation());
+    }
 
-      // Register components
-      registerComponents(selectFileMaV);
+    // Register components
+    registerComponents(selectFileMaV);
   }
 
   @Override
@@ -84,7 +88,7 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
     notes.setCaretPosition(0);
 
     contentPanel.add(Labels.newLabel(MessageKey.NOTES));
-    contentPanel.add(scrollPane, "push,"+ MultiBitUI.WIZARD_MAX_WIDTH_MIG+",wrap");
+    contentPanel.add(scrollPane, "push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     contentPanel.add(Labels.newLabel(MessageKey.CLOUD_BACKUP_LOCATION));
     contentPanel.add(selectFileMaV.getView().newComponentPanel(), "span 2,wrap");
@@ -152,9 +156,10 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
     log.debug("selectFileMaV.getModel().getValue() = '" + selectFileMaV.getModel().getValue() + "', isSelected = " + selectFileMaV.getModel().isSelected());
     if (Configurations.currentConfiguration != null) {
       if (selectFileMaV.getModel().isSelected()) {
-          Configurations.currentConfiguration.getAppearance().setCloudBackupLocation(selectFileMaV.getModel().getValue());
+        Configurations.currentConfiguration.getAppearance().setCloudBackupLocation(selectFileMaV.getModel().getValue());
       }
+      log.debug("Cloud backup location:\n{}", Configurations.currentConfiguration.getAppearance().getCloudBackupLocation());
     }
-    log.debug("Cloud backup location = '" + Configurations.currentConfiguration.getAppearance().getCloudBackupLocation() + "'");
+
   }
 }

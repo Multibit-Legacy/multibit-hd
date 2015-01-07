@@ -155,6 +155,8 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
       case EMPTY_WALLET_CONFIRM:
         state = EMPTY_WALLET_ENTER_DETAILS;
         break;
+      default:
+        throw new IllegalStateException("Unexpected state:" + state);
     }
 
   }

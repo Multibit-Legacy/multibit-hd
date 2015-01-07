@@ -3,6 +3,8 @@ package org.multibit.hd.ui.views.wizards.sign_message;
 import org.bitcoinj.core.Address;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 
+import java.util.Arrays;
+
 /**
  * <p>Model object to provide the following to "sign message" wizard:</p>
  * <ul>
@@ -11,7 +13,6 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class SignMessageWizardModel extends AbstractWizardModel<SignMessageState> {
 
@@ -52,10 +53,10 @@ public class SignMessageWizardModel extends AbstractWizardModel<SignMessageState
    * @return The signature
    */
   public byte[] getSignature() {
-    return signature;
+    return Arrays.copyOf(signature, signature.length);
   }
 
   public void setSignature(byte[] signature) {
-    this.signature = signature;
+    this.signature = Arrays.copyOf(signature, signature.length);
   }
 }

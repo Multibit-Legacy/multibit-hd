@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.themes;
 
 import com.google.common.base.Preconditions;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.ui.languages.LanguageKey;
 
 import javax.swing.*;
@@ -21,6 +22,7 @@ import java.util.Enumeration;
 public class Themes {
 
   // Always start with the Bootstrap theme and switch during startup if required
+  @SuppressFBWarnings({"MS_CANNOT_BE_FINAL"})
   public static Theme currentTheme = new BootstrapTheme();
 
   /**

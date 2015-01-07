@@ -39,7 +39,7 @@ public class CheckBoxTableCellRenderer extends DefaultTableCellRenderer {
     if (isSelected) {
       checkBox.setBackground(table.getSelectionBackground());
     } else {
-      if (row % 2 == 1) {
+      if (row % 2 != 0) {
         checkBox.setBackground(Themes.currentTheme.tableRowAltBackground());
       } else {
         checkBox.setBackground(Themes.currentTheme.tableRowBackground());

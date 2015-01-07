@@ -21,17 +21,17 @@ import java.io.InputStream;
  */
 public class AwesomeDecorator {
 
-  public static Font AWESOME_FONT;
+  public static final Font AWESOME_FONT;
 
   static {
 
+    // See FontAwesomeTools when upgrading to later version
     try (InputStream in = AwesomeDecorator.class.getResourceAsStream("/assets/fonts/FontAwesome-4.2.0.ttf")) {
 
-      AWESOME_FONT = Font.createFont(Font.TRUETYPE_FONT, in);
+      Font font = Font.createFont(Font.TRUETYPE_FONT, in);
+      Preconditions.checkNotNull(font, "Font Awesome not loaded");
 
-      Preconditions.checkNotNull(AWESOME_FONT, "Font Awesome not loaded");
-
-      AWESOME_FONT = AWESOME_FONT.deriveFont(Font.PLAIN, MultiBitUI.NORMAL_ICON_SIZE);
+      AWESOME_FONT = font.deriveFont(Font.PLAIN, MultiBitUI.NORMAL_ICON_SIZE);
 
     } catch (FontFormatException | IOException e) {
       throw new UIException(e);

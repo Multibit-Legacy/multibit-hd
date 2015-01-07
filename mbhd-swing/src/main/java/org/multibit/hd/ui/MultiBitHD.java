@@ -2,6 +2,7 @@ package org.multibit.hd.ui;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Uninterruptibles;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -45,12 +46,16 @@ public class MultiBitHD {
    *
    * @param args None specified
    */
-  public static void main(final String[] args) throws Exception {
+  public static void main(String[] args) throws Exception {
 
     if (args != null) {
+      // Show the command line arguments
       for (int i = 0; i < args.length; i++) {
         log.debug("MultiBit launched with args[{}]: '{}'", i, args[i]);
       }
+    } else {
+      // Provide empty arguments to avoid potential NPEs
+      args = new String[]{};
     }
 
     // Hand over to an instance to simplify FEST tests
@@ -114,6 +119,8 @@ public class MultiBitHD {
   /**
    * <p>Initialise the JVM. This occurs before anything else is called.</p>
    */
+  // Calling exit(-1) is required
+  @SuppressFBWarnings({"DM_EXIT"})
   private void initialiseJVM() throws Exception {
 
     log.debug("Initialising JVM...");

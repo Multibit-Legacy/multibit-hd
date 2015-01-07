@@ -151,7 +151,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
       case BACKGROUND_PRESSED_FOCUSED:
         paintBackgroundPressedAndFocused(g);
         break;
-
+      default:
+        throw new IllegalStateException("Unknown state:" + state);
     }
   }
 
@@ -252,6 +253,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
           getComponentColor(c, "background", color50, -0.0212406f, 0.13333333f, 0),
           getComponentColor(c, "background", color51, -0.030845039f, 0.23921567f, 0)};
         break;
+      default:
+        throw new IllegalStateException("Unknown state:" + state);
     }
     return extendedCacheKeys;
   }

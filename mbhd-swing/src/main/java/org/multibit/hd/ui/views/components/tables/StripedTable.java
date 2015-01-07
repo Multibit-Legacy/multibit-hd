@@ -67,7 +67,7 @@ public class StripedTable extends JTable {
 
       // Keep drawing until we reach the overall height of the table
       while (rowYToDraw < getHeight()) {
-        if (virtualRow % 2 == 1) {
+        if (virtualRow % 2 != 0) {
 
           // Odd row
           newGraphics.setColor(alternateColor);
@@ -114,7 +114,7 @@ public class StripedTable extends JTable {
 
     // Use custom rendering to overcome background color bug in Nimbus
     if (!isRowSelected(row)) {
-      c.setBackground(row % 2 == 1 ? alternateColor : rowColor);
+      c.setBackground(row % 2 != 0 ? alternateColor : rowColor);
       c.setOpaque(true);
     }
 

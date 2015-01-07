@@ -14,7 +14,6 @@ import java.awt.geom.RoundRectangle2D;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class NamedComboBoxPainter extends AbstractNamedRegionPainter {
 
@@ -37,59 +36,59 @@ public class NamedComboBoxPainter extends AbstractNamedRegionPainter {
   public static final int BACKGROUND_PRESSED_EDITABLE = 14;
 
   // All Colors used for painting
-  private Color color1 = adjustBackgroundColor( -0.6111111f, -0.110526316f, -0.74509805f, -247);
-  private Color color2 = adjustForegroundColor( 0.032459438f, -0.5928571f, 0.2745098f, 0);
-  private Color color3 = adjustForegroundColor( 0.032459438f, -0.590029f, 0.2235294f, 0);
-  private Color color4 = adjustForegroundColor( 0.032459438f, -0.60996324f, 0.36470586f, 0);
-  private Color color5 = adjustForegroundColor( 0.040395975f, -0.60474086f, 0.33725488f, 0);
-  private Color color6 = adjustForegroundColor( 0.032459438f, -0.5953556f, 0.32549018f, 0);
-  private Color color7 = adjustForegroundColor( 0.032459438f, -0.5957143f, 0.3333333f, 0);
-  private Color color8 = adjustForegroundColor( 0.021348298f, -0.56289876f, 0.2588235f, 0);
-  private Color color9 = adjustForegroundColor( 0.010237217f, -0.55799407f, 0.20784312f, 0);
-  private Color color10 = adjustForegroundColor( 0.021348298f, -0.59223604f, 0.35294116f, 0);
-  private Color color11 = adjustForegroundColor( 0.02391243f, -0.5774183f, 0.32549018f, 0);
-  private Color color12 = adjustForegroundColor( 0.021348298f, -0.56722116f, 0.3098039f, 0);
-  private Color color13 = adjustForegroundColor( 0.021348298f, -0.567841f, 0.31764704f, 0);
-  private Color color14 = adjustBackgroundColor( 0.0f, 0.0f, -0.22f, -176);
-  private Color color15 = adjustForegroundColor( 0.032459438f, -0.5787523f, 0.07058823f, 0);
-  private Color color16 = adjustForegroundColor( 0.032459438f, -0.5399696f, -0.18039218f, 0);
-  private Color color17 = adjustForegroundColor( 0.08801502f, -0.63174605f, 0.43921566f, 0);
-  private Color color18 = adjustForegroundColor( 0.040395975f, -0.6054113f, 0.35686272f, 0);
-  private Color color19 = adjustForegroundColor( 0.032459438f, -0.5998577f, 0.4352941f, 0);
-  private Color color20 = adjustForegroundColor( 5.1498413E-4f, -0.34585923f, -0.007843137f, 0);
-  private Color color21 = adjustForegroundColor( 5.1498413E-4f, -0.095173776f, -0.25882354f, 0);
-  private Color color22 = adjustForegroundColor( 0.004681647f, -0.6197143f, 0.43137252f, 0);
-  private Color color23 = adjustForegroundColor( -0.0028941035f, -0.4800539f, 0.28235292f, 0);
-  private Color color24 = adjustForegroundColor( 5.1498413E-4f, -0.43866998f, 0.24705881f, 0);
-  private Color color25 = adjustForegroundColor( 5.1498413E-4f, -0.4625541f, 0.35686272f, 0);
+  private Color color1 = adjustBackgroundColor(-0.6111111f, -0.110526316f, -0.74509805f, -247);
+  private Color color2 = adjustForegroundColor(0.032459438f, -0.5928571f, 0.2745098f, 0);
+  private Color color3 = adjustForegroundColor(0.032459438f, -0.590029f, 0.2235294f, 0);
+  private Color color4 = adjustForegroundColor(0.032459438f, -0.60996324f, 0.36470586f, 0);
+  private Color color5 = adjustForegroundColor(0.040395975f, -0.60474086f, 0.33725488f, 0);
+  private Color color6 = adjustForegroundColor(0.032459438f, -0.5953556f, 0.32549018f, 0);
+  private Color color7 = adjustForegroundColor(0.032459438f, -0.5957143f, 0.3333333f, 0);
+  private Color color8 = adjustForegroundColor(0.021348298f, -0.56289876f, 0.2588235f, 0);
+  private Color color9 = adjustForegroundColor(0.010237217f, -0.55799407f, 0.20784312f, 0);
+  private Color color10 = adjustForegroundColor(0.021348298f, -0.59223604f, 0.35294116f, 0);
+  private Color color11 = adjustForegroundColor(0.02391243f, -0.5774183f, 0.32549018f, 0);
+  private Color color12 = adjustForegroundColor(0.021348298f, -0.56722116f, 0.3098039f, 0);
+  private Color color13 = adjustForegroundColor(0.021348298f, -0.567841f, 0.31764704f, 0);
+  private Color color14 = adjustBackgroundColor(0.0f, 0.0f, -0.22f, -176);
+  private Color color15 = adjustForegroundColor(0.032459438f, -0.5787523f, 0.07058823f, 0);
+  private Color color16 = adjustForegroundColor(0.032459438f, -0.5399696f, -0.18039218f, 0);
+  private Color color17 = adjustForegroundColor(0.08801502f, -0.63174605f, 0.43921566f, 0);
+  private Color color18 = adjustForegroundColor(0.040395975f, -0.6054113f, 0.35686272f, 0);
+  private Color color19 = adjustForegroundColor(0.032459438f, -0.5998577f, 0.4352941f, 0);
+  private Color color20 = adjustForegroundColor(5.1498413E-4f, -0.34585923f, -0.007843137f, 0);
+  private Color color21 = adjustForegroundColor(5.1498413E-4f, -0.095173776f, -0.25882354f, 0);
+  private Color color22 = adjustForegroundColor(0.004681647f, -0.6197143f, 0.43137252f, 0);
+  private Color color23 = adjustForegroundColor(-0.0028941035f, -0.4800539f, 0.28235292f, 0);
+  private Color color24 = adjustForegroundColor(5.1498413E-4f, -0.43866998f, 0.24705881f, 0);
+  private Color color25 = adjustForegroundColor(5.1498413E-4f, -0.4625541f, 0.35686272f, 0);
   private Color color26 = decodeColor("nimbusFocus", 0.0f, 0.0f, 0.0f, 0);
-  private Color color27 = adjustForegroundColor( 0.032459438f, -0.54616207f, -0.02352941f, 0);
-  private Color color28 = adjustForegroundColor( 0.032459438f, -0.41349208f, -0.33725494f, 0);
-  private Color color29 = adjustForegroundColor( 0.08801502f, -0.6317773f, 0.4470588f, 0);
-  private Color color30 = adjustForegroundColor( 0.032459438f, -0.6113241f, 0.41568625f, 0);
-  private Color color31 = adjustForegroundColor( 0.032459438f, -0.5985242f, 0.39999998f, 0);
-  private Color color32 = adjustForegroundColor( 0.0f, -0.6357143f, 0.45098037f, 0);
-  private Color color33 = adjustForegroundColor( 0.0013483167f, -0.1769987f, -0.12156865f, 0);
-  private Color color34 = adjustForegroundColor( 0.059279382f, 0.3642857f, -0.43529415f, 0);
-  private Color color35 = adjustForegroundColor( 0.004681647f, -0.6198413f, 0.43921566f, 0);
-  private Color color36 = adjustForegroundColor( -8.738637E-4f, -0.50527954f, 0.35294116f, 0);
-  private Color color37 = adjustForegroundColor( 5.1498413E-4f, -0.4555341f, 0.3215686f, 0);
-  private Color color38 = adjustForegroundColor( 5.1498413E-4f, -0.4757143f, 0.43137252f, 0);
-  private Color color39 = adjustForegroundColor( 0.08801502f, 0.3642857f, -0.52156866f, 0);
-  private Color color40 = adjustForegroundColor( 0.032459438f, -0.5246032f, -0.12549022f, 0);
-  private Color color41 = adjustForegroundColor( 0.027408898f, -0.5847884f, 0.2980392f, 0);
-  private Color color42 = adjustForegroundColor( 0.026611507f, -0.53623784f, 0.19999999f, 0);
-  private Color color43 = adjustForegroundColor( 0.029681683f, -0.52701867f, 0.17254901f, 0);
-  private Color color44 = adjustForegroundColor( 0.03801495f, -0.5456242f, 0.3215686f, 0);
-  private Color color45 = adjustForegroundColor( -0.57865167f, -0.6357143f, -0.54901963f, 0);
-  private Color color46 = adjustForegroundColor( -3.528595E-5f, 0.018606722f, -0.23137257f, 0);
-  private Color color47 = adjustForegroundColor( -4.2033195E-4f, -0.38050595f, 0.20392156f, 0);
-  private Color color48 = adjustForegroundColor( 4.081726E-4f, -0.12922078f, 0.054901958f, 0);
-  private Color color49 = adjustForegroundColor( 0.0f, -0.00895375f, 0.007843137f, 0);
-  private Color color50 = adjustForegroundColor( -0.0015907288f, -0.1436508f, 0.19215685f, 0);
-  private Color color51 = adjustBackgroundColor( 0.0f, -0.110526316f, 0.25490195f, -83);
-  private Color color52 = adjustBackgroundColor( 0.0f, -0.110526316f, 0.25490195f, -88);
-  private Color color53 = adjustBackgroundColor( 0.0f, -0.005263157f, -0.52156866f, -191);
+  private Color color27 = adjustForegroundColor(0.032459438f, -0.54616207f, -0.02352941f, 0);
+  private Color color28 = adjustForegroundColor(0.032459438f, -0.41349208f, -0.33725494f, 0);
+  private Color color29 = adjustForegroundColor(0.08801502f, -0.6317773f, 0.4470588f, 0);
+  private Color color30 = adjustForegroundColor(0.032459438f, -0.6113241f, 0.41568625f, 0);
+  private Color color31 = adjustForegroundColor(0.032459438f, -0.5985242f, 0.39999998f, 0);
+  private Color color32 = adjustForegroundColor(0.0f, -0.6357143f, 0.45098037f, 0);
+  private Color color33 = adjustForegroundColor(0.0013483167f, -0.1769987f, -0.12156865f, 0);
+  private Color color34 = adjustForegroundColor(0.059279382f, 0.3642857f, -0.43529415f, 0);
+  private Color color35 = adjustForegroundColor(0.004681647f, -0.6198413f, 0.43921566f, 0);
+  private Color color36 = adjustForegroundColor(-8.738637E-4f, -0.50527954f, 0.35294116f, 0);
+  private Color color37 = adjustForegroundColor(5.1498413E-4f, -0.4555341f, 0.3215686f, 0);
+  private Color color38 = adjustForegroundColor(5.1498413E-4f, -0.4757143f, 0.43137252f, 0);
+  private Color color39 = adjustForegroundColor(0.08801502f, 0.3642857f, -0.52156866f, 0);
+  private Color color40 = adjustForegroundColor(0.032459438f, -0.5246032f, -0.12549022f, 0);
+  private Color color41 = adjustForegroundColor(0.027408898f, -0.5847884f, 0.2980392f, 0);
+  private Color color42 = adjustForegroundColor(0.026611507f, -0.53623784f, 0.19999999f, 0);
+  private Color color43 = adjustForegroundColor(0.029681683f, -0.52701867f, 0.17254901f, 0);
+  private Color color44 = adjustForegroundColor(0.03801495f, -0.5456242f, 0.3215686f, 0);
+  private Color color45 = adjustForegroundColor(-0.57865167f, -0.6357143f, -0.54901963f, 0);
+  private Color color46 = adjustForegroundColor(-3.528595E-5f, 0.018606722f, -0.23137257f, 0);
+  private Color color47 = adjustForegroundColor(-4.2033195E-4f, -0.38050595f, 0.20392156f, 0);
+  private Color color48 = adjustForegroundColor(4.081726E-4f, -0.12922078f, 0.054901958f, 0);
+  private Color color49 = adjustForegroundColor(0.0f, -0.00895375f, 0.007843137f, 0);
+  private Color color50 = adjustForegroundColor(-0.0015907288f, -0.1436508f, 0.19215685f, 0);
+  private Color color51 = adjustBackgroundColor(0.0f, -0.110526316f, 0.25490195f, -83);
+  private Color color52 = adjustBackgroundColor(0.0f, -0.110526316f, 0.25490195f, -88);
+  private Color color53 = adjustBackgroundColor(0.0f, -0.005263157f, -0.52156866f, -191);
 
   // Array of current component colors, updated in each paint call
   private Object[] componentColors;
@@ -114,30 +113,60 @@ public class NamedComboBoxPainter extends AbstractNamedRegionPainter {
     componentColors = extendedCacheKeys;
     //generate this entire method. Each state/bg/fg/border combo that has
     //been painted gets its own KEY and paint method.
-    switch(state) {
-      case BACKGROUND_DISABLED: paintBackgroundDisabled(g); break;
-      case BACKGROUND_DISABLED_PRESSED: paintBackgroundDisabledAndPressed(g); break;
-      case BACKGROUND_ENABLED: paintBackgroundEnabled(g); break;
-      case BACKGROUND_FOCUSED: paintBackgroundFocused(g); break;
-      case BACKGROUND_MOUSEOVER_FOCUSED: paintBackgroundMouseOverAndFocused(g); break;
-      case BACKGROUND_MOUSEOVER: paintBackgroundMouseOver(g); break;
-      case BACKGROUND_PRESSED_FOCUSED: paintBackgroundPressedAndFocused(g); break;
-      case BACKGROUND_PRESSED: paintBackgroundPressed(g); break;
-      case BACKGROUND_ENABLED_SELECTED: paintBackgroundEnabledAndSelected(g); break;
-      case BACKGROUND_DISABLED_EDITABLE: paintBackgroundDisabledAndEditable(g); break;
-      case BACKGROUND_ENABLED_EDITABLE: paintBackgroundEnabledAndEditable(g); break;
-      case BACKGROUND_FOCUSED_EDITABLE: paintBackgroundFocusedAndEditable(g); break;
-      case BACKGROUND_MOUSEOVER_EDITABLE: paintBackgroundMouseOverAndEditable(g); break;
-      case BACKGROUND_PRESSED_EDITABLE: paintBackgroundPressedAndEditable(g); break;
+    switch (state) {
+      case BACKGROUND_DISABLED:
+        paintBackgroundDisabled(g);
+        break;
+      case BACKGROUND_DISABLED_PRESSED:
+        paintBackgroundDisabledAndPressed(g);
+        break;
+      case BACKGROUND_ENABLED:
+        paintBackgroundEnabled(g);
+        break;
+      case BACKGROUND_FOCUSED:
+        paintBackgroundFocused(g);
+        break;
+      case BACKGROUND_MOUSEOVER_FOCUSED:
+        paintBackgroundMouseOverAndFocused(g);
+        break;
+      case BACKGROUND_MOUSEOVER:
+        paintBackgroundMouseOver(g);
+        break;
+      case BACKGROUND_PRESSED_FOCUSED:
+        paintBackgroundPressedAndFocused(g);
+        break;
+      case BACKGROUND_PRESSED:
+        paintBackgroundPressed(g);
+        break;
+      case BACKGROUND_ENABLED_SELECTED:
+        paintBackgroundEnabledAndSelected(g);
+        break;
+      case BACKGROUND_DISABLED_EDITABLE:
+        paintBackgroundDisabledAndEditable(g);
+        break;
+      case BACKGROUND_ENABLED_EDITABLE:
+        paintBackgroundEnabledAndEditable(g);
+        break;
+      case BACKGROUND_FOCUSED_EDITABLE:
+        paintBackgroundFocusedAndEditable(g);
+        break;
+      case BACKGROUND_MOUSEOVER_EDITABLE:
+        paintBackgroundMouseOverAndEditable(g);
+        break;
+      case BACKGROUND_PRESSED_EDITABLE:
+        paintBackgroundPressedAndEditable(g);
+        break;
+      default:
+        throw new IllegalStateException("Unknown state:" + state);
 
     }
   }
 
   protected Object[] getExtendedCacheKeys(JComponent c) {
     Object[] extendedCacheKeys = null;
-    switch(state) {
+    switch (state) {
       case BACKGROUND_ENABLED:
-        extendedCacheKeys = new Object[] {
+        extendedCacheKeys = new Object[]{
           getComponentColor(c, "background", color17, -0.63174605f, 0.43921566f, 0),
           getComponentColor(c, "background", color18, -0.6054113f, 0.35686272f, 0),
           getComponentColor(c, "background", color6, -0.5953556f, 0.32549018f, 0),
@@ -148,7 +177,7 @@ public class NamedComboBoxPainter extends AbstractNamedRegionPainter {
           getComponentColor(c, "background", color25, -0.4625541f, 0.35686272f, 0)};
         break;
       case BACKGROUND_FOCUSED:
-        extendedCacheKeys = new Object[] {
+        extendedCacheKeys = new Object[]{
           getComponentColor(c, "background", color17, -0.63174605f, 0.43921566f, 0),
           getComponentColor(c, "background", color18, -0.6054113f, 0.35686272f, 0),
           getComponentColor(c, "background", color6, -0.5953556f, 0.32549018f, 0),
@@ -159,7 +188,7 @@ public class NamedComboBoxPainter extends AbstractNamedRegionPainter {
           getComponentColor(c, "background", color25, -0.4625541f, 0.35686272f, 0)};
         break;
       case BACKGROUND_MOUSEOVER_FOCUSED:
-        extendedCacheKeys = new Object[] {
+        extendedCacheKeys = new Object[]{
           getComponentColor(c, "background", color29, -0.6317773f, 0.4470588f, 0),
           getComponentColor(c, "background", color30, -0.6113241f, 0.41568625f, 0),
           getComponentColor(c, "background", color31, -0.5985242f, 0.39999998f, 0),
@@ -171,7 +200,7 @@ public class NamedComboBoxPainter extends AbstractNamedRegionPainter {
           getComponentColor(c, "background", color38, -0.4757143f, 0.43137252f, 0)};
         break;
       case BACKGROUND_MOUSEOVER:
-        extendedCacheKeys = new Object[] {
+        extendedCacheKeys = new Object[]{
           getComponentColor(c, "background", color29, -0.6317773f, 0.4470588f, 0),
           getComponentColor(c, "background", color30, -0.6113241f, 0.41568625f, 0),
           getComponentColor(c, "background", color31, -0.5985242f, 0.39999998f, 0),
@@ -183,7 +212,7 @@ public class NamedComboBoxPainter extends AbstractNamedRegionPainter {
           getComponentColor(c, "background", color38, -0.4757143f, 0.43137252f, 0)};
         break;
       case BACKGROUND_PRESSED_FOCUSED:
-        extendedCacheKeys = new Object[] {
+        extendedCacheKeys = new Object[]{
           getComponentColor(c, "background", color41, -0.5847884f, 0.2980392f, 0),
           getComponentColor(c, "background", color42, -0.53623784f, 0.19999999f, 0),
           getComponentColor(c, "background", color43, -0.52701867f, 0.17254901f, 0),
@@ -194,7 +223,7 @@ public class NamedComboBoxPainter extends AbstractNamedRegionPainter {
           getComponentColor(c, "background", color50, -0.1436508f, 0.19215685f, 0)};
         break;
       case BACKGROUND_PRESSED:
-        extendedCacheKeys = new Object[] {
+        extendedCacheKeys = new Object[]{
           getComponentColor(c, "background", color41, -0.5847884f, 0.2980392f, 0),
           getComponentColor(c, "background", color42, -0.53623784f, 0.19999999f, 0),
           getComponentColor(c, "background", color43, -0.52701867f, 0.17254901f, 0),
@@ -205,7 +234,7 @@ public class NamedComboBoxPainter extends AbstractNamedRegionPainter {
           getComponentColor(c, "background", color50, -0.1436508f, 0.19215685f, 0)};
         break;
       case BACKGROUND_ENABLED_SELECTED:
-        extendedCacheKeys = new Object[] {
+        extendedCacheKeys = new Object[]{
           getComponentColor(c, "background", color41, -0.5847884f, 0.2980392f, 0),
           getComponentColor(c, "background", color42, -0.53623784f, 0.19999999f, 0),
           getComponentColor(c, "background", color43, -0.52701867f, 0.17254901f, 0),
@@ -215,6 +244,8 @@ public class NamedComboBoxPainter extends AbstractNamedRegionPainter {
           getComponentColor(c, "background", color49, -0.00895375f, 0.007843137f, 0),
           getComponentColor(c, "background", color50, -0.1436508f, 0.19215685f, 0)};
         break;
+      default:
+        throw new IllegalStateException("Unknown state:" + state);
     }
     return extendedCacheKeys;
   }
@@ -426,7 +457,6 @@ public class NamedComboBoxPainter extends AbstractNamedRegionPainter {
   }
 
 
-
   private Path2D decodePath1() {
     path.reset();
     path.moveTo(decodeX(0.22222222f), decodeY(2.0f));
@@ -531,179 +561,177 @@ public class NamedComboBoxPainter extends AbstractNamedRegionPainter {
   }
 
 
-
   private Paint decodeGradient1(Shape s) {
     Rectangle2D bounds = s.getBounds2D();
-    float x = (float)bounds.getX();
-    float y = (float)bounds.getY();
-    float w = (float)bounds.getWidth();
-    float h = (float)bounds.getHeight();
+    float x = (float) bounds.getX();
+    float y = (float) bounds.getY();
+    float w = (float) bounds.getWidth();
+    float h = (float) bounds.getHeight();
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[] { 0.0f,0.5f,1.0f },
-      new Color[] { color2,
-        decodeColor(color2,color3,0.5f),
+      new float[]{0.0f, 0.5f, 1.0f},
+      new Color[]{color2,
+        decodeColor(color2, color3, 0.5f),
         color3});
   }
 
   private Paint decodeGradient2(Shape s) {
     Rectangle2D bounds = s.getBounds2D();
-    float x = (float)bounds.getX();
-    float y = (float)bounds.getY();
-    float w = (float)bounds.getWidth();
-    float h = (float)bounds.getHeight();
+    float x = (float) bounds.getX();
+    float y = (float) bounds.getY();
+    float w = (float) bounds.getWidth();
+    float h = (float) bounds.getHeight();
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[] { 0.0f,0.2002841f,0.4005682f,0.5326705f,0.66477275f,0.8323864f,1.0f },
-      new Color[] { color4,
-        decodeColor(color4,color5,0.5f),
+      new float[]{0.0f, 0.2002841f, 0.4005682f, 0.5326705f, 0.66477275f, 0.8323864f, 1.0f},
+      new Color[]{color4,
+        decodeColor(color4, color5, 0.5f),
         color5,
-        decodeColor(color5,color6,0.5f),
+        decodeColor(color5, color6, 0.5f),
         color6,
-        decodeColor(color6,color7,0.5f),
+        decodeColor(color6, color7, 0.5f),
         color7});
   }
 
   private Paint decodeGradient3(Shape s) {
     Rectangle2D bounds = s.getBounds2D();
-    float x = (float)bounds.getX();
-    float y = (float)bounds.getY();
-    float w = (float)bounds.getWidth();
-    float h = (float)bounds.getHeight();
+    float x = (float) bounds.getX();
+    float y = (float) bounds.getY();
+    float w = (float) bounds.getWidth();
+    float h = (float) bounds.getHeight();
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[] { 0.0f,0.5f,1.0f },
-      new Color[] { color8,
-        decodeColor(color8,color9,0.5f),
+      new float[]{0.0f, 0.5f, 1.0f},
+      new Color[]{color8,
+        decodeColor(color8, color9, 0.5f),
         color9});
   }
 
   private Paint decodeGradient4(Shape s) {
     Rectangle2D bounds = s.getBounds2D();
-    float x = (float)bounds.getX();
-    float y = (float)bounds.getY();
-    float w = (float)bounds.getWidth();
-    float h = (float)bounds.getHeight();
+    float x = (float) bounds.getX();
+    float y = (float) bounds.getY();
+    float w = (float) bounds.getWidth();
+    float h = (float) bounds.getHeight();
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[] { 0.0f,0.171875f,0.34375f,0.4815341f,0.6193182f,0.8096591f,1.0f },
-      new Color[] { color10,
-        decodeColor(color10,color11,0.5f),
+      new float[]{0.0f, 0.171875f, 0.34375f, 0.4815341f, 0.6193182f, 0.8096591f, 1.0f},
+      new Color[]{color10,
+        decodeColor(color10, color11, 0.5f),
         color11,
-        decodeColor(color11,color12,0.5f),
+        decodeColor(color11, color12, 0.5f),
         color12,
-        decodeColor(color12,color13,0.5f),
+        decodeColor(color12, color13, 0.5f),
         color13});
   }
 
   private Paint decodeGradient5(Shape s) {
     Rectangle2D bounds = s.getBounds2D();
-    float x = (float)bounds.getX();
-    float y = (float)bounds.getY();
-    float w = (float)bounds.getWidth();
-    float h = (float)bounds.getHeight();
+    float x = (float) bounds.getX();
+    float y = (float) bounds.getY();
+    float w = (float) bounds.getWidth();
+    float h = (float) bounds.getHeight();
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[] { 0.0f,0.5f,1.0f },
-      new Color[] { color15,
-        decodeColor(color15,color16,0.5f),
+      new float[]{0.0f, 0.5f, 1.0f},
+      new Color[]{color15,
+        decodeColor(color15, color16, 0.5f),
         color16});
   }
 
   private Paint decodeGradient6(Shape s) {
     Rectangle2D bounds = s.getBounds2D();
-    float x = (float)bounds.getX();
-    float y = (float)bounds.getY();
-    float w = (float)bounds.getWidth();
-    float h = (float)bounds.getHeight();
+    float x = (float) bounds.getX();
+    float y = (float) bounds.getY();
+    float w = (float) bounds.getWidth();
+    float h = (float) bounds.getHeight();
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[] { 0.0f,0.2002841f,0.4005682f,0.5326705f,0.66477275f,0.8323864f,1.0f },
-      new Color[] { (Color)componentColors[0],
-        decodeColor((Color)componentColors[0],(Color)componentColors[1],0.5f),
-        (Color)componentColors[1],
-        decodeColor((Color)componentColors[1],(Color)componentColors[2],0.5f),
-        (Color)componentColors[2],
-        decodeColor((Color)componentColors[2],(Color)componentColors[3],0.5f),
-        (Color)componentColors[3]});
+      new float[]{0.0f, 0.2002841f, 0.4005682f, 0.5326705f, 0.66477275f, 0.8323864f, 1.0f},
+      new Color[]{(Color) componentColors[0],
+        decodeColor((Color) componentColors[0], (Color) componentColors[1], 0.5f),
+        (Color) componentColors[1],
+        decodeColor((Color) componentColors[1], (Color) componentColors[2], 0.5f),
+        (Color) componentColors[2],
+        decodeColor((Color) componentColors[2], (Color) componentColors[3], 0.5f),
+        (Color) componentColors[3]});
   }
 
   private Paint decodeGradient7(Shape s) {
     Rectangle2D bounds = s.getBounds2D();
-    float x = (float)bounds.getX();
-    float y = (float)bounds.getY();
-    float w = (float)bounds.getWidth();
-    float h = (float)bounds.getHeight();
+    float x = (float) bounds.getX();
+    float y = (float) bounds.getY();
+    float w = (float) bounds.getWidth();
+    float h = (float) bounds.getHeight();
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[] { 0.0f,0.5f,1.0f },
-      new Color[] { color20,
-        decodeColor(color20,color21,0.5f),
+      new float[]{0.0f, 0.5f, 1.0f},
+      new Color[]{color20,
+        decodeColor(color20, color21, 0.5f),
         color21});
   }
 
   private Paint decodeGradient8(Shape s) {
     Rectangle2D bounds = s.getBounds2D();
-    float x = (float)bounds.getX();
-    float y = (float)bounds.getY();
-    float w = (float)bounds.getWidth();
-    float h = (float)bounds.getHeight();
+    float x = (float) bounds.getX();
+    float y = (float) bounds.getY();
+    float w = (float) bounds.getWidth();
+    float h = (float) bounds.getHeight();
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[] { 0.0f,0.171875f,0.34375f,0.4815341f,0.6193182f,0.8096591f,1.0f },
-      new Color[] { (Color)componentColors[4],
-        decodeColor((Color)componentColors[4],(Color)componentColors[5],0.5f),
-        (Color)componentColors[5],
-        decodeColor((Color)componentColors[5],(Color)componentColors[6],0.5f),
-        (Color)componentColors[6],
-        decodeColor((Color)componentColors[6],(Color)componentColors[7],0.5f),
-        (Color)componentColors[7]});
+      new float[]{0.0f, 0.171875f, 0.34375f, 0.4815341f, 0.6193182f, 0.8096591f, 1.0f},
+      new Color[]{(Color) componentColors[4],
+        decodeColor((Color) componentColors[4], (Color) componentColors[5], 0.5f),
+        (Color) componentColors[5],
+        decodeColor((Color) componentColors[5], (Color) componentColors[6], 0.5f),
+        (Color) componentColors[6],
+        decodeColor((Color) componentColors[6], (Color) componentColors[7], 0.5f),
+        (Color) componentColors[7]});
   }
 
   private Paint decodeGradient9(Shape s) {
     Rectangle2D bounds = s.getBounds2D();
-    float x = (float)bounds.getX();
-    float y = (float)bounds.getY();
-    float w = (float)bounds.getWidth();
-    float h = (float)bounds.getHeight();
+    float x = (float) bounds.getX();
+    float y = (float) bounds.getY();
+    float w = (float) bounds.getWidth();
+    float h = (float) bounds.getHeight();
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[] { 0.0f,0.5f,1.0f },
-      new Color[] { color27,
-        decodeColor(color27,color28,0.5f),
+      new float[]{0.0f, 0.5f, 1.0f},
+      new Color[]{color27,
+        decodeColor(color27, color28, 0.5f),
         color28});
   }
 
   private Paint decodeGradient10(Shape s) {
     Rectangle2D bounds = s.getBounds2D();
-    float x = (float)bounds.getX();
-    float y = (float)bounds.getY();
-    float w = (float)bounds.getWidth();
-    float h = (float)bounds.getHeight();
+    float x = (float) bounds.getX();
+    float y = (float) bounds.getY();
+    float w = (float) bounds.getWidth();
+    float h = (float) bounds.getHeight();
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[] { 0.0f,0.5f,1.0f },
-      new Color[] { color33,
-        decodeColor(color33,color34,0.5f),
+      new float[]{0.0f, 0.5f, 1.0f},
+      new Color[]{color33,
+        decodeColor(color33, color34, 0.5f),
         color34});
   }
 
   private Paint decodeGradient11(Shape s) {
     Rectangle2D bounds = s.getBounds2D();
-    float x = (float)bounds.getX();
-    float y = (float)bounds.getY();
-    float w = (float)bounds.getWidth();
-    float h = (float)bounds.getHeight();
+    float x = (float) bounds.getX();
+    float y = (float) bounds.getY();
+    float w = (float) bounds.getWidth();
+    float h = (float) bounds.getHeight();
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[] { 0.0f,0.5f,1.0f },
-      new Color[] { color39,
-        decodeColor(color39,color40,0.5f),
+      new float[]{0.0f, 0.5f, 1.0f},
+      new Color[]{color39,
+        decodeColor(color39, color40, 0.5f),
         color40});
   }
 
   private Paint decodeGradient12(Shape s) {
     Rectangle2D bounds = s.getBounds2D();
-    float x = (float)bounds.getX();
-    float y = (float)bounds.getY();
-    float w = (float)bounds.getWidth();
-    float h = (float)bounds.getHeight();
+    float x = (float) bounds.getX();
+    float y = (float) bounds.getY();
+    float w = (float) bounds.getWidth();
+    float h = (float) bounds.getHeight();
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[] { 0.0f,0.5f,1.0f },
-      new Color[] { color45,
-        decodeColor(color45,color46,0.5f),
+      new float[]{0.0f, 0.5f, 1.0f},
+      new Color[]{color45,
+        decodeColor(color45, color46, 0.5f),
         color46});
   }
-
 
 
 }

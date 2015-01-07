@@ -32,19 +32,14 @@ import java.util.Locale;
 public class Formats {
 
   /**
-   * The separator character to use between currencies in an exchange rate
-   */
-  public static String EXCHANGE_RATE_SEPARATOR = " / ";
-
-  /**
    * The number of decimal places for showing the exchange rate depends on the bitcoin symbol used, with this offset
    */
-  public static int EXCHANGE_RATE_DECIMAL_PLACES_OFFSET = 2;
+  public static final int EXCHANGE_RATE_DECIMAL_PLACES_OFFSET = 2;
 
   /**
    * <p>Provide a split representation for the Bitcoin balance display.</p>
    * <p>For example, 12345.6789 becomes "12,345.67", "89" </p>
-   * <p>The amount will be adjusted by the symbolic multiplier from the current confiuration</p>
+   * <p>The amount will be adjusted by the symbolic multiplier from the current configuration</p>
    *
    * @param coin                  The amount in coins
    * @param languageConfiguration The  language configuration to use as the basis for presentation
@@ -237,13 +232,34 @@ public class Formats {
   }
 
   /**
+   * @param bitcoinConfiguration The Bitcoin configuration
+   * @param currentLocale        The current locale
+   *
+   * @return The decimal format symbols to use based on the configuration and locale
+   */
+  private static DecimalFormatSymbols configureDecimalFormatSymbols(BitcoinConfiguration bitcoinConfiguration, Locale currentLocale) {
+
+    DecimalFormatSymbols dfs = new DecimalFormatSymbols(currentLocale);
+
+    dfs.setDecimalSeparator(bitcoinConfiguration.getDecimalSeparator().charAt(0));
+    dfs.setGroupingSeparator(bitcoinConfiguration.getGroupingSeparator().charAt(0));
+
+    return dfs;
+
+  }
+
+  /**
    * @param dfs                  The decimal format symbols
    * @param bitcoinConfiguration The Bitcoin configuration to use
    * @param showNegative         True if the negative prefix is allowed
    *
    * @return A decimal format suitable for local currency balance representation
    */
-  private static DecimalFormat configureLocalDecimalFormat(DecimalFormatSymbols dfs, BitcoinConfiguration bitcoinConfiguration, boolean showNegative) {
+  private static DecimalFormat configureLocalDecimalFormat(
+    DecimalFormatSymbols dfs,
+    BitcoinConfiguration bitcoinConfiguration,
+    boolean showNegative
+  ) {
 
     DecimalFormat format = new DecimalFormat();
 
@@ -262,23 +278,6 @@ public class Formats {
     }
 
     return format;
-  }
-
-  /**
-   * @param bitcoinConfiguration The Bitcoin configuration
-   * @param currentLocale        The current locale
-   *
-   * @return The decimal format symbols to use based on the configuration and locale
-   */
-  private static DecimalFormatSymbols configureDecimalFormatSymbols(BitcoinConfiguration bitcoinConfiguration, Locale currentLocale) {
-
-    DecimalFormatSymbols dfs = new DecimalFormatSymbols(currentLocale);
-
-    dfs.setDecimalSeparator(bitcoinConfiguration.getDecimalSeparator().charAt(0));
-    dfs.setGroupingSeparator(bitcoinConfiguration.getGroupingSeparator().charAt(0));
-
-    return dfs;
-
   }
 
   /**

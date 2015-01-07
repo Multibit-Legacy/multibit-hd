@@ -144,6 +144,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       case SEND_CONFIRM_TREZOR:
         state = SEND_CONFIRM_AMOUNT;
         break;
+      default:
+        throw new IllegalStateException("Unexpected state:" + state);
     }
 
   }

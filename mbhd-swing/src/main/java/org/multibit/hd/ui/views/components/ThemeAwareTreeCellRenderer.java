@@ -115,6 +115,8 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.SIGN_OUT, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 2));
           setIconTextGap(6);
           break;
+        default:
+          throw new IllegalStateException("Unexpected screen:" + nodeInfo.getDetailScreen());
       }
 
     } else {

@@ -30,8 +30,8 @@ public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequest
     // Bitcoin address
     columns[2] = paymentRequestData.getAddress() == null ? "" : paymentRequestData.getAddress().toString();
 
-    // Description
-    columns[3] = paymentRequestData.getDescription() == null ? "" : paymentRequestData.getDescription();
+    // Description (cannot be null)
+    columns[3] = paymentRequestData.getDescription();
 
     // QR code label
     columns[4] = paymentRequestData.getLabel() == null ? "" : paymentRequestData.getLabel();

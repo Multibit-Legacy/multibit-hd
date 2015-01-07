@@ -20,8 +20,6 @@ import java.awt.event.ActionEvent;
  */
 public class DisplayInfoMessageView extends AbstractComponentView<DisplayInfoMessageModel> {
 
-  private JLabel infoMessage;
-
   private JButton panelCloseButton;
 
   /**

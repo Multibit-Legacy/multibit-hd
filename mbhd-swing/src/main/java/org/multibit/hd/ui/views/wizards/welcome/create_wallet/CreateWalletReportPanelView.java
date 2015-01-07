@@ -38,6 +38,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -209,7 +211,14 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
         // Provide a precise local creation time
         Dates.formatTransactionDateLocal(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
       );
-      walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(applicationDataDirectory, seed, Dates.nowInSeconds(), password, name, notes);
+      walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
+        applicationDataDirectory,
+        seed,
+        Dates.nowInSeconds(),
+        password,
+        name,
+        notes
+      );
 
       Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
 
@@ -328,7 +337,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       // Enable the finish button on the report page
       ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
 
-    } catch (Exception e) {
+    } catch (RuntimeException | IOException | NoSuchAlgorithmException e) {
       // Handing over to the exception handler means a hard shutdown
       ExceptionHandler.handleThrowable(e);
     }
