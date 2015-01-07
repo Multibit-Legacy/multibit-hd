@@ -87,6 +87,18 @@ public class NamedComboBoxArrowButtonPainter extends AbstractNamedRegionPainter 
     // Generate this entire method. Each state/bg/fg/border combo that has
     // been painted gets its own KEY and paint method
     switch (state) {
+      case BACKGROUND_DISABLED:
+        // Do nothing
+        break;
+      case BACKGROUND_ENABLED:
+        // Do nothing
+        break;
+      case BACKGROUND_ENABLED_MOUSEOVER:
+        // Do nothing
+        break;
+      case BACKGROUND_ENABLED_PRESSED:
+        // Do nothing
+        break;
       case BACKGROUND_DISABLED_EDITABLE:
         paintBackgroundDisabledAndEditable(g);
         break;
