@@ -211,8 +211,8 @@ public class ImageDecorator {
   public static BufferedImage rotate(BufferedImage image, double theta) {
 
     // Calculate the center of rotation
-    double x = image.getWidth() / 2;
-    double y = image.getHeight() / 2;
+    double x = (double) image.getWidth() / 2;
+    double y = (double) image.getHeight() / 2;
 
     // Copy the image
     BufferedImage copy = image.getSubimage(0, 0, image.getWidth(), image.getHeight());
