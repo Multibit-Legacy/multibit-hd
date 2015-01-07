@@ -243,7 +243,11 @@ public class Formats {
    *
    * @return A decimal format suitable for local currency balance representation
    */
-  private static DecimalFormat configureLocalDecimalFormat(DecimalFormatSymbols dfs, BitcoinConfiguration bitcoinConfiguration, boolean showNegative) {
+  private static DecimalFormat configureLocalDecimalFormat(
+    DecimalFormatSymbols dfs,
+    BitcoinConfiguration bitcoinConfiguration,
+    boolean showNegative
+  ) {
 
     DecimalFormat format = new DecimalFormat();
 
