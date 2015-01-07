@@ -19,6 +19,7 @@ import org.multibit.hd.ui.views.themes.Themes;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.util.Arrays;
 
 public class AmountBTCTableHeaderRenderer extends JLabel implements TableCellRenderer {
 
@@ -62,7 +63,7 @@ public class AmountBTCTableHeaderRenderer extends JLabel implements TableCellRen
       MultiBitUI.SMALL_ICON_SIZE
     );
 
-    this.bitcoinColumns = bitcoinColumns;
+    this.bitcoinColumns = Arrays.copyOf(bitcoinColumns, bitcoinColumns.length);
 
     this.bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin().deepCopy();
   }
