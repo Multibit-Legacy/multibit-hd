@@ -22,6 +22,7 @@
     <slf4j.version>1.7.2</slf4j.version>
     <xchange.version>2.1.0</xchange.version>
     <jackson.version>2.3.2</jackson.version>
+    <findbugs.version>3.0.0</findbugs.version>
 
     <!-- 2.0M10/1.2.1 -->
     <fest.version>1.2.1</fest.version>
@@ -199,17 +200,22 @@
         </configuration>
       </plugin>
 
-      <!-- Findbugs -->
+      <!-- Findbugs
+           Notes:
+           See Issue #323 for initial response to introduction and supporting notes
+           See target/findBugs.xml for report
+           Use Findbugs-IDEA plugin with "Medium" (default) or "Low" (recommended) threshold
+      -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>${findbugs.version}</version>
         <configuration>
           <effort>Max</effort>
-          <threshold>Low</threshold>
+          <!-- The project currently passes with Medium but Low is desired -->
+          <threshold>Medium</threshold>
           <xmlOutput>true</xmlOutput>
         </configuration>
-        <!-- Enable this once all bugs have been squashed
         <executions>
           <execution>
             <phase>verify</phase>
@@ -218,7 +224,6 @@
             </goals>
           </execution>
         </executions>
-        -->
       </plugin>
 
       <!-- Filter out functional and FEST UI tests by Maven (an IDE will run all tests including functional) -->
