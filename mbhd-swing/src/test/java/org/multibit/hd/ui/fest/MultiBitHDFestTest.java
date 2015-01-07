@@ -379,11 +379,10 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <ul>
    * <li>Start with empty wallet fixture</li>
    * <li>Unlock wallet</li>
-   * <li>Exercise the Trezor events within the context of an unlocked wallet</li>
    * </ul>
    */
   @Test
-  public void verifyHardwareWalletAfterUnlock() throws Exception {
+  public void verifyUnlockTrezorHardwareWallet() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be unlocked
     HardwareWalletEventFixtures.prepareUnlockTrezorUseCaseEvents();
@@ -391,11 +390,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Start with the empty hardware wallet fixture
     arrangeEmptyWithAttachedHardwareWallet();
 
-    // Unlock the wallet
-    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
-
     // Verify
-    HardwareWalletAfterUnlockRequirements.verifyUsing(window);
+    UnlockTrezorHardwareWalletRequirements.verifyUsing(window);
 
   }
 
@@ -426,7 +422,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     log.info("Arranging fresh environment with attached hardware wallet...");
 
     // Arrange the hardware client responses
-    AbstractTrezorHardwareWalletClient mockClient = HardwareWalletFixtures.createAttachedClient();
+    AbstractTrezorHardwareWalletClient mockClient = HardwareWalletFixtures.createAttachedInitialisedClient();
 
     // Setup the mock hardware wallet service
     HardwareWalletService hardwareWalletService = new HardwareWalletService(mockClient);
@@ -491,7 +487,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     WalletFixtures.createEmptyWalletFixture();
 
     // Arrange the hardware client responses
-    AbstractTrezorHardwareWalletClient mockClient = HardwareWalletFixtures.createAttachedClient();
+    AbstractTrezorHardwareWalletClient mockClient = HardwareWalletFixtures.createAttachedInitialisedClient();
 
     // Setup the mock hardware wallet service
     HardwareWalletService hardwareWalletService = new HardwareWalletService(mockClient);

@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.*;
+import org.bitcoinj.core.Utils;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
@@ -21,23 +22,24 @@ import java.util.concurrent.TimeUnit;
  * <p>Test hardware wallet event fixtures to provide the following to FEST tests:</p>
  * <ul>
  * <li>Various scripts to match use cases involving hardware wallets</li>
+ * <li>Various standard objects to act as payloads for the events</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.5
  *  
  */
 public class HardwareWalletEventFixtures {
 
-  private static final Logger log = LoggerFactory.getLogger(HardwareWalletEventFixtures.class);
+  public static final Logger log = LoggerFactory.getLogger(HardwareWalletEventFixtures.class);
 
-  private static final ListeningScheduledExecutorService eventScheduler = SafeExecutors.newSingleThreadScheduledExecutor("fest-events");
+  public static final ListeningScheduledExecutorService eventScheduler = SafeExecutors.newSingleThreadScheduledExecutor("fest-events");
 
   /**
    * The standard label for a hardware wallet
    */
   public static final String STANDARD_LABEL = "Example";
 
-  private static Queue<HardwareWalletEvent> hardwareWalletEvents = Queues.newArrayBlockingQueue(100);
+  public static Queue<HardwareWalletEvent> hardwareWalletEvents = Queues.newArrayBlockingQueue(100);
 
   /**
    * Control when the next event in the use case will be fired
@@ -90,13 +92,48 @@ public class HardwareWalletEventFixtures {
 
     hardwareWalletEvents.clear();
 
-    HardwareWalletEvent event = new HardwareWalletEvent(
+    // Attach device
+    final HardwareWalletEvent event1 = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_DEVICE_READY,
       Optional.<HardwareWalletMessage>of(
         newStandardFeatures()
       ));
 
-    hardwareWalletEvents.add(event);
+    hardwareWalletEvents.add(event1);
+
+    // Deterministic hierarchy
+    final HardwareWalletEvent event6 = new HardwareWalletEvent(
+      HardwareWalletEventType.DETERMINISTIC_HIERARCHY,
+      Optional.<HardwareWalletMessage>absent());
+
+    hardwareWalletEvents.add(event6);
+
+    // PIN matrix request (current)
+    final HardwareWalletEvent event7 = new HardwareWalletEvent(
+      HardwareWalletEventType.SHOW_PIN_ENTRY,
+      Optional.<HardwareWalletMessage>of(
+        newCurrentPinMatrix()
+      ));
+
+    hardwareWalletEvents.add(event7);
+
+    // Button request (cipher key confirm)
+    final HardwareWalletEvent event8 = new HardwareWalletEvent(
+      HardwareWalletEventType.SHOW_BUTTON_PRESS,
+      Optional.<HardwareWalletMessage>of(
+        newOtherButtonRequest()
+      ));
+
+    hardwareWalletEvents.add(event8);
+
+    // Success
+    final HardwareWalletEvent event9 = new HardwareWalletEvent(
+      HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED,
+      Optional.<HardwareWalletMessage>of(
+        newDeviceResetSuccess()
+      ));
+
+    hardwareWalletEvents.add(event9);
 
   }
 
@@ -147,7 +184,7 @@ public class HardwareWalletEventFixtures {
     final HardwareWalletEvent event5 = new HardwareWalletEvent(
       HardwareWalletEventType.PROVIDE_ENTROPY,
       Optional.<HardwareWalletMessage>absent()
-      );
+    );
 
     hardwareWalletEvents.add(event5);
 
@@ -166,7 +203,7 @@ public class HardwareWalletEventFixtures {
     final HardwareWalletEvent event6 = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED,
       Optional.<HardwareWalletMessage>of(
-        newDeviceResetSuccess()
+        newCipherKeySuccess()
       ));
 
     hardwareWalletEvents.add(event6);
@@ -174,7 +211,7 @@ public class HardwareWalletEventFixtures {
   }
 
   /**
-   * @return A default Features for use with FEST testing
+   * @return A default Features for use with FEST testing (abandon wallet)
    */
   public static Features newStandardFeatures() {
 
@@ -182,15 +219,15 @@ public class HardwareWalletEventFixtures {
     features.setVendor("bitcointrezor.com");
     features.setVersion("1.2.1");
     features.setBootloaderMode(false);
-    features.setDeviceId("5DE10270051613895EEB68ED");
+    features.setDeviceId("D18894FA25FA90CD589EDE57");
     features.setPinProtection(true);
     features.setPassphraseProtection(false);
     features.setLanguage("english");
     features.setLabel(STANDARD_LABEL);
     features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin"));
     features.setInitialized(true);
-    features.setRevision(new byte[]{0x52, 0x4f, 0x2a, (byte) 0x95, 0x7a, (byte) 0xfb, 0x66, (byte) 0xe6, (byte) 0xa8, 0x69, 0x38, 0x4a, (byte) 0xce, (byte) 0xac, (byte) 0xa1, (byte) 0xcb, 0x7f, (byte) 0x9c, (byte) 0xba, 0x60});
-    features.setBootloaderHash(new byte[]{(byte) 0xa0, 0x3e, 0x7e, (byte) 0x8e, (byte) 0x9d, (byte) 0xa0, (byte) 0xb9, 0x2d, 0x3d, 0x4b, 0x39, (byte) 0xef, (byte) 0xff, 0x38, 0x67, 0x35, 0x12, (byte) 0xec, (byte) 0xec, (byte) 0xc5, 0x6d, (byte) 0xb6, 0x02, 0x30, 0x30, 0x22, (byte) 0xe5, (byte) 0xe8, 0x7b, (byte) 0xe1, 0x22, 0x61});
+    features.setRevision(Utils.HEX.decode("524f2a957afb66e6a869384aceaca1cb7f9cba60"));
+    features.setBootloaderHash(Utils.HEX.decode("c4c32539b4a025a8e753a4c46264285911a45fcb14f4718179e711b1ce990524"));
     features.setImported(false);
 
     return features;
@@ -200,7 +237,7 @@ public class HardwareWalletEventFixtures {
   /**
    * @return A new device reset success (wallet created)
    */
-  private static Success newDeviceResetSuccess() {
+  public static Success newDeviceResetSuccess() {
     return new Success(
       "Device reset",
       new byte[]{}
@@ -210,7 +247,7 @@ public class HardwareWalletEventFixtures {
   /**
    * @return A new device wiped success
    */
-  private static Success newDeviceWipedSuccess() {
+  public static Success newDeviceWipedSuccess() {
 
     return new Success(
       "Device wiped",
@@ -220,9 +257,19 @@ public class HardwareWalletEventFixtures {
   }
 
   /**
+   * @return A new cipher key success (abandon wallet)
+   */
+  public static Success newCipherKeySuccess() {
+    return new Success(
+      "",
+      Utils.HEX.decode("ec406a3c796099050400f65ab311363e")
+    );
+  }
+
+  /**
    * @return A new confirm wipe button request
    */
-  private static ButtonRequest newWipeDeviceButtonRequest() {
+  public static ButtonRequest newWipeDeviceButtonRequest() {
 
     return new ButtonRequest(
       ButtonRequestType.WIPE_DEVICE,
@@ -234,7 +281,7 @@ public class HardwareWalletEventFixtures {
   /**
    * @return A new confirm word button request
    */
-  private static ButtonRequest newConfirmWordButtonRequest() {
+  public static ButtonRequest newConfirmWordButtonRequest() {
 
     return new ButtonRequest(
       ButtonRequestType.CONFIRM_WORD,
@@ -244,9 +291,30 @@ public class HardwareWalletEventFixtures {
   }
 
   /**
+   * @return A new "other" button request (cipher key etc)
+   */
+  public static ButtonRequest newOtherButtonRequest() {
+
+    return new ButtonRequest(
+      ButtonRequestType.OTHER,
+      ""
+    );
+
+  }
+
+  /**
+   * @return A new PIN matrix for "current" (unlock)
+   */
+  public static PinMatrixRequest newCurrentPinMatrix() {
+
+    return new PinMatrixRequest(PinMatrixRequestType.CURRENT);
+
+  }
+
+  /**
    * @return A new PIN matrix for "new first" (set)
    */
-  private static PinMatrixRequest newNewFirstPinMatrix() {
+  public static PinMatrixRequest newNewFirstPinMatrix() {
 
     return new PinMatrixRequest(PinMatrixRequestType.NEW_FIRST);
 
@@ -255,10 +323,127 @@ public class HardwareWalletEventFixtures {
   /**
    * @return A new PIN matrix for "new second" (confirm)
    */
-  private static PinMatrixRequest newNewSecondPinMatrix() {
+  public static PinMatrixRequest newNewSecondPinMatrix() {
 
     return new PinMatrixRequest(PinMatrixRequestType.NEW_SECOND);
 
   }
+
+  /**
+   * @return A new standard public key for M (abandon)
+   */
+  public static PublicKey newStandardPublicKey_M() {
+
+    HDNodeType hdNodeType = new HDNodeType(
+      true,
+      Utils.HEX.decode("03d902f35f560e0470c63313c7369168d9d7df2d49bf295fd9fb7cb109ccee0494"),
+      false,
+      null,
+      true,
+      Utils.HEX.decode("7923408dadd3c7b56eed15567707ae5e5dca089de972e07f3b860450e2a3b70e"),
+      true,
+      0,
+      true,
+      0,
+      true,
+      0
+    );
+
+    return new PublicKey(
+      false,
+      null,
+      null,
+      true,
+      hdNodeType
+    );
+  }
+
+  /**
+   * @return A new standard public key for M/44H (abandon)
+   */
+  public static PublicKey newStandardPublicKey_M_44H() {
+
+    HDNodeType hdNodeType = new HDNodeType(
+      true,
+      Utils.HEX.decode("03428a2da3e76291667a67a38ed45468ceb0d156bc8beda6e86fbc4cf295087c2b"),
+      false,
+      null,
+      true,
+      Utils.HEX.decode("45d3b0e8206db10a08d555317c7e245c5bbd12254ce968f3c79a959d4e6af98a"),
+      true,
+      0x8000002c,
+      true,
+      1,
+      true,
+      0x73c5da0a
+    );
+
+    return new PublicKey(
+      false,
+      null,
+      null,
+      true,
+      hdNodeType
+    );
+  }
+
+  /**
+   * @return A new standard public key for M/44H/0H (abandon)
+   */
+  public static PublicKey newStandardPublicKey_M_44H_0H() {
+
+    HDNodeType hdNodeType = new HDNodeType(
+      true,
+      Utils.HEX.decode("03f72f0e3684b0d7295f391616f12a469070bfcd175c55366239047495a2c1c410"),
+      false,
+      null,
+      true,
+      Utils.HEX.decode("af0894dc5f2d5bed0dc85b2fd2053a98575765c144e4e64126ee1009b38860b2"),
+      true,
+      0x80000000,
+      true,
+      2,
+      true,
+      0x88b3582b
+    );
+
+    return new PublicKey(
+      false,
+      null,
+      null,
+      true,
+      hdNodeType
+    );
+  }
+
+  /**
+   * @return A new standard public key for M/44H/0H/0H (abandon)
+   */
+  public static PublicKey newStandardPublicKey_M_44H_0H_0H() {
+
+    HDNodeType hdNodeType = new HDNodeType(
+      true,
+      Utils.HEX.decode("03774c910fcf07fa96886ea794f0d5caed9afe30b44b83f7e213bb92930e7df4bd"),
+      false,
+      null,
+      true,
+      Utils.HEX.decode("3da4bc190a2680111d31fadfdc905f2a7f6ce77c6f109919116f253d43445219"),
+      true,
+      0x80000000,
+      true,
+      3,
+      true,
+      0x155bca59
+    );
+
+    return new PublicKey(
+      false,
+      null,
+      null,
+      true,
+      hdNodeType
+    );
+  }
+
 
 }
