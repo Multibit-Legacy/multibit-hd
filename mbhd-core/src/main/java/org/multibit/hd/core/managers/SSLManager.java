@@ -224,7 +224,7 @@ public enum SSLManager {
   /**
    * A persistent X509 trust manager
    */
-  private class SavingTrustManager implements X509TrustManager {
+  static class SavingTrustManager implements X509TrustManager {
 
     private final X509TrustManager tm;
     private X509Certificate[] chain;
