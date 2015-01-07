@@ -192,6 +192,7 @@ public class CoreServices {
    *
    * @param shutdownType The
    */
+  @SuppressFBWarnings({"DM_GC"})
   public static synchronized void shutdownNow(final ShutdownEvent.ShutdownType shutdownType) {
 
     switch (shutdownType) {
@@ -213,7 +214,7 @@ public class CoreServices {
         // Reset the event handler
         uiEventBus = new EventBus();
 
-        // Suggest a garbage collection
+        // Suggest a garbage collection to free resources under test
         System.gc();
         break;
       case SWITCH:
