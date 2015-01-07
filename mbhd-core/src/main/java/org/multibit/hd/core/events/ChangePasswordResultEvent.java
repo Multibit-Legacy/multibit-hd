@@ -1,5 +1,6 @@
 package org.multibit.hd.core.events;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.dto.CoreMessageKey;
 
 import java.util.Arrays;
@@ -17,8 +18,13 @@ public class ChangePasswordResultEvent implements CoreEvent {
 
   private final CoreMessageKey changePasswordResultKey;
 
+  /**
+   * TODO Consider using List instead
+   */
   private final Object[] changePasswordResultData;
 
+  // The fix for this is more complex than leaving it in place
+  @SuppressFBWarnings({"EI_EXPOSE_REP2"})
   public ChangePasswordResultEvent(
           boolean changePasswordWasSuccessful,
           CoreMessageKey changePasswordResultKey,
@@ -38,6 +44,8 @@ public class ChangePasswordResultEvent implements CoreEvent {
     return changePasswordResultKey;
   }
 
+  // The fix for this is more complex than leaving it in place
+  @SuppressFBWarnings({"EI_EXPOSE_REP"})
   public Object[] getChangePasswordResultData() {
     return changePasswordResultData;
   }

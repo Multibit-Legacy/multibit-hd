@@ -1,5 +1,6 @@
 package org.multibit.hd.core.events;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
@@ -51,6 +52,13 @@ public class TransactionCreationEvent implements CoreEvent {
 
   private final Boolean sentByMe;
 
+  /**
+   * TODO Consider List<String> instead
+   */
+  private final String[] transactionCreationFailureReasonData;
+
+  // The fix for this is more complex than leaving it in place
+  @SuppressFBWarnings({"EI_EXPOSE_REP2"})
   public TransactionCreationEvent(
     String transactionId,
     Coin amount,
@@ -80,8 +88,6 @@ public class TransactionCreationEvent implements CoreEvent {
     this.sentByMe = sentByMe;
   }
 
-  private final String[] transactionCreationFailureReasonData;
-
   public Coin getAmount() {
     return amount;
   }
@@ -106,6 +112,8 @@ public class TransactionCreationEvent implements CoreEvent {
     return transactionCreationFailureReasonKey;
   }
 
+  // The fix for this is more complex than leaving it in place
+  @SuppressFBWarnings({"EI_EXPOSE_REP"})
   public String[] getTransactionCreationFailureReasonData() {
     return transactionCreationFailureReasonData;
   }

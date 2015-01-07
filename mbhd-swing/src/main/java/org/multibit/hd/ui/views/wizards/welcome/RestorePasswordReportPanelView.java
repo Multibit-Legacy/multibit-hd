@@ -138,7 +138,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     boolean restoreAsTrezor = model.getRestorePasswordEnterSeedPhraseModel().isRestoreAsTrezor();
     WalletId walletId;
     if (restoreAsTrezor) {
-      walletId = new WalletId(seed, WalletId.WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS);
+      walletId = new WalletId(seed, WalletId.getWalletIdSaltUsedInScryptForTrezorSoftWallets());
     } else {
       walletId = new WalletId(seed);
     }
@@ -150,21 +150,6 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     if (walletDirectory.isDirectory()) {
       walletSummary = WalletManager.getOrCreateWalletSummary(walletDirectory, walletId);
     } else {
-      SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            // Failed
-            passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
-            AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
-            AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
-          }
-        });
-      return;
-    }
-
-    // Check for present but empty wallet directory
-    if (walletSummary.getEncryptedPassword() == null) {
       SwingUtilities.invokeLater(
         new Runnable() {
           @Override

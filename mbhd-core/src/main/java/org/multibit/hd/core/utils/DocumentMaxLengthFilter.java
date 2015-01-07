@@ -3,6 +3,7 @@ package org.multibit.hd.core.utils;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
+import java.io.Serializable;
 
 /**
  * <p>Document filter to provide the following to text fields/areas:</p>
@@ -13,7 +14,7 @@ import javax.swing.text.DocumentFilter;
  * @since 0.0.1
  *
  */
-public class DocumentMaxLengthFilter extends DocumentFilter {
+public class DocumentMaxLengthFilter extends DocumentFilter implements Serializable {
 
   private final int maxCharacters;
 

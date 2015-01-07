@@ -1,6 +1,7 @@
 package org.multibit.hd.core.events;
 
 import com.google.common.base.Optional;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 
@@ -34,6 +35,13 @@ public class BitcoinSentEvent implements CoreEvent {
 
   private final String sendFailureReasonKey;
 
+  /**
+   * TODO Consider a List<String> instead
+   */
+  private final String[] sendFailureReasonData;
+
+  // The fix for this is more complex than leaving it in place
+  @SuppressFBWarnings({"EI_EXPOSE_REP2"})
   public BitcoinSentEvent(
     Address destinationAddress,
     Coin amount,
@@ -55,8 +63,6 @@ public class BitcoinSentEvent implements CoreEvent {
     this.sendFailureReasonData = sendFailureReasonData;
 
   }
-
-  private final String[] sendFailureReasonData;
 
   public Coin getAmount() {
     return amount;
@@ -82,6 +88,8 @@ public class BitcoinSentEvent implements CoreEvent {
     return sendFailureReasonKey;
   }
 
+  // The fix for this is more complex than leaving it in place
+  @SuppressFBWarnings({"EI_EXPOSE_REP"})
   public String[] getSendFailureReasonData() {
     return sendFailureReasonData;
   }

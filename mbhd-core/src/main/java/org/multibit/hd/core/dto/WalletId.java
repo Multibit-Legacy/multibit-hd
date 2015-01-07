@@ -26,17 +26,31 @@ public class WalletId {
   /**
    * The salt used in converting seed bytes to a wallet id for MBHD wallets
    */
-  public static final byte[] WALLET_ID_SALT_USED_IN_SCRYPT_FOR_MBHD_WALLETS = new byte[]{(byte) 1};
+  private static final byte[] WALLET_ID_SALT_USED_IN_SCRYPT_FOR_MBHD_WALLETS = new byte[]{(byte) 1};
 
   /**
     * The salt used in converting seed bytes to a wallet id for Trezor wallets
     */
-  public static final byte[] WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS = new byte[]{(byte) 2};
+  private static final byte[] WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS = new byte[]{(byte) 2};
 
   private static final int NUMBER_OF_BYTES_IN_WALLET_ID = 20;
   public static final int LENGTH_OF_FORMATTED_WALLET_ID = 2 * NUMBER_OF_BYTES_IN_WALLET_ID + (NUMBER_OF_BYTES_IN_WALLET_ID / SEPARATOR_REPEAT_PERIOD) - 1;
 
   private final byte[] walletId;
+
+  /**
+   * @return A copy of the wallet ID salt used in Scrypt for MBHD wallets
+   */
+  public static byte[] getWalletIdSaltUsedInScryptForMbhdWallets() {
+    return Arrays.copyOf(WALLET_ID_SALT_USED_IN_SCRYPT_FOR_MBHD_WALLETS, WALLET_ID_SALT_USED_IN_SCRYPT_FOR_MBHD_WALLETS.length);
+  }
+
+  /**
+   * @return A copy of the wallet ID salt used in Scrypt for Trezor soft wallets
+   */
+  public static byte[] getWalletIdSaltUsedInScryptForTrezorSoftWallets() {
+    return Arrays.copyOf(WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS, WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS.length);
+  }
 
   /**
    * Create a wallet id from a formatted wallet id
@@ -108,7 +122,7 @@ public class WalletId {
    * @return The raw wallet id as a byte[]
    */
   public byte[] getBytes() {
-    return walletId;
+    return Arrays.copyOf(walletId, walletId.length);
   }
 
   /**

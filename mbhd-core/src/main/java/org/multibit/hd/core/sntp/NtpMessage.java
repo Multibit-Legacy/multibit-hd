@@ -5,6 +5,7 @@ import com.google.common.base.Charsets;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 
 /**
@@ -209,6 +210,11 @@ public class NtpMessage {
   public double transmitTimestamp = 0;
 
   /**
+   * Lightweight random number generator for use with LSB filling
+   */
+  private static final Random random = new Random();
+
+  /**
    * Constructs a new NtpMessage from an array of bytes.
    */
   public NtpMessage(byte[] array) {
@@ -369,9 +375,9 @@ public class NtpMessage {
 
     // From RFC 2030: It is advisable to fill the non-significant
     // low order bits of the timestamp with a random, unbiased
-    // bitstring, both to avoid systematic roundoff errors and as
-    // a means of loop detection and replay detection.
-    array[7] = (byte) (Math.random() * 255.0);
+    // bitstring, both to avoid systematic rounding errors and as
+    // a means of loop detection and replay detection
+    array[7] = (byte) random.nextInt(256);
 
   }
 

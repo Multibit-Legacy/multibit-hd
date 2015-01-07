@@ -130,19 +130,19 @@ public class WalletSummary {
    * @return encrypted, padded wallet credentials
    */
   public byte[] getEncryptedPassword() {
-    return encryptedPassword;
+    return Arrays.copyOf(encryptedPassword, encryptedPassword.length);
   }
 
   public void setEncryptedPassword(byte[] encryptedPassword) {
-    this.encryptedPassword = encryptedPassword;
+    this.encryptedPassword = Arrays.copyOf(encryptedPassword, encryptedPassword.length);
   }
 
   public byte[] getEncryptedBackupKey() {
-    return encryptedBackupKey;
+    return Arrays.copyOf(encryptedBackupKey, encryptedBackupKey.length);
   }
 
   public void setEncryptedBackupKey(byte[] encryptedBackupKey) {
-    this.encryptedBackupKey = encryptedBackupKey;
+    this.encryptedBackupKey = Arrays.copyOf(encryptedBackupKey, encryptedBackupKey.length);
   }
 
   public WalletType getWalletType() {

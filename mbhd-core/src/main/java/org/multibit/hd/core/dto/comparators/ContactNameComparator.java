@@ -2,6 +2,7 @@ package org.multibit.hd.core.dto.comparators;
 
 import org.multibit.hd.core.dto.Contact;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Comparator;
  * @since 0.0.1
  *
  */
-public class ContactNameComparator implements Comparator<Contact> {
+public class ContactNameComparator implements Comparator<Contact>, Serializable {
 
 
   @Override

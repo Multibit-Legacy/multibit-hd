@@ -1,5 +1,6 @@
 package org.multibit.hd.core.config;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -15,13 +16,15 @@ import java.util.Locale;
  * <p>Utility to provide the following to configuration:</p>
  * <ul>
  * <li>Default configuration</li>
- * <li>Default configuration</li>
+ * <li>Switch configuration</li>
  * <li>Read/write configuration files</li>
  * </ul>
  *
  * @since 0.0.1
  *
  */
+// This arises from the global nature of the configuration
+@SuppressFBWarnings({"MS_CANNOT_BE_FINAL"})
 public class Configurations {
 
   private static final Logger log = LoggerFactory.getLogger(Configurations.class);

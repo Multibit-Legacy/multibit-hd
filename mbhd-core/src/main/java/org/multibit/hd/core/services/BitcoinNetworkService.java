@@ -581,7 +581,9 @@ public class BitcoinNetworkService extends AbstractService {
             return false;
           }
 
-          if (Math.floor(updatedSize / MINING_FEE_BOUNDARY) > Math.floor(initialSize / MINING_FEE_BOUNDARY)) {
+          double updatedSizeBoundary = Math.floor((double) updatedSize / MINING_FEE_BOUNDARY);
+          double initialSizeBoundary = Math.floor((double) initialSize / MINING_FEE_BOUNDARY);
+          if (updatedSizeBoundary > initialSizeBoundary) {
             // Adding a client fee output has stepped over a mining fee boundary.
             // There is extra mining fee due - this can either be paid by reducing the amount redeemed (tx output 0)
             // or reducing the client fee (tx output 1)

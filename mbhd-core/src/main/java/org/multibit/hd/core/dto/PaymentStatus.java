@@ -1,5 +1,7 @@
 package org.multibit.hd.core.dto;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * The status of a payment
  * This wraps a RAGStatus and has a depth and detail description information
@@ -18,7 +20,8 @@ public class PaymentStatus {
 
   /**
    * The localisation data for the status text for the payment
-   */
+   * TODO Consider a List<String> instead
+  */
   private Object[] statusData = null;
 
   /**
@@ -57,10 +60,16 @@ public class PaymentStatus {
     return statusKey;
   }
 
+  // The fix to this would introduce more problems than the danger
+  // it potentially presents
+  @SuppressFBWarnings({"EI_EXPOSE_REP"})
   public Object[] getStatusData() {
     return statusData;
   }
 
+  // The fix to this would introduce more problems than the danger
+  // it potentially presents
+  @SuppressFBWarnings({"EI_EXPOSE_REP2"})
   public void setStatusData(Object[] statusData) {
     this.statusData = statusData;
   }
@@ -108,7 +117,7 @@ public class PaymentStatus {
           return 1;
         } else {
           if (other.getStatus() == RAGStatus.GREEN) {
-            return new Integer(this.getDepth()).compareTo(other.getDepth());
+            return Integer.valueOf(this.getDepth()).compareTo(other.getDepth());
           } else {
             return -1;
           }

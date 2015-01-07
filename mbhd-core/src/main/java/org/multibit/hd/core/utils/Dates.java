@@ -559,8 +559,8 @@ public class Dates {
     Preconditions.checkArgument(separatorIndex > 3, "'" + text + "' does not contain '/' in the correct location");
 
     try {
-      int days = Integer.valueOf(text.substring(0, separatorIndex));
-      int checksum = Integer.valueOf(text.substring(separatorIndex + 1));
+      int days = Integer.parseInt(text.substring(0, separatorIndex));
+      int checksum = Integer.parseInt(text.substring(separatorIndex + 1));
 
       Preconditions.checkArgument(days % CHECKSUM_MODULUS == checksum, "'" + text + "' has incorrect checksum. Days=" + days + " checksum=" + checksum);
 

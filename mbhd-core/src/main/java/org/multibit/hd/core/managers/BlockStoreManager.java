@@ -1,5 +1,6 @@
 package org.multibit.hd.core.managers;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.core.CheckpointManager;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.store.BlockStore;
@@ -47,6 +48,7 @@ public class BlockStoreManager {
    * @throws BlockStoreException
    * @throws IOException
    */
+  @SuppressFBWarnings({"DM_GC"})
   public BlockStore createOrOpenBlockStore(File blockStoreFile, File checkpointsFile, Date checkpointDate, boolean createNew) throws BlockStoreException, IOException {
 
     boolean blockStoreCreatedNew = !blockStoreFile.exists();
