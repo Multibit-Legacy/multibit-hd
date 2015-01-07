@@ -32,11 +32,6 @@ import java.util.Locale;
 public class Formats {
 
   /**
-   * The separator character to use between currencies in an exchange rate
-   */
-  public static final String EXCHANGE_RATE_SEPARATOR = " / ";
-
-  /**
    * The number of decimal places for showing the exchange rate depends on the bitcoin symbol used, with this offset
    */
   public static final int EXCHANGE_RATE_DECIMAL_PLACES_OFFSET = 2;
@@ -237,6 +232,23 @@ public class Formats {
   }
 
   /**
+   * @param bitcoinConfiguration The Bitcoin configuration
+   * @param currentLocale        The current locale
+   *
+   * @return The decimal format symbols to use based on the configuration and locale
+   */
+  private static DecimalFormatSymbols configureDecimalFormatSymbols(BitcoinConfiguration bitcoinConfiguration, Locale currentLocale) {
+
+    DecimalFormatSymbols dfs = new DecimalFormatSymbols(currentLocale);
+
+    dfs.setDecimalSeparator(bitcoinConfiguration.getDecimalSeparator().charAt(0));
+    dfs.setGroupingSeparator(bitcoinConfiguration.getGroupingSeparator().charAt(0));
+
+    return dfs;
+
+  }
+
+  /**
    * @param dfs                  The decimal format symbols
    * @param bitcoinConfiguration The Bitcoin configuration to use
    * @param showNegative         True if the negative prefix is allowed
@@ -266,23 +278,6 @@ public class Formats {
     }
 
     return format;
-  }
-
-  /**
-   * @param bitcoinConfiguration The Bitcoin configuration
-   * @param currentLocale        The current locale
-   *
-   * @return The decimal format symbols to use based on the configuration and locale
-   */
-  private static DecimalFormatSymbols configureDecimalFormatSymbols(BitcoinConfiguration bitcoinConfiguration, Locale currentLocale) {
-
-    DecimalFormatSymbols dfs = new DecimalFormatSymbols(currentLocale);
-
-    dfs.setDecimalSeparator(bitcoinConfiguration.getDecimalSeparator().charAt(0));
-    dfs.setGroupingSeparator(bitcoinConfiguration.getGroupingSeparator().charAt(0));
-
-    return dfs;
-
   }
 
   /**

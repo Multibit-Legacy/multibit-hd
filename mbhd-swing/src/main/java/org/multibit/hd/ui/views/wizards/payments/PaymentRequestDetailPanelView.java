@@ -239,8 +239,11 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
         LabelDecorator.applyBitcoinSymbolLabel(
           exchangeRateLabel,
           Configurations.currentConfiguration.getBitcoin(),
-          Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL) + " " + amountFiat.getCurrency().get().getCurrencyCode()
-            + Formats.EXCHANGE_RATE_SEPARATOR);
+          Languages.safeText(
+            MessageKey.EXCHANGE_RATE_LABEL)
+            + " "
+            + amountFiat.getCurrency().get().getCurrencyCode()
+            + " / ");
       } else {
         amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
         exchangeRateLabel.setText(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
