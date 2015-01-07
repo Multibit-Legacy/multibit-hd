@@ -53,6 +53,8 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       case REPAIR_WALLET:
         state = RepairWalletState.REPAIR_WALLET_REPORT;
         break;
+      default:
+        throw new IllegalStateException("Unexpected state:" + state);
     }
   }
 

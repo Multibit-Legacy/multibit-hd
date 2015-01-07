@@ -11,7 +11,6 @@ import java.awt.geom.Rectangle2D;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class NamedComboBoxTextFieldPainter extends AbstractNamedRegionPainter {
 
@@ -36,16 +35,11 @@ public class NamedComboBoxTextFieldPainter extends AbstractNamedRegionPainter {
   private Color color11 = adjustBackgroundColor(0.0f, 0.0f, 0.0f, 0);
   private Color color12 = adjustForegroundColor(0.055555582f, -0.105344966f, 0.011764705f, 0);
 
-  // Array of current component colors, updated in each paint call
-  private Object[] componentColors;
-
   /**
    * @param color The color to use as the basis for the painter
    * @param state The state of the button to which this painter will apply
    */
   public NamedComboBoxTextFieldPainter(Color color, int state) {
-
-//    super(color, Themes.currentTheme.buttonBackground(), state);
 
     super(Color.RED, Color.BLUE, state);
 
@@ -56,10 +50,9 @@ public class NamedComboBoxTextFieldPainter extends AbstractNamedRegionPainter {
 
   @Override
   protected void doPaint(Graphics2D g, JComponent c, int width, int height, Object[] extendedCacheKeys) {
-    //populate componentColors array with colors calculated in getExtendedCacheKeys call
-    componentColors = extendedCacheKeys;
-    //generate this entire method. Each state/bg/fg/border combo that has
-    //been painted gets its own KEY and paint method.
+
+    // Generate this entire method. Each state/bg/fg/border combo that has
+    // been painted gets its own KEY and paint method
     switch (state) {
       case BACKGROUND_DISABLED:
         paintBackgroundDisabled(g);
@@ -70,6 +63,8 @@ public class NamedComboBoxTextFieldPainter extends AbstractNamedRegionPainter {
       case BACKGROUND_SELECTED:
         paintBackgroundSelected(g);
         break;
+      default:
+        throw new IllegalStateException("Unknown state:" + state);
 
     }
   }
@@ -224,6 +219,5 @@ public class NamedComboBoxTextFieldPainter extends AbstractNamedRegionPainter {
         decodeColor(color10, color11, 0.5f),
         color11});
   }
-
 
 }

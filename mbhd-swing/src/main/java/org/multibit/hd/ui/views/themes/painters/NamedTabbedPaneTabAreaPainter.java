@@ -14,7 +14,6 @@ import java.awt.geom.Rectangle2D;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public final class NamedTabbedPaneTabAreaPainter extends AbstractNamedRegionPainter {
 
@@ -28,15 +27,15 @@ public final class NamedTabbedPaneTabAreaPainter extends AbstractNamedRegionPain
 
   // All Colors used for painting
   private Color color1 = new Color(255, 200, 0, 255);
-  private Color color2 = adjustForegroundColor( 0.08801502f, 0.3642857f, -0.4784314f, 0);
-  private Color color3 = adjustForegroundColor( 5.1498413E-4f, -0.45471883f, 0.31764704f, 0);
-  private Color color4 = adjustForegroundColor( 5.1498413E-4f, -0.4633005f, 0.3607843f, 0);
-  private Color color5 = adjustForegroundColor( 0.05468172f, -0.58308274f, 0.19607842f, 0);
-  private Color color6 = adjustForegroundColor( -0.57865167f, -0.6357143f, -0.54901963f, 0);
-  private Color color7 = adjustForegroundColor( 5.1498413E-4f, -0.4690476f, 0.39215684f, 0);
-  private Color color8 = adjustForegroundColor( 5.1498413E-4f, -0.47635174f, 0.4352941f, 0);
-  private Color color9 = adjustForegroundColor( 0.0f, -0.05401492f, 0.05098039f, 0);
-  private Color color10 = adjustForegroundColor( 0.0f, -0.09303135f, 0.09411764f, 0);
+  private Color color2 = adjustForegroundColor(0.08801502f, 0.3642857f, -0.4784314f, 0);
+  private Color color3 = adjustForegroundColor(5.1498413E-4f, -0.45471883f, 0.31764704f, 0);
+  private Color color4 = adjustForegroundColor(5.1498413E-4f, -0.4633005f, 0.3607843f, 0);
+  private Color color5 = adjustForegroundColor(0.05468172f, -0.58308274f, 0.19607842f, 0);
+  private Color color6 = adjustForegroundColor(-0.57865167f, -0.6357143f, -0.54901963f, 0);
+  private Color color7 = adjustForegroundColor(5.1498413E-4f, -0.4690476f, 0.39215684f, 0);
+  private Color color8 = adjustForegroundColor(5.1498413E-4f, -0.47635174f, 0.4352941f, 0);
+  private Color color9 = adjustForegroundColor(0.0f, -0.05401492f, 0.05098039f, 0);
+  private Color color10 = adjustForegroundColor(0.0f, -0.09303135f, 0.09411764f, 0);
 
 
   /**
@@ -67,6 +66,8 @@ public final class NamedTabbedPaneTabAreaPainter extends AbstractNamedRegionPain
       case BACKGROUND_ENABLED_PRESSED:
         paintBackgroundEnabledAndPressed(g);
         break;
+      default:
+        throw new IllegalStateException("Unknown state:" + state);
     }
   }
 
