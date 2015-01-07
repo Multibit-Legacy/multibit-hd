@@ -982,6 +982,24 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
+    * @return A list of non Tezor wallet summaries based on the current application directory contents (never null)
+    */
+   public static List<WalletSummary> getNonHardTrezorWalletSummaries() {
+
+     List<File> walletDirectories = findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
+     Optional<String> walletRoot = INSTANCE.getCurrentWalletRoot();
+     List<WalletSummary> allWalletSummaries = findWalletSummaries(walletDirectories, walletRoot);
+     List<WalletSummary> nonHardTrezorWalletSummaries = Lists.newArrayList();
+
+     for (WalletSummary walletSummary : allWalletSummaries) {
+       if (!WalletType.TREZOR_HARD_WALLET.equals(walletSummary.getWalletType())) {
+         nonHardTrezorWalletSummaries.add(walletSummary);
+       }
+     }
+
+     return nonHardTrezorWalletSummaries;
+   }
+  /**
    * <p>Work out what wallets are available in a directory (typically the user data directory).
    * This is achieved by looking for directories with a name like <code>"mbhd-walletId"</code>
    *

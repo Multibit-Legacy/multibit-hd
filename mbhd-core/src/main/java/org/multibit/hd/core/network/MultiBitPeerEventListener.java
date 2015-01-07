@@ -36,11 +36,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
     log.trace("Number of blocks left = {}", blocksLeft);
 
-    if (blocksLeft == 0) {
-      doneDownload();
-      return;
-    }
-
     if (blocksLeft < 0 || originalBlocksLeft <= 0) {
       return;
     }
@@ -55,6 +50,10 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
     // Fire the download percentage
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(lastPercent, blocksLeft));
+
+    if (blocksLeft == 0) {
+       doneDownload();
+     }
   }
 
   @Override
@@ -69,13 +68,12 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     } else {
       log.info("Chain download switched to {}", peer);
     }
-    if (blocksLeft == 0) {
-      doneDownload();
-      return;
-    }
 
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(lastPercent, blocksLeft));
 
+    if (blocksLeft == 0) {
+      doneDownload();
+    }
   }
 
   @Override

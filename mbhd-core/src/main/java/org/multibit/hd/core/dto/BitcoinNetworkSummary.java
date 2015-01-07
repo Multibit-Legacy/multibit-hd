@@ -147,7 +147,7 @@ public class BitcoinNetworkSummary {
    * @param percent     The percentage of blocks downloaded (-1 means "hide", 0-99 "in progress", 100 "success")
    * @param blocksLeft  The number of blocks left (-1 means "hide", 0+ "show")
    */
-  public BitcoinNetworkSummary(
+  private BitcoinNetworkSummary(
     BitcoinNetworkStatus status,
     RAGStatus severity,
     Optional<CoreMessageKey> messageKey,

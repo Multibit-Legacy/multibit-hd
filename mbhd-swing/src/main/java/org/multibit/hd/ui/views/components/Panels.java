@@ -401,7 +401,7 @@ public class Panels {
     radio4.setActionCommand(restoreWalletCommand);
 
     // Check for existing wallets
-    if (WalletManager.getWalletSummaries().isEmpty()) {
+    if (WalletManager.getNonHardTrezorWalletSummaries().isEmpty()) {
       radio2.setEnabled(false);
       radio2.setForeground(UIManager.getColor("RadioButton.disabledText"));
     }
