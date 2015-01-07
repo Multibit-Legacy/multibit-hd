@@ -76,8 +76,4 @@ public interface HistoryService {
    */
   void writeHistory() throws HistorySaveException;
 
-  /**
-   * <p>Create some demonstration entries for testing purposes</p>
-   */
-  void addDemoHistory();
 }
