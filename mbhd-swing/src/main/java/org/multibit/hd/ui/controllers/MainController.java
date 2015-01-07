@@ -175,8 +175,7 @@ public class MainController extends AbstractController implements
         handoverToCredentialsWizard();
       }
 
-      if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(event.getPanelName())
-        || CredentialsState.CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK.name().equals(event.getPanelName())
+      if (CredentialsState.CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK.name().equals(event.getPanelName())
         || CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT.name().equals(event.getPanelName())
         ) {
 

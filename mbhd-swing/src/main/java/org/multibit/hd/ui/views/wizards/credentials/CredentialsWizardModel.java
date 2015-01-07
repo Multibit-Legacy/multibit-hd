@@ -139,6 +139,12 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
     switch (state) {
       case CREDENTIALS_ENTER_PASSWORD:
+        // Show the wallet load report
+        state = CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT;
+
+        // Unlock wallet
+        unlockWalletWithPassword();
+
         break;
       case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
       case CREDENTIALS_REQUEST_CIPHER_KEY:
@@ -157,6 +163,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         state = CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT;
         break;
       case CREDENTIALS_RESTORE:
+        break;
+      case CREDENTIALS_LOAD_WALLET_REPORT:
         break;
       default:
         throw new IllegalStateException("Cannot showNext with a state of " + state);
@@ -330,7 +338,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         break;
 
       default:
-        // TODO Fill in the other states and provide success feedback
         log.info(
                 "Message:'Operation succeeded'\n{}",
                 event.getMessage().get()
@@ -343,7 +350,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    * Request a cipher key from the device
    */
   public void requestCipherKey() {
-
     // Communicate with the device off the EDT
     ListenableFuture<Boolean> requestCipherKeyFuture = hardwareWalletRequestService.submit(
             new Callable<Boolean>() {
@@ -403,7 +409,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
               }
             }
     );
-
   }
 
   /**
@@ -554,14 +559,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
               public void onSuccess(Optional<WalletSummary> result) {
                 log.debug("Result: {}", result);
                 // Check the result
-                if (result.isPresent()) {
-
-                  // Maintain the spinner while the initialisation continues
-
-                  // Trigger the deferred hide
-                  //ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
-
-                } else {
+                if (!result.isPresent()) {
 
                   // Wait just long enough to be annoying (anything below 2 seconds is comfortable)
                   Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
@@ -582,13 +580,10 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
                           });
 
                 }
-
               }
 
               @Override
               public void onFailure(Throwable t) {
-                t.printStackTrace();
-
                 // Ensure the view hides the spinner and enables components
                 SwingUtilities.invokeLater(
                         new Runnable() {
@@ -613,7 +608,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    */
   public void unlockWalletWithPassword() {
 
-    // Start the spinner (we are deferring the hide)
     SwingUtilities.invokeLater(
             new Runnable() {
               @Override
@@ -622,13 +616,10 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
                 // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
                 ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
 
-                // Ensure the view shows the spinner and disables components
-                enterPasswordPanelView.disableForUnlock();
-
               }
             });
 
-    // Check the password (might take a while so do it asynchronously while showing a spinner)
+    // Check the password (might take a while so do it asynchronously)
     // Tar pit (must be in a separate thread to ensure UI updates)
     ListenableFuture<Boolean> passwordFuture = unlockWalletService.submit(
             new Callable<Boolean>() {
@@ -649,14 +640,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
               @Override
               public void onSuccess(Boolean result) {
                 // Check the result
-                if (result) {
-
-                  // Maintain the spinner while the initialisation continues
-
-                  // Trigger the deferred hide
-                  ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
-
-                } else {
+                if (!result) {
 
                   // Wait just long enough to be annoying (anything below 2 seconds is comfortable)
                   Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
@@ -677,12 +661,10 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
                           });
 
                 }
-
               }
 
               @Override
               public void onFailure(Throwable t) {
-
 
                 SwingUtilities.invokeLater(
                         new Runnable() {
@@ -739,7 +721,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
         return true;
       }
-
     }
 
     // Must have failed to be here
@@ -884,5 +865,4 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   public void setEnterPasswordPanelView(CredentialsEnterPasswordPanelView enterPasswordPanelView) {
     this.enterPasswordPanelView = enterPasswordPanelView;
   }
-
 }
