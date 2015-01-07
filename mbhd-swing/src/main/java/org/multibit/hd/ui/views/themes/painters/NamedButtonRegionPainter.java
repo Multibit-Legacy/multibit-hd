@@ -207,6 +207,9 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
           getComponentColor(c, "background", color23, -0.14126986f, 0.15686274f, 0),
           getComponentColor(c, "background", color24, -0.20852983f, 0.2588235f, 0)};
         break;
+      case BACKGROUND_DISABLED:
+        // Do nothing
+        break;
       case BACKGROUND_ENABLED:
         extendedCacheKeys = new Object[]{
           getComponentColor(c, "background", color35, -0.10655806f, 0.24313724f, 0),
