@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.themes.painters;
 
 import javax.swing.plaf.nimbus.AbstractRegionPainter;
 import java.awt.*;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
@@ -29,7 +28,6 @@ public abstract class AbstractNamedRegionPainter extends AbstractRegionPainter {
   protected Path2D path = new Path2D.Float();
   protected Rectangle2D rect = new Rectangle2D.Float(0, 0, 0, 0);
   protected RoundRectangle2D roundRect = new RoundRectangle2D.Float(0, 0, 0, 0, 0, 0);
-  protected Ellipse2D ellipse = new Ellipse2D.Float(0, 0, 0, 0);
 
   /**
    * The color corresponding to the "foregroundBasisColor" reference
