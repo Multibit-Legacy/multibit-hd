@@ -483,8 +483,8 @@ public class MainView extends JFrame {
         log.debug("Using partial coordinates");
 
         try {
-          int w = Integer.valueOf(lastFrameDimension[0]);
-          int h = Integer.valueOf(lastFrameDimension[1]);
+          int w = Integer.parseInt(lastFrameDimension[0]);
+          int h = Integer.parseInt(lastFrameDimension[1]);
           Dimension newBounds = new Dimension(w, h);
 
           // Center in main screen
