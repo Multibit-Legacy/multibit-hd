@@ -2,6 +2,8 @@ package org.multibit.hd.ui.views.components.confirm_password;
 
 import org.multibit.hd.ui.models.Model;
 
+import java.util.Arrays;
+
 /**
  * <p>Model to provide the following to view:</p>
  * <ul>
@@ -70,16 +72,14 @@ public class ConfirmPasswordModel implements Model<String> {
 
   @Override
   public void setValue(String value) {
-
     this.password1 = value.toCharArray();
-
   }
 
   public void setPassword1(char[] password1) {
-    this.password1 = password1;
+    this.password1 = Arrays.copyOf(password1, password1.length);
   }
 
   public void setPassword2(char[] password2) {
-    this.password2 = password2;
+    this.password2 = Arrays.copyOf(password2, password2.length);
   }
 }
