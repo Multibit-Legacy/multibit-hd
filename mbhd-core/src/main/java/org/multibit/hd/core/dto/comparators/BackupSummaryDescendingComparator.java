@@ -35,7 +35,7 @@ public class BackupSummaryDescendingComparator implements Comparator<BackupSumma
       return 1;
     }
 
-    // DateTime uses ascending order for comparisons so we invert
-    return -o1.getCreated().compareTo(o2.getCreated());
+    // DateTime uses ascending order for comparisons so we invert operands
+    return o2.getCreated().compareTo(o1.getCreated());
   }
 }
