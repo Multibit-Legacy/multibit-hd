@@ -98,7 +98,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
   @Override
   protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelRestoreUnlock(this, wizard);
+    PanelDecorator.addExitCancelRestoreUnlockAsNext(this, wizard);
 
   }
 
@@ -108,7 +108,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
     // Initialise with "Unlock" disabled to force users to enter a credentials
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
-      WizardButton.FINISH,
+      WizardButton.NEXT,
       false
     );
 
@@ -128,7 +128,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
   @Override
   public void afterShow() {
 
-    registerDefaultButton(getFinishButton());
+    registerDefaultButton(getNextButton());
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -154,20 +154,17 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
 
   }
 
-  @Override
-  public boolean beforeHide(boolean isExitCancel) {
-
-    // Don't block an exit
-    if (isExitCancel) {
-      return true;
-    }
-
-    // Hand over to the wizard to complete the hide or return on failure
-    getWizardModel().unlockWalletWithPassword();
-
-    // Defer the hide operation
-    return false;
-  }
+//  @Override
+//  public boolean beforeHide(boolean isExitCancel) {
+//
+//    // Don't block an exit
+//    if (isExitCancel) {
+//      return true;
+//    }
+//
+//    // Defer the hide
+//    return false;
+//  }
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
@@ -177,7 +174,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
-      WizardButton.FINISH,
+      WizardButton.NEXT,
       isUnlockEnabled()
     );
 
@@ -203,7 +200,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
-    getFinishButton().setEnabled(false);
+    getNextButton().setEnabled(false);
     getExitButton().setEnabled(false);
     getRestoreButton().setEnabled(false);
 
@@ -220,7 +217,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
-    getFinishButton().setEnabled(true);
+    getNextButton().setEnabled(true);
     getExitButton().setEnabled(true);
     getRestoreButton().setEnabled(true);
 
