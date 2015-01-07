@@ -290,6 +290,7 @@ public class PanelDecorator {
      addUnlock(view, wizard, wizardScreenPanel);
 
    }
+
   /**
    * <p>Add an exit/cancel, restore, finish button combination</p>
    *
@@ -311,6 +312,30 @@ public class PanelDecorator {
     addExitCancel(view, wizard, wizardScreenPanel);
     addRestore(view, wizard, wizardScreenPanel);
     addUnlockAsNext(view, wizard, wizardScreenPanel);
+
+  }
+  /**
+   * <p>Add an exit/cancel, restore, previous, finish button combination</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends AbstractWizardModel, P> void addExitRestorePreviousFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardScreenPanel(false), "'wizardScreenPanel' must be present");
+
+    // Use the current panel
+    JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
+
+    // Cancel always leads
+    addExitCancel(view, wizard, wizardScreenPanel);
+    addRestore(view, wizard, wizardScreenPanel);
+    addPrevious(view, wizard, wizardScreenPanel);
+    addFinish(view, wizard, wizardScreenPanel);
 
   }
 

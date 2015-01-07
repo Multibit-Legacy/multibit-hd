@@ -424,7 +424,7 @@ public enum WalletManager implements WalletEventListener {
         // Failed to decrypt the existing wallet/backups
         log.error("Failed to load from wallet directory.");
         IllegalStateException error = new IllegalStateException("The directory for the wallet '" + walletDirectory.getAbsoluteFile() + "' could not be created");
-        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, "core_wallet_failed_to_load", error));
+        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, error));
         throw error;
       }
     } else {
@@ -434,7 +434,7 @@ public enum WalletManager implements WalletEventListener {
       if (!walletDirectory.exists()) {
         if (!walletDirectory.mkdir()) {
           IllegalStateException error = new IllegalStateException("The directory for the wallet '" + walletDirectory.getAbsoluteFile() + "' could not be created");
-          CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, "core_wallet_failed_to_load", error));
+          CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, error));
           throw error;
         }
       }
@@ -469,7 +469,7 @@ public enum WalletManager implements WalletEventListener {
       WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, password.getBytes(Charsets.UTF_8), password);
     } catch (NoSuchAlgorithmException e) {
       WalletLoadException error = new WalletLoadException("Could not store encrypted credentials and backup AES key", e);
-      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, "core_wallet_failed_to_load", error));
+      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, error));
       throw error;
     }
     // Wallet is now created - finish off other configuration and check if wallet needs syncing
@@ -536,7 +536,7 @@ public enum WalletManager implements WalletEventListener {
         // Failed to decrypt the existing wallet/backups
         log.error("Failed to load from wallet directory.");
         IllegalStateException error = new IllegalStateException("The wallet could not be opened");
-        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, "core_wallet_failed_to_load", error));
+        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, error));
         throw error;
 
       }
@@ -630,7 +630,7 @@ public enum WalletManager implements WalletEventListener {
     addAutoSaveListener(walletSummary.getWallet(), walletSummary.getWalletFile());
 
     // Wallet loaded successfully
-    CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletSummary.getWalletId()), true, "core_wallet_loaded_ok", null));
+    CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletSummary.getWalletId()), true, CoreMessageKey.WALLET_LOADED_OK, null));
 
     // Check if the wallet needs to sync
     checkIfWalletNeedsToSync(walletSummary);

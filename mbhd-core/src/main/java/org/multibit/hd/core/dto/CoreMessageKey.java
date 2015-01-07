@@ -115,6 +115,7 @@ public enum CoreMessageKey {
   WALLET_LOADING("core_wallet_loading"),
   WALLET_LOADED_OK("core_wallet_loaded_ok"),
   WALLET_FAILED_TO_LOAD("core_wallet_failed_to_load"),
+  WALLET_BAD_PASSWORD("core_wallet_bad_password"),
 
   // End of enum
   ;

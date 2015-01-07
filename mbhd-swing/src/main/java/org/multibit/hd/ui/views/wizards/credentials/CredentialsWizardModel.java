@@ -13,6 +13,7 @@ import org.bitcoinj.wallet.KeyChain;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
@@ -132,6 +133,18 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    */
   public void setCreateNewTrezorWallet(boolean createNewTrezorWallet) {
     this.createNewTrezorWallet = createNewTrezorWallet;
+  }
+
+  @Override
+  public void showPrevious() {
+    switch (state) {
+       case CREDENTIALS_LOAD_WALLET_REPORT:
+         // Show the enter password screen (for when the user has entered an incorrect password
+         state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+         break;
+       default:
+         throw new IllegalStateException("Cannot showPrevious with a state of " + state);
+     }
   }
 
   @Override
@@ -659,7 +672,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
                             }
                           });
-
                 }
               }
 
@@ -675,7 +687,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
                           }
                         });
-
               }
             }
     );
@@ -696,10 +707,12 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       Optional<WalletSummary> currentWalletSummary;
       try {
         currentWalletSummary = WalletManager.INSTANCE.openWalletFromWalletId(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
-      } catch (WalletLoadException wle) {
+      } catch (org.bitcoinj.crypto.KeyCrypterException | WalletLoadException wle) {
         // Mostly this will be from a bad password
         log.error(wle.getMessage());
         // Assume bad credentials
+        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, CoreMessageKey.WALLET_BAD_PASSWORD, null));
+
         return false;
       }
 
@@ -817,7 +830,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
                           label, "Trezor"));
 
         } catch (Exception e) {
-          CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, "core_wallet_failed_to_load", e));
+          CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, CoreMessageKey.WALLET_LOADED_OK, e));
 
           log.error(e.getMessage(), e);
 
@@ -826,9 +839,9 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         log.debug("No wallet present");
       }
     } else {
-      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, "core_wallet_failed_to_load", new IllegalStateException("No hardware wallet service available")));
+      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, CoreMessageKey.WALLET_LOADED_OK, new IllegalStateException("No hardware wallet service available")));
 
-      log.error("No hardware wallet service");
+              log.error("No hardware wallet service");
     }
     return Optional.absent();
   }

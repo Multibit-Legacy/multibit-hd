@@ -154,18 +154,6 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
 
   }
 
-//  @Override
-//  public boolean beforeHide(boolean isExitCancel) {
-//
-//    // Don't block an exit
-//    if (isExitCancel) {
-//      return true;
-//    }
-//
-//    // Defer the hide
-//    return false;
-//  }
-
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 

@@ -1,6 +1,7 @@
 package org.multibit.hd.core.events;
 
 import com.google.common.base.Optional;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.WalletId;
 
 import javax.annotation.Nullable;
@@ -29,7 +30,7 @@ public class WalletLoadEvent implements CoreEvent {
   /**
    * The core message key
    */
-  private final String walletLoadMessageKey;
+  private final CoreMessageKey walletLoadMessageKey;
 
   /**
    * The raw load error if applicable
@@ -38,7 +39,7 @@ public class WalletLoadEvent implements CoreEvent {
 
 
 
-  public WalletLoadEvent(Optional<WalletId> walletId, boolean walletLoadWasSuccessful, String walletLoadMessageKey, @Nullable Throwable error) {
+  public WalletLoadEvent(Optional<WalletId> walletId, boolean walletLoadWasSuccessful, CoreMessageKey walletLoadMessageKey, @Nullable Throwable error) {
     this.walletId = walletId;
     this.walletLoadWasSuccessful = walletLoadWasSuccessful;
     this.walletLoadMessageKey = walletLoadMessageKey;
@@ -54,7 +55,7 @@ public class WalletLoadEvent implements CoreEvent {
     return walletLoadWasSuccessful;
   }
 
-  public String getWalletLoadMessageKey() {
+  public CoreMessageKey getWalletLoadMessageKey() {
     return walletLoadMessageKey;
   }
 
