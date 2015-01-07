@@ -25,7 +25,7 @@ import java.net.URISyntaxException;
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Select which of the trezor related tools to run</li>
+ * <li>Select which of the Trezor related tools to run</li>
  * </ul>
  *
  * @since 0.0.1
@@ -33,12 +33,10 @@ import java.net.URISyntaxException;
 
 public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorState> implements ActionListener {
 
-  // TODO replace with affiliate link
-
+  /**
+   * TODO replace with affiliate link
+   */
   private static String BUY_TREZOR_URL = "https://www.buytrezor.com";
-
-  // View components
-  private JLabel trezorConnectedStatusLabel;
 
   /**
    * @param wizard    The wizard managing the states
@@ -92,7 +90,6 @@ public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrez
   public void updateFromComponentModels(Optional componentModel) {
 
     // Next has been clicked
-
 
   }
 
