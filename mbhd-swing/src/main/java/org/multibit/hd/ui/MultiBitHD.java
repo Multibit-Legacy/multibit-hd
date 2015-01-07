@@ -2,6 +2,7 @@ package org.multibit.hd.ui;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Uninterruptibles;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -114,6 +115,8 @@ public class MultiBitHD {
   /**
    * <p>Initialise the JVM. This occurs before anything else is called.</p>
    */
+  // Calling exit(-1) is required
+  @SuppressFBWarnings({"DM_EXIT"})
   private void initialiseJVM() throws Exception {
 
     log.debug("Initialising JVM...");
