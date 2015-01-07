@@ -46,12 +46,16 @@ public class MultiBitHD {
    *
    * @param args None specified
    */
-  public static void main(final String[] args) throws Exception {
+  public static void main(String[] args) throws Exception {
 
     if (args != null) {
+      // Show the command line arguments
       for (int i = 0; i < args.length; i++) {
         log.debug("MultiBit launched with args[{}]: '{}'", i, args[i]);
       }
+    } else {
+      // Provide empty arguments to avoid potential NPEs
+      args = new String[]{};
     }
 
     // Hand over to an instance to simplify FEST tests
