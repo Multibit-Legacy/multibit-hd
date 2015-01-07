@@ -244,6 +244,26 @@ public class NamedComboBoxPainter extends AbstractNamedRegionPainter {
           getComponentColor(c, "background", color49, -0.00895375f, 0.007843137f, 0),
           getComponentColor(c, "background", color50, -0.1436508f, 0.19215685f, 0)};
         break;
+      case BACKGROUND_DISABLED:
+        // Do nothing
+        break;
+      case BACKGROUND_DISABLED_PRESSED:
+        // Do nothing
+        break;
+      case BACKGROUND_DISABLED_EDITABLE:
+        // Do nothing
+        break;
+      case BACKGROUND_ENABLED_EDITABLE:
+        // Do nothing
+        break;
+      case BACKGROUND_FOCUSED_EDITABLE:
+        // Do nothing
+        break;
+      case BACKGROUND_MOUSEOVER_EDITABLE:
+        // Do nothing
+        break;
+      case BACKGROUND_PRESSED_EDITABLE:
+        // Do nothing
       default:
         throw new IllegalStateException("Unknown state:" + state);
     }
