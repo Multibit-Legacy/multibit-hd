@@ -2,6 +2,7 @@ package org.multibit.hd.core.dto.comparators;
 
 import org.multibit.hd.core.dto.BackupSummary;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Comparator;
  * @since 0.0.5
  *
  */
-public class BackupSummaryDescendingComparator implements Comparator<BackupSummary> {
+public class BackupSummaryDescendingComparator implements Comparator<BackupSummary>, Serializable {
 
 
   @Override
