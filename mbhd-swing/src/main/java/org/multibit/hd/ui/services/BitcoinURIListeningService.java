@@ -9,6 +9,7 @@ import com.google.common.io.CharStreams;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
 import org.multibit.hd.core.events.ShutdownEvent;
@@ -207,6 +208,8 @@ public class BitcoinURIListeningService extends AbstractService {
 
     return new Runnable() {
 
+      // Guava will call this due to the annotation
+      @SuppressFBWarnings({"UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"})
       // Requires its own shutdown subscriber to ensure correct shutdown
       @Subscribe
       public void onShutdownEvent(ShutdownEvent event) {
