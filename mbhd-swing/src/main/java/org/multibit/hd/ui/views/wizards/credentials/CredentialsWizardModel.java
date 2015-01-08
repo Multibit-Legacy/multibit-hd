@@ -831,7 +831,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
                           // There is no reliable timestamp for a 'new' wallet as it could exist elsewhere
                           replayDateInMillis / 1000,
                           newWalletPassword,
-                          label, "Trezor"));
+                          label, "Trezor", true));
 
         } catch (Exception e) {
           CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, CoreMessageKey.WALLET_LOADED_OK, e));

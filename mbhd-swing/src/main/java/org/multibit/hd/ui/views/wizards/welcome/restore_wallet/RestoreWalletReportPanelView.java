@@ -522,11 +522,11 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
           Dates.thenInSeconds(replayDate),
           password,
           name,
-          notes
-        );
+          notes,
+          true);
       } else {
         // Create MBHD soft wallet
-        WalletManager.INSTANCE.getOrCreateMBHDSoftWalletSummaryFromSeed(applicationDataDirectory, seed, Dates.thenInSeconds(replayDate), password, name, notes);
+        WalletManager.INSTANCE.getOrCreateMBHDSoftWalletSummaryFromSeed(applicationDataDirectory, seed, Dates.thenInSeconds(replayDate), password, name, notes, true);
       }
 
       // Must have succeeded to get here

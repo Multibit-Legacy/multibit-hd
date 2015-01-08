@@ -266,8 +266,8 @@ public class BitcoinNetworkServiceFunctionalTest {
             nowInSeconds,
             WALLET_PASSWORD,
             name,
-            notes
-    );
+            notes,
+      true);
     assertThat(walletSummary).isNotNull();
     assertThat(walletSummary.getWallet()).isNotNull();
 

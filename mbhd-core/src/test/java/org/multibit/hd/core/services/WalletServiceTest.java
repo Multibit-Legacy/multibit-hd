@@ -80,8 +80,8 @@ public class WalletServiceTest {
                     nowInSeconds,
                     PASSWORD,
                     "Example",
-                    "Example"
-            );
+                    "Example",
+              true);
     WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
 
     firstAddress = walletSummary.getWallet().freshReceiveKey().toString();

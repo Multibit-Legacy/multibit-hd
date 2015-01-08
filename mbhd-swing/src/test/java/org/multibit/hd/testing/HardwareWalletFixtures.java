@@ -1,10 +1,15 @@
 package org.multibit.hd.testing;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.google.protobuf.Message;
 import org.bitcoinj.crypto.ChildNumber;
+import org.bitcoinj.wallet.KeyChain;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.hardware.core.events.MessageEvent;
 import org.multibit.hd.hardware.core.events.MessageEventType;
 import org.multibit.hd.hardware.core.events.MessageEvents;
@@ -14,6 +19,7 @@ import org.multibit.hd.hardware.core.messages.PublicKey;
 import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.mock;
@@ -32,6 +38,8 @@ import static org.mockito.Mockito.when;
  *  
  */
 public class HardwareWalletFixtures {
+
+  private static final ListeningExecutorService messageEventServices = SafeExecutors.newSingleThreadExecutor("fest-fixture-events");
 
   /**
    * Utility classes have private constructors
@@ -63,6 +71,8 @@ public class HardwareWalletFixtures {
 
     mockDeterministicHierarchy(mockClient);
 
+    mockGetCipherKey(mockClient);
+
     return mockClient;
   }
 
@@ -76,7 +86,7 @@ public class HardwareWalletFixtures {
     when(mockClient.connect()).thenAnswer(
       new Answer<Boolean>() {
         public Boolean answer(InvocationOnMock invocation) throws Throwable {
-          MessageEvents.fireMessageEvent(MessageEventType.DEVICE_CONNECTED);
+          fireMessageEvent(MessageEventType.DEVICE_CONNECTED);
           return true;
         }
       });
@@ -101,7 +111,8 @@ public class HardwareWalletFixtures {
             Optional.<Message>absent()
           );
 
-          MessageEvents.fireMessageEvent(event);
+          fireMessageEvent(event);
+
           return true;
         }
       });
@@ -116,24 +127,111 @@ public class HardwareWalletFixtures {
   private static void mockDeterministicHierarchy(AbstractTrezorHardwareWalletClient mockClient) {
 
     when(mockClient.getDeterministicHierarchy(anyListOf(ChildNumber.class))).thenAnswer(
-      new Answer<Boolean>() {
-        public Boolean answer(InvocationOnMock invocation) throws Throwable {
+      new Answer<Optional<Message>>() {
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
 
           List<ChildNumber> childNumberList = (List<ChildNumber>) invocation.getArguments()[0];
 
-          PublicKey publicKeyM = HardwareWalletEventFixtures.newStandardPublicKey_M();
+          final PublicKey publicKey;
 
-          MessageEvent event = new MessageEvent(
+          switch (childNumberList.size()) {
+            case 0:
+              // M
+              publicKey = HardwareWalletEventFixtures.newStandardPublicKey_M();
+              break;
+            case 1:
+              // M/44H
+              publicKey = HardwareWalletEventFixtures.newStandardPublicKey_M_44H();
+              break;
+            case 2:
+              // M/44H/0H
+              publicKey = HardwareWalletEventFixtures.newStandardPublicKey_M_44H_0H();
+              break;
+            case 3:
+              // M/44H/0H/0H
+              publicKey = HardwareWalletEventFixtures.newStandardPublicKey_M_44H_0H_0H();
+              break;
+            default:
+              throw new IllegalStateException("Unexpected child number count: " + childNumberList.size());
+          }
+
+          final MessageEvent event = new MessageEvent(
             MessageEventType.PUBLIC_KEY,
-            Optional.<HardwareWalletMessage>of(publicKeyM),
+            Optional.<HardwareWalletMessage>of(publicKey),
             Optional.<Message>absent()
           );
 
-          MessageEvents.fireMessageEvent(event);
+          fireMessageEvent(event);
 
-          return true;
+          return Optional.absent();
         }
       });
+  }
+
+  /**
+   * <p>Configure for a PUBLIC_KEY message for M</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param mockClient The mock client
+   */
+  private static void mockGetCipherKey(AbstractTrezorHardwareWalletClient mockClient) {
+
+    byte[] key = "MultiBit HD     Unlock".getBytes(Charsets.UTF_8);
+    byte[] keyValue = "0123456789abcdef".getBytes(Charsets.UTF_8);
+
+    when(mockClient.cipherKeyValue(0, KeyChain.KeyPurpose.RECEIVE_FUNDS, 0, key, keyValue, true, true, true)).thenAnswer(
+      new Answer<Optional<Message>>() {
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          final MessageEvent event = new MessageEvent(
+            MessageEventType.PIN_MATRIX_REQUEST,
+            Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newCurrentPinMatrix()),
+            Optional.<Message>absent()
+          );
+
+          fireMessageEvent(event);
+
+          return Optional.absent();
+        }
+      });
+  }
+
+  /**
+   * <p>Fire a new low level message event on its own thread</p>
+   *
+   * @param event The event
+   */
+  private static void fireMessageEvent(final MessageEvent event) {
+
+    messageEventServices.submit(new Runnable() {
+      @Override
+      public void run() {
+        MessageEvents.fireMessageEvent(event);
+      }
+    });
+
+    // Allow time for the event to propagate
+    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+
+  }
+
+  /**
+   * <p>Fire a new low level message event on its own thread</p>
+   *
+   * @param eventType The event type (no payload)
+   */
+  private static void fireMessageEvent(final MessageEventType eventType) {
+
+    messageEventServices.submit(new Runnable() {
+      @Override
+      public void run() {
+        MessageEvents.fireMessageEvent(eventType);
+      }
+    });
+
+    // Allow time for the event to propagate
+    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+
   }
 
 }

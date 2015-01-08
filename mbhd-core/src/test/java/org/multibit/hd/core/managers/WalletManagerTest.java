@@ -128,8 +128,8 @@ public class WalletManagerTest {
                     nowInSeconds,
                     "credentials",
                     "Example",
-                    "Example"
-            );
+                    "Example",
+              true);
 
     // Uncomment this next line if you want a wallet created in your MultiBitHD user data directory.
     //walletManager.createWallet( seed, "credentials");
@@ -147,8 +147,8 @@ public class WalletManagerTest {
                     nowInSeconds,
                     "credentials",
                     "Example",
-                    "Example"
-            );
+                    "Example",
+              true);
 
     assertThat(walletSummary2).isNotNull();
 
@@ -192,7 +192,7 @@ public class WalletManagerTest {
             nowInSeconds,
             "aPassword",
             "Abandon",
-            "Abandon");
+            "Abandon", true);
 
     assertThat(walletSummary).isNotNull();
     assertThat(WalletType.TREZOR_SOFT_WALLET.equals(walletSummary.getWalletType()));
@@ -336,8 +336,8 @@ public class WalletManagerTest {
             nowInSeconds,
             SIGNING_PASSWORD,
             "Signing Example",
-            "Signing Example"
-    );
+            "Signing Example",
+      true);
 
     // Address not in wallet
     ECKey ecKey = new ECKey();
@@ -433,8 +433,8 @@ public class WalletManagerTest {
                       nowInSeconds,
                       passwordToCheck,
                       "Password/seed encryption Example",
-                      "Password/seed encryption Example"
-              );
+                      "Password/seed encryption Example",
+                true);
 
       // Check the encrypted wallet credentials and seed are correct
       byte[] foundEncryptedBackupKey = walletSummary.getEncryptedBackupKey();

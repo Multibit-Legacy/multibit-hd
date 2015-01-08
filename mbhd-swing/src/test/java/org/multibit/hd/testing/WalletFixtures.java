@@ -60,7 +60,14 @@ public class WalletFixtures {
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    return walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(new File(applicationDirectoryName), seed, nowInSeconds, STANDARD_PASSWORD, "Example", "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.");
+    return walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
+      new File(applicationDirectoryName),
+      seed,
+      nowInSeconds,
+      STANDARD_PASSWORD,
+      "Example",
+      "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.",
+      false);
 
   }
 

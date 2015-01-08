@@ -94,8 +94,8 @@ public class BackupManagerTest {
               nowInSeconds,
               password,
               "Example",
-              "Example"
-      );
+              "Example",
+        true);
 
     // Wallet manager does not initiate the backup
     BackupManager.INSTANCE.createRollingBackup(walletSummary, password);

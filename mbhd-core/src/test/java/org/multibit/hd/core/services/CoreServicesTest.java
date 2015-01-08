@@ -65,8 +65,8 @@ public class CoreServicesTest {
               nowInSeconds,
               PASSWORD,
               "Example",
-              "Example"
-      );
+              "Example",
+        true);
 
     Wallet wallet  = walletSummary.getWallet();
 

@@ -172,6 +172,9 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
    * @param key The key to the operation text
    */
   public void setOperationText(MessageKey key) {
+    if (trezorDisplayMaV == null) {
+      return;
+    }
     this.trezorDisplayMaV.getView().setOperationText(key);
   }
 
