@@ -40,4 +40,12 @@ public class ViewChangedEvent implements ViewEvent {
   public boolean isVisible() {
     return visible;
   }
+
+  @Override
+  public String toString() {
+    return "ViewChangedEvent{" +
+            "viewKey=" + viewKey +
+            ", visible=" + visible +
+            '}';
+  }
 }
