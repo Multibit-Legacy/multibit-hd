@@ -107,7 +107,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       new MigLayout(
         Panels.migXYLayout(),
         "[][][]", // Column constraints
-        "[]10[]10[]10[]10[]" // Row constraints
+        "10[24]10[24]10[24]10[24]10[24]10" // Row constraints
       ));
 
     // Apply the theme
@@ -193,91 +193,86 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       new Runnable() {
         @Override
         public void run() {
-
-          // If the event is about peer group counts then ignore it - we are only interested in block count related events
-          if (!summary.getPeerCount().isPresent()) {
-            // Blocks left
-            int blocksLeft = event.getSummary().getBlocksLeft();
-            if (blocksLeft < 0) {
+          switch (summary.getStatus()) {
+            case NOT_CONNECTED:
               blocksLeftLabel.setVisible(false);
               blocksLeftStatusLabel.setVisible(false);
-            } else {
-              // Synchronizing
+              break;
+
+            case CONNECTING:
+              blocksLeftLabel.setVisible(false);
+              blocksLeftStatusLabel.setVisible(false);
+              break;
+
+            case CONNECTED:
+              break;
+
+            case DOWNLOADING_BLOCKCHAIN:
               blocksLeftLabel.setVisible(true);
               blocksLeftStatusLabel.setVisible(true);
-              AwesomeDecorator.applyIcon(
-                AwesomeIcon.EXCHANGE,
-                blocksLeftStatusLabel,
-                true,
-                MultiBitUI.NORMAL_ICON_SIZE
-              );
               blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
-            }
-
-            if (blocksLeft == 0) {
-
-              // Completed
-
-              // Update the status
               AwesomeDecorator.applyIcon(
-                AwesomeIcon.CHECK,
-                blocksLeftStatusLabel,
-                true,
-                MultiBitUI.NORMAL_ICON_SIZE
+                      AwesomeIcon.EXCHANGE,
+                      blocksLeftStatusLabel,
+                      true,
+                      MultiBitUI.NORMAL_ICON_SIZE
               );
-
-              // Looks ugly but is semantically correct
+              break;
+            case SYNCHRONIZED:
+              blocksLeftLabel.setVisible(true);
+              blocksLeftStatusLabel.setVisible(true);
               blocksLeftLabel.setText("0");
 
-            }
-
-            boolean currentEnabled = getFinishButton().isEnabled();
-
-            final boolean newEnabled;
-
-            // NOTE: Finish is kept disabled until fully synchronized
-            switch (event.getSummary().getSeverity()) {
-              case RED:
-                // Enable on RED only if unrestricted (allows FEST tests without a network)
-                newEnabled = InstallationManager.unrestricted;
-                break;
-              case AMBER:
-                // Enable on AMBER only if unrestricted
-                newEnabled = InstallationManager.unrestricted;
-                break;
-              case GREEN:
-                // Enable on GREEN only if synchronized or unrestricted (to speed up FEST tests)
-                newEnabled = BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus()) || InstallationManager.unrestricted || blocksLeft == 0;
-                break;
-              case PINK:
-              case EMPTY:
-                // Maintain the status quo unless unrestricted
-                newEnabled = currentEnabled || InstallationManager.unrestricted;
-                break;
-              default:
-                // Unknown status
-                throw new IllegalStateException("Unknown event severity " + event.getSummary().getStatus());
-            }
-
-            // Test for a change in condition
-            if (currentEnabled != newEnabled) {
-
-              getFinishButton().setEnabled(newEnabled);
-
-              if (newEnabled) {
-
-                // Stop the Bitcoin network to release resources
-                CoreServices.stopBitcoinNetworkService();
-
-              }
-
-            }
-
+              AwesomeDecorator.applyIcon(
+                      AwesomeIcon.CHECK,
+                      blocksLeftStatusLabel,
+                      true,
+                      MultiBitUI.NORMAL_ICON_SIZE
+              );
+              break;
+            default:
           }
 
+          boolean currentEnabled = getFinishButton().isEnabled();
+
+          final boolean newEnabled;
+
+          // NOTE: Finish is kept disabled until fully synchronized
+          switch (event.getSummary().getSeverity()) {
+            case RED:
+              // Enable on RED only if unrestricted (allows FEST tests without a network)
+              newEnabled = InstallationManager.unrestricted;
+              break;
+            case AMBER:
+              // Enable on AMBER only if unrestricted
+              newEnabled = InstallationManager.unrestricted;
+              break;
+            case GREEN:
+              // Enable on GREEN only if synchronized or unrestricted (to speed up FEST tests)
+              newEnabled = BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus()) || InstallationManager.unrestricted;
+              break;
+            case PINK:
+            case EMPTY:
+              // Maintain the status quo unless unrestricted
+              newEnabled = currentEnabled || InstallationManager.unrestricted;
+              break;
+            default:
+              // Unknown status
+              throw new IllegalStateException("Unknown event severity " + event.getSummary().getStatus());
+          }
+
+          // Test for a change in condition
+          if (currentEnabled != newEnabled) {
+
+            getFinishButton().setEnabled(newEnabled);
+
+            if (newEnabled) {
+              // Stop the Bitcoin network to release resources
+              CoreServices.stopBitcoinNetworkService();
+            }
+          }
         }
       });
-
   }
 
   /**

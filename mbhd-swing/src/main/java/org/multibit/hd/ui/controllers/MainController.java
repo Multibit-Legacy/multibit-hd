@@ -279,6 +279,13 @@ public class MainController extends AbstractController implements
     Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
     Preconditions.checkNotNull(summary.getMessageData(), "'errorData' must be present");
 
+        // Ensure that the header shows the header after a sync (if the configuration permits)
+    if (BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus())) {
+      boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
+      log.debug("Firing event to header viewable to:  {}", viewHeader);
+      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
+    }
+
     final String localisedMessage;
     if (summary.getMessageKey().isPresent() && summary.getMessageData().isPresent()) {
       // There is a message key with data
@@ -295,11 +302,6 @@ public class MainController extends AbstractController implements
 
     // Ensure everyone is aware of the update
     ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
-
-    // Ensure that the header shows the header after a sync (if the configuration permits)
-    if (BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus())) {
-      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, Configurations.currentConfiguration.getAppearance().isShowBalance());
-    }
   }
 
   @Subscribe

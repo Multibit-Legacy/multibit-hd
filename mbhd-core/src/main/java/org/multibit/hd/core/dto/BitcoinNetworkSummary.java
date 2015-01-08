@@ -167,10 +167,6 @@ public class BitcoinNetworkSummary {
     this.blocksLeft = blocksLeft;
   }
 
-  public Optional<Integer> getPeerCount() {
-    return peerCount;
-  }
-
   /**
    * @return A percent value for a progress bar (such as blockchain download progress)
    */
