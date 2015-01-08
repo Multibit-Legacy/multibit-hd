@@ -101,39 +101,20 @@ public class HardwareWalletEventFixtures {
 
     hardwareWalletEvents.add(event1);
 
-    // Deterministic hierarchy
-    final HardwareWalletEvent event6 = new HardwareWalletEvent(
-      HardwareWalletEventType.DETERMINISTIC_HIERARCHY,
-      Optional.<HardwareWalletMessage>absent());
+    // Deterministic hierarchy (indirectly from mock client via PUBLIC_KEY messages)
 
-    hardwareWalletEvents.add(event6);
+    // PIN matrix request (from mock client)
 
-    // PIN matrix request (current)
-    final HardwareWalletEvent event7 = new HardwareWalletEvent(
-      HardwareWalletEventType.SHOW_PIN_ENTRY,
-      Optional.<HardwareWalletMessage>of(
-        newCurrentPinMatrix()
-      ));
+    // Button request (cipher key confirm from client)
 
-    hardwareWalletEvents.add(event7);
-
-    // Button request (cipher key confirm)
-    final HardwareWalletEvent event8 = new HardwareWalletEvent(
-      HardwareWalletEventType.SHOW_BUTTON_PRESS,
-      Optional.<HardwareWalletMessage>of(
-        newOtherButtonRequest()
-      ));
-
-    hardwareWalletEvents.add(event8);
-
-    // Success
-    final HardwareWalletEvent event9 = new HardwareWalletEvent(
+    // Cipher key success
+    final HardwareWalletEvent event2 = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED,
       Optional.<HardwareWalletMessage>of(
-        newDeviceResetSuccess()
+        newCipherKeySuccess()
       ));
 
-    hardwareWalletEvents.add(event9);
+    hardwareWalletEvents.add(event2);
 
   }
 
@@ -263,6 +244,17 @@ public class HardwareWalletEventFixtures {
     return new Success(
       "",
       Utils.HEX.decode("ec406a3c796099050400f65ab311363e")
+    );
+  }
+
+  /**
+   * @return A new PIN entry failure
+   */
+  public static Failure newPinFailure() {
+
+    return new Failure(
+      FailureType.PIN_INVALID,
+      ""
     );
   }
 
@@ -444,6 +436,4 @@ public class HardwareWalletEventFixtures {
       hdNodeType
     );
   }
-
-
 }

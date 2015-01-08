@@ -71,6 +71,8 @@ public class HardwareWalletFixtures {
 
     mockDeterministicHierarchy(mockClient);
 
+    mockPinMatrixAck(mockClient);
+
     mockGetCipherKey(mockClient);
 
     return mockClient;
@@ -166,6 +168,50 @@ public class HardwareWalletFixtures {
           return Optional.absent();
         }
       });
+  }
+
+  /**
+   * <p>Configure for a PUBLIC_KEY message for M</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param mockClient The mock client
+   */
+  private static void mockPinMatrixAck(AbstractTrezorHardwareWalletClient mockClient) {
+
+    // Successful PIN
+    when(mockClient.pinMatrixAck("1234")).thenAnswer(
+      new Answer<Optional<Message>>() {
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          final MessageEvent event = new MessageEvent(
+            MessageEventType.BUTTON_REQUEST,
+            Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newOtherButtonRequest()),
+            Optional.<Message>absent()
+          );
+
+          fireMessageEvent(event);
+
+          return Optional.absent();
+        }
+      });
+
+    // Deliberate failed PIN
+    when(mockClient.pinMatrixAck("6789")).thenAnswer(
+      new Answer<Optional<Message>>() {
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          final MessageEvent event = new MessageEvent(
+            MessageEventType.FAILURE,
+            Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newPinFailure()),
+            Optional.<Message>absent()
+          );
+
+          fireMessageEvent(event);
+
+          return Optional.absent();
+        }
+      });
+
   }
 
   /**
