@@ -18,6 +18,8 @@ import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -32,6 +34,7 @@ import java.awt.event.ActionEvent;
  *
  */
 public class HeaderView extends AbstractView {
+  private static final Logger log = LoggerFactory.getLogger(HeaderView.class);
 
   private final ModelAndView<DisplayAmountModel, DisplayAmountView> balanceDisplayMaV;
 
@@ -68,9 +71,10 @@ public class HeaderView extends AbstractView {
     contentPanel.setBackground(Themes.currentTheme.headerPanelBackground());
     contentPanel.setOpaque(true);
 
-    // Create the balance display hiding it initially
+    // Create the balance display displaying it initially
     balanceDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER, true, "header.balance");
-    balanceDisplayMaV.getView().setVisible(false);
+    log.debug("header is now visible");
+    balanceDisplayMaV.getView().setVisible(true);
 
     // Provide a fixed height to avoid an annoying "slide down" during unlock
     contentPanel.add(balanceDisplayMaV.getView().newComponentPanel(), "growx,push,hmin 50,wrap");
@@ -213,20 +217,22 @@ public class HeaderView extends AbstractView {
   public void onViewChangedEvent(final ViewChangedEvent event) {
 
     if (event.getViewKey().equals(ViewKey.HEADER)) {
+      log.debug("Saw a ViewChangedEvent {}", event);
 
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
 
+          log.debug("Header now has visibility: {} ", event.isVisible());
           balanceDisplayMaV.getView().setVisible(event.isVisible());
           if (alertMessageLabel.getText().length() != 0 && event.isVisible()) {
             alertPanel.setVisible(event.isVisible());
           }
+
+          balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
         }
       });
-
     }
-
   }
 
   /**
