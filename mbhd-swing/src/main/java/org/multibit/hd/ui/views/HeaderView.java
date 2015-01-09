@@ -100,6 +100,8 @@ public class HeaderView extends AbstractView {
   @Subscribe
   public void onBalanceChangedEvent(final BalanceChangedEvent event) {
 
+    log.debug("Saw an onBalanceChangedEvent: {}", event);
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -288,6 +290,4 @@ public class HeaderView extends AbstractView {
 
     };
   }
-
-
 }

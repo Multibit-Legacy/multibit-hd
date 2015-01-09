@@ -127,6 +127,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     // The exchange rate provider can override the intention of the local amount visibility
     if (ExchangeKey.NONE.equals(exchangeKey)) {
       getModel().get().setLocalAmountVisible(false);
+      exchangeLabel.setVisible(false);
     }
 
     Coin coin = getModel().get().getCoinAmount();

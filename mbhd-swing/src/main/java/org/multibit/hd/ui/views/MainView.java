@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -10,6 +11,7 @@ import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
@@ -225,6 +227,11 @@ public class MainView extends JFrame {
 
       // Catch up on recent events
       CoreServices.getApplicationEventService().repeatLatestEvents();
+
+      // Ensure the wallet balance is propagated out
+      if (WalletManager.INSTANCE.getCurrentWalletBalance().isPresent()) {
+        ViewEvents.fireBalanceChangedEvent(WalletManager.INSTANCE.getCurrentWalletBalance().get(), null, Optional.<String>absent());
+      }
     }
 
     // Check for any wizards that were showing before the refresh occurred
