@@ -50,7 +50,7 @@ public class PersistentHistoryServiceTest {
               WalletServiceTest.PASSWORD,
               "Example",
               "Example",
-        true);
+        false); // No need to sync
 
     File contactDbFile = new File(applicationDirectory.getAbsolutePath() + File.separator + HistoryService.HISTORY_DATABASE_NAME);
 

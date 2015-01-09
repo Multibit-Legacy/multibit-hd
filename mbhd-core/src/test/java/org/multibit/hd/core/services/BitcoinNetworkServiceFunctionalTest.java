@@ -267,7 +267,8 @@ public class BitcoinNetworkServiceFunctionalTest {
             WALLET_PASSWORD,
             name,
             notes,
-      true);
+      true); // Perform sync
+
     assertThat(walletSummary).isNotNull();
     assertThat(walletSummary.getWallet()).isNotNull();
 

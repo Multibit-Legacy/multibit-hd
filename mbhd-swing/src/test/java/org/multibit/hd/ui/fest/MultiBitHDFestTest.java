@@ -454,7 +454,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     // Add the empty wallet fixture
-    WalletFixtures.createEmptyWalletFixture();
+    WalletFixtures.createEmptyMBHDSoftWalletFixture();
 
     // Continue with the set up
     setUpAfterArrange(true, false);
@@ -484,7 +484,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     // Add the empty wallet fixture
-    WalletFixtures.createEmptyWalletFixture();
+    WalletFixtures.createEmptyMBHDSoftWalletFixture();
 
     // Arrange the hardware client responses
     AbstractTrezorHardwareWalletClient mockClient = HardwareWalletFixtures.createAttachedInitialisedClient();
