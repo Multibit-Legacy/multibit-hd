@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.testing.HardwareWalletEventFixtures;
+import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorConfirmUnlockUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorEnterPinUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorRequestCipherKeyUseCase;
 
@@ -22,13 +22,15 @@ public class UnlockTrezorHardwareWalletRequirements {
 
     Map<String, Object> parameters = Maps.newHashMap();
 
-    // Request the cipher key (triggers deterministic hierarchy)
+    // Request the cipher key (refer to mock client for PublicKey responses)
     new TrezorRequestCipherKeyUseCase(window).execute(parameters);
 
-    // Deterministic hierarchy
-    HardwareWalletEventFixtures.fireNextEvent();
-
-    // Unlock with a PIN
+    // Enter PIN
     new TrezorEnterPinUseCase(window).execute(parameters);
+
+    // Unlock with cipher key
+    new TrezorConfirmUnlockUseCase(window).execute(parameters);
+
+
   }
 }

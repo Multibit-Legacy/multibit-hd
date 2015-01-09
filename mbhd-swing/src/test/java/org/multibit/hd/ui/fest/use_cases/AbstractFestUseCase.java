@@ -298,10 +298,10 @@ public abstract class AbstractFestUseCase {
   }
 
   /**
-   * The standard length of time for a wallet to unlock
+   * The standard length of time for a wallet to show the unlock report screen
    */
   protected void pauseForWalletUnlock() {
-    Pause.pause(7, TimeUnit.SECONDS);
+    Pause.pause(5, TimeUnit.SECONDS);
   }
 
   /**

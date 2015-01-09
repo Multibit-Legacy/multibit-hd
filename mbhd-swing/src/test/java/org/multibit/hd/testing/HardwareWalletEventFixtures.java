@@ -101,39 +101,20 @@ public class HardwareWalletEventFixtures {
 
     hardwareWalletEvents.add(event1);
 
-    // Deterministic hierarchy
-    final HardwareWalletEvent event6 = new HardwareWalletEvent(
-      HardwareWalletEventType.DETERMINISTIC_HIERARCHY,
-      Optional.<HardwareWalletMessage>absent());
+    // Deterministic hierarchy (indirectly from mock client via PUBLIC_KEY messages)
 
-    hardwareWalletEvents.add(event6);
+    // PIN matrix request (from mock client)
 
-    // PIN matrix request (current)
-    final HardwareWalletEvent event7 = new HardwareWalletEvent(
-      HardwareWalletEventType.SHOW_PIN_ENTRY,
-      Optional.<HardwareWalletMessage>of(
-        newCurrentPinMatrix()
-      ));
+    // Button request (cipher key confirm from client)
 
-    hardwareWalletEvents.add(event7);
-
-    // Button request (cipher key confirm)
-    final HardwareWalletEvent event8 = new HardwareWalletEvent(
-      HardwareWalletEventType.SHOW_BUTTON_PRESS,
-      Optional.<HardwareWalletMessage>of(
-        newOtherButtonRequest()
-      ));
-
-    hardwareWalletEvents.add(event8);
-
-    // Success
-    final HardwareWalletEvent event9 = new HardwareWalletEvent(
+    // Cipher key success
+    final HardwareWalletEvent event2 = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED,
       Optional.<HardwareWalletMessage>of(
-        newDeviceResetSuccess()
+        newCipherKeySuccess()
       ));
 
-    hardwareWalletEvents.add(event9);
+    hardwareWalletEvents.add(event2);
 
   }
 
@@ -267,6 +248,17 @@ public class HardwareWalletEventFixtures {
   }
 
   /**
+   * @return A new PIN entry failure
+   */
+  public static Failure newPinFailure() {
+
+    return new Failure(
+      FailureType.PIN_INVALID,
+      ""
+    );
+  }
+
+  /**
    * @return A new confirm wipe button request
    */
   public static ButtonRequest newWipeDeviceButtonRequest() {
@@ -350,9 +342,9 @@ public class HardwareWalletEventFixtures {
     );
 
     return new PublicKey(
-      false,
-      null,
-      null,
+      true,
+      "xpub661MyMwAqRbcFkPHucMnrGNzDwb6teAX1RbKQmqtEF8kK3Z7LZ59qafCjB9eCRLiTVG3uxBxgKvRgbubRhqSKXnGGb1aoaqLrpMBDrVxga8",
+      Utils.HEX.decode("0488b21e0000000000000000007923408dadd3c7b56eed15567707ae5e5dca089de972e07f3b860450e2a3b70e03d902f35f560e0470c63313c7369168d9d7df2d49bf295fd9fb7cb109ccee0494c7fe61f5"),
       true,
       hdNodeType
     );
@@ -379,9 +371,9 @@ public class HardwareWalletEventFixtures {
     );
 
     return new PublicKey(
-      false,
-      null,
-      null,
+      true,
+      "xpub68jrRzQopSUSfYDVF7r6KMbite5ge2zei1y94YhzTbJvt9wUC9DXaEPfvmcz7E5XdgQYTvUqehtjSM3Zvc4MadbTzabTNZvWq12kjzkKA3b",
+      Utils.HEX.decode("0488b21e0173c5da0a8000002c45d3b0e8206db10a08d555317c7e245c5bbd12254ce968f3c79a959d4e6af98a03428a2da3e76291667a67a38ed45468ceb0d156bc8beda6e86fbc4cf295087c2b1a4472fa"),
       true,
       hdNodeType
     );
@@ -408,9 +400,9 @@ public class HardwareWalletEventFixtures {
     );
 
     return new PublicKey(
-      false,
-      null,
-      null,
+      true,
+      "xpub6AmukNpN4yyLgyzSysjU6JqqoYA1mVUvtinHYdBGPDppatJXHxT8CcDsmBo9n3yLBgrcw9z62ygt1siT9xai4UaJ2w4FPmY6kPCF96YN2cF",
+      Utils.HEX.decode("0488b21e0288b3582b80000000af0894dc5f2d5bed0dc85b2fd2053a98575765c144e4e64126ee1009b38860b203f72f0e3684b0d7295f391616f12a469070bfcd175c55366239047495a2c1c4101d4fcb78"),
       true,
       hdNodeType
     );
@@ -437,13 +429,11 @@ public class HardwareWalletEventFixtures {
     );
 
     return new PublicKey(
-      false,
-      null,
-      null,
+      true,
+      "xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj",
+      Utils.HEX.decode("0488b21e03155bca59800000003da4bc190a2680111d31fadfdc905f2a7f6ce77c6f109919116f253d4344521903774c910fcf07fa96886ea794f0d5caed9afe30b44b83f7e213bb92930e7df4bdc84b94ea"),
       true,
       hdNodeType
     );
   }
-
-
 }

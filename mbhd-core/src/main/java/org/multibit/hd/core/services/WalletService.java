@@ -588,9 +588,7 @@ public class WalletService extends AbstractService {
         .append(PREFIX_SEPARATOR);
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
-          // TODO Beef up description for other cases
           description
-            .append(description)
             .append(" ")
             .append(transactionOutput.getScriptPubKey().getToAddress(networkParameters));
         }

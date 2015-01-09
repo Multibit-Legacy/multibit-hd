@@ -18,6 +18,8 @@ import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
 import org.bitcoinj.crypto.KeyCrypterException;
 import org.bitcoinj.crypto.KeyCrypterScrypt;
+import org.bitcoinj.core.*;
+import org.bitcoinj.crypto.*;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
@@ -38,12 +40,7 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Yaml;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
-import org.multibit.hd.core.dto.CoreMessageKey;
-import org.multibit.hd.core.dto.SignMessageResult;
-import org.multibit.hd.core.dto.VerifyMessageResult;
-import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.dto.WalletSummary;
-import org.multibit.hd.core.dto.WalletType;
+import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
@@ -61,13 +58,7 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import javax.annotation.Nullable;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.SignatureException;
@@ -79,9 +70,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SEPARATOR;
-import static org.multibit.hd.core.dto.WalletId.getWalletIdSaltUsedInScryptForTrezorSoftWallets;
-import static org.multibit.hd.core.dto.WalletId.parseWalletFilename;
+import static org.multibit.hd.core.dto.WalletId.*;
 
 /**
  * <p>Manager to provide the following to core users:</p>
@@ -257,7 +246,7 @@ public enum WalletManager implements WalletEventListener {
 
           try {
             // Wallet is now created - finish off other configuration
-            updateConfigurationAndCheckSync(createWalletRoot(walletId), walletDirectory, walletSummary, false);
+            updateConfigurationAndCheckSync(createWalletRoot(walletId), walletDirectory, walletSummary, false, true);
           } catch (IOException ioe) {
             throw new WalletLoadException("Cannot load wallet with id: " + walletId, ioe);
           }
@@ -286,6 +275,7 @@ public enum WalletManager implements WalletEventListener {
    * @param password                 The credentials to use to encrypt the wallet - if null then the wallet is not loaded
    * @param name                     The wallet name
    * @param notes                    Public notes associated with the wallet
+   * @param performSynch
    *
    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
    *
@@ -299,8 +289,8 @@ public enum WalletManager implements WalletEventListener {
     long creationTimeInSeconds,
     String password,
     String name,
-    String notes
-  ) throws WalletLoadException, WalletVersionException, IOException {
+    String notes,
+    boolean performSynch) throws WalletLoadException, WalletVersionException, IOException {
     log.debug("getOrCreateMBHDSoftWalletSummaryFromSeed called");
     final WalletSummary walletSummary;
 
@@ -358,7 +348,7 @@ public enum WalletManager implements WalletEventListener {
     }
 
     // Wallet is now created - finish off other configuration and check if wallet needs syncing
-    updateConfigurationAndCheckSync(walletRoot, walletDirectory, walletSummary, saveWalletYaml);
+    updateConfigurationAndCheckSync(walletRoot, walletDirectory, walletSummary, saveWalletYaml, performSynch);
 
     return walletSummary;
   }
@@ -379,6 +369,7 @@ public enum WalletManager implements WalletEventListener {
    * @param password                 The credentials to use to encrypt the wallet - if null then the wallet is not loaded
    * @param name                     The wallet name
    * @param notes                    Public notes associated with the wallet
+   * @param performSync              True if the wallet should immediately being synchronization
    *
    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
    *
@@ -392,8 +383,8 @@ public enum WalletManager implements WalletEventListener {
     long creationTimeInSeconds,
     String password,
     String name,
-    String notes
-  ) throws WalletLoadException, WalletVersionException, IOException {
+    String notes,
+    boolean performSync) throws WalletLoadException, WalletVersionException, IOException {
 
     log.debug("getOrCreateTrezorHardWalletSummaryFromRootNode called");
 
@@ -413,11 +404,10 @@ public enum WalletManager implements WalletEventListener {
         log.debug("Opening AES wallet:\n'{}'", walletFileWithAES.getAbsolutePath());
         walletSummary = loadFromWalletDirectory(walletDirectory, password);
       } catch (WalletLoadException e) {
-        // Failed to decrypt the existing wallet/backups
+        // Failed to decrypt the existing wallet/backups or something else went wrong
         log.error("Failed to load from wallet directory.");
-        IllegalStateException error = new IllegalStateException("The directory for the wallet '" + walletDirectory.getAbsoluteFile() + "' could not be created");
-        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, error));
-        throw error;
+        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, e));
+        throw e;
       }
     } else {
       log.debug("Wallet file does not exist. Creating...");
@@ -466,7 +456,7 @@ public enum WalletManager implements WalletEventListener {
     }
     // Wallet is now created - finish off other configuration and check if wallet needs syncing
     // (Always save the wallet yaml as there was a bug in early Trezor wallets where it was not written out)
-    updateConfigurationAndCheckSync(walletRoot, walletDirectory, walletSummary, true);
+    updateConfigurationAndCheckSync(walletRoot, walletDirectory, walletSummary, true, performSync);
 
     return walletSummary;
   }
@@ -487,6 +477,7 @@ public enum WalletManager implements WalletEventListener {
    * @param password                 The credentials to use to encrypt the wallet - if null then the wallet is not loaded
    * @param name                     The wallet name
    * @param notes                    Public notes associated with the wallet
+   * @param performSync              True if the wallet should immediately begin synchronizing
    *
    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
    *
@@ -500,8 +491,8 @@ public enum WalletManager implements WalletEventListener {
     long creationTimeInSeconds,
     String password,
     String name,
-    String notes
-  ) throws UnreadableWalletException, WalletLoadException, WalletVersionException, IOException {
+    String notes,
+    boolean performSync) throws UnreadableWalletException, WalletLoadException, WalletVersionException, IOException {
 
     log.debug("getOrCreateTrezorSoftWalletSummaryFromSeedPhrase called");
 
@@ -585,8 +576,8 @@ public enum WalletManager implements WalletEventListener {
     }
 
     // Wallet is now created - finish off other configuration and check if wallet needs syncing
-    // (Always save the wallet yaml as there was a bug in early Trezor wallets where it was not written out)
-    updateConfigurationAndCheckSync(walletRoot, walletDirectory, walletSummary, true);
+    // Always save the wallet YAML as there was a bug in early Trezor wallets where it was not written out
+    updateConfigurationAndCheckSync(walletRoot, walletDirectory, walletSummary, true, performSync);
 
     return walletSummary;
   }
@@ -595,7 +586,7 @@ public enum WalletManager implements WalletEventListener {
   /**
    * Update configuration with new wallet information
    */
-  private void updateConfigurationAndCheckSync(String walletRoot, File walletDirectory, WalletSummary walletSummary, boolean saveWalletYaml) throws IOException {
+  private void updateConfigurationAndCheckSync(String walletRoot, File walletDirectory, WalletSummary walletSummary, boolean saveWalletYaml, boolean performSync) throws IOException {
 
     Preconditions.checkNotNull(walletRoot, "'walletRoot' must be present");
     Preconditions.checkNotNull(walletDirectory, "'walletDirectory' must be present");
@@ -624,8 +615,13 @@ public enum WalletManager implements WalletEventListener {
     // Wallet loaded successfully
     CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletSummary.getWalletId()), true, CoreMessageKey.WALLET_LOADED_OK, null));
 
-    // Check if the wallet needs to sync
-    checkIfWalletNeedsToSync(walletSummary);
+    // Check if the wallet needs to synch (not required during FEST tests)
+    if (performSync) {
+      log.info("Wallet configured - performing synchronization");
+      checkIfWalletNeedsToSync(walletSummary);
+    } else {
+      log.warn("Wallet configured - synchronization not selected - expect this during testing");
+    }
   }
 
   /**
@@ -881,20 +877,20 @@ public enum WalletManager implements WalletEventListener {
       });
     Futures.addCallback(
       future, new FutureCallback() {
-      @Override
-      public void onSuccess(@Nullable Object result) {
-        // Do nothing this just means that the block chain download has begun
-        log.debug("Sync has begun");
+        @Override
+        public void onSuccess(@Nullable Object result) {
+          // Do nothing this just means that the block chain download has begun
+          log.debug("Sync has begun");
 
-      }
+        }
 
-      @Override
-      public void onFailure(Throwable t) {
-        // Have a failure
-        log.debug("Sync failed, error was " + t.getClass().getCanonicalName() + " " + t.getMessage());
+        @Override
+        public void onFailure(Throwable t) {
+          // Have a failure
+          log.debug("Sync failed, error was " + t.getClass().getCanonicalName() + " " + t.getMessage());
 
-      }
-    });
+        }
+      });
   }
 
   /**
@@ -974,23 +970,24 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-    * @return A list of non Tezor wallet summaries based on the current application directory contents (never null)
-    */
-   public static List<WalletSummary> getNonHardTrezorWalletSummaries() {
+   * @return A list of non Tezor wallet summaries based on the current application directory contents (never null)
+   */
+  public static List<WalletSummary> getNonHardTrezorWalletSummaries() {
 
-     List<File> walletDirectories = findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
-     Optional<String> walletRoot = INSTANCE.getCurrentWalletRoot();
-     List<WalletSummary> allWalletSummaries = findWalletSummaries(walletDirectories, walletRoot);
-     List<WalletSummary> nonHardTrezorWalletSummaries = Lists.newArrayList();
+    List<File> walletDirectories = findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
+    Optional<String> walletRoot = INSTANCE.getCurrentWalletRoot();
+    List<WalletSummary> allWalletSummaries = findWalletSummaries(walletDirectories, walletRoot);
+    List<WalletSummary> nonHardTrezorWalletSummaries = Lists.newArrayList();
 
-     for (WalletSummary walletSummary : allWalletSummaries) {
-       if (!WalletType.TREZOR_HARD_WALLET.equals(walletSummary.getWalletType())) {
-         nonHardTrezorWalletSummaries.add(walletSummary);
-       }
-     }
+    for (WalletSummary walletSummary : allWalletSummaries) {
+      if (!WalletType.TREZOR_HARD_WALLET.equals(walletSummary.getWalletType())) {
+        nonHardTrezorWalletSummaries.add(walletSummary);
+      }
+    }
 
-     return nonHardTrezorWalletSummaries;
-   }
+    return nonHardTrezorWalletSummaries;
+  }
+
   /**
    * <p>Work out what wallets are available in a directory (typically the user data directory).
    * This is achieved by looking for directories with a name like <code>"mbhd-walletId"</code>
@@ -1557,7 +1554,7 @@ public enum WalletManager implements WalletEventListener {
         walletSummary.getWallet().saveToFile(currentWalletFile);
 
         File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(currentWalletFile, walletSummary.getPassword());
-        log.debug("Created AES encrypted wallet as file:\n'{}'\nSize: {} bytes",encryptedAESCopy.getAbsolutePath(), encryptedAESCopy.length());
+        log.debug("Created AES encrypted wallet as file:\n'{}'\nSize: {} bytes", encryptedAESCopy.getAbsolutePath(), encryptedAESCopy.length());
 
         BackupService backupService = CoreServices.getOrCreateBackupService();
         backupService.rememberWalletSummaryAndPasswordForRollingBackup(walletSummary, walletSummary.getPassword());

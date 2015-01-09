@@ -53,4 +53,13 @@ public class BalanceChangedEvent implements ViewEvent {
   public Optional<String> getRateProvider() {
     return rateProvider;
   }
+
+  @Override
+  public String toString() {
+    return "BalanceChangedEvent{" +
+            "coinBalance=" + coinBalance +
+            ", localBalance=" + localBalance +
+            ", rateProvider=" + rateProvider +
+            '}';
+  }
 }

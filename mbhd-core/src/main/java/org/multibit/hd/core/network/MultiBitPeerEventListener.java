@@ -46,10 +46,10 @@ public class MultiBitPeerEventListener implements PeerEventListener {
         progress(pct, blocksLeft, new Date(block.getTimeSeconds() * 1000));
       }
       lastPercent = (int) pct;
-    }
 
-    // Fire the download percentage
-    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(lastPercent, blocksLeft));
+      // Fire the download percentage when it changes
+      CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(lastPercent, blocksLeft));
+    }
 
     if (blocksLeft == 0) {
        doneDownload();
@@ -78,7 +78,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   @Override
   public void onPeerConnected(Peer peer, int peerCount) {
-    log.trace("(connect) Number of peers = " + peerCount + ", lastPercent = " + lastPercent);
+    log.debug("(connect) Number of peers = " + peerCount + ", lastPercent = " + lastPercent);
 
     numberOfConnectedPeers = peerCount;
 
@@ -88,7 +88,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   @Override
   public void onPeerDisconnected(Peer peer, int peerCount) {
-    log.trace("(disconnect) Number of peers = " + peerCount);
+    log.debug("(disconnect) Number of peers = " + peerCount);
     if (peerCount == numberOfConnectedPeers) {
       // Don't fire an event - not useful
       return;
@@ -178,7 +178,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    * @param date the date of the last block downloaded
    */
   protected void progress(double pct, int blocksSoFar, Date date) {
-    log.trace(
+    log.debug(
             String.format(
                     "Chain download %d%% done with %d blocks to go, block date %s",
                     (int) pct,
@@ -193,6 +193,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    * @param blocks the number of blocks to download, estimated
    */
   protected void startDownload(int blocks) {
+    log.debug("Started download with {} blocks to download", blocks);
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadStarted());
 
   }
@@ -202,7 +203,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    */
   protected void doneDownload() {
 
-    log.info("Download of block chain complete");
+    log.debug("Download of block chain complete");
 
     // Fire that we have completed the sync
     lastPercent = 100;

@@ -51,8 +51,8 @@ public class PersistentContactServiceTest {
               nowInSeconds,
               WalletServiceTest.PASSWORD,
               "Example",
-              "Example"
-      );
+              "Example",
+        false); // No need to sync
 
     File contactDbFile = new File(applicationDirectory.getAbsolutePath() + File.separator + ContactService.CONTACTS_DATABASE_NAME);
 

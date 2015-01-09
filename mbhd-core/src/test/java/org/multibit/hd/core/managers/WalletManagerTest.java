@@ -122,14 +122,14 @@ public class WalletManagerTest {
     long nowInSeconds = Dates.nowInSeconds();
 
     WalletSummary walletSummary1 = walletManager
-            .getOrCreateMBHDSoftWalletSummaryFromSeed(
-                    applicationDirectory,
-                    seed,
-                    nowInSeconds,
-                    "credentials",
-                    "Example",
-                    "Example"
-            );
+      .getOrCreateMBHDSoftWalletSummaryFromSeed(
+        applicationDirectory,
+        seed,
+        nowInSeconds,
+        "credentials",
+        "Example",
+        "Example",
+        false); // No need to sync
 
     // Uncomment this next line if you want a wallet created in your MultiBitHD user data directory.
     //walletManager.createWallet( seed, "credentials");
@@ -141,14 +141,14 @@ public class WalletManagerTest {
     BackupManager.INSTANCE.initialise(applicationDirectory2, Optional.<File>absent());
 
     WalletSummary walletSummary2 = walletManager
-            .getOrCreateMBHDSoftWalletSummaryFromSeed(
-                    applicationDirectory2,
-                    seed,
-                    nowInSeconds,
-                    "credentials",
-                    "Example",
-                    "Example"
-            );
+      .getOrCreateMBHDSoftWalletSummaryFromSeed(
+        applicationDirectory2,
+        seed,
+        nowInSeconds,
+        "credentials",
+        "Example",
+        "Example",
+        false); // No need to sync
 
     assertThat(walletSummary2).isNotNull();
 
@@ -158,13 +158,13 @@ public class WalletManagerTest {
     assertThat(key1).isEqualTo(key2);
 
     File expectedFile = new File(
-            applicationDirectory2.getAbsolutePath()
-                    + File.separator
-                    + "mbhd-"
-                    + walletSummary2.getWalletId().toFormattedString()
-                    + File.separator
-                    + WalletManager.MBHD_WALLET_NAME
-                    + WalletManager.MBHD_AES_SUFFIX
+      applicationDirectory2.getAbsolutePath()
+        + File.separator
+        + "mbhd-"
+        + walletSummary2.getWalletId().toFormattedString()
+        + File.separator
+        + WalletManager.MBHD_WALLET_NAME
+        + WalletManager.MBHD_AES_SUFFIX
     );
 
     assertThat(expectedFile.exists()).isTrue();
@@ -187,12 +187,12 @@ public class WalletManagerTest {
     long nowInSeconds = Dates.nowInSeconds();
 
     WalletSummary walletSummary = walletManager.getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
-            applicationDirectory,
-            TREZOR_SEED_PHRASE,
-            nowInSeconds,
-            "aPassword",
-            "Abandon",
-            "Abandon");
+      applicationDirectory,
+      TREZOR_SEED_PHRASE,
+      nowInSeconds,
+      "aPassword",
+      "Abandon",
+      "Abandon", true);
 
     assertThat(walletSummary).isNotNull();
     assertThat(WalletType.TREZOR_SOFT_WALLET.equals(walletSummary.getWalletType()));
@@ -244,7 +244,7 @@ public class WalletManagerTest {
     // Check the first keys above are in the wallet
     assertThat(rebornWallet.hasKey(trezorKeyM44H_0H_0H_0_0)).isTrue();
     assertThat(rebornWallet.hasKey(trezorKeyM44H_0H_0H_1_0)).isTrue();
-   }
+  }
 
   @Test
   public void testFindWalletDirectories() throws Exception {
@@ -331,13 +331,13 @@ public class WalletManagerTest {
 
     log.debug("");
     WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
-            applicationDirectory,
-            seed,
-            nowInSeconds,
-            SIGNING_PASSWORD,
-            "Signing Example",
-            "Signing Example"
-    );
+      applicationDirectory,
+      seed,
+      nowInSeconds,
+      SIGNING_PASSWORD,
+      "Signing Example",
+      "Signing Example",
+      false); // No need to sync
 
     // Address not in wallet
     ECKey ecKey = new ECKey();
@@ -427,14 +427,14 @@ public class WalletManagerTest {
       long nowInSeconds = Dates.nowInSeconds();
 
       WalletSummary walletSummary = walletManager
-              .getOrCreateMBHDSoftWalletSummaryFromSeed(
-                      applicationDirectory,
-                      seed,
-                      nowInSeconds,
-                      passwordToCheck,
-                      "Password/seed encryption Example",
-                      "Password/seed encryption Example"
-              );
+        .getOrCreateMBHDSoftWalletSummaryFromSeed(
+          applicationDirectory,
+          seed,
+          nowInSeconds,
+          passwordToCheck,
+          "Password/seed encryption Example",
+          "Password/seed encryption Example",
+          false); // No need to sync
 
       // Check the encrypted wallet credentials and seed are correct
       byte[] foundEncryptedBackupKey = walletSummary.getEncryptedBackupKey();

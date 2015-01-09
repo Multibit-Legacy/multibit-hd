@@ -7,6 +7,7 @@ import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.events.WalletLoadEvent;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -168,6 +169,13 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
               public void run() {
 
                 log.debug("Saw a wallet load event {}", walletLoadEvent);
+
+                // Ensure the wallet balance is propagated out
+                if (WalletManager.INSTANCE.getCurrentWalletBalance().isPresent()) {
+                  ViewEvents.fireBalanceChangedEvent(
+                          WalletManager.INSTANCE.getCurrentWalletBalance().get(), null, Optional.<String>absent());
+                }
+
                 if (isInitialised()) {
                   unprocessedWalletLoadEvent = null;
                   if (walletLoadEvent.isWalletLoadWasSuccessful()) {

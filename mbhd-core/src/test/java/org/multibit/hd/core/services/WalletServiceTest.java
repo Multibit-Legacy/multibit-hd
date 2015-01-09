@@ -80,8 +80,9 @@ public class WalletServiceTest {
                     nowInSeconds,
                     PASSWORD,
                     "Example",
-                    "Example"
-            );
+                    "Example",
+              false); // No need to sync
+
     WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
 
     firstAddress = walletSummary.getWallet().freshReceiveKey().toString();

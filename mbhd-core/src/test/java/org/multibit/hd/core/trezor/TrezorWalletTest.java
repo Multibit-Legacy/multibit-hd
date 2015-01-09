@@ -164,8 +164,8 @@ public class TrezorWalletTest {
                     TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
                     (String) PASSWORD,
                     "trezor-hard-example",
-                    "trezor-hard-example"
-            );
+                    "trezor-hard-example",
+              true);
 
     assertThat(WalletType.TREZOR_HARD_WALLET.equals(walletSummary.getWalletType()));
 
@@ -260,8 +260,8 @@ public class TrezorWalletTest {
                     TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
                     (String) PASSWORD,
                     "trezor-soft-example",
-                    "trezor-soft-example"
-            );
+                    "trezor-soft-example",
+              true);
 
     assertThat(WalletType.TREZOR_SOFT_WALLET.equals(walletSummary.getWalletType()));
 
@@ -367,8 +367,8 @@ public class TrezorWalletTest {
                      TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
                      (String) PASSWORD,
                      "trezor-soft-example",
-                     "trezor-soft-example"
-             );
+                     "trezor-soft-example",
+               true);
 
      walletSummary.getWallet().decrypt(PASSWORD);
 
@@ -405,8 +405,8 @@ public class TrezorWalletTest {
                     TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
                     (String) PASSWORD,
                     "trezor-soft-example",
-                    "trezor-soft-example"
-            );
+                    "trezor-soft-example",
+              true);
 
     // Check the old password is what is expected
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();

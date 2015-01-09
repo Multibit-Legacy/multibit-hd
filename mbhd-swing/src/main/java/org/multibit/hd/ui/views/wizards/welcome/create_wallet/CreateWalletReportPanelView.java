@@ -217,8 +217,8 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
         Dates.nowInSeconds(),
         password,
         name,
-        notes
-      );
+        notes,
+        true);
 
       Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
 
