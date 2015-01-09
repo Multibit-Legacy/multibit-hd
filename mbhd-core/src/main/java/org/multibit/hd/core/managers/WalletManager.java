@@ -397,11 +397,10 @@ public enum WalletManager implements WalletEventListener {
         log.debug("Opening AES wallet:\n'{}'", walletFileWithAES.getAbsolutePath());
         walletSummary = loadFromWalletDirectory(walletDirectory, password);
       } catch (WalletLoadException e) {
-        // Failed to decrypt the existing wallet/backups
+        // Failed to decrypt the existing wallet/backups or something else went wrong
         log.error("Failed to load from wallet directory.");
-        IllegalStateException error = new IllegalStateException("The directory for the wallet '" + walletDirectory.getAbsoluteFile() + "' could not be created");
-        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, error));
-        throw error;
+        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, e));
+        throw e;
       }
     } else {
       log.debug("Wallet file does not exist. Creating...");
