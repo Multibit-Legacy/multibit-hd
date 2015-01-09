@@ -34,7 +34,7 @@ import java.util.Random;
  *
  * // Get response
  * socket.receive(packet);
- * System.out.println(msg.toString());
+ * // Print msg.toString();
  * </pre>
  *
  * This code is copyright (c) Adam Buckley 2004

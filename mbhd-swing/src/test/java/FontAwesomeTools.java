@@ -608,10 +608,12 @@ public class FontAwesomeTools {
         .replace("\\F", "\\uf")
         .replace(";", "),");
 
+      // Printing code
       System.out.println(entry);
 
     }
 
+    // Printing code
     System.out.println("  // End of enum\n;\n\nCopy paste the above into AwesomeIcon to replace the existing entries.");
 
   }

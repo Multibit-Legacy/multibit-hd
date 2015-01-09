@@ -193,7 +193,7 @@ public class TrezorWalletTest {
     // Ensure it is saved with the newly generated addresses
     File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(temporaryDirectory).get();
 
-    System.out.println("TrezorWalletTest#testCreateWalletWithTrezorAccountUsingMasterPrivateKey wallet: " + wallet.toString());
+    log.debug("TrezorWalletTest#testCreateWalletWithTrezorAccountUsingMasterPrivateKey wallet: " + wallet.toString());
     wallet.saveToFile(walletFile);
     EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, PASSWORD);
 
@@ -267,7 +267,7 @@ public class TrezorWalletTest {
 
     Wallet wallet = walletSummary.getWallet();
 
-    System.out.println("TrezorWalletTest#testCreateTrezorSoftWalletFromSniffSeed Trezor soft wallet: " + wallet.toString());
+    log.debug("TrezorWalletTest#testCreateTrezorSoftWalletFromSniffSeed Trezor soft wallet: " + wallet.toString());
 
     assertThat(wallet.getActiveKeychain()).isNotNull();
     assertThat(wallet.getActiveKeychain().getRootKey()).isNotNull();

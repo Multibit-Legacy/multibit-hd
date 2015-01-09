@@ -205,14 +205,14 @@ public class WalletManagerTest {
     DeterministicKey trezorKeyM44H_0H_0H_0_0 = trezorWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String addressM44H_0H_0H_0_0 = trezorKeyM44H_0H_0H_0_0.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
 
-    System.out.println("WalletManagerTest - trezorKeyM44H_0H_0H_0_0 = " + trezorKeyM44H_0H_0H_0_0.toString());
-    System.out.println("WalletManagerTest - addressM44H_0H_0H_0_0 = " + addressM44H_0H_0H_0_0);
+    log.debug("WalletManagerTest - trezorKeyM44H_0H_0H_0_0 = " + trezorKeyM44H_0H_0H_0_0.toString());
+    log.debug("WalletManagerTest - addressM44H_0H_0H_0_0 = " + addressM44H_0H_0H_0_0);
 
     DeterministicKey trezorKeyM44H_0H_0H_1_0 = trezorWallet.freshKey(KeyChain.KeyPurpose.CHANGE);
     String addressM44H_0H_0H_1_0 = trezorKeyM44H_0H_0H_1_0.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
 
-    System.out.println("WalletManagerTest - trezorKeyM44H_0H_0H_1_0 = " + trezorKeyM44H_0H_0H_1_0.toString());
-    System.out.println("WalletManagerTest - addressM44H_0H_0H_1_0 = " + addressM44H_0H_0H_1_0);
+    log.debug("WalletManagerTest - trezorKeyM44H_0H_0H_1_0 = " + trezorKeyM44H_0H_0H_1_0.toString());
+    log.debug("WalletManagerTest - addressM44H_0H_0H_1_0 = " + addressM44H_0H_0H_1_0);
 
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_0_0.equals(addressM44H_0H_0H_0_0)).isTrue();
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_1_0.equals(addressM44H_0H_0H_1_0)).isTrue();
