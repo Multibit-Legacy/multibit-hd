@@ -225,13 +225,14 @@ public class MainView extends JFrame {
     if (repeatLatestEvents) {
       log.debug("Repeating earlier events...");
 
-      // Catch up on recent events
-      CoreServices.getApplicationEventService().repeatLatestEvents();
-
       // Ensure the wallet balance is propagated out
       if (WalletManager.INSTANCE.getCurrentWalletBalance().isPresent()) {
         ViewEvents.fireBalanceChangedEvent(WalletManager.INSTANCE.getCurrentWalletBalance().get(), null, Optional.<String>absent());
       }
+
+      // Catch up on recent events
+      CoreServices.getApplicationEventService().repeatLatestEvents();
+
     }
 
     // Check for any wizards that were showing before the refresh occurred

@@ -84,7 +84,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
       new MigLayout(
         Panels.migXYLayout(),
         "[][][]", // Column constraints
-        "10[][][][][]10" // Row constraints
+        "10[24]10[24]15[24]10[24]15[24]10" // Row constraints
       ));
 
     // Apply the theme
