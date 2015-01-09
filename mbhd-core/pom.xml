@@ -433,11 +433,12 @@
     <!--</dependency>-->
 
     <!-- XChange Vault of Satoshi exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-vaultofsatoshi</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
+    <!-- Exchange out of business see #332 -->
+    <!--<dependency>-->
+      <!--<groupId>com.xeiam.xchange</groupId>-->
+      <!--<artifactId>xchange-vaultofsatoshi</artifactId>-->
+      <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
 
     <!-- XChange Vircurex exchange support -->
     <!-- No working feed at 2.1.0 -->
