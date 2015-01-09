@@ -89,7 +89,7 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
             verifier.verify(editor);
           }
         } catch (BadLocationException e1) {
-          e1.printStackTrace();
+          log.warn("Bad location in recipient combobox editor", e1);
         }
       }
     });

@@ -242,7 +242,7 @@ public class BackupService extends AbstractService {
         rememberedWalletSummaryForRollingBackup = Optional.absent();
         rememberedPasswordForRollingBackup = Optional.absent();
       } catch (IOException ioe) {
-        ioe.printStackTrace();
+        log.error("Failed to perform rolling backup", ioe);
         // TODO handle exception (which is thrown inside the main runnable)
       }
     }
@@ -272,7 +272,7 @@ public class BackupService extends AbstractService {
         rememberedWalletIdForLocalBackup = Optional.absent();
         rememberedPasswordForLocalBackup = Optional.absent();
       } catch (IOException ioe) {
-        ioe.printStackTrace();
+        log.error("Failed to perform local backup", ioe);
         // TODO handle exception (which is thrown inside the main runnable)
       }
     }
@@ -302,7 +302,7 @@ public class BackupService extends AbstractService {
         rememberedWalletIdForCloudBackup = Optional.absent();
         rememberedPasswordForCloudBackup = Optional.absent();
       } catch (IOException ioe) {
-        ioe.printStackTrace();
+        log.error("Failed to perform cloud backup", ioe);
         // TODO handle exception (which is thrown inside the main runnable)
       }
     }

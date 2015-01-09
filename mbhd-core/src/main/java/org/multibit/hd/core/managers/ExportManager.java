@@ -16,6 +16,7 @@ import org.multibit.hd.core.events.ExportPerformedEvent;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Collections;
 import java.util.Comparator;
@@ -149,9 +150,8 @@ public class ExportManager {
       csvWriter.writeAll(transactionDataList);
 
       // Success
-    } catch (Exception e) {
+    } catch (RuntimeException | IOException e) {
       exportWasSuccessful = false;
-      e.printStackTrace();
       errorMessage = e.getClass().getCanonicalName() + " " + e.getMessage();
     }
 
@@ -170,9 +170,8 @@ public class ExportManager {
       csvWriter.writeAll(paymentRequestDataList);
 
       // Success
-    } catch (Exception e) {
+    } catch (RuntimeException | IOException e ) {
       exportWasSuccessful = false;
-      e.printStackTrace();
       errorMessage = e.getClass().getCanonicalName() + " " + e.getMessage();
     }
 

@@ -12,16 +12,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import org.bitcoinj.core.Address;
-import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.ECKey;
-import org.bitcoinj.core.NetworkParameters;
-import org.bitcoinj.core.StoredBlock;
-import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.Utils;
-import org.bitcoinj.core.Wallet;
-import org.bitcoinj.core.WalletEventListener;
-import org.bitcoinj.core.WalletExtension;
+import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
@@ -79,6 +70,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -693,14 +685,14 @@ public enum WalletManager implements WalletEventListener {
           }
         } catch (BlockStoreException bse) {
           // Carry on - it's just logging
-          bse.printStackTrace();
+          log.warn("Block store exception", bse);
         } finally {
           // Close the blockstore - it will get opened again later but may or may not be checkpointed
           if (blockStore != null) {
             try {
               blockStore.close();
             } catch (BlockStoreException bse) {
-              bse.printStackTrace();
+              log.warn("Failed to close block store", bse);
             }
           }
         }
@@ -1415,8 +1407,8 @@ public enum WalletManager implements WalletEventListener {
       }
     } catch (KeyCrypterException e) {
       return new SignMessageResult(Optional.<String>absent(), false, CoreMessageKey.SIGN_MESSAGE_NO_PASSWORD, null);
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (RuntimeException | AddressFormatException e) {
+      log.error("Sign message failure", e);
       return new SignMessageResult(Optional.<String>absent(), false, CoreMessageKey.SIGN_MESSAGE_FAILURE, null);
     }
   }
@@ -1457,8 +1449,8 @@ public enum WalletManager implements WalletEventListener {
         return new VerifyMessageResult(false, CoreMessageKey.VERIFY_MESSAGE_VERIFY_FAILURE, null);
       }
 
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (RuntimeException | AddressFormatException | SignatureException e) {
+      log.warn("Failed to verify the message", e);
       return new VerifyMessageResult(false, CoreMessageKey.VERIFY_MESSAGE_FAILURE, null);
     }
   }

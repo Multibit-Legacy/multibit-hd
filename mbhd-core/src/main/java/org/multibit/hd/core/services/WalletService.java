@@ -59,6 +59,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -417,8 +418,8 @@ public class WalletService extends AbstractService {
     try {
       transaction.bitcoinSerialize(byteOutputStream);
       size = byteOutputStream.size();
-    } catch (IOException e1) {
-      e1.printStackTrace();
+    } catch (IOException e) {
+      log.error("Failed to serialize transaction", e);
     }
 
     List<Address> outputAddresses = calculateOutputAddresses(transaction);
@@ -1016,11 +1017,8 @@ public class WalletService extends AbstractService {
         wallet.encrypt(newPassword);
 
         CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(true, CoreMessageKey.CHANGE_PASSWORD_SUCCESS, null));
-      } catch (Exception e) {
-        e.printStackTrace();
-        if (e.getCause() != null) {
-          e.getCause().printStackTrace();
-        }
+      } catch (RuntimeException | NoSuchAlgorithmException e) {
+        log.error("Failed to change password", e);
         CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_ERROR, new Object[]{e.getMessage()}));
       }
     } else {

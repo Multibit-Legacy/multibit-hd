@@ -89,8 +89,8 @@ public class SendFeeDtoWalletExtension implements WalletExtension {
         try {
           nextFeeSendCount = Optional.of(Integer.parseInt(countString));
         } catch (NumberFormatException nfe) {
-          // return Optional.absent();
-          nfe.printStackTrace();
+          log.warn("Number format exception", nfe);
+          nextFeeSendCount = Optional.absent();
         }
       }
 

@@ -314,7 +314,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
         public void onFailure(Throwable t) {
 
           // Have a failure
-          t.printStackTrace();
+          log.error("Unexpected failure during request wipe", t);
 
           setReportMessageKey(MessageKey.TREZOR_WIPE_DEVICE_FAILURE);
           setReportMessageStatus(false);

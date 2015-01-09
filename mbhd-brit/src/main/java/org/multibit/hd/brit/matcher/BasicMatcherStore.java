@@ -241,7 +241,7 @@ public class BasicMatcherStore implements MatcherStore {
     try {
       storeBitcoinAddressesToFile(bitcoinAddresses, filename);
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("Failed to store Bitcoin addresses for date", e);
     }
   }
 
@@ -256,7 +256,7 @@ public class BasicMatcherStore implements MatcherStore {
     try {
       storeBitcoinAddressesToFile(allBitcoinAddresses, allBitcoinAddressesFilename);
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("Failed to store all Bitcoin addresses", e);
     }
   }
 
