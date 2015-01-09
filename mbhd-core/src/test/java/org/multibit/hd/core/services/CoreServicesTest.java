@@ -66,7 +66,7 @@ public class CoreServicesTest {
               PASSWORD,
               "Example",
               "Example",
-        true);
+        false); // No need to sync
 
     Wallet wallet  = walletSummary.getWallet();
 

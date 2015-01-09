@@ -22,7 +22,6 @@ import com.xeiam.xchange.kraken.KrakenExchange;
 import com.xeiam.xchange.lakebtc.LakeBTCExchange;
 import com.xeiam.xchange.oer.OERExchange;
 import com.xeiam.xchange.okcoin.OkCoinExchange;
-import com.xeiam.xchange.vaultofsatoshi.VaultOfSatoshiExchange;
 import org.multibit.hd.core.config.Configurations;
 
 /**
@@ -79,7 +78,7 @@ public enum ExchangeKey {
   OK_COIN(OkCoinExchange.class.getName()),
   OPEN_EXCHANGE_RATES(OERExchange.class.getName()),
   // POLONIEX(PoloniexExchange.class.getName()),// No working feed
-  VAULT_OF_SATOSHI(VaultOfSatoshiExchange.class.getName()),
+  //VAULT_OF_SATOSHI(VaultOfSatoshiExchange.class.getName()), // Out of business
   // VIRCUREX(VircurexExchange.class.getName()), // Broken
 
   // End of enum

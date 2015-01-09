@@ -41,11 +41,11 @@ public class WalletFixtures {
   public static final String ALTERNATIVE_PASSWORD = "def456";
 
   /**
-   * <p>Create an empty wallet in the current installation directory</p>
+   * <p>Create an empty MBHD soft wallet in the current installation directory</p>
    *
    * @return The wallet summary if successful
    */
-  public static WalletSummary createEmptyWalletFixture() throws IOException {
+  public static WalletSummary createEmptyMBHDSoftWalletFixture() throws IOException {
 
     String applicationDirectoryName = InstallationManager
       .getOrCreateApplicationDataDirectory()
@@ -67,7 +67,7 @@ public class WalletFixtures {
       STANDARD_PASSWORD,
       "Example",
       "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.",
-      false);
+      false); // No need to sync
 
   }
 
