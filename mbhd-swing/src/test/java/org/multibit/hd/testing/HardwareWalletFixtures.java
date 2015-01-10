@@ -54,9 +54,9 @@ public class HardwareWalletFixtures {
    * <li>Is initialised with the standard Trezor hardware wallet</li>
    * </ul>
    *
-   * @return The Trezor hardware wallet client
+   * @return A new Trezor hardware wallet client
    */
-  public static AbstractTrezorHardwareWalletClient createAttachedInitialisedClient() {
+  public static AbstractTrezorHardwareWalletClient newClient_Initialised() {
 
     // This section makes extensive use of Mockito
     // Please read http://docs.mockito.googlecode.com/hg/org/mockito/Mockito.html
@@ -67,7 +67,38 @@ public class HardwareWalletFixtures {
 
     mockConnect(mockClient);
 
-    mockInitialise(mockClient);
+    mockInitialise_Initialised(mockClient);
+
+    mockDeterministicHierarchy(mockClient);
+
+    mockPinMatrixAck(mockClient);
+
+    mockGetCipherKey(mockClient);
+
+    return mockClient;
+  }
+
+  /**
+   * <p>Create a hardware wallet with the following characteristics:</p>
+   * <ul>
+   * <li>Attached</li>
+   * <li>Wiped (factory fresh)</li>
+   * </ul>
+   *
+   * @return A new Trezor hardware wallet client
+   */
+  public static AbstractTrezorHardwareWalletClient newClient_Wiped() {
+
+    // This section makes extensive use of Mockito
+    // Please read http://docs.mockito.googlecode.com/hg/org/mockito/Mockito.html
+
+    AbstractTrezorHardwareWalletClient mockClient = mock(AbstractTrezorHardwareWalletClient.class);
+
+    when(mockClient.attach()).thenReturn(true);
+
+    mockConnect(mockClient);
+
+    mockInitialise_Wiped(mockClient);
 
     mockDeterministicHierarchy(mockClient);
 
@@ -100,12 +131,38 @@ public class HardwareWalletFixtures {
    *
    * @param mockClient The mock client
    */
-  private static void mockInitialise(AbstractTrezorHardwareWalletClient mockClient) {
+  private static void mockInitialise_Initialised(AbstractTrezorHardwareWalletClient mockClient) {
     when(mockClient.initialise()).thenAnswer(
       new Answer<Boolean>() {
         public Boolean answer(InvocationOnMock invocation) throws Throwable {
 
           Features features = HardwareWalletEventFixtures.newStandardFeatures();
+
+          MessageEvent event = new MessageEvent(
+            MessageEventType.FEATURES,
+            Optional.<HardwareWalletMessage>of(features),
+            Optional.<Message>absent()
+          );
+
+          fireMessageEvent(event);
+
+          return true;
+        }
+      });
+  }
+
+  /**
+   * <p>Configure for a FEATURES based on the standard features</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param mockClient The mock client
+   */
+  private static void mockInitialise_Wiped(AbstractTrezorHardwareWalletClient mockClient) {
+    when(mockClient.initialise()).thenAnswer(
+      new Answer<Boolean>() {
+        public Boolean answer(InvocationOnMock invocation) throws Throwable {
+
+          Features features = HardwareWalletEventFixtures.newWipedFeatures();
 
           MessageEvent event = new MessageEvent(
             MessageEventType.FEATURES,
@@ -249,12 +306,13 @@ public class HardwareWalletFixtures {
    */
   private static void fireMessageEvent(final MessageEvent event) {
 
-    messageEventServices.submit(new Runnable() {
-      @Override
-      public void run() {
-        MessageEvents.fireMessageEvent(event);
-      }
-    });
+    messageEventServices.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          MessageEvents.fireMessageEvent(event);
+        }
+      });
 
     // Allow time for the event to propagate
     Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
@@ -268,12 +326,13 @@ public class HardwareWalletFixtures {
    */
   private static void fireMessageEvent(final MessageEventType eventType) {
 
-    messageEventServices.submit(new Runnable() {
-      @Override
-      public void run() {
-        MessageEvents.fireMessageEvent(eventType);
-      }
-    });
+    messageEventServices.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          MessageEvents.fireMessageEvent(eventType);
+        }
+      });
 
     // Allow time for the event to propagate
     Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);

@@ -87,19 +87,21 @@ public class HardwareWalletEventFixtures {
 
   /**
    * <p>Prepare a sequence of events corresponding to unlocking an initialised Trezor</p>
+   *
+   * <p>Use this in conjunction with the mock Trezor client in HardwareWalletFixtures</p>
    */
-  public static void prepareUnlockTrezorUseCaseEvents() {
+  public static void prepareUnlockTrezorWalletUseCaseEvents() {
 
     hardwareWalletEvents.clear();
 
-    // Attach device
-    final HardwareWalletEvent event1 = new HardwareWalletEvent(
-      HardwareWalletEventType.SHOW_DEVICE_READY,
-      Optional.<HardwareWalletMessage>of(
-        newStandardFeatures()
-      ));
-
-    hardwareWalletEvents.add(event1);
+//    // Attach device
+//    final HardwareWalletEvent event1 = new HardwareWalletEvent(
+//      HardwareWalletEventType.SHOW_DEVICE_READY,
+//      Optional.<HardwareWalletMessage>of(
+//        newStandardFeatures()
+//      ));
+//
+//    hardwareWalletEvents.add(event1);
 
     // Deterministic hierarchy (indirectly from mock client via PUBLIC_KEY messages)
 
@@ -120,19 +122,20 @@ public class HardwareWalletEventFixtures {
 
   /**
    * <p>Prepare a sequence of events corresponding to initialising a Trezor</p>
+   * <p>Use this in conjunction with the mock Trezor client in HardwareWalletFixtures</p>
    */
-  public static void prepareInitialiseTrezorUseCaseEvents() {
+  public static void prepareCreateTrezorWalletUseCaseEvents() {
 
     hardwareWalletEvents.clear();
 
-    // Attach device
-    final HardwareWalletEvent event1 = new HardwareWalletEvent(
-      HardwareWalletEventType.SHOW_DEVICE_READY,
-      Optional.<HardwareWalletMessage>of(
-        newStandardFeatures()
-      ));
-
-    hardwareWalletEvents.add(event1);
+//    // Attach device
+//    final HardwareWalletEvent event1 = new HardwareWalletEvent(
+//      HardwareWalletEventType.SHOW_DEVICE_READY,
+//      Optional.<HardwareWalletMessage>of(
+//        newUninitialisedFeatures()
+//      ));
+//
+//    hardwareWalletEvents.add(event1);
 
     // Confirm wipe
     final HardwareWalletEvent event2 = new HardwareWalletEvent(
@@ -192,7 +195,7 @@ public class HardwareWalletEventFixtures {
   }
 
   /**
-   * @return A default Features for use with FEST testing (abandon wallet)
+   * @return An "initialised" Features for use with FEST testing (abandon wallet)
    */
   public static Features newStandardFeatures() {
 
@@ -207,6 +210,30 @@ public class HardwareWalletEventFixtures {
     features.setLabel(STANDARD_LABEL);
     features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin"));
     features.setInitialized(true);
+    features.setRevision(Utils.HEX.decode("524f2a957afb66e6a869384aceaca1cb7f9cba60"));
+    features.setBootloaderHash(Utils.HEX.decode("c4c32539b4a025a8e753a4c46264285911a45fcb14f4718179e711b1ce990524"));
+    features.setImported(false);
+
+    return features;
+
+  }
+
+  /**
+   * @return A "wiped" Features for use with FEST testing (abandon wallet)
+   */
+  public static Features newWipedFeatures() {
+
+    Features features = new Features();
+    features.setVendor("bitcointrezor.com");
+    features.setVersion("1.2.1");
+    features.setBootloaderMode(false);
+    features.setDeviceId("D18894FA25FA90CD589EDE57");
+    features.setPinProtection(false);
+    features.setPassphraseProtection(false);
+    features.setLanguage("english");
+    features.setLabel(STANDARD_LABEL);
+    features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin"));
+    features.setInitialized(false);
     features.setRevision(Utils.HEX.decode("524f2a957afb66e6a869384aceaca1cb7f9cba60"));
     features.setBootloaderHash(Utils.HEX.decode("c4c32539b4a025a8e753a4c46264285911a45fcb14f4718179e711b1ce990524"));
     features.setImported(false);
@@ -344,7 +371,8 @@ public class HardwareWalletEventFixtures {
     return new PublicKey(
       true,
       "xpub661MyMwAqRbcFkPHucMnrGNzDwb6teAX1RbKQmqtEF8kK3Z7LZ59qafCjB9eCRLiTVG3uxBxgKvRgbubRhqSKXnGGb1aoaqLrpMBDrVxga8",
-      Utils.HEX.decode("0488b21e0000000000000000007923408dadd3c7b56eed15567707ae5e5dca089de972e07f3b860450e2a3b70e03d902f35f560e0470c63313c7369168d9d7df2d49bf295fd9fb7cb109ccee0494c7fe61f5"),
+      Utils.HEX.decode(
+        "0488b21e0000000000000000007923408dadd3c7b56eed15567707ae5e5dca089de972e07f3b860450e2a3b70e03d902f35f560e0470c63313c7369168d9d7df2d49bf295fd9fb7cb109ccee0494c7fe61f5"),
       true,
       hdNodeType
     );
@@ -373,7 +401,8 @@ public class HardwareWalletEventFixtures {
     return new PublicKey(
       true,
       "xpub68jrRzQopSUSfYDVF7r6KMbite5ge2zei1y94YhzTbJvt9wUC9DXaEPfvmcz7E5XdgQYTvUqehtjSM3Zvc4MadbTzabTNZvWq12kjzkKA3b",
-      Utils.HEX.decode("0488b21e0173c5da0a8000002c45d3b0e8206db10a08d555317c7e245c5bbd12254ce968f3c79a959d4e6af98a03428a2da3e76291667a67a38ed45468ceb0d156bc8beda6e86fbc4cf295087c2b1a4472fa"),
+      Utils.HEX.decode(
+        "0488b21e0173c5da0a8000002c45d3b0e8206db10a08d555317c7e245c5bbd12254ce968f3c79a959d4e6af98a03428a2da3e76291667a67a38ed45468ceb0d156bc8beda6e86fbc4cf295087c2b1a4472fa"),
       true,
       hdNodeType
     );
@@ -402,7 +431,8 @@ public class HardwareWalletEventFixtures {
     return new PublicKey(
       true,
       "xpub6AmukNpN4yyLgyzSysjU6JqqoYA1mVUvtinHYdBGPDppatJXHxT8CcDsmBo9n3yLBgrcw9z62ygt1siT9xai4UaJ2w4FPmY6kPCF96YN2cF",
-      Utils.HEX.decode("0488b21e0288b3582b80000000af0894dc5f2d5bed0dc85b2fd2053a98575765c144e4e64126ee1009b38860b203f72f0e3684b0d7295f391616f12a469070bfcd175c55366239047495a2c1c4101d4fcb78"),
+      Utils.HEX.decode(
+        "0488b21e0288b3582b80000000af0894dc5f2d5bed0dc85b2fd2053a98575765c144e4e64126ee1009b38860b203f72f0e3684b0d7295f391616f12a469070bfcd175c55366239047495a2c1c4101d4fcb78"),
       true,
       hdNodeType
     );
@@ -431,7 +461,8 @@ public class HardwareWalletEventFixtures {
     return new PublicKey(
       true,
       "xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj",
-      Utils.HEX.decode("0488b21e03155bca59800000003da4bc190a2680111d31fadfdc905f2a7f6ce77c6f109919116f253d4344521903774c910fcf07fa96886ea794f0d5caed9afe30b44b83f7e213bb92930e7df4bdc84b94ea"),
+      Utils.HEX.decode(
+        "0488b21e03155bca59800000003da4bc190a2680111d31fadfdc905f2a7f6ce77c6f109919116f253d4344521903774c910fcf07fa96886ea794f0d5caed9afe30b44b83f7e213bb92930e7df4bdc84b94ea"),
       true,
       hdNodeType
     );

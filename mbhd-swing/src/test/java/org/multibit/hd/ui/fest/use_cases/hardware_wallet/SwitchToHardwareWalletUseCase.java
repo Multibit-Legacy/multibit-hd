@@ -28,7 +28,7 @@ public class SwitchToHardwareWalletUseCase extends AbstractFestUseCase {
   public void execute(Map<String, Object> parameters) {
 
     // Start the attach use case
-    HardwareWalletEventFixtures.prepareUnlockTrezorUseCaseEvents();
+    HardwareWalletEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
     HardwareWalletEventFixtures.fireNextEvent();
 
     // Allow time for the view to react
