@@ -70,7 +70,7 @@ public class TrezorHardwareWalletClientFixtures {
 
     mockDeterministicHierarchy(mockClient);
 
-    mockPinMatrixAck_CurrentPin(mockClient);
+    mockPinMatrixAck_UnlockWallet(mockClient);
 
     mockGetCipherKey(mockClient);
 
@@ -250,9 +250,70 @@ public class TrezorHardwareWalletClientFixtures {
   }
 
   /**
+   * <p>Configure for PIN matrix responses when unlocking a wallet (no previous create)</p>
+   * <ol>
+   * <li>"1234" is a correct PIN, "6789" will trigger FAILURE</li>
+   * <li>First call triggers a "protect call" BUTTON_REQUEST</li>
+   * <li>Subsequent calls do nothing so rely on event fixtures to provide use case context</li>
+   * </ol>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param mockClient The mock client
+   */
+  private static void mockPinMatrixAck_UnlockWallet(AbstractTrezorHardwareWalletClient mockClient) {
+
+    // Failed PIN
+    when(mockClient.pinMatrixAck("1234")).thenAnswer(
+      new Answer<Optional<Message>>() {
+
+        int count = 0;
+
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          MessageEvent event;
+          switch (count) {
+            case 0:
+              // PIN entered (current)
+              event = new MessageEvent(
+                MessageEventType.BUTTON_REQUEST,
+                Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newProtectCallButtonRequest()),
+                Optional.<Message>absent()
+              );
+              fireMessageEvent(event);
+              break;
+            default:
+              // Do nothing
+          }
+
+          count++;
+
+          return Optional.absent();
+        }
+      });
+
+    // Failed PIN
+    when(mockClient.pinMatrixAck("6789")).thenAnswer(
+      new Answer<Optional<Message>>() {
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          final MessageEvent event = new MessageEvent(
+            MessageEventType.FAILURE,
+            Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newPinFailure()),
+            Optional.<Message>absent()
+          );
+
+          fireMessageEvent(event);
+
+          return Optional.absent();
+        }
+      });
+
+  }
+
+  /**
    * <p>Configure for PIN matrix responses when creating a wallet</p>
    * <ol>
-   * <li>"1234" is a correct PIN</li>
+   * <li>"1234" is a correct PIN, "6789" will trigger FAILURE</li>
    * <li>First call triggers a PIN_MATRIX_REQUEST for "second PIN"</li>
    * <li>Second call triggers an ENTROPY_REQUEST</li>
    * <li>Subsequent calls do nothing so rely on event fixtures to provide use case context</li>
@@ -309,16 +370,6 @@ public class TrezorHardwareWalletClientFixtures {
           return Optional.absent();
         }
       });
-
-  }
-
-  /**
-   * <p>Configure for entering a PIN (6789 will cause failure, use event fixtures for next response)</p>
-   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
-   *
-   * @param mockClient The mock client
-   */
-  private static void mockPinMatrixAck_CurrentPin(AbstractTrezorHardwareWalletClient mockClient) {
 
     // Failed PIN
     when(mockClient.pinMatrixAck("6789")).thenAnswer(
