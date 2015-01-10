@@ -288,7 +288,7 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
             // Cancel the current Trezor operation
 
             // The Trezor should respond quickly to a cancel
-            setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
+            setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusMillis(100));
 
             log.debug("Sending 'request cancel'");
 

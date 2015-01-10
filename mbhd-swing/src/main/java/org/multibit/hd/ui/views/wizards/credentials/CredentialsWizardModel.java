@@ -140,13 +140,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   @Override
   public void showPrevious() {
     switch (state) {
-       case CREDENTIALS_LOAD_WALLET_REPORT:
-         // Show the enter password screen (for when the user has entered an incorrect password
-         state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
-         break;
-       default:
-         throw new IllegalStateException("Cannot showPrevious with a state of " + state);
-     }
+      case CREDENTIALS_LOAD_WALLET_REPORT:
+        // Show the enter password screen (for when the user has entered an incorrect password
+        state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+        break;
+      default:
+        throw new IllegalStateException("Cannot showPrevious with a state of " + state);
+    }
   }
 
   @Override
@@ -289,7 +289,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         }
         break;
       default:
-        // TODO Fill in the other states and provide success feedback
         log.info(
                 "Message:'Operation succeeded'\n{}",
                 event.getMessage().get()
@@ -301,6 +300,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
 
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+
     final Failure failure = (Failure) event.getMessage().get();
     log.debug("A failure event has occurred {}", failure);
 
@@ -308,24 +309,34 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
         // An unsuccessful get master public key has been performed
         log.debug("CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY was unsuccessful");
+        setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
+
         break;
       case CREDENTIALS_ENTER_PIN:
         // User entered incorrect PIN so should start again
-        state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
+
+        // Indicate a wrong PIN
+        getEnterPinPanelView().setPinStatus(false, true);
+
+        state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
+        // Reset the trezor and start again
+        if (hardwareWalletService.isPresent()) {
+          hardwareWalletService.get().requestCancel();
+        }
+
         break;
       default:
-
         if (FailureType.ACTION_CANCELLED.equals(failure.getType())) {
           // User is backing out of using their device (switch to password)
           state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
         } else {
-          // Something has gone wrong with the device
-          state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
+          // Something has gone wrong with the device so start again
+          state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
+          if (hardwareWalletService.isPresent()) {
+            hardwareWalletService.get().requestCancel();
+          }
         }
     }
-
-    setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
-
   }
 
   @Override
@@ -845,7 +856,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     } else {
       CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, CoreMessageKey.WALLET_LOADED_OK, new IllegalStateException("No hardware wallet service available")));
 
-              log.error("No hardware wallet service");
+      log.error("No hardware wallet service");
     }
     return Optional.absent();
   }
