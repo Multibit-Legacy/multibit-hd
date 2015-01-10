@@ -3,7 +3,6 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
@@ -57,9 +56,6 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
-
-    // Register for the high level hardware wallet events
-    HardwareWalletService.hardwareWalletEventBus.register(this);
 
     contentPanel.setLayout(new MigLayout(
             Panels.migXYLayout(),

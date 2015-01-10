@@ -201,11 +201,17 @@ public class ConfirmPasswordView extends AbstractComponentView<ConfirmPasswordMo
   }
 
   @Subscribe
-  public void onVerificationStatusChanged(VerificationStatusChangedEvent event) {
+  public void onVerificationStatusChanged(final VerificationStatusChangedEvent event) {
 
     if (event.getPanelName().equals(getModel().get().getPanelName() + ".credentials") && verificationStatusLabel != null) {
 
-      verificationStatusLabel.setVisible(event.isOK());
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            verificationStatusLabel.setVisible(event.isOK());
+          }
+        });
 
     }
   }

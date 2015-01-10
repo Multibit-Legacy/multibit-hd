@@ -18,7 +18,10 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.*;
+import org.multibit.hd.core.services.BackupService;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.ExchangeTickerService;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -82,8 +85,6 @@ public class MainController extends AbstractController implements
 
   private Optional<ExchangeTickerService> exchangeTickerService = Optional.absent();
 
-  private Optional<BitcoinNetworkService> bitcoinNetworkService = Optional.absent();
-
   private Optional<HardwareWalletService> hardwareWalletService = Optional.absent();
 
   private final BitcoinURIListeningService bitcoinURIListeningService;
@@ -101,8 +102,6 @@ public class MainController extends AbstractController implements
   // Keep track of other controllers for use after a preferences change
   private final HeaderController headerController;
 
-  private final SidebarController sidebarController;
-
   // Main view may be replaced during a soft shutdown
   private MainView mainView;
 
@@ -115,34 +114,34 @@ public class MainController extends AbstractController implements
   /**
    * @param bitcoinURIListeningService The Bitcoin URI listening service (must be present to permit a UI)
    * @param headerController           The header controller
-   * @param sidebarController          The sidebar controller
    */
   public MainController(
     BitcoinURIListeningService bitcoinURIListeningService,
-    HeaderController headerController,
-    SidebarController sidebarController
+    HeaderController headerController
   ) {
 
     super();
 
     Preconditions.checkNotNull(bitcoinURIListeningService, "'bitcoinURIListeningService' must be present");
     Preconditions.checkNotNull(headerController, "'headerController' must be present");
-    Preconditions.checkNotNull(sidebarController, "'sidebarController' must be present");
 
     this.bitcoinURIListeningService = bitcoinURIListeningService;
     this.headerController = headerController;
-    this.sidebarController = sidebarController;
 
   }
 
   @Subscribe
   public void onShutdownEvent(ShutdownEvent shutdownEvent) {
 
+    log.info("Received shutdown: {}", shutdownEvent.getShutdownType());
+
     switch (shutdownEvent.getShutdownType()) {
       case HARD:
       case SOFT:
 
-        log.info("MainController shutdown...");
+        // Unregister for events
+        headerController.unregister();
+        unregister();
 
         shutdownCurrentWallet(shutdownEvent.getShutdownType());
 
@@ -157,7 +156,7 @@ public class MainController extends AbstractController implements
   @Subscribe
   public void onWizardHideEvent(WizardHideEvent event) {
 
-    Preconditions.checkState(!SwingUtilities.isEventDispatchThread(), "This event should not be running on the EDT.");
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "This event should be running on the EDT.");
 
     log.debug("Wizard hide: '{}' Exit/Cancel: {}", event.getPanelName(), event.isExitCancel());
 
@@ -275,7 +274,7 @@ public class MainController extends AbstractController implements
     Preconditions.checkNotNull(event, "'event' must be present");
     Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");
 
-    BitcoinNetworkSummary summary = event.getSummary();
+    final BitcoinNetworkSummary summary = event.getSummary();
 
     Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
     Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
@@ -300,10 +299,16 @@ public class MainController extends AbstractController implements
       localisedMessage = summary.getStatus().name();
     }
 
-    ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
 
-    // Ensure everyone is aware of the update
-    ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
+          // Ensure everyone is aware of the update
+          ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
+        }
+      });
   }
 
   @Subscribe
@@ -1024,7 +1029,12 @@ public class MainController extends AbstractController implements
 
         log.debug("Environment supports hardware wallets so subscribing to hardware events");
 
-        // Subscribe to hardware wallet events
+        // (Re)subscribe to hardware wallet events
+        try {
+          HardwareWalletService.hardwareWalletEventBus.unregister(this);
+        } catch (IllegalArgumentException e) {
+          // Do nothing
+        }
         HardwareWalletService.hardwareWalletEventBus.register(this);
 
         // Start the service

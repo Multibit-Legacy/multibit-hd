@@ -58,7 +58,14 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   private final M wizardModel;
   protected Optional wizardParameter = Optional.absent();
 
+  /**
+   * True if the wizard supports the Exit button
+   */
   private final boolean exiting;
+
+  /**
+   * Maps the panel name to the panel views
+   */
   private Map<String, AbstractWizardPanelView> wizardViewMap = Maps.newHashMap();
 
   /**
@@ -120,7 +127,10 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   public void show(String panelName) {
 
-    Preconditions.checkState(wizardViewMap.containsKey(panelName), "'" + panelName + "' is not a valid panel name. Check the panel has been registered in the view map. Registered panels are " + wizardViewMap.keySet());
+    if (!wizardViewMap.containsKey(panelName)) {
+      log.error("'{}' is not a valid panel name. Check the panel has been registered in the view map. Registered panels are\n{}", wizardViewMap.keySet());
+      return;
+    }
 
     final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(panelName);
 
@@ -152,9 +162,12 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    * @param panelName    The panel name
    * @param isExitCancel True if this hide operation comes from an exit or cancel
    */
-  public void hide(String panelName, boolean isExitCancel) {
+  public void hide(final String panelName, final boolean isExitCancel) {
 
-    Preconditions.checkState(wizardViewMap.containsKey(panelName), "'" + panelName + "' is not a valid panel name");
+    if (!wizardViewMap.containsKey(panelName)) {
+      log.error("'{}' is not a valid panel name. Check the panel has been registered in the view map. Registered panels are\n{}", wizardViewMap.keySet());
+      return;
+    }
 
     final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(panelName);
 
@@ -411,7 +424,11 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
     // Ensure we de-register for all hardware wallet events
     if (this instanceof AbstractHardwareWalletWizard) {
-      HardwareWalletService.hardwareWalletEventBus.unregister(this);
+      try {
+        HardwareWalletService.hardwareWalletEventBus.unregister(this);
+      } catch (IllegalArgumentException e) {
+        // Do nothing
+      }
     }
 
     // Issue the wizard hide event before the hide takes place to give UI time to update

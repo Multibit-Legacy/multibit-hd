@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
-import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
@@ -198,10 +197,13 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
 
     if (event.getPanelName().equals(getModel().get().getPanelName() + componentName) && verificationStatusLabel != null) {
 
-      // Determine if the component is initialised
-      Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on the EDT");
-
-      verificationStatusLabel.setVisible(event.isOK());
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            verificationStatusLabel.setVisible(event.isOK());
+          }
+        });
 
     }
   }

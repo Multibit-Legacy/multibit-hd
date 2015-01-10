@@ -17,6 +17,7 @@ import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.AlertModel;
 
+import javax.swing.*;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -50,24 +51,31 @@ public class HeaderController extends AbstractController {
    * @param event The exchange rate change event
    */
   @Subscribe
-  public void onExchangeRateChangedEvent(ExchangeRateChangedEvent event) {
+  public void onExchangeRateChangedEvent(final ExchangeRateChangedEvent event) {
 
     // Build the exchange string
-    Optional<Coin> coin = WalletManager.INSTANCE.getCurrentWalletBalance();
+    final Optional<Coin> coin = WalletManager.INSTANCE.getCurrentWalletBalance();
 
-    BigDecimal localBalance;
+    final BigDecimal localBalance;
 
     if (event.getRate() != null) {
       localBalance = Coins.toLocalAmount(coin.or(Coin.ZERO), event.getRate());
     } else {
       localBalance = null;
     }
-    // Post the event
-    ViewEvents.fireBalanceChangedEvent(
-      coin.or(Coin.ZERO),
-      localBalance,
-      event.getRateProvider()
-    );
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          // Post the event
+          ViewEvents.fireBalanceChangedEvent(
+            coin.or(Coin.ZERO),
+            localBalance,
+            event.getRateProvider()
+          );
+        }
+      });
 
   }
 
@@ -123,8 +131,14 @@ public class HeaderController extends AbstractController {
       updateRemaining();
     }
 
-    // The alert structure has changed so inform the view
-    ViewEvents.fireAlertAddedEvent(alertModels.get(0));
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          // The alert structure has changed so inform the view
+          ViewEvents.fireAlertAddedEvent(alertModels.get(0));
+        }
+      });
 
   }
 

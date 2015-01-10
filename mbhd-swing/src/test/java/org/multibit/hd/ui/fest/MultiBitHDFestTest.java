@@ -87,6 +87,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     log.debug("FEST: Application cleanup should have finished. Performing final cleanup.");
 
+    testObject.stop();
+
     window.cleanUp();
 
     // Reset the installation manager

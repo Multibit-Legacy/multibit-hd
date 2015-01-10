@@ -14,7 +14,6 @@ import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
-import org.multibit.hd.ui.controllers.SidebarController;
 import org.multibit.hd.ui.platform.GenericApplicationFactory;
 import org.multibit.hd.ui.platform.GenericApplicationSpecification;
 import org.multibit.hd.ui.services.BitcoinURIListeningService;
@@ -81,6 +80,16 @@ public class MultiBitHD {
     }
 
     log.debug("Bootstrap complete.");
+
+  }
+
+  public void stop() {
+
+    log.debug("Stopping MultiBit HD");
+
+    mainController = null;
+
+    System.gc();
 
   }
 
@@ -204,8 +213,7 @@ public class MultiBitHD {
     // Including the other controllers avoids dangling references during a soft shutdown
     mainController = new MainController(
       bitcoinURIListeningService,
-      new HeaderController(),
-      new SidebarController()
+      new HeaderController()
     );
 
     // Start the hardware wallet support to allow credentials screen to be selected

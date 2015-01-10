@@ -25,4 +25,12 @@ public abstract class AbstractController {
     HardwareWalletService.hardwareWalletEventBus.register(this);
 
   }
+
+  public void unregister() {
+
+    CoreServices.uiEventBus.unregister(this);
+    HardwareWalletService.hardwareWalletEventBus.unregister(this);
+
+  }
+
 }
