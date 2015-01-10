@@ -27,6 +27,9 @@ public class TrezorEnterNextWordUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
+    // Allow time for hardware events to propagate
+    pauseForHardwareEvent();
+
     // Check that the Trezor enter next word view is showing
     window
       .label(MessageKey.TREZOR_PRESS_NEXT_TITLE.getKey())
@@ -41,7 +44,7 @@ public class TrezorEnterNextWordUseCase extends AbstractFestUseCase {
 
       assertThat(displayText.contains(""+i)).isTrue();
 
-      // Click next
+      // User input "next"
       HardwareWalletEventFixtures.fireNextEvent();
 
     }

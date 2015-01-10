@@ -7,6 +7,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import com.google.protobuf.Message;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.wallet.KeyChain;
+import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -22,29 +23,27 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * <p>[Pattern] to provide the following to {@link Object}:</p>
+ * <p>Factory to provide the following to hardware wallet FEST tests:</p>
  * <ul>
- * <li></li>
+ * <li>Various Trezor hardware wallet clients providing use case support</li>
  * </ul>
- * <p>Example:</p>
- * <pre>
- * </pre>
  *
  * @since 0.0.1
  *  
  */
-public class HardwareWalletFixtures {
+public class TrezorHardwareWalletClientFixtures {
 
-  private static final ListeningExecutorService messageEventServices = SafeExecutors.newSingleThreadExecutor("fest-fixture-events");
+  private static final ListeningExecutorService messageEventServices = SafeExecutors.newSingleThreadExecutor("fest-client-fixture-events");
 
   /**
    * Utility classes have private constructors
    */
-  private HardwareWalletFixtures() {
+  private TrezorHardwareWalletClientFixtures() {
   }
 
   /**
@@ -71,7 +70,7 @@ public class HardwareWalletFixtures {
 
     mockDeterministicHierarchy(mockClient);
 
-    mockPinMatrixAck(mockClient);
+    mockPinMatrixAck_CurrentPin(mockClient);
 
     mockGetCipherKey(mockClient);
 
@@ -98,11 +97,17 @@ public class HardwareWalletFixtures {
 
     mockConnect(mockClient);
 
-    mockInitialise_Wiped(mockClient);
+    mockInitialise_CreateWallet(mockClient);
+
+    mockWipeDevice(mockClient);
+
+    mockPinMatrixAck_CreateWallet(mockClient);
+
+    mockEntropyAck(mockClient);
+
+    mockWordAck_12_Success(mockClient);
 
     mockDeterministicHierarchy(mockClient);
-
-    mockPinMatrixAck(mockClient);
 
     mockGetCipherKey(mockClient);
 
@@ -152,17 +157,32 @@ public class HardwareWalletFixtures {
   }
 
   /**
-   * <p>Configure for a FEATURES based on the standard features</p>
+   * <p>Configure for a FEATURES based on the create wallet use case</p>
+   * <ol>
+   *   <li>First call triggers "wiped" FEATURES</li>
+   *   <li>Subsequent calls trigger "initialised" FEATURES</li>
+   * </ol>
    * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
    *
    * @param mockClient The mock client
    */
-  private static void mockInitialise_Wiped(AbstractTrezorHardwareWalletClient mockClient) {
+  private static void mockInitialise_CreateWallet(AbstractTrezorHardwareWalletClient mockClient) {
+
     when(mockClient.initialise()).thenAnswer(
       new Answer<Boolean>() {
+
+        int count=0;
+
         public Boolean answer(InvocationOnMock invocation) throws Throwable {
 
-          Features features = HardwareWalletEventFixtures.newWipedFeatures();
+          final Features features;
+          switch (count) {
+            case 0:
+              features = HardwareWalletEventFixtures.newWipedFeatures();
+              break;
+            default:
+              features = HardwareWalletEventFixtures.newStandardFeatures();
+          }
 
           MessageEvent event = new MessageEvent(
             MessageEventType.FEATURES,
@@ -171,6 +191,8 @@ public class HardwareWalletFixtures {
           );
 
           fireMessageEvent(event);
+
+          count++;
 
           return true;
         }
@@ -228,31 +250,77 @@ public class HardwareWalletFixtures {
   }
 
   /**
-   * <p>Configure for a PUBLIC_KEY message for M</p>
+   * <p>Configure for PIN matrix responses when creating a wallet</p>
+   * <ol>
+   * <li>"1234" is a correct PIN</li>
+   * <li>First call triggers a PIN_MATRIX_REQUEST for "second PIN"</li>
+   * <li>Second call triggers an ENTROPY_REQUEST</li>
+   * <li>Subsequent calls do nothing so rely on event fixtures to provide use case context</li>
+   * </ol>
    * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
    *
    * @param mockClient The mock client
    */
-  private static void mockPinMatrixAck(AbstractTrezorHardwareWalletClient mockClient) {
+  private static void mockPinMatrixAck_CreateWallet(AbstractTrezorHardwareWalletClient mockClient) {
 
-    // Successful PIN
+    // Failed PIN
     when(mockClient.pinMatrixAck("1234")).thenAnswer(
       new Answer<Optional<Message>>() {
+
+        int count = 0;
+
         public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
 
-          final MessageEvent event = new MessageEvent(
-            MessageEventType.BUTTON_REQUEST,
-            Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newOtherButtonRequest()),
-            Optional.<Message>absent()
-          );
+          MessageEvent event;
+          switch (count) {
+            case 0:
+              // PIN entered (first)
+              event = new MessageEvent(
+                MessageEventType.PIN_MATRIX_REQUEST,
+                Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newNewSecondPinMatrix()),
+                Optional.<Message>absent()
+              );
+              fireMessageEvent(event);
+              break;
+            case 1:
+              // PIN entered (second)
+              event = new MessageEvent(
+                MessageEventType.ENTROPY_REQUEST,
+                Optional.<HardwareWalletMessage>absent(),
+                Optional.<Message>absent()
+              );
+              fireMessageEvent(event);
+              break;
+            case 2:
+              // PIN entered (current) - expect cipher key request
+              event = new MessageEvent(
+                MessageEventType.BUTTON_REQUEST,
+                Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newProtectCallButtonRequest()),
+                Optional.<Message>absent()
+              );
+              fireMessageEvent(event);
+              break;
+            default:
+              // Do nothing
+          }
 
-          fireMessageEvent(event);
+          count++;
 
           return Optional.absent();
         }
       });
 
-    // Deliberate failed PIN
+  }
+
+  /**
+   * <p>Configure for entering a PIN (6789 will cause failure, use event fixtures for next response)</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param mockClient The mock client
+   */
+  private static void mockPinMatrixAck_CurrentPin(AbstractTrezorHardwareWalletClient mockClient) {
+
+    // Failed PIN
     when(mockClient.pinMatrixAck("6789")).thenAnswer(
       new Answer<Optional<Message>>() {
         public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
@@ -272,7 +340,7 @@ public class HardwareWalletFixtures {
   }
 
   /**
-   * <p>Configure for a PUBLIC_KEY message for M</p>
+   * <p>Configure for a CIPHER_KEY value</p>
    * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
    *
    * @param mockClient The mock client
@@ -300,11 +368,103 @@ public class HardwareWalletFixtures {
   }
 
   /**
+   * <p>Configure for a WORD_ACK message (12 words offered, 12 confirmed, success)</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param mockClient The mock client
+   */
+  private static void mockWipeDevice(AbstractTrezorHardwareWalletClient mockClient) {
+
+    when(mockClient.wipeDevice()).thenAnswer(
+      new Answer<Optional<Message>>() {
+
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          MessageEvent event = new MessageEvent(
+            MessageEventType.BUTTON_REQUEST,
+            Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newWipeDeviceButtonRequest()),
+            Optional.<Message>absent()
+          );
+
+          fireMessageEvent(event);
+
+          return Optional.absent();
+        }
+      });
+  }
+
+  /**
+   * <p>Configure for a WORD_ACK message (12 words offered, 12 confirmed, success)</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param mockClient The mock client
+   */
+  private static void mockEntropyAck(AbstractTrezorHardwareWalletClient mockClient) {
+
+    when(mockClient.entropyAck(Matchers.<byte[]>anyObject())).thenAnswer(
+      new Answer<Optional<Message>>() {
+
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          final MessageEvent event;
+            event = new MessageEvent(
+              MessageEventType.BUTTON_REQUEST,
+              Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newConfirmWordButtonRequest()),
+              Optional.<Message>absent()
+            );
+
+          fireMessageEvent(event);
+
+          return Optional.absent();
+        }
+      });
+  }
+
+  /**
+   * <p>Configure for a WORD_ACK message (12 words offered, 12 confirmed, success)</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param mockClient The mock client
+   */
+  private static void mockWordAck_12_Success(AbstractTrezorHardwareWalletClient mockClient) {
+
+    when(mockClient.wordAck(anyString())).thenAnswer(
+      new Answer<Optional<Message>>() {
+
+        int wordCount = 0;
+
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          wordCount++;
+
+          final MessageEvent event;
+          if (wordCount < 24) {
+            event = new MessageEvent(
+              MessageEventType.BUTTON_REQUEST,
+              Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newConfirmWordButtonRequest()),
+              Optional.<Message>absent()
+            );
+          } else {
+            event = new MessageEvent(
+              MessageEventType.SUCCESS,
+              Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newDeviceResetSuccess()),
+              Optional.<Message>absent()
+            );
+          }
+
+          fireMessageEvent(event);
+
+          return Optional.absent();
+        }
+      });
+  }
+
+  /**
    * <p>Fire a new low level message event on its own thread</p>
    *
    * @param event The event
    */
-  private static void fireMessageEvent(final MessageEvent event) {
+  public static void fireMessageEvent(final MessageEvent event) {
 
     messageEventServices.submit(
       new Runnable() {
@@ -324,7 +484,7 @@ public class HardwareWalletFixtures {
    *
    * @param eventType The event type (no payload)
    */
-  private static void fireMessageEvent(final MessageEventType eventType) {
+  public static void fireMessageEvent(final MessageEventType eventType) {
 
     messageEventServices.submit(
       new Runnable() {

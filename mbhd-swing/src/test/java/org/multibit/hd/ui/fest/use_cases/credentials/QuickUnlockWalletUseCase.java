@@ -53,17 +53,6 @@ public class QuickUnlockWalletUseCase extends AbstractFestUseCase {
       .requireEnabled()
       .click();
 
-    // Fixed time to unlock
-    pauseForWalletUnlock();
-
-    // Wait for Finish button to appear
-    window
-      .button(MessageKey.FINISH.getKey())
-      .requireVisible()
-        // Allow a short time to overcome initialisation delays
-      .requireEnabled(timeout(1, TimeUnit.SECONDS))
-      .click();
-
   }
 
 }

@@ -120,8 +120,6 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   public void show(String panelName) {
 
-    log.trace("Show wizard panel: {}", panelName);
-
     Preconditions.checkState(wizardViewMap.containsKey(panelName), "'" + panelName + "' is not a valid panel name. Check the panel has been registered in the view map. Registered panels are " + wizardViewMap.keySet());
 
     final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(panelName);
@@ -140,6 +138,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     if (wizardPanelView.beforeShow()) {
 
       // No abort so show
+      log.debug("Showing wizard panel: {}", panelName);
       cardLayout.show(wizardScreenHolder, panelName);
 
       wizardPanelView.afterShow();
@@ -154,8 +153,6 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    * @param isExitCancel True if this hide operation comes from an exit or cancel
    */
   public void hide(String panelName, boolean isExitCancel) {
-
-    log.trace("Hide wizard: '{}' ExitCancel: {}", panelName, isExitCancel);
 
     Preconditions.checkState(wizardViewMap.containsKey(panelName), "'" + panelName + "' is not a valid panel name");
 

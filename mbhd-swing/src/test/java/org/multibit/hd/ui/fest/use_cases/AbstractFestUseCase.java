@@ -47,7 +47,8 @@ public abstract class AbstractFestUseCase {
   public AbstractFestUseCase(FrameFixture window) {
     this.window = window;
 
-    log.info("New use case: {}", this.getClass().getSimpleName());
+    // Make this message stand out
+    log.warn("New use case: {}", this.getClass().getSimpleName());
 
   }
 

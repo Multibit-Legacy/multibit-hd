@@ -157,6 +157,8 @@ public class MainController extends AbstractController implements
   @Subscribe
   public void onWizardHideEvent(WizardHideEvent event) {
 
+    Preconditions.checkState(!SwingUtilities.isEventDispatchThread(), "This event should not be running on the EDT.");
+
     log.debug("Wizard hide: '{}' Exit/Cancel: {}", event.getPanelName(), event.isExitCancel());
 
     if (!event.isExitCancel()) {
@@ -1106,10 +1108,8 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingCredentialsWizard(true);
     mainView.setCredentialsRequestType(deferredCredentialsRequestType);
 
-    // Start building the wizard on the EDT to prevent UI updates
-    final CredentialsWizard credentialsWizard = Wizards.newExitingCredentialsWizard(deferredCredentialsRequestType);
-
     // Use a new thread to handle the new wizard so that the handover can complete
+    // hiding the existing wizard before drawing the replacement
     handoverExecutorService.execute(
       new Runnable() {
         @Override
@@ -1124,6 +1124,10 @@ public class MainController extends AbstractController implements
               @Override
               public void run() {
 
+                // Start building the wizard on the EDT to ensure darkened background remains
+                final CredentialsWizard credentialsWizard = Wizards.newExitingCredentialsWizard(deferredCredentialsRequestType);
+
+                log.debug("Forcing hide of existing light box");
                 Panels.hideLightBoxIfPresent();
 
                 log.debug("Showing exiting credentials wizard after handover");

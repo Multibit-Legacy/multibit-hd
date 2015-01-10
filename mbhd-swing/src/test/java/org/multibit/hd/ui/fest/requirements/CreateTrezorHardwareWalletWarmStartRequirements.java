@@ -1,13 +1,16 @@
 package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.testing.HardwareWalletEventFixtures;
 import org.multibit.hd.ui.fest.use_cases.create_wallet.CreateWalletSelectBackupLocationWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.credentials.UnlockReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.*;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectCreateTrezorWalletUseCase;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>FEST Swing UI test to provide:</p>
@@ -36,32 +39,20 @@ public class CreateTrezorHardwareWalletWarmStartRequirements {
     // Enter wallet details
     new TrezorEnterWalletDetailsUseCase(window).execute(parameters);
 
-    // Request create wallet
+    // Request create wallet (refer to mock client for "wipe device" ButtonRequest response)
     new TrezorRequestCreateWalletUseCase(window).execute(parameters);
 
-    // Wipe device button request
-    HardwareWalletEventFixtures.fireNextEvent();
-
-    // Confirm wipe
+    // Confirm wipe wallet
     new TrezorConfirmWipeUseCase(window).execute(parameters);
 
-    // Request first PIN
+    // User input ("New PIN (first)" - implied confirmation of "wipe device"")
     HardwareWalletEventFixtures.fireNextEvent();
 
-    // Enter new PIN
+    // Enter new PIN (refer to mock client for ButtonRequest response)
     new TrezorEnterNewPinUseCase(window).execute(parameters);
 
-    // Request second PIN
-    HardwareWalletEventFixtures.fireNextEvent();
-
-    // Confirm new PIN
+    // Confirm new PIN (refer to mock client for EntropyRequest response)
     new TrezorConfirmNewPinUseCase(window).execute(parameters);
-
-    // Request entropy
-    HardwareWalletEventFixtures.fireNextEvent();
-
-    // Confirm first word
-    HardwareWalletEventFixtures.fireNextEvent();
 
     // Confirm next words
     new TrezorEnterNextWordUseCase(window).execute(parameters);
@@ -71,6 +62,27 @@ public class CreateTrezorHardwareWalletWarmStartRequirements {
 
     // Verify report
     new TrezorCreateWalletReportUseCase(window).execute(parameters);
+
+    // Create is complete - hand over to credentials
+    Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+
+    // Request the master public key (refer to mock client for PublicKey responses)
+    new TrezorRequestMasterPublicKeyUseCase(window).execute(parameters);
+
+    // Request the cipher key (refer to mock client for PIN entry responses)
+    new TrezorRequestCipherKeyUseCase(window).execute(parameters);
+
+    // Verify PIN entry
+    new TrezorEnterPinUseCase(window).execute(parameters);
+
+    // Unlock with cipher key
+    new TrezorConfirmUnlockUseCase(window).execute(parameters);
+
+    // User input "confirm unlock"
+    HardwareWalletEventFixtures.fireNextEvent();
+
+    // Verify the wallet unlocked
+    new UnlockReportUseCase(window).execute(parameters);
 
   }
 }

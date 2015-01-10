@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.events.controller;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -23,6 +25,9 @@ public class ControllerEvents {
 
   private static final Logger log = LoggerFactory.getLogger(ControllerEvents.class);
 
+  // Provide a ControllerEvent thread pool to ensure non-AWT events are isolated from the EDT
+  private static ListeningExecutorService eventExecutor = SafeExecutors.newFixedThreadPool(10, "controller-events");
+
   /**
    * Utilities have a private constructor
    */
@@ -34,9 +39,17 @@ public class ControllerEvents {
    *
    * @param detailScreen The screen to show
    */
-  public static void fireShowDetailScreenEvent(Screen detailScreen) {
-    log.trace("Firing 'show detail screen' event");
-    CoreServices.uiEventBus.post(new ShowScreenEvent(detailScreen));
+  public static void fireShowDetailScreenEvent(final Screen detailScreen) {
+
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'show detail screen' event");
+          CoreServices.uiEventBus.post(new ShowScreenEvent(detailScreen));
+        }
+      });
+
   }
 
   /**
@@ -44,9 +57,16 @@ public class ControllerEvents {
    *
    * @param alertModel The alert model
    */
-  public static void fireAddAlertEvent(AlertModel alertModel) {
-    log.trace("Firing 'add alert' event");
-    CoreServices.uiEventBus.post(new AddAlertEvent(alertModel));
+  public static void fireAddAlertEvent(final AlertModel alertModel) {
+
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'add alert' event");
+          CoreServices.uiEventBus.post(new AddAlertEvent(alertModel));
+        }
+      });
 
   }
 
@@ -54,11 +74,19 @@ public class ControllerEvents {
    * <p>Broadcast a new "remove alert" event</p>
    */
   public static void fireRemoveAlertEvent() {
-    log.trace("Firing 'remove alert' event");
-    CoreServices.uiEventBus.post(new RemoveAlertEvent());
 
-    // Keep track of this
-    CoreServices.logHistory(Languages.safeText(MessageKey.HIDE_ALERT));
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'remove alert' event");
+          CoreServices.uiEventBus.post(new RemoveAlertEvent());
+
+          // Keep track of this
+          CoreServices.logHistory(Languages.safeText(MessageKey.HIDE_ALERT));
+        }
+      });
+
   }
 
 }

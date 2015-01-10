@@ -94,15 +94,6 @@ public class HardwareWalletEventFixtures {
 
     hardwareWalletEvents.clear();
 
-//    // Attach device
-//    final HardwareWalletEvent event1 = new HardwareWalletEvent(
-//      HardwareWalletEventType.SHOW_DEVICE_READY,
-//      Optional.<HardwareWalletMessage>of(
-//        newStandardFeatures()
-//      ));
-//
-//    hardwareWalletEvents.add(event1);
-
     // Deterministic hierarchy (indirectly from mock client via PUBLIC_KEY messages)
 
     // PIN matrix request (from mock client)
@@ -110,13 +101,13 @@ public class HardwareWalletEventFixtures {
     // Button request (cipher key confirm from client)
 
     // Cipher key success
-    final HardwareWalletEvent event2 = new HardwareWalletEvent(
+    final HardwareWalletEvent event1 = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED,
       Optional.<HardwareWalletMessage>of(
         newCipherKeySuccess()
       ));
 
-    hardwareWalletEvents.add(event2);
+    hardwareWalletEvents.add(event1);
 
   }
 
@@ -128,52 +119,17 @@ public class HardwareWalletEventFixtures {
 
     hardwareWalletEvents.clear();
 
-//    // Attach device
-//    final HardwareWalletEvent event1 = new HardwareWalletEvent(
-//      HardwareWalletEventType.SHOW_DEVICE_READY,
-//      Optional.<HardwareWalletMessage>of(
-//        newUninitialisedFeatures()
-//      ));
-//
-//    hardwareWalletEvents.add(event1);
-
-    // Confirm wipe
-    final HardwareWalletEvent event2 = new HardwareWalletEvent(
-      HardwareWalletEventType.SHOW_BUTTON_PRESS,
-      Optional.<HardwareWalletMessage>of(
-        newWipeDeviceButtonRequest()
-      ));
-
-    hardwareWalletEvents.add(event2);
-
     // Request PIN (first)
-    final HardwareWalletEvent event3 = new HardwareWalletEvent(
+    final HardwareWalletEvent event2 = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_PIN_ENTRY,
       Optional.<HardwareWalletMessage>of(
         newNewFirstPinMatrix()
       ));
 
-    hardwareWalletEvents.add(event3);
+    hardwareWalletEvents.add(event2);
 
-    // Request PIN (second)
-    final HardwareWalletEvent event4 = new HardwareWalletEvent(
-      HardwareWalletEventType.SHOW_PIN_ENTRY,
-      Optional.<HardwareWalletMessage>of(
-        newNewSecondPinMatrix()
-      ));
-
-    hardwareWalletEvents.add(event4);
-
-    // Request entropy
-    final HardwareWalletEvent event5 = new HardwareWalletEvent(
-      HardwareWalletEventType.PROVIDE_ENTROPY,
-      Optional.<HardwareWalletMessage>absent()
-    );
-
-    hardwareWalletEvents.add(event5);
-
-    // Next 12 words, confirm 12 words
-    for (int i = 0; i < 24; i++) {
+    // Overall need 23 more button presses
+    for (int i = 0; i < 23; i++) {
       final HardwareWalletEvent event = new HardwareWalletEvent(
         HardwareWalletEventType.SHOW_BUTTON_PRESS,
         Optional.<HardwareWalletMessage>of(
@@ -183,7 +139,11 @@ public class HardwareWalletEventFixtures {
       hardwareWalletEvents.add(event);
     }
 
-    // Operation successful
+    // Deterministic hierarchy (indirectly from mock client via PUBLIC_KEY messages)
+
+    // PIN matrix request (from mock client)
+
+    // Cipher key success
     final HardwareWalletEvent event6 = new HardwareWalletEvent(
       HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED,
       Optional.<HardwareWalletMessage>of(
@@ -310,12 +270,24 @@ public class HardwareWalletEventFixtures {
   }
 
   /**
-   * @return A new "other" button request (cipher key etc)
+   * @return A new "other" button request (entropy request etc)
    */
   public static ButtonRequest newOtherButtonRequest() {
 
     return new ButtonRequest(
       ButtonRequestType.OTHER,
+      ""
+    );
+
+  }
+
+  /**
+   * @return A new "protect call" button request (cipher key etc)
+   */
+  public static ButtonRequest newProtectCallButtonRequest() {
+
+    return new ButtonRequest(
+      ButtonRequestType.PROTECT_CALL,
       ""
     );
 

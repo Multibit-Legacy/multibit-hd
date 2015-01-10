@@ -27,6 +27,9 @@ public class TrezorConfirmWipeUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
+    // Allow time for hardware events to propagate
+    pauseForHardwareEvent();
+
     // Check that the Trezor press confirm to wipe panel view is showing
     window
       .label(MessageKey.TREZOR_PRESS_CONFIRM_TITLE.getKey())

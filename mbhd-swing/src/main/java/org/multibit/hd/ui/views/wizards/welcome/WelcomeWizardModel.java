@@ -375,7 +375,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
                 hardwareWalletService.get().secureCreateWallet(
                         "english", // For now the Trezor UI is fixed at English
                         getTrezorWalletLabel(),
-                        false, // For now we ignore supplied entropy (too confusing for mainstream)
+                        false, // For now we hide the supplied entropy (too confusing for mainstream)
                         true, // A PIN is mandatory for mainstream
                         getSeedPhraseSize().getStrength()
                 );

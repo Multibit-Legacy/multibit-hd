@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.events.view;
 
 import com.google.common.base.Optional;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import org.bitcoinj.core.Coin;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.models.AlertModel;
@@ -23,11 +25,13 @@ import java.math.BigDecimal;
  * low level event (such as a mouse click) will initiate it.</p>
  *
  * @since 0.0.1
- *
  */
 public class ViewEvents {
 
   private static final Logger log = LoggerFactory.getLogger(ViewEvents.class);
+
+  // Provide a ViewEvent thread pool to ensure non-AWT events are isolated from the EDT
+  private static ListeningExecutorService eventExecutor = SafeExecutors.newFixedThreadPool(10, "view-events");
 
   /**
    * Utilities have a private constructor
@@ -43,17 +47,24 @@ public class ViewEvents {
    * @param rateProvider The exchange rate provider (e.g. "Bitstamp")
    */
   public static void fireBalanceChangedEvent(
-    Coin coinBalance,
-    BigDecimal localBalance,
-    Optional<String> rateProvider
+    final Coin coinBalance,
+    final BigDecimal localBalance,
+    final Optional<String> rateProvider
   ) {
 
-    log.trace("Firing 'balance changed' event");
-    CoreServices.uiEventBus.post(new BalanceChangedEvent(
-      coinBalance,
-      localBalance,
-      rateProvider
-    ));
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'balance changed' event");
+          CoreServices.uiEventBus.post(
+            new BalanceChangedEvent(
+              coinBalance,
+              localBalance,
+              rateProvider
+            ));
+        }
+      });
 
   }
 
@@ -63,9 +74,15 @@ public class ViewEvents {
    * @param localisedMessage The localised message to display alongside the severity
    * @param severity         The system status severity (normally in line with an alert)
    */
-  public static void fireSystemStatusChangedEvent(String localisedMessage, RAGStatus severity) {
-    log.trace("Firing 'system status changed' event");
-    CoreServices.uiEventBus.post(new SystemStatusChangedEvent(localisedMessage, severity));
+  public static void fireSystemStatusChangedEvent(final String localisedMessage, final RAGStatus severity) {
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'system status changed' event");
+          CoreServices.uiEventBus.post(new SystemStatusChangedEvent(localisedMessage, severity));
+        }
+      });
   }
 
   /**
@@ -74,9 +91,15 @@ public class ViewEvents {
    * @param localisedMessage The localised message to display alongside the progress bar
    * @param percent          The amount to display in percent
    */
-  public static void fireProgressChangedEvent(String localisedMessage, int percent) {
-    log.trace("Firing 'progress changed' event: '{}'", percent);
-    CoreServices.uiEventBus.post(new ProgressChangedEvent(localisedMessage, percent));
+  public static void fireProgressChangedEvent(final String localisedMessage, final int percent) {
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'progress changed' event: '{}'", percent);
+          CoreServices.uiEventBus.post(new ProgressChangedEvent(localisedMessage, percent));
+        }
+      });
   }
 
   /**
@@ -84,33 +107,57 @@ public class ViewEvents {
    *
    * @param alertModel The alert model for the new display
    */
-  public static void fireAlertAddedEvent(AlertModel alertModel) {
-    log.trace("Firing 'alert added' event");
-    CoreServices.uiEventBus.post(new AlertAddedEvent(alertModel));
+  public static void fireAlertAddedEvent(final AlertModel alertModel) {
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'alert added' event");
+          CoreServices.uiEventBus.post(new AlertAddedEvent(alertModel));
+        }
+      });
   }
 
   /**
-    * <p>Broadcast a new "switch wallet" event</p>
-    */
-   public static void fireSwitchWalletEvent() {
-     log.debug("Firing 'switch wallet' event");
-     CoreServices.uiEventBus.post(new SwitchWalletEvent());
-   }
+   * <p>Broadcast a new "switch wallet" event</p>
+   */
+  public static void fireSwitchWalletEvent() {
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.debug("Firing 'switch wallet' event");
+          CoreServices.uiEventBus.post(new SwitchWalletEvent());
+        }
+      });
+  }
 
   /**
    * <p>Broadcast a new "alert removed" event</p>
    */
   public static void fireAlertRemovedEvent() {
-    log.trace("Firing 'alert removed' event");
-    CoreServices.uiEventBus.post(new AlertRemovedEvent());
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'alert removed' event");
+          CoreServices.uiEventBus.post(new AlertRemovedEvent());
+        }
+      });
   }
 
   /**
    * <p>Broadcast a new "wallet detail changed" event</p>
    */
-  public static void fireWalletDetailChangedEvent(WalletDetail walletDetail) {
-    log.trace("Firing 'walletDetailChanged' event");
-    CoreServices.uiEventBus.post(new WalletDetailChangedEvent(walletDetail));
+  public static void fireWalletDetailChangedEvent(final WalletDetail walletDetail) {
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'walletDetailChanged' event");
+          CoreServices.uiEventBus.post(new WalletDetailChangedEvent(walletDetail));
+        }
+      });
   }
 
   /**
@@ -120,9 +167,19 @@ public class ViewEvents {
    * @param wizardButton The wizard button to which this applies
    * @param enabled      True if the button should be enabled
    */
-  public static void fireWizardButtonEnabledEvent(String panelName, WizardButton wizardButton, boolean enabled) {
-    log.trace("Firing 'wizard button enabled {}' event: {}", panelName, enabled);
-    CoreServices.uiEventBus.post(new WizardButtonEnabledEvent(panelName, wizardButton, enabled));
+  public static void fireWizardButtonEnabledEvent(
+    final String panelName,
+    final WizardButton wizardButton,
+    final boolean enabled
+  ) {
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'wizard button enabled {}' event: {}", panelName, enabled);
+          CoreServices.uiEventBus.post(new WizardButtonEnabledEvent(panelName, wizardButton, enabled));
+        }
+      });
 
   }
 
@@ -133,9 +190,19 @@ public class ViewEvents {
    * @param wizardModel  The wizard model containing all the user data
    * @param isExitCancel True if this hide event comes as a result of an exit or cancel
    */
-  public static void fireWizardHideEvent(String panelName, AbstractWizardModel wizardModel, boolean isExitCancel) {
-    log.trace("Firing 'wizard hide' event");
-    CoreServices.uiEventBus.post(new WizardHideEvent(panelName, wizardModel, isExitCancel));
+  public static void fireWizardHideEvent(
+    final String panelName,
+    final AbstractWizardModel wizardModel,
+    final boolean isExitCancel
+  ) {
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'wizard hide' event");
+          CoreServices.uiEventBus.post(new WizardHideEvent(panelName, wizardModel, isExitCancel));
+        }
+      });
   }
 
   /**
@@ -144,9 +211,15 @@ public class ViewEvents {
    * @param panelName    The unique panel name to which this applies (use screen name for detail screens)
    * @param isExitCancel True if this hide event comes as a result of an exit or cancel
    */
-  public static void fireWizardPopoverHideEvent(String panelName, boolean isExitCancel) {
-    log.trace("Firing 'wizard popover hide' event");
-    CoreServices.uiEventBus.post(new WizardPopoverHideEvent(panelName, isExitCancel));
+  public static void fireWizardPopoverHideEvent(final String panelName, final boolean isExitCancel) {
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'wizard popover hide' event");
+          CoreServices.uiEventBus.post(new WizardPopoverHideEvent(panelName, isExitCancel));
+        }
+      });
   }
 
   /**
@@ -155,9 +228,15 @@ public class ViewEvents {
    * @param panelName    The unique panel name to which this applies (use screen name for detail screens)
    * @param isExitCancel True if this deferred hide event comes as a result of an exit or cancel
    */
-  public static void fireWizardDeferredHideEvent(String panelName, boolean isExitCancel) {
-    log.trace("Firing 'wizard deferred hide' event");
-    CoreServices.uiEventBus.post(new WizardDeferredHideEvent(panelName, isExitCancel));
+  public static void fireWizardDeferredHideEvent(final String panelName, final boolean isExitCancel) {
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'wizard deferred hide' event");
+          CoreServices.uiEventBus.post(new WizardDeferredHideEvent(panelName, isExitCancel));
+        }
+      });
   }
 
   /**
@@ -166,9 +245,15 @@ public class ViewEvents {
    * @param panelName      The unique panel name to which this applies (use screen name for detail screens)
    * @param componentModel The component model containing the change (absent if the component has no model)
    */
-  public static void fireComponentChangedEvent(String panelName, Optional componentModel) {
-    log.trace("Firing 'component changed' event");
-    CoreServices.uiEventBus.post(new ComponentChangedEvent(panelName, componentModel));
+  public static void fireComponentChangedEvent(final String panelName, final Optional componentModel) {
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'component changed' event");
+          CoreServices.uiEventBus.post(new ComponentChangedEvent(panelName, componentModel));
+        }
+      });
   }
 
   /**
@@ -177,9 +262,15 @@ public class ViewEvents {
    * @param panelName The panel name to which this applies
    * @param status    True if the verification is OK
    */
-  public static void fireVerificationStatusChangedEvent(String panelName, boolean status) {
-    log.trace("Firing 'verification status changed' event: {}", status);
-    CoreServices.uiEventBus.post(new VerificationStatusChangedEvent(panelName, status));
+  public static void fireVerificationStatusChangedEvent(final String panelName, final boolean status) {
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'verification status changed' event: {}", status);
+          CoreServices.uiEventBus.post(new VerificationStatusChangedEvent(panelName, status));
+        }
+      });
   }
 
   /**
@@ -188,9 +279,15 @@ public class ViewEvents {
    * @param viewKey The view to which this applies
    * @param visible True if the view is "visible" (could be reduced height etc)
    */
-  public static void fireViewChangedEvent(ViewKey viewKey, boolean visible) {
-    log.trace("Firing 'view changed' event: {}", visible);
-    CoreServices.uiEventBus.post(new ViewChangedEvent(viewKey, visible));
+  public static void fireViewChangedEvent(final ViewKey viewKey, final boolean visible) {
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'view changed' event: {}", visible);
+          CoreServices.uiEventBus.post(new ViewChangedEvent(viewKey, visible));
+        }
+      });
   }
 
 }
