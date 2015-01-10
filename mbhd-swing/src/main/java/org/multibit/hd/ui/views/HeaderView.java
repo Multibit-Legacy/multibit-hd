@@ -71,10 +71,10 @@ public class HeaderView extends AbstractView {
     contentPanel.setBackground(Themes.currentTheme.headerPanelBackground());
     contentPanel.setOpaque(true);
 
-    // Create the balance display displaying it initially
+    // Create the balance display not displaying it initially
     balanceDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER, true, "header.balance");
     log.debug("header is now visible");
-    balanceDisplayMaV.getView().setVisible(true);
+    balanceDisplayMaV.getView().setVisible(false);
 
     // Provide a fixed height to avoid an annoying "slide down" during unlock
     contentPanel.add(balanceDisplayMaV.getView().newComponentPanel(), "growx,push,hmin 50,wrap");

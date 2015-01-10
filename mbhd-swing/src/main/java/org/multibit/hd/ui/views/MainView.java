@@ -232,7 +232,6 @@ public class MainView extends JFrame {
 
       // Catch up on recent events
       CoreServices.getApplicationEventService().repeatLatestEvents();
-
     }
 
     // Check for any wizards that were showing before the refresh occurred
