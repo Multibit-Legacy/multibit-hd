@@ -19,7 +19,7 @@ import java.util.Map;
  *
  * @since 0.0.1
  */
-public class HardwareWalletCreateWalletRequirements {
+public class CreateTrezorHardwareWalletColdStartRequirements {
 
   public static void verifyUsing(FrameFixture window) {
 
@@ -30,6 +30,7 @@ public class HardwareWalletCreateWalletRequirements {
     new WelcomeSelectLanguage_en_US_UseCase(window).execute(parameters);
 
     // Select create Trezor wallet
+    // TODO Remove this
     new WelcomeSelectCreateTrezorWalletUseCase(window).execute(parameters);
 
     // Verify the Trezor preparation

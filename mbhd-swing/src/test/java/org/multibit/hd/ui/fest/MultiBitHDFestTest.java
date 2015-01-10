@@ -357,11 +357,11 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with empty wallet fixture</li>
-   * <li>Create a new hardware wallet</li>
+   * <li>Create a new Trezor hardware wallet</li>
    * </ul>
    */
   @Test
-  public void verifyHardwareWalletCreateWallet() throws Exception {
+  public void verifyCreateTrezorHardwareWalletColdStart() throws Exception {
 
     // Prepare an empty and attached Trezor device that will be initialised
     HardwareWalletEventFixtures.prepareInitialiseTrezorUseCaseEvents();
@@ -370,7 +370,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     arrangeFreshWithAttachedHardwareWallet();
 
     // Verify
-    HardwareWalletCreateWalletRequirements.verifyUsing(window);
+    CreateTrezorHardwareWalletColdStartRequirements.verifyUsing(window);
 
   }
 
