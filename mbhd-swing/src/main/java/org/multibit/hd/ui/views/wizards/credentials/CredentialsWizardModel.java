@@ -105,6 +105,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
   /**
    * True if a Trezor failure has occurred that necessitates a switch to password entry
+   * or if the Trezor has been pulled out of the USB socket
    */
   private boolean switchToPassword;
 
@@ -349,6 +350,17 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
     }
 
+  }
+
+
+  @Override
+  public void showDeviceDetached(HardwareWalletEvent event) {
+    log.debug("Device is now detached - showing password screen");
+
+    if (Dates.nowUtc().isAfter(getIgnoreHardwareWalletEventsThreshold())) {
+
+      state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+    }
   }
 
   @Override
