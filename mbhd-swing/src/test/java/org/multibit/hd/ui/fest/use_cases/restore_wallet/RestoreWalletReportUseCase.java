@@ -48,10 +48,6 @@ public class RestoreWalletReportUseCase extends AbstractFestUseCase {
       .label(MessageKey.CACERTS_INSTALLED_STATUS.getKey())
       .requireVisible();
 
-    window
-      .label(MessageKey.SYNCHRONIZING_STATUS.getKey())
-      .requireVisible();
-
     // By the time the messages have appeared the Finish button
     // should be ready
     window
