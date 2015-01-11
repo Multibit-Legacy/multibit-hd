@@ -9,7 +9,6 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardDeferredHideEvent;
@@ -87,6 +86,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     this.exiting = isExiting;
     this.wizardParameter = wizardParameter;
 
+    // Subscribe to events
+    ViewEvents.subscribe(this);
     CoreEvents.subscribe(this);
 
     // Always bind the ESC key to a Cancel event (escape to safety)
@@ -117,6 +118,15 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     // Show the panel specified by the initial state
     show(wizardModel.getPanelName());
 
+  }
+
+  /**
+   * <p>This wizard is about to close</p>
+   */
+  public void unsubscribe() {
+    ViewEvents.unsubscribe(this);
+    CoreEvents.unsubscribe(this);
+    // Further events are handled by subclasses (e.g. HardwareWallet)
   }
 
   /**
@@ -421,13 +431,10 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     // De-register
     wizardPanelView.deregisterDefaultButton();
 
-    // Ensure we de-register for all hardware wallet events
-    if (this instanceof AbstractHardwareWalletWizard) {
-      AbstractHardwareWalletWizard self = (AbstractHardwareWalletWizard) this;
-      self.unregister();
-    }
+    // Ensure we unsubscribe the wizard from all further events
+    unsubscribe();
 
-    // Issue the wizard hide event before the hide takes place to give UI time to update
+    // Issue the wizard hide event before the hide takes place to give panel views time to update
     ViewEvents.fireWizardHideEvent(panelName, wizardModel, isExitCancel);
 
     // Required to run on a new thread since this may take some time to complete
@@ -454,7 +461,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
             // Ensure we deregister the wizard panel view (and model if present) for events
             try {
 
-              CoreEvents.unsubscribe(panelView);
+              // Unsubscribe from events
+              panelView.unsubscribe();
               log.trace("Deregistered wizard panel view '{}' from UI events", panelView.getPanelName());
 
               if (panelView.getPanelModel().isPresent()) {
@@ -471,7 +479,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
             @SuppressWarnings("unchecked")
             List<ModelAndView> mavs = panelView.getComponents();
             for (ModelAndView mav : mavs) {
-              mav.close();
+              mav.unsubscribe();
             }
             log.trace("Closed {} registered component(s) from wizard panel view '{}'", mavs.size(), panelView.getPanelName());
 

@@ -89,7 +89,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
               // Deregister any previous entries from UI events since
               // this view is never closed unless the application exits
               for (ModelAndView<DisplayAmountModel, DisplayAmountView> mav : displayAmountMaVList) {
-                mav.close();
+                mav.unsubscribe();
               }
 
               // Reset the list

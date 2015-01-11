@@ -41,7 +41,9 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
   /**
    * Unregister from hardware wallet events - called during the hide process
    */
-  public void unregister() {
+  @Override
+  public void unsubscribe() {
+    super.unsubscribe();
     HardwareWalletEvents.unsubscribe(this);
   }
 

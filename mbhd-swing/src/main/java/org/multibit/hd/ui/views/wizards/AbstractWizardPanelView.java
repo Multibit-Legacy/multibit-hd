@@ -104,7 +104,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
     this.wizardModel = wizard.getWizardModel();
     this.panelName = panelName;
 
-    // All wizard panel views can receive UI events
+    // All wizard panel views can receive Core and View events
+    ViewEvents.subscribe(this);
     CoreEvents.subscribe(this);
 
     // All wizard screen panels are decorated with the same theme and
@@ -132,6 +133,15 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
 
   }
 
+  /**
+   * <p>The wizard is closing so unsubscribe</p>
+   */
+  public void unsubscribe() {
+
+    ViewEvents.unsubscribe(this);
+    CoreEvents.unsubscribe(this);
+
+  }
   /**
    * <p>Called when the wizard is first created to initialise the panel model.</p>
    *
@@ -538,4 +548,5 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
     }
 
   }
+
 }
