@@ -23,6 +23,7 @@ import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.SwitchWalletEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -822,20 +823,36 @@ public class MainController extends AbstractController implements
       case SHOW_DEVICE_READY:
         // Show an alert if the Trezor connects when
         // - there is a current wallet
-        // - the current wallet is not a "hard" Trezor wallet
+        // - the current wallet is not the same "hard" Trezor wallet
         Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-        if (walletSummary.isPresent() && !WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
-
-          SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
-                // Attempt to create a suitable alert model in addition to view event
-                AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
-                ControllerEvents.fireAddAlertEvent(alertModel);
+        if (walletSummary.isPresent()) {
+          boolean showAlert = false;
+          if (!WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
+            // Not currently using a Trezor hard wallet so show the alert
+            showAlert = true;
+          } else {
+            Optional<HardwareWalletService> hardwareWalletService1 = CoreServices.getOrCreateHardwareWalletService();
+            if (hardwareWalletService1.isPresent() ) {
+              Optional<Features> features = hardwareWalletService1.get().getContext().getFeatures();
+              String currentWalletName = walletSummary.get().getName();
+              if (features.isPresent() && !features.get().getDeviceId().equals(currentWalletName)) {
+                // The newly plugged in Trezor is a different one
+                showAlert = true;
               }
-            });
+            }
+          }
 
+          if (showAlert) {
+            SwingUtilities.invokeLater(
+                    new Runnable() {
+                      @Override
+                      public void run() {
+                        // Attempt to create a suitable alert model in addition to view event
+                        AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+                        ControllerEvents.fireAddAlertEvent(alertModel);
+                      }
+                    });
+          }
         }
         // Set the deferred credentials request type
         deferredCredentialsRequestType = CredentialsRequestType.TREZOR;

@@ -111,7 +111,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     Preconditions.checkNotNull(configuration, "'configuration' must be present");
 
-    log.debug("in update view visible: {}", visible);
+    log.trace("in update view visible: {}", visible);
     // Determine initial visibility
     leadingSymbolLabel.setVisible(visible);
     primaryBalanceLabel.setVisible(visible);
