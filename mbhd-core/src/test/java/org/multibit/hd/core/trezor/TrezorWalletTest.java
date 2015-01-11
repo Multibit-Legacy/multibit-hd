@@ -194,6 +194,7 @@ public class TrezorWalletTest {
     File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(temporaryDirectory).get();
 
     log.debug("Wallet: " + wallet.toString());
+    Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
     wallet.saveToFile(walletFile);
     EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, PASSWORD);
 
@@ -308,6 +309,7 @@ public class TrezorWalletTest {
     // Ensure it is saved with the newly generated addresses
     File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(temporaryDirectory).get();
 
+    Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
     wallet.saveToFile(walletFile);
     EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, PASSWORD);
 
