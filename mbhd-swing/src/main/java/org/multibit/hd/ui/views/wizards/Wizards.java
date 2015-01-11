@@ -214,7 +214,7 @@ public class Wizards {
    */
   public static WelcomeWizard newExitingWelcomeWizard(WelcomeWizardState initialState, WelcomeWizardMode mode) {
 
-    log.debug("New 'Exiting welcome wizard'");
+    log.debug("New 'Exiting welcome wizard'. Initial state: {}, mode: {}", initialState, mode);
 
     Preconditions.checkNotNull(initialState, "'initialState' must be present");
 

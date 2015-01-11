@@ -849,7 +849,14 @@ public class MainController extends AbstractController implements
         // - there is a current wallet
         // - the current wallet is not a "hard" Trezor wallet
         Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-        if (walletSummary.isPresent() && !WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
+        if (walletSummary.isPresent()
+          && !WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())
+          ) {
+
+          // TODO Currently getting a false positive due to FEST test use of WalletManager
+          // during fixture creation
+
+          log.debug("Trezor attached during an unlocked soft wallet session - showing alert");
 
           SwingUtilities.invokeLater(
             new Runnable() {
@@ -1049,18 +1056,15 @@ public class MainController extends AbstractController implements
 
       if (hardwareWalletService.isPresent()) {
 
-        log.debug("Environment supports hardware wallets so subscribing to hardware events");
-
         // (Re)subscribe to hardware wallet events
+        // This is required in case the user stops and starts the
+        // hardware wallet service during a session
         HardwareWalletEvents.subscribe(this);
 
         // Start the service
         hardwareWalletService.get().start();
 
-        log.debug("Pausing for hardware wallet events");
-
-        // Allow time for hardware wallet to produce events
-        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+        log.info("Started hardware wallet service");
 
       }
 
@@ -1174,7 +1178,7 @@ public class MainController extends AbstractController implements
    */
   private void handoverToWelcomeWizardRestore() {
 
-    log.debug("Hand over to welcome wizard");
+    log.debug("Hand over to welcome wizard (restore wallet)");
 
     // Handover
     mainView.setShowExitingWelcomeWizard(true);
@@ -1223,7 +1227,7 @@ public class MainController extends AbstractController implements
    */
   private void handoverToWelcomeWizardCreateTrezorWallet() {
 
-    log.debug("Hand over to welcome wizard");
+    log.debug("Hand over to welcome wizard (create Trezor wallet)");
 
     // Handover
     mainView.setShowExitingWelcomeWizard(true);

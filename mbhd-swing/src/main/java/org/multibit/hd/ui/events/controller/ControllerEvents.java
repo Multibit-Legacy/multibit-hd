@@ -65,6 +65,7 @@ public class ControllerEvents {
       } catch (IllegalArgumentException e) {
         log.warn("Unexpected failure to register");
       }
+      controllerEventBusSubscribers.remove(subscriber);
     } else {
       log.warn("Subscriber already registered: " + subscriber.getClass().getSimpleName());
     }
@@ -98,11 +99,15 @@ public class ControllerEvents {
    * <p>Unsubscribe all subscribers from events</p>
    * <p>This approach ensures all subscribers will be correctly removed during a shutdown or wizard hide event</p>
    */
+  @SuppressWarnings("unchecked")
   public static void unsubscribeAll() {
 
-    for (Object subscriber : controllerEventBusSubscribers) {
+    Set allSubscribers = Sets.newHashSet();
+    allSubscribers.addAll(controllerEventBusSubscribers);
+    for (Object subscriber : allSubscribers) {
       unsubscribe(subscriber);
     }
+    allSubscribers.clear();
     log.info("All subscribers removed");
 
   }

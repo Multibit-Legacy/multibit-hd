@@ -370,9 +370,11 @@ public abstract class AbstractFestUseCase {
 
   /**
    * The standard length of time for a hardware wallet event to be processed
+   * This rather long duration emulates user actions and is in line with typical
+   * responses from a real life Trezor
    */
   protected void pauseForHardwareEvent() {
-    Pause.pause(500, TimeUnit.MILLISECONDS);
+    Pause.pause(1, TimeUnit.SECONDS);
   }
 
 }

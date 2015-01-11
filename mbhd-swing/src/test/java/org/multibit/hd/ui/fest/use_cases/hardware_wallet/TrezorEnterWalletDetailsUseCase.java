@@ -25,6 +25,9 @@ public class TrezorEnterWalletDetailsUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
+    // Allow time for hardware events to propagate
+    pauseForHardwareEvent();
+
     // Check that the Trezor enter wallet details screen is showing
     window
       .label(MessageKey.CREATE_TREZOR_WALLET_ENTER_DETAILS_TITLE.getKey())

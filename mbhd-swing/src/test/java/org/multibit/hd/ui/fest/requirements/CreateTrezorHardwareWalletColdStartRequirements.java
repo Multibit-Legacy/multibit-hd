@@ -46,7 +46,7 @@ public class CreateTrezorHardwareWalletColdStartRequirements {
     new TrezorEnterWalletDetailsUseCase(window).execute(parameters);
 
     // Request create wallet (refer to mock client for "wipe device" ButtonRequest response)
-    new TrezorRequestCreateWalletUseCase(window).execute(parameters);
+    //new TrezorRequestCreateWalletUseCase(window).execute(parameters);
 
     // Confirm wipe wallet
     new TrezorConfirmWipeUseCase(window).execute(parameters);

@@ -44,6 +44,8 @@ public enum SSLManager {
   /**
    * <p>Handles the process of installing all CA certificates for MultiBit and supporting services (e.g. exchanges)</p>
    *
+   * <p>Due to the risk of upstream responses being slow this should be run its own executor</p>
+   *
    * @param applicationDirectory The application directory that must be writable
    * @param localTrustStoreName  The name of the local trust store (e.g. "appname-cacerts")
    * @param force                True if the SSL certificate should be refreshed from the main server

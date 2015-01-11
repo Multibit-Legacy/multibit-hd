@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the Trezor "press confirm wipe device" screen</li>
+ * <li>Verify the Trezor "create Trezor wallet" screen</li>
  * </ul>
  *
  * <p>Require the panel view to be showing (event triggered earlier)</p>

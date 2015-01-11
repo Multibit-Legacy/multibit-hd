@@ -97,6 +97,7 @@ public class CoreEvents {
       } catch (IllegalArgumentException e) {
         log.warn("Unexpected failure to unregister");
       }
+      coreEventBusSubscribers.remove(subscriber);
     } else {
       log.warn("Subscriber already unregistered: " + subscriber.getClass().getSimpleName());
     }
@@ -107,11 +108,15 @@ public class CoreEvents {
    * <p>Unsubscribe all subscribers from events</p>
    * <p>This approach ensures all subscribers will be correctly removed during a shutdown or wizard hide event</p>
    */
+  @SuppressWarnings("unchecked")
   public static void unsubscribeAll() {
 
-    for (Object subscriber : coreEventBusSubscribers) {
+    Set allSubscribers = Sets.newHashSet();
+    allSubscribers.addAll(coreEventBusSubscribers);
+    for (Object subscriber : allSubscribers) {
       unsubscribe(subscriber);
     }
+    allSubscribers.clear();
     log.info("All subscribers removed");
 
   }

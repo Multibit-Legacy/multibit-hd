@@ -1,8 +1,10 @@
 package org.multibit.hd.ui;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.Uninterruptibles;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
@@ -42,6 +44,8 @@ public class MultiBitHD {
   private static final Logger log = LoggerFactory.getLogger(MultiBitHD.class);
 
   private MainController mainController;
+
+  private final ListeningExecutorService cacertsExecutorService = SafeExecutors.newSingleThreadExecutor("install-cacerts");
 
   /**
    * <p>Main entry point to the application</p>
@@ -96,8 +100,6 @@ public class MultiBitHD {
     ViewEvents.unsubscribeAll();
     ControllerEvents.unsubscribeAll();
     CoreEvents.unsubscribeAll();
-
-    System.gc();
 
   }
 
@@ -179,11 +181,21 @@ public class MultiBitHD {
 
       }
 
-      // Configure SSL certificates without forcing and set up the local CA trust store
-      SSLManager.INSTANCE.installCACertificates(
-        InstallationManager.getOrCreateApplicationDataDirectory(),
-        InstallationManager.CA_CERTS_NAME,
-        false);
+      // Execute the CA certificates download on a separate thread to avoid slowing
+      // the startup time
+      cacertsExecutorService.submit(
+        new Runnable() {
+          @Override
+          public void run() {
+            SSLManager.INSTANCE.installCACertificates(
+              InstallationManager.getOrCreateApplicationDataDirectory(),
+              InstallationManager.CA_CERTS_NAME,
+              true
+            );
+
+          }
+        });
+
 
     } catch (SecurityException se) {
       log.error(se.getClass().getName() + " " + se.getMessage());
@@ -307,6 +319,14 @@ public class MultiBitHD {
     ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme());
     Themes.switchTheme(themeKey.theme());
 
+    // Give MultiBit Hardware a chance to process the hardware wallet
+    // and for MainController to process the events
+    // The delay is observed in FEST tests ranges from 400-800ms and if
+    // not included results in wiped hardware wallets being missed
+    // on startup
+    log.debug("Allowing time for hardware wallet state transition");
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
     log.debug("Building MainView...");
 
     // Build a new MainView
@@ -318,9 +338,6 @@ public class MultiBitHD {
     // Check for any pre-existing wallets in the application directory
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
-
-    // Allow a moment for hardware wallet events to settle
-    Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
     // Check for fresh install
     boolean showWelcomeWizard = walletDirectories.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted();
@@ -335,10 +352,11 @@ public class MultiBitHD {
 
       if (hardwareWalletService.isDeviceReady() && !hardwareWalletService.isWalletPresent()) {
 
-        log.debug("Uninitialised hardware wallet detected");
+        log.debug("Wiped hardware wallet detected");
 
         // Must show the welcome wizard in hardware wallet mode
         // regardless of wallet or licence situation
+        // MainController should have handled the events
         showWelcomeWizard = true;
 
       }

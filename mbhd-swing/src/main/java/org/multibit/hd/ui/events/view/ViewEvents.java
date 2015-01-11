@@ -99,6 +99,7 @@ public class ViewEvents {
       } catch (IllegalArgumentException e) {
         log.warn("Unexpected failure to unregister");
       }
+      viewEventBusSubscribers.remove(subscriber);
     } else {
       log.warn("Subscriber already unregistered: " + subscriber.getClass().getSimpleName());
     }
@@ -109,11 +110,15 @@ public class ViewEvents {
    * <p>Unsubscribe all subscribers from events</p>
    * <p>This approach ensures all subscribers will be correctly removed during a shutdown or wizard hide event</p>
    */
+  @SuppressWarnings("unchecked")
   public static void unsubscribeAll() {
 
-    for (Object subscriber : viewEventBusSubscribers) {
+    Set allSubscribers = Sets.newHashSet();
+    allSubscribers.addAll(viewEventBusSubscribers);
+    for (Object subscriber : allSubscribers) {
       unsubscribe(subscriber);
     }
+    allSubscribers.clear();
     log.info("All subscribers removed");
 
   }

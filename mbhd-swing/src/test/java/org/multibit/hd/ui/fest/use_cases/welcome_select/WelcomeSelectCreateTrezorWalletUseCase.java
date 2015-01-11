@@ -25,6 +25,9 @@ public class WelcomeSelectCreateTrezorWalletUseCase extends AbstractFestUseCase 
   @Override
   public void execute(Map<String, Object> parameters) {
 
+    // Allow time for events to propagate
+    pauseForHardwareEvent();
+
     // Verify that the title appears
     assertLabelText(MessageKey.SELECT_WALLET_TITLE);
 

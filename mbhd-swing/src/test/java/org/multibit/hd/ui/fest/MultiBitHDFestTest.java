@@ -510,7 +510,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     HardwareWalletFixtureType hardwareWalletFixtureType
   ) throws Exception {
 
-    log.debug("Setup hardware wallet environment");
+    log.debug("Setup after arrange with hardware wallet environment: {}", hardwareWalletFixtureType);
 
     HardwareWalletService hardwareWalletService;
     AbstractTrezorHardwareWalletClient mockClient;

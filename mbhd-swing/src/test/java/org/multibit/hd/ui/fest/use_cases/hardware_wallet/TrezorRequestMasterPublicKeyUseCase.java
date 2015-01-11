@@ -25,6 +25,9 @@ public class TrezorRequestMasterPublicKeyUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
+    // Allow time for events to propagate
+    pauseForHardwareEvent();
+
     // Check that the request panel view is showing
     window
     .label(MessageKey.TREZOR_UNLOCK_TITLE.getKey())
