@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Uninterruptibles;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.SSLManager;
@@ -14,6 +15,8 @@ import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.platform.GenericApplicationFactory;
 import org.multibit.hd.ui.platform.GenericApplicationSpecification;
 import org.multibit.hd.ui.services.BitcoinURIListeningService;
@@ -88,6 +91,11 @@ public class MultiBitHD {
     log.debug("Stopping MultiBit HD");
 
     mainController = null;
+
+    // final purge in case anything gets missed
+    ViewEvents.unsubscribeAll();
+    ControllerEvents.unsubscribeAll();
+    CoreEvents.unsubscribeAll();
 
     System.gc();
 
