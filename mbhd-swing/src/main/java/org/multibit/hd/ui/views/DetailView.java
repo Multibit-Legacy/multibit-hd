@@ -52,6 +52,16 @@ public class DetailView extends AbstractView {
 
   }
 
+  @Override
+  public void unregister() {
+    super.unregister();
+
+    // Unsubscribe the screens
+    for (Map.Entry<Screen, AbstractScreenView> entry : screenViewMap.entrySet()) {
+      entry.getValue().unsubscribe();
+    }
+  }
+
   /**
    * @return The content panel for this View
    */

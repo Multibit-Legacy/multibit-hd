@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.events.view.ScreenComponentModelChangedEvent;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -55,6 +56,7 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
     this.screen = screen;
 
     // All detail views can receive events
+    ViewEvents.subscribe(this);
     CoreEvents.subscribe(this);
 
     // All screens are decorated with the same theme and layout at creation
@@ -67,6 +69,14 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
     // Apply the screen theme to the panel
     PanelDecorator.applyScreenTheme(screenPanel, title);
 
+  }
+
+  /**
+   * This screen is closing (probably due to a shutdown)
+   */
+  public void unsubscribe() {
+    ViewEvents.unsubscribe(this);
+    CoreEvents.unsubscribe(this);
   }
 
   /**
