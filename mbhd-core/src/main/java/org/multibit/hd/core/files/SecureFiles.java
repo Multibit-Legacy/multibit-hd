@@ -65,26 +65,39 @@ public class SecureFiles {
    */
   private static void fastSecureDelete(File file) throws IOException {
     if (file.exists()) {
-      SecureRandom random = new SecureRandom();
-      RandomAccessFile raf = new RandomAccessFile(file, "rw");
-      FileChannel channel = raf.getChannel();
+      RandomAccessFile raf = null;
+      FileChannel channel = null;
+      try {
+        SecureRandom random = new SecureRandom();
+        raf = new RandomAccessFile(file, "rw");
+        channel = raf.getChannel();
 
-      MappedByteBuffer buffer = channel.map(
-        FileChannel.MapMode.READ_WRITE,
-        0,
-        raf.length()
-      );
+        MappedByteBuffer buffer = channel.map(
+                FileChannel.MapMode.READ_WRITE,
+                0,
+                raf.length()
+        );
 
-      // Overwrite with random data; one byte at a time
-      byte[] data = new byte[1];
-      while (buffer.hasRemaining()) {
-        random.nextBytes(data);
-        buffer.put(data[0]);
+        // Overwrite with random data; one byte at a time
+        byte[] data = new byte[1];
+        while (buffer.hasRemaining()) {
+          random.nextBytes(data);
+          buffer.put(data[0]);
+        }
+        buffer.force();
+
+        boolean deleteSuccess = file.delete();
+        log.trace("Result of delete was {} for:\n'{}'", deleteSuccess, file.getAbsolutePath());
+      } finally {
+        if (channel != null) {
+          channel.close();
+          channel = null;
+        }
+        if (raf != null) {
+          raf.close();
+          raf = null;
+        }
       }
-      buffer.force();
-
-      boolean deleteSuccess = file.delete();
-      log.trace("Result of delete was {} for:\n'{}'", deleteSuccess, file.getAbsolutePath());
     }
   }
 

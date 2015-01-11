@@ -193,7 +193,7 @@ public class TrezorWalletTest {
     // Ensure it is saved with the newly generated addresses
     File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(temporaryDirectory).get();
 
-    log.debug("TrezorWalletTest#testCreateWalletWithTrezorAccountUsingMasterPrivateKey wallet: " + wallet.toString());
+    log.debug("Wallet: " + wallet.toString());
     wallet.saveToFile(walletFile);
     EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, PASSWORD);
 
@@ -224,7 +224,6 @@ public class TrezorWalletTest {
     // syncWallet();
 
     log.debug("Wallet at end of test = " + walletSummary.getWallet().toString());
-
   }
 
   @Test
@@ -267,7 +266,7 @@ public class TrezorWalletTest {
 
     Wallet wallet = walletSummary.getWallet();
 
-    log.debug("TrezorWalletTest#testCreateTrezorSoftWalletFromSniffSeed Trezor soft wallet: " + wallet.toString());
+    log.debug("Trezor soft wallet: " + wallet.toString());
 
     assertThat(wallet.getActiveKeychain()).isNotNull();
     assertThat(wallet.getActiveKeychain().getRootKey()).isNotNull();
@@ -414,8 +413,8 @@ public class TrezorWalletTest {
     // Change the password and check it
     WalletService.changeWalletPassword(walletSummary, (String) PASSWORD, (String) CHANGED_PASSWORD);
 
-    // The change password is run on an executor thread so wait 5 seconds for it to complete
-    Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
+    // The change password is run on an executor thread so wait 10 seconds for it to complete
+    Uninterruptibles.sleepUninterruptibly(10, TimeUnit.SECONDS);
 
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD)).isTrue();
 
