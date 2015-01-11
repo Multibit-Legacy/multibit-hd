@@ -165,7 +165,7 @@ public class TrezorWalletTest {
                     (String) PASSWORD,
                     "trezor-hard-example",
                     "trezor-hard-example",
-              true);
+                    true);
 
     assertThat(WalletType.TREZOR_HARD_WALLET.equals(walletSummary.getWalletType()));
 
@@ -177,23 +177,27 @@ public class TrezorWalletTest {
     DeterministicKey key0 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String address0 = key0.toAddress(networkParameters).toString();
     log.debug("key0: {}", key0);
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     DeterministicKey key1 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String address1 = key1.toAddress(networkParameters).toString();
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     DeterministicKey key2 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String address2 = key2.toAddress(networkParameters).toString();
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     DeterministicKey key3 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String address3 = key3.toAddress(networkParameters).toString();
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     DeterministicKey key4 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String address4 = key4.toAddress(networkParameters).toString();
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
-    // Ensure it is saved with the newly generated addresses
+    // It is saved with the newly generated addresses
     File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(temporaryDirectory).get();
-
-    log.debug("TrezorWalletTest#testCreateWalletWithTrezorAccountUsingMasterPrivateKey wallet: " + wallet.toString());
+    log.debug("Wallet: " + wallet.toString());
     wallet.saveToFile(walletFile);
     EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, PASSWORD);
 
@@ -210,6 +214,7 @@ public class TrezorWalletTest {
     assertThat(address4).isEqualTo(SNIFF_EXPECTED_ADDRESS_4);
 
     // Load the wallet up again to check it loads ok
+    Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
     Optional<WalletSummary> rereadWalletSummary = WalletManager.INSTANCE.openWalletFromWalletId(temporaryDirectory, walletSummary.getWalletId(), PASSWORD);
     assertThat(rereadWalletSummary.isPresent());
 
@@ -224,7 +229,6 @@ public class TrezorWalletTest {
     // syncWallet();
 
     log.debug("Wallet at end of test = " + walletSummary.getWallet().toString());
-
   }
 
   @Test
@@ -261,13 +265,13 @@ public class TrezorWalletTest {
                     (String) PASSWORD,
                     "trezor-soft-example",
                     "trezor-soft-example",
-              true);
+                    true);
 
     assertThat(WalletType.TREZOR_SOFT_WALLET.equals(walletSummary.getWalletType()));
 
     Wallet wallet = walletSummary.getWallet();
 
-    log.debug("TrezorWalletTest#testCreateTrezorSoftWalletFromSniffSeed Trezor soft wallet: " + wallet.toString());
+    log.debug("Trezor soft wallet: " + wallet.toString());
 
     assertThat(wallet.getActiveKeychain()).isNotNull();
     assertThat(wallet.getActiveKeychain().getRootKey()).isNotNull();
@@ -284,6 +288,7 @@ public class TrezorWalletTest {
     DeterministicKey key0 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String address0 = key0.toAddress(networkParameters).toString();
     log.debug("key0: {}", key0);
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Check the first receiving key has the expected path - this should be m/44h/0h/0h/0/0
     List<ChildNumber> expectedFirstKeyPathList = new ArrayList<>();
@@ -296,17 +301,21 @@ public class TrezorWalletTest {
 
     DeterministicKey key1 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String address1 = key1.toAddress(networkParameters).toString();
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     DeterministicKey key2 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String address2 = key2.toAddress(networkParameters).toString();
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     DeterministicKey key3 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String address3 = key3.toAddress(networkParameters).toString();
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     DeterministicKey key4 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
     String address4 = key4.toAddress(networkParameters).toString();
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
-    // Ensure it is saved with the newly generated addresses
+    // It is saved with the newly generated addresses
     File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(temporaryDirectory).get();
 
     wallet.saveToFile(walletFile);
@@ -325,6 +334,7 @@ public class TrezorWalletTest {
     assertThat(address4).isEqualTo(SNIFF_EXPECTED_ADDRESS_4);
 
     // Load the wallet up again to check it loads ok
+    Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
     Optional<WalletSummary> rereadWalletSummary = WalletManager.INSTANCE.openWalletFromWalletId(temporaryDirectory, walletSummary.getWalletId(), PASSWORD);
     assertThat(rereadWalletSummary.isPresent());
 
@@ -343,42 +353,46 @@ public class TrezorWalletTest {
   }
 
   @Test
-   /**
-    * Decrypt and then encrypt a Trezor soft wallet.
-    * This is not actually used in MBHD on the UI but is used in the change password
-    */
-   public void testDecryptAndEncryptTrezorSoftWallet() throws Exception {
-     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
-     networkParameters = BitcoinNetwork.current().get();
+  /**
+   * Decrypt and then encrypt a Trezor soft wallet.
+   * This is not actually used in MBHD on the UI but is used in the change password
+   */
+  public void testDecryptAndEncryptTrezorSoftWallet() throws Exception {
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+    networkParameters = BitcoinNetwork.current().get();
 
-     // Create a random temporary directory where the wallet directory will be written
-     File temporaryDirectory = SecureFiles.createTemporaryDirectory();
+    // Create a random temporary directory where the wallet directory will be written
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
-     // Create a wallet from a seed phrase
-     BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
-     InstallationManager.setCurrentApplicationDataDirectory(temporaryDirectory);
+    // Create a wallet from a seed phrase
+    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
+    InstallationManager.setCurrentApplicationDataDirectory(temporaryDirectory);
 
-     // Create a Trezor soft wallet using the seed phrase
-     WalletSummary walletSummary = WalletManager
-             .INSTANCE
-             .getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
-                     temporaryDirectory,
-                     TREZOR_SNIFF_SEED_PHRASE,
-                     TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
-                     (String) PASSWORD,
-                     "trezor-soft-example",
-                     "trezor-soft-example",
-               true);
+    // Create a Trezor soft wallet using the seed phrase
+    WalletSummary walletSummary = WalletManager
+            .INSTANCE
+            .getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
+                    temporaryDirectory,
+                    TREZOR_SNIFF_SEED_PHRASE,
+                    TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
+                    (String) PASSWORD,
+                    "trezor-soft-example",
+                    "trezor-soft-example",
+                    true);
 
-     walletSummary.getWallet().decrypt(PASSWORD);
+    Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
 
-     assertThat(walletSummary.getWallet().isEncrypted()).isFalse();
+    walletSummary.getWallet().decrypt(PASSWORD);
 
-     // Encrypt it again
-     walletSummary.getWallet().encrypt("BLAH BLAH BLAH DI BLAH");
+    assertThat(walletSummary.getWallet().isEncrypted()).isFalse();
 
-     assertThat(walletSummary.getWallet().isEncrypted()).isTrue();
-   }
+    // Encrypt it again
+    walletSummary.getWallet().encrypt("BLAH BLAH BLAH DI BLAH");
+
+    Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+
+    assertThat(walletSummary.getWallet().isEncrypted()).isTrue();
+  }
 
 
   @Test
@@ -406,7 +420,9 @@ public class TrezorWalletTest {
                     (String) PASSWORD,
                     "trezor-soft-example",
                     "trezor-soft-example",
-              true);
+                    true);
+
+    Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
 
     // Check the old password is what is expected
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
@@ -414,8 +430,8 @@ public class TrezorWalletTest {
     // Change the password and check it
     WalletService.changeWalletPassword(walletSummary, (String) PASSWORD, (String) CHANGED_PASSWORD);
 
-    // The change password is run on an executor thread so wait 5 seconds for it to complete
-    Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
+    // The change password is run on an executor thread so wait 10 seconds for it to complete
+    Uninterruptibles.sleepUninterruptibly(10, TimeUnit.SECONDS);
 
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD)).isTrue();
 

@@ -18,6 +18,7 @@ import org.spongycastle.crypto.params.KeyParameter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -131,6 +132,7 @@ public class EncryptedFileReaderWriter {
   }
 
   private static File encryptAndDeleteOriginal(File fileToEncrypt, KeyParameter keyParameter, byte[] initialisationVector) throws EncryptedFileReaderWriterException {
+    FileOutputStream encryptedWalletOutputStream = null;
     try {
       // Read in the file
       byte[] unencryptedBytes = Files.toByteArray(fileToEncrypt);
@@ -147,7 +149,7 @@ public class EncryptedFileReaderWriter {
         // Save encrypted bytes
         File encryptedFilename = new File(fileToEncrypt.getAbsoluteFile() + WalletManager.MBHD_AES_SUFFIX);
         ByteArrayInputStream encryptedWalletByteArrayInputStream = new ByteArrayInputStream(encryptedBytes);
-        FileOutputStream encryptedWalletOutputStream = new FileOutputStream(encryptedFilename);
+        encryptedWalletOutputStream = new FileOutputStream(encryptedFilename);
         ByteStreams.copy(encryptedWalletByteArrayInputStream, encryptedWalletOutputStream);
         encryptedWalletOutputStream.flush();
 
@@ -164,6 +166,15 @@ public class EncryptedFileReaderWriter {
       }
     } catch (Exception e) {
       throw new EncryptedFileReaderWriterException("Cannot make encrypted copy for file '" + fileToEncrypt.getAbsolutePath() + "'", e);
+    } finally {
+      if (encryptedWalletOutputStream != null) {
+        try {
+          encryptedWalletOutputStream.close();
+          encryptedWalletOutputStream = null;
+        } catch (IOException e) {
+          log.error("Cannot close wallet outpur stream", e);
+        }
+      }
     }
   }
 

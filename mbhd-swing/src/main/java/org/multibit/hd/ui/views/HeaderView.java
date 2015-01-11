@@ -100,7 +100,7 @@ public class HeaderView extends AbstractView {
   @Subscribe
   public void onBalanceChangedEvent(final BalanceChangedEvent event) {
 
-    log.debug("Saw an onBalanceChangedEvent: {}", event);
+    log.trace("Saw an onBalanceChangedEvent: {}", event);
 
     SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -219,7 +219,7 @@ public class HeaderView extends AbstractView {
   public void onViewChangedEvent(final ViewChangedEvent event) {
 
     if (event.getViewKey().equals(ViewKey.HEADER)) {
-      log.debug("Saw a ViewChangedEvent {}", event);
+      log.trace("Saw a ViewChangedEvent {}", event);
 
       SwingUtilities.invokeLater(new Runnable() {
         @Override
