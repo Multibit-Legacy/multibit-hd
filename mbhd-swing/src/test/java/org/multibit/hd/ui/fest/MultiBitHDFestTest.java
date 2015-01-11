@@ -403,12 +403,12 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   /**
    * <p>Verify the following:</p>
    * <ul>
-   * <li>Start with empty wallet fixture</li>
+   * <li>Start with empty wallet fixture (warm)</li>
    * <li>Unlock wallet</li>
    * </ul>
    */
   @Test
-  public void verifyUnlockTrezorHardwareWallet() throws Exception {
+  public void verifyUnlockTrezorHardwareWallet_WarmStart() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be unlocked
     HardwareWalletEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
@@ -417,7 +417,30 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     arrangeEmpty(HardwareWalletFixtureType.TREZOR_INITIALISED);
 
     // Verify
-    UnlockTrezorHardwareWalletRequirements.verifyUsing(window);
+    UnlockTrezorHardwareWalletWarmStartRequirements.verifyUsing(window);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with fresh wallet fixture (cold)</li>
+   * <li>Unlock wallet</li>
+   * </ul>
+   *
+   * TODO Need to add cold start functionality into WelcomeWizard
+   */
+  @Ignore
+  public void verifyUnlockTrezorHardwareWallet_ColdStart() throws Exception {
+
+    // Prepare an initialised and attached Trezor device that will be unlocked
+    HardwareWalletEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
+
+    // Start with the fresh hardware wallet fixture
+    arrangeFresh(HardwareWalletFixtureType.TREZOR_INITIALISED);
+
+    // Verify
+    UnlockTrezorHardwareWalletColdStartRequirements.verifyUsing(window);
 
   }
 
