@@ -2,7 +2,6 @@ package org.multibit.hd.ui.controllers;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.*;
 import org.bitcoinj.uri.BitcoinURI;
@@ -26,6 +25,7 @@ import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.SwitchWalletEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -139,9 +139,14 @@ public class MainController extends AbstractController implements
       case HARD:
       case SOFT:
 
-        // Unregister for events
-        headerController.unregister();
-        unregister();
+        // Unsubscribe views for events
+        mainView.unsubscribe();
+
+        // Unregister controllers for events
+        headerController.unsubscribe();
+
+        // Unregister this
+        unsubscribe();
 
         shutdownCurrentWallet(shutdownEvent.getShutdownType());
 
@@ -1010,12 +1015,13 @@ public class MainController extends AbstractController implements
 
     // Check if the service is running and is allowed
     if (hardwareWalletService.isPresent() && !isServiceAllowed) {
-      log.debug("Stopping hardware service");
 
       // Stop the service, all listeners and clear the CoreServices reference
-      CoreServices.stopHardwareWalletService(Lists.<Object>newArrayList(this));
+      CoreServices.stopHardwareWalletService();
+
       // Clear our reference
       hardwareWalletService = Optional.absent();
+
       return;
     }
 
@@ -1030,12 +1036,7 @@ public class MainController extends AbstractController implements
         log.debug("Environment supports hardware wallets so subscribing to hardware events");
 
         // (Re)subscribe to hardware wallet events
-        try {
-          HardwareWalletService.hardwareWalletEventBus.unregister(this);
-        } catch (IllegalArgumentException e) {
-          // Do nothing
-        }
-        HardwareWalletService.hardwareWalletEventBus.register(this);
+        HardwareWalletEvents.subscribe(this);
 
         // Start the service
         hardwareWalletService.get().start();

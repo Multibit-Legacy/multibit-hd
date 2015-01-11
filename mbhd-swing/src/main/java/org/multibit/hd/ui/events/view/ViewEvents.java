@@ -2,9 +2,11 @@ package org.multibit.hd.ui.events.view;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.dto.RAGStatus;
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.math.BigDecimal;
+import java.util.Set;
 
 /**
  * <p>Factory to provide the following to application API:</p>
@@ -24,8 +27,11 @@ import java.math.BigDecimal;
  * <p>An application event is a high level event with specific semantics. Normally a
  * low level event (such as a mouse click) will initiate it.</p>
  *
- * <p>It is expected that ViewEvents will interact with UI components and as such is
- * expected to execute on the EDT.</p>
+ * <p>It is expected that ViewEvents will interact with Swing components and as such is
+ * expected to execute on the EDT. This cannot be provided directly within the method
+ * by wrapping since the semantics of the calling code may require synchronous execution
+ * across many subscribers. One example is if the UI is required to "freeze" in order to
+ * prevent the user from interacting with it during an atomic operation.</p>
  *
  * @since 0.0.1
  */
@@ -34,9 +40,80 @@ public class ViewEvents {
   private static final Logger log = LoggerFactory.getLogger(ViewEvents.class);
 
   /**
+   * Use Guava to handle subscribers to events
+   * Do not use this method directly, instead
+   */
+  private static final EventBus viewEventBus = new EventBus(ExceptionHandler.newSubscriberExceptionHandler());
+
+  /**
+   * Keep track of the Guava event bus subscribers for a clean shutdown
+   */
+  private static final Set<Object> viewEventBusSubscribers = Sets.newHashSet();
+
+
+  /**
    * Utilities have a private constructor
    */
   private ViewEvents() {
+  }
+
+  /**
+   * <p>Subscribe to events. Repeating a subscribe will not affect the event bus.</p>
+   * <p>This approach ensures all subscribers will be correctly removed during a shutdown or wizard hide event</p>
+   *
+   * @param subscriber The subscriber (use the Guava <code>@Subscribe</code> annotation to subscribe a method)
+   */
+  public static void subscribe(Object subscriber) {
+
+    Preconditions.checkNotNull(subscriber, "'subscriber' must be present");
+
+    if (viewEventBusSubscribers.add(subscriber)) {
+      log.debug("Register: " + subscriber.getClass().getSimpleName());
+      try {
+        viewEventBus.register(subscriber);
+      } catch (IllegalArgumentException e) {
+        log.warn("Unexpected failure to register");
+      }
+    } else {
+      log.warn("Subscriber already registered: " + subscriber.getClass().getSimpleName());
+    }
+
+  }
+
+  /**
+   * <p>Unsubscribe a known subscriber from events. Providing an unknown object will not affect the event bus.</p>
+   * <p>This approach ensures all subscribers will be correctly removed during a shutdown or wizard hide event</p>
+   *
+   * @param subscriber The subscriber (use the Guava <code>@Subscribe</code> annotation to subscribe a method)
+   */
+  public static void unsubscribe(Object subscriber) {
+
+    Preconditions.checkNotNull(subscriber, "'subscriber' must be present");
+
+    if (viewEventBusSubscribers.contains(subscriber)) {
+      log.debug("Unregister: " + subscriber.getClass().getSimpleName());
+      try {
+        viewEventBus.unregister(subscriber);
+      } catch (IllegalArgumentException e) {
+        log.warn("Unexpected failure to unregister");
+      }
+    } else {
+      log.warn("Subscriber already unregistered: " + subscriber.getClass().getSimpleName());
+    }
+
+  }
+
+  /**
+   * <p>Unsubscribe all subscribers from events</p>
+   * <p>This approach ensures all subscribers will be correctly removed during a shutdown or wizard hide event</p>
+   */
+  public static void unsubscribeAll() {
+
+    for (Object subscriber : viewEventBusSubscribers) {
+      unsubscribe(subscriber);
+    }
+    log.info("All subscribers removed");
+
   }
 
   /**
@@ -55,7 +132,7 @@ public class ViewEvents {
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
 
     log.trace("Firing 'balance changed' event");
-    CoreServices.uiEventBus.post(
+    viewEventBus.post(
       new BalanceChangedEvent(
         coinBalance,
         localBalance,
@@ -74,7 +151,7 @@ public class ViewEvents {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.trace("Firing 'system status changed' event");
-    CoreServices.uiEventBus.post(new SystemStatusChangedEvent(localisedMessage, severity));
+    viewEventBus.post(new SystemStatusChangedEvent(localisedMessage, severity));
 
   }
 
@@ -88,7 +165,7 @@ public class ViewEvents {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.trace("Firing 'progress changed' event: '{}'", percent);
-    CoreServices.uiEventBus.post(new ProgressChangedEvent(localisedMessage, percent));
+    viewEventBus.post(new ProgressChangedEvent(localisedMessage, percent));
 
   }
 
@@ -101,7 +178,7 @@ public class ViewEvents {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.trace("Firing 'alert added' event");
-    CoreServices.uiEventBus.post(new AlertAddedEvent(alertModel));
+    viewEventBus.post(new AlertAddedEvent(alertModel));
   }
 
   /**
@@ -111,7 +188,7 @@ public class ViewEvents {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.debug("Firing 'switch wallet' event");
-    CoreServices.uiEventBus.post(new SwitchWalletEvent());
+    viewEventBus.post(new SwitchWalletEvent());
 
   }
 
@@ -122,7 +199,7 @@ public class ViewEvents {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.trace("Firing 'alert removed' event");
-    CoreServices.uiEventBus.post(new AlertRemovedEvent());
+    viewEventBus.post(new AlertRemovedEvent());
   }
 
   /**
@@ -132,7 +209,7 @@ public class ViewEvents {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.trace("Firing 'walletDetailChanged' event");
-    CoreServices.uiEventBus.post(new WalletDetailChangedEvent(walletDetail));
+    viewEventBus.post(new WalletDetailChangedEvent(walletDetail));
 
   }
 
@@ -151,7 +228,7 @@ public class ViewEvents {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.trace("Firing 'wizard button enabled {}' event: {}", panelName, enabled);
-    CoreServices.uiEventBus.post(new WizardButtonEnabledEvent(panelName, wizardButton, enabled));
+    viewEventBus.post(new WizardButtonEnabledEvent(panelName, wizardButton, enabled));
 
   }
 
@@ -170,7 +247,7 @@ public class ViewEvents {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.trace("Firing 'wizard hide' event");
-    CoreServices.uiEventBus.post(new WizardHideEvent(panelName, wizardModel, isExitCancel));
+    viewEventBus.post(new WizardHideEvent(panelName, wizardModel, isExitCancel));
 
   }
 
@@ -184,7 +261,7 @@ public class ViewEvents {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.trace("Firing 'wizard popover hide' event");
-    CoreServices.uiEventBus.post(new WizardPopoverHideEvent(panelName, isExitCancel));
+    viewEventBus.post(new WizardPopoverHideEvent(panelName, isExitCancel));
 
   }
 
@@ -198,7 +275,7 @@ public class ViewEvents {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.trace("Firing 'wizard deferred hide' event");
-    CoreServices.uiEventBus.post(new WizardDeferredHideEvent(panelName, isExitCancel));
+    viewEventBus.post(new WizardDeferredHideEvent(panelName, isExitCancel));
 
   }
 
@@ -212,7 +289,7 @@ public class ViewEvents {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.trace("Firing 'component changed' event");
-    CoreServices.uiEventBus.post(new ComponentChangedEvent(panelName, componentModel));
+    viewEventBus.post(new ComponentChangedEvent(panelName, componentModel));
 
   }
 
@@ -226,7 +303,7 @@ public class ViewEvents {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.trace("Firing 'verification status changed' event: {}", status);
-    CoreServices.uiEventBus.post(new VerificationStatusChangedEvent(panelName, status));
+    viewEventBus.post(new VerificationStatusChangedEvent(panelName, status));
 
   }
 
@@ -240,7 +317,7 @@ public class ViewEvents {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.trace("Firing 'view changed' event: {}", visible);
-    CoreServices.uiEventBus.post(new ViewChangedEvent(viewKey, visible));
+    viewEventBus.post(new ViewChangedEvent(viewKey, visible));
 
   }
 

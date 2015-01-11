@@ -12,9 +12,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.AbstractService;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.models.Models;
@@ -231,7 +231,7 @@ public class BitcoinURIListeningService extends AbstractService {
       @Override
       public void run() {
 
-        CoreServices.uiEventBus.register(this);
+        CoreEvents.subscribe(this);
 
         boolean socketClosed = false;
 

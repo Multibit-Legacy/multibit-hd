@@ -3,8 +3,8 @@ package org.multibit.hd.ui.views.wizards;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.utils.Dates;
-import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +34,15 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
     super(wizardModel, isExiting, wizardParameter);
 
     // All hardware wallet wizards can receive hardware wallet events
-    HardwareWalletService.hardwareWalletEventBus.register(this);
+    HardwareWalletEvents.subscribe(this);
 
+  }
+
+  /**
+   * Unregister from hardware wallet events - called during the hide process
+   */
+  public void unregister() {
+    HardwareWalletEvents.unsubscribe(this);
   }
 
   /**

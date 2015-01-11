@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.events.CoreEvents;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -35,7 +35,7 @@ public abstract class AbstractWizardModel<S> implements DocumentListener {
     this.state = state;
 
     // All wizard models can receive UI events
-    CoreServices.uiEventBus.register(this);
+    CoreEvents.subscribe(this);
 
   }
 

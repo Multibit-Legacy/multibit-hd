@@ -160,6 +160,7 @@ public class BitcoinNetworkService extends AbstractService {
       // Check if there is a wallet - if there is no wallet the network will not start (there's nowhere to put the blockchain)
       if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
         log.warn("Not opening blockstore as there is currently no wallet.");
+        return null;
       }
       File walletParentDirectory = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get().getParentFile();
 

@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.screens;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.events.view.ScreenComponentModelChangedEvent;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
@@ -55,7 +55,7 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
     this.screen = screen;
 
     // All detail views can receive events
-    CoreServices.uiEventBus.register(this);
+    CoreEvents.subscribe(this);
 
     // All screens are decorated with the same theme and layout at creation
     // so just need a vanilla panel to begin with

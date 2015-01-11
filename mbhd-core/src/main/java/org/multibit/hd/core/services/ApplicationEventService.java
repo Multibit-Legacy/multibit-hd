@@ -4,8 +4,8 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.*;
-import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 
 /**
  * <p>Service to provide the following to application:</p>
@@ -28,7 +28,7 @@ public class ApplicationEventService extends AbstractService {
   @Override
   protected boolean startInternal() {
 
-    HardwareWalletService.hardwareWalletEventBus.register(this);
+    HardwareWalletEvents.subscribe(this);
     isRegistered = true;
 
     return false;
@@ -42,8 +42,8 @@ public class ApplicationEventService extends AbstractService {
       case HARD:
       case SOFT:
         if (isRegistered) {
-          // Unregister from hardware wallet events
-          HardwareWalletService.hardwareWalletEventBus.unregister(this);
+          // Unsubscribe from hardware wallet events
+          HardwareWalletEvents.unsubscribe(this);
           isRegistered=false;
         }
 

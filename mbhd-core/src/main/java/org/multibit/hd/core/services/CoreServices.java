@@ -2,7 +2,6 @@ package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.utils.Threading;
@@ -22,7 +21,6 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.CoreException;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -40,7 +38,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Collection;
 
 /**
  * <p>Factory to provide the following to application API:</p>
@@ -64,13 +61,6 @@ public class CoreServices {
    * The live matcher PGP public key file
    */
   public static final String LIVE_MATCHER_PUBLIC_KEY_FILE = "multibit-org-matcher-key.asc";
-
-  /**
-   * Send or register events to the user interface subscribers
-   */
-  // This arises from the global nature of the UI event bus
-  @SuppressFBWarnings({"MS_CANNOT_BE_FINAL"})
-  public static EventBus uiEventBus = new EventBus(ExceptionHandler.newSubscriberExceptionHandler());
 
   /**
    * Keep track of selected application events (e.g. exchange rate changes, security alerts etc)
@@ -211,9 +201,6 @@ public class CoreServices {
         shutdownWalletSupportServices(shutdownType);
         shutdownApplicationSupportServices(shutdownType);
 
-        // Reset the event handler
-        uiEventBus = new EventBus();
-
         // Suggest a garbage collection to free resources under test
         System.gc();
         break;
@@ -231,6 +218,13 @@ public class CoreServices {
 
   /**
    * <p>Shutdown all application support services (non-optional)</p>
+   * <ul>
+   * <li>Contact service</li>
+   * <li>History service</li>
+   * <li>Bitcoin network service</li>
+   * <li>Wallet service</li>
+   * <li>Backup service</li>
+   * </ul>
    *
    * @param shutdownType The shutdown type providing context
    */
@@ -256,6 +250,9 @@ public class CoreServices {
 
   /**
    * <p>Shutdown all application support services (non-optional)</p>
+   * <ul>
+   * <li>Hardware wallet service</li>
+   * </ul>
    *
    * @param shutdownType The shutdown type providing context
    */
@@ -363,15 +360,14 @@ public class CoreServices {
   }
 
   /**
-   * @param listeners Any listeners of hardware events that are known about
+   * <p>Stop the hardware wallet service</p>
    */
-  public static void stopHardwareWalletService(Collection<Object> listeners) {
+  public static void stopHardwareWalletService() {
 
-    log.debug("Stop hardware wallet service");
+    log.debug("Stop hardware wallet service (expect all subscribers to be purged)");
     hardwareWalletService.get().stopAndWait();
-    for (Object listener : listeners) {
-      HardwareWalletService.hardwareWalletEventBus.unregister(listener);
-    }
+
+    // Clear the reference to avoid restart issues
     hardwareWalletService = Optional.absent();
 
   }

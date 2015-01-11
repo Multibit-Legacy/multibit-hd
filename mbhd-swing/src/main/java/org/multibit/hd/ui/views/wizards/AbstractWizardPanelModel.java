@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.events.CoreEvents;
 
 /**
  * <p>Abstract base class wizard models:</p>
@@ -26,7 +26,7 @@ public abstract class AbstractWizardPanelModel implements WizardPanelModel {
     this.panelName = panelName;
 
     // All wizard panel models can receive events
-    CoreServices.uiEventBus.register(this);
+    CoreEvents.subscribe(this);
 
   }
 

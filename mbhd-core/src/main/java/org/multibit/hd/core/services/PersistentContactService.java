@@ -1,13 +1,14 @@
 package org.multibit.hd.core.services;
 
-import org.bitcoinj.core.Address;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.bitcoinj.core.Address;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.exceptions.ContactsSaveException;
@@ -65,7 +66,7 @@ public class PersistentContactService extends AbstractService implements Contact
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
     // Register for events
-    CoreServices.uiEventBus.register(this);
+    CoreEvents.subscribe(this);
 
     // Work out where to writeContacts the contacts for this wallet id.
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();

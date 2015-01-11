@@ -1,18 +1,22 @@
 package org.multibit.hd.core.events;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.*;
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.Currency;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -38,9 +42,78 @@ public class CoreEvents {
   private static ListeningScheduledExecutorService txSeenExecutor = SafeExecutors.newSingleThreadScheduledExecutor("tx-seen");
 
   /**
+   * Use Guava to handle subscribers to events
+   */
+  private static final EventBus coreEventBus = new EventBus(ExceptionHandler.newSubscriberExceptionHandler());
+
+  /**
+   * Keep track of the Guava event bus subscribers for a clean shutdown
+   */
+  private static final Set<Object> coreEventBusSubscribers = Sets.newHashSet();
+
+  /**
    * Utilities have a private constructor
    */
   private CoreEvents() {
+  }
+
+  /**
+   * <p>Subscribe to events. Repeating a subscribe will not affect the event bus.</p>
+   * <p>This approach ensures all subscribers will be correctly removed during a shutdown or wizard hide event</p>
+   *
+   * @param subscriber The subscriber (use the Guava <code>@Subscribe</code> annotation to subscribe a method)
+   */
+  public static void subscribe(Object subscriber) {
+
+    Preconditions.checkNotNull(subscriber, "'subscriber' must be present");
+
+    if (coreEventBusSubscribers.add(subscriber)) {
+      log.debug("Register: " + subscriber.getClass().getSimpleName());
+      try {
+        coreEventBus.register(subscriber);
+      } catch (IllegalArgumentException e) {
+        log.warn("Unexpected failure to register");
+      }
+    } else {
+      log.warn("Subscriber already registered: " + subscriber.getClass().getSimpleName());
+    }
+
+  }
+
+  /**
+   * <p>Unsubscribe a known subscriber from events. Providing an unknown object will not affect the event bus.</p>
+   * <p>This approach ensures all subscribers will be correctly removed during a shutdown or wizard hide event</p>
+   *
+   * @param subscriber The subscriber (use the Guava <code>@Subscribe</code> annotation to subscribe a method)
+   */
+  public static void unsubscribe(Object subscriber) {
+
+    Preconditions.checkNotNull(subscriber, "'subscriber' must be present");
+
+    if (coreEventBusSubscribers.contains(subscriber)) {
+      log.debug("Unregister: " + subscriber.getClass().getSimpleName());
+      try {
+        coreEventBus.unregister(subscriber);
+      } catch (IllegalArgumentException e) {
+        log.warn("Unexpected failure to unregister");
+      }
+    } else {
+      log.warn("Subscriber already unregistered: " + subscriber.getClass().getSimpleName());
+    }
+
+  }
+
+  /**
+   * <p>Unsubscribe all subscribers from events</p>
+   * <p>This approach ensures all subscribers will be correctly removed during a shutdown or wizard hide event</p>
+   */
+  public static void unsubscribeAll() {
+
+    for (Object subscriber : coreEventBusSubscribers) {
+      unsubscribe(subscriber);
+    }
+    log.info("All subscribers removed");
+
   }
 
   /**
@@ -63,7 +136,7 @@ public class CoreEvents {
         @Override
         public void run() {
           ExchangeRateChangedEvent event = new ExchangeRateChangedEvent(rate, currency, rateProvider, expires);
-          CoreServices.uiEventBus.post(event);
+          coreEventBus.post(event);
           log.debug("Firing 'exchange rate changed' event: {}", event);
         }
       });
@@ -82,7 +155,7 @@ public class CoreEvents {
         @Override
         public void run() {
           log.trace("Firing 'exchange status changed' event");
-          CoreServices.uiEventBus.post(new ExchangeStatusChangedEvent(exchangeSummary));
+          coreEventBus.post(new ExchangeStatusChangedEvent(exchangeSummary));
         }
       });
 
@@ -100,7 +173,7 @@ public class CoreEvents {
         @Override
         public void run() {
           log.trace("Firing 'transactionCreation' event");
-          CoreServices.uiEventBus.post(transactionCreationEvent);
+          coreEventBus.post(transactionCreationEvent);
         }
       });
 
@@ -118,29 +191,29 @@ public class CoreEvents {
         @Override
         public void run() {
           log.trace("Firing 'bitcoin sent' event");
-          CoreServices.uiEventBus.post(bitcoinSentEvent);
+          coreEventBus.post(bitcoinSentEvent);
         }
       });
   }
 
   /**
-    * <p>Broadcast WalletLoadEvent</p>
-    *
-    * @param walletLoadEvent containing walletLoad information
-    */
-   public static void fireWalletLoadEvent(final WalletLoadEvent walletLoadEvent) {
+   * <p>Broadcast WalletLoadEvent</p>
+   *
+   * @param walletLoadEvent containing walletLoad information
+   */
+  public static void fireWalletLoadEvent(final WalletLoadEvent walletLoadEvent) {
 
-     eventExecutor.submit(
-       new Runnable() {
-         @Override
-         public void run() {
-           log.trace("Firing 'walletLoadEvent' event");
-           CoreServices.uiEventBus.post(walletLoadEvent);
-         }
-       });
-   }
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Firing 'walletLoadEvent' event");
+          coreEventBus.post(walletLoadEvent);
+        }
+      });
+  }
 
-   /**
+  /**
    * Broadcast ChangePasswordResultEvent
    */
   public static void fireChangePasswordResultEvent(final ChangePasswordResultEvent changePasswordResultEvent) {
@@ -150,7 +223,7 @@ public class CoreEvents {
         @Override
         public void run() {
           log.trace("Firing 'change password result' event");
-          CoreServices.uiEventBus.post(changePasswordResultEvent);
+          coreEventBus.post(changePasswordResultEvent);
         }
       });
   }
@@ -167,7 +240,7 @@ public class CoreEvents {
       new Runnable() {
         @Override
         public void run() {
-          CoreServices.uiEventBus.post(transactionSeenEvent);
+          coreEventBus.post(transactionSeenEvent);
           consolidateTransactionSeenEvents();
         }
       });
@@ -186,7 +259,7 @@ public class CoreEvents {
           new Callable() {
             @Override
             public Object call() throws Exception {
-              CoreServices.uiEventBus.post(new SlowTransactionSeenEvent());
+              coreEventBus.post(new SlowTransactionSeenEvent());
               synchronized (lockObject) {
                 waitingToFireSlowTransactionSeenEvent = false;
               }
@@ -213,7 +286,7 @@ public class CoreEvents {
       }
     }
 
-    CoreServices.uiEventBus.post(new BitcoinNetworkChangedEvent(bitcoinNetworkSummary));
+    coreEventBus.post(new BitcoinNetworkChangedEvent(bitcoinNetworkSummary));
 
   }
 
@@ -229,7 +302,7 @@ public class CoreEvents {
         @Override
         public void run() {
           log.trace("Firing 'backup wallet loaded' event");
-          CoreServices.uiEventBus.post(new BackupWalletLoadedEvent(walletId, backupWalletFile));
+          coreEventBus.post(new BackupWalletLoadedEvent(walletId, backupWalletFile));
         }
       });
   }
@@ -245,7 +318,7 @@ public class CoreEvents {
         @Override
         public void run() {
           log.trace("Firing 'security' event");
-          CoreServices.uiEventBus.post(new SecurityEvent(securitySummary));
+          coreEventBus.post(new SecurityEvent(securitySummary));
         }
       });
   }
@@ -261,7 +334,7 @@ public class CoreEvents {
         @Override
         public void run() {
           log.trace("Firing 'history changed' event");
-          CoreServices.uiEventBus.post(new HistoryChangedEvent(historyEntry));
+          coreEventBus.post(new HistoryChangedEvent(historyEntry));
         }
       });
   }
@@ -269,7 +342,7 @@ public class CoreEvents {
   /**
    * <p>Broadcast a new "shutdown" event</p>
    *
-   * <p>Typically this is for SOFT shutdowns. A HARD shutdown should call <code>CoreServices.shutdownNow()</code> directly.</p>
+   * <p>Typically this is for SOFT shutdowns. A HARD shutdown should call <code>shutdownNow()</code> directly.</p>
    *
    * @param shutdownType The shutdown type
    */
@@ -279,7 +352,7 @@ public class CoreEvents {
         @Override
         public void run() {
           log.info("Firing 'shutdown' event: {}", shutdownType);
-          CoreServices.uiEventBus.post(new ShutdownEvent(shutdownType));
+          coreEventBus.post(new ShutdownEvent(shutdownType));
         }
       });
   }
@@ -293,7 +366,7 @@ public class CoreEvents {
         @Override
         public void run() {
           log.trace("Firing 'configuration changed' event");
-          CoreServices.uiEventBus.post(new ConfigurationChangedEvent());
+          coreEventBus.post(new ConfigurationChangedEvent());
         }
       });
   }
@@ -309,7 +382,7 @@ public class CoreEvents {
         @Override
         public void run() {
           log.trace("Firing 'export performed' event");
-          CoreServices.uiEventBus.post(exportPerformedEvent);
+          coreEventBus.post(exportPerformedEvent);
         }
       });
   }

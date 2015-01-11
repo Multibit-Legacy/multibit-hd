@@ -8,6 +8,7 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
@@ -185,10 +186,10 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
           // Check the result
           if (result) {
 
-            // Manually deregister the MaVs
-            CoreServices.uiEventBus.unregister(enterPasswordMaV);
-            CoreServices.uiEventBus.unregister(confirmPasswordMaV);
-            CoreServices.uiEventBus.unregister(displaySecurityPopoverMaV);
+            // Manually unsubscribe the MaVs
+            CoreEvents.unsubscribe(enterPasswordMaV);
+            CoreEvents.unsubscribe(confirmPasswordMaV);
+            CoreEvents.unsubscribe(displaySecurityPopoverMaV);
 
             // Trigger the deferred hide
             ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);

@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public abstract class AbstractService implements ManagedService {
     // Use the standard Object.toString() representation in place of anything else
     serviceName = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
-    CoreServices.uiEventBus.register(this);
+    CoreEvents.subscribe(this);
     isRegistered = true;
 
     log.debug("Service {} registered", serviceName);
@@ -97,8 +98,7 @@ public abstract class AbstractService implements ManagedService {
 
       // Unregister if executor services are shutting down
       if (isRegistered) {
-        log.debug("Service {} unregister...", serviceName);
-        CoreServices.uiEventBus.unregister(this);
+        CoreEvents.unsubscribe(this);
         isRegistered = false;
       }
 

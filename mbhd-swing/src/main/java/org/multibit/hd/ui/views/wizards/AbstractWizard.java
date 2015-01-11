@@ -10,7 +10,6 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardDeferredHideEvent;
@@ -88,7 +87,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     this.exiting = isExiting;
     this.wizardParameter = wizardParameter;
 
-    CoreServices.uiEventBus.register(this);
+    CoreEvents.subscribe(this);
 
     // Always bind the ESC key to a Cancel event (escape to safety)
     wizardScreenHolder.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "quit");
@@ -424,11 +423,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
     // Ensure we de-register for all hardware wallet events
     if (this instanceof AbstractHardwareWalletWizard) {
-      try {
-        HardwareWalletService.hardwareWalletEventBus.unregister(this);
-      } catch (IllegalArgumentException e) {
-        // Do nothing
-      }
+      AbstractHardwareWalletWizard self = (AbstractHardwareWalletWizard) this;
+      self.unregister();
     }
 
     // Issue the wizard hide event before the hide takes place to give UI time to update
@@ -458,12 +454,12 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
             // Ensure we deregister the wizard panel view (and model if present) for events
             try {
 
-              CoreServices.uiEventBus.unregister(panelView);
+              CoreEvents.unsubscribe(panelView);
               log.trace("Deregistered wizard panel view '{}' from UI events", panelView.getPanelName());
 
               if (panelView.getPanelModel().isPresent()) {
                 Object panelModel = panelView.getPanelModel().get();
-                CoreServices.uiEventBus.unregister(panelModel);
+                CoreEvents.unsubscribe(panelModel);
                 log.trace("Deregistered wizard panel model '{}' from UI events", panelView.getPanelName());
               }
 

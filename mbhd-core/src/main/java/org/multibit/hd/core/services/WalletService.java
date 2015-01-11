@@ -152,7 +152,7 @@ public class WalletService extends AbstractService {
 
     this.networkParameters = networkParameters;
 
-    CoreServices.uiEventBus.register(this);
+    CoreEvents.subscribe(this);
   }
 
   @Override

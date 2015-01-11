@@ -1,7 +1,8 @@
 package org.multibit.hd.ui.views.screens;
 
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.ui.events.view.ViewEvents;
 
 /**
  * <p>Abstract base class wizard models:</p>
@@ -25,8 +26,9 @@ public abstract class AbstractScreenModel implements ScreenModel {
 
     this.detailView = detailView;
 
-    // Register for events
-    CoreServices.uiEventBus.register(this);
+    // Register for Core events
+    CoreEvents.subscribe(this);
+    ViewEvents.subscribe(this);
 
   }
 

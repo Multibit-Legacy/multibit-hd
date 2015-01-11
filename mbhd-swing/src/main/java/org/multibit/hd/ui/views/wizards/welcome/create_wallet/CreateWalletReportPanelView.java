@@ -334,8 +334,15 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       } else {
         log.debug("No current configuration so nothing to write out");
       }
-      // Enable the finish button on the report page
-      ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
+
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            // Enable the finish button on the report page
+            ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
+          }
+        });
 
     } catch (RuntimeException | IOException | NoSuchAlgorithmException e) {
       // Handing over to the exception handler means a hard shutdown

@@ -65,7 +65,7 @@ public class MainView extends JFrame {
   public MainView() {
 
     // Ensure we can respond to UI events
-    CoreServices.uiEventBus.register(this);
+    CoreEvents.subscribe(this);
 
     // Define the minimum size for the frame
     setMinimumSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
@@ -305,13 +305,13 @@ public class MainView extends JFrame {
 
   }
 
+
   /**
    * @return True if the exiting welcome wizard will be shown on a reset
    */
   public boolean isShowExitingWelcomeWizard() {
     return showExitingWelcomeWizard;
   }
-
 
   /**
    * @param show True if the exiting welcome wizard should be shown during the next refresh
@@ -376,14 +376,11 @@ public class MainView extends JFrame {
     // Require opaque to ensure the color is shown
     mainPanel.setOpaque(true);
 
-    // Deregister any previous references
+    // Unsubscribe from events
     if (headerView != null) {
 
-      log.debug("Deregister earlier views");
-      CoreServices.uiEventBus.unregister(headerView);
-      CoreServices.uiEventBus.unregister(sidebarView);
-      CoreServices.uiEventBus.unregister(detailView);
-      CoreServices.uiEventBus.unregister(footerView);
+      log.debug("Unsubscribe existing views");
+      unsubscribe();
 
     }
 
@@ -449,6 +446,18 @@ public class MainView extends JFrame {
     mainPanel.add(footerView.getContentPanel(), "growx, growy"); // Ensure footer size remains fixed using row height sizing
 
     return mainPanel;
+  }
+
+  /**
+   * This view is about to close so all child views should unsubscribe from events
+   */
+  public void unsubscribe() {
+
+    headerView.unregister();
+    sidebarView.unregister();
+    detailView.unregister();
+    footerView.unregister();
+
   }
 
   /**

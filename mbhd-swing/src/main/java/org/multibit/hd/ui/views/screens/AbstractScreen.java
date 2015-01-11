@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.screens;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.ConfigurationChangedEvent;
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.views.components.Panels;
 
 import javax.swing.*;
@@ -33,7 +33,7 @@ public abstract class AbstractScreen<M extends ScreenModel> {
 
     this.detailModel = detailModel;
 
-    CoreServices.uiEventBus.register(this);
+    CoreEvents.subscribe(this);
 
     detailPanel = Panels.newPanel();
 

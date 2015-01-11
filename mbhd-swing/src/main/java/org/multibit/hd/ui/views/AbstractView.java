@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views;
 
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.events.view.ViewEvents;
 
 /**
  * <p>Abstract base class to provide the following to UI controllers:</p>
@@ -15,8 +15,17 @@ public abstract class AbstractView {
 
   public AbstractView() {
 
-    // All controllers are registered for UI events
-    CoreServices.uiEventBus.register(this);
+    // All views are registered for ViewEvents
+    ViewEvents.subscribe(this);
+
+    // Note Core and Controller events are not appropriate here
 
   }
+
+  public void unregister() {
+
+    ViewEvents.unsubscribe(this);
+
+  }
+
 }

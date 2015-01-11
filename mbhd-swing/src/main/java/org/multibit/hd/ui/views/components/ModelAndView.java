@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.models.Model;
 import org.multibit.hd.ui.views.View;
 import org.slf4j.Logger;
@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
  * <p>All ModelAndView components are registered for UI events by default (both model and view)</p>
  *
  * @since 0.0.1
- *
  */
 public class ModelAndView<M extends Model, V extends View> {
 
@@ -30,8 +29,8 @@ public class ModelAndView<M extends Model, V extends View> {
     this.view = view;
 
     // Convenience method to ensure UI events work out of the box
-    CoreServices.uiEventBus.register(model);
-    CoreServices.uiEventBus.register(view);
+    CoreEvents.subscribe(model);
+    CoreEvents.subscribe(view);
 
   }
 
@@ -54,16 +53,8 @@ public class ModelAndView<M extends Model, V extends View> {
    */
   public void close() {
 
-    try {
-      CoreServices.uiEventBus.unregister(model);
-    } catch (IllegalArgumentException e) {
-      log.warn("Model was not registered: {}", model.getClass().getCanonicalName());
-    }
-    try {
-      CoreServices.uiEventBus.unregister(view);
-    } catch (IllegalArgumentException e) {
-      log.warn("View was not registered: {}", view.getClass().getCanonicalName());
-    }
+    CoreEvents.unsubscribe(model);
+    CoreEvents.unsubscribe(view);
 
   }
 }
