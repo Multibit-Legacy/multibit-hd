@@ -14,7 +14,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -205,7 +205,7 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
       public void actionPerformed(ActionEvent e) {
 
         Configurations.currentConfiguration.getAppearance().setCurrentScreen(Screen.HISTORY.name());
-        ControllerEvents.fireShowDetailScreenEvent(Screen.HISTORY);
+        ViewEvents.fireShowDetailScreenEvent(Screen.HISTORY);
       }
     };
   }

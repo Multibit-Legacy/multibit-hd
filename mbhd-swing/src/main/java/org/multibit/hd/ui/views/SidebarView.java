@@ -6,8 +6,8 @@ import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.Dates;
-import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.ShowScreenEvent;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -274,7 +274,7 @@ public class SidebarView extends AbstractView {
           break;
         default:
           Configurations.currentConfiguration.getAppearance().setCurrentScreen(nodeInfo.getDetailScreen().name());
-          ControllerEvents.fireShowDetailScreenEvent(nodeInfo.getDetailScreen());
+          ViewEvents.fireShowDetailScreenEvent(nodeInfo.getDetailScreen());
       }
     } else {
       log.debug("Ignoring selection: '{}'", detailScreen);

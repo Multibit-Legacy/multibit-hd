@@ -443,6 +443,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
         @Override
         public void run() {
 
+          log.debug("Hiding wizard {}", this.getClass().getSimpleName());
+
           // Require some extra time to get the rest of the UI started for credentials wizard
           // There is no chance of the system showing a light box during this time so this
           // operation is safe
@@ -467,6 +469,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
               if (panelView.getPanelModel().isPresent()) {
                 Object panelModel = panelView.getPanelModel().get();
+                // May get some false positives from this approach
                 CoreEvents.unsubscribe(panelModel);
                 log.trace("Deregistered wizard panel model '{}' from UI events", panelView.getPanelName());
               }

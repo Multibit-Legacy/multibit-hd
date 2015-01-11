@@ -122,12 +122,21 @@ public class MainController extends AbstractController implements
 
     super();
 
+    // MainController must also subscribe to ViewEvents
+    ViewEvents.subscribe(this);
+
     Preconditions.checkNotNull(bitcoinURIListeningService, "'bitcoinURIListeningService' must be present");
     Preconditions.checkNotNull(headerController, "'headerController' must be present");
 
     this.bitcoinURIListeningService = bitcoinURIListeningService;
     this.headerController = headerController;
 
+  }
+
+  @Override
+  public void unsubscribe() {
+    super.unsubscribe();
+    ViewEvents.unsubscribe(this);
   }
 
   @Subscribe
@@ -667,7 +676,7 @@ public class MainController extends AbstractController implements
 
           // Show the current detail screen
           Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
-          ControllerEvents.fireShowDetailScreenEvent(screen);
+          ViewEvents.fireShowDetailScreenEvent(screen);
 
           // Trigger the alert panels to refresh
           headerController.refresh();
@@ -751,8 +760,14 @@ public class MainController extends AbstractController implements
   public void onPreferencesEvent(GenericPreferencesEvent event) {
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      // Show the Preferences screen
-      ControllerEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            // Show the Preferences screen
+            ViewEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
+          }
+        });
     }
 
   }
@@ -885,7 +900,8 @@ public class MainController extends AbstractController implements
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        ControllerEvents.fireShowDetailScreenEvent(Screen.HELP); // TODO show the 'spendable balance may be lower' help screen when it is written
+        // TODO show the 'spendable balance may be lower' help screen when it is written
+        ViewEvents.fireShowDetailScreenEvent(Screen.HELP);
       }
     };
   }
@@ -1279,7 +1295,7 @@ public class MainController extends AbstractController implements
 
     // Show the initial detail screen
     Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
-    ControllerEvents.fireShowDetailScreenEvent(screen);
+    ViewEvents.fireShowDetailScreenEvent(screen);
 
     // Don't hold up the UI thread with these background operations
     walletExecutorService.submit(

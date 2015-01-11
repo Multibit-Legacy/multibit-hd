@@ -7,9 +7,11 @@ import com.google.common.eventbus.EventBus;
 import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.ui.events.controller.ShowScreenEvent;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
+import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
@@ -318,6 +320,19 @@ public class ViewEvents {
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.trace("Firing 'view changed' event: {}", visible);
     viewEventBus.post(new ViewChangedEvent(viewKey, visible));
+
+  }
+
+  /**
+   * <p>Broadcast a new "show detail screen" event</p>
+   *
+   * @param detailScreen The screen to show
+   */
+  public static void fireShowDetailScreenEvent(final Screen detailScreen) {
+
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
+    log.trace("Firing 'show detail screen' event");
+    viewEventBus.post(new ShowScreenEvent(detailScreen));
 
   }
 

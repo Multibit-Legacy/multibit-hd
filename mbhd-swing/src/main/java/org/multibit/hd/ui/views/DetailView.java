@@ -23,7 +23,6 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class DetailView extends AbstractView {
 
@@ -92,30 +91,22 @@ public class DetailView extends AbstractView {
 
     Preconditions.checkState(!screenViewMap.isEmpty(), "'screenViewMap' has not been initialised. DetailView is not ready.");
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    Screen screen = event.getScreen();
 
-        Screen screen = event.getScreen();
+    Preconditions.checkState(screenViewMap.containsKey(screen), "Screen '" + screen.name() + "' has not been added to screenViewMap.");
 
-        Preconditions.checkState(screenViewMap.containsKey(screen), "Screen '"+ screen.name() +"' has not been added to screenViewMap.");
+    AbstractScreenView view = screenViewMap.get(screen);
 
-        AbstractScreenView view = screenViewMap.get(screen);
+    if (!view.isInitialised()) {
 
-        if (!view.isInitialised()) {
+      // Initialise the panel and add it to the card layout parent
+      screenPanel.add(view.getScreenViewPanel(), screen.name());
 
-          // Initialise the panel and add it to the card layout parent
-          screenPanel.add(view.getScreenViewPanel(), screen.name());
+    }
 
-        }
+    cardLayout.show(screenPanel, event.getScreen().name());
 
-        cardLayout.show(screenPanel, event.getScreen().name());
-
-        view.afterShow();
-
-      }
-    });
-
+    view.afterShow();
 
   }
 

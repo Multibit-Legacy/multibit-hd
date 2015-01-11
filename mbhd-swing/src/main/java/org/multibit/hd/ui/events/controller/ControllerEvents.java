@@ -10,7 +10,6 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
-import org.multibit.hd.ui.views.screens.Screen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,24 +104,6 @@ public class ControllerEvents {
       unsubscribe(subscriber);
     }
     log.info("All subscribers removed");
-
-  }
-
-  /**
-   * <p>Broadcast a new "show detail screen" event</p>
-   *
-   * @param detailScreen The screen to show
-   */
-  public static void fireShowDetailScreenEvent(final Screen detailScreen) {
-
-    eventExecutor.submit(
-      new Runnable() {
-        @Override
-        public void run() {
-          log.trace("Firing 'show detail screen' event");
-          controllerEventBus.post(new ShowScreenEvent(detailScreen));
-        }
-      });
 
   }
 
