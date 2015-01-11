@@ -10,7 +10,6 @@ import org.multibit.hd.core.events.CoreEvents;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public abstract class AbstractWizardPanelModel implements WizardPanelModel {
 
@@ -28,6 +27,13 @@ public abstract class AbstractWizardPanelModel implements WizardPanelModel {
     // All wizard panel models can receive events
     CoreEvents.subscribe(this);
 
+  }
+
+  /**
+   * <p>Called when the wizard is closing</p>
+   */
+  public void unsubscribe() {
+    CoreEvents.unsubscribe(this);
   }
 
   @Override

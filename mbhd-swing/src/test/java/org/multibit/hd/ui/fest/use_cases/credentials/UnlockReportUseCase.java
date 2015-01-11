@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.fest.use_cases.credentials;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
@@ -30,6 +32,11 @@ public class UnlockReportUseCase extends AbstractFestUseCase {
 
     // Fixed time to unlock
     pauseForWalletUnlock();
+
+    // Test for successful wallet load
+    assertLabelContainsValue(
+      CoreMessageKey.WALLET_LOADING.getKey(),
+      Languages.safeText(CoreMessageKey.WALLET_LOADED_OK));
 
     // Wait for Finish button to appear
     window

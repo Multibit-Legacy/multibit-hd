@@ -64,9 +64,6 @@ public class MainView extends JFrame {
   @SuppressFBWarnings({"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"})
   public MainView() {
 
-    // Ensure we can respond to UI events
-    CoreEvents.subscribe(this);
-
     // Define the minimum size for the frame
     setMinimumSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
 

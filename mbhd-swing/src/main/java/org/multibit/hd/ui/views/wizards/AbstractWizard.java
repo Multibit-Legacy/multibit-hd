@@ -432,6 +432,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     wizardPanelView.deregisterDefaultButton();
 
     // Ensure we unsubscribe the wizard from all further events
+    getWizardModel().unsubscribe();
     unsubscribe();
 
     // Issue the wizard hide event before the hide takes place to give panel views time to update

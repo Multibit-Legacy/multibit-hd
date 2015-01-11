@@ -6,7 +6,6 @@ import com.google.common.collect.Sets;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
@@ -62,10 +61,9 @@ public class PersistentHistoryService extends AbstractService implements History
    */
   PersistentHistoryService(WalletId walletId) {
 
-    Preconditions.checkNotNull(walletId, "'walletId' must be present");
+    super();
 
-    // Register for events
-    CoreEvents.subscribe(this);
+    Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
     // Work out where to store the history for this wallet id.
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();

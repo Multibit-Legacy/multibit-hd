@@ -148,11 +148,12 @@ public class WalletService extends AbstractService {
 
   public WalletService(NetworkParameters networkParameters) {
 
+    super();
+
     Preconditions.checkNotNull(networkParameters, "'networkParameters' must be present");
 
     this.networkParameters = networkParameters;
 
-    CoreEvents.subscribe(this);
   }
 
   @Override

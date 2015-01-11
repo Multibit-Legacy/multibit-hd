@@ -1,7 +1,6 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -34,11 +33,6 @@ public abstract class AbstractService implements ManagedService {
   private Optional<ListeningExecutorService> service = Optional.absent();
 
   /**
-   * True if this service was successfully registered with the UI event bus
-   */
-  private boolean isRegistered = false;
-
-  /**
    * Keep track of the class instance to assist debugging
    */
   private final String serviceName;
@@ -49,10 +43,14 @@ public abstract class AbstractService implements ManagedService {
     serviceName = getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
 
     CoreEvents.subscribe(this);
-    isRegistered = true;
 
-    log.debug("Service {} registered", serviceName);
+  }
 
+  /**
+   * <p>Unsubscribe from events due to the service shutting down</p>
+   */
+  public void unsubscribe() {
+    CoreEvents.unsubscribe(this);
   }
 
   // Declared final to ensure consistent behaviour across services
@@ -60,10 +58,6 @@ public abstract class AbstractService implements ManagedService {
   public final boolean start() {
 
     log.info("Service {} starting...", serviceName);
-
-    // If services are permitted to restart the provided ExecutorServices will be in
-    // an indeterminate state so prevent this from happening
-    Preconditions.checkState(isRegistered, "Cannot restart a service. Always use a fresh instance to ensure resources are released.");
 
     // Hand over to the specific implementation
     return startInternal();
@@ -96,11 +90,8 @@ public abstract class AbstractService implements ManagedService {
         service.get().shutdownNow();
       }
 
-      // Unregister if executor services are shutting down
-      if (isRegistered) {
-        CoreEvents.unsubscribe(this);
-        isRegistered = false;
-      }
+      // Unsubscribe from events
+      unsubscribe();
 
       log.debug("Service {} stopped", serviceName);
     } else {

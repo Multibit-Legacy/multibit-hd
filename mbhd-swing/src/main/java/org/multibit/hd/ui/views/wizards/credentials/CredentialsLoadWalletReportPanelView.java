@@ -82,11 +82,11 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(
-            new MigLayout(
-                    Panels.migXYLayout(),
-                    "[][][]", // Column constraints
-                    "[20]10[20]10[20]10[20]10" // Row constraints
-            ));
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[][][]", // Column constraints
+        "[20]10[20]10[20]10[20]10" // Row constraints
+      ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -127,7 +127,7 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
 
   @Override
   public void fireInitialStateViewEvents() {
-   // Disable the previous button - it is enabled once the wallet fails loads
+    // Disable the previous button - it is enabled once the wallet fails loads
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.PREVIOUS, false);
 
     // Disable the finish button - it is enabled once the wallet loads
@@ -147,76 +147,76 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
   @Override
   public void afterShow() {
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
+      new Runnable() {
+        @Override
+        public void run() {
 
-                getFinishButton().requestFocusInWindow();
+          getFinishButton().requestFocusInWindow();
 
-                if (unprocessedWalletLoadEvent != null) {
-                  onWalletLoadEvent(unprocessedWalletLoadEvent);
-                }
+          if (unprocessedWalletLoadEvent != null) {
+            onWalletLoadEvent(unprocessedWalletLoadEvent);
+          }
 
-              }
-            });
+        }
+      });
   }
 
   @Subscribe
   public void onWalletLoadEvent(final WalletLoadEvent walletLoadEvent) {
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
+      new Runnable() {
+        @Override
+        public void run() {
 
-                log.debug("Saw a wallet load event {}", walletLoadEvent);
+          log.debug("Saw a wallet load event {}", walletLoadEvent);
 
-                // Ensure the wallet balance is propagated out
-                if (WalletManager.INSTANCE.getCurrentWalletBalance().isPresent()) {
-                  ViewEvents.fireBalanceChangedEvent(
-                          WalletManager.INSTANCE.getCurrentWalletBalance().get(), null, Optional.<String>absent());
-                }
+          // Ensure the wallet balance is propagated out
+          if (WalletManager.INSTANCE.getCurrentWalletBalance().isPresent()) {
+            ViewEvents.fireBalanceChangedEvent(
+              WalletManager.INSTANCE.getCurrentWalletBalance().get(), null, Optional.<String>absent());
+          }
 
-                if (isInitialised()) {
-                  unprocessedWalletLoadEvent = null;
-                  if (walletLoadEvent.isWalletLoadWasSuccessful()) {
-                    // Wallet loaded ok
-                    loadedOk = true;
-                    LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_LOADED_OK));
-                    LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.TRUE));
+          if (isInitialised()) {
+            unprocessedWalletLoadEvent = null;
+            if (walletLoadEvent.isWalletLoadWasSuccessful()) {
+              // Wallet loaded ok
+              loadedOk = true;
+              LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_LOADED_OK));
+              LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.TRUE));
 
-                    // Enable the finish button
-                    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+              // Enable the finish button
+              ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
 
-                    // Disable previous button - this is only there to enable bad password recovery
-                    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.PREVIOUS, false);
+              // Disable previous button - this is only there to enable bad password recovery
+              ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.PREVIOUS, false);
 
-                    // Indicate connecting
-                    if (!connected) {
-                      connectedStatusLabel.setVisible(true);
-                      LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTING_TO_BITCOIN_NETWORK));
-                    }
-                  } else {
-                    // Wallet failed to load
-                    if (walletLoadEvent.getWalletLoadMessageKey() != null) {
-                      // Specific
-                      LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(walletLoadEvent.getWalletLoadMessageKey()));
-                    } else {
-                      LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_FAILED_TO_LOAD));
-                    }
-                    LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.FALSE));
-
-                    // Disable the finish button
-                    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
-
-                    // Enable previous button
-                    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.PREVIOUS, true);
-                  }
-
-                } else {
-                  unprocessedWalletLoadEvent = walletLoadEvent;
-                }
+              // Indicate connecting
+              if (!connected) {
+                connectedStatusLabel.setVisible(true);
+                LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTING_TO_BITCOIN_NETWORK));
               }
-            });
+            } else {
+              // Wallet failed to load
+              if (walletLoadEvent.getWalletLoadMessageKey() != null) {
+                // Specific
+                LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(walletLoadEvent.getWalletLoadMessageKey()));
+              } else {
+                LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_FAILED_TO_LOAD));
+              }
+              LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.FALSE));
+
+              // Disable the finish button
+              ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
+
+              // Enable previous button
+              ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.PREVIOUS, true);
+            }
+
+          } else {
+            unprocessedWalletLoadEvent = walletLoadEvent;
+          }
+        }
+      });
   }
 
   @Subscribe
@@ -226,62 +226,62 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
       return;
     }
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
+      new Runnable() {
+        @Override
+        public void run() {
 
-                // Extremely high volume
-                log.trace("Saw a Bitcoin network changed event {}", bitcoinNetworkChangedEvent);
-                BitcoinNetworkSummary summary = bitcoinNetworkChangedEvent.getSummary();
+          // Extremely high volume
+          log.trace("Saw a Bitcoin network changed event {}", bitcoinNetworkChangedEvent);
+          BitcoinNetworkSummary summary = bitcoinNetworkChangedEvent.getSummary();
 
-                switch (summary.getStatus()) {
-                  case NOT_CONNECTED:
-                    startedSync = false;
-                    break;
+          switch (summary.getStatus()) {
+            case NOT_CONNECTED:
+              startedSync = false;
+              break;
 
-                  case CONNECTING:
-                    startedSync = false;
-                    connectedStatusLabel.setVisible(true);
-                    LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTING_TO_BITCOIN_NETWORK));
-                    break;
+            case CONNECTING:
+              startedSync = false;
+              connectedStatusLabel.setVisible(true);
+              LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTING_TO_BITCOIN_NETWORK));
+              break;
 
-                  case CONNECTED:
-                    connectedStatusLabel.setVisible(true);
-                    LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTED_TO_BITCOIN_NETWORK));
-                    LabelDecorator.applyStatusLabel(connectedStatusLabel, Optional.of(Boolean.TRUE));
+            case CONNECTED:
+              connectedStatusLabel.setVisible(true);
+              LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTED_TO_BITCOIN_NETWORK));
+              LabelDecorator.applyStatusLabel(connectedStatusLabel, Optional.of(Boolean.TRUE));
 
-                    if (!startedSync) {
-                      synchronisationStatusLabel.setVisible(true);
-                      LabelDecorator.applyWrappingLabel(synchronisationStatusLabel, Languages.safeText(CoreMessageKey.PREPARING_TO_SYNCHRONISE));
-                    }
-                    break;
-
-                  case DOWNLOADING_BLOCKCHAIN:
-                    startedSync = true;
-                    synchronisationStatusLabel.setVisible(true);
-                    LabelDecorator.applyWrappingLabel(synchronisationStatusLabel, Languages.safeText(CoreMessageKey.SYNCHRONISING));
-                    break;
-
-                  case SYNCHRONIZED:
-                    startedSync = true;
-                    synchronisationStatusLabel.setVisible(true);
-                    LabelDecorator.applyWrappingLabel(synchronisationStatusLabel, Languages.safeText(CoreMessageKey.SYNCHRONISED));
-                    LabelDecorator.applyStatusLabel(synchronisationStatusLabel, Optional.of(Boolean.TRUE));
-
-                    if (loadedOk) {
-                      // Wallet is ready to use
-                      walletIsReadyToUseStatusLabel.setVisible(true);
-                      LabelDecorator.applyWrappingLabel(walletIsReadyToUseStatusLabel, Languages.safeText(CoreMessageKey.WALLET_IS_READY_TO_USE));
-                      LabelDecorator.applyStatusLabel(walletIsReadyToUseStatusLabel, Optional.of(Boolean.TRUE));
-                    }
-                    break;
-
-                  default:
-
-
-                }
-
+              if (!startedSync) {
+                synchronisationStatusLabel.setVisible(true);
+                LabelDecorator.applyWrappingLabel(synchronisationStatusLabel, Languages.safeText(CoreMessageKey.PREPARING_TO_SYNCHRONISE));
               }
-            });
+              break;
+
+            case DOWNLOADING_BLOCKCHAIN:
+              startedSync = true;
+              synchronisationStatusLabel.setVisible(true);
+              LabelDecorator.applyWrappingLabel(synchronisationStatusLabel, Languages.safeText(CoreMessageKey.SYNCHRONISING));
+              break;
+
+            case SYNCHRONIZED:
+              startedSync = true;
+              synchronisationStatusLabel.setVisible(true);
+              LabelDecorator.applyWrappingLabel(synchronisationStatusLabel, Languages.safeText(CoreMessageKey.SYNCHRONISED));
+              LabelDecorator.applyStatusLabel(synchronisationStatusLabel, Optional.of(Boolean.TRUE));
+
+              if (loadedOk) {
+                // Wallet is ready to use
+                walletIsReadyToUseStatusLabel.setVisible(true);
+                LabelDecorator.applyWrappingLabel(walletIsReadyToUseStatusLabel, Languages.safeText(CoreMessageKey.WALLET_IS_READY_TO_USE));
+                LabelDecorator.applyStatusLabel(walletIsReadyToUseStatusLabel, Optional.of(Boolean.TRUE));
+              }
+              break;
+
+            default:
+
+
+          }
+
+        }
+      });
   }
 }

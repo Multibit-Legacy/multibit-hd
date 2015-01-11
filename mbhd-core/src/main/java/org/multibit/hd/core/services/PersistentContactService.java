@@ -8,7 +8,6 @@ import org.bitcoinj.core.Address;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.exceptions.ContactsSaveException;
@@ -63,10 +62,9 @@ public class PersistentContactService extends AbstractService implements Contact
    */
   PersistentContactService(WalletId walletId) {
 
-    Preconditions.checkNotNull(walletId, "'walletId' must be present");
+    super();
 
-    // Register for events
-    CoreEvents.subscribe(this);
+    Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
     // Work out where to writeContacts the contacts for this wallet id.
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();

@@ -1,8 +1,10 @@
 package org.multibit.hd.ui.fest.use_cases.credentials;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.themes.Themes;
 
@@ -65,11 +67,23 @@ public class SlowUnlockWalletUseCase extends AbstractFestUseCase {
     // Fixed time to fail to unlock
     pauseForFailedWalletUnlock();
 
-    // Verify failure colouring
+    // Verify report screen is showing in failure mode
     window
-      .textBox(MessageKey.ENTER_PASSWORD.getKey())
-      .background()
-      .requireEqualTo(Themes.currentTheme.invalidDataEntryBackground());
+      .label(MessageKey.LOAD_WALLET_REPORT_TITLE.getKey())
+      .requireVisible();
+
+    // Test for failed wallet load
+    assertLabelContainsValue(
+      CoreMessageKey.WALLET_LOADING.getKey(),
+      Languages.safeText(CoreMessageKey.WALLET_BAD_PASSWORD));
+
+    // Verify buttons
+    window
+      .button(MessageKey.FINISH.getKey())
+      .requireDisabled();
+    window
+      .button(MessageKey.PREVIOUS.getKey())
+      .click();
 
     // Enter new credentials
     window
@@ -97,6 +111,8 @@ public class SlowUnlockWalletUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled()
       .click();
+
+    // Hand over to "unlock report use case"
 
   }
 
