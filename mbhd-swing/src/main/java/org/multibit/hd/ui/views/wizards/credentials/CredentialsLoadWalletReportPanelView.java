@@ -151,6 +151,8 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
         @Override
         public void run() {
 
+          registerDefaultButton(getFinishButton());
+
           getFinishButton().requestFocusInWindow();
 
           if (unprocessedWalletLoadEvent != null) {
