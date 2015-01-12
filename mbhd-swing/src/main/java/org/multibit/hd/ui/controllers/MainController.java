@@ -297,9 +297,14 @@ public class MainController extends AbstractController implements
 
     // Ensure that the header shows the header after a sync (if the configuration permits)
     if (BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus())) {
-      boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
+      final boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
       log.debug("Firing event to header viewable to:  {}", viewHeader);
-      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
+        }
+      });
     }
 
     final String localisedMessage;
@@ -315,15 +320,15 @@ public class MainController extends AbstractController implements
     }
 
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
+            new Runnable() {
+              @Override
+              public void run() {
+                ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
 
-          // Ensure everyone is aware of the update
-          ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
-        }
-      });
+                // Ensure everyone is aware of the update
+                ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
+              }
+            });
   }
 
   @Subscribe
@@ -762,13 +767,13 @@ public class MainController extends AbstractController implements
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            // Show the Preferences screen
-            ViewEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
-          }
-        });
+              new Runnable() {
+                @Override
+                public void run() {
+                  // Show the Preferences screen
+                  ViewEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
+                }
+              });
     }
 
   }

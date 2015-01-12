@@ -158,15 +158,18 @@ public class HeaderController extends AbstractController {
       updateRemaining();
 
       // The alert structure has changed so inform the view
-      if (!alertModels.isEmpty()) {
-        ViewEvents.fireAlertAddedEvent(alertModels.get(0));
-      }
-    } else {
-
-      // Use an empty event to signal that the event should be hidden
-      ViewEvents.fireAlertRemovedEvent();
+      //SwingUtilities.invokeLater(new Runnable() {
+      //  @Override
+      //  public void run() {
+          if (!alertModels.isEmpty()) {
+            ViewEvents.fireAlertAddedEvent(alertModels.get(0));
+          } else {
+            // Use an empty event to signal that the event should be hidden
+            ViewEvents.fireAlertRemovedEvent();
+          }
+      //  }
+      //});
     }
-
   }
 
   /**
