@@ -181,13 +181,13 @@ public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairW
                 true,
                 MultiBitUI.NORMAL_ICON_SIZE
         );
-        // Enable the Finish button
-        ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
 
         // Put the report screen into a finished state
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
+            // Enable the Finish button
+            ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
 
             // Wallet replayed without errors so it must be repaired
             walletRepairedStatusLabel.setVisible(true);

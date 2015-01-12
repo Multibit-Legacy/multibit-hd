@@ -1,8 +1,8 @@
 package org.multibit.hd.ui.views.wizards.repair_wallet;
 
-import org.bitcoinj.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.*;
+import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletSummary;
@@ -15,6 +15,7 @@ import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 
 import javax.annotation.Nullable;
+import javax.swing.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +27,6 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletState> {
 
@@ -82,9 +82,9 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       @Override
       public void run() {
         SSLManager.INSTANCE.installCACertificates(
-          InstallationManager.getOrCreateApplicationDataDirectory(),
-          InstallationManager.CA_CERTS_NAME,
-          true
+                InstallationManager.getOrCreateApplicationDataDirectory(),
+                InstallationManager.CA_CERTS_NAME,
+                true
         );
 
       }
@@ -92,17 +92,24 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
     Futures.addCallback(cacertsFuture, new FutureCallback() {
       @Override
       public void onSuccess(@Nullable Object result) {
-
         cacertsRepaired = Optional.of(Boolean.TRUE);
-        ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
-
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
+          }
+        });
       }
 
       @Override
       public void onFailure(Throwable t) {
-
         cacertsRepaired = Optional.of(Boolean.FALSE);
-        ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
+          }
+        });
       }
     });
 
@@ -125,7 +132,12 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       final DateTime replayDate = new DateTime(currentWallet.getEarliestKeyCreationTime() * 1000);
 
       // Hide the header view
-      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+      SwingUtilities.invokeLater(new Runnable() {
+               @Override
+               public void run() {
+                 ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+               }
+             });
 
       // Allow time the UI to update
       Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
@@ -161,11 +173,15 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
 
           // Have a failure
           walletRepaired = Optional.of(Boolean.FALSE);
-          ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
 
+          SwingUtilities.invokeLater(new Runnable() {
+                   @Override
+                   public void run() {
+                     ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
+                   }
+                 });
         }
       });
-
     }
   }
 }
