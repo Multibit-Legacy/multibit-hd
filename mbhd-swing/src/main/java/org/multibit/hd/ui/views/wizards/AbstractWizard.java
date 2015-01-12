@@ -452,7 +452,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
           if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(panelName)) {
 
             log.trace("Blocking to allow UI startup to complete");
-            Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
+            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
           }
 
           // Work through the view map ensuring all components are deregistered from UI events

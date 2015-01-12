@@ -1262,7 +1262,7 @@ public class BitcoinNetworkService extends AbstractService {
 
   public void addWalletToPeerGroup(Wallet wallet) {
     if (peerGroup != null && wallet != null) {
-      log.debug("Adding wallet {} to peerGroup {}", wallet, peerGroup);
+      log.trace("Adding wallet {} to peerGroup {}", wallet, peerGroup);
       peerGroup.addWallet(wallet);
       peerGroup.setFastCatchupTimeSecs(wallet.getEarliestKeyCreationTime());
       peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
@@ -1273,7 +1273,7 @@ public class BitcoinNetworkService extends AbstractService {
 
   public void addWalletToBlockChain(Wallet wallet) {
     if (blockChain != null && wallet != null) {
-      log.debug("Adding wallet {} to blockChain {}", wallet, blockChain);
+      log.trace("Adding wallet {} to blockChain {}", wallet, blockChain);
       blockChain.addWallet(wallet);
     } else {
       log.debug("Could not add wallet to blockChain - one or more is missing");
