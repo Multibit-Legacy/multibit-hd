@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import javax.swing.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -254,7 +255,12 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
         public void onSuccess(@Nullable Object result) {
 
           // We now have the features so throw a ComponentChangedEvent for the UI to update
-          ViewEvents.fireComponentChangedEvent(UseTrezorState.VERIFY_TREZOR.name(), Optional.absent());
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              ViewEvents.fireComponentChangedEvent(UseTrezorState.VERIFY_TREZOR.name(), Optional.absent());
+            }
+          });
 
         }
 
@@ -303,7 +309,12 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
         public void onSuccess(@Nullable Object result) {
 
           // We now wiped the device so throw a ComponentChangedEvent for the UI to update
-          ViewEvents.fireComponentChangedEvent(UseTrezorState.REQUEST_WIPE_TREZOR.name(), Optional.absent());
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              ViewEvents.fireComponentChangedEvent(UseTrezorState.REQUEST_WIPE_TREZOR.name(), Optional.absent());
+            }
+          });
 
           setReportMessageKey(MessageKey.TREZOR_WIPE_DEVICE_SUCCESS);
           setReportMessageStatus(true);
