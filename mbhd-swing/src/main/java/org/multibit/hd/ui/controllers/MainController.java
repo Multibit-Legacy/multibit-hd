@@ -493,7 +493,7 @@ public class MainController extends AbstractController implements
           log.trace("Using switch wallet view refresh");
 
           // Sleep for a short time to reduce UI jolt
-          Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
+          Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
           // Hide the application frame to prevent user interacting with the detail
           // panels after the exit panel view has hidden
