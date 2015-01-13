@@ -128,6 +128,8 @@ public class Wizards {
 
   private static final Logger log = LoggerFactory.getLogger(Wizards.class);
 
+  private static CredentialsWizard credentialsWizard = null;
+
   /**
    * @return A new "exit" wizard
    */
@@ -251,15 +253,26 @@ public class Wizards {
    */
   public static CredentialsWizard newExitingCredentialsWizard(CredentialsRequestType credentialsRequestType) {
 
-    log.debug("New 'Credentials wizard' with credentialsRequestType = " + credentialsRequestType);
+    log.debug("Creating 'Credentials wizard' with credentialsRequestType = " + credentialsRequestType);
+    CredentialsWizardModel model;
     switch (credentialsRequestType) {
       case TREZOR:
-        return new CredentialsWizard(new CredentialsWizardModel(CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY, credentialsRequestType), true);
+        model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY, credentialsRequestType);
+        break;
       case PASSWORD:
-        return new CredentialsWizard(new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD, credentialsRequestType), true);
+        model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD, credentialsRequestType);
+        break;
       default:
         throw new UnsupportedOperationException("The '" + credentialsRequestType.name() + "' is not supported");
     }
+
+    if (credentialsWizard != null) {
+      // Clear down all existing subscriptions
+      credentialsWizard.unsubscribe();
+    }
+    credentialsWizard = new CredentialsWizard(model, true);
+    log.debug("CredentialsWizard: {}", credentialsWizard);
+    return credentialsWizard;
   }
 
   /**

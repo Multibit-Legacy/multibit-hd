@@ -53,7 +53,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   private final JPanel wizardScreenHolder = Panels.newPanel(cardLayout);
 
-  private final M wizardModel;
+  private M wizardModel;
   protected Optional wizardParameter = Optional.absent();
 
   /**
@@ -302,13 +302,6 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   }
 
   /**
-   * @return The wizard model
-   */
-  public M getWizardModel() {
-    return wizardModel;
-  }
-
-  /**
    * @param wizardPanelView The wizard panel view (providing a reference to its underlying panel model)
    *
    * @return The "next" action based on the model state
@@ -514,4 +507,15 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
   }
 
+  /**
+    * @return The wizard model
+    */
+   public M getWizardModel() {
+     return wizardModel;
+   }
+
+  public void setWizardModel(M wizardModel) {
+    Preconditions.checkNotNull(wizardModel, "'model' must be present");
+    this.wizardModel = wizardModel;
+  }
 }
