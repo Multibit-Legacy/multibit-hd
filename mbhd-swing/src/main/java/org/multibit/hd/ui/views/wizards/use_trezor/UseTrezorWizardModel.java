@@ -4,9 +4,9 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import org.joda.time.DateTime;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
@@ -35,8 +35,6 @@ import java.util.concurrent.Callable;
 public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseTrezorState> {
 
   private static final Logger log = LoggerFactory.getLogger(UseTrezorWizardModel.class);
-
-  public static final int TREZOR_WIPE_TIME_DELTA = 4; // seconds
 
   /**
    * The current selection option as a state
@@ -192,6 +190,16 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
         state=UseTrezorState.USE_TREZOR_REPORT_PANEL;
         setReportMessageKey(MessageKey.TREZOR_WIPE_DEVICE_SUCCESS);
         setReportMessageStatus(true);
+
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              // Let MainController know about this
+              ViewEvents.fireComponentChangedEvent(UseTrezorState.CONFIRM_WIPE_TREZOR.name(), Optional.of(Dates.nowUtc()));
+            }
+          });
+
         break;
       default:
         log.info(
@@ -289,15 +297,13 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
           Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
           if (hardwareWalletServiceOptional.isPresent()) {
             HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
-            if (hardwareWalletService.isWalletPresent()) {
+            if (hardwareWalletService.isDeviceReady() && hardwareWalletService.isWalletPresent()) {
               hardwareWalletService.wipeDevice();
-              log.debug("Wipe device request has been performed");
-              hardwareWalletService.getContext().setLastWipeTime(Optional.of(DateTime.now().toDate()));
             } else {
               log.debug("No wallet present so no need to wipe the device");
             }
           } else {
-            log.error("No hardware wallet service");
+            log.error("Unexpected failure of hardware wallet service");
           }
           return true;
 
@@ -308,6 +314,8 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       future, new FutureCallback() {
         @Override
         public void onSuccess(@Nullable Object result) {
+
+          log.debug("Wipe device request has been performed successfully");
 
           // We now wiped the device so throw a ComponentChangedEvent for the UI to update
           SwingUtilities.invokeLater(new Runnable() {

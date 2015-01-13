@@ -29,6 +29,7 @@ import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.SwitchWalletEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
@@ -54,7 +55,7 @@ import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
-import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorWizardModel;
+import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorState;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
@@ -66,7 +67,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
@@ -114,6 +114,16 @@ public class MainController extends AbstractController implements
 
   // Assume a password rather than a hardware wallet cipher key
   private CredentialsRequestType deferredCredentialsRequestType = CredentialsRequestType.PASSWORD;
+
+  /**
+   * The delay between a wipe and insertion of a new device
+   */
+  private static final int TREZOR_WIPE_TIME_THRESHOLD = 4;
+
+  /**
+   * The last time a Trezor device was wiped (or yesterday as the default)
+   */
+  private DateTime lastWipedTrezorDateTime = Dates.nowUtc().minusDays(1);
 
   /**
    * @param bitcoinURIListeningService The Bitcoin URI listening service (must be present to permit a UI)
@@ -302,12 +312,13 @@ public class MainController extends AbstractController implements
     if (BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus())) {
       final boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
       log.debug("Firing event to header viewable to:  {}", viewHeader);
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
-        }
-      });
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
+          }
+        });
     }
 
     final String localisedMessage;
@@ -323,15 +334,15 @@ public class MainController extends AbstractController implements
     }
 
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
-                ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
+      new Runnable() {
+        @Override
+        public void run() {
+          ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
 
-                // Ensure everyone is aware of the update
-                ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
-              }
-            });
+          // Ensure everyone is aware of the update
+          ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
+        }
+      });
   }
 
   @Subscribe
@@ -461,6 +472,17 @@ public class MainController extends AbstractController implements
       default:
         throw new IllegalStateException("Unknown alert type: " + summary.getAlertType());
     }
+  }
+
+  @Subscribe
+  public void onComponentChangedEvent(ComponentChangedEvent event) {
+
+    // Check for specific component changes
+    if (UseTrezorState.CONFIRM_WIPE_TREZOR.name().equals(event.getPanelName())) {
+      // The user has successfully completed wiping a Trezor device
+      lastWipedTrezorDateTime = (DateTime) event.getComponentModel().get();
+    }
+
   }
 
   /**
@@ -770,13 +792,13 @@ public class MainController extends AbstractController implements
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       SwingUtilities.invokeLater(
-              new Runnable() {
-                @Override
-                public void run() {
-                  // Show the Preferences screen
-                  ViewEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
-                }
-              });
+        new Runnable() {
+          @Override
+          public void run() {
+            // Show the Preferences screen
+            ViewEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
+          }
+        });
     }
 
   }
@@ -857,7 +879,7 @@ public class MainController extends AbstractController implements
         // Show an alert if the Trezor connects when
         // - there is a current wallet
         // - the current wallet is not the same "hard" Trezor wallet
-        // - there has not been a wipe trezor in the last few seconds
+        // - there has not been a "wipe Trezor" in the last few seconds
         Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
         if (walletSummary.isPresent()) {
           Optional<HardwareWalletService> hardwareWalletService1 = CoreServices.getOrCreateHardwareWalletService();
@@ -877,9 +899,11 @@ public class MainController extends AbstractController implements
             }
           }
           if (hardwareWalletService1.isPresent()) {
-            Optional<Date> lastWipeTime = hardwareWalletService1.get().getContext().getLastWipeTime();
-            if (lastWipeTime.isPresent() && lastWipeTime.get().after(DateTime.now().minusSeconds(UseTrezorWizardModel.TREZOR_WIPE_TIME_DELTA).toDate())) {
-              log.debug("There has been a wipe trezor very recently so suppressing an alert");
+
+            if (lastWipedTrezorDateTime
+              .plusSeconds(TREZOR_WIPE_TIME_THRESHOLD)
+              .isAfter(Dates.nowUtc())) {
+              log.debug("Suppressing the alert due to recent confirmed Trezor wipe operation");
               showAlert = false;
             }
           }
@@ -891,14 +915,14 @@ public class MainController extends AbstractController implements
             log.debug("Trezor attached during an unlocked soft wallet session - showing alert");
 
             SwingUtilities.invokeLater(
-                    new Runnable() {
-                      @Override
-                      public void run() {
-                        // Attempt to create a suitable alert model in addition to view event
-                        AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
-                        ControllerEvents.fireAddAlertEvent(alertModel);
-                      }
-                    });
+              new Runnable() {
+                @Override
+                public void run() {
+                  // Attempt to create a suitable alert model in addition to view event
+                  AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+                  ControllerEvents.fireAddAlertEvent(alertModel);
+                }
+              });
           }
         }
         // Set the deferred credentials request type
