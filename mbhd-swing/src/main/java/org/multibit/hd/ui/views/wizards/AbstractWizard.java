@@ -130,6 +130,19 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   }
 
   /**
+   * Unsubscribe from all events. This also unsubscribes the internal model and all internal views
+   */
+  public void unsubscribeAll() {
+
+    unsubscribe();
+    for (AbstractWizardPanelView view : getWizardViewMap().values()) {
+      view.unsubscribe();
+    }
+
+    getWizardModel().unsubscribe();
+  }
+
+  /**
    * <p>Show the named panel</p>
    *
    * @param panelName The panel name

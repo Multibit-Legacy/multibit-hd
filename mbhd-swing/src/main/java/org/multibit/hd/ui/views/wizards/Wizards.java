@@ -93,7 +93,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>Factory to provide the following to UI:</p>
@@ -269,12 +268,7 @@ public class Wizards {
 
     if (credentialsWizard != null) {
       // Clear down all existing subscriptions
-      credentialsWizard.unsubscribe();
-      Map<String, AbstractWizardPanelView> map = credentialsWizard.getWizardViewMap();
-      for (AbstractWizardPanelView view : map.values()) {
-        view.unsubscribe();
-      }
-      credentialsWizard.getWizardModel().unsubscribe();
+      credentialsWizard.unsubscribeAll();
     }
     credentialsWizard = new CredentialsWizard(model, true);
     log.debug("CredentialsWizard: {}", credentialsWizard);
