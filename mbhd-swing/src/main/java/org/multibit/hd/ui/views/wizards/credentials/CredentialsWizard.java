@@ -3,6 +3,8 @@ package org.multibit.hd.ui.views.wizards.credentials;
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -19,9 +21,11 @@ import java.util.Map;
  *
  */
 public class CredentialsWizard extends AbstractHardwareWalletWizard<CredentialsWizardModel> {
+  private static final Logger log = LoggerFactory.getLogger(CredentialsWizard.class);
 
   public CredentialsWizard(CredentialsWizardModel model, boolean isExiting) {
     super(model, isExiting, Optional.absent());
+    log.debug("Created CredentialsWizard: {}",this);
   }
 
   @Override

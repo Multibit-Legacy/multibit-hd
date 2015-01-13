@@ -432,7 +432,7 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
   @Subscribe
   public void onHardwareWalletEvent(HardwareWalletEvent event) {
 
-    log.debug("Received hardware event: '{}'.", event.getEventType().name());
+    log.debug("{} Received hardware event: '{}'.", this, event.getEventType().name());
 
     if (!Dates.nowUtc().isAfter(getWizardModel().getIgnoreHardwareWalletEventsThreshold())) {
       log.debug("Ignoring device event due to 'ignore threshold' still in force", event);

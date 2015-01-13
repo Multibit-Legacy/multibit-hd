@@ -93,6 +93,13 @@ public class CreateTrezorWalletEnterNewPinPanelView extends AbstractWizardPanelV
   }
 
   @Override
+  public boolean beforeHide(boolean isExitCancel) {
+    // Ensure unsubscribed for events
+    unsubscribe();
+    return true;
+  }
+
+  @Override
   public void updateFromComponentModels(Optional componentModel) {
 
     // Determine any events

@@ -138,12 +138,13 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   @Override
   public boolean beforeHide(boolean isExitCancel) {
 
+    log.debug("isExitCancel: {}", isExitCancel);
+
     // Don't block an exit
     if (isExitCancel) {
       return true;
     }
 
-    // Start the spinner (we are deferring the hide)
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
@@ -167,6 +168,8 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
+    log.debug("updateFromComponentModel called");
+
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
@@ -181,7 +184,8 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
    * @param visible True if the PIN status should be visible
    */
   public void setPinStatus(final boolean status, final boolean visible) {
-    // Start the spinner (we are deferring the hide)
+
+    log.debug("status: {}, visible: {}", status, visible);
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
@@ -203,7 +207,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
    */
   private boolean isFinishEnabled() {
 
-    log.debug("PIN= {}", getPanelModel().get()
+    log.debug("PIN: {}", getPanelModel().get()
             .getEnterPinModel()
             .getValue());
     return !Strings.isNullOrEmpty(
