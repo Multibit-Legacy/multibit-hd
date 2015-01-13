@@ -6,6 +6,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.*;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
@@ -53,6 +54,7 @@ import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
+import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
@@ -64,6 +66,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
@@ -854,15 +857,17 @@ public class MainController extends AbstractController implements
         // Show an alert if the Trezor connects when
         // - there is a current wallet
         // - the current wallet is not the same "hard" Trezor wallet
+        // - there has not been a wipe trezor in the last few seconds
         Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
         if (walletSummary.isPresent()) {
+          Optional<HardwareWalletService> hardwareWalletService1 = CoreServices.getOrCreateHardwareWalletService();
+
           boolean showAlert = false;
           if (!WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
             // Not currently using a Trezor hard wallet so show the alert
             showAlert = true;
           } else {
-            Optional<HardwareWalletService> hardwareWalletService1 = CoreServices.getOrCreateHardwareWalletService();
-            if (hardwareWalletService1.isPresent() ) {
+            if (hardwareWalletService1.isPresent()) {
               Optional<Features> features = hardwareWalletService1.get().getContext().getFeatures();
               String currentWalletName = walletSummary.get().getName();
               if (features.isPresent() && !features.get().getDeviceId().equals(currentWalletName)) {
@@ -871,11 +876,17 @@ public class MainController extends AbstractController implements
               }
             }
           }
+          if (hardwareWalletService1.isPresent()) {
+            Optional<Date> lastWipeTime = hardwareWalletService1.get().getContext().getLastWipeTime();
+            if (lastWipeTime.isPresent() && lastWipeTime.get().after(DateTime.now().minusSeconds(UseTrezorWizardModel.TREZOR_WIPE_TIME_DELTA).toDate())) {
+              log.debug("There has been a wipe trezor very recently so suppressing an alert");
+              showAlert = false;
+            }
+          }
 
           if (showAlert) {
 
-            // TODO Currently getting a false positive due to FEST test use of WalletManager
-            // during fixture creation
+            // TODO Currently getting a false positive due to FEST test use of WalletManager during fixture creation
 
             log.debug("Trezor attached during an unlocked soft wallet session - showing alert");
 

@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
@@ -87,7 +86,6 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
       }
 
     });
-
   }
 
   @Override
@@ -108,62 +106,4 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
     // No need to update the wizard it has the references
 
   }
-
-  /**
-   * TODO Remove dead code
-   * @return The Trezor display view to avoid method duplication
-   */
-  public TrezorDisplayView getTrezorDisplayView() {
-    return trezorDisplayMaV.getView();
-  }
-
-  /**
-   * TODO Remove dead code
-   * @param visible True if the display should not be visible
-   */
-  public void setDisplayVisible(boolean visible) {
-    this.trezorDisplayMaV.getView().setDisplayVisible(visible);
-  }
-
-  /**
-   * TODO Remove dead code
-   */
-  public void disableForUnlock() {
-
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
-
-    getFinishButton().setEnabled(false);
-    getExitButton().setEnabled(false);
-    getRestoreButton().setEnabled(false);
-
-    trezorDisplayMaV.getView().setSpinnerVisible(true);
-
-  }
-
-  /**
-   * TODO Remove dead code
-   */
-  public void enableForFailedUnlock() {
-
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
-
-    getFinishButton().setEnabled(false);
-    getExitButton().setEnabled(true);
-    getRestoreButton().setEnabled(true);
-
-    trezorDisplayMaV.getView().setSpinnerVisible(false);
-
-  }
-
-  /**
-   * TODO Remove dead code
-   */
-  public void incorrectEntropy() {
-
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
-
-    trezorDisplayMaV.getView().incorrectEntropy();
-
-  }
-
 }

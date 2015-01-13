@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -34,6 +35,8 @@ import java.util.concurrent.Callable;
 public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseTrezorState> {
 
   private static final Logger log = LoggerFactory.getLogger(UseTrezorWizardModel.class);
+
+  public static final int TREZOR_WIPE_TIME_DELTA = 4; // seconds
 
   /**
    * The current selection option as a state
@@ -84,7 +87,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
           case SELECT_TREZOR_ACTION:
             break;
           case USE_TREZOR_WALLET:
-            //state = UseTrezorState.REQUEST_CIPHER_KEY;
             break;
           case BUY_TREZOR:
             state = UseTrezorState.BUY_TREZOR;
@@ -140,7 +142,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   public void showPINEntry(HardwareWalletEvent event) {
 
     // Device is PIN protected
-
     switch (state) {
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
@@ -193,7 +194,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
         setReportMessageStatus(true);
         break;
       default:
-        // TODO Fill in the other states and provide success feedback
         log.info(
           "Message:'Operation succeeded'\n{}",
           event.getMessage().get()
@@ -292,6 +292,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
             if (hardwareWalletService.isWalletPresent()) {
               hardwareWalletService.wipeDevice();
               log.debug("Wipe device request has been performed");
+              hardwareWalletService.getContext().setLastWipeTime(Optional.of(DateTime.now().toDate()));
             } else {
               log.debug("No wallet present so no need to wipe the device");
             }
@@ -318,7 +319,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
           setReportMessageKey(MessageKey.TREZOR_WIPE_DEVICE_SUCCESS);
           setReportMessageStatus(true);
-
         }
 
         @Override
