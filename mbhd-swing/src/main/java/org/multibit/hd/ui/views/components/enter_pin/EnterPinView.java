@@ -117,7 +117,7 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
     pinText.setText(Strings.repeat("*", pin.length()));
 
     // Ensure we hide the status display (entering new values)
-    setPinStatus(false, false);
+    setPinStatus(true, false);
 
   }
 
@@ -164,7 +164,6 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
    * @param visible True if the PIN status should be visible
    */
   public void setPinStatus(boolean status, boolean visible) {
-
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
     // Check if we had to provide a PIN
@@ -185,18 +184,10 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
       }
       pinStatus.setText(Languages.safeText(MessageKey.PIN_FAILURE));
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, pinStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+      // Clear any previously entered PIN
+      getModel().get().setValue("");
+      pinText.setText("");
     }
-
   }
-
-  /**
-   * The user has entered an incorrect PIN
-   */
-  public void incorrectPin() {
-
-    setPinStatus(false, true);
-
-
-  }
-
 }
