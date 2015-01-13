@@ -266,13 +266,17 @@ public class Wizards {
         throw new UnsupportedOperationException("The '" + credentialsRequestType.name() + "' is not supported");
     }
 
-    if (credentialsWizard != null) {
-      // Clear down all existing subscriptions
-      credentialsWizard.unsubscribeAll();
+    // TODO This needs to be fixed (see #348)
+    synchronized (Wizards.class) {
+      if (credentialsWizard != null) {
+        // Clear down all existing subscriptions
+        credentialsWizard.unsubscribeAll();
+      }
+      credentialsWizard = new CredentialsWizard(model, true);
+      log.debug("CredentialsWizard: {}", credentialsWizard);
     }
-    credentialsWizard = new CredentialsWizard(model, true);
-    log.debug("CredentialsWizard: {}", credentialsWizard);
     return credentialsWizard;
+
   }
 
   /**
