@@ -196,6 +196,10 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   protected abstract void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap);
 
+  protected Map<String, AbstractWizardPanelView> getWizardViewMap() {
+    return wizardViewMap;
+  }
+
   /**
    * @return The wizard panel
    */
