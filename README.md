@@ -8,7 +8,8 @@ Project status: Private beta. Expect minor bugs and API changes. Not suitable fo
 
 A desktop Hierarchical Deterministic Wallet (HDW) for Bitcoin using the Simplified Payment Verification (SPV) mode to provide very fast blockchain synchronization.
 
-The target audience is "international mainstream" which compels the user interface to remain as simple and consistent as possible while still retaining advanced capabilities under the covers.
+The target audience is "international mainstream" which compels the user interface to remain as simple and consistent as possible while still retaining advanced capabilities
+under the covers.
 
 Support for external hardware wallets (such as the Trezor) is [available through the MultiBit Hardware project](https://github.com/bitcoin-solutions/mbhd-hardware).
 
@@ -27,7 +28,8 @@ MultiBit HD is a standard Maven build, but currently relies on some snapshot bui
 
 #### Verify you have Maven 3+
 
-Most IDEs (such as [Intellij Community Edition](http://www.jetbrains.com/idea/download/)) come with support for Maven built in, but if not then you may need to [install it manually](http://maven.apache.org/download.cgi).
+Most IDEs (such as [Intellij Community Edition](http://www.jetbrains.com/idea/download/)) come with support for Maven built in, but if not then you may need
+ to [install it manually](http://maven.apache.org/download.cgi).
 
 IDEs such as Eclipse may require the [m2eclipse plugin](http://www.sonatype.org/m2eclipse) to be configured.
 
@@ -65,7 +67,9 @@ $ java -jar mbhd-swing/target/multibit-hd.jar "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SC
 ```
 #### Multiple instances
 
-MultiBit HD will avoid multiple instances by using port 8330 as a method of detecting another running instance. If port 8330 cannot be bound MultiBit HD will assume that another instance is running and hand over any Bitcoin URI arguments present when it started. It will then perform a hard shutdown terminating its own JVM. The other instance will react to receiving a Bitcoin URI message on port 8330 by displaying an alert bar requesting the user to act upon the Bitcoin URI payment request.
+MultiBit HD will avoid multiple instances by using port 8330 as a method of detecting another running instance. If port 8330 cannot be bound MultiBit HD will assume that
+another instance is running and hand over any Bitcoin URI arguments present when it started. It will then perform a hard shutdown terminating its own JVM. The other instance will
+react to receiving a Bitcoin URI message on port 8330 by displaying an alert bar requesting the user to act upon the Bitcoin URI payment request.
 
 ### Frequently asked questions (FAQ)
 
@@ -75,7 +79,9 @@ Here are some common questions that developers ask when they first encounter MBH
 
 Simply add yourself as a watcher to the repository and keep and eye on issues that interest you.
 
-In general issues are labelled with a yellow `awaiting review` or a blue `in progress` to indicate where our attention is focused. We would appreciate you updating and running up the code and verifying that an `awaiting review` does what it is supposed to. If you could then post a comment similar to `Works for me on Linux` then that would help us to close off the issue faster, or engage further with it to get bugs fixed.
+In general issues are labelled with a yellow `awaiting review` or a blue `in progress` to indicate where our attention is focused. We would appreciate you updating and running up
+the code and verifying that an `awaiting review` does what it is supposed to. If you could then post a comment similar to `Works for me on Linux` then that would help us to close
+off the issue faster, or engage further with it to get bugs fixed.
 
 Of course, if you want to contribute coding effort or deeper code review and commentary that would be most appreciated as well. We want MultiBit HD to be as solid as we can make it.
 
@@ -91,13 +97,16 @@ Trezor device. All private keys remain on the Trezor device and associated conta
 
 #### Why not Java 8 ?
 
-At the time MBHD was being written (Q4 2013 - Q2 2014) Java 8 was not in production release and the sheer size of the packaged download was coming in at 150Mb (18x MultiBit Classic and 3x the standard Java 7 packaged footprints). That footprint alone would be sufficient to dramatically increase the cost of serving the application and deter people from downloading in countries where bandwidth is less available.
+At the time MBHD was being written (Q4 2013 - Q2 2014) Java 8 was not in production release and the sheer size of the packaged download was coming in at 150Mb (18x MultiBit
+Classic and 3x the standard Java 7 packaged footprints). That footprint alone would be sufficient to dramatically increase the cost of serving the application and deter people
+from downloading in countries where bandwidth is less available.
 
 We will revisit this once we have suitable compressed JWrapper JREs available.
 
 #### Why not JavaFX ?
 
-JavaFX was only available as version 2.2 on Java 7 and the move to Java 8 was not going to happen. There were many significant features missing in JavaFX 2.2 which would only be fixed in Java 8:
+JavaFX was only available as version 2.2 on Java 7 and the move to Java 8 was not going to happen. There were many significant features missing in JavaFX 2.2 which would only be
+fixed in Java 8:
 
 * no right to left languages (Hebrew, Farsi, Arabic, etc)
 * no integration with native platform for Bitcoin URI protocol handling
@@ -107,7 +116,8 @@ Thus this technology was not suitable for the very wide range of people using Mu
 
 #### Why Swing ?
 
-There is a vast amount of support for Swing. The code is near bullet-proof for most use cases and it fully supports internationalization which is a key requirement for MultiBit HD. Also, many of the supporting libraries for Swing
+There is a vast amount of support for Swing. The code is near bullet-proof for most use cases and it fully supports internationalization which is a key requirement for MultiBit HD.
+Also, many of the supporting libraries for Swing
 pre-date 2009 making it much harder for [dependency chain attacks](http://gary-rowe.com/agilestack/2013/07/03/preventing-dependency-chain-attacks-in-maven/) to take place.
 
 With some effort Swing can be made to look quite modern.
@@ -116,11 +126,14 @@ Swing also allows us to smoothly integrate with the native platform which puts i
 
 #### Why not SwingX ?
 
-SwingX is a large support library that introduces a lot of additional functionality to Swing applications. Much of this additional functionality is not required by MultiBit or can be relatively easily worked around. Consequently including it would increase the available attack surface.
+SwingX is a large support library that introduces a lot of additional functionality to Swing applications. Much of this additional functionality is not required by MultiBit or
+can be relatively easily worked around. Consequently including it would increase the available attack surface.
 
 #### Why the Nimbus look and feel ?
 
-In Java 7 the Nimbus look and feel became integrated with the JDK. It provides a modern 2D rendered UI that is the same across all platforms. It is highly customisable through simple themes and provides consistent painting behaviour across platforms. For example to paint a button red in Swing using the Mac-only Aqua theme requires complex custom ButtonUI code.
+In Java 7 the Nimbus look and feel became integrated with the JDK. It provides a modern 2D rendered UI that is the same across all platforms. It is highly customisable through
+simple themes and provides consistent painting behaviour across platforms. For example to paint a button red in Swing using the Mac-only Aqua theme requires complex custom
+ButtonUI code.
 
 Using Nimbus ensures that we don't have this or similar problems.
 
@@ -150,13 +163,16 @@ This section covers tools to assist developers when developing MBHD code.
 
 ### Executing the automated requirements tests
 
-We use [Swing FEST](http://docs.codehaus.org/display/FEST/Swing+Module) to perform automated requirements testing of the user interface. It gives super fast overview of the application and runs like a standard unit test. `MultiBitHDFestTest` provides the entry point.
+We use [Swing FEST](http://docs.codehaus.org/display/FEST/Swing+Module) to perform automated requirements testing of the user interface. It gives super fast overview of the
+application and runs like a standard unit test. `MultiBitHDFestTest` provides the entry point.
 
 This provides an ever-improving set of regression tests to ensure that new code does not break the existing work.
 
-The code is arranged as a single test case with multiple individual tests that are independent of each other. Each create their own temporary application directory and may or may not require an initial randomly created empty wallet.
+The code is arranged as a single test case with multiple individual tests that are independent of each other. Each create their own temporary application directory and may or
+may not require an initial randomly created empty wallet.
 
-Developers are strongly encouraged to create a FEST test for any UI work they are about to undertake and use it to actually test the work in progress. It is far faster to run FEST than to manually run up the application and do it manually.
+Developers are strongly encouraged to create a FEST test for any UI work they are about to undertake and use it to actually test the work in progress. It is far faster to run
+FEST than to manually run up the application and do it manually.
 
 FEST is not intended to run as part of a Maven build since not all build environments support a display.
 

@@ -74,9 +74,10 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
   private boolean useInternalHelp = false;
 
   /**
-   * Handles the loading of the internal images
+   * Handles the loading of the internal images (lazy initialisation to avoid delays on start)
    */
-  private ListeningExecutorService listeningExecutorService;
+  private ListeningExecutorService listeningExecutorService = SafeExecutors.newSingleThreadExecutor("load-internal-help");
+  ;
 
   /**
    * We have to use a Hashtable here because of Swing internal handling
@@ -121,12 +122,24 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
   // View components
 
   /**
+   * The unvisited link color
+   */
+  private final Color enteredLinkColor = Themes.currentTheme.sidebarSelectedText();
+  private final String enteredLinkHexColor = String.format("#%02x%02x%02x", enteredLinkColor.getRed(), enteredLinkColor.getGreen(), enteredLinkColor.getBlue());
+
+  private final Color exitedLinkColor = Themes.currentTheme.sidebarSelectedText();
+  private final String exitedLinkHexColor = String.format("#%02x%02x%02x", exitedLinkColor.getRed(), exitedLinkColor.getGreen(), exitedLinkColor.getBlue());
+
+  private final String headingHexColor = "#973131";
+
+  /**
    * @param panelModel The model backing this panel view
    * @param screen     The screen to filter events from components
    * @param title      The key to the main title of this panel view
    */
   public HelpScreenView(HelpScreenModel panelModel, Screen screen, MessageKey title) {
     super(panelModel, screen, title);
+
   }
 
   @Override
@@ -234,6 +247,11 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
       useInternalHelp = true;
     }
 
+    // Always use internal help for FEST tests to provide predictable output
+    if (InstallationManager.unrestricted) {
+      useInternalHelp = true;
+    }
+
     // Only populate the image cache if we have to
     if (useInternalHelp) {
       populateImageCache();
@@ -265,6 +283,9 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
     };
 
+    // Ensure FEST can find it
+    editorPane.setName(MessageKey.HELP.getKey() + ".editorPane");
+
     // Make it read-only to allow links to be followed
     editorPane.setEditable(false);
 
@@ -282,22 +303,60 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
     editorPane.addHyperlinkListener(
       new HyperlinkListener() {
+
         @Override
         public void hyperlinkUpdate(HyperlinkEvent e) {
 
+          final URL url = e.getURL();
+
+          boolean relative = !url.toString().startsWith("http");
+
+          boolean multiBitAbsolute = url.toString().startsWith(InstallationManager.MBHD_WEBSITE_HELP_DOMAIN);
+
+          boolean multiBitHelp = url.toString().startsWith(InstallationManager.MBHD_WEBSITE_HELP_DOMAIN)
+            && url.toString().contains("/hd")
+            && url.toString().endsWith(".html");
+
+          if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
+
+            if (!multiBitHelp) {
+
+              // Indicate an external link
+              if (launchBrowserButton.isEnabled()) {
+                launchBrowserButton.setBackground(Themes.currentTheme.infoAlertBackground());
+              }
+
+            }
+          }
+
+          if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
+
+            if (launchBrowserButton.isEnabled()) {
+              launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
+            }
+          }
+
           if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 
-            URL url = e.getURL();
+            // Force the main browser if not MultiBit HD help (i.e. a relative link to the FAQ)
+            if (!multiBitHelp) {
 
-            boolean relative = !url.toString().startsWith("http");
-            boolean multiBit = url.toString().startsWith(InstallationManager.MBHD_WEBSITE_HELP_DOMAIN);
-
-            // Ignore off site links
-            if (!relative && !multiBit) {
-
-              // User is clicking on an external link so hint at proper browser
-              Sounds.playBeep();
-              launchBrowserButton.setBackground(Themes.currentTheme.readOnlyBackground());
+              listeningExecutorService.submit(
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    try {
+                      if (launchBrowserButton.isEnabled()) {
+                        Desktop.getDesktop().browse(url.toURI());
+                      } else {
+                        // No browser available
+                        Sounds.playBeep();
+                      }
+                    } catch (IOException | URISyntaxException e1) {
+                      Sounds.playBeep();
+                    }
+                  }
+                });
 
             } else {
 
@@ -337,9 +396,6 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
   private void populateImageCache() {
 
     internalImageCache = new Hashtable();
-
-    // This can take a while so keep it off the EDT
-    listeningExecutorService = SafeExecutors.newSingleThreadExecutor("load-internal-help");
 
     // Run the decryption on a different thread
     listeningExecutorService.submit(
@@ -420,12 +476,6 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
     };
 
-    // Define some color entries
-    Color linkColor = Themes.currentTheme.sidebarSelectedText();
-
-    String linkHexColor = String.format("#%02x%02x%02x", linkColor.getRed(), linkColor.getGreen(), linkColor.getBlue());
-    String headingHexColor = "#973131";
-
     // Set a basic style sheet
     StyleSheet styleSheet = kit.getStyleSheet();
 
@@ -437,8 +487,8 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     styleSheet.addRule("h3{color:" + headingHexColor + ";font-size:150%;}");
     styleSheet.addRule("h4{color:" + headingHexColor + ";font-size:120%;}");
     styleSheet.addRule("h1 img,h2 img,h3 img{vertical-align:middle;margin-right:5px;}");
-    styleSheet.addRule("a:link,a:visited,a:active{color:" + linkHexColor + ";}");
-    styleSheet.addRule("a:link:hover,a:visited:hover,a:active:hover{color:" + linkHexColor + ";}");
+    styleSheet.addRule("a:link:hover,a:visited:hover,a:active:hover{color:" + enteredLinkHexColor + ";}");
+    styleSheet.addRule("a:link,a:visited,a:active{color:" + exitedLinkHexColor + ";}");
     styleSheet.addRule("a img{border:0;}");
 
     return kit;
@@ -460,6 +510,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
             editorPane.setPage(url);
 
+            // Reset the button background
             launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
 
           } catch (IOException e) {

@@ -362,7 +362,7 @@ public abstract class AbstractFestUseCase {
   }
 
   /**
-   * The standard length of time for a preparation view to occur (e.g. wallet create notes)
+   * The standard length of time for a preparation view to occur (e.g. wallet create notes, help screen rendering etc)
    */
   protected void pauseForPreparationDisplay() {
     Pause.pause(4, TimeUnit.SECONDS);
