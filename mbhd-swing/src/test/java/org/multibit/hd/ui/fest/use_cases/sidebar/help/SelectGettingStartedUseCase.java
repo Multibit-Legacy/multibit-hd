@@ -46,28 +46,21 @@ public class SelectGettingStartedUseCase extends AbstractFestUseCase {
     // This should be constant based on the internal help
     // but a change in position can be quickly corrected
     // by offering a series of guesses with pauses in between
-    //    window
-    //      .robot
-    //      .moveMouse(editorPane, 100, 330);
-    //    pauseForViewReset();
+    //        window
+    //          .robot
+    //          .moveMouse(editorPane, 100, 190);
+    //        pauseForViewReset();
 
     // Click the "Getting Started" link
     window
       .robot
-      .click(editorPane, new Point(100, 330));
+      .click(editorPane, new Point(100, 190));
 
     // Ensure we are on the correct page
     helpContents = window
       .textBox(MessageKey.HELP.getKey() + ".editorPane")
       .text();
     assertThat(helpContents).contains("Step 1 - Download and install");
-
-    // Ensure that offsite links are neutered
-    helpContents = window
-      .textBox(MessageKey.HELP.getKey() + ".editorPane")
-      .text();
-    assertThat(helpContents).doesNotMatch("*.http://.*");
-
 
   }
 
