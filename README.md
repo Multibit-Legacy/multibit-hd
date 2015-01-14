@@ -189,12 +189,14 @@ Use the `ResourceBundleTools` to find similar entries and to arrange keys in the
 To do an internal help refresh:
 
 1. Ensure you have cloned the [MultiBit website](https://github.com/bitcoin-solutions/multibit-website) into a sibling directory to MultiBit HD
-2. Switch to the appropriate site branch (e.g. `master` for ongoing releases) and update
-3. Use Ant to execute the `update-internal-help.xml` script to copy the relevant files into the correct locations
-4. Update any FEST tests that rely on particular text being in place
-5. Run without a network connection to verify that the internal help appears correctly
-6. Check internal and external links work correctly
-7. Check IDE Changes to ensure no new files have been missed
+1. Switch to the appropriate site branch (e.g. `master` for ongoing releases) and update
+1. Use Ant to execute the `update-internal-help.xml` script to copy the relevant files into the correct locations
+1. Within Intellij, navigate to `assets/images/en/screenshots/mbhd-01`, select all image files and copy to clipboard
+1. Paste image names into `HelpScreenView` where directed (remove existing)
+1. Update any FEST tests that rely on particular text being in place
+1. Run without a network connection to verify that the internal help appears correctly
+1. Check internal and external links work correctly
+1. Check IDE Changes to ensure no new files have been missed
 
 #### Updating the internationalisation files
 

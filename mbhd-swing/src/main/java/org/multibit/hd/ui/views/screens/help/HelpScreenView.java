@@ -91,21 +91,36 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
   private static final Iterable<String> imageNames = Splitter.on("\n").split(
     // In Intellij just highlight the names and paste into "" to get the list
     "about.png\n" +
+      "accept-licence.png\n" +
       "appearance.png\n" +
       "change-password.png\n" +
+      "confirm-seed-phrase.png\n" +
       "contacts.png\n" +
+      "create-password.png\n" +
+      "create-seed-phrase.png\n" +
+      "create-wallet-report.png\n" +
       "edit-contact.png\n" +
       "edit-wallet.png\n" +
       "empty-wallet.png\n" +
+      "enter-password.png\n" +
       "exchange-rates.png\n" +
       "history.png\n" +
+      "installer-1.png\n" +
+      "installer-2.png\n" +
+      "installer-3.png\n" +
+      "installer-4.png\n" +
+      "installer-5.png\n" +
       "labs.png\n" +
       "languages.png\n" +
       "payments.png\n" +
       "preferences.png\n" +
+      "prepare-create-wallet.png\n" +
       "repair-wallet.png\n" +
       "request-payment.png\n" +
       "restorePassword.png\n" +
+      "select-backup-location.png\n" +
+      "select-create-wallet.png\n" +
+      "select-language.png\n" +
       "send-payment.png\n" +
       "send-receive.png\n" +
       "sign-message.png\n" +
