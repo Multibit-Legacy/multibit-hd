@@ -1,31 +1,28 @@
-<h3>Upgrading MultiBit</h3>
-<p>New versions of MultiBit are released containing bug fixes and new features every so often. We recommend you keep your version of MultiBit up-to-date.</p>
-<p>This guide tells you how upgrade to a newer version. It is assumed that you have
-  reviewed the <a href="help_gettingStarted.html" target="_blank">Getting Started</a> guide and know where all your wallet files are.</p>
+<h3>Upgrading MultiBit HD</h3>
 
-<h4>Step 1 - Locate your wallet files</h4>
-<p>If you have a standard installation (i.e. you followed our installation notes) upgrading MultiBit should be a seamless process. Your wallet and configuration files will not be in the same directory as the MultiBit application.</p>
-<p>Note: You can create new wallets in <strong>any directory</strong> however we recommend you store your wallets and configuration files separate from the
-  installation directory.</p>
-<p>You can always see the file location of your current wallet in the main title bar of your MultiBit window. For instance, it might say: "MultiBit - My wallet - /Users/jim/Library/Application Support/MultiBit/multibit.wallet". The file name at the end is where your wallet is stored.</p>
+<p>MultiBit HD is under active development and gets regular updates containing bug fixes and new features.</p>
 
-<h4>Step 2 (optional) - Move your wallets</h4>
-<p>If you have stored your wallets in the MultiBit installation directory (this is not recommended) and want to move the wallets out of this directory then please review the <a href="help_movingAWallet.html" target="_blank">Moving A Wallet</a> article.</p>
+<p>Whenever the application starts it checks against MultiBit.org for any new updates and if one is found an update process is triggered. This will give you
+  the option to upgrade at your convenience.</p>
 
-<h4>Step 3 - Run the installer/ Mac DMG file</h4>
-<p>Download the installer from the <a href="https://multibit.org" target="_blank">official MultiBit site</a> and <a href="/blog/2013/07/24/how-to-check-signatures.html" target="_blank">verify the GPG signature</a> to be absolutely sure you have a legitimate copy.</p>
-<p>Follow the <a href="help_installing.html" target="_blank">standard installation instructions</a> for your computer.</p>
+<p>The upgrade process will usually simply overwrite the old version with the new one. Once the process has completed you will be able to continue working just as you were before.</p>
 
-<h4>Step 4 - (Windows and Linux only) Run the old version's uninstaller</h4>
-<p>Once you are happy with the new version of MultiBit there is a uninstaller shortcut provided so that you can uninstall the older version of MultiBit.</p>
-<p>This is not required on Mac OS X since MultiBit.app is simply overwritten.</p>
+<h4>Technical details</h4>
 
-<h4>Finish</h4>
-<p>That's all there is to it. MultiBit will alert you if there is a problem and the <a href="/help.html">main help contents provide answers</a> to many common questions.</p>
+<p>The updater process works as follows:</p>
+<ol>
+  <li>Check <a href="https://multibit.org/releases/multibit-hd/updates.xml">for updates</a></li>
+  <li>Present the update wizard as a background process</li>
+  <li>Download the latest update if the user gives permission</li>
+  <li>Verify the signature against the Bitcoin Solutions Ltd public key</li>
+  <li>Overwrite the existing version</li>
+  <li>Launch the new version</li>
+</ol>
+
+<p>When the new version of MultiBit HD is launched it may perform a wallet update to introduce new features or configuration information. During this process any
+existing wallets will be automatically backed up.</p>
 
 <h4>Related articles</h4>
-<p>Here are some related articles:</p>
 <ul>
-  <li><a href="help_support_missingWallets.html">Lost wallets</a></li>
-  <li><a href="help_lostOrForgottenPassword.html">I've lost or forgotten my password</a></li>
+  <li><a href="how-to-upgrade-from-classic.html">How to upgrade from MultiBit Classic to MultiBit HD</a></li>
 </ul>
