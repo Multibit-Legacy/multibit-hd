@@ -324,10 +324,6 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
           final URL url = e.getURL();
 
-          boolean relative = !url.toString().startsWith("http");
-
-          boolean multiBitAbsolute = url.toString().startsWith(InstallationManager.MBHD_WEBSITE_HELP_DOMAIN);
-
           boolean multiBitHelp = url.toString().startsWith(InstallationManager.MBHD_WEBSITE_HELP_DOMAIN)
             && url.toString().contains("/hd")
             && url.toString().endsWith(".html");
