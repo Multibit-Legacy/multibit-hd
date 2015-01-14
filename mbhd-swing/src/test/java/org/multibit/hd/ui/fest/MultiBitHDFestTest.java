@@ -172,7 +172,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Start with the standard empty wallet in a random application directory
     arrangeStandard(HardwareWalletFixtureType.NONE);
 
-    // Restore a credentials through the welcome wizard
+    // Restore a password through the welcome wizard
     WelcomeWizardRestorePasswordRequirements.verifyUsing(window);
 
     // Unlock the wallet
@@ -441,6 +441,27 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     // Verify
     UnlockTrezorHardwareWalletColdStartRequirements.verifyUsing(window);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with empty wallet fixture (warm)</li>
+   * <li>Plug trezor out, see password screen, plug in, see PIN matrix</li>
+   * </ul>
+   */
+  @Test
+  public void verifyPlugInAndPullOutTrezorHardwareWallet() throws Exception {
+
+    // Prepare an initialised and attached Trezor device that will be unlocked
+    HardwareWalletEventFixtures.preparePlugInAndPullOutTrezorWalletUseCaseEvents();
+
+    // Start with the empty hardware wallet fixture
+    arrangeEmpty(HardwareWalletFixtureType.TREZOR_INITIALISED);
+
+    // Verify
+    PlugInAndPullOutTrezorHardwareWalletRequirements.verifyUsing(window);
 
   }
 

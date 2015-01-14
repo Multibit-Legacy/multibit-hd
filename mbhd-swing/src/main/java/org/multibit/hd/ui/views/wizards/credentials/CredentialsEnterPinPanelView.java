@@ -108,6 +108,13 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   }
 
   @Override
+  public boolean beforeShow() {
+    // Ensure we clear any previously entered PIN
+    setPinStatus(false, false);
+    return true;
+  }
+
+  @Override
   public void afterShow() {
 
     registerDefaultButton(getFinishButton());
@@ -180,7 +187,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   }
 
   /**
-   * @param status  True if successful (check mark), false for failure (cross)
+   * @param status  True if successful (check mark), false for failure (cross), PIN is cleared on failure
    * @param visible True if the PIN status should be visible
    */
   public void setPinStatus(final boolean status, final boolean visible) {

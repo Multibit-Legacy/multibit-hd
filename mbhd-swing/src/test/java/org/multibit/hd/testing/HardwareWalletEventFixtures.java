@@ -112,6 +112,42 @@ public class HardwareWalletEventFixtures {
   }
 
   /**
+    * <p>Prepare a sequence of events corresponding to plugging in an initialised Trezor</p>
+    *
+    * <p>Use this in conjunction with the mock Trezor client in HardwareWalletFixtures</p>
+    */
+   public static void preparePlugInAndPullOutTrezorWalletUseCaseEvents() {
+
+     hardwareWalletEvents.clear();
+
+     Features features = new Features();
+       features.setLabel("Aardvark");
+
+       // Trezor has been pulled out
+     final HardwareWalletEvent event1 = new HardwareWalletEvent(
+       HardwareWalletEventType.SHOW_DEVICE_DETACHED,
+       Optional.<HardwareWalletMessage>absent());
+
+     hardwareWalletEvents.add(event1);
+
+     // Trezor has plugged in
+     final HardwareWalletEvent event2 = new HardwareWalletEvent(
+       HardwareWalletEventType.SHOW_DEVICE_READY,
+       Optional.of((HardwareWalletMessage)features));
+
+     hardwareWalletEvents.add(event2);
+
+     // Cipher key success
+     final HardwareWalletEvent event3 = new HardwareWalletEvent(
+      HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED,
+      Optional.<HardwareWalletMessage>of(
+        newCipherKeySuccess()
+      ));
+
+     hardwareWalletEvents.add(event3);
+   }
+
+  /**
    * <p>Prepare a sequence of events corresponding to initialising a Trezor</p>
    * <p>Use this in conjunction with the mock Trezor client in HardwareWalletFixtures</p>
    */
