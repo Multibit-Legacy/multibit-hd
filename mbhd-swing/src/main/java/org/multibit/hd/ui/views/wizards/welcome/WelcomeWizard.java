@@ -1,6 +1,8 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.*;
@@ -146,7 +148,22 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
         // Ensure the panel updates its model (the button is outside of the panel itself)
         wizardPanelView.updateFromComponentModels(Optional.absent());
 
+
+
         switch (getWizardModel().getState()) {
+
+          case WELCOME_SELECT_LANGUAGE:
+            // Check for initialised hardware wallet on cold start
+            Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+            if (hardwareWalletService.isPresent()
+              && hardwareWalletService.get().isDeviceReady()
+              && hardwareWalletService.get().isWalletPresent()) {
+              // Initialised hardware wallet is attached so move directly to credentials
+              hide(getWizardModel().getPanelName(), false);
+            } else {
+              standardNext();
+            }
+            break;
           case WELCOME_SELECT_WALLET:
 
             // Radio buttons indicate the next state
@@ -156,13 +173,7 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
                 hide(getWizardModel().getPanelName(), false);
                 break;
               default:
-                // Treat as a Next
-
-                // Move to the next state
-                getWizardModel().showNext();
-
-                // Show the panel based on the state
-                show(getWizardModel().getPanelName());
+                standardNext();
                 break;
             }
 
@@ -176,10 +187,7 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
             // Treat as a Next
 
             // Move to the next state
-            getWizardModel().showNext();
-
-            // Show the panel based on the state
-            show(getWizardModel().getPanelName());
+            standardNext();
 
             break;
 
@@ -188,5 +196,18 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
       }
     };
 
+  }
+
+  /**
+   * Standard "next" button handling
+   */
+  private void standardNext() {
+    // Treat as a Next
+
+    // Move to the next state
+    getWizardModel().showNext();
+
+    // Show the panel based on the state
+    show(getWizardModel().getPanelName());
   }
 }

@@ -428,9 +428,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <li>Unlock wallet</li>
    * </ul>
    *
-   * TODO Need to add cold start functionality into WelcomeWizard
    */
-  @Ignore
+  @Test
   public void verifyUnlockTrezorHardwareWallet_ColdStart() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be unlocked
