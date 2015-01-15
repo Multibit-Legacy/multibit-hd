@@ -51,7 +51,7 @@ public class RestoreButtonTrezorUseCase extends AbstractFestUseCase {
     // Allow time for the wizard hand over to take place
     pauseForViewReset();
 
-    // Click on the next button, which selects the last backup and starts the restore
+    // Click on the next button, which selects the last backup and starts the actual restore
     window
       .button(MessageKey.NEXT.getKey())
       .click();

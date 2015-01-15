@@ -185,11 +185,11 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with standard application directory</li>
-   * <li>Show the PIN entry, unlock screen and restore from there</li>
+   * <li>Show the PIN entry, unlock screen and restore from there. This FEST test creates a local backup</li>
    * </ul>
    */
   @Test
-  public void verifyRestoreTrezor() throws Exception {
+  public void verifyRestoreTrezorWithLocalBackup() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be unlocked
     HardwareWalletEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
@@ -201,6 +201,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     RestoreTrezorWarmStartRequirements.verifyUsing(window);
 
     // Create a local backup so that there is something to load
+    // (this is done after the initial trezor dialog so that the master public key has been returned)
     createLocalBackup(walletSummary);
 
     // Do the restore with the local backup available
