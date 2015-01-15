@@ -1,7 +1,10 @@
 package org.multibit.hd.testing;
 
 import com.google.common.io.ByteStreams;
+import org.bitcoinj.crypto.DeterministicKey;
+import org.bitcoinj.crypto.HDKeyDerivation;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.files.ZipFiles;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -40,6 +43,45 @@ public class WalletFixtures {
   public static final String STANDARD_PASSWORD = "abc123";
   public static final String ALTERNATIVE_PASSWORD = "def456";
 
+  public static final String ABANDON_SEED_PHRASE = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+  public static final String ABANDON_TREZOR_PASSWORD = "ec406a3c796099050400f65ab311363e";
+
+  /**
+   * <p>Create an empty Trezor hard wallet in the current installation directory</p>
+   *
+   * @return The wallet summary if successful
+   */
+  public static WalletSummary createEmptyTrezorHardWalletFixture() throws IOException {
+
+    String applicationDirectoryName = InstallationManager
+      .getOrCreateApplicationDataDirectory()
+      .getAbsolutePath();
+
+    // Create a wallet from a seed
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(ABANDON_SEED_PHRASE));
+
+    DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed);
+
+    // Trezor uses BIP-44
+    // BIP-44 starts from M/44h/0h/0h
+    // Create a root node from which all addresses will be generated
+    DeterministicKey trezorRootNode = WalletManager.generateTrezorWalletRootNode(privateMasterKey);
+
+    WalletManager walletManager = WalletManager.INSTANCE;
+
+    long nowInSeconds = Dates.nowInSeconds();
+
+    return walletManager.getOrCreateTrezorHardWalletSummaryFromRootNode(
+            new File(applicationDirectoryName),
+            trezorRootNode,
+            nowInSeconds,
+            ABANDON_TREZOR_PASSWORD,
+            "Example Trezor hard wallet",
+            "Example empty wallet. Password is '" + ABANDON_TREZOR_PASSWORD + "'.",
+            false); // No need to sync
+
+  }
   /**
    * <p>Create an empty MBHD soft wallet in the current installation directory</p>
    *
@@ -65,17 +107,16 @@ public class WalletFixtures {
       seed,
       nowInSeconds,
       STANDARD_PASSWORD,
-      "Example",
+      "Example MBHD soft wallet",
       "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.",
       false); // No need to sync
-
   }
 
   /**
    * <p>Create a standard wallet in the current installation directory containing known transactions</p>
    * <p>This is required when we want to examine real transactions in the payments screen</p>
    */
-  public static void createStandardWalletFixture() throws IOException {
+  public static void createStandardMBHDSoftWalletFixture() throws IOException {
 
     String zipFileName = InstallationManager
       .getOrCreateApplicationDataDirectory()
@@ -93,7 +134,5 @@ public class WalletFixtures {
       ZipFiles.unzip(zipFileName, applicationDirectoryName);
 
     }
-
   }
-
 }

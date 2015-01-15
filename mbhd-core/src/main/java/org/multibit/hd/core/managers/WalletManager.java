@@ -299,6 +299,7 @@ public enum WalletManager implements WalletEventListener {
     final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
 
     boolean saveWalletYaml = false;
+    boolean createdNew = false;
     if (walletFileWithAES.exists()) {
       log.debug("Discovered AES encrypted wallet file. Loading...");
 
@@ -333,12 +334,17 @@ public enum WalletManager implements WalletEventListener {
 
       // Save the wallet YAML
       saveWalletYaml = true;
+      createdNew = true;
 
       try {
         WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, seed, password);
       } catch (NoSuchAlgorithmException e) {
         throw new WalletLoadException("Could not store encrypted credentials and backup AES key", e);
       }
+    }
+
+    if (createdNew) {
+      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), true, CoreMessageKey.WALLET_LOADED_OK, null, Optional.<File>absent()));
     }
 
     // Wallet is now created - finish off other configuration and check if wallet needs syncing
@@ -392,6 +398,8 @@ public enum WalletManager implements WalletEventListener {
 
     final WalletSummary walletSummary;
 
+    boolean createdNew = false;
+
     if (walletFileWithAES.exists()) {
       try {
         // There is already a wallet created with this root - if so load it and return that
@@ -429,6 +437,10 @@ public enum WalletManager implements WalletEventListener {
 
       // Create a new wallet summary
       walletSummary = new WalletSummary(walletId, walletToReturn);
+
+      log.debug("Created new wallet in {}", walletFile);
+
+      createdNew = true;
     }
 
     // Wallet summary cannot be null at this point
@@ -448,6 +460,11 @@ public enum WalletManager implements WalletEventListener {
       CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, error, Optional.<File>absent()));
       throw error;
     }
+
+    if (createdNew) {
+      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), true, CoreMessageKey.WALLET_LOADED_OK, null, Optional.<File>absent()));
+    }
+
     // Wallet is now created - finish off other configuration and check if wallet needs syncing
     // (Always save the wallet yaml as there was a bug in early Trezor wallets where it was not written out)
     updateConfigurationAndCheckSync(walletRoot, walletDirectory, walletSummary, true, performSync);
@@ -504,6 +521,8 @@ public enum WalletManager implements WalletEventListener {
 
     final WalletSummary walletSummary;
 
+    boolean createdNew = false;
+
     if (walletFileWithAES.exists()) {
       try {
         // There is already a wallet created with this root - if so load it and return that
@@ -552,6 +571,8 @@ public enum WalletManager implements WalletEventListener {
 
       // Create a new wallet summary
       walletSummary = new WalletSummary(walletId, walletToReturn);
+
+      createdNew = true;
     }
 
     // Wallet summary cannot be null
@@ -567,6 +588,10 @@ public enum WalletManager implements WalletEventListener {
       WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, seed, password);
     } catch (NoSuchAlgorithmException e) {
       throw new WalletLoadException("Could not store encrypted credentials and backup AES key", e);
+    }
+
+    if (createdNew) {
+      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), true, CoreMessageKey.WALLET_LOADED_OK, null, Optional.<File>absent()));
     }
 
     // Wallet is now created - finish off other configuration and check if wallet needs syncing
