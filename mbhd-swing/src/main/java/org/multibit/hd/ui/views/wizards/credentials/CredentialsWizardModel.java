@@ -738,7 +738,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         // Mostly this will be from a bad password
         log.error(wle.getMessage());
         // Assume bad credentials
-        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, CoreMessageKey.WALLET_BAD_PASSWORD, null));
+        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, CoreMessageKey.WALLET_BAD_PASSWORD, null, Optional.<File>absent()));
 
         return false;
       }
@@ -857,7 +857,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
                           label, "Trezor", true));
 
         } catch (Exception e) {
-          CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, CoreMessageKey.WALLET_LOADED_OK, e));
+          CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, e, Optional.<File>absent()));
 
           log.error(e.getMessage(), e);
 
@@ -866,7 +866,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         log.debug("No wallet present");
       }
     } else {
-      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, CoreMessageKey.WALLET_LOADED_OK, new IllegalStateException("No hardware wallet service available")));
+      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, new IllegalStateException("No hardware wallet service available"), Optional.<File>absent()));
 
       log.error("No hardware wallet service");
     }

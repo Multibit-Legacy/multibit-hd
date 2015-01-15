@@ -347,22 +347,6 @@ public class MainController extends AbstractController implements
   }
 
   @Subscribe
-  public void onBackupWalletLoadedEvent(BackupWalletLoadedEvent event) {
-    log.trace("Received 'backup wallet loaded' event");
-
-    Preconditions.checkNotNull(event, "'event' must be present");
-    Preconditions.checkNotNull(event.getBackupLoaded(), "backup file must be present");
-
-    final String localisedMessage = Languages.safeText(CoreMessageKey.BACKUP_WALLET_WAS_LOADED);
-
-    ControllerEvents.fireAddAlertEvent(
-      Models.newAlertModel(
-        localisedMessage,
-        RAGStatus.AMBER)
-    );
-  }
-
-  @Subscribe
   public void onExchangeStatusChangeEvent(ExchangeStatusChangedEvent event) {
 
     log.trace("Received 'Exchange status changed' event");

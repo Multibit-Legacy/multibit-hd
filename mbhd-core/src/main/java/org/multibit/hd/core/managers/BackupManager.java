@@ -6,18 +6,18 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
-import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.BackupSummary;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.WalletLoadEvent;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
@@ -39,7 +39,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static org.multibit.hd.core.dto.WalletId.LENGTH_OF_FORMATTED_WALLET_ID;
 import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SEPARATOR;
@@ -77,9 +76,6 @@ public enum BackupManager {
   // Where the cloud backups are stored (this is typically specified by the user and is a SpiderOak etc sync directory)
   private Optional<File> cloudBackupDirectory;
 
-  // Notification scheduler
-  private ListeningScheduledExecutorService backupNotifier;
-
   /**
    * Initialise the backup manager to use the specified cloudBackupDirectory.
    * All the cloud backups will be written and read from this directory.
@@ -92,26 +88,13 @@ public enum BackupManager {
 
     this.applicationDataDirectory = applicationDataDirectory;
     this.cloudBackupDirectory = cloudBackupDirectory;
-    this.backupNotifier = SafeExecutors.newSingleThreadScheduledExecutor("backup-notification");
   }
 
   /**
    */
   public void shutdownNow() {
-
     this.applicationDataDirectory = null;
     this.cloudBackupDirectory = Optional.absent();
-
-    // Not initialised yet
-    if (backupNotifier != null) {
-      backupNotifier.shutdownNow();
-      try {
-        backupNotifier.awaitTermination(1, TimeUnit.SECONDS);
-      } catch (InterruptedException e) {
-        log.warn("Timed out waiting for backup to complete");
-      }
-    }
-    backupNotifier = null;
   }
 
   /**
@@ -125,11 +108,7 @@ public enum BackupManager {
    * Get all the backups available in the local zip backup directory for the wallet id specified.
    */
   public List<BackupSummary> getLocalZipBackups(WalletId walletId) {
-    if (applicationDataDirectory == null) {
-      // Locate the standard installation directory
-      applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-      log.debug("Setting the application data directory to {}", applicationDataDirectory);
-    }
+    createApplicationDataDirectoryIfNotSet();
 
     // Find the wallet root directory for this wallet id
     File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
@@ -208,7 +187,7 @@ public enum BackupManager {
    */
   public List<File> getRollingBackups(WalletId walletId) {
     Preconditions.checkNotNull(walletId);
-    Preconditions.checkNotNull(applicationDataDirectory);
+    createApplicationDataDirectoryIfNotSet();
 
     // Calculate the directory the rolling backups are stored in for this wallet id
     String rollingBackupDirectoryName = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId)) +
@@ -275,7 +254,7 @@ public enum BackupManager {
     Preconditions.checkNotNull(walletSummary, "'walletSummary' must be present");
     Preconditions.checkNotNull(walletSummary.getWallet(), "'wallet' must be present");
     Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
-    Preconditions.checkNotNull(applicationDataDirectory, "'applicationDataDirectory' must be present. Check BackupManager has been initialised");
+    createApplicationDataDirectoryIfNotSet();
 
     // Find the wallet root directory for this wallet id
     File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletSummary.getWalletId())
@@ -330,8 +309,8 @@ public enum BackupManager {
    * @return The created local backup as a file
    */
   public File createLocalBackup(WalletId walletId, CharSequence password) throws IOException {
-    Preconditions.checkNotNull(applicationDataDirectory);
     Preconditions.checkNotNull(walletId);
+    createApplicationDataDirectoryIfNotSet();
 
     // Find the wallet root directory for this wallet id
     File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
@@ -373,8 +352,8 @@ public enum BackupManager {
    * @return The created cloud backup as a file or null if nothing was generated
    */
   public File createCloudBackup(WalletId walletId, CharSequence password) throws IOException {
-    Preconditions.checkNotNull(applicationDataDirectory);
     Preconditions.checkNotNull(walletId);
+    createApplicationDataDirectoryIfNotSet();
 
     // Find the wallet root directory for this wallet id
     File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
@@ -447,19 +426,11 @@ public enum BackupManager {
         // No rolling backup was successfully loaded
         throw new WalletLoadException("Could not load any rolling backup successfully.");
       } else {
-        // Emit backupWalletLoadedEvent for notification on GUI
-        // This is delayed a few seconds to ensure the UI has initialised to accept alerts
+        // Emit WalletLoadedEvent for notification on GUI
         if (fileLoaded != null) {
           log.debug("Loaded backup wallet file:\n'{}'", fileLoaded.getAbsolutePath());
+          CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.BACKUP_WALLET_WAS_LOADED, null, Optional.of(fileLoaded)));
         }
-
-        final File finalFileLoaded = fileLoaded;
-        backupNotifier.schedule(new Runnable() {
-          @Override
-          public void run() {
-            CoreEvents.fireBackupWalletLoadedEvent(walletId, finalFileLoaded);
-          }
-        }, 4, TimeUnit.SECONDS);
         return wallet;
       }
     }
@@ -543,7 +514,7 @@ public enum BackupManager {
    * @param walletId        the wallet id of wallet backups to thin
    * @param backupDirectory the directory to thin
    */
-  void thinBackupDirectory(WalletId walletId, File backupDirectory) {
+  private void thinBackupDirectory(WalletId walletId, File backupDirectory) {
     if (dateFormat == null) {
       dateFormat = new SimpleDateFormat(BACKUP_TIMESTAMP_SUFFIX_FORMAT);
     }
@@ -622,5 +593,13 @@ public enum BackupManager {
 
   public void setApplicationDataDirectory(File applicationDataDirectory) {
     this.applicationDataDirectory = applicationDataDirectory;
+  }
+
+  private void createApplicationDataDirectoryIfNotSet() {
+    if (applicationDataDirectory == null) {
+      // Locate the standard installation directory
+      applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+      log.debug("Setting the application data directory to {}", applicationDataDirectory);
+    }
   }
 }

@@ -5,6 +5,7 @@ import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.WalletId;
 
 import javax.annotation.Nullable;
+import java.io.File;
 
 /**
  * <p>Event to provide the following to application API:</p>
@@ -37,13 +38,19 @@ public class WalletLoadEvent implements CoreEvent {
    */
   private final Optional<Throwable> error;
 
+  /**
+   * The backup file that was loaded, or absent if not applicable
+   */
+  private final Optional<File> backupLoaded;
 
 
-  public WalletLoadEvent(Optional<WalletId> walletId, boolean walletLoadWasSuccessful, CoreMessageKey walletLoadMessageKey, @Nullable Throwable error) {
+
+  public WalletLoadEvent(Optional<WalletId> walletId, boolean walletLoadWasSuccessful, CoreMessageKey walletLoadMessageKey, @Nullable Throwable error, Optional<File> backupLoaded) {
     this.walletId = walletId;
     this.walletLoadWasSuccessful = walletLoadWasSuccessful;
     this.walletLoadMessageKey = walletLoadMessageKey;
     this.error = Optional.fromNullable(error);
+    this.backupLoaded = backupLoaded;
 
   }
 
@@ -63,6 +70,10 @@ public class WalletLoadEvent implements CoreEvent {
     return error;
   }
 
+  public Optional<File> getBackupLoaded() {
+    return backupLoaded;
+  }
+
   @Override
   public String toString() {
     return "WalletLoadEvent{" +
@@ -70,6 +81,7 @@ public class WalletLoadEvent implements CoreEvent {
             ", walletLoadWasSuccessful=" + walletLoadWasSuccessful +
             ", walletLoadMessageKey='" + walletLoadMessageKey + '\'' +
             ", error=" + error +
+            ", backupLoaded=" + backupLoaded +
             '}';
   }
 }

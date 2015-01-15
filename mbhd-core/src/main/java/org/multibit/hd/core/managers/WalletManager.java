@@ -13,12 +13,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import org.bitcoinj.core.*;
-import org.bitcoinj.crypto.ChildNumber;
-import org.bitcoinj.crypto.DeterministicKey;
-import org.bitcoinj.crypto.HDKeyDerivation;
-import org.bitcoinj.crypto.KeyCrypterException;
-import org.bitcoinj.crypto.KeyCrypterScrypt;
-import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.*;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.store.BlockStore;
@@ -406,7 +400,7 @@ public enum WalletManager implements WalletEventListener {
       } catch (WalletLoadException e) {
         // Failed to decrypt the existing wallet/backups or something else went wrong
         log.error("Failed to load from wallet directory.");
-        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, e));
+        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, e, Optional.<File>absent()));
         throw e;
       }
     } else {
@@ -416,7 +410,7 @@ public enum WalletManager implements WalletEventListener {
       if (!walletDirectory.exists()) {
         if (!walletDirectory.mkdir()) {
           IllegalStateException error = new IllegalStateException("The directory for the wallet '" + walletDirectory.getAbsoluteFile() + "' could not be created");
-          CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, error));
+          CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, error, Optional.<File>absent()));
           throw error;
         }
       }
@@ -451,7 +445,7 @@ public enum WalletManager implements WalletEventListener {
       WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, password.getBytes(Charsets.UTF_8), password);
     } catch (NoSuchAlgorithmException e) {
       WalletLoadException error = new WalletLoadException("Could not store encrypted credentials and backup AES key", e);
-      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, error));
+      CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, error, Optional.<File>absent()));
       throw error;
     }
     // Wallet is now created - finish off other configuration and check if wallet needs syncing
@@ -519,7 +513,7 @@ public enum WalletManager implements WalletEventListener {
         // Failed to decrypt the existing wallet/backups
         log.error("Failed to load from wallet directory.");
         IllegalStateException error = new IllegalStateException("The wallet could not be opened");
-        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, error));
+        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, error, Optional.<File>absent()));
         throw error;
 
       }
@@ -611,9 +605,6 @@ public enum WalletManager implements WalletEventListener {
 
     // Set up auto-save on the wallet.
     addAutoSaveListener(walletSummary.getWallet(), walletSummary.getWalletFile());
-
-    // Wallet loaded successfully
-    CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletSummary.getWalletId()), true, CoreMessageKey.WALLET_LOADED_OK, null));
 
     // Check if the wallet needs to synch (not required during FEST tests)
     if (performSync) {
@@ -793,13 +784,14 @@ public enum WalletManager implements WalletEventListener {
       if (walletFile.exists() && isWalletSerialised(walletFile)) {
         // Serialised wallets are no longer supported.
         throw new WalletLoadException(
-          "Could not load wallet '"
-            + walletFile
-            + "'. Serialized wallets are no longer supported."
+                "Could not load wallet '"
+                        + walletFile
+                        + "'. Serialized wallets are no longer supported."
         );
       }
 
       Wallet wallet;
+      boolean backupFileLoaded = false;
 
       try {
         wallet = loadWalletFromFile(walletFile, password);
@@ -811,9 +803,10 @@ public enum WalletManager implements WalletEventListener {
         // Log the initial error
         log.error("WalletManager error: " + e.getClass().getCanonicalName() + " " + e.getMessage(), e);
 
-        // Try loading one of the rolling backups - this will send a BackupWalletLoadedEvent containing the initial error
+        // Try loading one of the rolling backups - this will send a WalletLoadedEvent containing the backup file loaded
         // If the rolling backups don't load then loadRollingBackup will throw a WalletLoadException which will propagate out
         wallet = BackupManager.INSTANCE.loadRollingBackup(walletId, password);
+        backupFileLoaded = true;
       }
 
       // Create the wallet summary with its wallet
@@ -824,6 +817,11 @@ public enum WalletManager implements WalletEventListener {
 
       log.debug("Loaded the wallet successfully from \n{}", walletDirectory);
       log.debug("Wallet:{}", wallet);
+
+      // Fire a wallet loaded event indicating success (if a rolling backup was loaded this has already been sent so do not send another)
+      if (!backupFileLoaded) {
+        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), true, CoreMessageKey.WALLET_LOADED_OK, null, Optional.<File>absent()));
+      }
 
       return walletSummary;
 
