@@ -342,9 +342,11 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       // User attached an operational device in place of whatever
       // they are currently doing so start again.
 
-      state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
+      // If a wallet is loading then do not switch to PIN entry
+      if (!state.equals(CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT)) {
+        state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
+      }
     }
-
   }
 
 
@@ -354,7 +356,10 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
     if (Dates.nowUtc().isAfter(getIgnoreHardwareWalletEventsThreshold())) {
 
-      state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+      // If the wallet is loading then do not switch to password entry
+      if (!state.equals(CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT)) {
+        state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+      }
     }
   }
 
