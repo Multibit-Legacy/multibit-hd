@@ -180,11 +180,18 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
 
           if (isInitialised()) {
             unprocessedWalletLoadEvent = null;
-            if (walletLoadEvent.isWalletLoadWasSuccessful()) {
-              // Wallet loaded ok
+            if (walletLoadEvent.isWalletLoadWasSuccessful() || walletLoadEvent.getBackupLoaded().isPresent()) {
+              // Wallet loaded ok or rolling backup loaded
               loadedOk = true;
-              LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_LOADED_OK));
-              LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.TRUE));
+
+              if (walletLoadEvent.getBackupLoaded().isPresent()) {
+                // Indicate backup wallet was loaded with a cross - TODO an exclamation mark would be nicer
+                LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.BACKUP_WALLET_WAS_LOADED));
+                LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.FALSE));
+              } else {
+                LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_LOADED_OK));
+                LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.TRUE));
+              }
 
               // Enable the finish button
               ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
