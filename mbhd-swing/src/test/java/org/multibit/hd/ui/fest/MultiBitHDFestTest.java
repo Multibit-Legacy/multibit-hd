@@ -2,6 +2,7 @@ package org.multibit.hd.ui.fest;
 
 import com.google.common.base.Optional;
 import com.google.common.io.ByteStreams;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiQuery;
@@ -200,12 +201,20 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Verify up to the restore
     RestoreTrezorWarmStartRequirements.verifyUsing(window);
 
+    log.debug("Entropy 1 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
+
     // Create a local backup so that there is something to load
     // (this is done after the initial trezor dialog so that the master public key has been returned)
     createLocalBackup(walletSummary);
 
+    log.debug("Entropy 2 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
+
     // Do the restore with the local backup available
     RestoreTrezorRestoreWithLocalBackupRequirements.verifyUsing(window);
+
+    log.debug("Entropy 3 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
+
+    Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
   }
 
   /**

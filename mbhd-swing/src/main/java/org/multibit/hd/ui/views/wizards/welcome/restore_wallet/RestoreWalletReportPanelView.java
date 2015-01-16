@@ -621,13 +621,13 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       // For Trezor hard wallets the backups are encrypted with the entropy derived password
       String walletPassword = null;
       Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-      if (hardwareWalletService.isPresent()) {
+      if (hardwareWalletService.isPresent() && hardwareWalletService.get().getContext().getEntropy().isPresent()) {
         walletPassword = Hex.toHexString(hardwareWalletService.get().getContext().getEntropy().get());
       }
 
       // Check there is a wallet password - if not then cannot decrypt backup
       if (walletPassword == null) {
-        log.debug("Cannot work out the password to decrypt the backup - there is no entropy form the Trezor");
+        log.debug("Cannot work out the password to decrypt the backup - there is no entropy from the Trezor");
         return false;
       }
       KeyParameter backupAESKey = AESUtils.createAESKey(walletPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());

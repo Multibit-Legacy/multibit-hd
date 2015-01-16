@@ -2,11 +2,14 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.testing.HardwareWalletEventFixtures;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorConfirmUnlockUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorEnterPinUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorRequestCipherKeyUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorRequestMasterPublicKeyUseCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -20,6 +23,8 @@ import java.util.Map;
  * @since 0.0.1
  */
 public class RestoreTrezorWarmStartRequirements {
+
+  private static final Logger log = LoggerFactory.getLogger(RestoreTrezorWarmStartRequirements.class);
 
   public static void verifyUsing(FrameFixture window) {
 
@@ -39,5 +44,8 @@ public class RestoreTrezorWarmStartRequirements {
 
     // User input "confirm unlock"
     HardwareWalletEventFixtures.fireNextEvent();
+
+    log.debug("Entropy 0 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
+
   }
 }

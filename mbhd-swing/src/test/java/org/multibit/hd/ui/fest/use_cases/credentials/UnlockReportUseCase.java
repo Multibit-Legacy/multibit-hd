@@ -45,6 +45,5 @@ public class UnlockReportUseCase extends AbstractFestUseCase {
         // Allow a short time to overcome initialisation delays
       .requireEnabled(timeout(1, TimeUnit.SECONDS))
       .click();
-
   }
 }

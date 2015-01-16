@@ -54,7 +54,12 @@ public class RestoreButtonTrezorUseCase extends AbstractFestUseCase {
     // Click on the next button, which selects the last backup and starts the actual restore
     window
       .button(MessageKey.NEXT.getKey())
+      .requireVisible()
+        // Allow a short time to overcome initialisation delays
+      .requireEnabled();
+
+    window
+      .button(MessageKey.NEXT.getKey())
       .click();
   }
-
 }
