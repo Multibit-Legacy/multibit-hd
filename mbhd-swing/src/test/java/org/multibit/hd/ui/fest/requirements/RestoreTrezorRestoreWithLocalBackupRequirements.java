@@ -1,13 +1,11 @@
 package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.credentials.RestoreButtonTrezorUseCase;
 import org.multibit.hd.ui.fest.use_cases.credentials.UnlockReportUseCase;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>FEST Swing UI test to provide:</p>
@@ -28,10 +26,7 @@ public class RestoreTrezorRestoreWithLocalBackupRequirements {
     new RestoreButtonTrezorUseCase(window).execute(parameters);
 
     // Verify wallet loads
-    // TODO - currently fails because no entropy is available in hardwareService#getContext
-    new UnlockReportUseCase(window).execute(null);
+    new UnlockReportUseCase(window).execute(parameters);
 
-    // TODO remove - just for visibility whilst coding
-    Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
   }
 }

@@ -3,7 +3,7 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.testing.HardwareWalletEventFixtures;
+import org.multibit.hd.testing.MessageEventFixtures;
 import org.multibit.hd.ui.fest.use_cases.create_wallet.CreateWalletSelectBackupLocationWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.credentials.UnlockReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.*;
@@ -52,7 +52,7 @@ public class CreateTrezorHardwareWalletColdStartRequirements {
     new TrezorConfirmWipeUseCase(window).execute(parameters);
 
     // User input ("New PIN (first)" - implied confirmation of "wipe device"")
-    HardwareWalletEventFixtures.fireNextEvent();
+    MessageEventFixtures.fireNextEvent();
 
     // Enter new PIN (refer to mock client for ButtonRequest response)
     new TrezorEnterNewPinUseCase(window).execute(parameters);
@@ -85,7 +85,7 @@ public class CreateTrezorHardwareWalletColdStartRequirements {
     new TrezorConfirmUnlockUseCase(window).execute(parameters);
 
     // User input "confirm unlock"
-    HardwareWalletEventFixtures.fireNextEvent();
+    MessageEventFixtures.fireNextEvent();
 
     // Verify the wallet unlocked
     new UnlockReportUseCase(window).execute(parameters);

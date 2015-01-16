@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.testing.HardwareWalletEventFixtures;
+import org.multibit.hd.testing.MessageEventFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
@@ -45,7 +45,7 @@ public class TrezorEnterNextWordUseCase extends AbstractFestUseCase {
       assertThat(displayText.contains(""+i)).isTrue();
 
       // User input "next"
-      HardwareWalletEventFixtures.fireNextEvent();
+      MessageEventFixtures.fireNextEvent();
 
     }
 

@@ -2,25 +2,20 @@ package org.multibit.hd.testing;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.Uninterruptibles;
 import com.google.protobuf.Message;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.wallet.KeyChain;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.hardware.core.events.MessageEvent;
 import org.multibit.hd.hardware.core.events.MessageEventType;
-import org.multibit.hd.hardware.core.events.MessageEvents;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
 import org.multibit.hd.hardware.core.messages.PublicKey;
 import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
@@ -37,8 +32,6 @@ import static org.mockito.Mockito.when;
  *  
  */
 public class TrezorHardwareWalletClientFixtures {
-
-  private static final ListeningExecutorService messageEventServices = SafeExecutors.newSingleThreadExecutor("fest-client-fixture-events");
 
   /**
    * Utility classes have private constructors
@@ -124,7 +117,7 @@ public class TrezorHardwareWalletClientFixtures {
     when(mockClient.connect()).thenAnswer(
       new Answer<Boolean>() {
         public Boolean answer(InvocationOnMock invocation) throws Throwable {
-          fireMessageEvent(MessageEventType.DEVICE_CONNECTED);
+          MessageEventFixtures.fireMessageEvent(MessageEventType.DEVICE_CONNECTED);
           return true;
         }
       });
@@ -141,7 +134,7 @@ public class TrezorHardwareWalletClientFixtures {
       new Answer<Boolean>() {
         public Boolean answer(InvocationOnMock invocation) throws Throwable {
 
-          Features features = HardwareWalletEventFixtures.newStandardFeatures();
+          Features features = MessageEventFixtures.newStandardFeatures();
 
           MessageEvent event = new MessageEvent(
             MessageEventType.FEATURES,
@@ -149,7 +142,7 @@ public class TrezorHardwareWalletClientFixtures {
             Optional.<Message>absent()
           );
 
-          fireMessageEvent(event);
+          MessageEventFixtures.fireMessageEvent(event);
 
           return true;
         }
@@ -178,10 +171,10 @@ public class TrezorHardwareWalletClientFixtures {
           final Features features;
           switch (count) {
             case 0:
-              features = HardwareWalletEventFixtures.newWipedFeatures();
+              features = MessageEventFixtures.newWipedFeatures();
               break;
             default:
-              features = HardwareWalletEventFixtures.newStandardFeatures();
+              features = MessageEventFixtures.newStandardFeatures();
           }
 
           MessageEvent event = new MessageEvent(
@@ -190,7 +183,7 @@ public class TrezorHardwareWalletClientFixtures {
             Optional.<Message>absent()
           );
 
-          fireMessageEvent(event);
+          MessageEventFixtures.fireMessageEvent(event);
 
           count++;
 
@@ -205,12 +198,14 @@ public class TrezorHardwareWalletClientFixtures {
    *
    * @param mockClient The mock client
    */
+  @SuppressWarnings("unchecked")
   private static void mockDeterministicHierarchy(AbstractTrezorHardwareWalletClient mockClient) {
 
     when(mockClient.getDeterministicHierarchy(anyListOf(ChildNumber.class))).thenAnswer(
       new Answer<Optional<Message>>() {
         public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
 
+          // This unchecked cast is known to be OK
           List<ChildNumber> childNumberList = (List<ChildNumber>) invocation.getArguments()[0];
 
           final PublicKey publicKey;
@@ -218,19 +213,19 @@ public class TrezorHardwareWalletClientFixtures {
           switch (childNumberList.size()) {
             case 0:
               // M
-              publicKey = HardwareWalletEventFixtures.newStandardPublicKey_M();
+              publicKey = MessageEventFixtures.newStandardPublicKey_M();
               break;
             case 1:
               // M/44H
-              publicKey = HardwareWalletEventFixtures.newStandardPublicKey_M_44H();
+              publicKey = MessageEventFixtures.newStandardPublicKey_M_44H();
               break;
             case 2:
               // M/44H/0H
-              publicKey = HardwareWalletEventFixtures.newStandardPublicKey_M_44H_0H();
+              publicKey = MessageEventFixtures.newStandardPublicKey_M_44H_0H();
               break;
             case 3:
               // M/44H/0H/0H
-              publicKey = HardwareWalletEventFixtures.newStandardPublicKey_M_44H_0H_0H();
+              publicKey = MessageEventFixtures.newStandardPublicKey_M_44H_0H_0H();
               break;
             default:
               throw new IllegalStateException("Unexpected child number count: " + childNumberList.size());
@@ -242,7 +237,7 @@ public class TrezorHardwareWalletClientFixtures {
             Optional.<Message>absent()
           );
 
-          fireMessageEvent(event);
+          MessageEventFixtures.fireMessageEvent(event);
 
           return Optional.absent();
         }
@@ -276,10 +271,10 @@ public class TrezorHardwareWalletClientFixtures {
               // PIN entered (current)
               event = new MessageEvent(
                 MessageEventType.BUTTON_REQUEST,
-                Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newProtectCallButtonRequest()),
+                Optional.<HardwareWalletMessage>of(MessageEventFixtures.newProtectCallButtonRequest()),
                 Optional.<Message>absent()
               );
-              fireMessageEvent(event);
+              MessageEventFixtures.fireMessageEvent(event);
               break;
             default:
               // Do nothing
@@ -298,11 +293,11 @@ public class TrezorHardwareWalletClientFixtures {
 
           final MessageEvent event = new MessageEvent(
             MessageEventType.FAILURE,
-            Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newPinFailure()),
+            Optional.<HardwareWalletMessage>of(MessageEventFixtures.newPinFailure()),
             Optional.<Message>absent()
           );
 
-          fireMessageEvent(event);
+          MessageEventFixtures.fireMessageEvent(event);
 
           return Optional.absent();
         }
@@ -338,10 +333,10 @@ public class TrezorHardwareWalletClientFixtures {
               // PIN entered (first)
               event = new MessageEvent(
                 MessageEventType.PIN_MATRIX_REQUEST,
-                Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newNewSecondPinMatrix()),
+                Optional.<HardwareWalletMessage>of(MessageEventFixtures.newNewSecondPinMatrix()),
                 Optional.<Message>absent()
               );
-              fireMessageEvent(event);
+              MessageEventFixtures.fireMessageEvent(event);
               break;
             case 1:
               // PIN entered (second)
@@ -350,16 +345,16 @@ public class TrezorHardwareWalletClientFixtures {
                 Optional.<HardwareWalletMessage>absent(),
                 Optional.<Message>absent()
               );
-              fireMessageEvent(event);
+              MessageEventFixtures.fireMessageEvent(event);
               break;
             case 2:
               // PIN entered (current) - expect cipher key request
               event = new MessageEvent(
                 MessageEventType.BUTTON_REQUEST,
-                Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newProtectCallButtonRequest()),
+                Optional.<HardwareWalletMessage>of(MessageEventFixtures.newProtectCallButtonRequest()),
                 Optional.<Message>absent()
               );
-              fireMessageEvent(event);
+              MessageEventFixtures.fireMessageEvent(event);
               break;
             default:
               // Do nothing
@@ -378,11 +373,11 @@ public class TrezorHardwareWalletClientFixtures {
 
           final MessageEvent event = new MessageEvent(
             MessageEventType.FAILURE,
-            Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newPinFailure()),
+            Optional.<HardwareWalletMessage>of(MessageEventFixtures.newPinFailure()),
             Optional.<Message>absent()
           );
 
-          fireMessageEvent(event);
+          MessageEventFixtures.fireMessageEvent(event);
 
           return Optional.absent();
         }
@@ -407,11 +402,11 @@ public class TrezorHardwareWalletClientFixtures {
 
           final MessageEvent event = new MessageEvent(
             MessageEventType.PIN_MATRIX_REQUEST,
-            Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newCurrentPinMatrix()),
+            Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCurrentPinMatrix()),
             Optional.<Message>absent()
           );
 
-          fireMessageEvent(event);
+          MessageEventFixtures.fireMessageEvent(event);
 
           return Optional.absent();
         }
@@ -433,11 +428,11 @@ public class TrezorHardwareWalletClientFixtures {
 
           MessageEvent event = new MessageEvent(
             MessageEventType.BUTTON_REQUEST,
-            Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newWipeDeviceButtonRequest()),
+            Optional.<HardwareWalletMessage>of(MessageEventFixtures.newWipeDeviceButtonRequest()),
             Optional.<Message>absent()
           );
 
-          fireMessageEvent(event);
+          MessageEventFixtures.fireMessageEvent(event);
 
           return Optional.absent();
         }
@@ -460,11 +455,11 @@ public class TrezorHardwareWalletClientFixtures {
           final MessageEvent event;
             event = new MessageEvent(
               MessageEventType.BUTTON_REQUEST,
-              Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newConfirmWordButtonRequest()),
+              Optional.<HardwareWalletMessage>of(MessageEventFixtures.newConfirmWordButtonRequest()),
               Optional.<Message>absent()
             );
 
-          fireMessageEvent(event);
+          MessageEventFixtures.fireMessageEvent(event);
 
           return Optional.absent();
         }
@@ -492,62 +487,22 @@ public class TrezorHardwareWalletClientFixtures {
           if (wordCount < 24) {
             event = new MessageEvent(
               MessageEventType.BUTTON_REQUEST,
-              Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newConfirmWordButtonRequest()),
+              Optional.<HardwareWalletMessage>of(MessageEventFixtures.newConfirmWordButtonRequest()),
               Optional.<Message>absent()
             );
           } else {
             event = new MessageEvent(
               MessageEventType.SUCCESS,
-              Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newDeviceResetSuccess()),
+              Optional.<HardwareWalletMessage>of(MessageEventFixtures.newDeviceResetSuccess()),
               Optional.<Message>absent()
             );
           }
 
-          fireMessageEvent(event);
+          MessageEventFixtures.fireMessageEvent(event);
 
           return Optional.absent();
         }
       });
-  }
-
-  /**
-   * <p>Fire a new low level message event on its own thread</p>
-   *
-   * @param event The event
-   */
-  public static void fireMessageEvent(final MessageEvent event) {
-
-    messageEventServices.submit(
-      new Runnable() {
-        @Override
-        public void run() {
-          MessageEvents.fireMessageEvent(event);
-        }
-      });
-
-    // Allow time for the event to propagate
-    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
-
-  }
-
-  /**
-   * <p>Fire a new low level message event on its own thread</p>
-   *
-   * @param eventType The event type (no payload)
-   */
-  public static void fireMessageEvent(final MessageEventType eventType) {
-
-    messageEventServices.submit(
-      new Runnable() {
-        @Override
-        public void run() {
-          MessageEvents.fireMessageEvent(eventType);
-        }
-      });
-
-    // Allow time for the event to propagate
-    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
-
   }
 
 }

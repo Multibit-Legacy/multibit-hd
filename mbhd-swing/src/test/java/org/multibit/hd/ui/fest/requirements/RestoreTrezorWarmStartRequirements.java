@@ -3,7 +3,7 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.testing.HardwareWalletEventFixtures;
+import org.multibit.hd.testing.MessageEventFixtures;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorConfirmUnlockUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorEnterPinUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorRequestCipherKeyUseCase;
@@ -43,7 +43,7 @@ public class RestoreTrezorWarmStartRequirements {
     new TrezorConfirmUnlockUseCase(window).execute(parameters);
 
     // User input "confirm unlock"
-    HardwareWalletEventFixtures.fireNextEvent();
+    MessageEventFixtures.fireNextEvent();
 
     log.debug("Entropy 0 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
 

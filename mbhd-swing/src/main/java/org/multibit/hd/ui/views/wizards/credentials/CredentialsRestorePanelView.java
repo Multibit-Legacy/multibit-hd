@@ -11,7 +11,7 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Credntials: Restore</li>
+ * <li>Credentials: Restore</li>
  * </ul>
  *
  * <p>This view is a transition view to ease the hand over process</p>

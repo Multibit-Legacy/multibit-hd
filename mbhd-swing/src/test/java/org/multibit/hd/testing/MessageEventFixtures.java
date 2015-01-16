@@ -4,83 +4,88 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
-import com.google.common.util.concurrent.*;
+import com.google.common.util.concurrent.Uninterruptibles;
+import com.google.protobuf.Message;
 import org.bitcoinj.core.Utils;
-import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
-import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
-import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
+import org.multibit.hd.hardware.core.events.MessageEvent;
+import org.multibit.hd.hardware.core.events.MessageEventType;
+import org.multibit.hd.hardware.core.events.MessageEvents;
 import org.multibit.hd.hardware.core.messages.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Queue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <p>Test hardware wallet event fixtures to provide the following to FEST tests:</p>
+ * <p>Low level message event fixtures to provide the following to FEST tests:</p>
  * <ul>
  * <li>Various scripts to match use cases involving hardware wallets</li>
  * <li>Various standard objects to act as payloads for the events</li>
  * </ul>
+ * <p>These fixtures provide the low level message events that represent spontaneous events
+ * associated with the device. In reality these messages would be triggered by the device
+ * completing an operation or the user interacting with the device which then issues the
+ * event to trigger the next step in a process.</p>
+ *
+ * <p>By addressing low level events the FSM within MultiBit Hardware will be correctly
+ * exercised ensuring that the closest approximation to a read device is maintained.</p>
  *
  * @since 0.0.5
  *  
  */
-public class HardwareWalletEventFixtures {
+public class MessageEventFixtures {
 
-  public static final Logger log = LoggerFactory.getLogger(HardwareWalletEventFixtures.class);
-
-  public static final ListeningScheduledExecutorService eventScheduler = SafeExecutors.newSingleThreadScheduledExecutor("fest-events");
+  public static final Logger log = LoggerFactory.getLogger(MessageEventFixtures.class);
 
   /**
    * The standard label for a hardware wallet
    */
   public static final String STANDARD_LABEL = "Example";
 
-  public static Queue<HardwareWalletEvent> hardwareWalletEvents = Queues.newArrayBlockingQueue(100);
+  public static Queue<MessageEvent> messageEvents = Queues.newArrayBlockingQueue(100);
 
   /**
    * Control when the next event in the use case will be fired
    */
   public static void fireNextEvent() {
 
-    Preconditions.checkState(!hardwareWalletEvents.isEmpty(), "Unexpected call to empty stack. The test should know when the last event has been fired.");
+    Preconditions.checkState(!messageEvents.isEmpty(), "Unexpected call to empty queue. The test should know when the last event has been fired.");
 
-    final ListenableFuture<Boolean> future = eventScheduler.submit(
-      new Callable<Boolean>() {
-        @Override
-        public Boolean call() {
+    // Get the head of the queue
+    MessageEvent event = messageEvents.remove();
 
-          // Get the head of the queue
-          HardwareWalletEvent event = hardwareWalletEvents.remove();
+    MessageEvents.fireMessageEvent(event);
 
-          if (event.getMessage().isPresent()) {
-            HardwareWalletEvents.fireHardwareWalletEvent(event.getEventType(), event.getMessage().get());
-          } else {
-            HardwareWalletEvents.fireHardwareWalletEvent(event.getEventType());
-          }
+    // Allow time for the event to be picked up and propagated
+    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
-          return true;
-        }
-      });
-    Futures.addCallback(
-      future, new FutureCallback<Boolean>() {
-        @Override
-        public void onSuccess(Boolean result) {
+  }
 
-          // Must have successfully fired the event to be here
-        }
+  /**
+   * <p>Fire a new low level message event on its own thread</p>
+   *
+   * @param event The event
+   */
+  public static void fireMessageEvent(final MessageEvent event) {
 
-        @Override
-        public void onFailure(Throwable t) {
+    MessageEvents.fireMessageEvent(event);
 
-          log.error("Fail to fire hardware wallet event", t);
+    // Allow time for the event to propagate
+    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
-        }
-      });
+  }
 
+  /**
+   * <p>Fire a new low level message event on its own thread</p>
+   *
+   * @param eventType The event type (no payload)
+   */
+  public static void fireMessageEvent(final MessageEventType eventType) {
+
+    MessageEvents.fireMessageEvent(eventType);
+
+    // Allow time for the event to propagate
     Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
 
   }
@@ -88,11 +93,11 @@ public class HardwareWalletEventFixtures {
   /**
    * <p>Prepare a sequence of events corresponding to unlocking an initialised Trezor</p>
    *
-   * <p>Use this in conjunction with the mock Trezor client in HardwareWalletFixtures</p>
+   * <p>Use this in conjunction with the mock Trezor client in MessageFixtures</p>
    */
   public static void prepareUnlockTrezorWalletUseCaseEvents() {
 
-    hardwareWalletEvents.clear();
+    messageEvents.clear();
 
     // Deterministic hierarchy (indirectly from mock client via PUBLIC_KEY messages)
 
@@ -101,78 +106,79 @@ public class HardwareWalletEventFixtures {
     // Button request (cipher key confirm from client)
 
     // Cipher key success
-    final HardwareWalletEvent event1 = new HardwareWalletEvent(
-      HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED,
-      Optional.<HardwareWalletMessage>of(
-        newCipherKeySuccess()
-      ));
+    final MessageEvent event1 = new MessageEvent(
+      MessageEventType.SUCCESS,
+      Optional.<HardwareWalletMessage>of(newCipherKeySuccess()),
+      Optional.<Message>absent()
+    );
 
-    hardwareWalletEvents.add(event1);
+    messageEvents.add(event1);
 
   }
 
   /**
-    * <p>Prepare a sequence of events corresponding to plugging in an initialised Trezor</p>
-    *
-    * <p>Use this in conjunction with the mock Trezor client in HardwareWalletFixtures</p>
-    */
-   public static void preparePlugInAndPullOutTrezorWalletUseCaseEvents() {
+   * <p>Prepare a sequence of events corresponding to plugging in an initialised Trezor</p>
+   *
+   * <p>Use this in conjunction with the mock Trezor client in MessageFixtures</p>
+   */
+  public static void preparePlugInAndPullOutTrezorWalletUseCaseEvents() {
 
-     hardwareWalletEvents.clear();
+    messageEvents.clear();
 
-     Features features = new Features();
-       features.setLabel("Aardvark");
+    // Trezor has been pulled out
+    final MessageEvent event1 = new MessageEvent(
+      MessageEventType.DEVICE_DETACHED,
+      Optional.<HardwareWalletMessage>absent(),
+      Optional.<Message>absent()
+    );
 
-       // Trezor has been pulled out
-     final HardwareWalletEvent event1 = new HardwareWalletEvent(
-       HardwareWalletEventType.SHOW_DEVICE_DETACHED,
-       Optional.<HardwareWalletMessage>absent());
+    messageEvents.add(event1);
 
-     hardwareWalletEvents.add(event1);
+    // Trezor has plugged in
+    final MessageEvent event2 = new MessageEvent(
+      MessageEventType.DEVICE_ATTACHED,
+      Optional.<HardwareWalletMessage>absent(),
+      Optional.<Message>absent()
+    );
 
-     // Trezor has plugged in
-     final HardwareWalletEvent event2 = new HardwareWalletEvent(
-       HardwareWalletEventType.SHOW_DEVICE_READY,
-       Optional.of((HardwareWalletMessage)features));
+    messageEvents.add(event2);
 
-     hardwareWalletEvents.add(event2);
+    // Cipher key success
+    final MessageEvent event3 = new MessageEvent(
+      MessageEventType.SUCCESS,
+      Optional.<HardwareWalletMessage>of(newCipherKeySuccess()),
+      Optional.<Message>absent()
+    );
 
-     // Cipher key success
-     final HardwareWalletEvent event3 = new HardwareWalletEvent(
-      HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED,
-      Optional.<HardwareWalletMessage>of(
-        newCipherKeySuccess()
-      ));
-
-     hardwareWalletEvents.add(event3);
-   }
+    messageEvents.add(event3);
+  }
 
   /**
    * <p>Prepare a sequence of events corresponding to initialising a Trezor</p>
-   * <p>Use this in conjunction with the mock Trezor client in HardwareWalletFixtures</p>
+   * <p>Use this in conjunction with the mock Trezor client in MessageFixtures</p>
    */
   public static void prepareCreateTrezorWalletUseCaseEvents() {
 
-    hardwareWalletEvents.clear();
+    messageEvents.clear();
 
     // Request PIN (first)
-    final HardwareWalletEvent event2 = new HardwareWalletEvent(
-      HardwareWalletEventType.SHOW_PIN_ENTRY,
-      Optional.<HardwareWalletMessage>of(
-        newNewFirstPinMatrix()
-      ));
+    final MessageEvent event2 = new MessageEvent(
+      MessageEventType.PIN_MATRIX_REQUEST,
+      Optional.<HardwareWalletMessage>of(newNewFirstPinMatrix()),
+      Optional.<Message>absent()
+    );
 
-    hardwareWalletEvents.add(event2);
+    messageEvents.add(event2);
 
     // Overall need 23 more button presses
     for (int i = 0; i < 23; i++) {
-      final HardwareWalletEvent event = new HardwareWalletEvent(
-        HardwareWalletEventType.SHOW_BUTTON_PRESS,
-        Optional.<HardwareWalletMessage>of(
-          newConfirmWordButtonRequest()
-        ));
+      final MessageEvent event = new MessageEvent(
+        MessageEventType.BUTTON_REQUEST,
+        Optional.<HardwareWalletMessage>of(newConfirmWordButtonRequest()),
+        Optional.<Message>absent()
+      );
 
-      hardwareWalletEvents.add(event);
+      messageEvents.add(event);
     }
 
     // Deterministic hierarchy (indirectly from mock client via PUBLIC_KEY messages)
@@ -180,13 +186,13 @@ public class HardwareWalletEventFixtures {
     // PIN matrix request (from mock client)
 
     // Cipher key success
-    final HardwareWalletEvent event6 = new HardwareWalletEvent(
-      HardwareWalletEventType.SHOW_OPERATION_SUCCEEDED,
-      Optional.<HardwareWalletMessage>of(
-        newCipherKeySuccess()
-      ));
+    final MessageEvent event6 = new MessageEvent(
+      MessageEventType.SUCCESS,
+      Optional.<HardwareWalletMessage>of(newCipherKeySuccess()),
+      Optional.<Message>absent()
+    );
 
-    hardwareWalletEvents.add(event6);
+    messageEvents.add(event6);
 
   }
 
@@ -261,7 +267,7 @@ public class HardwareWalletEventFixtures {
   }
 
   /**
-   * @return A new cipher key success (abandon wallet)
+   * @return A new cipher key success ("abandon" wallet)
    */
   public static Success newCipherKeySuccess() {
     return new Success(

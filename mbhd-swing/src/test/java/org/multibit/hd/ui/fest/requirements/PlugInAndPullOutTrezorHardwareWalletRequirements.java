@@ -3,7 +3,7 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.testing.HardwareWalletEventFixtures;
+import org.multibit.hd.testing.MessageEventFixtures;
 import org.multibit.hd.ui.fest.use_cases.credentials.QuickUnlockWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorEnterPinUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorRequestCipherKeyUseCase;
@@ -39,7 +39,7 @@ public class PlugInAndPullOutTrezorHardwareWalletRequirements {
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Pull the Trezor out
-    HardwareWalletEventFixtures.fireNextEvent();
+    MessageEventFixtures.fireNextEvent();
 
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
@@ -47,7 +47,7 @@ public class PlugInAndPullOutTrezorHardwareWalletRequirements {
     new QuickUnlockWalletUseCase(window).execute(null);
 
     // Plug the Trezor in
-    HardwareWalletEventFixtures.fireNextEvent();
+    MessageEventFixtures.fireNextEvent();
 
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 

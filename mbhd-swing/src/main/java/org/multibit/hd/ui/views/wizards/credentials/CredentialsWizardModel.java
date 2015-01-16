@@ -270,6 +270,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           byte[] payload = ((Success) event.getMessage().get()).getPayload();
           String message = ((Success) event.getMessage().get()).getMessage();
 
+          // Do not write the payload into the logs since it can unlock a wallet!
           log.info(
                   "Message:'{}'\nPayload length: {}",
                   message,

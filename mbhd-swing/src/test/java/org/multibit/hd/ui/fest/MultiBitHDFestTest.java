@@ -22,7 +22,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
-import org.multibit.hd.testing.HardwareWalletEventFixtures;
+import org.multibit.hd.testing.MessageEventFixtures;
 import org.multibit.hd.testing.HardwareWalletFixtureType;
 import org.multibit.hd.testing.TrezorHardwareWalletClientFixtures;
 import org.multibit.hd.testing.WalletFixtures;
@@ -193,7 +193,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public void verifyRestoreTrezorWithLocalBackup() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be unlocked
-    HardwareWalletEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
+    MessageEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
 
     // Start with the empty hardware wallet fixture
     WalletSummary walletSummary = arrangeEmpty(HardwareWalletFixtureType.TREZOR_INITIALISED);
@@ -427,7 +427,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public void verifyCreateTrezorHardwareWallet_ColdStart() throws Exception {
 
     // Prepare an empty and attached Trezor device that will be initialised
-    HardwareWalletEventFixtures.prepareCreateTrezorWalletUseCaseEvents();
+    MessageEventFixtures.prepareCreateTrezorWalletUseCaseEvents();
 
     // Start with a fresh environment
     arrangeFresh(HardwareWalletFixtureType.TREZOR_WIPED);
@@ -449,7 +449,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public void verifyCreateTrezorHardwareWallet_WarmStart() throws Exception {
 
     // Prepare an empty and attached Trezor device that will be initialised
-    HardwareWalletEventFixtures.prepareCreateTrezorWalletUseCaseEvents();
+    MessageEventFixtures.prepareCreateTrezorWalletUseCaseEvents();
 
     // Start with an empty environment
     arrangeEmpty(HardwareWalletFixtureType.TREZOR_WIPED);
@@ -470,7 +470,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public void verifyUnlockTrezorHardwareWallet_WarmStart() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be unlocked
-    HardwareWalletEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
+    MessageEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
 
     // Start with the empty hardware wallet fixture
     arrangeEmpty(HardwareWalletFixtureType.TREZOR_INITIALISED);
@@ -492,7 +492,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public void verifyUnlockTrezorHardwareWallet_ColdStart() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be unlocked
-    HardwareWalletEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
+    MessageEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
 
     // Start with the fresh hardware wallet fixture
     arrangeFresh(HardwareWalletFixtureType.TREZOR_INITIALISED);
@@ -513,7 +513,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public void verifyPlugInAndPullOutTrezorHardwareWallet() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be unlocked
-    HardwareWalletEventFixtures.preparePlugInAndPullOutTrezorWalletUseCaseEvents();
+    MessageEventFixtures.preparePlugInAndPullOutTrezorWalletUseCaseEvents();
 
     // Start with the empty hardware wallet fixture
     arrangeEmpty(HardwareWalletFixtureType.TREZOR_INITIALISED);

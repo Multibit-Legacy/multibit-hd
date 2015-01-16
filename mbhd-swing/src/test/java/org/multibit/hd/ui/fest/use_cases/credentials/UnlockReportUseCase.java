@@ -14,7 +14,7 @@ import static org.fest.swing.timing.Timeout.timeout;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the wallet "unlock report" panel view</li>
+ * <li>Verify the credentials "unlock report" panel view</li>
  * </ul>
  *
  * <p>Require the panel view to be showing (event triggered earlier)</p>

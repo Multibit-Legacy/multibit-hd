@@ -6,8 +6,7 @@ import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.hardware.core.events.MessageEvent;
 import org.multibit.hd.hardware.core.events.MessageEventType;
 import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
-import org.multibit.hd.testing.HardwareWalletEventFixtures;
-import org.multibit.hd.testing.TrezorHardwareWalletClientFixtures;
+import org.multibit.hd.testing.MessageEventFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
@@ -49,26 +48,24 @@ public class TrezorConfirmNextWordUseCase extends AbstractFestUseCase {
 
       if (i < 12) {
         // User input "next" except for the last one
-        HardwareWalletEventFixtures.fireNextEvent();
+        MessageEventFixtures.fireNextEvent();
       } else {
         // Final word needs to generate low level messages
         // Operation success
-        // Low level event to ensure internal FSM is updated
         MessageEvent event = new MessageEvent(
           MessageEventType.SUCCESS,
-          Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newDeviceResetSuccess()),
+          Optional.<HardwareWalletMessage>of(MessageEventFixtures.newDeviceResetSuccess()),
           Optional.<Message>absent()
         );
-        TrezorHardwareWalletClientFixtures.fireMessageEvent(event);
+        MessageEventFixtures.fireMessageEvent(event);
 
         // Features
-        // Low level event to ensure internal FSM is updated
         event = new MessageEvent(
           MessageEventType.FEATURES,
-          Optional.<HardwareWalletMessage>of(HardwareWalletEventFixtures.newStandardFeatures()),
+          Optional.<HardwareWalletMessage>of(MessageEventFixtures.newStandardFeatures()),
           Optional.<Message>absent()
         );
-        TrezorHardwareWalletClientFixtures.fireMessageEvent(event);
+        MessageEventFixtures.fireMessageEvent(event);
 
       }
 

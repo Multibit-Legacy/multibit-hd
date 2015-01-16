@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.testing.HardwareWalletEventFixtures;
+import org.multibit.hd.testing.MessageEventFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -28,14 +28,14 @@ public class SwitchToHardwareWalletUseCase extends AbstractFestUseCase {
   public void execute(Map<String, Object> parameters) {
 
     // Start the attach use case
-    HardwareWalletEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
-    HardwareWalletEventFixtures.fireNextEvent();
+    MessageEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
+    MessageEventFixtures.fireNextEvent();
 
     // Allow time for the view to react
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Check that an alert message is present
-    assertLabelContainsValue("alert_message_label", HardwareWalletEventFixtures.STANDARD_LABEL);
+    assertLabelContainsValue("alert_message_label", MessageEventFixtures.STANDARD_LABEL);
 
     // Check the 'Yes' button on the alert is present and click it
     window

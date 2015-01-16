@@ -18,7 +18,6 @@ import static org.fest.swing.timing.Timeout.timeout;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class RestoreButtonTrezorUseCase extends AbstractFestUseCase {
 
@@ -28,7 +27,8 @@ public class RestoreButtonTrezorUseCase extends AbstractFestUseCase {
 
   @Override
   public void execute(Map<String, Object> parameters) {
-   // Fixed time to unlock
+
+    // Fixed time to unlock
     pauseForWalletUnlock();
 
     // Test for successful wallet load
@@ -43,7 +43,7 @@ public class RestoreButtonTrezorUseCase extends AbstractFestUseCase {
         // Allow a short time to overcome initialisation delays
       .requireEnabled(timeout(1, TimeUnit.SECONDS));
 
-    // Expect the restore button
+    // Click on the Restore button
     window
       .button(MessageKey.RESTORE.getKey())
       .click();
@@ -51,15 +51,30 @@ public class RestoreButtonTrezorUseCase extends AbstractFestUseCase {
     // Allow time for the wizard hand over to take place
     pauseForViewReset();
 
-    // Click on the next button, which selects the last backup and starts the actual restore
+    // Click on the Next button, which selects the last backup and starts the actual restore
     window
       .button(MessageKey.NEXT.getKey())
       .requireVisible()
         // Allow a short time to overcome initialisation delays
       .requireEnabled();
 
+    // Click on the Next button
     window
       .button(MessageKey.NEXT.getKey())
       .click();
+
+    // Test for successful wallet load
+    assertLabelContainsValue(
+      MessageKey.WALLET_CREATED_STATUS.getKey(),
+      Languages.safeText(MessageKey.WALLET_CREATED_STATUS));
+
+    // Click on the Finish button
+    window
+      .button(MessageKey.FINISH.getKey())
+        // Allow a short time to overcome initialisation delays
+      .requireEnabled(timeout(1, TimeUnit.SECONDS))
+      .click();
+
+    // Expect a handover to the credentials wizard
   }
 }
