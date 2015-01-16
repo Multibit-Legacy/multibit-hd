@@ -18,10 +18,7 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.BackupService;
-import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.ExchangeTickerService;
-import org.multibit.hd.core.services.WalletService;
+import org.multibit.hd.core.services.*;
 import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -863,7 +860,7 @@ public class MainController extends AbstractController implements
       case SHOW_DEVICE_READY:
         // Show an alert if the Trezor connects when
         // - there is a current wallet
-        // - the current wallet is not the same "hard" Trezor wallet
+        // - the current wallet is not the same "hard" Trezor wallet as in the alert
         // - there has not been a "wipe Trezor" in the last few seconds
         Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
         if (walletSummary.isPresent()) {
@@ -884,7 +881,6 @@ public class MainController extends AbstractController implements
             }
           }
           if (hardwareWalletService1.isPresent()) {
-
             if (lastWipedTrezorDateTime
               .plusSeconds(TREZOR_WIPE_TIME_THRESHOLD)
               .isAfter(Dates.nowUtc())) {
@@ -1318,7 +1314,15 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingWelcomeWizard(false);
     mainView.setShowExitingCredentialsWizard(false);
 
+    Optional<HardwareWalletEvent> lastHardwareWalletEvent = CoreServices.getApplicationEventService().getLatestHardwareWalletEvent();
+
+    // Refresh the main view
     mainView.refresh();
+
+    if (lastHardwareWalletEvent.isPresent()) {
+      // Make sure a 'there is a new Trezor' message is not lost
+      HardwareWalletEvents.fireHardwareWalletEvent(lastHardwareWalletEvent.get());
+    }
 
     // Allow time for MainView to refresh
     Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
