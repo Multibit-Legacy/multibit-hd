@@ -186,41 +186,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with standard application directory</li>
-   * <li>Show the PIN entry, unlock screen and restore from there. This FEST test creates a local backup</li>
-   * </ul>
-   */
-  @Test
-  public void verifyRestoreTrezorWithLocalBackup() throws Exception {
-
-    // Prepare an initialised and attached Trezor device that will be unlocked
-    MessageEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
-
-    // Start with the empty hardware wallet fixture
-    WalletSummary walletSummary = arrangeEmpty(HardwareWalletFixtureType.TREZOR_INITIALISED);
-
-    // Verify up to the restore
-    RestoreTrezorWarmStartRequirements.verifyUsing(window);
-
-    log.debug("Entropy 1 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
-
-    // Create a local backup so that there is something to load
-    // (this is done after the initial trezor dialog so that the master public key has been returned)
-    createLocalBackup(walletSummary);
-
-    log.debug("Entropy 2 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
-
-    // Do the restore with the local backup available
-    RestoreTrezorRestoreWithLocalBackupRequirements.verifyUsing(window);
-
-    log.debug("Entropy 3 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
-
-    Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
-  }
-
-  /**
-   * <p>Verify the following:</p>
-   * <ul>
-   * <li>Start with standard application directory</li>
    * <li>Show the credentials unlock screen and click restore</li>
    * <li>Back out of the restore by selecting an existing wallet</li>
    * </ul>
@@ -521,6 +486,41 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Verify
     PlugInAndPullOutTrezorHardwareWalletRequirements.verifyUsing(window);
 
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with standard application directory</li>
+   * <li>Show the PIN entry, unlock screen and restore from there. This FEST test creates a local backup</li>
+   * </ul>
+   */
+  @Test
+  public void verifyRestoreTrezorWithLocalBackup() throws Exception {
+
+    // Prepare an initialised and attached Trezor device that will be unlocked
+    MessageEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
+
+    // Start with the empty hardware wallet fixture
+    WalletSummary walletSummary = arrangeEmpty(HardwareWalletFixtureType.TREZOR_INITIALISED);
+
+    // Verify up to the restore
+    RestoreTrezorWarmStartRequirements.verifyUsing(window);
+
+    log.debug("Entropy 1 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
+
+    // Create a local backup so that there is something to load
+    // (this is done after the initial trezor dialog so that the master public key has been returned)
+    createLocalBackup(walletSummary);
+
+    log.debug("Entropy 2 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
+
+    // Do the restore with the local backup available
+    RestoreTrezorRestoreWithLocalBackupRequirements.verifyUsing(window);
+
+    log.debug("Entropy 3 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
+
+    Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
   }
 
   ////////////////////////////////////////////////////////////////
