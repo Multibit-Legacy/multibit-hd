@@ -74,4 +74,13 @@ public class AlertModel implements Model<String> {
     this.localisedMessage = value;
   }
 
+  @Override
+  public String toString() {
+    return "AlertModel{" +
+      "button=" + button +
+      ", severity=" + severity +
+      ", localisedMessage='" + localisedMessage + '\'' +
+      ", remaining=" + remaining +
+      '}';
+  }
 }

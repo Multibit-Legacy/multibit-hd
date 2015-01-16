@@ -18,11 +18,15 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.*;
+import org.multibit.hd.core.services.BackupService;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.ExchangeTickerService;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
@@ -1319,9 +1323,13 @@ public class MainController extends AbstractController implements
     // Refresh the main view
     mainView.refresh();
 
-    if (lastHardwareWalletEvent.isPresent()) {
-      // Make sure a 'there is a new Trezor' message is not lost
-      HardwareWalletEvents.fireHardwareWalletEvent(lastHardwareWalletEvent.get().getEventType());
+    if (lastHardwareWalletEvent.isPresent()
+      && lastHardwareWalletEvent.get().getEventType() == HardwareWalletEventType.SHOW_DEVICE_READY) {
+      // Make sure the 'DEVICE_READY' event is not lost
+      HardwareWalletEvents.fireHardwareWalletEvent(
+        lastHardwareWalletEvent.get().getEventType(),
+        lastHardwareWalletEvent.get().getMessage().get()
+      );
     }
 
     // Allow time for MainView to refresh

@@ -128,6 +128,8 @@ public class HeaderView extends AbstractView {
 
     Preconditions.checkNotNull(alertModel, "'alertModel' must be present");
 
+    log.debug("Received 'alert added event': {}", event.getAlertModel());
+
     // Update the text according to the model
     alertMessageLabel.setText(alertModel.getLocalisedMessage());
     alertRemainingLabel.setText(alertModel.getRemainingText());
