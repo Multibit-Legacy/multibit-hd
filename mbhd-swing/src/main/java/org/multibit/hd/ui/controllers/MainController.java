@@ -1321,7 +1321,7 @@ public class MainController extends AbstractController implements
 
     if (lastHardwareWalletEvent.isPresent()) {
       // Make sure a 'there is a new Trezor' message is not lost
-      HardwareWalletEvents.fireHardwareWalletEvent(lastHardwareWalletEvent.get());
+      HardwareWalletEvents.fireHardwareWalletEvent(lastHardwareWalletEvent.get().getEventType());
     }
 
     // Allow time for MainView to refresh
