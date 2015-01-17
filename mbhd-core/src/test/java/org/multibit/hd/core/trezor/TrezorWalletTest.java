@@ -50,6 +50,7 @@ public class TrezorWalletTest {
   private static final DateTime TREZOR_SNIFF_WALLET_CREATION_DATE = new DateTime("2014-08-12T16:23:32");
 
   // These addresses were taken directly from myTrezor.com for a wallet with the TREZOR_SNIFF_SEED_PHRASE
+  // and, for addresses 5 to 9, multibit-hardware
 
   // m/44h/0h/0h/0/0
   private static final String SNIFF_EXPECTED_ADDRESS_0 = "1MkTpZN4TpLwJjZt9zHBXREJA8avUHXB3q";
@@ -66,6 +67,21 @@ public class TrezorWalletTest {
   // m/44h/0h/0h/0/4
   private static final String SNIFF_EXPECTED_ADDRESS_4 = "18dxk72otf2amyAsjiKnEWhox5CJGQHYGA";
 
+  // m/44h/0h/0h/0/5
+  private static final String SNIFF_EXPECTED_ADDRESS_5 = "178nhbLCC4qZgb9YeJ8tkEhbzX6GBwhrBk";
+
+  // m/44h/0h/0h/0/6
+  private static final String SNIFF_EXPECTED_ADDRESS_6 = "1E798BoJxCu94m6Y2Y88WnyXGhLzjyx2yz";
+
+  // m/44h/0h/0h/0/7
+  private static final String SNIFF_EXPECTED_ADDRESS_7 = "1GRKMgdf8XcyVMZdaNmbotTWQBQ2wrAQ8A";
+
+  // m/44h/0h/0h/0/8
+  private static final String SNIFF_EXPECTED_ADDRESS_8 = "17mmU5aa1ZmXB6DXu6w1Ypfnkra3thP5VJ";
+
+  // m/44h/0h/0h/0/9
+  private static final String SNIFF_EXPECTED_ADDRESS_9 = "1LrsPGpBhzMtTM5f9sfGj3LEfCSZRcGXmd";
+
   @Before
   public void setUp() throws Exception {
 
@@ -76,7 +92,21 @@ public class TrezorWalletTest {
    * Create some keys that derives addresses using BIP 44 - this is the HD account structure used by Trezor
    * This derivation uses the private master key
    */
-  public void testCreateKeysWithTrezorAccount() throws Exception {
+  public void testCreateKeysWithTrezorAccount1() throws Exception {
+    runSniffSeedTest();
+  }
+
+  @Test
+  /**
+   * Create some keys that derives addresses using BIP 44 - this is the HD account structure used by Trezor
+   * This derivation uses the private master key
+   */
+  public void testCreateKeysWithTrezorAccount2() throws Exception {
+    // Repeat sniff seed test - this is done because of issue 354 - intermittent sniff seed failure on Travis
+    runSniffSeedTest();
+  }
+
+  private void runSniffSeedTest() throws Exception {
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
     networkParameters = BitcoinNetwork.current().get();
 
@@ -115,15 +145,36 @@ public class TrezorWalletTest {
     log.debug("key_m_44h_0h_0h_0_4 = " + key_m_44h_0h_0h_0_4);
     Address address4 = key_m_44h_0h_0h_0_4.toAddress(networkParameters);
 
+    DeterministicKey key_m_44h_0h_0h_0_5 = deterministicHierarchy.deriveChild(key_m_44h_0h_0h_0.getPath(), false, false, new ChildNumber(5, false));
+    log.debug("key_m_44h_0h_0h_0_5 = " + key_m_44h_0h_0h_0_5);
+    Address address5 = key_m_44h_0h_0h_0_5.toAddress(networkParameters);
+
+    DeterministicKey key_m_44h_0h_0h_0_6 = deterministicHierarchy.deriveChild(key_m_44h_0h_0h_0.getPath(), false, false, new ChildNumber(6, false));
+    log.debug("key_m_44h_0h_0h_0_6 = " + key_m_44h_0h_0h_0_6);
+    Address address6 = key_m_44h_0h_0h_0_6.toAddress(networkParameters);
+
+    DeterministicKey key_m_44h_0h_0h_0_7 = deterministicHierarchy.deriveChild(key_m_44h_0h_0h_0.getPath(), false, false, new ChildNumber(7, false));
+    log.debug("key_m_44h_0h_0h_0_7 = " + key_m_44h_0h_0h_0_7);
+    Address address7 = key_m_44h_0h_0h_0_7.toAddress(networkParameters);
+
+    DeterministicKey key_m_44h_0h_0h_0_8 = deterministicHierarchy.deriveChild(key_m_44h_0h_0h_0.getPath(), false, false, new ChildNumber(8, false));
+    log.debug("key_m_44h_0h_0h_0_8 = " + key_m_44h_0h_0h_0_8);
+    Address address8 = key_m_44h_0h_0h_0_8.toAddress(networkParameters);
+
+    DeterministicKey key_m_44h_0h_0h_0_9 = deterministicHierarchy.deriveChild(key_m_44h_0h_0h_0.getPath(), false, false, new ChildNumber(9, false));
+    log.debug("key_m_44h_0h_0h_0_9 = " + key_m_44h_0h_0h_0_9);
+    Address address9 = key_m_44h_0h_0h_0_9.toAddress(networkParameters);
+
     assertThat(address0.toString()).isEqualTo(SNIFF_EXPECTED_ADDRESS_0);
-
     assertThat(address1.toString()).isEqualTo(SNIFF_EXPECTED_ADDRESS_1);
-
     assertThat(address2.toString()).isEqualTo(SNIFF_EXPECTED_ADDRESS_2);
-
     assertThat(address3.toString()).isEqualTo(SNIFF_EXPECTED_ADDRESS_3);
-
     assertThat(address4.toString()).isEqualTo(SNIFF_EXPECTED_ADDRESS_4);
+    assertThat(address5.toString()).isEqualTo(SNIFF_EXPECTED_ADDRESS_5);
+    assertThat(address6.toString()).isEqualTo(SNIFF_EXPECTED_ADDRESS_6);
+    assertThat(address7.toString()).isEqualTo(SNIFF_EXPECTED_ADDRESS_7);
+    assertThat(address8.toString()).isEqualTo(SNIFF_EXPECTED_ADDRESS_8);
+    assertThat(address9.toString()).isEqualTo(SNIFF_EXPECTED_ADDRESS_9);
   }
 
   @Test
