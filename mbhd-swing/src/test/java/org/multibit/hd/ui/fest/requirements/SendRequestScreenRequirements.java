@@ -19,13 +19,12 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class SendRequestScreenRequirements {
 
   public static void verifyUsing(FrameFixture window) {
 
-    Map<String,Object> parameters = Maps.newHashMap();
+    Map<String, Object> parameters = Maps.newHashMap();
 
     // Select the send/request screen
     new ShowSendRequestScreenUseCase(window).execute(parameters);

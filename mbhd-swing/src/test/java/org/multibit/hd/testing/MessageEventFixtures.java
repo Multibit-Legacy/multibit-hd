@@ -1,26 +1,14 @@
 package org.multibit.hd.testing;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
-import com.google.common.util.concurrent.Uninterruptibles;
-import com.google.protobuf.Message;
 import org.bitcoinj.core.Utils;
-import org.multibit.hd.hardware.core.events.MessageEvent;
-import org.multibit.hd.hardware.core.events.MessageEventType;
-import org.multibit.hd.hardware.core.events.MessageEvents;
 import org.multibit.hd.hardware.core.messages.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Queue;
-import java.util.concurrent.TimeUnit;
-
 /**
  * <p>Low level message event fixtures to provide the following to FEST tests:</p>
  * <ul>
- * <li>Various scripts to match use cases involving hardware wallets</li>
  * <li>Various standard objects to act as payloads for the events</li>
  * </ul>
  * <p>These fixtures provide the low level message events that represent spontaneous events
@@ -29,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * event to trigger the next step in a process.</p>
  *
  * <p>By addressing low level events the FSM within MultiBit Hardware will be correctly
- * exercised ensuring that the closest approximation to a read device is maintained.</p>
+ * exercised ensuring that the closest approximation to a real device is maintained.</p>
  *
  * @since 0.0.5
  *  
@@ -42,159 +30,6 @@ public class MessageEventFixtures {
    * The standard label for a hardware wallet
    */
   public static final String STANDARD_LABEL = "Example";
-
-  public static Queue<MessageEvent> messageEvents = Queues.newArrayBlockingQueue(100);
-
-  /**
-   * Control when the next event in the use case will be fired
-   */
-  public static void fireNextEvent() {
-
-    Preconditions.checkState(!messageEvents.isEmpty(), "Unexpected call to empty queue. The test should know when the last event has been fired.");
-
-    // Get the head of the queue
-    MessageEvent event = messageEvents.remove();
-
-    MessageEvents.fireMessageEvent(event);
-
-    // Allow time for the event to be picked up and propagated
-    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
-
-  }
-
-  /**
-   * <p>Fire a new low level message event on its own thread</p>
-   *
-   * @param event The event
-   */
-  public static void fireMessageEvent(final MessageEvent event) {
-
-    MessageEvents.fireMessageEvent(event);
-
-    // Allow time for the event to propagate
-    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
-
-  }
-
-  /**
-   * <p>Fire a new low level message event on its own thread</p>
-   *
-   * @param eventType The event type (no payload)
-   */
-  public static void fireMessageEvent(final MessageEventType eventType) {
-
-    MessageEvents.fireMessageEvent(eventType);
-
-    // Allow time for the event to propagate
-    Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
-
-  }
-
-  /**
-   * <p>Prepare a sequence of events corresponding to unlocking an initialised Trezor</p>
-   *
-   * <p>Use this in conjunction with the mock Trezor client in MessageFixtures</p>
-   */
-  public static void prepareUnlockTrezorWalletUseCaseEvents() {
-
-    messageEvents.clear();
-
-    // Deterministic hierarchy (indirectly from mock client via PUBLIC_KEY messages)
-
-    // PIN matrix request (from mock client)
-
-    // Button request (cipher key confirm from client)
-
-    // Cipher key success
-    final MessageEvent event1 = new MessageEvent(
-      MessageEventType.SUCCESS,
-      Optional.<HardwareWalletMessage>of(newCipherKeySuccess()),
-      Optional.<Message>absent()
-    );
-
-    messageEvents.add(event1);
-
-  }
-
-  /**
-   * <p>Prepare a sequence of events corresponding to plugging in an initialised Trezor</p>
-   *
-   * <p>Use this in conjunction with the mock Trezor client in MessageFixtures</p>
-   */
-  public static void preparePlugInAndPullOutTrezorWalletUseCaseEvents() {
-
-    messageEvents.clear();
-
-    // Trezor has been pulled out
-    final MessageEvent event1 = new MessageEvent(
-      MessageEventType.DEVICE_DETACHED,
-      Optional.<HardwareWalletMessage>absent(),
-      Optional.<Message>absent()
-    );
-
-    messageEvents.add(event1);
-
-    // Trezor has plugged in
-    final MessageEvent event2 = new MessageEvent(
-      MessageEventType.DEVICE_ATTACHED,
-      Optional.<HardwareWalletMessage>absent(),
-      Optional.<Message>absent()
-    );
-
-    messageEvents.add(event2);
-
-    // Cipher key success
-    final MessageEvent event3 = new MessageEvent(
-      MessageEventType.SUCCESS,
-      Optional.<HardwareWalletMessage>of(newCipherKeySuccess()),
-      Optional.<Message>absent()
-    );
-
-    messageEvents.add(event3);
-  }
-
-  /**
-   * <p>Prepare a sequence of events corresponding to initialising a Trezor</p>
-   * <p>Use this in conjunction with the mock Trezor client in MessageFixtures</p>
-   */
-  public static void prepareCreateTrezorWalletUseCaseEvents() {
-
-    messageEvents.clear();
-
-    // Request PIN (first)
-    final MessageEvent event2 = new MessageEvent(
-      MessageEventType.PIN_MATRIX_REQUEST,
-      Optional.<HardwareWalletMessage>of(newNewFirstPinMatrix()),
-      Optional.<Message>absent()
-    );
-
-    messageEvents.add(event2);
-
-    // Overall need 23 more button presses
-    for (int i = 0; i < 23; i++) {
-      final MessageEvent event = new MessageEvent(
-        MessageEventType.BUTTON_REQUEST,
-        Optional.<HardwareWalletMessage>of(newConfirmWordButtonRequest()),
-        Optional.<Message>absent()
-      );
-
-      messageEvents.add(event);
-    }
-
-    // Deterministic hierarchy (indirectly from mock client via PUBLIC_KEY messages)
-
-    // PIN matrix request (from mock client)
-
-    // Cipher key success
-    final MessageEvent event6 = new MessageEvent(
-      MessageEventType.SUCCESS,
-      Optional.<HardwareWalletMessage>of(newCipherKeySuccess()),
-      Optional.<Message>absent()
-    );
-
-    messageEvents.add(event6);
-
-  }
 
   /**
    * @return An "initialised" Features for use with FEST testing (abandon wallet)

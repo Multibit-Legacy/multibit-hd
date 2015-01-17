@@ -8,7 +8,8 @@ import org.multibit.hd.hardware.core.events.MessageEventType;
 import org.multibit.hd.hardware.core.events.MessageEvents;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.MessageSignature;
-import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
+import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
+import org.multibit.hd.ui.fest.use_cases.AbstractHardwareWalletFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
@@ -23,10 +24,15 @@ import java.util.Map;
  *
  * @since 0.0.1
  */
-public class ShowPINMatrixUseCase extends AbstractFestUseCase {
+public class ShowPINMatrixUseCase extends AbstractHardwareWalletFestUseCase {
 
-  public ShowPINMatrixUseCase(FrameFixture window) {
-    super(window);
+
+  /**
+   * @param window                The FEST window frame fixture
+   * @param hardwareWalletFixture The hardware wallet fixture
+   */
+  public ShowPINMatrixUseCase(FrameFixture window, HardwareWalletFixture hardwareWalletFixture) {
+    super(window, hardwareWalletFixture);
   }
 
   @Override

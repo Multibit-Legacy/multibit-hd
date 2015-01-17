@@ -19,13 +19,12 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class WelcomeWizardCreateWallet_en_US_Requirements {
 
   public static void verifyUsing(FrameFixture window) {
 
-    Map<String,Object> parameters = Maps.newHashMap();
+    Map<String, Object> parameters = Maps.newHashMap();
 
     new CloseDebugSecurityPopoverUseCase(window).execute(parameters);
 

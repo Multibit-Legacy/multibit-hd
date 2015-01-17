@@ -2,7 +2,8 @@ package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.timing.Timeout;
-import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
+import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
+import org.multibit.hd.ui.fest.use_cases.AbstractHardwareWalletFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
@@ -17,10 +18,14 @@ import java.util.concurrent.TimeUnit;
  *
  * @since 0.0.5
  */
-public class TrezorConfirmNewPinUseCase extends AbstractFestUseCase {
+public class TrezorConfirmNewPinUseCase extends AbstractHardwareWalletFestUseCase {
 
-  public TrezorConfirmNewPinUseCase(FrameFixture window) {
-    super(window);
+  /**
+   * @param window                The FEST window frame fixture
+   * @param hardwareWalletFixture The hardware wallet fixture
+   */
+  public TrezorConfirmNewPinUseCase(FrameFixture window, HardwareWalletFixture hardwareWalletFixture) {
+    super(window, hardwareWalletFixture);
   }
 
   @Override

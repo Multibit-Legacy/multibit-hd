@@ -20,12 +20,10 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.hardware.core.HardwareWalletClient;
 import org.multibit.hd.hardware.core.HardwareWalletService;
-import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
-import org.multibit.hd.testing.MessageEventFixtures;
-import org.multibit.hd.testing.HardwareWalletFixtureType;
-import org.multibit.hd.testing.TrezorHardwareWalletClientFixtures;
 import org.multibit.hd.testing.WalletFixtures;
+import org.multibit.hd.testing.hardware_wallet_fixtures.*;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.fest.requirements.*;
 import org.multibit.hd.ui.views.MainView;
@@ -109,7 +107,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public void verifyWelcomeWizardCreateWallet_en_US() throws Exception {
 
     // Start with a completely empty random application directory
-    arrangeFresh(HardwareWalletFixtureType.NONE);
+    arrangeFresh(Optional.<HardwareWalletFixture>absent());
 
     // Create a wallet through the welcome wizard
     WelcomeWizardCreateWallet_en_US_Requirements.verifyUsing(window);
@@ -130,7 +128,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public void verifyWelcomeWizardCreateWallet_ro_RO() throws Exception {
 
     // Start with a completely empty random application directory
-    arrangeFresh(HardwareWalletFixtureType.NONE);
+    arrangeFresh(Optional.<HardwareWalletFixture>absent());
 
     // Create a wallet through the welcome wizard
     WelcomeWizardCreateWallet_ro_RO_Requirements.verifyUsing(window);
@@ -151,7 +149,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public void verifyWelcomeWizardRestoreWallet_en_US() throws Exception {
 
     // Start with a completely empty random application directory
-    arrangeFresh(HardwareWalletFixtureType.NONE);
+    arrangeFresh(Optional.<HardwareWalletFixture>absent());
 
     // Restore a wallet through the welcome wizard
     WelcomeWizardRestoreWallet_en_US_Requirements.verifyUsing(window);
@@ -171,8 +169,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifyRestorePassword() throws Exception {
 
-    // Start with the standard empty wallet in a random application directory
-    arrangeStandard(HardwareWalletFixtureType.NONE);
+    // Start with the empty hardware wallet fixture
+    arrangeEmpty(Optional.<HardwareWalletFixture>absent());
 
     // Restore a password through the welcome wizard
     WelcomeWizardRestorePasswordRequirements.verifyUsing(window);
@@ -193,8 +191,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifyUseExistingWallet() throws Exception {
 
-    // Start with the standard empty wallet in a random application directory
-    arrangeStandard(HardwareWalletFixtureType.NONE);
+    // Start with the empty hardware wallet fixture
+    arrangeEmpty(Optional.<HardwareWalletFixture>absent());
 
     // Use  the welcome wizard
     WelcomeWizardUseExistingWalletRequirements.verifyUsing(window);
@@ -215,8 +213,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifySidebarScreens() throws Exception {
 
-    // Start with the empty wallet fixture
-    arrangeEmpty(HardwareWalletFixtureType.NONE);
+    // Start with the empty hardware wallet fixture
+    arrangeEmpty(Optional.<HardwareWalletFixture>absent());
 
     // Unlock the wallet
     SlowUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -237,8 +235,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifySendRequestScreen() throws Exception {
 
-    // Start with the standard wallet fixture (require contacts)
-    arrangeStandard(HardwareWalletFixtureType.NONE);
+    // Start with the empty hardware wallet fixture
+    arrangeEmpty(Optional.<HardwareWalletFixture>absent());
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -259,8 +257,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifyPaymentsScreen() throws Exception {
 
-    // Start with the standard wallet fixture
-    arrangeStandard(HardwareWalletFixtureType.NONE);
+    // Start with the empty hardware wallet fixture
+    arrangeEmpty(Optional.<HardwareWalletFixture>absent());
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -281,8 +279,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifyContactsScreen() throws Exception {
 
-    // Start with the empty wallet fixture
-    arrangeEmpty(HardwareWalletFixtureType.NONE);
+    // Start with the empty hardware wallet fixture
+    arrangeEmpty(Optional.<HardwareWalletFixture>absent());
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -303,8 +301,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifyHelpScreen() throws Exception {
 
-    // Start with the empty wallet fixture
-    arrangeEmpty(HardwareWalletFixtureType.NONE);
+    // Start with the empty hardware wallet fixture
+    arrangeEmpty(Optional.<HardwareWalletFixture>absent());
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -325,8 +323,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifySettingsScreen() throws Exception {
 
-    // Start with the empty wallet fixture
-    arrangeEmpty(HardwareWalletFixtureType.NONE);
+    // Start with the empty hardware wallet fixture
+    WalletSummary walletSummary = arrangeEmpty(Optional.<HardwareWalletFixture>absent());
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -347,8 +345,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifyManageWalletScreen() throws Exception {
 
-    // Start with the empty wallet fixture
-    arrangeEmpty(HardwareWalletFixtureType.NONE);
+    // Start with the empty hardware wallet fixture
+    arrangeEmpty(Optional.<HardwareWalletFixture>absent());
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -369,8 +367,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifyToolsScreen() throws Exception {
 
-    // Start with the standard wallet fixture
-    arrangeEmpty(HardwareWalletFixtureType.NONE);
+    // Start with the empty hardware wallet fixture
+    arrangeEmpty(Optional.<HardwareWalletFixture>absent());
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -392,13 +390,13 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public void verifyCreateTrezorHardwareWallet_ColdStart() throws Exception {
 
     // Prepare an empty and attached Trezor device that will be initialised
-    MessageEventFixtures.prepareCreateTrezorWalletUseCaseEvents();
+    HardwareWalletFixture hardwareWalletFixture = new TrezorWipedFixture();
 
-    // Start with a fresh environment
-    arrangeFresh(HardwareWalletFixtureType.TREZOR_WIPED);
+    // Start with a completely empty random application directory
+    arrangeFresh(Optional.of(hardwareWalletFixture));
 
     // Verify
-    CreateTrezorHardwareWalletColdStartRequirements.verifyUsing(window);
+    CreateTrezorHardwareWalletColdStartRequirements.verifyUsing(window, hardwareWalletFixture);
 
   }
 
@@ -414,13 +412,13 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public void verifyCreateTrezorHardwareWallet_WarmStart() throws Exception {
 
     // Prepare an empty and attached Trezor device that will be initialised
-    MessageEventFixtures.prepareCreateTrezorWalletUseCaseEvents();
+    HardwareWalletFixture hardwareWalletFixture = new TrezorWipedFixture();
 
-    // Start with an empty environment
-    arrangeEmpty(HardwareWalletFixtureType.TREZOR_WIPED);
+    // Start with the empty hardware wallet fixture
+    arrangeEmpty(Optional.of(hardwareWalletFixture));
 
     // Verify
-    CreateTrezorHardwareWalletWarmStartRequirements.verifyUsing(window);
+    CreateTrezorHardwareWalletWarmStartRequirements.verifyUsing(window, hardwareWalletFixture);
 
   }
 
@@ -435,13 +433,13 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public void verifyUnlockTrezorHardwareWallet_WarmStart() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be unlocked
-    MessageEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
+    HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedUnlockFixture();
 
     // Start with the empty hardware wallet fixture
-    arrangeEmpty(HardwareWalletFixtureType.TREZOR_INITIALISED);
+    arrangeEmpty(Optional.of(hardwareWalletFixture));
 
     // Verify
-    UnlockTrezorHardwareWalletWarmStartRequirements.verifyUsing(window);
+    UnlockTrezorHardwareWalletWarmStartRequirements.verifyUsing(window, hardwareWalletFixture);
 
   }
 
@@ -451,19 +449,18 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <li>Start with fresh wallet fixture (cold)</li>
    * <li>Unlock wallet</li>
    * </ul>
-   *
    */
   @Test
   public void verifyUnlockTrezorHardwareWallet_ColdStart() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be unlocked
-    MessageEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
+    HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedUnlockFixture();
 
-    // Start with the fresh hardware wallet fixture
-    arrangeFresh(HardwareWalletFixtureType.TREZOR_INITIALISED);
+    // Start with a completely empty random application directory
+    arrangeFresh(Optional.of(hardwareWalletFixture));
 
     // Verify
-    UnlockTrezorHardwareWalletColdStartRequirements.verifyUsing(window);
+    UnlockTrezorHardwareWalletColdStartRequirements.verifyUsing(window, hardwareWalletFixture);
 
   }
 
@@ -471,20 +468,20 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with empty wallet fixture (warm)</li>
-   * <li>Plug trezor out, see password screen, plug in, see PIN matrix</li>
+   * <li>Detach Trezor, see password screen, attach Trezor, see PIN matrix, unlock</li>
    * </ul>
    */
   @Test
-  public void verifyPlugInAndPullOutTrezorHardwareWallet() throws Exception {
+  public void verifyReattachTrezorHardwareWallet() throws Exception {
 
-    // Prepare an initialised and attached Trezor device that will be unlocked
-    MessageEventFixtures.preparePlugInAndPullOutTrezorWalletUseCaseEvents();
+    // Prepare an initialised and attached Trezor device that will be re-attached
+    HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedReattachedFixture();
 
     // Start with the empty hardware wallet fixture
-    arrangeEmpty(HardwareWalletFixtureType.TREZOR_INITIALISED);
+    arrangeEmpty(Optional.of(hardwareWalletFixture));
 
     // Verify
-    PlugInAndPullOutTrezorHardwareWalletRequirements.verifyUsing(window);
+    ReattachTrezorHardwareWalletRequirements.verifyUsing(window, hardwareWalletFixture);
 
   }
 
@@ -498,27 +495,22 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifyRestoreTrezorWithLocalBackup() throws Exception {
 
-    // Prepare an initialised and attached Trezor device that will be unlocked
-    MessageEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
+    // Prepare an initialised and attached Trezor device that will be restored then unlocked
+    HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedRestoreFixture();
 
     // Start with the empty hardware wallet fixture
-    WalletSummary walletSummary = arrangeEmpty(HardwareWalletFixtureType.TREZOR_INITIALISED);
+    WalletSummary walletSummary = arrangeEmpty(Optional.of(hardwareWalletFixture));
 
     // Verify up to the restore
-    RestoreTrezorWarmStartRequirements.verifyUsing(window);
-
-    log.debug("Entropy 1 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
+    RestoreTrezorWarmStartRequirements.verifyUsing(window, hardwareWalletFixture);
 
     // Create a local backup so that there is something to load
-    // (this is done after the initial trezor dialog so that the master public key has been returned)
+    // (this is done after the initial trezor dialog so that the
+    // master public key has been returned)
     createLocalBackup(walletSummary);
 
-    log.debug("Entropy 2 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
-
     // Do the restore with the local backup available
-    RestoreTrezorRestoreWithLocalBackupRequirements.verifyUsing(window);
-
-    log.debug("Entropy 3 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
+    RestoreTrezorRestoreWithLocalBackupRequirements.verifyUsing(window, hardwareWalletFixture);
 
     Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
   }
@@ -529,16 +521,16 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Cold start</p>
    * <p>Starts MultiBit HD with an empty application directory</p>
    *
-   * @param hardwareWalletFixtureType The hardware wallet fixture type
+   * @param hardwareWalletFixture The hardware wallet fixture
    *
    * @throws Exception If something goes wrong
    */
-  private void arrangeFresh(HardwareWalletFixtureType hardwareWalletFixtureType) throws Exception {
+  private void arrangeFresh(Optional<HardwareWalletFixture> hardwareWalletFixture) throws Exception {
 
     log.info("Arranging fresh environment...");
 
     // Continue with the set up
-    setUpAfterArrange(false, hardwareWalletFixtureType);
+    setUpAfterArrange(false, hardwareWalletFixture);
 
   }
 
@@ -546,10 +538,12 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Warm start</p>
    * <p>Starts MultiBit HD with an application directory containing the empty wallet fixture and an accepted licence</p>
    *
+   * @param hardwareWalletFixture The hardware wallet fixture
+   *
    * @throws Exception If something goes wrong
    */
-  private WalletSummary arrangeEmpty(HardwareWalletFixtureType hardwareWalletFixtureType) throws Exception {
-    log.info("Arranging empty wallet fixture environment with hardwareWalletFixtureType: {} ...", hardwareWalletFixtureType);
+  private WalletSummary arrangeEmpty(Optional<HardwareWalletFixture> hardwareWalletFixture) throws Exception {
+    log.info("Arranging empty wallet fixture environment with hardwareWalletFixtureType: {} ...", hardwareWalletFixture);
 
     // Get the temporary application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
@@ -564,32 +558,32 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     // Add the empty wallet fixture
     WalletSummary walletSummary;
-    if (HardwareWalletFixtureType.NONE.equals(hardwareWalletFixtureType)) {
-      walletSummary = WalletFixtures.createEmptyMBHDSoftWalletFixture();
-    } else {
+    if (hardwareWalletFixture.isPresent()) {
       walletSummary = WalletFixtures.createEmptyTrezorHardWalletFixture();
+    } else {
+      walletSummary = WalletFixtures.createEmptyMBHDSoftWalletFixture();
     }
 
     // Continue with the set up
-    setUpAfterArrange(true, hardwareWalletFixtureType);
+    setUpAfterArrange(true, hardwareWalletFixture);
 
     return walletSummary;
   }
 
   public static void createLocalBackup(WalletSummary walletSummary) throws IOException {
-      // Create a local backup of the empty wallet so that there is one to load
-      BackupManager.INSTANCE.createLocalBackup(walletSummary.getWalletId(), WalletFixtures.ABANDON_TREZOR_PASSWORD);
+    // Create a local backup of the empty wallet so that there is one to load
+    BackupManager.INSTANCE.createLocalBackup(walletSummary.getWalletId(), WalletFixtures.ABANDON_TREZOR_PASSWORD);
   }
 
   /**
    * <p>Warm start</p>
    * <p>Starts MultiBit HD with an application directory containing a standard wallet fixture containing real transactions and contacts</p>
    *
-   * @param hardwareWalletFixtureType The hardware wallet fixture type
+   * @param hardwareWalletFixture The hardware wallet fixture
    *
    * @throws Exception If something goes wrong
    */
-  private void arrangeStandard(HardwareWalletFixtureType hardwareWalletFixtureType) throws Exception {
+  private void arrangeStandard(Optional<HardwareWalletFixture> hardwareWalletFixture) throws Exception {
 
     log.info("Arranging standard wallet fixture environment...");
 
@@ -608,7 +602,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     WalletFixtures.createStandardMBHDSoftWalletFixture();
 
     // Continue with the set up
-    setUpAfterArrange(true, hardwareWalletFixtureType);
+    setUpAfterArrange(true, hardwareWalletFixture);
 
   }
 
@@ -619,34 +613,22 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    */
   private void setUpAfterArrange(
     boolean licenceAccepted,
-    HardwareWalletFixtureType hardwareWalletFixtureType
+    Optional<HardwareWalletFixture> hardwareWalletFixture
   ) throws Exception {
 
-    log.debug("Setup after arrange with hardware wallet environment: {}", hardwareWalletFixtureType);
+    if (hardwareWalletFixture.isPresent()) {
 
-    HardwareWalletService hardwareWalletService;
-    AbstractTrezorHardwareWalletClient mockClient;
-    switch (hardwareWalletFixtureType) {
+      log.debug("Setup after arrange with hardware wallet environment");
 
-      case NONE:
-        // Do nothing
-        break;
-      case TREZOR_WIPED:
-        // Arrange the hardware client responses
-        mockClient = TrezorHardwareWalletClientFixtures.newClient_Wiped();
+      // Get the hardware wallet client for the test case
+      HardwareWalletClient mockClient = hardwareWalletFixture.get().getClient();
 
-        // Setup the mock hardware wallet service
-        hardwareWalletService = new HardwareWalletService(mockClient);
-        CoreServices.setHardwareWalletService(hardwareWalletService);
-        break;
-      case TREZOR_INITIALISED:
-        // Arrange the hardware client responses
-        mockClient = TrezorHardwareWalletClientFixtures.newClient_Initialised();
+      // Inject it into the hardware wallet service
+      HardwareWalletService hardwareWalletService = new HardwareWalletService(mockClient);
 
-        // Setup the mock hardware wallet service
-        hardwareWalletService = new HardwareWalletService(mockClient);
-        CoreServices.setHardwareWalletService(hardwareWalletService);
-        break;
+      // Ensure CoreServices uses it instead of creating one
+      CoreServices.setHardwareWalletService(hardwareWalletService);
+
     }
 
     log.debug("Reset locale to en_US");

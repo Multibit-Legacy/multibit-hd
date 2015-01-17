@@ -1,13 +1,8 @@
 package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
-import com.google.common.base.Optional;
-import com.google.protobuf.Message;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.hardware.core.events.MessageEvent;
-import org.multibit.hd.hardware.core.events.MessageEventType;
-import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
-import org.multibit.hd.testing.MessageEventFixtures;
-import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
+import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
+import org.multibit.hd.ui.fest.use_cases.AbstractHardwareWalletFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
@@ -23,10 +18,14 @@ import static org.fest.assertions.Assertions.assertThat;
  *
  * @since 0.0.5
  */
-public class TrezorConfirmNextWordUseCase extends AbstractFestUseCase {
+public class TrezorConfirmNextWordUseCase extends AbstractHardwareWalletFestUseCase {
 
-  public TrezorConfirmNextWordUseCase(FrameFixture window) {
-    super(window);
+  /**
+   * @param window                The FEST window frame fixture
+   * @param hardwareWalletFixture The hardware wallet fixture
+   */
+  public TrezorConfirmNextWordUseCase(FrameFixture window, HardwareWalletFixture hardwareWalletFixture) {
+    super(window, hardwareWalletFixture);
   }
 
   @Override
@@ -47,29 +46,13 @@ public class TrezorConfirmNextWordUseCase extends AbstractFestUseCase {
       assertThat(displayText.contains("" + i)).isTrue();
 
       if (i < 12) {
-        // User input "next" except for the last one
-        MessageEventFixtures.fireNextEvent();
+        hardwareWalletFixture.fireNextEvent("Click Next");
       } else {
-        // Final word needs to generate low level messages
-        // Operation success
-        MessageEvent event = new MessageEvent(
-          MessageEventType.SUCCESS,
-          Optional.<HardwareWalletMessage>of(MessageEventFixtures.newDeviceResetSuccess()),
-          Optional.<Message>absent()
-        );
-        MessageEventFixtures.fireMessageEvent(event);
-
-        // Features
-        event = new MessageEvent(
-          MessageEventType.FEATURES,
-          Optional.<HardwareWalletMessage>of(MessageEventFixtures.newStandardFeatures()),
-          Optional.<Message>absent()
-        );
-        MessageEventFixtures.fireMessageEvent(event);
-
+        hardwareWalletFixture.fireNextEvent("Success");
       }
 
     }
 
   }
+
 }

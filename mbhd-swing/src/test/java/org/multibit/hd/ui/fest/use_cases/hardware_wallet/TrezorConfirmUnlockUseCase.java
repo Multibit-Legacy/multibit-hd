@@ -1,7 +1,8 @@
 package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
+import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
+import org.multibit.hd.ui.fest.use_cases.AbstractHardwareWalletFestUseCase;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsState;
@@ -18,10 +19,14 @@ import java.util.Map;
  *
  * @since 0.0.5
  */
-public class TrezorConfirmUnlockUseCase extends AbstractFestUseCase {
+public class TrezorConfirmUnlockUseCase extends AbstractHardwareWalletFestUseCase {
 
-  public TrezorConfirmUnlockUseCase(FrameFixture window) {
-    super(window);
+  /**
+   * @param window                The FEST window frame fixture
+   * @param hardwareWalletFixture The hardware wallet fixture
+   */
+  public TrezorConfirmUnlockUseCase(FrameFixture window, HardwareWalletFixture hardwareWalletFixture) {
+    super(window, hardwareWalletFixture);
   }
 
   @Override

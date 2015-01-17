@@ -3,7 +3,8 @@ package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.testing.MessageEventFixtures;
-import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
+import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
+import org.multibit.hd.ui.fest.use_cases.AbstractHardwareWalletFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
@@ -18,18 +19,21 @@ import java.util.concurrent.TimeUnit;
  *
  * @since 0.0.5
  */
-public class SwitchToHardwareWalletUseCase extends AbstractFestUseCase {
+public class SwitchToHardwareWalletUseCase extends AbstractHardwareWalletFestUseCase {
 
-  public SwitchToHardwareWalletUseCase(FrameFixture window) {
-    super(window);
+  /**
+   * @param window                The FEST window frame fixture
+   * @param hardwareWalletFixture The hardware wallet fixture
+   */
+  public SwitchToHardwareWalletUseCase(FrameFixture window, HardwareWalletFixture hardwareWalletFixture) {
+    super(window, hardwareWalletFixture);
   }
 
   @Override
   public void execute(Map<String, Object> parameters) {
 
+    // TODO Link the hardware wallet fixture
     // Start the attach use case
-    MessageEventFixtures.prepareUnlockTrezorWalletUseCaseEvents();
-    MessageEventFixtures.fireNextEvent();
 
     // Allow time for the view to react
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);

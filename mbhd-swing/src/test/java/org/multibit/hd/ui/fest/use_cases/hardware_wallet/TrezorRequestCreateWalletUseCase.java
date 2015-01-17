@@ -1,7 +1,8 @@
 package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
+import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
+import org.multibit.hd.ui.fest.use_cases.AbstractHardwareWalletFestUseCase;
 
 import java.util.Map;
 
@@ -15,10 +16,14 @@ import java.util.Map;
  *
  * @since 0.0.5
  */
-public class TrezorRequestCreateWalletUseCase extends AbstractFestUseCase {
+public class TrezorRequestCreateWalletUseCase extends AbstractHardwareWalletFestUseCase {
 
-  public TrezorRequestCreateWalletUseCase(FrameFixture window) {
-    super(window);
+  /**
+   * @param window                The FEST window frame fixture
+   * @param hardwareWalletFixture The hardware wallet fixture
+   */
+  public TrezorRequestCreateWalletUseCase(FrameFixture window, HardwareWalletFixture hardwareWalletFixture) {
+    super(window, hardwareWalletFixture);
   }
 
   @Override

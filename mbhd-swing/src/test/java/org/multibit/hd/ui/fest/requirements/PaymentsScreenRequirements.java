@@ -17,20 +17,19 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class PaymentsScreenRequirements {
 
   public static void verifyUsing(FrameFixture window) {
 
-    Map<String,Object> parameters = Maps.newHashMap();
+    Map<String, Object> parameters = Maps.newHashMap();
 
     // Select the payments screen
     new ShowPaymentsScreenUseCase(window).execute(parameters);
 
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
-     // Verify the transaction details wizard works ok
+    // Verify the transaction details wizard works ok
     new ShowDetailPaymentsUseCase(window).execute(parameters);
 
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);

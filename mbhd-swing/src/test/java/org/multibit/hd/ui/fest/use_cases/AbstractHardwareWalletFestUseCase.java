@@ -10,10 +10,9 @@ import org.fest.swing.timing.Pause;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.awt.event.KeyEvent;
 import java.util.Map;
@@ -29,32 +28,22 @@ import static org.fest.assertions.Assertions.assertThat;
  *
  * @since 0.0.1
  */
-public abstract class AbstractFestUseCase {
+public abstract class AbstractHardwareWalletFestUseCase extends AbstractFestUseCase {
 
-  protected static final Logger log = LoggerFactory.getLogger(AbstractFestUseCase.class);
-
-  protected static final int SEND_REQUEST_ROW = 0;
-  protected static final int PAYMENTS_ROW = 1;
-  protected static final int CONTACTS_ROW = 2;
-  protected static final int HELP_ROW = 3;
-  protected static final int SETTINGS_ROW = 4;
-  protected static final int MANAGE_WALLET_ROW = 5;
-  protected static final int TOOLS_ROW = 6;
-  protected static final int EXIT_ROW = 7;
-
-  protected final FrameFixture window;
+  protected final HardwareWalletFixture hardwareWalletFixture;
 
   /**
-   * @param window The FEST window frame fixture
+   * @param window                The FEST window frame fixture
+   * @param hardwareWalletFixture The hardware wallet fixture
    */
-  public AbstractFestUseCase(FrameFixture window) {
+  public AbstractHardwareWalletFestUseCase(FrameFixture window, HardwareWalletFixture hardwareWalletFixture) {
 
-    Preconditions.checkNotNull(window, "'window' must be present");
+    super(window);
 
-    this.window = window;
+    Preconditions.checkNotNull(hardwareWalletFixture,"'hardwareWalletFixture' must be present");
 
-    // Make this message stand out
-    log.warn("New hardware wallet use case: {}", this.getClass().getSimpleName());
+    this.hardwareWalletFixture = hardwareWalletFixture;
+
   }
 
   /**
@@ -379,7 +368,7 @@ public abstract class AbstractFestUseCase {
    * responses from a real life Trezor
    */
   protected void pauseForHardwareEvent() {
-    Pause.pause(1, TimeUnit.SECONDS);
+    Pause.pause(2, TimeUnit.SECONDS);
   }
 
 }

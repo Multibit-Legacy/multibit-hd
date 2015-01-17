@@ -64,7 +64,7 @@ public class RestoreButtonTrezorUseCase extends AbstractFestUseCase {
       .button(MessageKey.NEXT.getKey())
       .click();
 
-    // Wait for the wallet load screen to open and the wallet to load
+    // Wait for the restore screen to open and the wallet to load
     Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
 
     // Test for successful wallet load

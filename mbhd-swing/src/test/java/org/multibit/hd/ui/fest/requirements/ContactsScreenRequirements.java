@@ -13,13 +13,12 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class ContactsScreenRequirements {
 
   public static void verifyUsing(FrameFixture window) {
 
-    Map<String,Object> parameters = Maps.newHashMap();
+    Map<String, Object> parameters = Maps.newHashMap();
 
     // Select the contacts screen
     new ShowContactsScreenUseCase(window).execute(parameters);
