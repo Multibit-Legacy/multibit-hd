@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.fest.use_cases.credentials;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -62,6 +63,9 @@ public class RestoreButtonTrezorUseCase extends AbstractFestUseCase {
     window
       .button(MessageKey.NEXT.getKey())
       .click();
+
+    // Wait for the wallet load screen to open and the wallet to load
+    Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
 
     // Test for successful wallet load
     assertLabelContainsValue(
