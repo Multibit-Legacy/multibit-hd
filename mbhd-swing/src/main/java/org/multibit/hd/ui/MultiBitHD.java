@@ -1,5 +1,6 @@
 package org.multibit.hd.ui;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -319,13 +320,15 @@ public class MultiBitHD {
     ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme());
     Themes.switchTheme(themeKey.theme());
 
-    // Give MultiBit Hardware a chance to process the hardware wallet
-    // and for MainController to process the events
-    // The delay is observed in FEST tests ranges from 400-800ms and if
-    // not included results in wiped hardware wallets being missed
-    // on startup
-    log.debug("Allowing time for hardware wallet state transition");
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+    final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    if (hardwareWalletService.isPresent()) {
+      // Give MultiBit Hardware a chance to process any attached hardware wallet
+      // and for MainController to subsequently process the events
+      // The delay observed in reality and FEST tests ranges from 1400-2200ms and if
+      // not included results in wiped hardware wallets being missed on startup
+      log.debug("Allowing time for hardware wallet state transition");
+      Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+    }
 
     log.debug("Building MainView...");
 
@@ -347,10 +350,9 @@ public class MultiBitHD {
     }
 
     // Check for fresh hardware wallet
-    if (CoreServices.getOrCreateHardwareWalletService().isPresent()) {
-      HardwareWalletService hardwareWalletService = CoreServices.getOrCreateHardwareWalletService().get();
+    if (hardwareWalletService.isPresent()) {
 
-      if (hardwareWalletService.isDeviceReady() && !hardwareWalletService.isWalletPresent()) {
+      if (hardwareWalletService.get().isDeviceReady() && !hardwareWalletService.get().isWalletPresent()) {
 
         log.debug("Wiped hardware wallet detected");
 

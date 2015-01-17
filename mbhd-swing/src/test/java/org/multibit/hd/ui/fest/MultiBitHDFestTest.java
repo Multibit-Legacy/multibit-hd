@@ -229,7 +229,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   /**
    * <p>Verify the following:</p>
    * <ul>
-   * <li>Start with empty wallet fixture</li>
+   * <li>Start with standard wallet fixture</li>
    * <li>Unlock wallet</li>
    * <li>Exercise the Send/Request screen</li>
    * </ul>
@@ -237,8 +237,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifySendRequestScreen() throws Exception {
 
-    // Start with the empty hardware wallet fixture
-    arrangeEmpty(Optional.<HardwareWalletFixture>absent());
+    // Start with the standard hardware wallet fixture
+    arrangeStandard(Optional.<HardwareWalletFixture>absent());
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
