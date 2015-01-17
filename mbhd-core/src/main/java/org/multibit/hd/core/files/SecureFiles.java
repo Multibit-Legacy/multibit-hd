@@ -195,7 +195,7 @@ public class SecureFiles {
 
     // Add a random number to the topLevelTemporaryDirectory
     String temporaryDirectoryName = topLevelTemporaryDirectory.getAbsolutePath() + File.separator + secureRandom.nextInt(Integer.MAX_VALUE);
-    log.debug("Temporary directory name: {}", temporaryDirectoryName);
+    log.debug("Temporary directory name:\n'{}'", temporaryDirectoryName);
     File temporaryDirectory = new File(temporaryDirectoryName);
     temporaryDirectory.deleteOnExit();
 
