@@ -198,7 +198,6 @@ public class MainController extends AbstractController implements
         || WelcomeWizardState.RESTORE_WALLET_REPORT.name().equals(event.getPanelName())
         || WelcomeWizardState.RESTORE_PASSWORD_REPORT.name().equals(event.getPanelName())
         || WelcomeWizardState.WELCOME_SELECT_WALLET.name().equals(event.getPanelName())
-        || WelcomeWizardState.WELCOME_SELECT_LANGUAGE.name().equals(event.getPanelName())
         ) {
 
         // We have just finished the welcome wizard and want the credentials screen

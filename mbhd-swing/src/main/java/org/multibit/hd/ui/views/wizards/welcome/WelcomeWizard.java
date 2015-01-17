@@ -159,7 +159,11 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
               && hardwareWalletService.get().isDeviceReady()
               && hardwareWalletService.get().isWalletPresent()) {
               // Initialised hardware wallet is attached so move directly to credentials
-              hide(getWizardModel().getPanelName(), false);
+              // We cannot move from WELCOME_SELECT_LANGUAGE due to complications
+              // with language changes in soft wallets, so a state progress is made first
+              // followed by a hide
+              getWizardModel().showNext();
+              hide(WelcomeWizardState.WELCOME_SELECT_WALLET.name(), false);
             } else {
               standardNext();
             }

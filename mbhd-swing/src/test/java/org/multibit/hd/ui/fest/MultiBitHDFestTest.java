@@ -96,6 +96,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
   }
 
+  // Soft wallet tests
+
   /**
    * <p>Verify the following:</p>
    * <ul>
@@ -104,7 +106,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * </ul>
    */
   @Test
-  public void verifyWelcomeWizardCreateWallet_en_US() throws Exception {
+  public void verifyCreateWallet_en_US_ColdStart() throws Exception {
 
     // Start with a completely empty random application directory
     arrangeFresh(Optional.<HardwareWalletFixture>absent());
@@ -125,7 +127,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * </ul>
    */
   @Test
-  public void verifyWelcomeWizardCreateWallet_ro_RO() throws Exception {
+  public void verifyCreateWallet_ro_RO_ColdStart() throws Exception {
 
     // Start with a completely empty random application directory
     arrangeFresh(Optional.<HardwareWalletFixture>absent());
@@ -146,7 +148,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * </ul>
    */
   @Test
-  public void verifyWelcomeWizardRestoreWallet_en_US() throws Exception {
+  public void verifyRestoreWallet_en_US_ColdStart() throws Exception {
 
     // Start with a completely empty random application directory
     arrangeFresh(Optional.<HardwareWalletFixture>absent());
@@ -169,8 +171,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifyRestorePassword() throws Exception {
 
-    // Start with the empty hardware wallet fixture
-    arrangeEmpty(Optional.<HardwareWalletFixture>absent());
+    // Start with the standard hardware wallet fixture
+    arrangeStandard(Optional.<HardwareWalletFixture>absent());
 
     // Restore a password through the welcome wizard
     WelcomeWizardRestorePasswordRequirements.verifyUsing(window);
@@ -191,8 +193,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifyUseExistingWallet() throws Exception {
 
-    // Start with the empty hardware wallet fixture
-    arrangeEmpty(Optional.<HardwareWalletFixture>absent());
+    // Start with the standard hardware wallet fixture
+    arrangeStandard(Optional.<HardwareWalletFixture>absent());
 
     // Use  the welcome wizard
     WelcomeWizardUseExistingWalletRequirements.verifyUsing(window);
@@ -249,7 +251,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   /**
    * <p>Verify the following:</p>
    * <ul>
-   * <li>Start with restored wallet fixture</li>
+   * <li>Start with standard wallet fixture</li>
    * <li>Unlock wallet</li>
    * <li>Exercise the Payments screen</li>
    * </ul>
@@ -257,8 +259,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   @Test
   public void verifyPaymentsScreen() throws Exception {
 
-    // Start with the empty hardware wallet fixture
-    arrangeEmpty(Optional.<HardwareWalletFixture>absent());
+    // Start with the standard hardware wallet fixture
+    arrangeStandard(Optional.<HardwareWalletFixture>absent());
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -324,7 +326,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public void verifySettingsScreen() throws Exception {
 
     // Start with the empty hardware wallet fixture
-    WalletSummary walletSummary = arrangeEmpty(Optional.<HardwareWalletFixture>absent());
+    arrangeEmpty(Optional.<HardwareWalletFixture>absent());
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
@@ -377,6 +379,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     ToolsScreenRequirements.verifyUsing(window);
 
   }
+
+  // Hardware wallet tests
 
   /**
    * <p>Verify the following:</p>

@@ -36,7 +36,7 @@ public class CreateTrezorHardwareWalletColdStartRequirements {
     // TODO Remove this
     new WelcomeSelectCreateTrezorWalletUseCase(window).execute(parameters);
 
-// Verify the Trezor preparation
+    // Verify the Trezor preparation
     new TrezorPreparationUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Select a backup location
