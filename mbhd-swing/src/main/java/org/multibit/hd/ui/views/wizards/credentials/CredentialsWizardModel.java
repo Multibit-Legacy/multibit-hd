@@ -17,6 +17,7 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletPassword;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.WalletLoadEvent;
@@ -752,7 +753,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
         // Update the wallet data
         WalletSummary walletSummary = currentWalletSummary.get();
-        walletSummary.setPassword(password);
+        walletSummary.setWalletPassword(new WalletPassword(password, walletId));
 
         // Create the history service
         CoreServices.getOrCreateHistoryService(walletSummary.getWalletId());

@@ -172,7 +172,7 @@ public class PersistentHistoryService extends AbstractService implements History
     log.debug("Loading history from '{}'", backingStoreFile.getAbsolutePath());
     try {
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
-              WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
+              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
               WalletManager.scryptSalt(),
               WalletManager.aesInitialisationVector());
       Set<HistoryEntry> loadedHistory = protobufSerializer.readHistoryEntries(decryptedInputStream);
@@ -235,7 +235,7 @@ public class PersistentHistoryService extends AbstractService implements History
       protobufSerializer.writeHistoryEntries(history, byteArrayOutputStream);
       EncryptedFileReaderWriter.encryptAndWrite(
         byteArrayOutputStream.toByteArray(),
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
         backingStoreFile
       );
 

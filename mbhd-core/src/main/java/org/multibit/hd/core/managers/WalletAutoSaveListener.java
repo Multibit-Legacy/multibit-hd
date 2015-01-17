@@ -3,7 +3,9 @@ package org.multibit.hd.core.managers;
 import com.google.common.base.Optional;
 import org.bitcoinj.wallet.WalletFiles;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
+import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.exceptions.WalletSaveException;
 import org.multibit.hd.core.services.BackupService;
 import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
@@ -35,8 +37,16 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
     if (walletSummary.isPresent()) {
+      // Check the password is the correct password for this wallet
+      // The walletSummary needs to be consistent and the wallet filename contains the formatted walletId
+      WalletId walletId = walletSummary.get().getWalletId();
+      if (!walletId.equals(walletSummary.get().getWalletPassword().getWalletId())
+              || !newlySavedFile.getAbsolutePath().contains(walletId.toFormattedString()) ) {
+        throw new WalletSaveException("The password specified is not the password for the wallet saved in '" + newlySavedFile.getAbsolutePath() + "'");
+      }
+
       // Save an encrypted copy of the wallet
-      CharSequence password = walletSummary.get().getPassword();
+      CharSequence password = walletSummary.get().getWalletPassword().getPassword();
       File encryptedWalletFile = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(newlySavedFile, password);
       if (encryptedWalletFile != null && encryptedWalletFile.exists()) {
         log.debug("Save encrypted copy of wallet (size: {} bytes) as:\n'{}'", encryptedWalletFile.length(), encryptedWalletFile.getAbsolutePath());

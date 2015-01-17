@@ -31,7 +31,7 @@ public class WalletSummary {
   private File walletFile;
 
   @JsonIgnore
-  private CharSequence password;
+  private WalletPassword walletPassword;
 
   private String name;
 
@@ -88,18 +88,24 @@ public class WalletSummary {
   }
 
   public void setWalletId(WalletId walletId) {
+    Preconditions.checkNotNull(walletId, "'walletId' must be present");
     this.walletId = walletId;
   }
 
   /**
    * @return The wallet credentials
    */
-  public CharSequence getPassword() {
-    return password;
+  public WalletPassword getWalletPassword() {
+    return walletPassword;
   }
 
-  public void setPassword(CharSequence password) {
-    this.password = password;
+  /**
+   * Set the wallet password. This is the wallet password tagged with the walletId it belongs to.
+   * @param walletPassword
+   */
+  public void setWalletPassword(WalletPassword walletPassword) {
+    Preconditions.checkArgument(walletPassword.getWalletId().equals(walletId), "The walletPassword is not the password for this wallet");
+    this.walletPassword = walletPassword;
   }
 
   /**
@@ -167,6 +173,7 @@ public class WalletSummary {
     return "WalletSummary{" +
             "wallet=" + wallet +
             ", walletId=" + walletId +
+            ", walletPassword=" +walletPassword +
             ", walletType=" + walletType +
             ", walletFile=" +walletFile +
             ", credentials=***" +

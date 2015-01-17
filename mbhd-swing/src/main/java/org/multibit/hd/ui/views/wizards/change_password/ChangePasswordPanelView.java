@@ -7,6 +7,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletPassword;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.SecurityEvent;
@@ -280,7 +281,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
       if (currentWalletSummary != null && currentWalletSummary.isPresent()) {
 
         WalletSummary walletSummary = currentWalletSummary.get();
-        walletSummary.setPassword(password);
+        walletSummary.setWalletPassword(new WalletPassword(password, walletId));
 
         CoreServices.getOrCreateHistoryService(walletSummary.getWalletId());
 

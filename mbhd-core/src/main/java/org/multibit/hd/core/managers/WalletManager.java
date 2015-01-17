@@ -41,6 +41,7 @@ import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.events.WalletLoadEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
+import org.multibit.hd.core.exceptions.WalletSaveException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.services.BackupService;
@@ -327,7 +328,7 @@ public enum WalletManager implements WalletEventListener {
       walletSummary = new WalletSummary(walletId, walletToReturn);
       walletSummary.setName(name);
       walletSummary.setNotes(notes);
-      walletSummary.setPassword(password);
+      walletSummary.setWalletPassword(new WalletPassword(password, walletId));
       walletSummary.setWalletType(WalletType.MBHD_SOFT_WALLET);
       walletSummary.setWalletFile(walletFile);
       setCurrentWalletSummary(walletSummary);
@@ -448,7 +449,7 @@ public enum WalletManager implements WalletEventListener {
     walletSummary.setWalletFile(walletFile);
     walletSummary.setName(name);
     walletSummary.setNotes(notes);
-    walletSummary.setPassword(password);
+    walletSummary.setWalletPassword(new WalletPassword(password, walletId));
 
     setCurrentWalletSummary(walletSummary);
 
@@ -580,7 +581,7 @@ public enum WalletManager implements WalletEventListener {
     walletSummary.setWalletFile(walletFile);
     walletSummary.setName(name);
     walletSummary.setNotes(notes);
-    walletSummary.setPassword(password);
+    walletSummary.setWalletPassword(new WalletPassword(password, walletId));
 
     setCurrentWalletSummary(walletSummary);
 
@@ -838,7 +839,7 @@ public enum WalletManager implements WalletEventListener {
       WalletSummary walletSummary = getOrCreateWalletSummary(walletDirectory, walletId);
       walletSummary.setWallet(wallet);
       walletSummary.setWalletFile(new File(walletFilenameNoAESSuffix));
-      walletSummary.setPassword(password);
+      walletSummary.setWalletPassword(new WalletPassword(password, walletId));
 
       log.debug("Loaded the wallet successfully from \n{}", walletDirectory);
       log.debug("Wallet:{}", wallet);
@@ -1570,19 +1571,24 @@ public enum WalletManager implements WalletEventListener {
       WalletId walletId = walletSummary.getWalletId();
       log.debug("Saving wallet with id : {}, height : {}", walletId, walletSummary.getWallet().getLastBlockSeenHeight());
 
+      // Check that the password is the correct password for this wallet
+      if (!walletId.equals(walletSummary.getWalletPassword().getWalletId())) {
+        throw new WalletSaveException("The password specified is not the password for this wallet");
+      }
+
       try {
         File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
         File currentWalletFile = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get();
 
         walletSummary.getWallet().saveToFile(currentWalletFile);
 
-        File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(currentWalletFile, walletSummary.getPassword());
+        File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(currentWalletFile, walletSummary.getWalletPassword().getPassword());
         log.debug("Created AES encrypted wallet as file:\n'{}'\nSize: {} bytes", encryptedAESCopy.getAbsolutePath(), encryptedAESCopy.length());
 
         BackupService backupService = CoreServices.getOrCreateBackupService();
-        backupService.rememberWalletSummaryAndPasswordForRollingBackup(walletSummary, walletSummary.getPassword());
-        backupService.rememberWalletIdAndPasswordForLocalZipBackup(walletSummary.getWalletId(), walletSummary.getPassword());
-        backupService.rememberWalletIdAndPasswordForCloudZipBackup(walletSummary.getWalletId(), walletSummary.getPassword());
+        backupService.rememberWalletSummaryAndPasswordForRollingBackup(walletSummary, walletSummary.getWalletPassword().getPassword());
+        backupService.rememberWalletIdAndPasswordForLocalZipBackup(walletSummary.getWalletId(), walletSummary.getWalletPassword().getPassword());
+        backupService.rememberWalletIdAndPasswordForCloudZipBackup(walletSummary.getWalletId(), walletSummary.getWalletPassword().getPassword());
 
       } catch (IOException ioe) {
         log.error("Could not write wallet and backups for wallet with id '" + walletId + "' successfully. The error was '" + ioe.getMessage() + "'");

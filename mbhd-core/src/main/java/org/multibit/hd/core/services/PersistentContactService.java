@@ -272,7 +272,7 @@ public class PersistentContactService extends AbstractService implements Contact
 
     try {
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
         WalletManager.scryptSalt(),
         WalletManager.aesInitialisationVector());
       Set<Contact> loadedContacts = protobufSerializer.readContacts(decryptedInputStream);
@@ -331,7 +331,7 @@ public class PersistentContactService extends AbstractService implements Contact
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
 
       protobufSerializer.writeContacts(contacts, byteArrayOutputStream);
-      EncryptedFileReaderWriter.encryptAndWrite(byteArrayOutputStream.toByteArray(), WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(), backingStoreFile);
+      EncryptedFileReaderWriter.encryptAndWrite(byteArrayOutputStream.toByteArray(), WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), backingStoreFile);
 
     } catch (Exception e) {
       throw new ContactsSaveException("Could not save contacts db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");

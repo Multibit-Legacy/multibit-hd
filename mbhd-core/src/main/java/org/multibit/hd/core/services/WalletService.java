@@ -8,34 +8,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
-import org.bitcoinj.core.Address;
-import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.ECKey;
-import org.bitcoinj.core.NetworkParameters;
-import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.TransactionConfidence;
-import org.bitcoinj.core.TransactionOutput;
-import org.bitcoinj.core.Utils;
-import org.bitcoinj.core.Wallet;
+import org.bitcoinj.core.*;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
-import org.multibit.hd.core.dto.CoreMessageKey;
-import org.multibit.hd.core.dto.FiatPayment;
-import org.multibit.hd.core.dto.PaymentData;
-import org.multibit.hd.core.dto.PaymentRequestData;
-import org.multibit.hd.core.dto.PaymentStatus;
-import org.multibit.hd.core.dto.PaymentType;
-import org.multibit.hd.core.dto.RAGStatus;
-import org.multibit.hd.core.dto.TransactionData;
-import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.dto.WalletSummary;
-import org.multibit.hd.core.events.ChangePasswordResultEvent;
-import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.events.ExchangeRateChangedEvent;
-import org.multibit.hd.core.events.ShutdownEvent;
-import org.multibit.hd.core.events.TransactionSeenEvent;
+import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.events.*;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
@@ -53,24 +32,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Currency;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
@@ -723,7 +688,7 @@ public class WalletService extends AbstractService {
 
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
         backingStoreFile,
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
         WalletManager.scryptSalt(),
         WalletManager.aesInitialisationVector());
       Payments payments = protobufSerializer.readPayments(decryptedInputStream);
@@ -771,7 +736,7 @@ public class WalletService extends AbstractService {
       protobufSerializer.writePayments(payments, byteArrayOutputStream);
       EncryptedFileReaderWriter.encryptAndWrite(
         byteArrayOutputStream.toByteArray(),
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
         backingStoreFile
       );
 
@@ -1001,7 +966,7 @@ public class WalletService extends AbstractService {
 
         // Change the credentials used to encrypt the wallet
         wallet.decrypt(oldPassword);
-        walletSummary.setPassword(newPassword);
+        walletSummary.setWalletPassword(new WalletPassword(newPassword, walletSummary.getWalletId()));
         walletSummary.setEncryptedBackupKey(encryptedNewBackupAESKey);
         walletSummary.setEncryptedPassword(encryptedPaddedNewPassword);
 
