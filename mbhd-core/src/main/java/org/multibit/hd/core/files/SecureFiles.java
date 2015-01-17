@@ -6,12 +6,7 @@ import com.google.common.io.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
@@ -30,6 +25,8 @@ import java.security.SecureRandom;
 public class SecureFiles {
 
   private static final Logger log = LoggerFactory.getLogger(SecureFiles.class);
+
+  private static SecureRandom secureRandom = new SecureRandom();
 
   /**
    * Utilities have private constructor
@@ -192,10 +189,17 @@ public class SecureFiles {
   public static File createTemporaryDirectory() throws IOException {
 
     // Use Guava's atomic temporary file creation for a more secure operation
-    File temporaryDirectory = Files.createTempDir();
+    // Then add on a random number to avoid same temp dir being created in the same millisecond (this was happening on Travis)
+    File topLevelTemporaryDirectory = Files.createTempDir();
+    topLevelTemporaryDirectory.deleteOnExit();
+
+    // Add a random number to the topLevelTemporaryDirectory
+    String temporaryDirectoryName = topLevelTemporaryDirectory.getAbsolutePath() + File.separator + secureRandom.nextInt(Integer.MAX_VALUE);
+    log.debug("Temporary directory name: {}", temporaryDirectoryName);
+    File temporaryDirectory = new File(temporaryDirectoryName);
     temporaryDirectory.deleteOnExit();
 
-    if (temporaryDirectory.exists() && temporaryDirectory.canWrite() && temporaryDirectory.canRead()) {
+    if (temporaryDirectory.mkdir() && temporaryDirectory.exists() && temporaryDirectory.canWrite() && temporaryDirectory.canRead()) {
       log.debug("Created temporary directory:\n'{}'", temporaryDirectory.getAbsolutePath());
       return temporaryDirectory;
     }
