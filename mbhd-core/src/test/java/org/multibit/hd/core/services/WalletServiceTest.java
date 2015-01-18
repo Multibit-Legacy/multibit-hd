@@ -49,14 +49,13 @@ public class WalletServiceTest {
 
   public static final String CHANGED_PASSWORD2 = "3the quick brown fox jumps over the lazy dog";
 
-  private static final Logger log = LoggerFactory.getLogger(WalletServiceTest.class);
+  public static final String CHANGED_PASSWORD3 = "4bebop a doolah shen am o bing bang";
 
-  private String firstAddress;
+  private static final Logger log = LoggerFactory.getLogger(WalletServiceTest.class);
 
 
   @Before
   public void setUp() throws Exception {
-
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
     networkParameters = BitcoinNetwork.current().get();
 
@@ -84,8 +83,6 @@ public class WalletServiceTest {
               false); // No need to sync
 
     WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
-
-    firstAddress = walletSummary.getWallet().freshReceiveKey().toString();
 
     walletService = new WalletService(networkParameters);
 
@@ -157,9 +154,39 @@ public class WalletServiceTest {
     WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD1, CHANGED_PASSWORD2);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD2)).isTrue();
 
-    // And change ti back to the original value just for good measure
+    // And change it back to the original value just for good measure
     WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD2, PASSWORD);
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
+
+    // Change the credentials again
+    WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD3);
+    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD3)).isTrue();
+  }
+
+  @Test
+  /**
+   * A repeat of the change password test to explore how bulletproof it is
+   */
+  public void testChangePasswordRepeat() throws Exception {
+    log.debug("Start of testChangePassword repeat");
+
+    assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
+
+    // Change the credentials once
+    WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD1);
+    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD1)).isTrue();
+
+    // Change the credentials again
+    WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD1, CHANGED_PASSWORD2);
+    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD2)).isTrue();
+
+    // Change it back to the original value
+    WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD2, PASSWORD);
+    assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
+
+    // Change the credentials again
+    WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD3);
+    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD3)).isTrue();
   }
 
   @Test
