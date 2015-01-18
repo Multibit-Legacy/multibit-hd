@@ -1,6 +1,7 @@
 package org.multibit.hd.core.managers;
 
 import com.google.common.base.Optional;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.utils.Threading;
 import org.bitcoinj.wallet.WalletFiles;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -22,6 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * </ul>
  * </p>
  */
+@SuppressFBWarnings({"UL_UNRELEASED_LOCK"})
 public class WalletAutoSaveListener implements WalletFiles.Listener {
 
   private static final Logger log = LoggerFactory.getLogger(WalletAutoSaveListener.class);
