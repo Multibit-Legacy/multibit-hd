@@ -165,7 +165,7 @@ public class WalletServiceTest {
 
   @Test
   /**
-   * A repeat of the change password test to explore how bulletproof it is
+   * A repeat of the change password test to check raciness (issue #322)
    */
   public void testChangePasswordRepeat() throws Exception {
     log.debug("Start of testChangePassword repeat");

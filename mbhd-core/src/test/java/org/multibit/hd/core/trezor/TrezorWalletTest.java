@@ -43,7 +43,9 @@ public class TrezorWalletTest {
 
   private static final CharSequence PASSWORD = "bingBongaDingDong";
 
-  private static final CharSequence CHANGED_PASSWORD = "I have a dream";
+  private static final CharSequence CHANGED_PASSWORD1 = "I have a dream";
+
+  public static final String CHANGED_PASSWORD2 = "3the quick brown fox jumps over the lazy dog";
 
   private static final String TREZOR_SNIFF_SEED_PHRASE = "sniff divert demise scrub pony motor struggle innocent model mask enroll settle cash junior denial harsh peasant update estate aspect lyrics season empower asset";
 
@@ -478,14 +480,73 @@ public class TrezorWalletTest {
     // Check the old password is what is expected
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
 
-    // Change the password and check it
-    WalletService.changeWalletPassword(walletSummary, (String) PASSWORD, (String) CHANGED_PASSWORD);
+    // Change the password
+    WalletService.changeWalletPassword(walletSummary, (String) PASSWORD, (String) CHANGED_PASSWORD1);
 
-    // The change password is run on an executor thread so wait 10 seconds for it to complete
-    Uninterruptibles.sleepUninterruptibly(10, TimeUnit.SECONDS);
+    // The change password is run on an executor thread so wait 5 seconds for it to complete
+    Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
 
-    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD)).isTrue();
+    // Check it
+    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD1)).isTrue();
 
-    // TODO check wallet roundtrips via protobuf
+    // Change the password again
+    WalletService.changeWalletPassword(walletSummary, (String) CHANGED_PASSWORD1, (String) CHANGED_PASSWORD2);
+
+    // The change password is run on an executor thread so wait 5 seconds for it to complete
+    Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
+
+    // Check it
+    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD2)).isTrue();
+  }
+
+  @Test
+  /**
+   * Change the password on a Trezor soft wallet - a repeat of the testChangePasswordTrezorSoftWallet to check raciness (issue #322)
+   */
+  public void testChangePasswordTrezorSoftWalletRepeat() throws Exception {
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+    networkParameters = BitcoinNetwork.current().get();
+
+    // Create a random temporary directory where the wallet directory will be written
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
+
+    // Create a wallet from a seed phrase
+    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
+    InstallationManager.setCurrentApplicationDataDirectory(temporaryDirectory);
+
+    // Create a Trezor soft wallet using the seed phrase
+    WalletSummary walletSummary = WalletManager
+            .INSTANCE
+            .getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
+                    temporaryDirectory,
+                    TREZOR_SNIFF_SEED_PHRASE,
+                    TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
+                    (String) PASSWORD,
+                    "trezor-soft-example",
+                    "trezor-soft-example",
+                    true);
+
+    Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+
+    // Check the old password is what is expected
+    assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
+
+    // Change the password
+    WalletService.changeWalletPassword(walletSummary, (String) PASSWORD, (String) CHANGED_PASSWORD1);
+
+    // The change password is run on an executor thread so wait 5 seconds for it to complete
+    Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
+
+    // Check it
+    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD1)).isTrue();
+
+    // Change the password again
+    WalletService.changeWalletPassword(walletSummary, (String) CHANGED_PASSWORD1, (String) CHANGED_PASSWORD2);
+
+    // The change password is run on an executor thread so wait 5 seconds for it to complete
+    Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
+
+    // Check it
+    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD2)).isTrue();
   }
 }
