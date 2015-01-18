@@ -5,8 +5,8 @@
   <target name="update-help" description="Copy the help files from adjacent MultiBit Website project" >
 
     <!-- Clear out any existing help directories -->
-    <delete dir="${basedir}/../multibit-website/src/main/resources/views/html/en/help/hd0.1" />
-    <delete dir="${basedir}/../multibit-website/src/main/resources/assets/images/en/screenshots/mbhd-0.1" />
+    <delete dir="${basedir}/mbhd-swing/src/main/resources/assets/html/en/help/hd0.1" />
+    <delete dir="${basedir}/mbhd-swing/src/main/resources/assets/images/en/screenshots/mbhd-01" />
 
     <!-- Replace the directories -->
     <mkdir dir="${basedir}/../multibit-website/src/main/resources/views/html/en/help/hd0.1" />
