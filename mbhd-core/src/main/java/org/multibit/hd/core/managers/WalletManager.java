@@ -270,7 +270,7 @@ public enum WalletManager implements WalletEventListener {
    * @param password                 The credentials to use to encrypt the wallet - if null then the wallet is not loaded
    * @param name                     The wallet name
    * @param notes                    Public notes associated with the wallet
-   * @param performSynch
+   * @param performSynch             True if the wallet should immediately begin synchronization
    *
    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
    *
@@ -370,7 +370,7 @@ public enum WalletManager implements WalletEventListener {
    * @param password                 The credentials to use to encrypt the wallet - if null then the wallet is not loaded
    * @param name                     The wallet name
    * @param notes                    Public notes associated with the wallet
-   * @param performSync              True if the wallet should immediately being synchronization
+   * @param performSync              True if the wallet should immediately begin synchronization
    *
    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
    *
@@ -606,7 +606,12 @@ public enum WalletManager implements WalletEventListener {
   /**
    * Update configuration with new wallet information
    */
-  private void updateConfigurationAndCheckSync(String walletRoot, File walletDirectory, WalletSummary walletSummary, boolean saveWalletYaml, boolean performSync) throws IOException {
+  private void updateConfigurationAndCheckSync(
+    String walletRoot,
+    File walletDirectory,
+    WalletSummary walletSummary,
+    boolean saveWalletYaml,
+    boolean performSync) throws IOException {
 
     Preconditions.checkNotNull(walletRoot, "'walletRoot' must be present");
     Preconditions.checkNotNull(walletDirectory, "'walletDirectory' must be present");
@@ -667,7 +672,11 @@ public enum WalletManager implements WalletEventListener {
           int walletBlockHeight = walletBeingReturned.getLastBlockSeenHeight();
           Date walletLastSeenBlockTime = walletBeingReturned.getLastBlockSeenTime();
 
-          log.debug("Wallet lastBlockSeenHeight: {}, lastSeenBlockTime: {}, earliestKeyCreationTime: {}", walletBlockHeight, walletLastSeenBlockTime, walletBeingReturned.getEarliestKeyCreationTime());
+          log.debug(
+            "Wallet lastBlockSeenHeight: {}, lastSeenBlockTime: {}, earliestKeyCreationTime: {}",
+            walletBlockHeight,
+            walletLastSeenBlockTime,
+            walletBeingReturned.getEarliestKeyCreationTime());
 
           // See if the bitcoinNetworkService already has an open blockstore
           blockStore = bitcoinNetworkService.getBlockStore();
@@ -810,9 +819,9 @@ public enum WalletManager implements WalletEventListener {
       if (walletFile.exists() && isWalletSerialised(walletFile)) {
         // Serialised wallets are no longer supported.
         throw new WalletLoadException(
-                "Could not load wallet '"
-                        + walletFile
-                        + "'. Serialized wallets are no longer supported."
+          "Could not load wallet '"
+            + walletFile
+            + "'. Serialized wallets are no longer supported."
         );
       }
 
