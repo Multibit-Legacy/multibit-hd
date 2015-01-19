@@ -209,6 +209,24 @@ public class SecureFiles {
   }
 
   /**
+   * Create a temporary filename but do not create the actual file
+   */
+  public static File createTemporaryFilename(String prefix, String suffix, File dir) throws IOException {
+    long n = secureRandom.nextLong();
+    if (n == Long.MIN_VALUE) {
+      n = 0;      // corner case
+    } else {
+      n = Math.abs(n);
+    }
+    String name = prefix + Long.toString(n) + suffix;
+    File f = new File(dir, name);
+    if (!name.equals(f.getName()))
+      throw new IOException("Unable to create temporary file");
+    return f;
+
+  }
+
+  /**
    * Securely write a file to the file system using temporary file then renaming to the destination
    */
   public static void writeFile(InputStream inputStream, File tempFile, File destFile) throws IOException {
