@@ -85,7 +85,7 @@ public class WalletToEncounterDateLink {
    */
   public static WalletToEncounterDateLink parse(String serialisedWalletToEncounterDate) {
 
-    log.debug("Attempting to parse walletToEncounterDateLink:\n{}", serialisedWalletToEncounterDate);
+    log.trace("Attempting to parse walletToEncounterDateLink:\n{}", serialisedWalletToEncounterDate);
 
     if (serialisedWalletToEncounterDate == null) {
       return null;

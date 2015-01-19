@@ -76,7 +76,7 @@ public class MatcherResponse {
       }
     }
 
-    log.debug("Serialised matcherResponse = \n{}\n", builder.toString());
+    log.trace("Serialised matcherResponse = \n{}\n", builder.toString());
     return builder.toString().getBytes(Charsets.UTF_8);
 
   }
@@ -92,7 +92,7 @@ public class MatcherResponse {
 
     String serialisedMatcherResponseAsString = new String(serialisedMatcherResponse, Charsets.UTF_8);
 
-    log.debug("Attempting to parse matcher response:\n{}", serialisedMatcherResponseAsString);
+    log.trace("Attempting to parse matcher response:\n{}", serialisedMatcherResponseAsString);
     String[] rows = Strings.split(serialisedMatcherResponseAsString, '\n');
 
     if (rows.length > 0) {
