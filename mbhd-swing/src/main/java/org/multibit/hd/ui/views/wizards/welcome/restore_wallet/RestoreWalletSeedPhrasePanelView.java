@@ -99,12 +99,17 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    // Fire the decision events
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, isNextEnabled());
 
-    // Fire "seed phrase verification" event
-    ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".seedphrase", isNextEnabled());
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Fire the decision events
+        ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, isNextEnabled());
 
+        // Fire "seed phrase verification" event
+        ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".seedphrase", isNextEnabled());
+      }
+    });
   }
 
   /**

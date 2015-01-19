@@ -100,13 +100,18 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
     List<String> userSeedPhrase = enterSeedPhraseMaV.getModel().getSeedPhrase();
     String userSeedTimestamp = enterSeedPhraseMaV.getModel().getSeedTimestamp();
 
-    boolean result = actualSeedPhrase.equals(userSeedPhrase) && actualSeedTimestamp.equals(userSeedTimestamp);
+    final boolean result = actualSeedPhrase.equals(userSeedPhrase) && actualSeedTimestamp.equals(userSeedTimestamp);
 
-    // Fire the decision events (requires knowledge of the previous panel data)
-    ViewEvents.fireWizardButtonEnabledEvent(CREATE_WALLET_CONFIRM_SEED_PHRASE.name(), WizardButton.NEXT, result);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Fire the decision events (requires knowledge of the previous panel data)
+        ViewEvents.fireWizardButtonEnabledEvent(CREATE_WALLET_CONFIRM_SEED_PHRASE.name(), WizardButton.NEXT, result);
 
-    // Fire "seed phrase verification" event
-    ViewEvents.fireVerificationStatusChangedEvent(getPanelName()+".seedphrase", result);
+        // Fire "seed phrase verification" event
+        ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".seedphrase", result);
+      }
+    });
 
   }
 }

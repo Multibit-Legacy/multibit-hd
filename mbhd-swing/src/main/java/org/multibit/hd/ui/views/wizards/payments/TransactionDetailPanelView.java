@@ -173,8 +173,13 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
           if (message.length() >MAXIMUM_ERROR_LENGTH) {
             message = message.substring(0, MAXIMUM_ERROR_LENGTH) + ELLIPSIS;
           }
-          AlertModel alertModel = new AlertModel(message, RAGStatus.AMBER);
-          ViewEvents.fireAlertAddedEvent(alertModel);
+          final AlertModel alertModel = new AlertModel(message, RAGStatus.AMBER);
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              ViewEvents.fireAlertAddedEvent(alertModel);
+            }
+          });
         }
       }
     };

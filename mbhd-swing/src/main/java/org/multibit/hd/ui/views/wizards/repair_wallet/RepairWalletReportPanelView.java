@@ -117,11 +117,16 @@ public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairW
   @Override
   public void afterShow() {
 
-    // Ensure the Finish button is disabled to avoid complex side effects during repair
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Ensure the Finish button is disabled to avoid complex side effects during repair
+        ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
 
-    // Hide the header balance - swtching back on is dealt with in MainController#onBitcoinNetworkChangedEvent
-    ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+        // Hide the header balance - swtching back on is dealt with in MainController#onBitcoinNetworkChangedEvent
+        ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+      }
+    });
 
     // Start the CA certs update process in a new thread
     getWizardModel().installCACertificates();

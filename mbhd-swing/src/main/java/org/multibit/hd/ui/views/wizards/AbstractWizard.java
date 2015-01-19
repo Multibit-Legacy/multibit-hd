@@ -434,7 +434,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    * @param isExitCancel    True if this hide operation comes from an exit or cancel
    * @param wizardPanelView The wizard panel view from the wizard view map
    */
-  private void handleHide(final String panelName, boolean isExitCancel, AbstractWizardPanelView wizardPanelView) {
+  private void handleHide(final String panelName, final boolean isExitCancel, AbstractWizardPanelView wizardPanelView) {
 
     log.debug("Handle hide starting: '{}' ExitCancel: {}", panelName, isExitCancel);
 
@@ -445,8 +445,14 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     getWizardModel().unsubscribe();
     unsubscribe();
 
-    // Issue the wizard hide event before the hide takes place to give panel views time to update
-    ViewEvents.fireWizardHideEvent(panelName, wizardModel, isExitCancel);
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Issue the wizard hide event before the hide takes place to give panel views time to update
+        ViewEvents.fireWizardHideEvent(panelName, wizardModel, isExitCancel);
+      }
+    });
 
     // Required to run on a new thread since this may take some time to complete
     wizardHideExecutorService.submit(

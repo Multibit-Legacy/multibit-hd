@@ -233,10 +233,17 @@ public class ViewEvents {
     final boolean enabled
   ) {
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "ViewEvents are expected to run on the EDT thread");
     log.trace("Firing 'wizard button enabled {}' event: {}", panelName, enabled);
-    viewEventBus.post(new WizardButtonEnabledEvent(panelName, wizardButton, enabled));
-
+    if (SwingUtilities.isEventDispatchThread()) {
+      viewEventBus.post(new WizardButtonEnabledEvent(panelName, wizardButton, enabled));
+    } else {
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          viewEventBus.post(new WizardButtonEnabledEvent(panelName, wizardButton, enabled));
+        }
+      });
+    }
   }
 
   /**

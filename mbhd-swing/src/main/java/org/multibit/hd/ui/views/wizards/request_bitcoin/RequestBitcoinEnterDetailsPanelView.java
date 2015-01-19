@@ -248,7 +248,12 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
 
     log.debug("A new receiving address has been issued. The number of external keys is now {}", walletSummary.getWallet().getActiveKeychain().getIssuedExternalKeys());
 
-    ViewEvents.fireWalletDetailChangedEvent(walletDetail);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        ViewEvents.fireWalletDetailChangedEvent(walletDetail);
+      }
+    });
 
   }
 

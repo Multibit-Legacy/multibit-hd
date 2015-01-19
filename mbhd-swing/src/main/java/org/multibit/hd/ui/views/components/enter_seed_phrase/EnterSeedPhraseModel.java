@@ -9,6 +9,7 @@ import org.multibit.hd.ui.models.Model;
 import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -102,23 +103,32 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
         .split(text)
     );
 
-    String componentName = seedPhrase.size() > 0 ? ".seedphrase" : ".timestamp";
+    final String componentName = seedPhrase.size() > 0 ? ".seedphrase" : ".timestamp";
 
     // Perform a basic verification of the seed phrase
     if (SeedPhraseSize.isValid(seedPhrase.size())) {
-
-      // Have a possible match so alert the panel model to do more detailed checking
-      ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
-
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          // Have a possible match so alert the panel model to do more detailed checking
+          ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
+        }
+      });
     } else {
 
       // Definitely a fail so don't bother the panel model with it
 
-      // Ensure the "next" button is kept disabled and no "verified" message
-      ViewEvents.fireWizardButtonEnabledEvent(panelName, WizardButton.NEXT, false);
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          // Ensure the "next" button is kept disabled and no "verified" message
+          ViewEvents.fireWizardButtonEnabledEvent(panelName, WizardButton.NEXT, false);
 
-      // Fire "seed phrase verification" event
-      ViewEvents.fireVerificationStatusChangedEvent(panelName + componentName, false);
+          // Fire "seed phrase verification" event
+          ViewEvents.fireVerificationStatusChangedEvent(panelName + componentName, false);
+        }
+      });
+
     }
 
   }

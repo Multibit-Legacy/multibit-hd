@@ -1409,8 +1409,13 @@ public class MainController extends AbstractController implements
                   JButton button = Buttons.newAlertPanelButton(getShowHelpAction(), MessageKey.DETAILS, MessageKey.DETAILS_TOOLTIP, AwesomeIcon.QUESTION);
 
                   // The transaction has not been sent correctly, or change is not spendable, throw a warning alert
-                  AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER), RAGStatus.AMBER, button);
-                  ViewEvents.fireAlertAddedEvent(alertModel);
+                  final AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER), RAGStatus.AMBER, button);
+                  SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                      ViewEvents.fireAlertAddedEvent(alertModel);
+                    }
+                  });
                 }
               }
             }

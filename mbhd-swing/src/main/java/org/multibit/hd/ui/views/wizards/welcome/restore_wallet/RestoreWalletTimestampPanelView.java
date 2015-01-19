@@ -136,8 +136,15 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
       // Do nothing
     }
 
-    // Fire the "timestamp verified" event
-    ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".timestamp", isTimestampValid);
+    final boolean finalIsTimestampValid = isTimestampValid;
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Fire the "timestamp verified" event
+        ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".timestamp", finalIsTimestampValid);
+      }
+    });
 
     // Confirm credentials will fire its own event
 

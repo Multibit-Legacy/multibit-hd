@@ -99,11 +99,16 @@ public class RestorePasswordEnterSeedPhraseView extends AbstractWizardPanelView<
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    // Fire the decision events (requires knowledge of the previous panel data)
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, isNextEnabled());
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Fire the decision events (requires knowledge of the previous panel data)
+        ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, isNextEnabled());
 
-    // Fire "seed phrase verification" event
-    ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".seedphrase", isNextEnabled());
+        // Fire "seed phrase verification" event
+        ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".seedphrase", isNextEnabled());
+      }
+    });
 
   }
 

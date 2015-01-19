@@ -325,7 +325,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   private void fireWalletDetailsChanged() {
 
     // Ensure the views that display payments update
-    WalletDetail walletDetail = new WalletDetail();
+    final WalletDetail walletDetail = new WalletDetail();
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
       walletDetail.setApplicationDirectory(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath());
@@ -338,7 +338,13 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
       walletDetail.setNumberOfPayments(CoreServices.getCurrentWalletService().get().getPaymentDataList().size());
-      ViewEvents.fireWalletDetailChangedEvent(walletDetail);
+
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          ViewEvents.fireWalletDetailChangedEvent(walletDetail);
+        }
+      });
 
     }
   }

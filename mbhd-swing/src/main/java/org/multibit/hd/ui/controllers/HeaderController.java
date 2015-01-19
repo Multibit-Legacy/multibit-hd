@@ -39,10 +39,13 @@ public class HeaderController extends AbstractController {
     if (!alertModels.isEmpty()) {
 
       // The alert structure has changed so inform the view
-      ViewEvents.fireAlertAddedEvent(alertModels.get(0));
-
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          ViewEvents.fireAlertAddedEvent(alertModels.get(0));
+        }
+      });
     }
-
   }
 
   /**

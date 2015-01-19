@@ -8,6 +8,7 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
+import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,7 +46,12 @@ public class SelectBackupSummaryModel implements Model<BackupSummary> {
   public void setValue(BackupSummary value) {
     this.selectedBackup = value;
 
-    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
+      }
+    });
   }
 
   /**

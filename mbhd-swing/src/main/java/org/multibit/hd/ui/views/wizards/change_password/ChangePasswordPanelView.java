@@ -192,13 +192,14 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
             CoreEvents.unsubscribe(confirmPasswordMaV);
             CoreEvents.unsubscribe(displaySecurityPopoverMaV);
 
-            // Trigger the deferred hide
-            ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
 
             // Enable components
             SwingUtilities.invokeLater(new Runnable() {
               @Override
               public void run() {
+                // Trigger the deferred hide
+                ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
+
                 if (isNextEnabled()) {
                   getNextButton().setEnabled(true);
                 }

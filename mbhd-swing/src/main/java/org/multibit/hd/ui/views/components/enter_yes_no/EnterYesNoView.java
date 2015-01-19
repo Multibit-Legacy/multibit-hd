@@ -89,9 +89,13 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
 
         Panels.hideLightBoxPopoverIfPresent();
 
-        // Issue the wizard popover hide event
-        ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), false);
-
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            // Issue the wizard popover hide event
+            ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
+          }
+        });
       }
 
     };
@@ -111,9 +115,13 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
 
         Panels.hideLightBoxPopoverIfPresent();
 
-        // Issue the wizard popover hide event
-        ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
-
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            // Issue the wizard popover hide event
+            ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
+          }
+        });
       }
 
     };
@@ -133,9 +141,13 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
 
         Panels.hideLightBoxPopoverIfPresent();
 
-        // Issue the wizard popover hide event
-        ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
-
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            // Issue the wizard popover hide event
+            ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
+          }
+        });
       }
 
     };

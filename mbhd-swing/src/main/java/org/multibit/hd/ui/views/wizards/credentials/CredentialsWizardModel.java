@@ -170,7 +170,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         }
         // createNewTrezorWallet dealt with in MainController as it is in WelcomeWizard
         if (createNewTrezorWallet) {
-          ViewEvents.fireWizardHideEvent(getPanelName(), this, false);
+          final CredentialsWizardModel finalThis = this;
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              ViewEvents.fireWizardHideEvent(getPanelName(), finalThis, false);
+            }
+          });
         }
         break;
       case CREDENTIALS_ENTER_PIN:

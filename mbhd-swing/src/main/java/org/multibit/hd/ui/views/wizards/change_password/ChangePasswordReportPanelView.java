@@ -119,13 +119,12 @@ public class ChangePasswordReportPanelView extends AbstractWizardPanelView<Chang
 
   @Subscribe
   public void onChangePasswordResultEvent(final ChangePasswordResultEvent changePasswordResultEvent) {
-
-    // Enable and focus the finish button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
-
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+        // Enable and focus the finish button
+        ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+
         passwordChangedStatusLabel.setText(Languages.safeText(changePasswordResultEvent.getChangePasswordResultKey(), changePasswordResultEvent.getChangePasswordResultData()));
         LabelDecorator.applyStatusLabel(passwordChangedStatusLabel, Optional.of(changePasswordResultEvent.isChangePasswordWasSuccessful()));
         getFinishButton().requestFocusInWindow();
