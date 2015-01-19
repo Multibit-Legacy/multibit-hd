@@ -483,8 +483,8 @@ public class TrezorWalletTest {
     // Change the password
     WalletService.changeWalletPassword(walletSummary, (String) PASSWORD, (String) CHANGED_PASSWORD1);
 
-    // The change password is run on an executor thread so wait 5 seconds for it to complete
-    Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
+    // The change password is run on an executor thread so wait 10 seconds for it to complete
+    Uninterruptibles.sleepUninterruptibly(10, TimeUnit.SECONDS);
 
     // Check it
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD1)).isTrue();
@@ -492,8 +492,8 @@ public class TrezorWalletTest {
     // Change the password again
     WalletService.changeWalletPassword(walletSummary, (String) CHANGED_PASSWORD1, (String) CHANGED_PASSWORD2);
 
-    // The change password is run on an executor thread so wait 5 seconds for it to complete
-    Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
+    // The change password is run on an executor thread so wait 10 seconds for it to complete
+    Uninterruptibles.sleepUninterruptibly(10, TimeUnit.SECONDS);
 
     // Check it
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD2)).isTrue();
@@ -534,8 +534,8 @@ public class TrezorWalletTest {
     // Change the password
     WalletService.changeWalletPassword(walletSummary, (String) PASSWORD, (String) CHANGED_PASSWORD1);
 
-    // The change password is run on an executor thread so wait 5 seconds for it to complete
-    Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
+    // The change password is run on an executor thread so wait 10 seconds for it to complete
+    Uninterruptibles.sleepUninterruptibly(10, TimeUnit.SECONDS);
 
     // Check it
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD1)).isTrue();
@@ -543,8 +543,8 @@ public class TrezorWalletTest {
     // Change the password again
     WalletService.changeWalletPassword(walletSummary, (String) CHANGED_PASSWORD1, (String) CHANGED_PASSWORD2);
 
-    // The change password is run on an executor thread so wait 5 seconds for it to complete
-    Uninterruptibles.sleepUninterruptibly(5, TimeUnit.SECONDS);
+    // The change password is run on an executor thread so wait 10 seconds for it to complete
+    Uninterruptibles.sleepUninterruptibly(10, TimeUnit.SECONDS);
 
     // Check it
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD2)).isTrue();
