@@ -114,6 +114,14 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
     // Check for report message from hardware wallet
     LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
 
+    // Remember the cloud backup location
+    String cloudBackupLocation = getWizardModel().getCloudBackupLocation();
+    log.debug("cloudBackupLocation = " + cloudBackupLocation);
+
+    if (Configurations.currentConfiguration != null) {
+      Configurations.currentConfiguration.getAppearance().setCloudBackupLocation(cloudBackupLocation);
+    }
+
     if (getWizardModel().getReportMessageStatus()) {
       String nowTimestamp = Dates.newSeedTimestamp();
       log.debug("The timestamp for the new wallet is {}", nowTimestamp);

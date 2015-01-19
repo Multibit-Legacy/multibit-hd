@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.FutureCallback;
@@ -85,6 +86,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private ConfirmPasswordModel confirmPasswordModel;
 
   private SelectFileModel cloudBackupLocationSelectFileModel;
+  private SelectFileModel trezorCloudBackupLocationSelectFileModel;
   private SelectFileModel restoreLocationSelectFileModel;
 
   private EnterSeedPhraseModel createWalletEnterSeedPhraseModel;
@@ -762,7 +764,21 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
    * @return The user entered "cloud backup" location
    */
   public String getCloudBackupLocation() {
-    return cloudBackupLocationSelectFileModel.getValue();
+    // Cloud backup location entered for soft wallets
+    String cloudBackupLocation1 = cloudBackupLocationSelectFileModel == null ? "" : cloudBackupLocationSelectFileModel.getValue();
+
+    // Cloud backup location entered for Trezor wallets
+    String cloudBackupLocation2 = trezorCloudBackupLocationSelectFileModel == null ? "" : trezorCloudBackupLocationSelectFileModel.getValue();
+
+    if (!Strings.isNullOrEmpty(cloudBackupLocation1)) {
+      return cloudBackupLocation1;
+    } else {
+      if (!Strings.isNullOrEmpty(cloudBackupLocation2)) {
+            return cloudBackupLocation2;
+          } else {
+        return "";
+      }
+    }
   }
 
   /**
@@ -796,6 +812,15 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   public void setCloudBackupLocationSelectFileModel(SelectFileModel cloudBackupLocationSelectFileModel) {
     this.cloudBackupLocationSelectFileModel = cloudBackupLocationSelectFileModel;
   }
+
+  /**
+    * <p>Reduced visibility for panel models</p>
+    *
+    * @param trezorCloudBackupLocationSelectFileModel The "cloud backup location" select file model
+    */
+   public void setTrezorCloudBackupLocationSelectFileModel(SelectFileModel trezorCloudBackupLocationSelectFileModel) {
+     this.trezorCloudBackupLocationSelectFileModel = trezorCloudBackupLocationSelectFileModel;
+   }
 
   /**
    * <p>Reduced visibility for panel models</p>
@@ -961,5 +986,4 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   public void setTrezorConfirmWordPanelView(CreateTrezorWalletConfirmWordPanelView trezorConfirmWordPanelView) {
     this.trezorConfirmWordPanelView = trezorConfirmWordPanelView;
   }
-
 }

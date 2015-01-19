@@ -51,7 +51,7 @@ public class CreateTrezorWalletSelectBackupLocationPanelView extends AbstractWiz
       selectFileMaV.getModel().setValue(Configurations.currentConfiguration.getAppearance().getCloudBackupLocation());
     }
 
-    getWizardModel().setCloudBackupLocationSelectFileModel(selectFileMaV.getModel());
+    getWizardModel().setTrezorCloudBackupLocationSelectFileModel(selectFileMaV.getModel());
 
     // Register components
     registerComponents(selectFileMaV);
