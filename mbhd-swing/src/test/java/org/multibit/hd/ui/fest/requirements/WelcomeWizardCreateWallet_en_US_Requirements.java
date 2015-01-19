@@ -4,7 +4,9 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.create_wallet.*;
+import org.multibit.hd.ui.fest.use_cases.credentials.QuickUnlockWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.edit_wallet.ShowThenCancelEditWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectCreateWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
@@ -49,6 +51,13 @@ public class WelcomeWizardCreateWallet_en_US_Requirements {
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     new CreateWalletReportUseCase(window).execute(parameters);
+
+    // Hand over to the credentials wizard
+
+    new QuickUnlockWalletUseCase(window).execute(parameters);
+
+    // Test that the cloud backup was successful
+    new ShowThenCancelEditWalletUseCase(window).execute(parameters);
 
   }
 }

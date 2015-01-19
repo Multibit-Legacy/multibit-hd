@@ -642,10 +642,13 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     log.debug("Create standard configuration (no exchange)");
 
-    // Always start without an exchange
+    // Always start without an exchange and with cloud backups
     Configuration configuration = Configurations.newDefaultConfiguration();
     configuration.getBitcoin().setCurrentExchange(ExchangeKey.NONE.name());
     configuration.setLicenceAccepted(licenceAccepted);
+
+    String festCloudBackupDirectory = InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/fest-cloud-backups";
+    configuration.getAppearance().setCloudBackupLocation(festCloudBackupDirectory);
 
     // Persist the new configuration ready for reading later
     try (FileOutputStream fos = new FileOutputStream(InstallationManager.getConfigurationFile())) {

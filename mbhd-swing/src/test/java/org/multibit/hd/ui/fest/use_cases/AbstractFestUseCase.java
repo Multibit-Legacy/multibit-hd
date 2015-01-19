@@ -54,7 +54,7 @@ public abstract class AbstractFestUseCase {
     this.window = window;
 
     // Make this message stand out
-    log.warn("New hardware wallet use case: {}", this.getClass().getSimpleName());
+    log.warn("New use case: {}", this.getClass().getSimpleName());
   }
 
   /**

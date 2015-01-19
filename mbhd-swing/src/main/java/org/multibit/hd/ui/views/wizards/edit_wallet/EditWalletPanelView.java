@@ -56,10 +56,6 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
   public void newPanelModel() {
 
     selectFileMaV = Components.newSelectFileMaV(getPanelName());
-    setPanelModel(selectFileMaV.getModel());
-    if (Configurations.currentConfiguration != null) {
-      selectFileMaV.getModel().setValue(Configurations.currentConfiguration.getAppearance().getCloudBackupLocation());
-    }
 
     // Register components
     registerComponents(selectFileMaV);
@@ -87,14 +83,18 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
     notes.setText(getWizardModel().getWalletSummary().getNotes());
     notes.setCaretPosition(0);
 
+    // Cloud backup location
+    setPanelModel(selectFileMaV.getModel());
+    if (Configurations.currentConfiguration != null) {
+      selectFileMaV.getModel().setValue(Configurations.currentConfiguration.getAppearance().getCloudBackupLocation());
+    }
+
     contentPanel.add(Labels.newLabel(MessageKey.NOTES));
     contentPanel.add(scrollPane, "push," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     contentPanel.add(Labels.newLabel(MessageKey.CLOUD_BACKUP_LOCATION));
     contentPanel.add(selectFileMaV.getView().newComponentPanel(), "span 2,wrap");
 
-    // Register components
-    registerComponents(selectFileMaV);
   }
 
   @Override

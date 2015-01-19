@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.edit_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -40,6 +41,16 @@ public class ShowThenCancelEditWalletUseCase extends AbstractFestUseCase {
       .textBox(MessageKey.NOTES.getKey())
       .requireVisible()
       .requireEnabled();
+
+    // We should have a known FEST cloud backup directory
+    String festCloudBackups = InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/fest-cloud-backups";
+
+    // Verify "cloud backups" field is present
+    window
+      .textBox(MessageKey.SELECT_FILE.getKey())
+      .requireVisible()
+      .requireEnabled()
+      .requireText(festCloudBackups);
 
     // Verify Apply is present
     window

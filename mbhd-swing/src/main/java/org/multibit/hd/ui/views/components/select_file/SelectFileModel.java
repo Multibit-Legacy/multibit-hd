@@ -20,7 +20,7 @@ public class SelectFileModel implements Model<String> {
   private String selectedFile = "";
 
   /**
-   * A file was selected (= true) or no file was seleced/ cancel (= false)
+   * A file was selected (= true) or no file was selected/ cancel (= false)
    */
   private boolean selected = false;
 

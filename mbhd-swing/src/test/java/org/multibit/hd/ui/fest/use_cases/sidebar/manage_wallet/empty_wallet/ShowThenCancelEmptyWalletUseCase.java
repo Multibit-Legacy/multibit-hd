@@ -34,6 +34,8 @@ public class ShowThenCancelEmptyWalletUseCase extends AbstractFestUseCase {
       .requireEnabled(Timeout.timeout(10, TimeUnit.SECONDS))
       .click();
 
+    pauseForComponentReset();
+
     // Verify the "empty wallet" wizard appears
     assertLabelText(MessageKey.EMPTY_WALLET_TITLE);
 

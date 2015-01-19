@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.wizards.wallet_details;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -72,15 +71,6 @@ public class WalletDetailsPanelView extends AbstractWizardPanelView<WalletDetail
     notes.setText(walletSummary.getNotes());
     contentPanel.add(Labels.newLabel(MessageKey.NOTES),"wrap");
     contentPanel.add(notes, "span2,wrap");
-
-    contentPanel.add(Labels.newLabel(MessageKey.CLOUD_BACKUP_LOCATION));
-    contentPanel.add(
-      Labels.newValueLabel(
-        Configurations
-          .currentConfiguration
-          .getAppearance()
-          .getCloudBackupLocation()
-      ), "span 2,wrap");
 
     // Details
     walletDetailMaV = Components.newWalletDetailMaV(getPanelName());

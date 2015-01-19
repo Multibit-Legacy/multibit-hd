@@ -97,7 +97,7 @@ public class Labels {
   /**
    * <p>A convenience method for creating a themed label with direct text. This is not internationalised.</p>
    *
-   * @return A new value label with default styling for placing direct text
+   * @return A new wrapping value label with default styling for placing direct text
    */
   public static JLabel newValueLabel(String value) {
 
