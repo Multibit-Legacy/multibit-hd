@@ -56,6 +56,14 @@ public class SearchHistoryUseCase extends AbstractFestUseCase {
     // Verify that only a single row matches
     assertThat(rowCount2).isEqualTo(1);
 
+    // Click the sidebar to hide the history
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .requireVisible()
+      .requireEnabled()
+      .selectRow(MANAGE_WALLET_ROW)
+      .click();
+
   }
 
 }

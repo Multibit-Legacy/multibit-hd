@@ -92,8 +92,8 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            // Issue the wizard popover hide event
-            ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
+            // Issue the wizard popover hide event (not exiting but confirming)
+            ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), false);
           }
         });
       }
@@ -118,7 +118,7 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            // Issue the wizard popover hide event
+            // Issue the wizard popover hide event (exit/cancel)
             ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
           }
         });
@@ -144,7 +144,7 @@ public class EnterYesNoView extends AbstractComponentView<EnterYesNoModel> {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            // Issue the wizard popover hide event
+            // Issue the wizard popover hide event (exit/cancel)
             ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
           }
         });

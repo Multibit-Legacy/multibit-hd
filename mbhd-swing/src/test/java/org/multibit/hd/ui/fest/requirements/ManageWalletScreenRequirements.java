@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.ShowManageWalletScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.change_password.VerifyChangePasswordUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.edit_wallet.ShowThenCancelEditWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.empty_wallet.ShowThenCancelEmptyWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.history.*;
@@ -50,9 +51,16 @@ public class ManageWalletScreenRequirements {
       Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
     }
 
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
     // Show then cancel the "repair wallet" wizard
     // Verifying the repair will take too long
     new ShowThenCancelRepairWalletUseCase(window).execute(parameters);
+
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
+    // Verify change password
+    new VerifyChangePasswordUseCase(window).execute(parameters);
 
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
@@ -82,6 +90,8 @@ public class ManageWalletScreenRequirements {
 
     // Search for the first entry
     new SearchHistoryUseCase(window).execute(parameters);
+
+
 
   }
 

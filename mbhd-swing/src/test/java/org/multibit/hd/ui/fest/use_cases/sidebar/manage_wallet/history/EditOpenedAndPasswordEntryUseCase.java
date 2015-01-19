@@ -48,6 +48,7 @@ public class EditOpenedAndPasswordEntryUseCase extends AbstractFestUseCase {
       .cell(Languages.safeText(MessageKey.PASSWORD_VERIFIED))
       .row;
 
+    // Set the checkboxes if necessary
     ensureCheckboxIsSelected(MessageKey.HISTORY, openedRow, HistoryTableModel.CHECKBOX_COLUMN_INDEX);
     ensureCheckboxIsSelected(MessageKey.HISTORY, pvRow, HistoryTableModel.CHECKBOX_COLUMN_INDEX);
 

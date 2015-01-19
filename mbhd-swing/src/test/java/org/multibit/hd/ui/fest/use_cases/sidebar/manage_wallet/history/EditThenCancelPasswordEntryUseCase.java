@@ -43,11 +43,6 @@ public class EditThenCancelPasswordEntryUseCase extends AbstractFestUseCase {
       .cell(Languages.safeText(MessageKey.PASSWORD_VERIFIED))
       .row;
 
-    // Get table contents
-    String[][] history =  window
-      .table(MessageKey.HISTORY.getKey())
-      .contents();
-
     ensureCheckboxIsSelected(MessageKey.HISTORY, pvRow, HistoryTableModel.CHECKBOX_COLUMN_INDEX);
 
     // Click on Edit
@@ -84,12 +79,14 @@ public class EditThenCancelPasswordEntryUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-    // Click Yes
+    // Click Yes (this will discard the popup and the wizard)
     window
       .button(MessageKey.YES.getKey())
       .requireVisible()
       .requireEnabled()
       .click();
+
+    pauseForComponentReset();
 
     // Verify the underlying screen is back
     window
@@ -106,7 +103,7 @@ public class EditThenCancelPasswordEntryUseCase extends AbstractFestUseCase {
     assertThat(rowCount2).isEqualTo(rowCount1);
 
     // Get updated table contents
-    history =  window
+    String[][] history =  window
       .table(MessageKey.HISTORY.getKey())
       .contents();
 
