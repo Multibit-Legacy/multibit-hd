@@ -240,6 +240,7 @@ public class ViewEvents {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
+          log.warn("This event firing should really be on the Swing event thread (EDT)");
           viewEventBus.post(new WizardButtonEnabledEvent(panelName, wizardButton, enabled));
         }
       });
