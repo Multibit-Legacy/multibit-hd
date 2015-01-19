@@ -851,7 +851,6 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setWalletPassword(new WalletPassword(password, walletId));
 
       log.debug("Loaded the wallet successfully from \n{}", walletDirectory);
-      log.debug("Wallet:{}", wallet);
 
       // Fire a wallet loaded event indicating success (if a rolling backup was loaded this has already been sent so do not send another)
       if (!backupFileLoaded) {

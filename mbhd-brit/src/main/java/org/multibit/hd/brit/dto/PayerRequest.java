@@ -92,7 +92,6 @@ public class PayerRequest {
       builder.append(OPTIONAL_NOT_PRESENT_TEXT);
     }
 
-    //log.debug("Serialised payerRequest = \n{}\n", builder.toString());
     return builder.toString().getBytes(Charsets.UTF_8);
   }
 
@@ -107,7 +106,6 @@ public class PayerRequest {
 
     String serialisedPaymentRequestAsString = new String(serialisedPayerRequest, Charsets.UTF_8);
 
-    log.debug("Attempting to parse PayerRequest:\n{}\n", serialisedPaymentRequestAsString);
     String[] rows = Strings.split(serialisedPaymentRequestAsString, SEPARATOR);
     if (rows.length == 4) {
       if (Long.parseLong(rows[0]) != 1) {

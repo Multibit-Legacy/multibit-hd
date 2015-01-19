@@ -74,7 +74,7 @@ public class BasicMatcher implements Matcher {
 
   @Override
   public PayerRequest decryptPayerRequest(EncryptedPayerRequest encryptedPayerRequest) throws Exception {
-    log.debug("Attempting to decrypt payload:\n{}\n", new String(encryptedPayerRequest.getPayload(), Charsets.UTF_8));
+    log.trace("Attempting to decrypt payload:\n{}\n", new String(encryptedPayerRequest.getPayload(), Charsets.UTF_8));
 
     ByteArrayInputStream serialisedPayerRequestEncryptedInputStream = new ByteArrayInputStream(encryptedPayerRequest.getPayload());
 
