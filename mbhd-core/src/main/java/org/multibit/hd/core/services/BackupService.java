@@ -2,8 +2,8 @@ package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Uninterruptibles;
-import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.BackupManager;
 import org.slf4j.Logger;
@@ -303,7 +303,8 @@ public class BackupService extends AbstractService {
         rememberedPasswordForCloudBackup = Optional.absent();
       } catch (IOException ioe) {
         log.error("Failed to perform cloud backup", ioe);
-        // TODO handle exception (which is thrown inside the main runnable)
+        CoreServices.logHistory("Failed to perform cloud backup. Message: " + ioe.getMessage());
+        CoreEvents.fireSecurityEvent(SecuritySummary.newBackupFailed());
       }
     }
   }
