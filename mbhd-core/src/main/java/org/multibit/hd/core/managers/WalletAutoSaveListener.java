@@ -55,7 +55,7 @@ public class WalletAutoSaveListener implements WalletFiles.Listener {
 
         // Rename the wallet to a temp file to reduce contention on secure delete
         File directory = newlySavedFile.getAbsoluteFile().getParentFile();
-        File tempWalletToDelete = SecureFiles.createTemporaryFilename("wallet", null, directory);
+        File tempWalletToDelete = SecureFiles.createTemporaryFilename("wallet", ".tmp", directory);
         if (!newlySavedFile.renameTo(tempWalletToDelete)) {
           throw new WalletSaveException("Could not save wallet " + newlySavedFile.getAbsolutePath() + ". Rename of wallet prior to secure delete failed.");
         }
