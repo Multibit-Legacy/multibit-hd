@@ -35,11 +35,10 @@ public class WalletSummary {
   private WalletPassword walletPassword;
 
   /**
-   * Replaced by WalletTypeExtension stored in the Wallet itself
+   * This field is dominated by WalletTypeExtension stored in the Wallet itself.
+   * Used mainly so that you do not have to decrypt the wallet to see the walletType
    */
-  @Deprecated
-  @JsonIgnore
-  private WalletType walletType;
+  private WalletType walletType = WalletType.UNKNOWN;
 
   private String name;
 
@@ -107,7 +106,7 @@ public class WalletSummary {
 
   /**
    * Set the wallet password. This is the wallet password tagged with the walletId it belongs to.
-   * @param walletPassword
+   * @param walletPassword the wallet id + password combination
    */
   public void setWalletPassword(WalletPassword walletPassword) {
     Preconditions.checkArgument(walletPassword.getWalletId().equals(walletId), "The walletPassword is not the password for this wallet");
@@ -162,9 +161,18 @@ public class WalletSummary {
    * @return WalletType the wallet type, as specified by the WalletTypeExtension
    */
   public WalletType getWalletType() {
-    return WalletManager.getWalletType(wallet);
+    // Use the wallet type if it is available
+    if (wallet != null) {
+      return WalletManager.getWalletType(wallet);
+    } else {
+      // Use the local walletType if that is all there is
+      return walletType;
+    }
    }
 
+  public void setWalletType(WalletType walletType) {
+     this.walletType = walletType;
+   }
 
   public File getWalletFile() {
     return walletFile;
@@ -182,6 +190,7 @@ public class WalletSummary {
             ", walletId=" + walletId +
             ", walletPassword=" +walletPassword +
             ", walletFile=" +walletFile +
+            ", walletType=" +walletType +
             ", credentials=***" +
             ", name='" + name + '\'' +
             ", notes='" + notes + '\'' +

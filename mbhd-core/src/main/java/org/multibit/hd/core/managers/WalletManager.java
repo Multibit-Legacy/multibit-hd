@@ -621,6 +621,10 @@ public enum WalletManager implements WalletEventListener {
     Preconditions.checkNotNull(walletDirectory, "'walletDirectory' must be present");
     Preconditions.checkNotNull(walletSummary, "'walletSummary' must be present");
 
+    // Set the walletSummary walletType
+    // This is stored in plain text in the wallet yaml and enables filtering before knowing the wallet password
+    walletSummary.setWalletType(getWalletType(walletSummary.getWallet()));
+
     if (saveWalletYaml) {
       File walletSummaryFile = WalletManager.getOrCreateWalletSummaryFile(walletDirectory);
       log.debug("Writing wallet YAML to file:\n'{}'", walletSummaryFile.getAbsolutePath());
@@ -628,7 +632,8 @@ public enum WalletManager implements WalletEventListener {
     }
 
     // Remember the current soft wallet root
-    if (WalletType.TREZOR_HARD_WALLET != walletSummary.getWalletType()) {
+    if (WalletType.MBHD_SOFT_WALLET == walletSummary.getWalletType() ||
+            WalletType.TREZOR_SOFT_WALLET == walletSummary.getWalletType()) {
       if (Configurations.currentConfiguration != null) {
         Configurations.currentConfiguration.getWallet().setLastSoftWalletRoot(walletRoot);
       }
