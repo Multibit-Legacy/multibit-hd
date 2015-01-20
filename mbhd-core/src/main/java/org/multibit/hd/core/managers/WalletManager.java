@@ -43,6 +43,7 @@ import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletSaveException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
+import org.multibit.hd.core.extensions.WalletTypeExtension;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.services.BackupService;
 import org.multibit.hd.core.services.BitcoinNetworkService;
@@ -57,10 +58,7 @@ import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -307,7 +305,6 @@ public enum WalletManager implements WalletEventListener {
       // There is already a wallet created with this root - if so load it and return that
       walletSummary = loadFromWalletDirectory(walletDirectory, password);
 
-      walletSummary.setWalletType(WalletType.MBHD_SOFT_WALLET);
       setCurrentWalletSummary(walletSummary);
     } else {
       // Wallet file does not exist so create it below the known good wallet directory
@@ -329,7 +326,6 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setName(name);
       walletSummary.setNotes(notes);
       walletSummary.setWalletPassword(new WalletPassword(password, walletId));
-      walletSummary.setWalletType(WalletType.MBHD_SOFT_WALLET);
       walletSummary.setWalletFile(walletFile);
       setCurrentWalletSummary(walletSummary);
 
@@ -343,6 +339,9 @@ public enum WalletManager implements WalletEventListener {
         throw new WalletLoadException("Could not store encrypted credentials and backup AES key", e);
       }
     }
+
+    // Set wallet type
+    walletSummary.getWallet().addOrUpdateExtension(new WalletTypeExtension(WalletType.MBHD_SOFT_WALLET));
 
     if (createdNew) {
       CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), true, CoreMessageKey.WALLET_LOADED_OK, null, Optional.<File>absent()));
@@ -445,13 +444,16 @@ public enum WalletManager implements WalletEventListener {
     }
 
     // Wallet summary cannot be null at this point
-    walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
     walletSummary.setWalletFile(walletFile);
     walletSummary.setName(name);
     walletSummary.setNotes(notes);
     walletSummary.setWalletPassword(new WalletPassword(password, walletId));
 
     setCurrentWalletSummary(walletSummary);
+
+    // Set wallet type
+    walletSummary.getWallet().addOrUpdateExtension(new WalletTypeExtension(WalletType.TREZOR_HARD_WALLET));
+
 
     try {
       // The entropy based password from the Trezor is used for both the wallet password and for the backup's password
@@ -577,13 +579,15 @@ public enum WalletManager implements WalletEventListener {
     }
 
     // Wallet summary cannot be null
-    walletSummary.setWalletType(WalletType.TREZOR_SOFT_WALLET);
     walletSummary.setWalletFile(walletFile);
     walletSummary.setName(name);
     walletSummary.setNotes(notes);
     walletSummary.setWalletPassword(new WalletPassword(password, walletId));
 
     setCurrentWalletSummary(walletSummary);
+
+    // Set wallet type
+    walletSummary.getWallet().addOrUpdateExtension(new WalletTypeExtension(WalletType.TREZOR_SOFT_WALLET));
 
     try {
       WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, seed, password);
@@ -786,11 +790,72 @@ public enum WalletManager implements WalletEventListener {
 
     Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(inputStream);
 
-    WalletExtension[] walletExtensions = new WalletExtension[]{new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension()};
+    WalletExtension[] walletExtensions = new WalletExtension[]{new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension(), new WalletTypeExtension()};
     Wallet wallet = new WalletProtobufSerializer().readWallet(BitcoinNetwork.current().get(), walletExtensions, walletProto);
     wallet.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
 
+    // Try to infer the wallet type from the key structure to bootstrap missing WalletType values
+    inferWalletType(wallet);
+
+    log.debug("Successfully loaded wallet of type {} as follows:\n{}\n", getWalletType(wallet), wallet.toString());
+
     return wallet;
+  }
+
+  private void inferWalletType(Wallet wallet) {
+    // Get the wallet type as defined by the wallet type extension
+    WalletType walletType = getWalletType(wallet);
+
+    WalletType inferredWalletType = null;
+
+    if (WalletType.UNKNOWN.equals(walletType)) {
+      // Attempt to infer the wallet type from the wallet key structure
+      if (wallet.getActiveKeychain() != null) {
+        List<DeterministicKey> leafKeys = wallet.getActiveKeychain().getLeafKeys();
+        if (leafKeys != null && !leafKeys.isEmpty()) {
+          DeterministicKey firstLeafKey = leafKeys.get(0);
+
+          if (firstLeafKey != null) {
+            ImmutableList<ChildNumber> firstLeafKeyPath = firstLeafKey.getPath();
+
+            if (firstLeafKeyPath != null && firstLeafKeyPath.size() > 0) {
+              // MBHD soft wallets start at m/0h
+              if (ChildNumber.ZERO_HARDENED.equals(firstLeafKeyPath.get(0))) {
+                inferredWalletType = WalletType.MBHD_SOFT_WALLET;
+              } else if ((new ChildNumber(44 | ChildNumber.HARDENED_BIT)).equals(firstLeafKeyPath.get(0))) {
+                // Trezor wallet
+                if (firstLeafKey.isEncrypted()) {
+                  // soft wallets only have encrypted private keys
+                  inferredWalletType = WalletType.TREZOR_SOFT_WALLET;
+                } else {
+                  inferredWalletType = WalletType.TREZOR_HARD_WALLET;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // if we inferred the WalletType put it in the wallet
+      if (inferredWalletType != null) {
+        log.debug("Inferring the Wallet type of the wallet to be {}", inferredWalletType);
+        wallet.addOrUpdateExtension(new WalletTypeExtension(inferredWalletType));
+      }
+    }
+  }
+
+  static public WalletType getWalletType(Wallet wallet) {
+    if (wallet == null) {
+       return WalletType.UNKNOWN;
+     } else {
+       Map<String, WalletExtension> walletExtensionMap = wallet.getExtensions();
+       WalletTypeExtension walletTypeExtension = (WalletTypeExtension)walletExtensionMap.get(WalletTypeExtension.WALLET_TYPE_WALLET_EXTENSION_ID);
+       if (walletTypeExtension == null) {
+         return WalletType.UNKNOWN;
+       } else {
+         return walletTypeExtension.getWalletType();
+       }
+     }
   }
 
   /**

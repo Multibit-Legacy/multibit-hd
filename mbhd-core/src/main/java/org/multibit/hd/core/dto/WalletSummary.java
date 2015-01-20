@@ -3,6 +3,7 @@ package org.multibit.hd.core.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Preconditions;
 import org.bitcoinj.core.Wallet;
+import org.multibit.hd.core.managers.WalletManager;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -33,11 +34,16 @@ public class WalletSummary {
   @JsonIgnore
   private WalletPassword walletPassword;
 
+  /**
+   * Replaced by WalletTypeExtension stored in the Wallet itself
+   */
+  @Deprecated
+  @JsonIgnore
+  private WalletType walletType;
+
   private String name;
 
   private String notes;
-
-  private WalletType walletType = WalletType.MBHD_SOFT_WALLET;
 
   /**
    * The wallet credentials, encrypted with an AES key derived from the wallet seed
@@ -151,13 +157,14 @@ public class WalletSummary {
     this.encryptedBackupKey = Arrays.copyOf(encryptedBackupKey, encryptedBackupKey.length);
   }
 
+  /**
+   * Report the wallet type specified in the WalletTypeExtension in the wallet
+   * @return WalletType the wallet type, as specified by the WalletTypeExtension
+   */
   public WalletType getWalletType() {
-     return walletType;
+    return WalletManager.getWalletType(wallet);
    }
 
-  public void setWalletType(WalletType walletType) {
-     this.walletType = walletType;
-   }
 
   public File getWalletFile() {
     return walletFile;
@@ -174,7 +181,6 @@ public class WalletSummary {
             "wallet=" + wallet +
             ", walletId=" + walletId +
             ", walletPassword=" +walletPassword +
-            ", walletType=" + walletType +
             ", walletFile=" +walletFile +
             ", credentials=***" +
             ", name='" + name + '\'' +

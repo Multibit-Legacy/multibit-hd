@@ -19,7 +19,7 @@ public class WalletTypeExtension implements WalletExtension {
 
   private static final Logger log = LoggerFactory.getLogger(WalletTypeExtension.class);
 
-  public static final String WALET_TYPE_WALLET_EXTENSION_ID = "org.multibit.hd.core.WalletTypeExtension";
+  public static final String WALLET_TYPE_WALLET_EXTENSION_ID = "org.multibit.hd.core.WalletTypeExtension";
 
   private WalletType walletType;
 
@@ -33,7 +33,7 @@ public class WalletTypeExtension implements WalletExtension {
 
   @Override
   public String getWalletExtensionID() {
-    return WALET_TYPE_WALLET_EXTENSION_ID;
+    return WALLET_TYPE_WALLET_EXTENSION_ID;
   }
 
   @Override
