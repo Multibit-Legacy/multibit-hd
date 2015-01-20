@@ -30,9 +30,10 @@ public class CreateWalletSelectBackupLocationWalletUseCase extends AbstractFestU
     // Verify that the title appears
     assertLabelText(MessageKey.SELECT_BACKUP_LOCATION_TITLE);
 
+    // This may be populated with the current cloud backup depending on the test
+    // so just leave it unspecified for now
     window
       .textBox(MessageKey.SELECT_FILE.getKey())
-      .requireEmpty()
       .requireEnabled()
       .requireVisible();
 

@@ -114,9 +114,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Create a wallet through the welcome wizard
     WelcomeWizardCreateWallet_en_US_Requirements.verifyUsing(window);
 
-    // Unlock the wallet
-    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
-
   }
 
   /**
@@ -134,9 +131,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     // Create a wallet through the welcome wizard
     WelcomeWizardCreateWallet_ro_RO_Requirements.verifyUsing(window);
-
-    // Unlock the wallet
-    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
   }
 

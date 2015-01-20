@@ -33,7 +33,8 @@ public class ShowManageWalletScreenUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(MANAGE_WALLET_ROW);
+      .selectRow(MANAGE_WALLET_ROW)
+      .click();
 
     // Expect the Manage Wallet screen to show
 

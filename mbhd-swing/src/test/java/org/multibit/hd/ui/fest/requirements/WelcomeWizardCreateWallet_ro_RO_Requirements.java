@@ -4,7 +4,11 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.create_wallet.*;
+import org.multibit.hd.ui.fest.use_cases.credentials.QuickUnlockWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.credentials.UnlockReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.ShowManageWalletScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.edit_wallet.ShowThenCancelEditWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectCreateWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectLanguage_ro_RO_UseCase;
@@ -49,6 +53,20 @@ public class WelcomeWizardCreateWallet_ro_RO_Requirements {
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     new CreateWalletReportUseCase(window).execute(parameters);
+
+    // Hand over to the credentials wizard
+
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
+    new QuickUnlockWalletUseCase(window).execute(parameters);
+
+    new UnlockReportUseCase(window).execute(parameters);
+
+    // Show the manage wallets screen
+    new ShowManageWalletScreenUseCase(window).execute(parameters);
+
+    // Test that the cloud backup was successful
+    new ShowThenCancelEditWalletUseCase(window).execute(parameters);
 
   }
 }
