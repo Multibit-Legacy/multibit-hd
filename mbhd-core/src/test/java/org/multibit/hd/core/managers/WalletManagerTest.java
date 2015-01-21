@@ -232,7 +232,8 @@ public class WalletManagerTest {
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_0_3.equals(trezorAddressM44H_0H_0H_0_3.toString())).isTrue();
     assertThat(TREZOR_ADDRESS_M_44H_0H_0H_1_3.equals(trezorAddressM44H_0H_0H_1_3.toString())).isTrue();
 
-    log.debug("TrezorWallet : {}", trezorWallet.toString());
+    log.debug("Original trezor wallet, number of keys: " + trezorWallet.getActiveKeychain().numKeys());
+    log.debug("Original trezor wallet : {}", trezorWallet.toString());
 
     // Check the wallet can be reloaded ok i.e. the protobuf round trips
     File temporaryFile = File.createTempFile("WalletManagerTest", ".wallet");
@@ -240,10 +241,33 @@ public class WalletManagerTest {
     File encryptedWalletFile = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(temporaryFile, "aPassword");
 
     Wallet rebornWallet = WalletManager.INSTANCE.loadWalletFromFile(encryptedWalletFile, "aPassword");
+    log.debug("Reborn trezor wallet, number of keys: " + rebornWallet.getActiveKeychain().numKeys());
+    log.debug("Reborn trezor wallet : {}", rebornWallet.toString());
 
     // Check the first keys above are in the wallet
     assertThat(rebornWallet.hasKey(trezorKeyM44H_0H_0H_0_0)).isTrue();
     assertThat(rebornWallet.hasKey(trezorKeyM44H_0H_0H_1_0)).isTrue();
+
+    // Create a fresh receiving and change address
+    Address freshReceivingAddress = rebornWallet.freshAddress(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    assertThat(freshReceivingAddress).isNotNull();
+
+    Address freshChangeAddress = rebornWallet.freshAddress(KeyChain.KeyPurpose.CHANGE);
+    assertThat(freshChangeAddress).isNotNull();
+
+    log.debug("Reborn trezor wallet with more keys, number of keys: " + rebornWallet.getActiveKeychain().numKeys());
+    log.debug("Reborn trezor wallet with more keys : {}", rebornWallet.toString());
+
+    // Round trip it again
+    File temporaryFile2 = File.createTempFile("WalletManagerTest2", ".wallet");
+    rebornWallet.saveToFile(temporaryFile2);
+    File encryptedWalletFile2 = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(temporaryFile2, "aPassword2");
+
+    Wallet rebornWallet2 = WalletManager.INSTANCE.loadWalletFromFile(encryptedWalletFile2, "aPassword2");
+
+    // Check the first keys above are in the wallet
+    assertThat(rebornWallet2.hasKey(trezorKeyM44H_0H_0H_0_0)).isTrue();
+    assertThat(rebornWallet2.hasKey(trezorKeyM44H_0H_0H_1_0)).isTrue();
   }
 
   @Test
