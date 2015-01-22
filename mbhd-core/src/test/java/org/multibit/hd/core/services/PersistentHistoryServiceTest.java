@@ -9,6 +9,7 @@ import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.WalletIdTest;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -24,6 +25,7 @@ import static org.fest.assertions.Assertions.assertThat;
 public class PersistentHistoryServiceTest {
 
   private PersistentHistoryService historyService;
+  private WalletSummary walletSummary;
 
   @Before
   public void setUp() throws Exception {
@@ -41,7 +43,7 @@ public class PersistentHistoryServiceTest {
     BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     long nowInSeconds = Dates.nowInSeconds();
-    WalletManager
+    walletSummary = WalletManager
       .INSTANCE
       .getOrCreateMBHDSoftWalletSummaryFromSeed(
               applicationDirectory,
@@ -124,7 +126,7 @@ public class PersistentHistoryServiceTest {
     assertThat(allHistoryEntries.size()).isEqualTo(0);
 
     // Reload it - there should be the same number of history entries and the new history entry should be available
-    historyService.loadHistory();
+    historyService.loadHistory((String)walletSummary.getWalletPassword().getPassword());
 
     allHistoryEntries = historyService.allHistory();
 
