@@ -281,10 +281,11 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
       }
       if (currentWalletSummary != null && currentWalletSummary.isPresent()) {
 
+        WalletPassword walletPassword = new WalletPassword(password, walletId);
         WalletSummary walletSummary = currentWalletSummary.get();
-        walletSummary.setWalletPassword(new WalletPassword(password, walletId));
+        walletSummary.setWalletPassword(walletPassword);
 
-        CoreServices.getOrCreateHistoryService(walletSummary.getWalletId());
+        CoreServices.getOrCreateHistoryService(walletPassword);
 
         // Must have succeeded to be here
         CoreServices.logHistory(Languages.safeText(MessageKey.PASSWORD_VERIFIED));

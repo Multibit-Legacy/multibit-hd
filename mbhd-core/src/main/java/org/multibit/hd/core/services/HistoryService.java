@@ -55,7 +55,7 @@ public interface HistoryService {
    *
    * @throws HistoryLoadException If something goes wrong
    */
-  void loadHistory() throws HistoryLoadException;
+  void loadHistory(String password) throws HistoryLoadException;
 
   /**
    * @param selectedEntries The selected entries to remove from the store
