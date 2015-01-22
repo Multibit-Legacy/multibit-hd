@@ -47,8 +47,7 @@ public class SecurityCheckingService extends AbstractService {
           // Check frequently for a Java debugger being attached
           // to get immediate detection
           if (OSUtils.isDebuggerAttached()) {
-            // TODO Reinstate this
-            //handleDebuggerAttached();
+            handleDebuggerAttached();
           }
 
         }
