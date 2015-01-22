@@ -41,6 +41,14 @@ public class QuickUnlockWalletUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireDisabled();
 
+    // Verify there is a wallet selected
+    // If this fails check the standard wallet fixture YAML
+    window
+      .comboBox(MessageKey.SELECT_WALLET.getKey())
+      .requireEnabled()
+      .requireNotEditable()
+      .requireItemCount(1);
+
     // Enter credentials text
     window
       .textBox(MessageKey.ENTER_PASSWORD.getKey())
