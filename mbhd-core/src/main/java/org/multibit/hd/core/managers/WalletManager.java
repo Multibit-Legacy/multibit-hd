@@ -1070,22 +1070,23 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * @return A list of non Tezor wallet summaries based on the current application directory contents (never null)
+   * @return A list of soft wallet summaries based on the current application directory contents (never null)
+   *         This list contains MBHD soft wallets and Trezor soft wallets
    */
-  public static List<WalletSummary> getNonHardTrezorWalletSummaries() {
+  public static List<WalletSummary> getSoftWalletSummaries() {
 
     List<File> walletDirectories = findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
     Optional<String> walletRoot = INSTANCE.getCurrentWalletRoot();
     List<WalletSummary> allWalletSummaries = findWalletSummaries(walletDirectories, walletRoot);
-    List<WalletSummary> nonHardTrezorWalletSummaries = Lists.newArrayList();
+    List<WalletSummary>softWalletSummaries = Lists.newArrayList();
 
     for (WalletSummary walletSummary : allWalletSummaries) {
-      if (!WalletType.TREZOR_HARD_WALLET.equals(walletSummary.getWalletType())) {
-        nonHardTrezorWalletSummaries.add(walletSummary);
+      if (WalletType.MBHD_SOFT_WALLET.equals(walletSummary.getWalletType()) || WalletType.TREZOR_SOFT_WALLET.equals(walletSummary.getWalletType())) {
+        softWalletSummaries.add(walletSummary);
       }
     }
 
-    return nonHardTrezorWalletSummaries;
+    return softWalletSummaries;
   }
 
   /**
