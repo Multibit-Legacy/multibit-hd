@@ -1,10 +1,13 @@
 package org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.wallet_details;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -32,14 +35,42 @@ public class ShowThenCancelWalletDetailsUseCase extends AbstractFestUseCase {
     // Verify the "wallet details" wizard appears
     assertLabelText(MessageKey.WALLET_DETAILS_TITLE);
 
-//    // Verify the note appears
-//    assertLabelText(MessageKey.ABOUT_NOTE_1);
-//
-//    // Verify "visit website" is present
-//    window
-//      .button(MessageKey.VISIT_WEBSITE.getKey())
-//      .requireVisible()
-//      .requireEnabled();
+    // Verify that various labels are present
+    assertThat(
+      window
+        .textBox(MessageKey.CLOUD_BACKUP_LOCATION.getKey())
+        .requireVisible()
+        .text()).isNotEmpty();
+
+    assertThat(
+      window
+        .textBox(MessageKey.APPLICATION_DIRECTORY.getKey())
+        .requireVisible()
+        .text()).isNotEmpty();
+
+    assertThat(
+      window
+        .textBox(MessageKey.WALLET_DIRECTORY.getKey())
+        .requireVisible()
+        .text()).isNotEmpty();
+
+    assertThat(
+      window
+        .label(MessageKey.CONTACTS.getKey())
+        .requireVisible()
+        .text()).isNotEmpty();
+
+    assertThat(
+      window
+        .label(MessageKey.PAYMENTS.getKey())
+        .requireVisible()
+        .text()).isNotEmpty();
+
+    // Verify that WalletType has loaded (see #364)
+    assertThat(window
+      .textBox(CoreMessageKey.WALLET_CAPABILITIES.getKey())
+      .requireVisible()
+      .text()).isNotEmpty();
 
     // Verify Finish is present
     window
