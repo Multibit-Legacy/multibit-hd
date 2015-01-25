@@ -805,6 +805,8 @@ public enum WalletManager implements WalletEventListener {
     // Try to infer the wallet type from the key structure to bootstrap missing WalletType values
     inferWalletType(wallet);
 
+    log.debug("Wallet loaded ok:\n{}\n", wallet);
+
     return wallet;
   }
 

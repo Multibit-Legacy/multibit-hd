@@ -257,10 +257,8 @@ public class WalletService extends AbstractService {
               subsetPaymentDataList.add(paymentData);
             }
           }
-
         }
       }
-
     }
 
     Collections.sort(subsetPaymentDataList, new PaymentComparator());

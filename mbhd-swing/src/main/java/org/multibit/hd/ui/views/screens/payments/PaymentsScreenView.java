@@ -7,6 +7,7 @@ import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
+import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -161,6 +162,16 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   }
 
   /**
+    * Update the payments when a transactionCreationEvent occurs
+    */
+   @Subscribe
+   public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+     log.trace("Received a TransactionCreationEvent.");
+
+     update(true);
+   }
+
+   /**
    * <p>Called when the search box is updated</p>
    *
    * @param event The "component changed" event

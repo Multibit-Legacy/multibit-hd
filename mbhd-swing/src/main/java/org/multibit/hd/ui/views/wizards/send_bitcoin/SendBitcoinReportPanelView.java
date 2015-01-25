@@ -191,6 +191,11 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
     lastTransactionCreationEvent = transactionCreationEvent;
 
+    if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+      // We now have a transactionId so keep that in the panel model for filtering TransactionSeenEvents later
+      currentTransactionId = transactionCreationEvent.getTransactionId();
+    }
+
     // The event may be fired before the UI has initialised
     if (!initialised) {
       return;
@@ -202,8 +207,6 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
         public void run() {
 
           if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
-            // We now have a transactionId so keep that in the panel model for filtering TransactionSeenEvents later
-            currentTransactionId = transactionCreationEvent.getTransactionId();
             LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
             LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, "");
             LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));

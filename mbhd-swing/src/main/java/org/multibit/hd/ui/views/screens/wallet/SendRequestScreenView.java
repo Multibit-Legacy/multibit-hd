@@ -12,6 +12,7 @@ import org.multibit.hd.core.dto.PaymentType;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
+import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
@@ -204,6 +205,11 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     update();
   }
 
+  @Subscribe
+  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+    update();
+  }
+
   /**
    * Update the payments when a walletDetailsChangedEvent occurs
    */
@@ -296,8 +302,6 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
           requestBitcoin.setEnabled(finalNewEnabled);
         }
       });
-
     }
-
   }
 }
