@@ -80,7 +80,7 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
     reportStatusLabel.setVisible(false);
 
     timestampLabel = Labels.newTimestamp();
-    timestampText = TextBoxes.newReadOnlyTextField(10);
+    timestampText = TextBoxes.newReadOnlyTextField(10, MessageKey.TIMESTAMP, MessageKey.TIMESTAMP_TOOLTIP);
     timestampNote = Labels.newTimestampNote();
 
     // Start off invisible in case wallet creation fails
