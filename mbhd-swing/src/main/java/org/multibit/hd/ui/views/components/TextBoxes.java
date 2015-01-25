@@ -284,7 +284,13 @@ public class TextBoxes {
    */
   public static JTextField newEnterName(DocumentListener listener, boolean readOnly) {
 
-    JTextField textField = readOnly ? newReadOnlyTextField(40, MessageKey.NAME, MessageKey.NAME_TOOLTIP) : newTextField(40);
+    JTextField textField;
+    if (readOnly) {
+      textField = newReadOnlyTextField(40, MessageKey.NAME, MessageKey.NAME_TOOLTIP);
+    } else {
+      textField = newTextField(40);
+      AccessibilityDecorator.apply(textField, MessageKey.NAME, MessageKey.NAME_TOOLTIP);
+    }
 
     textField.getDocument().addDocumentListener(listener);
 
@@ -300,7 +306,13 @@ public class TextBoxes {
    */
   public static JTextField newEnterEmailAddress(DocumentListener listener, boolean readOnly) {
 
-    JTextField textField = readOnly ? newReadOnlyTextField(40, MessageKey.EMAIL_ADDRESS, MessageKey.EMAIL_ADDRESS_TOOLTIP) : newTextField(40);
+    JTextField textField;
+    if (readOnly) {
+      textField = newReadOnlyTextField(40, MessageKey.EMAIL_ADDRESS, MessageKey.EMAIL_ADDRESS_TOOLTIP);
+    } else {
+      textField = newTextField(40);
+      AccessibilityDecorator.apply(textField, MessageKey.EMAIL_ADDRESS, MessageKey.EMAIL_ADDRESS_TOOLTIP);
+    }
 
     // Detect changes
     textField.getDocument().addDocumentListener(listener);
@@ -365,7 +377,12 @@ public class TextBoxes {
    */
   public static JTextField newEnterExtendedPublicKey(DocumentListener listener, boolean readOnly) {
 
-    JTextField textField = readOnly ? newReadOnlyTextField(40, MessageKey.EXTENDED_PUBLIC_KEY, MessageKey.EXTENDED_PUBLIC_KEY_TOOLTIP) : newTextField(40);
+    JTextField textField;
+    if (readOnly) {
+      textField = newReadOnlyTextField(40, MessageKey.EXTENDED_PUBLIC_KEY, MessageKey.EXTENDED_PUBLIC_KEY_TOOLTIP);
+    } else {
+      textField = newTextField(40);
+    }
 
     // Detect changes
     textField.getDocument().addDocumentListener(listener);
