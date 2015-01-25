@@ -225,7 +225,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   }
 
   @Subscribe
-  public void onBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
+  public void onBitcoinSentEvent(final BitcoinSentEvent bitcoinSentEvent) {
     log.debug("Received the BitcoinSentEvent: " + bitcoinSentEvent);
 
     lastBitcoinSentEvent = bitcoinSentEvent;
@@ -234,16 +234,22 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
       return;
     }
 
-    if (bitcoinSentEvent.isSendWasSuccessful()) {
-      LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
-      LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
-    } else {
-      String summaryMessage = Languages.safeText(CoreMessageKey.BITCOIN_SEND_FAILED);
-      String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReasonKey(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
-      LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, summaryMessage);
-      LabelDecorator.applyWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
-      LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
-    }
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          if (bitcoinSentEvent.isSendWasSuccessful()) {
+            LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
+            LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
+          } else {
+            String summaryMessage = Languages.safeText(CoreMessageKey.BITCOIN_SEND_FAILED);
+            String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReasonKey(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
+            LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, summaryMessage);
+            LabelDecorator.applyWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
+            LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
+          }
+        }
+      });
   }
 
   @Subscribe
