@@ -327,6 +327,7 @@ public enum WalletManager implements WalletEventListener {
       walletSummary.setNotes(notes);
       walletSummary.setWalletPassword(new WalletPassword(password, walletId));
       walletSummary.setWalletFile(walletFile);
+      walletSummary.setWalletType(WalletType.MBHD_SOFT_WALLET);
       setCurrentWalletSummary(walletSummary);
 
       // Save the wallet YAML
@@ -448,6 +449,7 @@ public enum WalletManager implements WalletEventListener {
     walletSummary.setName(name);
     walletSummary.setNotes(notes);
     walletSummary.setWalletPassword(new WalletPassword(password, walletId));
+    walletSummary.setWalletType(WalletType.TREZOR_HARD_WALLET);
 
     setCurrentWalletSummary(walletSummary);
 
@@ -583,6 +585,7 @@ public enum WalletManager implements WalletEventListener {
     walletSummary.setName(name);
     walletSummary.setNotes(notes);
     walletSummary.setWalletPassword(new WalletPassword(password, walletId));
+    walletSummary.setWalletType(WalletType.TREZOR_SOFT_WALLET);
 
     setCurrentWalletSummary(walletSummary);
 
@@ -633,7 +636,7 @@ public enum WalletManager implements WalletEventListener {
 
     // Remember the current soft wallet root
     if (WalletType.MBHD_SOFT_WALLET == walletSummary.getWalletType() ||
-            WalletType.TREZOR_SOFT_WALLET == walletSummary.getWalletType()) {
+      WalletType.TREZOR_SOFT_WALLET == walletSummary.getWalletType()) {
       if (Configurations.currentConfiguration != null) {
         Configurations.currentConfiguration.getWallet().setLastSoftWalletRoot(walletRoot);
       }
@@ -802,8 +805,6 @@ public enum WalletManager implements WalletEventListener {
     // Try to infer the wallet type from the key structure to bootstrap missing WalletType values
     inferWalletType(wallet);
 
-    log.debug("Successfully loaded wallet of type {} as follows:\n{}\n", getWalletType(wallet), wallet.toString());
-
     return wallet;
   }
 
@@ -851,16 +852,16 @@ public enum WalletManager implements WalletEventListener {
 
   static public WalletType getWalletType(Wallet wallet) {
     if (wallet == null) {
-       return WalletType.UNKNOWN;
-     } else {
-       Map<String, WalletExtension> walletExtensionMap = wallet.getExtensions();
-       WalletTypeExtension walletTypeExtension = (WalletTypeExtension)walletExtensionMap.get(WalletTypeExtension.WALLET_TYPE_WALLET_EXTENSION_ID);
-       if (walletTypeExtension == null) {
-         return WalletType.UNKNOWN;
-       } else {
-         return walletTypeExtension.getWalletType();
-       }
-     }
+      return WalletType.UNKNOWN;
+    } else {
+      Map<String, WalletExtension> walletExtensionMap = wallet.getExtensions();
+      WalletTypeExtension walletTypeExtension = (WalletTypeExtension) walletExtensionMap.get(WalletTypeExtension.WALLET_TYPE_WALLET_EXTENSION_ID);
+      if (walletTypeExtension == null) {
+        return WalletType.UNKNOWN;
+      } else {
+        return walletTypeExtension.getWalletType();
+      }
+    }
   }
 
   /**
@@ -1072,22 +1073,26 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * @return A list of non Tezor wallet summaries based on the current application directory contents (never null)
+   *
+   * <p>This list contains MBHD soft wallets and Trezor soft wallets</p>
+   * @return A list of soft wallet summaries based on the current application directory contents (never null)
+   *
    */
-  public static List<WalletSummary> getNonHardTrezorWalletSummaries() {
+  public static List<WalletSummary> getSoftWalletSummaries() {
 
     List<File> walletDirectories = findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
     Optional<String> walletRoot = INSTANCE.getCurrentWalletRoot();
     List<WalletSummary> allWalletSummaries = findWalletSummaries(walletDirectories, walletRoot);
-    List<WalletSummary> nonHardTrezorWalletSummaries = Lists.newArrayList();
+    List<WalletSummary> softWalletSummaries = Lists.newArrayList();
 
     for (WalletSummary walletSummary : allWalletSummaries) {
-      if (!WalletType.TREZOR_HARD_WALLET.equals(walletSummary.getWalletType())) {
-        nonHardTrezorWalletSummaries.add(walletSummary);
+      if (WalletType.MBHD_SOFT_WALLET == walletSummary.getWalletType()
+        || WalletType.TREZOR_SOFT_WALLET == walletSummary.getWalletType()) {
+        softWalletSummaries.add(walletSummary);
       }
     }
 
-    return nonHardTrezorWalletSummaries;
+    return softWalletSummaries;
   }
 
   /**

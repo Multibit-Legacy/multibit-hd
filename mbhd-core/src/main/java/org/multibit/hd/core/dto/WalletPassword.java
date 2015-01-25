@@ -57,7 +57,6 @@ public class WalletPassword {
   @Override
   public String toString() {
     return "WalletPassword{" +
-            "password=" + password +
             ", walletId=" + walletId +
             '}';
   }

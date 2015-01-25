@@ -65,7 +65,7 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
    */
   public CredentialsLoadWalletReportPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.LOAD_WALLET_REPORT_TITLE, AwesomeIcon.FILE_TEXT);
+    super(wizard, panelName, MessageKey.LOAD_WALLET_REPORT_TITLE, AwesomeIcon.SUN_O);
 
   }
 

@@ -230,23 +230,23 @@ public class TrezorWalletTest {
         DeterministicKey key0 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
         String address0 = key0.toAddress(networkParameters).toString();
         log.debug("key0: {}", key0);
-        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
         DeterministicKey key1 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
         String address1 = key1.toAddress(networkParameters).toString();
-        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
         DeterministicKey key2 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
         String address2 = key2.toAddress(networkParameters).toString();
-        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
         DeterministicKey key3 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
         String address3 = key3.toAddress(networkParameters).toString();
-        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
         DeterministicKey key4 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
         String address4 = key4.toAddress(networkParameters).toString();
-        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
         // It is saved with the newly generated addresses
         File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(temporaryDirectory).get();
@@ -267,7 +267,7 @@ public class TrezorWalletTest {
         assertThat(address4).isEqualTo(SNIFF_EXPECTED_ADDRESS_4);
 
         // Load the wallet up again to check it loads ok
-        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
         Optional<WalletSummary> rereadWalletSummary = WalletManager.INSTANCE.openWalletFromWalletId(temporaryDirectory, walletSummary.getWalletId(), PASSWORD);
         assertThat(rereadWalletSummary.isPresent());
 
@@ -341,7 +341,7 @@ public class TrezorWalletTest {
         DeterministicKey key0 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
         String address0 = key0.toAddress(networkParameters).toString();
         log.debug("key0: {}", key0);
-        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
         // Check the first receiving key has the expected path - this should be m/44h/0h/0h/0/0
         List<ChildNumber> expectedFirstKeyPathList = new ArrayList<>();
@@ -354,19 +354,19 @@ public class TrezorWalletTest {
 
         DeterministicKey key1 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
         String address1 = key1.toAddress(networkParameters).toString();
-        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
         DeterministicKey key2 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
         String address2 = key2.toAddress(networkParameters).toString();
-        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
         DeterministicKey key3 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
         String address3 = key3.toAddress(networkParameters).toString();
-        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
         DeterministicKey key4 = wallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
         String address4 = key4.toAddress(networkParameters).toString();
-        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
         // It is saved with the newly generated addresses
         File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(temporaryDirectory).get();
@@ -387,7 +387,7 @@ public class TrezorWalletTest {
         assertThat(address4).isEqualTo(SNIFF_EXPECTED_ADDRESS_4);
 
         // Load the wallet up again to check it loads ok
-        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
         Optional<WalletSummary> rereadWalletSummary = WalletManager.INSTANCE.openWalletFromWalletId(temporaryDirectory, walletSummary.getWalletId(), PASSWORD);
         assertThat(rereadWalletSummary.isPresent());
 

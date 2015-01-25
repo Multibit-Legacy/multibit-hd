@@ -961,7 +961,7 @@ public class WalletService extends AbstractService {
 
         // Load up all the history, contacts and payments using the old credentials
         ContactService contactService = CoreServices.getOrCreateContactService(walletId);
-        HistoryService historyService = CoreServices.getOrCreateHistoryService(walletId);
+        HistoryService historyService = CoreServices.getOrCreateHistoryService(walletSummary.getWalletPassword());
         WalletService walletService = CoreServices.getOrCreateWalletService(walletId);
 
         // Change the credentials used to encrypt the wallet

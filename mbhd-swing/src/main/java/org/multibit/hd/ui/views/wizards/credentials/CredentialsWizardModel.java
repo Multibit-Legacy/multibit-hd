@@ -21,6 +21,7 @@ import org.multibit.hd.core.dto.WalletPassword;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.WalletLoadEvent;
+import org.multibit.hd.core.exceptions.HistoryLoadException;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -739,10 +740,19 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     if (!"".equals(password)) {
       // Attempt to open the wallet to check the password
       WalletId walletId = enterPasswordPanelModel.getSelectWalletModel().getValue().getWalletId();
+
+
       Optional<WalletSummary> currentWalletSummary;
       try {
+        // Open the history BEFORE the wallet
+        // This way if the password is a previous password a rolling backup is not loaded
+        // Fail fast
+
+        // Create the history service
+        CoreServices.getOrCreateHistoryService(new WalletPassword(password, walletId));
+
         currentWalletSummary = WalletManager.INSTANCE.openWalletFromWalletId(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
-      } catch (org.bitcoinj.crypto.KeyCrypterException | WalletLoadException wle) {
+      } catch (HistoryLoadException | org.bitcoinj.crypto.KeyCrypterException | WalletLoadException wle) {
         // Mostly this will be from a bad password
         log.error(wle.getMessage());
         // Assume bad credentials
@@ -760,9 +770,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         // Update the wallet data
         WalletSummary walletSummary = currentWalletSummary.get();
         walletSummary.setWalletPassword(new WalletPassword(password, walletId));
-
-        // Create the history service
-        CoreServices.getOrCreateHistoryService(walletSummary.getWalletId());
 
         // Must have succeeded to be here
         CoreServices.logHistory(Languages.safeText(MessageKey.PASSWORD_VERIFIED));

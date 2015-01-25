@@ -17,6 +17,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Yaml;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletPassword;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
@@ -516,22 +517,22 @@ public class CoreServices {
 
     Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present. No wallet is present.");
 
-    WalletId walletId = currentWalletSummary.get().getWalletId();
+    WalletPassword walletPassword = currentWalletSummary.get().getWalletPassword();
 
-    return getOrCreateHistoryService(walletId);
+    return getOrCreateHistoryService(walletPassword);
   }
 
   /**
    * @return The history service for a wallet (single soft, multiple hard)
    */
-  public static HistoryService getOrCreateHistoryService(WalletId walletId) {
+  public static HistoryService getOrCreateHistoryService(WalletPassword walletPassword) {
 
     log.debug("Get or create history service");
 
-    Preconditions.checkNotNull(walletId, "'walletId' must be present");
+    Preconditions.checkNotNull(walletPassword, "'walletPassword' must be present");
 
     if (!historyService.isPresent()) {
-      historyService = Optional.of(new PersistentHistoryService(walletId));
+      historyService = Optional.of(new PersistentHistoryService(walletPassword));
     }
 
     // Return the existing or new history service

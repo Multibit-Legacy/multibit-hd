@@ -140,12 +140,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
     // Trigger the wizard hide process manually (no suitable button available)
     // using a deferred hide (control passes directly to handleHide)
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
-      }
-    });
+    ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
 
     // Make the switch immediately
     Configurations.switchConfiguration(newConfiguration);

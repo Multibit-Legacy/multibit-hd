@@ -324,58 +324,60 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
           final URL url = e.getURL();
 
-          boolean multiBitHelp = url.toString().startsWith(InstallationManager.MBHD_WEBSITE_HELP_DOMAIN)
-            && url.toString().contains("/hd")
-            && url.toString().endsWith(".html");
+          if (url != null) {
+            boolean multiBitHelp = url.toString().startsWith(InstallationManager.MBHD_WEBSITE_HELP_DOMAIN)
+                    && url.toString().contains("/hd")
+                    && url.toString().endsWith(".html");
 
-          if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
+            if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
 
-            if (!multiBitHelp) {
+              if (!multiBitHelp) {
 
-              // Indicate an external link
-              if (launchBrowserButton.isEnabled()) {
-                launchBrowserButton.setBackground(Themes.currentTheme.infoAlertBackground());
+                // Indicate an external link
+                if (launchBrowserButton.isEnabled()) {
+                  launchBrowserButton.setBackground(Themes.currentTheme.infoAlertBackground());
+                }
+
               }
-
             }
-          }
 
-          if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
+            if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
 
-            if (launchBrowserButton.isEnabled()) {
-              launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
+              if (launchBrowserButton.isEnabled()) {
+                launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
+              }
             }
-          }
 
-          if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 
-            // Force the main browser if not MultiBit HD help (i.e. a relative link to the FAQ)
-            if (!multiBitHelp) {
+              // Force the main browser if not MultiBit HD help (i.e. a relative link to the FAQ)
+              if (!multiBitHelp) {
 
-              listeningExecutorService.submit(
-                new Runnable() {
-                  @Override
-                  public void run() {
-                    try {
-                      if (launchBrowserButton.isEnabled()) {
-                        Desktop.getDesktop().browse(url.toURI());
-                      } else {
-                        // No browser available
-                        Sounds.playBeep();
-                      }
-                    } catch (IOException | URISyntaxException e1) {
-                      Sounds.playBeep();
-                    }
-                  }
-                });
+                listeningExecutorService.submit(
+                        new Runnable() {
+                          @Override
+                          public void run() {
+                            try {
+                              if (launchBrowserButton.isEnabled()) {
+                                Desktop.getDesktop().browse(url.toURI());
+                              } else {
+                                // No browser available
+                                Sounds.playBeep();
+                              }
+                            } catch (IOException | URISyntaxException e1) {
+                              Sounds.playBeep();
+                            }
+                          }
+                        });
 
-            } else {
+              } else {
 
-              // User has clicked on the link so treat as a new page
-              addPage(e.getURL());
+                // User has clicked on the link so treat as a new page
+                addPage(e.getURL());
 
-              // We are allowed to browse to this page
-              browse(currentPage());
+                // We are allowed to browse to this page
+                browse(currentPage());
+              }
             }
           }
 
