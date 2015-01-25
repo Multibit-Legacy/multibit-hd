@@ -59,7 +59,7 @@ public class ControllerEvents {
     Preconditions.checkNotNull(subscriber, "'subscriber' must be present");
 
     if (controllerEventBusSubscribers.add(subscriber)) {
-      log.debug("Register: " + subscriber.getClass().getSimpleName());
+      log.trace("Register: " + subscriber.getClass().getSimpleName());
       try {
         controllerEventBus.register(subscriber);
       } catch (IllegalArgumentException e) {
@@ -83,7 +83,7 @@ public class ControllerEvents {
     Preconditions.checkNotNull(subscriber, "'subscriber' must be present");
 
     if (controllerEventBusSubscribers.contains(subscriber)) {
-      log.debug("Unregister: " + subscriber.getClass().getSimpleName());
+      log.trace("Unregister: " + subscriber.getClass().getSimpleName());
       try {
         controllerEventBus.unregister(subscriber);
       } catch (IllegalArgumentException e) {

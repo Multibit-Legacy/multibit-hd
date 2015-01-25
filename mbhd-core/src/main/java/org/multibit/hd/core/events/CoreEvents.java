@@ -70,7 +70,7 @@ public class CoreEvents {
     Preconditions.checkNotNull(subscriber, "'subscriber' must be present");
 
     if (coreEventBusSubscribers.add(subscriber)) {
-      log.debug("Register: " + subscriber.getClass().getSimpleName());
+      log.trace("Register: " + subscriber.getClass().getSimpleName());
       try {
         coreEventBus.register(subscriber);
       } catch (IllegalArgumentException e) {
@@ -93,7 +93,7 @@ public class CoreEvents {
     Preconditions.checkNotNull(subscriber, "'subscriber' must be present");
 
     if (coreEventBusSubscribers.contains(subscriber)) {
-      log.debug("Unregister: " + subscriber.getClass().getSimpleName());
+      log.trace("Unregister: " + subscriber.getClass().getSimpleName());
       try {
         coreEventBus.unregister(subscriber);
       } catch (IllegalArgumentException e) {
