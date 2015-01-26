@@ -70,7 +70,7 @@ public class ViewEvents {
     Preconditions.checkNotNull(subscriber, "'subscriber' must be present");
 
     if (viewEventBusSubscribers.add(subscriber)) {
-      log.debug("Register: " + subscriber.getClass().getSimpleName());
+      log.trace("Register: " + subscriber.getClass().getSimpleName());
       try {
         viewEventBus.register(subscriber);
       } catch (IllegalArgumentException e) {
@@ -93,7 +93,7 @@ public class ViewEvents {
     Preconditions.checkNotNull(subscriber, "'subscriber' must be present");
 
     if (viewEventBusSubscribers.contains(subscriber)) {
-      log.debug("Unregister: " + subscriber.getClass().getSimpleName());
+      log.trace("Unregister: " + subscriber.getClass().getSimpleName());
       try {
         viewEventBus.unregister(subscriber);
       } catch (IllegalArgumentException e) {

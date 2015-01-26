@@ -82,7 +82,7 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
     pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(2), getModel().get().getPanelName() + ".button_2"), MultiBitUI.SMALL_BUTTON_MIG);
     pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(3), getModel().get().getPanelName() + ".button_3"), MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
 
-    pinText = TextBoxes.newReadOnlyTextField(10);
+    pinText = TextBoxes.newReadOnlyTextField(10, MessageKey.ENTER_CURRENT_PIN, MessageKey.ENTER_CURRENT_PIN);
     pinText.setName(getModel().get().getPanelName()+".textbox");
     TitleFontDecorator.apply(pinText, (float) (MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE * 0.6));
 

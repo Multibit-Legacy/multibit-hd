@@ -10,10 +10,7 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.AbstractComponentView;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.TextBoxes;
+import org.multibit.hd.ui.views.components.*;
 
 import javax.swing.*;
 
@@ -61,20 +58,20 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
     WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
 
     // Cloud backup location (limit width)
-    panel.add(Labels.newLabel(MessageKey.CLOUD_BACKUP_LOCATION));
-    cloudBackupDirectoryTextField = TextBoxes.newReadOnlyTextField(40);
+    panel.add(Labels.newValueLabel(Languages.safeText(MessageKey.CLOUD_BACKUP_LOCATION)));
+    cloudBackupDirectoryTextField = TextBoxes.newReadOnlyTextField(40, MessageKey.CLOUD_BACKUP_LOCATION, MessageKey.CLOUD_BACKUP_LOCATION);
     cloudBackupDirectoryTextField.setText(Configurations.currentConfiguration.getAppearance().getCloudBackupLocation());
     panel.add(cloudBackupDirectoryTextField, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     // Application directory (limit width)
-    panel.add(Labels.newLabel(MessageKey.APPLICATION_DIRECTORY));
-    applicationDirectoryTextField = TextBoxes.newReadOnlyTextField(40);
+    panel.add(Labels.newValueLabel(Languages.safeText(MessageKey.APPLICATION_DIRECTORY)));
+    applicationDirectoryTextField = TextBoxes.newReadOnlyTextField(40, MessageKey.APPLICATION_DIRECTORY, MessageKey.APPLICATION_DIRECTORY);
     applicationDirectoryTextField.setText(walletDetail.getApplicationDirectory());
     panel.add(applicationDirectoryTextField, MultiBitUI.WIZARD_MAX_WIDTH_MIG+",wrap");
 
     // Wallet directory (limit width)
-    panel.add(Labels.newLabel(MessageKey.WALLET_DIRECTORY));
-    walletDirectoryTextField = TextBoxes.newReadOnlyTextField(40);
+    panel.add(Labels.newValueLabel(Languages.safeText(MessageKey.WALLET_DIRECTORY)));
+    walletDirectoryTextField = TextBoxes.newReadOnlyTextField(40, MessageKey.WALLET_DIRECTORY, MessageKey.WALLET_DIRECTORY);
     walletDirectoryTextField.setText(walletDetail.getWalletDirectory());
     panel.add(walletDirectoryTextField, MultiBitUI.WIZARD_MAX_WIDTH_MIG+",wrap");
 
@@ -91,6 +88,7 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
     // Capabilities (limit width)
     panel.add(Labels.newLabel(CoreMessageKey.WALLET_CAPABILITIES),"wrap");
     walletCapabilitiesTextArea = TextBoxes.newReadOnlyTextArea(4,50);
+    AccessibilityDecorator.apply(walletCapabilitiesTextArea, CoreMessageKey.WALLET_CAPABILITIES);
     // Can only provide capabilities for known wallet types and we can't make assumptions
     if (walletSummary.getWalletType() != null) {
       walletCapabilitiesTextArea.setText(Languages.safeText(walletSummary.getWalletType().getKey()));

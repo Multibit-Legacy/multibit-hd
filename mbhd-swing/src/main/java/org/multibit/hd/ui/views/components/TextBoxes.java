@@ -57,9 +57,12 @@ public class TextBoxes {
   }
 
   /**
+   * @param nameKey    The name key for accessibility
+   * @param tooltipKey The tooltip key for accessibility
+   *
    * @return A new text field with default theme
    */
-  public static JTextField newReadOnlyTextField(int columns) {
+  public static JTextField newReadOnlyTextField(int columns, MessageKey nameKey, MessageKey tooltipKey) {
 
     JTextField textField = new JTextField(columns);
 
@@ -71,6 +74,9 @@ public class TextBoxes {
     textField.setBackground(Themes.currentTheme.readOnlyBackground());
 
     textField.setOpaque(false);
+
+    // Ensure FEST can find it
+    AccessibilityDecorator.apply(textField, nameKey, tooltipKey);
 
     return textField;
   }
@@ -249,10 +255,7 @@ public class TextBoxes {
    */
   public static JTextField newDisplaySeedTimestamp(String seedTimestamp) {
 
-    JTextField textField = newReadOnlyTextField(20);
-
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.TIMESTAMP, MessageKey.TIMESTAMP_TOOLTIP);
+    JTextField textField = newReadOnlyTextField(20, MessageKey.TIMESTAMP, MessageKey.TIMESTAMP_TOOLTIP);
 
     textField.setText(seedTimestamp);
 
@@ -281,10 +284,13 @@ public class TextBoxes {
    */
   public static JTextField newEnterName(DocumentListener listener, boolean readOnly) {
 
-    JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
-
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.NAME, MessageKey.NAME_TOOLTIP);
+    JTextField textField;
+    if (readOnly) {
+      textField = newReadOnlyTextField(40, MessageKey.NAME, MessageKey.NAME_TOOLTIP);
+    } else {
+      textField = newTextField(40);
+      AccessibilityDecorator.apply(textField, MessageKey.NAME, MessageKey.NAME_TOOLTIP);
+    }
 
     textField.getDocument().addDocumentListener(listener);
 
@@ -300,10 +306,13 @@ public class TextBoxes {
    */
   public static JTextField newEnterEmailAddress(DocumentListener listener, boolean readOnly) {
 
-    JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
-
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.EMAIL_ADDRESS, MessageKey.EMAIL_ADDRESS_TOOLTIP);
+    JTextField textField;
+    if (readOnly) {
+      textField = newReadOnlyTextField(40, MessageKey.EMAIL_ADDRESS, MessageKey.EMAIL_ADDRESS_TOOLTIP);
+    } else {
+      textField = newTextField(40);
+      AccessibilityDecorator.apply(textField, MessageKey.EMAIL_ADDRESS, MessageKey.EMAIL_ADDRESS_TOOLTIP);
+    }
 
     // Detect changes
     textField.getDocument().addDocumentListener(listener);
@@ -339,10 +348,7 @@ public class TextBoxes {
    */
   public static JTextField newDisplayBitcoinAddress(String bitcoinAddress) {
 
-    JTextField textField = newReadOnlyTextField(34);
-
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS, MessageKey.BITCOIN_ADDRESS_TOOLTIP);
+    JTextField textField = newReadOnlyTextField(34, MessageKey.BITCOIN_ADDRESS, MessageKey.BITCOIN_ADDRESS_TOOLTIP);
 
     textField.setText(bitcoinAddress);
 
@@ -371,10 +377,12 @@ public class TextBoxes {
    */
   public static JTextField newEnterExtendedPublicKey(DocumentListener listener, boolean readOnly) {
 
-    JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
-
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.EXTENDED_PUBLIC_KEY, MessageKey.EXTENDED_PUBLIC_KEY_TOOLTIP);
+    JTextField textField;
+    if (readOnly) {
+      textField = newReadOnlyTextField(40, MessageKey.EXTENDED_PUBLIC_KEY, MessageKey.EXTENDED_PUBLIC_KEY_TOOLTIP);
+    } else {
+      textField = newTextField(40);
+    }
 
     // Detect changes
     textField.getDocument().addDocumentListener(listener);
@@ -672,7 +680,9 @@ public class TextBoxes {
   public static JTextArea newTrezorV1Display(String panelName) {
 
     JTextArea trezorDisplay = newReadOnlyTextArea(5, 50);
-    trezorDisplay.setName(panelName+".trezor_display");
+
+    // Ensure FEST can find it
+    trezorDisplay.setName(panelName + ".trezor_display");
 
     return trezorDisplay;
 
