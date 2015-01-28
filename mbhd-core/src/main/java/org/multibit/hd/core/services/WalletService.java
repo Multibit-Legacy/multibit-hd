@@ -724,7 +724,7 @@ public class WalletService extends AbstractService {
 
     try {
 
-      log.debug("Writing payments to '{}'", backingStoreFile.getAbsolutePath());
+      log.debug("Writing payments to\n'{}'", backingStoreFile.getAbsolutePath());
       log.trace("Writing TransactionInfoMap: {}", transactionInfoMap);
 
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
@@ -741,7 +741,7 @@ public class WalletService extends AbstractService {
       log.debug("Writing payments completed");
 
     } catch (Exception e) {
-      log.error("Could not write to payments db '{}'. backingStoreFile.getAbsolutePath()", e);
+      log.error("Could not write to payments db\n'{}'", backingStoreFile.getAbsolutePath(), e);
       throw new PaymentsSaveException("Could not write payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.", e);
     }
   }
