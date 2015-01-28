@@ -58,7 +58,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   @Override
   public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-    log.debug("Chain download started with number of blocks left = {}", blocksLeft);
+    log.trace("Chain download started with number of blocks left = {}", blocksLeft);
 
     startDownload(blocksLeft);
     // Only mark this the first time, because this method can be called more than once during a chain download
@@ -178,7 +178,9 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    * @param date the date of the last block downloaded
    */
   protected void progress(double pct, int blocksSoFar, Date date) {
-    log.debug(
+
+    // Logging this information in production is not necessary
+    log.trace(
             String.format(
                     "Chain download %d%% done with %d blocks to go, block date %s",
                     (int) pct,
