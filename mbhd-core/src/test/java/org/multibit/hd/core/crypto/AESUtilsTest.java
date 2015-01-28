@@ -17,12 +17,14 @@ package org.multibit.hd.core.crypto;
  */
 
 import org.bitcoinj.utils.BriefLogFormatter;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletIdTest;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.spongycastle.crypto.params.KeyParameter;
 
@@ -32,33 +34,30 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class AESUtilsTest {
 
-  // Nonsense bytes for encryption test.
-  private static final byte[] TEST_BYTES = {0, -101, 2, 103, -4, 105, 6, 107, 8, -109, 10, 111, -12, 113, 14, -115, 16, 117, -18, 119, 20, 121, 22, 123, -24, 125, 26, 127, -28, 29, -30, 31};
-
-  private byte[] initialisationVector;
-  private byte[] keyBytes;
-  private KeyParameter keyParameter;
-
-  private SecureRandom secureRandom;
-
   @Before
   public void setUp() throws Exception {
+
+    InstallationManager.unrestricted = true;
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
-    secureRandom = new SecureRandom();
+    SecureRandom secureRandom = new SecureRandom();
 
     // Create a random initialisationVector
-    initialisationVector = new byte[org.multibit.hd.brit.crypto.AESUtils.BLOCK_LENGTH];
+    byte[] initialisationVector = new byte[org.multibit.hd.brit.crypto.AESUtils.BLOCK_LENGTH];
     secureRandom.nextBytes(initialisationVector);
 
     // Create a random key
     secureRandom.nextBytes(initialisationVector);
-    keyBytes = new byte[org.multibit.hd.brit.crypto.AESUtils.KEY_LENGTH];
-    keyParameter = new KeyParameter(keyBytes);
 
     BriefLogFormatter.init();
   }
 
+  @After
+  public void tearDown() throws Exception {
+
+    InstallationManager.unrestricted = false;
+
+  }
 
   @Test
   public void testCreateAESKey() throws Exception {

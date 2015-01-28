@@ -1,9 +1,11 @@
 package org.multibit.hd.core.utils;
 
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.managers.InstallationManager;
 
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -12,10 +14,18 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class NumbersTest {
 
-  @BeforeClass
-  public static void setUpConfiguration() {
+  @Before
+  public void setUp() {
 
+    InstallationManager.unrestricted = true;
     Configurations.currentConfiguration = new Configuration();
+
+  }
+
+  @After
+  public void tearDown() throws Exception {
+
+    InstallationManager.unrestricted = false;
 
   }
 

@@ -3,6 +3,7 @@ package org.multibit.hd.core.utils;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.managers.InstallationManager;
 
 import java.util.Currency;
 import java.util.Locale;
@@ -11,9 +12,12 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class CurrencyUtilsTest {
 
+
+
   @Before
   public void setUp() throws Exception {
 
+    InstallationManager.unrestricted = true;
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
     Locale.setDefault(Locale.UK);
@@ -22,6 +26,7 @@ public class CurrencyUtilsTest {
 
   public void tearDown() {
 
+    InstallationManager.unrestricted = false;
     Locale.setDefault(Locale.UK);
   }
 
