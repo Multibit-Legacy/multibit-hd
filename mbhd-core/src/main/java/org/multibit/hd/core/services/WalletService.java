@@ -682,7 +682,7 @@ public class WalletService extends AbstractService {
 
     try {
 
-      log.debug("Reading payments from '{}'", backingStoreFile.getAbsolutePath());
+      log.debug("Reading payments from\n'{}'", backingStoreFile.getAbsolutePath());
 
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
         backingStoreFile,
