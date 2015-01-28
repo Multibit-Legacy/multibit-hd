@@ -21,16 +21,17 @@ import org.multibit.hd.core.config.LoggingConfiguration;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class LogbackFactory {
 
   private LogbackFactory() { /* singleton */ }
 
-  public static SyslogAppender buildSyslogAppender(LoggingConfiguration.SyslogConfiguration syslog,
-                                                   LoggerContext context,
-                                                   String name,
-                                                   String logFormat) {
+  public static SyslogAppender buildSyslogAppender(
+    LoggingConfiguration.SyslogConfiguration syslog,
+    LoggerContext context,
+    String name,
+    String logFormat) {
     final SyslogAppender appender = new SyslogAppender();
     appender.setName(name);
     appender.setContext(context);
@@ -49,9 +50,11 @@ public class LogbackFactory {
 
   // There are restricted possibilities for the rolling file appender
   @SuppressFBWarnings({"BC_UNCONFIRMED_CAST"})
-  public static FileAppender<ILoggingEvent> buildFileAppender(LoggingConfiguration.FileConfiguration file,
-                                                              LoggerContext context,
-                                                              String logFormat) {
+  public static FileAppender<ILoggingEvent> buildFileAppender(
+    LoggingConfiguration.FileConfiguration file,
+    LoggerContext context,
+    String logFormat) {
+
     final LogFormatter formatter = new LogFormatter(context, file.getTimeZone());
 
     if (logFormat != null) {
@@ -59,15 +62,15 @@ public class LogbackFactory {
     }
     formatter.start();
 
-    final FileAppender<ILoggingEvent> appender =
-      file.isArchive() ? new RollingFileAppender<ILoggingEvent>() :
-        new FileAppender<ILoggingEvent>();
+    final FileAppender<ILoggingEvent> appender = file.isArchive() ?
+      new RollingFileAppender<ILoggingEvent>() :
+      new FileAppender<ILoggingEvent>();
 
     appender.setAppend(true);
     appender.setContext(context);
     appender.setLayout(formatter);
     appender.setFile(file.getCurrentLogFilename());
-    appender.setPrudent(false);
+    appender.setPrudent(false); // We don't expect multiple JVMs
 
     addThresholdFilter(appender, file.getThreshold());
 
@@ -97,9 +100,10 @@ public class LogbackFactory {
     return appender;
   }
 
-  public static ConsoleAppender<ILoggingEvent> buildConsoleAppender(LoggingConfiguration.ConsoleConfiguration console,
-                                                                    LoggerContext context,
-                                                                    String logFormat) {
+  public static ConsoleAppender<ILoggingEvent> buildConsoleAppender(
+    LoggingConfiguration.ConsoleConfiguration console,
+    LoggerContext context,
+    String logFormat) {
     final LogFormatter formatter = new LogFormatter(context, console.getTimeZone());
     if (logFormat != null) {
       formatter.setPattern(logFormat);
