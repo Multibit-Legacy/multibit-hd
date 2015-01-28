@@ -140,7 +140,7 @@ public class CoreServices {
     securityCheckingService = new SecurityCheckingService();
     configurationService = new ConfigurationService();
 
-    // Start the logging factory
+    // Start the logging factory (see later for instance)
     LoggingFactory.bootstrap();
 
     // Start the configuration service to ensure shutdown events are trapped
@@ -163,8 +163,8 @@ public class CoreServices {
       Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
     }
 
-    // Configure logging
-    new LoggingFactory(Configurations.currentConfiguration.getLogging(), "MBHD").configure();
+    // Configure logging now that we have a configuration
+    new LoggingFactory(Configurations.currentConfiguration.getLogging(), "MultiBit HD").configure();
 
     // Start security checking service
     securityCheckingService.start();

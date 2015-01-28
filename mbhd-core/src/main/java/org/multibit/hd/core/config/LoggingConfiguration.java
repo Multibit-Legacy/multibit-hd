@@ -143,15 +143,15 @@ public class LoggingConfiguration {
 
   public static class FileConfiguration {
 
-    private boolean enabled = false;
+    private boolean enabled = true;
 
     private Level threshold = Level.ALL;
 
-    private String currentLogFilename = InstallationManager.MBHD_PREFIX;
+    private String currentLogFilename = InstallationManager.getOrCreateApplicationDataDirectory() + "/logs/multibit-hd.log";
 
     private boolean archive = true;
 
-    private String archivedLogFilenamePattern="log/multibit-hd-%d.log.gz";
+    private String archivedLogFilenamePattern=InstallationManager.getOrCreateApplicationDataDirectory() + "/logs/multibit-hd-%d{yyyy-MM-dd}.%i.log.gz";
 
     private int archivedFileCount = 5;
 
