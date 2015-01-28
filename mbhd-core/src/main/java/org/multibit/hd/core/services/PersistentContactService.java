@@ -268,7 +268,7 @@ public class PersistentContactService extends AbstractService implements Contact
   @Override
   public void loadContacts() throws ContactsLoadException {
 
-    log.debug("Loading contacts from '{}'", backingStoreFile.getAbsolutePath());
+    log.debug("Loading contacts from\n'{}'", backingStoreFile.getAbsolutePath());
 
     try {
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,

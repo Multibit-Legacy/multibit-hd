@@ -953,7 +953,7 @@ public enum WalletManager implements WalletEventListener {
     if (file != null) {
       WalletAutoSaveListener walletAutoSaveListener = new WalletAutoSaveListener();
       wallet.autosaveToFile(file, AUTO_SAVE_DELAY, TimeUnit.MILLISECONDS, walletAutoSaveListener);
-      log.debug("WalletAutoSaveListener {} on file {} just added to wallet {}", System.identityHashCode(this), file.getAbsolutePath(), System.identityHashCode(wallet));
+      log.debug("WalletAutoSaveListener {} on file\n'{}'\njust added to wallet {}", System.identityHashCode(this), file.getAbsolutePath(), System.identityHashCode(wallet));
     } else {
       log.debug("Not adding autoSaveListener to wallet {} as no wallet file is specified", System.identityHashCode(wallet));
     }

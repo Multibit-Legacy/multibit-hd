@@ -168,7 +168,7 @@ public class PersistentHistoryService extends AbstractService implements History
   @Override
   public void loadHistory(String password) throws HistoryLoadException {
 
-    log.debug("Loading history from '{}'", backingStoreFile.getAbsolutePath());
+    log.debug("Loading history from\n'{}'", backingStoreFile.getAbsolutePath());
     try {
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
               password,
