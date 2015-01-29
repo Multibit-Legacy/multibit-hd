@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Logback configuration for use during tests -->
+<!--
+      Logback configuration for use during tests
+
+      Without this configuration the log files will be enormous
+      so do not remove it
+
+-->
 <configuration>
 
   <!-- Standard console appender for checking activity (short on detail) -->
@@ -12,9 +18,7 @@
   </appender>
 
   <!-- Define logging for third party customisation -->
-  <!--<logger name="org.hibernate" level="DEBUG" />-->
-  <!--<logger name="com.sun.jersey" level="DEBUG" />-->
-  <logger name="org.bitcoinj" level="WARN" />
+  <logger name="org.bitcoinj" level="WARN"/>
 
   <!-- Define logging for organisation applications only -->
   <logger name="org.multibit" level="DEBUG"/>

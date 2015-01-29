@@ -18,13 +18,14 @@ package org.multibit.hd.core.crypto;
 
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.utils.BriefLogFormatter;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -40,28 +41,29 @@ public class EncryptedFileReaderWriterTest {
 
   private static final CharSequence PASSWORD1 = "aTestPassword";
 
-  private byte[] initialisationVector;
-  private byte[] keyBytes;
-  private KeyParameter keyParameter;
-
-  private SecureRandom secureRandom;
-
   @Before
   public void setUp() throws Exception {
+
+    InstallationManager.unrestricted = true;
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
-    secureRandom = new SecureRandom();
+    SecureRandom secureRandom = new SecureRandom();
 
     // Create a random initialisationVector
-    initialisationVector = new byte[AESUtils.BLOCK_LENGTH];
+    byte[] initialisationVector = new byte[AESUtils.BLOCK_LENGTH];
     secureRandom.nextBytes(initialisationVector);
 
     // Create a random key
     secureRandom.nextBytes(initialisationVector);
-    keyBytes = new byte[AESUtils.KEY_LENGTH];
-    keyParameter = new KeyParameter(keyBytes);
 
     BriefLogFormatter.init();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+
+    InstallationManager.unrestricted = false;
+
   }
 
   @Test
@@ -72,7 +74,7 @@ public class EncryptedFileReaderWriterTest {
     File outputFile = new File(temporaryDirectory + File.separator + "outputFile.aes");
 
     EncryptedFileReaderWriter.encryptAndWrite(TEST_BYTES1, PASSWORD1, outputFile);
-    InputStream decryptedInputstream = EncryptedFileReaderWriter.readAndDecrypt(
+    InputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
       outputFile,
       PASSWORD1,
       WalletManager.scryptSalt(),
@@ -84,7 +86,7 @@ public class EncryptedFileReaderWriterTest {
     int nRead;
     byte[] data = new byte[16384];
 
-    while ((nRead = decryptedInputstream.read(data, 0, data.length)) != -1) {
+    while ((nRead = decryptedInputStream.read(data, 0, data.length)) != -1) {
       buffer.write(data, 0, nRead);
     }
 
@@ -92,6 +94,7 @@ public class EncryptedFileReaderWriterTest {
 
     assertThat(Utils.HEX.encode(buffer.toByteArray())).isEqualTo(Utils.HEX.encode(TEST_BYTES1));
 
-    decryptedInputstream.close();
+    decryptedInputStream.close();
   }
+
 }

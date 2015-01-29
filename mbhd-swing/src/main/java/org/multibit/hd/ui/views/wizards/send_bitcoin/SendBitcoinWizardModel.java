@@ -507,14 +507,18 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
                 BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
 
-                if (bitcoinNetworkService.getLastSendRequestSummaryOptional().isPresent() && bitcoinNetworkService.getLastWalletOptional().isPresent()) {
+                if (bitcoinNetworkService.getLastSendRequestSummaryOptional().isPresent()
+                  && bitcoinNetworkService.getLastWalletOptional().isPresent()) {
 
                   SendRequestSummary sendRequestSummary = bitcoinNetworkService.getLastSendRequestSummaryOptional().get();
 
                   // Check the unsigned and signed tx are essentially the same as a check against malware attacks on the Trezor
                   if (TransactionUtils.checkEssentiallyEqual(sendRequestSummary.getSendRequest().get().tx, deviceTx)) {
                     // Substitute the signed tx from the trezor
-                    log.debug("Substituting the Trezor signed tx '{}' for the unsigned version {}", deviceTx.toString(), sendRequestSummary.getSendRequest().get().tx.toString());
+                    log.debug("Substituting the Trezor signed tx '{}' for the unsigned version {}",
+                      deviceTx.toString(),
+                      sendRequestSummary.getSendRequest().get().tx.toString()
+                    );
                     sendRequestSummary.getSendRequest().get().tx = deviceTx;
                     log.debug("The transaction fee was {}", sendRequestSummary.getSendRequest().get().fee);
 

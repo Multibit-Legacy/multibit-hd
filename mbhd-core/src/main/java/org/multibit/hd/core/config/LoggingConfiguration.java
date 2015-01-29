@@ -37,7 +37,7 @@ public class LoggingConfiguration {
 
     loggers.put("org.multibit", Level.DEBUG);
     loggers.put("com.xeiam", Level.WARN);
-    loggers.put("org.bitcoinjj", Level.WARN);
+    loggers.put("org.bitcoinj", Level.WARN);
   }
 
   public Level getLevel() {
@@ -143,18 +143,33 @@ public class LoggingConfiguration {
 
   public static class FileConfiguration {
 
-    private boolean enabled = false;
+    /**
+     * Only produce file logs when not in test
+     */
+    private boolean enabled = !InstallationManager.unrestricted;
 
     private Level threshold = Level.ALL;
 
-    private String currentLogFilename = InstallationManager.MBHD_PREFIX;
-
     private boolean archive = true;
 
-    private String archivedLogFilenamePattern="log/multibit-hd-%d.log.gz";
+    /**
+     * Ensure we reference the users
+     */
+    private String currentLogFilename = InstallationManager.getOrCreateApplicationDataDirectory() + "/logs/multibit-hd.log";
 
-    private int archivedFileCount = 5;
+    /**
+     * Only a single log per day
+     */
+    private String archivedLogFilenamePattern=InstallationManager.getOrCreateApplicationDataDirectory() + "/logs/multibit-hd-%d{yyyy-MM-dd}.log.gz";
 
+    /**
+     * 14 allows for 2 weeks of intensive use
+     */
+    private int archivedFileCount = 14;
+
+    /**
+     * UTC in file logs ensure consistency when users post logs in
+     */
     private TimeZone timeZone = UTC;
 
     private String logFormat;

@@ -2,16 +2,11 @@ package org.multibit.hd.core.logging;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.jmx.JMXConfigurator;
 import ch.qos.logback.classic.jul.LevelChangePropagator;
-import org.multibit.hd.core.config.LoggingConfiguration;
 import org.multibit.hd.core.config.LoggingConfiguration;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -79,21 +74,6 @@ public class LoggingFactory {
           name,
           syslog.getLogFormat())));
     }
-
-
-    final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-    try {
-      final ObjectName objectName = new ObjectName("com.ir:type=Logging");
-      if (!server.isRegistered(objectName)) {
-        server.registerMBean(new JMXConfigurator(root.getLoggerContext(),
-          server,
-          objectName),
-          objectName);
-      }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-
   }
 
   private void hijackJDKLogging() {

@@ -805,7 +805,8 @@ public enum WalletManager implements WalletEventListener {
     // Try to infer the wallet type from the key structure to bootstrap missing WalletType values
     inferWalletType(wallet);
 
-    log.debug("Wallet loaded ok:\n{}\n", wallet);
+    // Writing out a wallet to a clear text file is security risk
+    log.trace("Wallet loaded OK:\n{}\n", wallet);
 
     return wallet;
   }
@@ -952,7 +953,7 @@ public enum WalletManager implements WalletEventListener {
     if (file != null) {
       WalletAutoSaveListener walletAutoSaveListener = new WalletAutoSaveListener();
       wallet.autosaveToFile(file, AUTO_SAVE_DELAY, TimeUnit.MILLISECONDS, walletAutoSaveListener);
-      log.debug("WalletAutoSaveListener {} on file {} just added to wallet {}", System.identityHashCode(this), file.getAbsolutePath(), System.identityHashCode(wallet));
+      log.debug("WalletAutoSaveListener {} on file\n'{}'\njust added to wallet {}", System.identityHashCode(this), file.getAbsolutePath(), System.identityHashCode(wallet));
     } else {
       log.debug("Not adding autoSaveListener to wallet {} as no wallet file is specified", System.identityHashCode(wallet));
     }
