@@ -10,10 +10,12 @@ import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.Images;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -69,6 +71,11 @@ public class MainView extends JFrame {
 
     // Set the starting size
     setSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
+
+    // Ensure app does not have Java coffee up icon on Windows
+    if (OSUtils.isWindows()) {
+      setIconImage(Images.newLogoIconImage());
+    }
 
     // Provide all panels with a reference to the main frame
     Panels.applicationFrame = this;

@@ -53,11 +53,11 @@ public class Images {
   }
 
   /**
-   * @return A new "logo" image icon
+   * @return A new "logo" image icon (32x32)
    */
-  public static BufferedImage newLogoImage() {
+  public static BufferedImage newLogoIconImage() {
 
-    try (InputStream is = Images.class.getResourceAsStream("/assets/images/multibit128.png")) {
+    try (InputStream is = Images.class.getResourceAsStream("/assets/images/multibit32.png")) {
 
       // Transform the mask color into the current themed text
       return ImageIO.read(is);
