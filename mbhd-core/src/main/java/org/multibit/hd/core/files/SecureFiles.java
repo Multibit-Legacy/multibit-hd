@@ -2,13 +2,13 @@ package org.multibit.hd.core.files;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
-import com.google.common.io.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.SecureRandom;
@@ -81,9 +81,17 @@ public class SecureFiles {
           random.nextBytes(data);
           buffer.put(data[0]);
         }
-        buffer.force();
 
-        boolean deleteSuccess = file.delete();
+        // Ensure we push this out to the file system
+        buffer.force();
+        channel.close();
+
+        // Use JDK7 NIO Files to delete the file since it offers the following benefits:
+        // * best chance at an atomic operation
+        // * relies on native code
+        // * works on Windows
+        boolean deleteSuccess = Files.deleteIfExists(file.toPath());
+
         log.trace("Result of delete was {} for:\n'{}'", deleteSuccess, file.getAbsolutePath());
       } finally {
         if (channel != null) {
@@ -188,9 +196,9 @@ public class SecureFiles {
    */
   public static File createTemporaryDirectory() throws IOException {
 
-    // Use Guava's atomic temporary file creation for a more secure operation
-    // Then add on a random number to avoid same temp dir being created in the same millisecond (this was happening on Travis)
-    File topLevelTemporaryDirectory = Files.createTempDir();
+    // Use JDK7 NIO Files for a more secure operation than Guava
+    File topLevelTemporaryDirectory = Files.createTempDirectory("mbhd").toFile();
+
     topLevelTemporaryDirectory.deleteOnExit();
 
     // Add a random number to the topLevelTemporaryDirectory
