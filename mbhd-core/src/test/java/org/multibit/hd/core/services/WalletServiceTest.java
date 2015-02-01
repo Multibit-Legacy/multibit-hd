@@ -56,6 +56,8 @@ public class WalletServiceTest {
 
   @Before
   public void setUp() throws Exception {
+
+    InstallationManager.unrestricted = true;
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
     networkParameters = BitcoinNetwork.current().get();
 
