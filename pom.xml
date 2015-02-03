@@ -276,7 +276,7 @@
       <dependency>
         <groupId>org.multibit.hd.hardware</groupId>
         <artifactId>trezor</artifactId>
-        <version>0.2.1</version>
+        <version>develop-SNAPSHOT</version>
       </dependency>
 
       <!-- Logging is through SLF4J and Logback -->
