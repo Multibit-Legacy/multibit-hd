@@ -89,8 +89,8 @@ public class Configuration {
    * @return The current version
    */
   @JsonIgnore
-  public String getVersion() {
-    return getAppearance().getVersion();
+  public String getCurrentVersion() {
+    return getAppearance().getCurrentVersion();
   }
 
   /**

@@ -88,7 +88,7 @@ public class BitcoinMessages {
     }
 
     // Provide PGP-like signature wrapping
-    String versionField = VERSION + ": MultiBit HD (" + Configurations.currentConfiguration.getVersion() + ")";
+    String versionField = VERSION + ": MultiBit HD (" + Configurations.currentConfiguration.getCurrentVersion() + ")";
     String commentField = COMMENT + ": https://multibit.org";
     String addressField = ADDRESS + ": " + signingAddress.toString();
 

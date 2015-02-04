@@ -31,7 +31,8 @@ public class AppearanceConfiguration {
   /**
    * The version field cannot contain "/" or "(" or ")" since it is used in the PeerGroup of Bitcoinj
    */
-  private String version = "0.0.4";
+  private final String currentVersion = "0.0.5beta";
+  private String version = currentVersion;
 
   /**
    * Good default width and height for centered initial screen and balance displayed
@@ -108,10 +109,18 @@ public class AppearanceConfiguration {
   }
 
   /**
-   * @return The current version number
+   * @return The version number stored in the YAML
    */
   public String getVersion() {
     return version;
+  }
+
+  /**
+   *
+   * @return the current version (hardwired in the code)
+   */
+  public String getCurrentVersion() {
+    return currentVersion;
   }
 
   public void setVersion(String version) {
