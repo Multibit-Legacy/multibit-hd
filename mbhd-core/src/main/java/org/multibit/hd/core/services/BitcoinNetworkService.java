@@ -1248,7 +1248,7 @@ public class BitcoinNetworkService extends AbstractService {
 
     peerGroup.setUserAgent(
       InstallationManager.MBHD_APP_NAME,
-      Configurations.currentConfiguration.getAppearance().getCurrentVersion());
+      Configurations.currentConfiguration.getCurrentVersion());
     peerGroup.setFastCatchupTimeSecs(0); // genesis block
     peerGroup.setMaxConnections(MAXIMUM_NUMBER_OF_PEERS);
     peerGroup.setUseLocalhostPeerWhenPossible(false);
