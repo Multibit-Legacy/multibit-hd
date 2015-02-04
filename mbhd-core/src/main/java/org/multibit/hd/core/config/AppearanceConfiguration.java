@@ -1,5 +1,7 @@
 package org.multibit.hd.core.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * <p>Configuration to provide the following to application:</p>
  * <ul>
@@ -119,6 +121,7 @@ public class AppearanceConfiguration {
    *
    * @return the current version (hardwired in the code)
    */
+  @JsonIgnore
   public String getCurrentVersion() {
     return currentVersion;
   }
