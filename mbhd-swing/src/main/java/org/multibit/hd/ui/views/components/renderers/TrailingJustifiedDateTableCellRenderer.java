@@ -11,11 +11,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**
- *  <p>Renderer to provide the following to tables:</p>
- *  <ul>
- *  <li>Renders dates</li>
- *  </ul>
- *  
+ * <p>Renderer to provide the following to tables:</p>
+ * <ul>
+ * <li>Renders dates</li>
+ * </ul>
+ *
  */
 public class TrailingJustifiedDateTableCellRenderer extends DefaultTableCellRenderer {
 
@@ -55,7 +55,7 @@ public class TrailingJustifiedDateTableCellRenderer extends DefaultTableCellRend
       label.setForeground(table.getSelectionForeground());
     } else {
       label.setForeground(table.getForeground());
-      if (row % 2 == 1) {
+      if (row % 2 != 0) {
         label.setBackground(Themes.currentTheme.tableRowAltBackground());
       } else {
         label.setBackground(Themes.currentTheme.tableRowBackground());

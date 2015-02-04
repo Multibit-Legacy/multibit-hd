@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.events.controller;
 
+import org.multibit.hd.ui.events.view.ViewEvent;
 import org.multibit.hd.ui.views.screens.Screen;
 
 /**
@@ -11,7 +12,7 @@ import org.multibit.hd.ui.views.screens.Screen;
  * @since 0.0.1
  *         
  */
-public class ShowScreenEvent {
+public class ShowScreenEvent implements ViewEvent {
 
   private final Screen screen;
 

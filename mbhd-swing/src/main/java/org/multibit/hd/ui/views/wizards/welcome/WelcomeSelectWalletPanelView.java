@@ -24,15 +24,12 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 
 public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<WelcomeWizardModel, WelcomeWizardState> implements ActionListener {
 
   // Model
   private WelcomeWizardState currentSelection;
-
-  // View components
 
   /**
    * @param wizard    The wizard managing the states
@@ -47,7 +44,13 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public void newPanelModel() {
 
-    currentSelection = CREATE_WALLET_SELECT_BACKUP_LOCATION;
+    // Use the wizard model to determine the mode (don't store the result due to thread safety)
+    if (WelcomeWizardMode.TREZOR.equals(getWizardModel().getMode())) {
+      currentSelection = TREZOR_CREATE_WALLET_PREPARATION;
+    } else {
+      currentSelection = CREATE_WALLET_PREPARATION;
+    }
+
     setPanelModel(currentSelection);
 
     // Bind this to the wizard model
@@ -58,27 +61,38 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
-    contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[]", // Column constraints
-      "[]" // Row constraints
-    ));
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[]", // Column constraints
+        "[]" // Row constraints
+      ));
 
-    contentPanel.add(Panels.newWalletSelector(
-      this,
-      CREATE_WALLET_SELECT_BACKUP_LOCATION.name(),
-      RESTORE_PASSWORD_SEED_PHRASE.name(),
-      RESTORE_WALLET_SEED_PHRASE.name(),
-      SELECT_WALLET_HARDWARE.name(),
-      SELECT_EXISTING_WALLET.name()
-    ), "wrap");
-
+    // Use the wizard model to determine the mode (don't store the result due to thread safety)
+    if (WelcomeWizardMode.TREZOR.equals(getWizardModel().getMode())) {
+      contentPanel.add(
+        Panels.newHardwareWalletSelector(
+          this,
+          TREZOR_CREATE_WALLET_PREPARATION.name(), // Relies on create being default
+          WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
+          RESTORE_WALLET_SELECT_BACKUP.name() // Triggers a transition to backups
+        ), "wrap");
+    } else {
+      contentPanel.add(
+        Panels.newWalletSelector(
+          this,
+          CREATE_WALLET_PREPARATION.name(), // Relies on create being default
+          WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
+          RESTORE_PASSWORD_SEED_PHRASE.name(),
+          RESTORE_WALLET_SEED_PHRASE.name()
+        ), "wrap");
+    }
   }
 
   @Override
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
-    if (wizard.getWizardModel().isRestoring()) {
+    if (wizard.getWizardModel().isRestoringSoftWallet()) {
       // Do not allow a return to the credentials wizard
       // The logic is too complex to justify the operation
       // It is much easier to just have the user either
@@ -130,6 +144,9 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
     JRadioButton source = (JRadioButton) e.getSource();
 
     currentSelection = WelcomeWizardState.valueOf(source.getActionCommand());
+
+    // Bind this to the wizard model
+    getWizardModel().setSelectWalletChoice(currentSelection);
 
   }
 }

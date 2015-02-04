@@ -7,7 +7,6 @@ package org.multibit.hd.ui;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public interface MultiBitUI {
 
@@ -31,10 +30,6 @@ public interface MultiBitUI {
    * The minimum height for a standard wizard panel (450 is tight) allowing for popovers
    */
   int WIZARD_MIN_HEIGHT = 450;
-  /**
-   * The minimum height for a welcome wizard panel (500 is minimum for 24 word seed and padding) allowing for popovers
-   */
-  int WELCOME_WIZARD_MIN_HEIGHT = 500;
 
   /**
    * The minimum width for a wizard popover (must be less than the PREF defined below)
@@ -72,9 +67,23 @@ public interface MultiBitUI {
   String WIZARD_MAX_WIDTH_MIG = "wmax " + (MultiBitUI.WIZARD_MIN_WIDTH - 30);
 
   /**
+   * A width constraint to avoid seed phrase text area overflow in wizards
+   * In particular this affects some Linux variants perhaps due to an issue
+   * within MiG Layout.
+   *
+   * See <a href="https://github.com/bitcoin-solutions/multibit-hd/issues/230">Issue #230</a> for details.
+   */
+  String WIZARD_MAX_WIDTH_SEED_PHRASE_MIG = "width 300:300:" + (MultiBitUI.WIZARD_MIN_WIDTH - 30);
+
+  /**
    * A width constraint to avoid text overflow in wizards
    */
   String COMBO_BOX_WIDTH_MIG = "w min:350:";
+
+  /**
+   * A width constraint to avoid text overflow in wizards showing Trezor device screens
+   */
+  String TREZOR_DISPLAY_MAX_WIDTH_MIG = "w 150";
 
   // Corners
 
@@ -163,11 +172,16 @@ public interface MultiBitUI {
   String LARGE_BUTTON_MIG = "wmin 150,hmin 120";
 
   /**
-    * Provides the MiG layout information for a medium button (used for PIN entry)
-    */
-   String MEDIUM_BUTTON_MIG = "wmin 75,hmin 60";
+   * Provides the MiG layout information for a medium button
+   */
+  String MEDIUM_BUTTON_MIG = "wmin 75,hmin 60";
 
-   /**
+  /**
+   * Provides the MiG layout information for a small button
+   */
+  String SMALL_BUTTON_MIG = "wmin 50,hmin 40";
+
+  /**
    * Provides the MiG layout information for a normal icon
    */
   String NORMAL_ICON_SIZE_MIG = "w " + NORMAL_ICON_SIZE + ",h " + NORMAL_ICON_SIZE;

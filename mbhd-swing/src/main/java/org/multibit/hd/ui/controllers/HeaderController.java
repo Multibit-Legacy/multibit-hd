@@ -1,10 +1,11 @@
 package org.multibit.hd.ui.controllers;
 
-import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
+import org.bitcoinj.core.Coin;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.managers.WalletManager;
@@ -16,6 +17,7 @@ import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.AlertModel;
 
+import javax.swing.*;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -37,10 +39,13 @@ public class HeaderController extends AbstractController {
     if (!alertModels.isEmpty()) {
 
       // The alert structure has changed so inform the view
-      ViewEvents.fireAlertAddedEvent(alertModels.get(0));
-
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          ViewEvents.fireAlertAddedEvent(alertModels.get(0));
+        }
+      });
     }
-
   }
 
   /**
@@ -49,24 +54,31 @@ public class HeaderController extends AbstractController {
    * @param event The exchange rate change event
    */
   @Subscribe
-  public void onExchangeRateChangedEvent(ExchangeRateChangedEvent event) {
+  public void onExchangeRateChangedEvent(final ExchangeRateChangedEvent event) {
 
     // Build the exchange string
-    Optional<Coin> coin = WalletManager.INSTANCE.getCurrentWalletBalance();
+    final Optional<Coin> coin = WalletManager.INSTANCE.getCurrentWalletBalance();
 
-    BigDecimal localBalance;
+    final BigDecimal localBalance;
 
     if (event.getRate() != null) {
       localBalance = Coins.toLocalAmount(coin.or(Coin.ZERO), event.getRate());
     } else {
       localBalance = null;
     }
-    // Post the event
-    ViewEvents.fireBalanceChangedEvent(
-      coin.or(Coin.ZERO),
-      localBalance,
-      event.getRateProvider()
-    );
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          // Post the event
+          ViewEvents.fireBalanceChangedEvent(
+            coin.or(Coin.ZERO),
+            localBalance,
+            event.getRateProvider()
+          );
+        }
+      });
 
   }
 
@@ -96,22 +108,40 @@ public class HeaderController extends AbstractController {
   @Subscribe
   public synchronized void onAddAlertEvent(AddAlertEvent event) {
 
-    // Add this to the list
-    alertModels.add(event.getAlertModel());
-
-    // Play a beep on the first alert
-    switch (event.getAlertModel().getSeverity()) {
-      case RED:
-      case AMBER:
-        Sounds.playBeep();
+    boolean ignoreRepeated = false;
+    // Check for repeated text
+    for (AlertModel alertModel : alertModels) {
+      if (alertModel.getLocalisedMessage().equals(event.getAlertModel().getLocalisedMessage())) {
+        // Ignore duplicated message
+        ignoreRepeated = true;
         break;
+      }
     }
 
-    // Adjust the models to reflect the new M of N values
-    updateRemaining();
+    if (!ignoreRepeated) {
 
-    // The alert structure has changed so inform the view
-    ViewEvents.fireAlertAddedEvent(alertModels.get(0));
+      // Add this to the list
+      alertModels.add(event.getAlertModel());
+
+      // Play a beep on the first alert for RED or AMBER
+      RAGStatus severity = event.getAlertModel().getSeverity();
+      if (RAGStatus.RED.equals(severity)
+        || RAGStatus.AMBER.equals(severity)) {
+        Sounds.playBeep();
+      }
+
+      // Adjust the models to reflect the new M of N values
+      updateRemaining();
+    }
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          // The alert structure has changed so inform the view
+          ViewEvents.fireAlertAddedEvent(alertModels.get(0));
+        }
+      });
 
   }
 
@@ -131,15 +161,18 @@ public class HeaderController extends AbstractController {
       updateRemaining();
 
       // The alert structure has changed so inform the view
-      if (!alertModels.isEmpty()) {
-        ViewEvents.fireAlertAddedEvent(alertModels.get(0));
-      }
-    } else {
-
-      // Use an empty event to signal that the event should be hidden
-      ViewEvents.fireAlertRemovedEvent();
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          if (!alertModels.isEmpty()) {
+            ViewEvents.fireAlertAddedEvent(alertModels.get(0));
+          } else {
+            // Use an empty event to signal that the event should be hidden
+            ViewEvents.fireAlertRemovedEvent();
+          }
+        }
+      });
     }
-
   }
 
   /**

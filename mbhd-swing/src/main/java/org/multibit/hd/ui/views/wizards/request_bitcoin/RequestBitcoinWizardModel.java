@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.wizards.request_bitcoin;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.components.enter_amount.EnterAmountModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class RequestBitcoinWizardModel extends AbstractWizardModel<RequestBitcoinState> {
 

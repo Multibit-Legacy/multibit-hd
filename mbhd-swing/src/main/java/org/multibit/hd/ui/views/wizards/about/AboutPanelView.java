@@ -26,7 +26,7 @@ import java.io.IOException;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, String> {
 
@@ -57,7 +57,7 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
       "[]20[]20[]" // Row constraints
     ));
 
-    String version = Configurations.currentConfiguration.getVersion();
+    String version = Configurations.currentConfiguration.getCurrentVersion();
 
     contentPanel.add(Labels.newVersion(), "shrink");
     contentPanel.add(Labels.newValueLabel(version), "push,align left,wrap");

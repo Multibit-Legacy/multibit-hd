@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.select_recipient;
 
-import com.google.bitcoin.core.NetworkParameters;
+import org.bitcoinj.core.NetworkParameters;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.dto.Recipient;
@@ -27,7 +27,7 @@ import java.awt.event.ActionListener;
  * <p>Deliberately ignores the Bitcoin address component to avoid false near addresses</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class RecipientComboBoxEditor implements ComboBoxEditor {
 
@@ -89,7 +89,7 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
             verifier.verify(editor);
           }
         } catch (BadLocationException e1) {
-          e1.printStackTrace();
+          log.warn("Bad location in recipient combobox editor", e1);
         }
       }
     });

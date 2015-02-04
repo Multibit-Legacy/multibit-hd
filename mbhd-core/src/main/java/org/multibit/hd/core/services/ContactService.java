@@ -1,6 +1,6 @@
 package org.multibit.hd.core.services;
 
-import com.google.bitcoin.core.Address;
+import org.bitcoinj.core.Address;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
@@ -10,12 +10,11 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *  <p>Interface to provide the following to Contact API:</p>
- *  <ul>
- *  <li>Common methods for contact data access</li>
- *  </ul>
- *  </p>
- *  
+ * <p>Interface to provide the following to Contact API:</p>
+ * <ul>
+ * <li>Common methods for contact data access</li>
+ * </ul>
+ *
  */
 public interface ContactService {
   /**

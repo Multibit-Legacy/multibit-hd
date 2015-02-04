@@ -11,8 +11,20 @@ import java.util.Locale;
  * <li>Ordering keys across all variables</li>
  * </ul>
  *
+ * <p>Upgrade process:</p>
+ * <ol>
+ * <li>Download <a href="http://fontawesome.io/" target="_blank">latest Font Awesome ZIP</a></li>
+ * <li>Unzip and open <code>variables.less</code></li>
+ * <li>Copy the contents starting from <code>@fa-var</code></li>
+ * <li>Remove the contents of <code>variablesLessRaw</code> and replace as ""</li>
+ * <li>Paste the new contents. Intellij will automatically provide string concatenation</li>
+ * <li>Execute the main() method to generate the enum on the console</li>
+ * <li>Copy the output into AwesomeIcon to update the references</li>
+ * <li>Copy <code>fontawesome-webfont.ttf</code> as <code>FontAwesome-version.ttf</code></li>
+ * <li>Update <code>AwesomeDecorator</code> to the new reference</li>
+ * </ol>
+ *
  * @since 0.0.1
- *  
  */
 public class FontAwesomeTools {
 
@@ -28,6 +40,7 @@ public class FontAwesomeTools {
     "@fa-var-ambulance: \"\\f0f9\";\n" +
     "@fa-var-anchor: \"\\f13d\";\n" +
     "@fa-var-android: \"\\f17b\";\n" +
+    "@fa-var-angellist: \"\\f209\";\n" +
     "@fa-var-angle-double-down: \"\\f103\";\n" +
     "@fa-var-angle-double-left: \"\\f100\";\n" +
     "@fa-var-angle-double-right: \"\\f101\";\n" +
@@ -38,6 +51,7 @@ public class FontAwesomeTools {
     "@fa-var-angle-up: \"\\f106\";\n" +
     "@fa-var-apple: \"\\f179\";\n" +
     "@fa-var-archive: \"\\f187\";\n" +
+    "@fa-var-area-chart: \"\\f1fe\";\n" +
     "@fa-var-arrow-circle-down: \"\\f0ab\";\n" +
     "@fa-var-arrow-circle-left: \"\\f0a8\";\n" +
     "@fa-var-arrow-circle-o-down: \"\\f01a\";\n" +
@@ -55,10 +69,12 @@ public class FontAwesomeTools {
     "@fa-var-arrows-h: \"\\f07e\";\n" +
     "@fa-var-arrows-v: \"\\f07d\";\n" +
     "@fa-var-asterisk: \"\\f069\";\n" +
+    "@fa-var-at: \"\\f1fa\";\n" +
     "@fa-var-automobile: \"\\f1b9\";\n" +
     "@fa-var-backward: \"\\f04a\";\n" +
     "@fa-var-ban: \"\\f05e\";\n" +
     "@fa-var-bank: \"\\f19c\";\n" +
+    "@fa-var-bar-chart: \"\\f080\";\n" +
     "@fa-var-bar-chart-o: \"\\f080\";\n" +
     "@fa-var-barcode: \"\\f02a\";\n" +
     "@fa-var-bars: \"\\f0c9\";\n" +
@@ -67,6 +83,11 @@ public class FontAwesomeTools {
     "@fa-var-behance-square: \"\\f1b5\";\n" +
     "@fa-var-bell: \"\\f0f3\";\n" +
     "@fa-var-bell-o: \"\\f0a2\";\n" +
+    "@fa-var-bell-slash: \"\\f1f6\";\n" +
+    "@fa-var-bell-slash-o: \"\\f1f7\";\n" +
+    "@fa-var-bicycle: \"\\f206\";\n" +
+    "@fa-var-binoculars: \"\\f1e5\";\n" +
+    "@fa-var-birthday-cake: \"\\f1fd\";\n" +
     "@fa-var-bitbucket: \"\\f171\";\n" +
     "@fa-var-bitbucket-square: \"\\f172\";\n" +
     "@fa-var-bitcoin: \"\\f15a\";\n" +
@@ -83,7 +104,9 @@ public class FontAwesomeTools {
     "@fa-var-building-o: \"\\f0f7\";\n" +
     "@fa-var-bullhorn: \"\\f0a1\";\n" +
     "@fa-var-bullseye: \"\\f140\";\n" +
+    "@fa-var-bus: \"\\f207\";\n" +
     "@fa-var-cab: \"\\f1ba\";\n" +
+    "@fa-var-calculator: \"\\f1ec\";\n" +
     "@fa-var-calendar: \"\\f073\";\n" +
     "@fa-var-calendar-o: \"\\f133\";\n" +
     "@fa-var-camera: \"\\f030\";\n" +
@@ -97,6 +120,13 @@ public class FontAwesomeTools {
     "@fa-var-caret-square-o-right: \"\\f152\";\n" +
     "@fa-var-caret-square-o-up: \"\\f151\";\n" +
     "@fa-var-caret-up: \"\\f0d8\";\n" +
+    "@fa-var-cc: \"\\f20a\";\n" +
+    "@fa-var-cc-amex: \"\\f1f3\";\n" +
+    "@fa-var-cc-discover: \"\\f1f2\";\n" +
+    "@fa-var-cc-mastercard: \"\\f1f1\";\n" +
+    "@fa-var-cc-paypal: \"\\f1f4\";\n" +
+    "@fa-var-cc-stripe: \"\\f1f5\";\n" +
+    "@fa-var-cc-visa: \"\\f1f0\";\n" +
     "@fa-var-certificate: \"\\f0a3\";\n" +
     "@fa-var-chain: \"\\f0c1\";\n" +
     "@fa-var-chain-broken: \"\\f127\";\n" +
@@ -120,6 +150,7 @@ public class FontAwesomeTools {
     "@fa-var-circle-thin: \"\\f1db\";\n" +
     "@fa-var-clipboard: \"\\f0ea\";\n" +
     "@fa-var-clock-o: \"\\f017\";\n" +
+    "@fa-var-close: \"\\f00d\";\n" +
     "@fa-var-cloud: \"\\f0c2\";\n" +
     "@fa-var-cloud-download: \"\\f0ed\";\n" +
     "@fa-var-cloud-upload: \"\\f0ee\";\n" +
@@ -138,6 +169,7 @@ public class FontAwesomeTools {
     "@fa-var-compass: \"\\f14e\";\n" +
     "@fa-var-compress: \"\\f066\";\n" +
     "@fa-var-copy: \"\\f0c5\";\n" +
+    "@fa-var-copyright: \"\\f1f9\";\n" +
     "@fa-var-credit-card: \"\\f09d\";\n" +
     "@fa-var-crop: \"\\f125\";\n" +
     "@fa-var-crosshairs: \"\\f05b\";\n" +
@@ -179,6 +211,7 @@ public class FontAwesomeTools {
     "@fa-var-external-link-square: \"\\f14c\";\n" +
     "@fa-var-eye: \"\\f06e\";\n" +
     "@fa-var-eye-slash: \"\\f070\";\n" +
+    "@fa-var-eyedropper: \"\\f1fb\";\n" +
     "@fa-var-facebook: \"\\f09a\";\n" +
     "@fa-var-facebook-square: \"\\f082\";\n" +
     "@fa-var-fast-backward: \"\\f049\";\n" +
@@ -224,6 +257,7 @@ public class FontAwesomeTools {
     "@fa-var-forward: \"\\f04e\";\n" +
     "@fa-var-foursquare: \"\\f180\";\n" +
     "@fa-var-frown-o: \"\\f119\";\n" +
+    "@fa-var-futbol-o: \"\\f1e3\";\n" +
     "@fa-var-gamepad: \"\\f11b\";\n" +
     "@fa-var-gavel: \"\\f0e3\";\n" +
     "@fa-var-gbp: \"\\f154\";\n" +
@@ -242,6 +276,7 @@ public class FontAwesomeTools {
     "@fa-var-google: \"\\f1a0\";\n" +
     "@fa-var-google-plus: \"\\f0d5\";\n" +
     "@fa-var-google-plus-square: \"\\f0d4\";\n" +
+    "@fa-var-google-wallet: \"\\f1ee\";\n" +
     "@fa-var-graduation-cap: \"\\f19d\";\n" +
     "@fa-var-group: \"\\f0c0\";\n" +
     "@fa-var-h-square: \"\\f0fd\";\n" +
@@ -259,6 +294,7 @@ public class FontAwesomeTools {
     "@fa-var-home: \"\\f015\";\n" +
     "@fa-var-hospital-o: \"\\f0f8\";\n" +
     "@fa-var-html5: \"\\f13b\";\n" +
+    "@fa-var-ils: \"\\f20b\";\n" +
     "@fa-var-image: \"\\f03e\";\n" +
     "@fa-var-inbox: \"\\f01c\";\n" +
     "@fa-var-indent: \"\\f03c\";\n" +
@@ -267,6 +303,7 @@ public class FontAwesomeTools {
     "@fa-var-inr: \"\\f156\";\n" +
     "@fa-var-instagram: \"\\f16d\";\n" +
     "@fa-var-institution: \"\\f19c\";\n" +
+    "@fa-var-ioxhost: \"\\f208\";\n" +
     "@fa-var-italic: \"\\f033\";\n" +
     "@fa-var-joomla: \"\\f1aa\";\n" +
     "@fa-var-jpy: \"\\f157\";\n" +
@@ -276,15 +313,19 @@ public class FontAwesomeTools {
     "@fa-var-krw: \"\\f159\";\n" +
     "@fa-var-language: \"\\f1ab\";\n" +
     "@fa-var-laptop: \"\\f109\";\n" +
+    "@fa-var-lastfm: \"\\f202\";\n" +
+    "@fa-var-lastfm-square: \"\\f203\";\n" +
     "@fa-var-leaf: \"\\f06c\";\n" +
     "@fa-var-legal: \"\\f0e3\";\n" +
     "@fa-var-lemon-o: \"\\f094\";\n" +
     "@fa-var-level-down: \"\\f149\";\n" +
     "@fa-var-level-up: \"\\f148\";\n" +
     "@fa-var-life-bouy: \"\\f1cd\";\n" +
+    "@fa-var-life-buoy: \"\\f1cd\";\n" +
     "@fa-var-life-ring: \"\\f1cd\";\n" +
     "@fa-var-life-saver: \"\\f1cd\";\n" +
     "@fa-var-lightbulb-o: \"\\f0eb\";\n" +
+    "@fa-var-line-chart: \"\\f201\";\n" +
     "@fa-var-link: \"\\f0c1\";\n" +
     "@fa-var-linkedin: \"\\f0e1\";\n" +
     "@fa-var-linkedin-square: \"\\f08c\";\n" +
@@ -307,6 +348,7 @@ public class FontAwesomeTools {
     "@fa-var-male: \"\\f183\";\n" +
     "@fa-var-map-marker: \"\\f041\";\n" +
     "@fa-var-maxcdn: \"\\f136\";\n" +
+    "@fa-var-meanpath: \"\\f20c\";\n" +
     "@fa-var-medkit: \"\\f0fa\";\n" +
     "@fa-var-meh-o: \"\\f11a\";\n" +
     "@fa-var-microphone: \"\\f130\";\n" +
@@ -322,9 +364,11 @@ public class FontAwesomeTools {
     "@fa-var-mortar-board: \"\\f19d\";\n" +
     "@fa-var-music: \"\\f001\";\n" +
     "@fa-var-navicon: \"\\f0c9\";\n" +
+    "@fa-var-newspaper-o: \"\\f1ea\";\n" +
     "@fa-var-openid: \"\\f19b\";\n" +
     "@fa-var-outdent: \"\\f03b\";\n" +
     "@fa-var-pagelines: \"\\f18c\";\n" +
+    "@fa-var-paint-brush: \"\\f1fc\";\n" +
     "@fa-var-paper-plane: \"\\f1d8\";\n" +
     "@fa-var-paper-plane-o: \"\\f1d9\";\n" +
     "@fa-var-paperclip: \"\\f0c6\";\n" +
@@ -332,6 +376,7 @@ public class FontAwesomeTools {
     "@fa-var-paste: \"\\f0ea\";\n" +
     "@fa-var-pause: \"\\f04c\";\n" +
     "@fa-var-paw: \"\\f1b0\";\n" +
+    "@fa-var-paypal: \"\\f1ed\";\n" +
     "@fa-var-pencil: \"\\f040\";\n" +
     "@fa-var-pencil-square: \"\\f14b\";\n" +
     "@fa-var-pencil-square-o: \"\\f044\";\n" +
@@ -339,15 +384,16 @@ public class FontAwesomeTools {
     "@fa-var-phone-square: \"\\f098\";\n" +
     "@fa-var-photo: \"\\f03e\";\n" +
     "@fa-var-picture-o: \"\\f03e\";\n" +
+    "@fa-var-pie-chart: \"\\f200\";\n" +
     "@fa-var-pied-piper: \"\\f1a7\";\n" +
     "@fa-var-pied-piper-alt: \"\\f1a8\";\n" +
-    "@fa-var-pied-piper-square: \"\\f1a7\";\n" +
     "@fa-var-pinterest: \"\\f0d2\";\n" +
     "@fa-var-pinterest-square: \"\\f0d3\";\n" +
     "@fa-var-plane: \"\\f072\";\n" +
     "@fa-var-play: \"\\f04b\";\n" +
     "@fa-var-play-circle: \"\\f144\";\n" +
     "@fa-var-play-circle-o: \"\\f01d\";\n" +
+    "@fa-var-plug: \"\\f1e6\";\n" +
     "@fa-var-plus: \"\\f067\";\n" +
     "@fa-var-plus-circle: \"\\f055\";\n" +
     "@fa-var-plus-square: \"\\f0fe\";\n" +
@@ -368,6 +414,7 @@ public class FontAwesomeTools {
     "@fa-var-reddit: \"\\f1a1\";\n" +
     "@fa-var-reddit-square: \"\\f1a2\";\n" +
     "@fa-var-refresh: \"\\f021\";\n" +
+    "@fa-var-remove: \"\\f00d\";\n" +
     "@fa-var-renren: \"\\f18b\";\n" +
     "@fa-var-reorder: \"\\f0c9\";\n" +
     "@fa-var-repeat: \"\\f01e\";\n" +
@@ -397,6 +444,8 @@ public class FontAwesomeTools {
     "@fa-var-share-alt-square: \"\\f1e1\";\n" +
     "@fa-var-share-square: \"\\f14d\";\n" +
     "@fa-var-share-square-o: \"\\f045\";\n" +
+    "@fa-var-shekel: \"\\f20b\";\n" +
+    "@fa-var-sheqel: \"\\f20b\";\n" +
     "@fa-var-shield: \"\\f132\";\n" +
     "@fa-var-shopping-cart: \"\\f07a\";\n" +
     "@fa-var-sign-in: \"\\f090\";\n" +
@@ -406,7 +455,9 @@ public class FontAwesomeTools {
     "@fa-var-skype: \"\\f17e\";\n" +
     "@fa-var-slack: \"\\f198\";\n" +
     "@fa-var-sliders: \"\\f1de\";\n" +
+    "@fa-var-slideshare: \"\\f1e7\";\n" +
     "@fa-var-smile-o: \"\\f118\";\n" +
+    "@fa-var-soccer-ball-o: \"\\f1e3\";\n" +
     "@fa-var-sort: \"\\f0dc\";\n" +
     "@fa-var-sort-alpha-asc: \"\\f15d\";\n" +
     "@fa-var-sort-alpha-desc: \"\\f15e\";\n" +
@@ -473,17 +524,22 @@ public class FontAwesomeTools {
     "@fa-var-tint: \"\\f043\";\n" +
     "@fa-var-toggle-down: \"\\f150\";\n" +
     "@fa-var-toggle-left: \"\\f191\";\n" +
+    "@fa-var-toggle-off: \"\\f204\";\n" +
+    "@fa-var-toggle-on: \"\\f205\";\n" +
     "@fa-var-toggle-right: \"\\f152\";\n" +
     "@fa-var-toggle-up: \"\\f151\";\n" +
+    "@fa-var-trash: \"\\f1f8\";\n" +
     "@fa-var-trash-o: \"\\f014\";\n" +
     "@fa-var-tree: \"\\f1bb\";\n" +
     "@fa-var-trello: \"\\f181\";\n" +
     "@fa-var-trophy: \"\\f091\";\n" +
     "@fa-var-truck: \"\\f0d1\";\n" +
     "@fa-var-try: \"\\f195\";\n" +
+    "@fa-var-tty: \"\\f1e4\";\n" +
     "@fa-var-tumblr: \"\\f173\";\n" +
     "@fa-var-tumblr-square: \"\\f174\";\n" +
     "@fa-var-turkish-lira: \"\\f195\";\n" +
+    "@fa-var-twitch: \"\\f1e8\";\n" +
     "@fa-var-twitter: \"\\f099\";\n" +
     "@fa-var-twitter-square: \"\\f081\";\n" +
     "@fa-var-umbrella: \"\\f0e9\";\n" +
@@ -511,6 +567,7 @@ public class FontAwesomeTools {
     "@fa-var-weibo: \"\\f18a\";\n" +
     "@fa-var-weixin: \"\\f1d7\";\n" +
     "@fa-var-wheelchair: \"\\f193\";\n" +
+    "@fa-var-wifi: \"\\f1eb\";\n" +
     "@fa-var-windows: \"\\f17a\";\n" +
     "@fa-var-won: \"\\f159\";\n" +
     "@fa-var-wordpress: \"\\f19a\";\n" +
@@ -518,11 +575,11 @@ public class FontAwesomeTools {
     "@fa-var-xing: \"\\f168\";\n" +
     "@fa-var-xing-square: \"\\f169\";\n" +
     "@fa-var-yahoo: \"\\f19e\";\n" +
+    "@fa-var-yelp: \"\\f1e9\";\n" +
     "@fa-var-yen: \"\\f157\";\n" +
     "@fa-var-youtube: \"\\f167\";\n" +
     "@fa-var-youtube-play: \"\\f16a\";\n" +
-    "@fa-var-youtube-square: \"\\f166\";\n"
-    ;
+    "@fa-var-youtube-square: \"\\f166\";\n";
 
   public static void main(String[] args) throws IOException {
 
@@ -540,21 +597,23 @@ public class FontAwesomeTools {
 
     Iterable<String> variablesLessRawIterable = Splitter.on("\n").split(variablesLessRaw);
 
-    for (String variablesLessRawEntry: variablesLessRawIterable) {
+    for (String variablesLessRawEntry : variablesLessRawIterable) {
 
       String entry = variablesLessRawEntry
         .toUpperCase(Locale.ENGLISH)
-        .replace("-","_")
-        .replace("\"","'")
-        .replace("@FA_VAR_","")
-        .replace(": ","(")
-        .replace("\\F","\\uf")
-        .replace(";","),");
+        .replace("-", "_")
+        .replace("\"", "'")
+        .replace("@FA_VAR_", "")
+        .replace(": ", "(")
+        .replace("\\F", "\\uf")
+        .replace(";", "),");
 
+      // Printing code
       System.out.println(entry);
 
     }
 
+    // Printing code
     System.out.println("  // End of enum\n;\n\nCopy paste the above into AwesomeIcon to replace the existing entries.");
 
   }

@@ -6,8 +6,8 @@ import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.utils.Dates;
-import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.controller.ShowScreenEvent;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -35,7 +35,7 @@ import java.awt.event.MouseEvent;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class SidebarView extends AbstractView {
 
@@ -245,11 +245,11 @@ public class SidebarView extends AbstractView {
 
     // Add application nodes
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.HELP, Screen.HELP));
-    root.add(TreeNodes.newSidebarTreeNode(MessageKey.HISTORY, Screen.HISTORY));
     settingsNode = TreeNodes.newSidebarTreeNode(MessageKey.SETTINGS, Screen.SETTINGS);
     root.add(settingsNode);
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.MANAGE_WALLET, Screen.MANAGE_WALLET));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.TOOLS, Screen.TOOLS));
-    root.add(TreeNodes.newSidebarTreeNode(MessageKey.EXIT, Screen.EXIT));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.EXIT_OR_SWITCH, Screen.EXIT));
 
     return root;
   }
@@ -274,7 +274,7 @@ public class SidebarView extends AbstractView {
           break;
         default:
           Configurations.currentConfiguration.getAppearance().setCurrentScreen(nodeInfo.getDetailScreen().name());
-          ControllerEvents.fireShowDetailScreenEvent(nodeInfo.getDetailScreen());
+          ViewEvents.fireShowDetailScreenEvent(nodeInfo.getDetailScreen());
       }
     } else {
       log.debug("Ignoring selection: '{}'", detailScreen);
@@ -292,9 +292,15 @@ public class SidebarView extends AbstractView {
    */
   public void requestFocus() {
 
-    lastSelectionDateTime = Dates.nowUtc();
-    sidebarTree.setFocusable(true);
-    sidebarTree.requestFocusInWindow();
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          lastSelectionDateTime = Dates.nowUtc();
+          sidebarTree.setFocusable(true);
+          sidebarTree.requestFocusInWindow();
+        }
+      });
 
   }
 

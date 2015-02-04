@@ -16,18 +16,16 @@ package org.multibit.hd.core.crypto;
  * limitations under the License.
  */
 
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.utils.BriefLogFormatter;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.utils.BriefLogFormatter;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.crypto.AESUtils;
-import org.multibit.hd.brit.utils.FileUtils;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.managers.WalletManagerTest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -38,56 +36,57 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class EncryptedFileReaderWriterTest {
 
-  private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
-
-
-  private static final String EXAMPLE_TEXT = "The quick brown fox jumps over the lazy dog. 01234567890. !@#$%^&*(). ,.;:[]-_=+";
-
   // Nonsense bytes for encryption test.
   private static final byte[] TEST_BYTES1 = {0, -101, 2, 103, -4, 105, 6, 107, 8, -109, 10, 111, -12, 113, 14, -115, 16, 117, -18, 119, 20, 121, 22, 123, -24, 125, 26, 127, -28, 29, -30, 31};
 
   private static final CharSequence PASSWORD1 = "aTestPassword";
 
-  private byte[] initialisationVector;
-  private byte[] keyBytes;
-  private KeyParameter keyParameter;
-
-  private SecureRandom secureRandom;
-
   @Before
   public void setUp() throws Exception {
+
+    InstallationManager.unrestricted = true;
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
-    secureRandom = new SecureRandom();
+    SecureRandom secureRandom = new SecureRandom();
 
     // Create a random initialisationVector
-    initialisationVector = new byte[AESUtils.BLOCK_LENGTH];
+    byte[] initialisationVector = new byte[AESUtils.BLOCK_LENGTH];
     secureRandom.nextBytes(initialisationVector);
 
     // Create a random key
     secureRandom.nextBytes(initialisationVector);
-    keyBytes = new byte[AESUtils.KEY_LENGTH];
-    keyParameter = new KeyParameter(keyBytes);
 
     BriefLogFormatter.init();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+
+    InstallationManager.unrestricted = false;
+
   }
 
   @Test
   public void testEncryptDecryptSuccess() throws Exception {
     // Create a random temporary directory
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
     File outputFile = new File(temporaryDirectory + File.separator + "outputFile.aes");
 
     EncryptedFileReaderWriter.encryptAndWrite(TEST_BYTES1, PASSWORD1, outputFile);
-    InputStream decryptedInputstream = EncryptedFileReaderWriter.readAndDecrypt(outputFile, PASSWORD1, WalletManager.SCRYPT_SALT, WalletManager.AES_INITIALISATION_VECTOR);
+    InputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
+      outputFile,
+      PASSWORD1,
+      WalletManager.scryptSalt(),
+      WalletManager.aesInitialisationVector()
+    );
 
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
     int nRead;
     byte[] data = new byte[16384];
 
-    while ((nRead = decryptedInputstream.read(data, 0, data.length)) != -1) {
+    while ((nRead = decryptedInputStream.read(data, 0, data.length)) != -1) {
       buffer.write(data, 0, nRead);
     }
 
@@ -95,6 +94,7 @@ public class EncryptedFileReaderWriterTest {
 
     assertThat(Utils.HEX.encode(buffer.toByteArray())).isEqualTo(Utils.HEX.encode(TEST_BYTES1));
 
-    decryptedInputstream.close();
+    decryptedInputStream.close();
   }
+
 }

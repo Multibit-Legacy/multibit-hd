@@ -18,11 +18,11 @@ import java.awt.*;
 import java.math.BigDecimal;
 
 /**
- *  <p>Renderer to provide the following to tables:</p>
- *  <ul>
- *  <li>Renderer of numeric amount field</li>
- *  </ul>
- *  
+ * <p>Renderer to provide the following to tables:</p>
+ * <ul>
+ * <li>Renderer of numeric amount field</li>
+ * </ul>
+ *
  */
 public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
   JLabel label;
@@ -83,10 +83,10 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
           log.error(nfe.getClass().getCanonicalName() + " " + nfe.getMessage());
         }
       } else {
-        log.warn("Cannot render fiatPayment = "
-          + fiatPayment
-          + ", bitcoinConfiguration.getLocalCurrencyCode() = "
-          + Configurations.currentConfiguration.getBitcoin().getLocalCurrencyCode()
+        // No fiat payment information (could be no exchange)
+        log.trace("Cannot render fiatPayment. {} {}",
+          fiatPayment,
+          Configurations.currentConfiguration.getBitcoin().getLocalCurrencyCode()
         );
         label.setText("");
         if (isSelected) {
@@ -99,7 +99,7 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
         label.setBackground(table.getSelectionBackground());
         label.setForeground(table.getSelectionForeground());
       } else {
-        if (row % 2 == 1) {
+        if (row % 2 != 0) {
           label.setBackground(Themes.currentTheme.tableRowAltBackground());
         } else {
           label.setBackground(Themes.currentTheme.tableRowBackground());

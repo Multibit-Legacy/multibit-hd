@@ -25,7 +25,6 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetworkWizardModel, VerifyNetworkPanelModel> {
 
@@ -50,7 +49,7 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
 
     // Configure the panel model
     final VerifyNetworkPanelModel panelModel = new VerifyNetworkPanelModel(
-      getPanelName());
+            getPanelName());
     setPanelModel(panelModel);
 
     // Bind it to the wizard model
@@ -61,17 +60,19 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[]10[][]", // Column constraints
-      "[]10[]10[]" // Row constraints
+            Panels.migXYLayout(),
+            "[]10[][]", // Column constraints
+            "[]10[]10[]" // Row constraints
     ));
 
     contentPanel.add(Labels.newVerifyNetworkNote(), "span 3," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
-    peerCountLabel = Labels.newValueLabel("0");
+    int currentPeerCount = CoreServices.getOrCreateBitcoinNetworkService().getNumberOfConnectedPeers();
+    peerCountLabel = Labels.newValueLabel(String.valueOf(currentPeerCount));
     peerCountStatusLabel = Labels.newPeerCount();
+    decoratePeerCountStatusLabel(currentPeerCount);
 
-    blocksLeftLabel = Labels.newValueLabel("0");
+    blocksLeftLabel = Labels.newValueLabel("");
     blocksLeftStatusLabel = Labels.newBlocksLeft();
 
     contentPanel.add(peerCountStatusLabel, "");
@@ -113,58 +114,66 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
   }
 
   @Subscribe
-  public void onBitcoinNetworkChangedEvent(BitcoinNetworkChangedEvent event) {
+  public void onBitcoinNetworkChangedEvent(final BitcoinNetworkChangedEvent event) {
 
-    BitcoinNetworkSummary summary = event.getSummary();
-
-    // Peer count
-    int peerCount = event.getSummary().getPeerCount();
-    if (peerCount > 0) {
-      AwesomeDecorator.applyIcon(
-        AwesomeIcon.CHECK,
-        peerCountStatusLabel,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
-      );
-    } else {
-      AwesomeDecorator.applyIcon(
-        AwesomeIcon.TIMES,
-        peerCountStatusLabel,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
-      );
-
+    // Avoid NPEs with early events
+    if (!isInitialised()) {
+      return;
     }
-    peerCountLabel.setText(String.valueOf(summary.getPeerCount()));
 
-    // Blocks left
-    int blocksLeft = event.getSummary().getBlocksLeft();
-    if (blocksLeft == 0) {
-      AwesomeDecorator.applyIcon(
-        AwesomeIcon.CHECK,
-        blocksLeftStatusLabel,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
-      );
-      blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
-    } else if (blocksLeft < 0) {
-      AwesomeDecorator.applyIcon(
-        AwesomeIcon.TIMES,
-        blocksLeftStatusLabel,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
-      );
-      blocksLeftLabel.setText("");
-    } else {
-      AwesomeDecorator.applyIcon(
-        AwesomeIcon.EXCHANGE,
-        blocksLeftStatusLabel,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
-      );
-      blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
-    }
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+
+        BitcoinNetworkSummary summary = event.getSummary();
+
+        // Get peer count directly from services so it always matches footer
+        int peerCount = CoreServices.getOrCreateBitcoinNetworkService().getNumberOfConnectedPeers();
+        peerCountLabel.setText(String.valueOf(peerCount));
+        decoratePeerCountStatusLabel(peerCount);
+
+        // Blocks left
+        int blocksLeft = event.getSummary().getBlocksLeft();
+        if (blocksLeft == 0) {
+          // Sync has completed
+          AwesomeDecorator.applyIcon(
+            AwesomeIcon.CHECK,
+            blocksLeftStatusLabel,
+            true,
+            MultiBitUI.NORMAL_ICON_SIZE
+          );
+          blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
+        } else if (blocksLeft > 0) {
+          // Sync is in progress
+          AwesomeDecorator.applyIcon(
+            AwesomeIcon.EXCHANGE,
+            blocksLeftStatusLabel,
+            true,
+            MultiBitUI.NORMAL_ICON_SIZE
+          );
+          blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
+        }
+        // blocksLeft can be -1 if no blocks left information is set
+      }
+    });
 
   }
 
+  private void decoratePeerCountStatusLabel(int peerCount) {
+    if (peerCount > 0) {
+      AwesomeDecorator.applyIcon(
+              AwesomeIcon.CHECK,
+              peerCountStatusLabel,
+              true,
+              MultiBitUI.NORMAL_ICON_SIZE
+      );
+    } else {
+      AwesomeDecorator.applyIcon(
+              AwesomeIcon.TIMES,
+              peerCountStatusLabel,
+              true,
+              MultiBitUI.NORMAL_ICON_SIZE
+      );
+    }
+  }
 }

@@ -1,7 +1,7 @@
 package org.multibit.hd.core.dto;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
@@ -9,11 +9,11 @@ import org.joda.time.DateTime;
 import java.util.Set;
 
 /**
- *  <p>DTO to provide the following to WalletService:</p>
- *  <ul>
- *  <li>Additional payment request info</li>
- *  </ul>
- *  
+ * <p>DTO to provide the following to WalletService:</p>
+ * <ul>
+ * <li>Additional payment request info</li>
+ * </ul>
+ *
  */
 public class PaymentRequestData implements PaymentData {
 

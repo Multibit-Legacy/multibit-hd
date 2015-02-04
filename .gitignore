@@ -23,6 +23,7 @@ target/
 
 # JWrapper
 # Folders
+mbhd-install/
 mbhd-install/JRE-1.7/
 mbhd-install/jwrapper/
 mbhd-install/jwrapperlib/

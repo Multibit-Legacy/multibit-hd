@@ -16,7 +16,7 @@ import java.awt.event.HierarchyListener;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ScrollBarUIDecorator {
 

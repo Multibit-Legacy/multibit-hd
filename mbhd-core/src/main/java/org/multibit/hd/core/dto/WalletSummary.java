@@ -1,10 +1,12 @@
 package org.multibit.hd.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Preconditions;
+import org.bitcoinj.core.Wallet;
+import org.multibit.hd.core.managers.WalletManager;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.util.Arrays;
 
 /**
@@ -27,13 +29,20 @@ public class WalletSummary {
   private WalletId walletId;
 
   @JsonIgnore
-  private CharSequence password;
+  private File walletFile;
+
+  @JsonIgnore
+  private WalletPassword walletPassword;
+
+  /**
+   * This field is dominated by WalletTypeExtension stored in the Wallet itself.
+   * Used mainly so that you do not have to decrypt the wallet to see the walletType
+   */
+  private WalletType walletType = WalletType.UNKNOWN;
 
   private String name;
 
   private String notes;
-
-  private WalletType walletType;
 
   /**
    * The wallet credentials, encrypted with an AES key derived from the wallet seed
@@ -84,18 +93,24 @@ public class WalletSummary {
   }
 
   public void setWalletId(WalletId walletId) {
+    Preconditions.checkNotNull(walletId, "'walletId' must be present");
     this.walletId = walletId;
   }
 
   /**
    * @return The wallet credentials
    */
-  public CharSequence getPassword() {
-    return password;
+  public WalletPassword getWalletPassword() {
+    return walletPassword;
   }
 
-  public void setPassword(CharSequence password) {
-    this.password = password;
+  /**
+   * Set the wallet password. This is the wallet password tagged with the walletId it belongs to.
+   * @param walletPassword the wallet id + password combination
+   */
+  public void setWalletPassword(WalletPassword walletPassword) {
+    Preconditions.checkArgument(walletPassword.getWalletId().equals(walletId), "The walletPassword is not the password for this wallet");
+    this.walletPassword = walletPassword;
   }
 
   /**
@@ -126,28 +141,46 @@ public class WalletSummary {
    * @return encrypted, padded wallet credentials
    */
   public byte[] getEncryptedPassword() {
-    return encryptedPassword;
+    return Arrays.copyOf(encryptedPassword, encryptedPassword.length);
   }
 
   public void setEncryptedPassword(byte[] encryptedPassword) {
-    this.encryptedPassword = encryptedPassword;
+    this.encryptedPassword = Arrays.copyOf(encryptedPassword, encryptedPassword.length);
   }
 
   public byte[] getEncryptedBackupKey() {
-    return encryptedBackupKey;
+    return Arrays.copyOf(encryptedBackupKey, encryptedBackupKey.length);
   }
 
   public void setEncryptedBackupKey(byte[] encryptedBackupKey) {
-    this.encryptedBackupKey = encryptedBackupKey;
+    this.encryptedBackupKey = Arrays.copyOf(encryptedBackupKey, encryptedBackupKey.length);
   }
 
+  /**
+   * Report the wallet type specified in the WalletTypeExtension in the wallet
+   * @return WalletType the wallet type, as specified by the WalletTypeExtension
+   */
   public WalletType getWalletType() {
-     return walletType;
+    // Use the wallet type if it is available
+    if (wallet != null) {
+      return WalletManager.getWalletType(wallet);
+    } else {
+      // Use the local walletType if that is all there is
+      return walletType;
+    }
    }
 
-   public void setWalletType(WalletType walletType) {
+  public void setWalletType(WalletType walletType) {
      this.walletType = walletType;
    }
+
+  public File getWalletFile() {
+    return walletFile;
+  }
+
+  public void setWalletFile(File walletFile) {
+    this.walletFile = walletFile;
+  }
 
 
   @Override
@@ -155,8 +188,10 @@ public class WalletSummary {
     return "WalletSummary{" +
             "wallet=" + wallet +
             ", walletId=" + walletId +
-            ", walletType=" + walletType +
-            ", credentials=" + password +
+            ", walletPassword=" +walletPassword +
+            ", walletFile=" +walletFile +
+            ", walletType=" +walletType +
+            ", credentials=***" +
             ", name='" + name + '\'' +
             ", notes='" + notes + '\'' +
             ", encryptedPassword=" + Arrays.toString(encryptedPassword) +

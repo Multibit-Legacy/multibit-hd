@@ -1,6 +1,6 @@
 package org.multibit.hd.core.dto;
 
-import com.google.bitcoin.core.Utils;
+import org.bitcoinj.core.Utils;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.crypto.AESUtils;
 import org.multibit.hd.core.managers.WalletManager;
@@ -24,14 +24,33 @@ public class WalletId {
   public static final String WALLET_ID_SEPARATOR = "-";
 
   /**
-   * The salt used in converting seed bytes to a wallet id
+   * The salt used in converting seed bytes to a wallet id for MBHD wallets
    */
-  public static final byte[] WALLET_ID_SALT_USED_IN_SCRYPT = new byte[]{(byte) 1};
+  private static final byte[] WALLET_ID_SALT_USED_IN_SCRYPT_FOR_MBHD_WALLETS = new byte[]{(byte) 1};
+
+  /**
+    * The salt used in converting seed bytes to a wallet id for Trezor wallets
+    */
+  private static final byte[] WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS = new byte[]{(byte) 2};
 
   private static final int NUMBER_OF_BYTES_IN_WALLET_ID = 20;
   public static final int LENGTH_OF_FORMATTED_WALLET_ID = 2 * NUMBER_OF_BYTES_IN_WALLET_ID + (NUMBER_OF_BYTES_IN_WALLET_ID / SEPARATOR_REPEAT_PERIOD) - 1;
 
   private final byte[] walletId;
+
+  /**
+   * @return A copy of the wallet ID salt used in Scrypt for MBHD wallets
+   */
+  public static byte[] getWalletIdSaltUsedInScryptForMbhdWallets() {
+    return Arrays.copyOf(WALLET_ID_SALT_USED_IN_SCRYPT_FOR_MBHD_WALLETS, WALLET_ID_SALT_USED_IN_SCRYPT_FOR_MBHD_WALLETS.length);
+  }
+
+  /**
+   * @return A copy of the wallet ID salt used in Scrypt for Trezor soft wallets
+   */
+  public static byte[] getWalletIdSaltUsedInScryptForTrezorSoftWallets() {
+    return Arrays.copyOf(WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS, WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS.length);
+  }
 
   /**
    * Create a wallet id from a formatted wallet id
@@ -49,16 +68,29 @@ public class WalletId {
   }
 
   /**
-   * Create a wallet id from the given seed.
+   * Create an MBHD wallet id from the given seed.
    * This produces a wallet id from the seed using various trapdoor functions.
    * The seed is typically generated from the SeedPhraseGenerator#convertToSeed method.
    *
    * @param seed The seed to use in deriving the wallet id
    */
   public WalletId(byte[] seed) {
-    walletId = AESUtils.generate160BitsOfEntropy(seed, WALLET_ID_SALT_USED_IN_SCRYPT);
+    walletId = AESUtils.generate160BitsOfEntropy(seed, WALLET_ID_SALT_USED_IN_SCRYPT_FOR_MBHD_WALLETS);
   }
 
+
+  /**
+   * Create an wallet id from the given seed and salt
+   *
+   * You can use this to generate a wallet id for a Trezor soft wallet passing in WALLET_ID_SALT_USED_IN_SCRYPT_FOR_TREZOR_SOFT_WALLETS
+   * This produces a wallet id from the seed using various trapdoor functions.
+   * The seed is typically generated from the SeedPhraseGenerator#convertToSeed method.
+   *
+   * @param seed The seed to use in deriving the wallet id
+   */
+  public WalletId(byte[] seed, byte[] salt) {
+    walletId = AESUtils.generate160BitsOfEntropy(seed, salt);
+  }
 
   /**
    * Create a WalletId from a wallet filename - the filename is parsed into a walletId byte array
@@ -90,7 +122,7 @@ public class WalletId {
    * @return The raw wallet id as a byte[]
    */
   public byte[] getBytes() {
-    return walletId;
+    return Arrays.copyOf(walletId, walletId.length);
   }
 
   /**

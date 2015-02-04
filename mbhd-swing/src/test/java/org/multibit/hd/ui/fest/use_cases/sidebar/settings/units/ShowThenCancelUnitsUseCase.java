@@ -14,7 +14,7 @@ import java.util.Map;
  * <p>Requires the "settings" screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ShowThenCancelUnitsUseCase extends AbstractFestUseCase {
 
@@ -25,12 +25,12 @@ public class ShowThenCancelUnitsUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on "exchange"
+    // Click on "units"
     window
       .button(MessageKey.SHOW_UNITS_WIZARD.getKey())
       .click();
 
-    // Verify the "exchange" wizard appears
+    // Verify the "units" wizard appears
     assertLabelText(MessageKey.UNITS_SETTINGS_TITLE);
 
     // Verify cancel is present

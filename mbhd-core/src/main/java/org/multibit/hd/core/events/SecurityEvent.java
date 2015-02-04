@@ -9,7 +9,7 @@ import org.multibit.hd.core.dto.SecuritySummary;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class SecurityEvent implements CoreEvent {
 
@@ -24,5 +24,17 @@ public class SecurityEvent implements CoreEvent {
    */
   public SecuritySummary getSummary() {
     return summary;
+  }
+
+  /**
+   * <p>Convenience method to compare the security alert type</p>
+   *
+   * @param securityAlertType The security alert type to test against
+   *
+   * @return True if this security alert matches
+   */
+  public boolean is(SecuritySummary.AlertType securityAlertType) {
+
+    return summary.getAlertType().equals(securityAlertType);
   }
 }

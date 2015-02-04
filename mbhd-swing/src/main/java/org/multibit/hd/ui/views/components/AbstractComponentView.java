@@ -13,7 +13,7 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public abstract class AbstractComponentView<M extends Model> implements View<M> {
 

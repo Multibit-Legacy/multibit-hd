@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.renderers;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
@@ -15,11 +15,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**
- *  <p>Renderer to provide the following to tables:</p>
- *  <ul>
- *  <li>Renderer of numeric amount field</li>
- *  </ul>
- *  
+ * <p>Renderer to provide the following to tables:</p>
+ * <ul>
+ * <li>Renderer of numeric amount field</li>
+ * </ul>
+ *
  */
 public class AmountBTCTableCellRenderer extends DefaultTableCellRenderer {
   JLabel label;
@@ -67,7 +67,7 @@ public class AmountBTCTableCellRenderer extends DefaultTableCellRenderer {
         label.setBackground(table.getSelectionBackground());
         label.setForeground(table.getSelectionForeground());
       } else {
-        if (row % 2 == 1) {
+        if (row % 2 != 0) {
           label.setBackground(Themes.currentTheme.tableRowAltBackground());
         } else {
           label.setBackground(Themes.currentTheme.tableRowBackground());

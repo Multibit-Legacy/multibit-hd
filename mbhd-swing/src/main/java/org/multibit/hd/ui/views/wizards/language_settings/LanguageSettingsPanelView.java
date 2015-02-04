@@ -32,7 +32,7 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 
 public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageSettingsWizardModel, LanguageSettingsPanelModel> implements ActionListener {

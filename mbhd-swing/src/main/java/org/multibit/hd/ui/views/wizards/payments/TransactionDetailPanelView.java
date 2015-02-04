@@ -11,12 +11,13 @@ import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,9 +31,11 @@ import java.net.URI;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class TransactionDetailPanelView extends AbstractWizardPanelView<PaymentsWizardModel, TransactionDetailPanelModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(TransactionDetailPanelView.class);
 
   private static final String BLOCKCHAIN_INFO_PREFIX = "https://blockchain.info/tx-index/";
 
@@ -84,20 +87,7 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
     rawTransactionTextArea.setBorder(null);
 
     // Raw transaction requires its own scroll pane
-    JScrollPane scrollPane = new JScrollPane();
-    scrollPane.setOpaque(true);
-    scrollPane.setBackground(Themes.currentTheme.readOnlyBackground());
-    scrollPane.setBorder(null);
-    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-    // View port requires special handling
-    scrollPane.setViewportView(rawTransactionTextArea);
-    scrollPane.getViewport().setBackground(Themes.currentTheme.readOnlyBackground());
-    scrollPane.setViewportBorder(new TextBubbleBorder(Themes.currentTheme.readOnlyBorder()));
-
-    // Ensure we maintain the overall theme
-    ScrollBarUIDecorator.apply(scrollPane, false);
+    JScrollPane scrollPane = ScrollPanes.newReadOnlyScrollPane(rawTransactionTextArea);
 
     JButton blockchainInfoBrowserButton = Buttons.newLaunchBrowserButton(getBlockchainInfoBrowserAction(), MessageKey.VIEW_IN_BLOCKCHAIN_INFO, MessageKey.VIEW_IN_BLOCKCHAIN_INFO_TOOLTIP);
 
@@ -183,8 +173,13 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
           if (message.length() >MAXIMUM_ERROR_LENGTH) {
             message = message.substring(0, MAXIMUM_ERROR_LENGTH) + ELLIPSIS;
           }
-          AlertModel alertModel = new AlertModel(message, RAGStatus.AMBER);
-          ViewEvents.fireAlertAddedEvent(alertModel);
+          final AlertModel alertModel = new AlertModel(message, RAGStatus.AMBER);
+          SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+              ViewEvents.fireAlertAddedEvent(alertModel);
+            }
+          });
         }
       }
     };

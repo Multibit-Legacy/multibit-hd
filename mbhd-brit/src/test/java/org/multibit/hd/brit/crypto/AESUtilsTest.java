@@ -16,12 +16,11 @@ package org.multibit.hd.brit.crypto;
  * limitations under the License.
  */
 
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.utils.BriefLogFormatter;
 import com.google.common.base.Charsets;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.utils.BriefLogFormatter;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.brit.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -32,8 +31,7 @@ import static org.junit.Assert.assertEquals;
 
 public class AESUtilsTest {
 
-  private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
-
+  private static final Logger log = LoggerFactory.getLogger(AESUtilsTest.class);
 
   private static final String EXAMPLE_TEXT = "The quick brown fox jumps over the lazy dog. 01234567890. !@#$%^&*(). ,.;:[]-_=+";
 
@@ -41,7 +39,6 @@ public class AESUtilsTest {
   private static final byte[] TEST_BYTES = {0, -101, 2, 103, -4, 105, 6, 107, 8, -109, 10, 111, -12, 113, 14, -115, 16, 117, -18, 119, 20, 121, 22, 123, -24, 125, 26, 127, -28, 29, -30, 31};
 
   private byte[] initialisationVector;
-  private byte[] keyBytes;
   private KeyParameter keyParameter;
 
   private SecureRandom secureRandom;
@@ -56,7 +53,7 @@ public class AESUtilsTest {
 
     // Create a random key
     secureRandom.nextBytes(initialisationVector);
-    keyBytes = new byte[AESUtils.KEY_LENGTH];
+    byte[] keyBytes = new byte[AESUtils.KEY_LENGTH];
     keyParameter = new KeyParameter(keyBytes);
 
     BriefLogFormatter.init();
@@ -81,20 +78,42 @@ public class AESUtilsTest {
   }
 
   @Test
-   public void testEncrypt_ExpectSuccess2() throws Exception {
-     // Plain text
-     byte[] plainBytes = TEST_BYTES;
-     log.debug("Initial message: '{}'", Utils.HEX.encode(plainBytes));
+  public void testEncrypt_ExpectSuccess2() throws Exception {
+    for (int i = 0; i < 32; i++) {
+      // Plain text - random data with a random length
+      int length = secureRandom.nextInt(256);
 
-     // Encrypt
-     byte[] encryptedBytes = AESUtils.encrypt(plainBytes, keyParameter, initialisationVector);
-     log.debug("Encrypted message: '{}'", Utils.HEX.encode(encryptedBytes));
+      byte[] plainBytes = new byte[length];
+      secureRandom.nextBytes(plainBytes);
 
-     // Decrypt
-     byte[] rebornBytes = AESUtils.decrypt(encryptedBytes, keyParameter, initialisationVector);
-     log.debug("Reborn message: '{}'", Utils.HEX.encode(rebornBytes));
+      log.debug("Initial message: '{}'", Utils.HEX.encode(plainBytes));
 
-     assertEquals(Utils.HEX.encode(plainBytes), Utils.HEX.encode(rebornBytes));
+      // Encrypt
+      byte[] encryptedBytes = AESUtils.encrypt(plainBytes, keyParameter, initialisationVector);
+      log.debug("Encrypted message: '{}'", Utils.HEX.encode(encryptedBytes));
 
-   }
+      // Decrypt
+      byte[] rebornBytes = AESUtils.decrypt(encryptedBytes, keyParameter, initialisationVector);
+      log.debug("Reborn message: '{}'", Utils.HEX.encode(rebornBytes));
+
+      assertEquals(Utils.HEX.encode(plainBytes), Utils.HEX.encode(rebornBytes));
+    }
+  }
+
+  @Test
+  public void testEncrypt_ExpectSuccess3() throws Exception {
+    // Plain text
+    byte[] plainBytes = TEST_BYTES;
+    log.debug("Initial message: '{}'", Utils.HEX.encode(plainBytes));
+
+    // Encrypt
+    byte[] encryptedBytes = AESUtils.encrypt(plainBytes, keyParameter, initialisationVector);
+    log.debug("Encrypted message: '{}'", Utils.HEX.encode(encryptedBytes));
+
+    // Decrypt
+    byte[] rebornBytes = AESUtils.decrypt(encryptedBytes, keyParameter, initialisationVector);
+    log.debug("Reborn message: '{}'", Utils.HEX.encode(rebornBytes));
+
+    assertEquals(Utils.HEX.encode(plainBytes), Utils.HEX.encode(rebornBytes));
+  }
 }

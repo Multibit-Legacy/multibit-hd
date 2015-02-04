@@ -13,13 +13,12 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class SecurityAlertPopoverRequirements {
 
   public static void verifyUsing(FrameFixture window) {
 
-    Map<String,Object> parameters = Maps.newHashMap();
+    Map<String, Object> parameters = Maps.newHashMap();
 
     new CloseDebugSecurityPopoverUseCase(window).execute(parameters);
 

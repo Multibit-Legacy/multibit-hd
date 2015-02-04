@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.utils;
 
-import org.junit.After;
 import org.junit.Test;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
@@ -10,15 +9,6 @@ import java.util.Locale;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class HtmlUtilsTest {
-
-  private Locale originalLocale = Locale.getDefault();
-
-  @After
-  public void tearDown() throws Exception {
-
-    Locale.setDefault(originalLocale);
-
-  }
 
   @Test
   public void testLocaliseWithCenteredLineBreaks() throws Exception {
@@ -65,10 +55,9 @@ public class HtmlUtilsTest {
   @Test
   public void testLocaliseWithLineBreaks_RTL() throws Exception {
 
-    Locale.setDefault(new Locale("ar","SA"));
-
     // New Configuration relies on default locale
     Configurations.currentConfiguration = new Configuration();
+    Configurations.currentConfiguration.getLanguage().setLocale((new Locale("ar","SA")));
 
     String[] lines = new String[] {
 

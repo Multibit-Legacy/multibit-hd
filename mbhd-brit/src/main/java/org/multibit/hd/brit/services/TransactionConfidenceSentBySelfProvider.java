@@ -1,20 +1,20 @@
 package org.multibit.hd.brit.services;
 
-import com.google.bitcoin.core.Coin;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.TransactionConfidence;
-import com.google.bitcoin.core.Wallet;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionConfidence;
+import org.bitcoinj.core.Wallet;
 
 /**
- *  <p>Class to provide the following to FeeService:<br>
- *  <ul>
- *  <li>Provide 'isSentByMe' information using the transaction confidence</li>
- *  </ul>
- *  Example:<br>
- *  <pre>
- *  </pre>
- *  </p>
- *  
+ * <p>Class to provide the following to FeeService:<br>
+ * <ul>
+ * <li>Provide 'isSentByMe' information using the transaction confidence</li>
+ * </ul>
+ * Example:<br>
+ * <pre>
+ * </pre>
+ * </p>
+ *
  */
 public class TransactionConfidenceSentBySelfProvider implements TransactionSentBySelfProvider {
   @Override

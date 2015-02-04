@@ -4,14 +4,14 @@ import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.testing.WalletFixtures;
-import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
-import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
-import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectRestoreWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletEnterSeedPhraseUseCase;
 import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletSelectBackupLocationWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletTimestampUseCase;
 import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
+import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
+import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
+import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectRestoreWalletUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import java.util.Map;
@@ -23,7 +23,6 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class WelcomeWizardRestoreWallet_en_US_Requirements {
 

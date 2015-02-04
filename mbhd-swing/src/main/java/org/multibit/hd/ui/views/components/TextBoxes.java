@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.DocumentMaxLengthFilter;
 import org.multibit.hd.ui.MultiBitUI;
@@ -26,9 +26,13 @@ import java.util.Collection;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class TextBoxes {
+
+  /**
+   * The maximum display width of a V1 Trezor device (allowing for icon)
+   */
+  private static final int TREZOR_MAX_COLUMNS = 22;
 
   /**
    * Utilities have no public constructor
@@ -53,9 +57,12 @@ public class TextBoxes {
   }
 
   /**
+   * @param nameKey    The name key for accessibility
+   * @param tooltipKey The tooltip key for accessibility
+   *
    * @return A new text field with default theme
    */
-  public static JTextField newReadOnlyTextField(int columns) {
+  public static JTextField newReadOnlyTextField(int columns, MessageKey nameKey, MessageKey tooltipKey) {
 
     JTextField textField = new JTextField(columns);
 
@@ -67,6 +74,9 @@ public class TextBoxes {
     textField.setBackground(Themes.currentTheme.readOnlyBackground());
 
     textField.setOpaque(false);
+
+    // Ensure FEST can find it
+    AccessibilityDecorator.apply(textField, nameKey, tooltipKey);
 
     return textField;
   }
@@ -245,10 +255,7 @@ public class TextBoxes {
    */
   public static JTextField newDisplaySeedTimestamp(String seedTimestamp) {
 
-    JTextField textField = newReadOnlyTextField(20);
-
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.TIMESTAMP, MessageKey.TIMESTAMP_TOOLTIP);
+    JTextField textField = newReadOnlyTextField(20, MessageKey.TIMESTAMP, MessageKey.TIMESTAMP_TOOLTIP);
 
     textField.setText(seedTimestamp);
 
@@ -277,10 +284,13 @@ public class TextBoxes {
    */
   public static JTextField newEnterName(DocumentListener listener, boolean readOnly) {
 
-    JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
-
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.NAME, MessageKey.NAME_TOOLTIP);
+    JTextField textField;
+    if (readOnly) {
+      textField = newReadOnlyTextField(40, MessageKey.NAME, MessageKey.NAME_TOOLTIP);
+    } else {
+      textField = newTextField(40);
+      AccessibilityDecorator.apply(textField, MessageKey.NAME, MessageKey.NAME_TOOLTIP);
+    }
 
     textField.getDocument().addDocumentListener(listener);
 
@@ -296,10 +306,13 @@ public class TextBoxes {
    */
   public static JTextField newEnterEmailAddress(DocumentListener listener, boolean readOnly) {
 
-    JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
-
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.EMAIL_ADDRESS, MessageKey.EMAIL_ADDRESS_TOOLTIP);
+    JTextField textField;
+    if (readOnly) {
+      textField = newReadOnlyTextField(40, MessageKey.EMAIL_ADDRESS, MessageKey.EMAIL_ADDRESS_TOOLTIP);
+    } else {
+      textField = newTextField(40);
+      AccessibilityDecorator.apply(textField, MessageKey.EMAIL_ADDRESS, MessageKey.EMAIL_ADDRESS_TOOLTIP);
+    }
 
     // Detect changes
     textField.getDocument().addDocumentListener(listener);
@@ -335,10 +348,7 @@ public class TextBoxes {
    */
   public static JTextField newDisplayBitcoinAddress(String bitcoinAddress) {
 
-    JTextField textField = newReadOnlyTextField(34);
-
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS, MessageKey.BITCOIN_ADDRESS_TOOLTIP);
+    JTextField textField = newReadOnlyTextField(34, MessageKey.BITCOIN_ADDRESS, MessageKey.BITCOIN_ADDRESS_TOOLTIP);
 
     textField.setText(bitcoinAddress);
 
@@ -367,10 +377,12 @@ public class TextBoxes {
    */
   public static JTextField newEnterExtendedPublicKey(DocumentListener listener, boolean readOnly) {
 
-    JTextField textField = readOnly ? newReadOnlyTextField(40) : newTextField(40);
-
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.EXTENDED_PUBLIC_KEY, MessageKey.EXTENDED_PUBLIC_KEY_TOOLTIP);
+    JTextField textField;
+    if (readOnly) {
+      textField = newReadOnlyTextField(40, MessageKey.EXTENDED_PUBLIC_KEY, MessageKey.EXTENDED_PUBLIC_KEY_TOOLTIP);
+    } else {
+      textField = newTextField(40);
+    }
 
     // Detect changes
     textField.getDocument().addDocumentListener(listener);
@@ -661,6 +673,22 @@ public class TextBoxes {
   }
 
   /**
+   * @param panelName The panel name used as the basis for the FEST name
+   *
+   * @return A text area with similar dimensions to a V1 Trezor after MiG resizing
+   */
+  public static JTextArea newTrezorV1Display(String panelName) {
+
+    JTextArea trezorDisplay = newReadOnlyTextArea(5, 50);
+
+    // Ensure FEST can find it
+    trezorDisplay.setName(panelName + ".trezor_display");
+
+    return trezorDisplay;
+
+  }
+
+  /**
    * @param listener A document listener to detect changes
    *
    * @return A new "enter API key" text field
@@ -685,4 +713,22 @@ public class TextBoxes {
     return '\u2022';
   }
 
+  /**
+   * @return A new "enter Trezor label" limited length text field
+   */
+  public static JTextField newEnterTrezorLabel() {
+
+    JTextField textField = newTextField(TREZOR_MAX_COLUMNS);
+
+    // Limit the length of the underlying document
+    DefaultStyledDocument doc = new DefaultStyledDocument();
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(TREZOR_MAX_COLUMNS));
+    textField.setDocument(doc);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.ENTER_TREZOR_LABEL, MessageKey.ENTER_TREZOR_LABEL_TOOLTIP);
+
+    return textField;
+
+  }
 }

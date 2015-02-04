@@ -5,8 +5,11 @@ import com.google.common.base.Strings;
 import com.google.common.util.concurrent.*;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletPassword;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
@@ -29,6 +32,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.util.concurrent.Callable;
@@ -41,10 +46,11 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
-
 public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePasswordWizardModel, ChangePasswordPanelModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(ChangePasswordPanelView.class);
 
   // Panel specific components
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
@@ -112,18 +118,6 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
   }
 
   @Override
-  public void fireInitialStateViewEvents() {
-
-    // Determine any events
-    ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.NEXT,
-      true
-    );
-
-  }
-
-  @Override
   public void afterShow() {
 
     SwingUtilities.invokeLater(new Runnable() {
@@ -134,7 +128,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
 
         // Check for any security alerts
         Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
-        if (securityEvent.isPresent()) {
+        if (securityEvent.isPresent() && securityEvent.get().is(SecuritySummary.AlertType.DEBUGGER_ATTACHED)) {
 
           displaySecurityPopoverMaV.getModel().setValue(securityEvent.get());
 
@@ -166,7 +160,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
         // Ensure the view shows the spinner and disables components
         getNextButton().setEnabled(false);
         getCancelButton().setEnabled(false);
-        enterPasswordMaV.getView().setSpinnerVisibility(true);
+        enterPasswordMaV.getView().setSpinnerVisible(true);
 
       }
     });
@@ -193,18 +187,19 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
           // Check the result
           if (result) {
 
-            // Manually deregister the MaVs
-            CoreServices.uiEventBus.unregister(enterPasswordMaV);
-            CoreServices.uiEventBus.unregister(confirmPasswordMaV);
-            CoreServices.uiEventBus.unregister(displaySecurityPopoverMaV);
+            // Manually unsubscribe the MaVs
+            CoreEvents.unsubscribe(enterPasswordMaV);
+            CoreEvents.unsubscribe(confirmPasswordMaV);
+            CoreEvents.unsubscribe(displaySecurityPopoverMaV);
 
-            // Trigger the deferred hide
-            ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
 
             // Enable components
             SwingUtilities.invokeLater(new Runnable() {
               @Override
               public void run() {
+                // Trigger the deferred hide
+                ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
+
                 if (isNextEnabled()) {
                   getNextButton().setEnabled(true);
                 }
@@ -229,7 +224,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
                   getNextButton().setEnabled(true);
                 }
                 getCancelButton().setEnabled(true);
-                enterPasswordMaV.getView().setSpinnerVisibility(false);
+                enterPasswordMaV.getView().setSpinnerVisible(false);
 
                 enterPasswordMaV.getView().requestInitialFocus();
 
@@ -250,7 +245,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
                 getNextButton().setEnabled(true);
               }
               getCancelButton().setEnabled(true);
-              enterPasswordMaV.getView().setSpinnerVisibility(false);
+              enterPasswordMaV.getView().setSpinnerVisible(false);
 
               enterPasswordMaV.getView().requestInitialFocus();
             }
@@ -277,19 +272,20 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
 
       // If a credentials has been entered, put it into the wallet summary (so that it is available for address generation)
       WalletId walletId = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId();
+      Optional<WalletSummary> currentWalletSummary;
       try {
-        WalletManager.INSTANCE.open(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
+        currentWalletSummary = WalletManager.INSTANCE.openWalletFromWalletId(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
       } catch (WalletLoadException wle) {
         // Wallet did not load - assume credentials was incorrect
         return false;
       }
-      Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-      if (currentWalletSummary.isPresent()) {
+      if (currentWalletSummary != null && currentWalletSummary.isPresent()) {
 
+        WalletPassword walletPassword = new WalletPassword(password, walletId);
         WalletSummary walletSummary = currentWalletSummary.get();
-        walletSummary.setPassword(password);
+        walletSummary.setWalletPassword(walletPassword);
 
-        CoreServices.getOrCreateHistoryService(walletSummary.getWalletId());
+        CoreServices.getOrCreateHistoryService(walletPassword);
 
         // Must have succeeded to be here
         CoreServices.logHistory(Languages.safeText(MessageKey.PASSWORD_VERIFIED));

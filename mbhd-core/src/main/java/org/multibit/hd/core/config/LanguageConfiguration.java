@@ -13,7 +13,7 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class LanguageConfiguration {
 
@@ -23,11 +23,10 @@ public class LanguageConfiguration {
   @JsonProperty
   private Locale locale = Locale.US;
 
-  public LanguageConfiguration() {
-
-    this(Locale.getDefault());
-
-  }
+  /**
+   * Default constructor for Jackson
+   */
+  public LanguageConfiguration() {}
 
   /**
    * @param locale The locale on which to set defaults

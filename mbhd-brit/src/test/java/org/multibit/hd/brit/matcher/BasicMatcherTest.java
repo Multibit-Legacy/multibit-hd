@@ -16,12 +16,13 @@ package org.multibit.hd.brit.matcher;
  * limitations under the License.
  */
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.params.MainNetParams;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.io.Files;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.params.MainNetParams;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -35,7 +36,6 @@ import org.multibit.hd.brit.payer.PayerConfig;
 import org.multibit.hd.brit.payer.Payers;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.brit.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,7 +152,7 @@ public class BasicMatcherTest {
     MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile, PGPUtilsTest.TEST_DATA_PASSWORD);
 
     // Create a random temporary directory for the Matcher store to use
-    File matcherStoreDirectory = FileUtils.makeRandomTemporaryDirectory();
+    File matcherStoreDirectory = Files.createTempDir();
     MatcherStore matcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectory);
 
     Matcher matcher = Matchers.newBasicMatcher(matcherConfig, matcherStore);

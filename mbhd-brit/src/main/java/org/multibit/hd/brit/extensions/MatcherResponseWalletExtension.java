@@ -1,11 +1,11 @@
 package org.multibit.hd.brit.extensions;
 
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletExtension;
+import org.bitcoinj.core.Wallet;
+import org.bitcoinj.core.WalletExtension;
 import org.multibit.hd.brit.dto.MatcherResponse;
 
 /**
- * <p>Walet Extension to provide the following to Wallet:</p>
+ * <p>Wallet Extension to provide the following to Wallet:</p>
  * <ul>
  * <li>Persistence of a MatcherResponse</li>
  * </ul>

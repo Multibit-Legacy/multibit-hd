@@ -30,7 +30,6 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairWalletWizardModel, RepairWalletReportPanelModel> {
 
@@ -57,7 +56,7 @@ public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairW
 
     // Configure the panel model
     RepairWalletReportPanelModel panelModel = new RepairWalletReportPanelModel(
-      getPanelName()
+            getPanelName()
     );
     setPanelModel(panelModel);
 
@@ -67,9 +66,9 @@ public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairW
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[][][]", // Column constraints
-      "[]10[]10[]10[]" // Row constraints
+            Panels.migXYLayout(),
+            "[][][]", // Column constraints
+            "[]10[]10[]10[]" // Row constraints
     ));
 
     // Apply the theme
@@ -77,10 +76,10 @@ public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairW
 
     cacertsRepairedStatusLabel = Labels.newCACertsInstalledStatus(false);
     AwesomeDecorator.applyIcon(
-      AwesomeIcon.EXCHANGE,
-      cacertsRepairedStatusLabel,
-      true,
-      MultiBitUI.NORMAL_ICON_SIZE
+            AwesomeIcon.EXCHANGE,
+            cacertsRepairedStatusLabel,
+            true,
+            MultiBitUI.NORMAL_ICON_SIZE
     );
     AccessibilityDecorator.apply(cacertsRepairedStatusLabel, MessageKey.CACERTS_INSTALLED_STATUS);
 
@@ -92,9 +91,9 @@ public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairW
 
     // Start invisible (activates after synchronization completes)
     walletRepairedStatusLabel = Labels.newStatusLabel(
-      Optional.of(MessageKey.WALLET_REPAIRED_STATUS),
-      null,
-      Optional.<Boolean>absent());
+            Optional.of(MessageKey.WALLET_REPAIRED_STATUS),
+            null,
+            Optional.<Boolean>absent());
     AccessibilityDecorator.apply(cacertsRepairedStatusLabel, MessageKey.CACERTS_INSTALLED_STATUS);
     walletRepairedStatusLabel.setVisible(false);
 
@@ -118,11 +117,16 @@ public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairW
   @Override
   public void afterShow() {
 
-    // Ensure the Finish button is disabled to avoid complex side effects during repair
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Ensure the Finish button is disabled to avoid complex side effects during repair
+        ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
 
-    // Hide the header balance
-    ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+        // Hide the header balance - swtching back on is dealt with in MainController#onBitcoinNetworkChangedEvent
+        ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+      }
+    });
 
     // Start the CA certs update process in a new thread
     getWizardModel().installCACertificates();
@@ -146,63 +150,64 @@ public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairW
     }
 
     BitcoinNetworkSummary summary = event.getSummary();
+    switch (summary.getStatus()) {
+      case NOT_CONNECTED:
+        blocksLeftLabel.setVisible(false);
+        blocksLeftStatusLabel.setVisible(false);
+        break;
 
-    // Blocks left
-    int blocksLeft = event.getSummary().getBlocksLeft();
-    if (blocksLeft < 0) {
-      blocksLeftLabel.setVisible(false);
-      blocksLeftStatusLabel.setVisible(false);
-    } else {
-      // Synchronizing
-      blocksLeftLabel.setVisible(true);
-      blocksLeftStatusLabel.setVisible(true);
-      AwesomeDecorator.applyIcon(
-        AwesomeIcon.EXCHANGE,
-        blocksLeftStatusLabel,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
-      );
-      blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
+      case CONNECTING:
+        blocksLeftLabel.setVisible(false);
+        blocksLeftStatusLabel.setVisible(false);
+        break;
+
+      case CONNECTED:
+        break;
+
+      case DOWNLOADING_BLOCKCHAIN:
+        blocksLeftLabel.setVisible(true);
+        blocksLeftStatusLabel.setVisible(true);
+        blocksLeftLabel.setText(String.valueOf(summary.getBlocksLeft()));
+        AwesomeDecorator.applyIcon(
+                AwesomeIcon.EXCHANGE,
+                blocksLeftStatusLabel,
+                true,
+                MultiBitUI.NORMAL_ICON_SIZE
+        );
+        break;
+      case SYNCHRONIZED:
+        blocksLeftLabel.setVisible(true);
+        blocksLeftStatusLabel.setVisible(true);
+        blocksLeftLabel.setText("0");
+
+        AwesomeDecorator.applyIcon(
+                AwesomeIcon.CHECK,
+                blocksLeftStatusLabel,
+                true,
+                MultiBitUI.NORMAL_ICON_SIZE
+        );
+
+        // Put the report screen into a finished state
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            // Enable the Finish button
+            ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+
+            // Wallet replayed without errors so it must be repaired
+            walletRepairedStatusLabel.setVisible(true);
+            AwesomeDecorator.bindIcon(
+                    AwesomeIcon.CHECK,
+                    walletRepairedStatusLabel,
+                    true,
+                    MultiBitUI.NORMAL_ICON_SIZE
+            );
+
+          }
+        });
+        break;
+      default:
     }
-
-    if (blocksLeft == 0) {
-
-      // Completed
-
-      // Update the status
-      AwesomeDecorator.applyIcon(
-        AwesomeIcon.CHECK,
-        blocksLeftStatusLabel,
-        true,
-        MultiBitUI.NORMAL_ICON_SIZE
-      );
-      // Looks ugly but is semantically correct
-      blocksLeftLabel.setText("0");
-
-      // Show the header balance
-      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, true);
-
-      // Enable the Finish button
-      ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
-
-      // Put the report screen into a finished state
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-
-          // Wallet replayed without errors so it must be repaired
-          walletRepairedStatusLabel.setVisible(true);
-          AwesomeDecorator.bindIcon(
-            AwesomeIcon.CHECK,
-            walletRepairedStatusLabel,
-            true,
-            MultiBitUI.NORMAL_ICON_SIZE
-          );
-
-        }
-      });
-    }
-
   }
 
 
@@ -226,10 +231,10 @@ public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairW
           if (cacertsRepaired.isPresent()) {
             cacertsRepairedStatusLabel.setVisible(true);
             AwesomeDecorator.bindIcon(
-              cacertsRepaired.get() ? AwesomeIcon.CHECK : AwesomeIcon.TIMES,
-              cacertsRepairedStatusLabel,
-              true,
-              MultiBitUI.NORMAL_ICON_SIZE
+                    cacertsRepaired.get() ? AwesomeIcon.CHECK : AwesomeIcon.TIMES,
+                    cacertsRepairedStatusLabel,
+                    true,
+                    MultiBitUI.NORMAL_ICON_SIZE
             );
 
           }
@@ -237,18 +242,14 @@ public class RepairWalletReportPanelView extends AbstractWizardPanelView<RepairW
           if (walletRepaired.isPresent()) {
             walletRepairedStatusLabel.setVisible(true);
             AwesomeDecorator.bindIcon(
-              walletRepaired.get() ? AwesomeIcon.CHECK : AwesomeIcon.TIMES,
-              walletRepairedStatusLabel,
-              true,
-              MultiBitUI.NORMAL_ICON_SIZE
+                    walletRepaired.get() ? AwesomeIcon.CHECK : AwesomeIcon.TIMES,
+                    walletRepairedStatusLabel,
+                    true,
+                    MultiBitUI.NORMAL_ICON_SIZE
             );
           }
-
         }
       });
-
     }
-
   }
-
 }

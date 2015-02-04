@@ -1,7 +1,7 @@
 package org.multibit.hd.core.utils;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.AddressFormatException;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -88,7 +88,7 @@ public class BitcoinMessages {
     }
 
     // Provide PGP-like signature wrapping
-    String versionField = VERSION + ": MultiBit HD (" + Configurations.currentConfiguration.getVersion() + ")";
+    String versionField = VERSION + ": MultiBit HD (" + Configurations.currentConfiguration.getCurrentVersion() + ")";
     String commentField = COMMENT + ": https://multibit.org";
     String addressField = ADDRESS + ": " + signingAddress.toString();
 

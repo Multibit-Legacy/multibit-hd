@@ -8,6 +8,7 @@ import com.xeiam.xchange.service.polling.PollingMarketDataService;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.config.BitcoinConfiguration;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 
@@ -54,7 +55,7 @@ public class ExchangeTickerServiceFunctionalTest {
 
     ExchangeTickerService testObject = new ExchangeTickerService(bitcoinConfiguration);
 
-    CoreServices.uiEventBus.register(this);
+    CoreEvents.subscribe(this);
 
     testObject.start();
 

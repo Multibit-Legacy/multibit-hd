@@ -11,7 +11,7 @@ import org.multibit.hd.core.dto.ExchangeSummary;
  * <p>Contains a summary indicating RAG status and localised message</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ExchangeStatusChangedEvent implements CoreEvent {
 

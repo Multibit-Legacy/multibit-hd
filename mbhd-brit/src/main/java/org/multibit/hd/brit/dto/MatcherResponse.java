@@ -1,8 +1,8 @@
 package org.multibit.hd.brit.dto;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.params.MainNetParams;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.AddressFormatException;
+import org.bitcoinj.params.MainNetParams;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
@@ -76,7 +76,7 @@ public class MatcherResponse {
       }
     }
 
-    log.debug("Serialised matcherResponse = \n{}\n", builder.toString());
+    log.trace("Serialised matcherResponse = \n{}\n", builder.toString());
     return builder.toString().getBytes(Charsets.UTF_8);
 
   }
@@ -92,7 +92,7 @@ public class MatcherResponse {
 
     String serialisedMatcherResponseAsString = new String(serialisedMatcherResponse, Charsets.UTF_8);
 
-    log.debug("Attempting to parse matcher response:\n{}", serialisedMatcherResponseAsString);
+    log.trace("Attempting to parse matcher response:\n{}", serialisedMatcherResponseAsString);
     String[] rows = Strings.split(serialisedMatcherResponseAsString, '\n');
 
     if (rows.length > 0) {

@@ -1,0 +1,43 @@
+<!-- TO DO remove redundant descriptions of Multibit classic files -->
+<h3>File descriptions</h3>
+<p>When MultiBit runs, it creates various files on your computer. This help section describes what each of these files is for.</p>
+<p>For the purpose of illustration, imagine you have created a new wallet called <b>saving.wallet</b>.
+  Please refer to the relevant help section for your version below (use the 'About MultiBit' menu option if required).</p>
+
+<h4>Wallet files for MultiBit version 0.5.13 and later</h4>
+<p>Here is a list of the files stored with your wallet:</p>
+<ul>
+  <li><p>saving.wallet&nbsp;&nbsp;=&nbsp;&nbsp;This is the main wallet file containing your private keys and transactions.</p></li>
+  <li><p>saving.info&nbsp;&nbsp;=&nbsp;&nbsp;This file contains the description of the wallet and the labels you have given to your addresses.</p></li>
+  <li><p>saving-data&nbsp;&nbsp;=&nbsp;&nbsp;A directory containing your wallet backup files.</p></li>
+  <li><p>saving-data/key-backup&nbsp;&nbsp;=&nbsp;&nbsp;A directory containing your automatically generated private key export files.</p></li>
+  <li><p>saving-data/rolling-backup&nbsp;&nbsp;=&nbsp;&nbsp;A directory containing your rolling wallet backups.</p></li>
+  <li><p>saving-data/wallet-backup&nbsp;&nbsp;=&nbsp;&nbsp;A directory containing your encrypted wallet backups.</p></li>
+  <li><p>saving-data/wallet-unenc-backup&nbsp;&nbsp;=&nbsp;&nbsp;A directory containing your unencrypted wallet backups.</p></li>
+</ul>
+<p><b>Private key backups</b>. In your private key backup directory you will have files called 'saving-YYYYMMDDHHMMSS.key'. Here the YYYYMMDDHHMMSS is a timestamp. With an encrypted wallet every time you add or change the password, add a receiving address or import private keys an encrypted, timestamped export of your private keys is created. This is encrypted with your wallet password. You can use these to recover the essentials of your wallet by importing one of these files into a new wallet.</p>
+<p><b>Rolling backups</b>. In your rolling backup directory you will see one (or sometimes more) file with the name 'saving-YYYYMMDDHHMMSS.wallet'. This is the rolling wallet backup file. Every time the wallet writes to disk, the existing wallet is kept as a backup. The main purpose of this file is to recover from any sudden loss of power that prevents a clean wallet save.</p>
+<p><b>Wallet backups</b>. These are two more directories where backups are made of your wallets. One stores backups for encrypted wallets, the other for unencrypted wallets. These files are in the format 'saving-YYYYMMDDHHMMSS.wallet' and 'saving-YYYYMMDDHHMMSS.info'. Your wallet is backed up to these directories when you open a wallet, add or change the password, add a receiving address or import private keys.</p>
+<p>When you add a password to a wallet all the unencrypted wallet backups are encrypted with the password you have chosen. These files are stored as ''saving-YYYYMMDDHHMMSS.wallet.cipher'. You can open these files as normal using the 'File | Open Wallet' menu option. When you do you will be asked for the wallet password to decrypt the wallet.</p>
+<p>If when MultiBit opens your main wallet file it is not successful it will automatically use the most recent backup files to try to recover your wallet.</p>
+<br/>
+<h4>Wallet files for MultiBit version 0.5.12 and earlier</h4>
+<p>Here is a list of the files stored with your wallet:</p>
+<ul>
+  <li><p>saving.wallet&nbsp;&nbsp;=&nbsp;&nbsp;This is the main wallet file containing your private keys and transactions.</p></li>
+  <li><p>saving.info&nbsp;&nbsp;=&nbsp;&nbsp;This file contains the description of the wallet and the labels you have given to your addresses.</p></li>
+  <li><p>saving-YYYYMMDDHHMMSS.wallet&nbsp;&nbsp;=&nbsp;&nbsp;Here the YYYYMMDDHHMMSS is a timestamp. This is the rolling wallet backup file. Every time the wallet writes to disk, the existing wallet is kept as a backup. Only one backup is kept. The main purpose of this file is to recover from any sudden loss of power that prevents a clean wallet save.</p></li>
+  <li><p>saving-YYYYMMDDHHMMSS.key&nbsp;&nbsp;=&nbsp;&nbsp;You may have several of these. With an encrypted wallet every time you add or change the password, add a receiving address or import private keys an encrypted, timestamped export of your private keys is created. This is encrypted with your wallet password. You can use these to recover the essentials of your wallet by importing one of these files into a new wallet.</p></li>
+</ul>
+<p>If when MultiBit opens your main wallet file it is not successful it will automatically use the most recent rolling backup file to try to recover your wallet.</p>
+<br>
+
+<h4>Other, non-wallet related files</h4>
+<p>There are also non wallet related files that are created in MultiBit. These are listed below:</p>
+<ul>
+  <li><p>multibit.properties&nbsp;&nbsp;=&nbsp;&nbsp;This is the MultiBit configuration file.</p></li>
+  <li><p>multibit.blockchain&nbsp;&nbsp;=&nbsp;&nbsp;This is the MultiBit blockchain, an early format.</p></li>
+  <li><p>multibit.spvstore&nbsp;&nbsp;=&nbsp;&nbsp;This is the MultiBit blockchain, a more advanced format.</p></li>
+  <li><p>multibit.checkpoints&nbsp;&nbsp;=&nbsp;&nbsp;This is the MultiBit checkpoints file. This is used to avoid having to download the whole blockchain.</p></li>
+</ul>
+</br>

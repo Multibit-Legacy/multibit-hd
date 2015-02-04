@@ -1,6 +1,6 @@
 package org.multibit.hd.brit.matcher;
 
-import com.google.bitcoin.core.Address;
+import org.bitcoinj.core.Address;
 import org.multibit.hd.brit.dto.BRITWalletId;
 import org.multibit.hd.brit.dto.WalletToEncounterDateLink;
 

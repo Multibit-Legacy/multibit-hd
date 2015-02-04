@@ -7,7 +7,7 @@ package org.multibit.hd.ui.views.wizards.language_settings;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum LanguageSettingsState {
 

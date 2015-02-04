@@ -7,7 +7,7 @@ package org.multibit.hd.ui.views.wizards.credentials;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum CredentialsState {
 
@@ -17,14 +17,29 @@ public enum CredentialsState {
   CREDENTIALS_ENTER_PASSWORD,
 
   /**
-   * Enter a Trezor PIN
+   * Request the master public key from the Trezor (does not trigger PIN request)
    */
-   CREDENTIALS_ENTER_PIN,
+  CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY,
 
   /**
-   * No Trezor PIN required
+   * Request a cipher key from the Trezor (most likely triggers a PIN request)
    */
-   CREDENTIALS_NO_PIN_REQUIRED,
+  CREDENTIALS_REQUEST_CIPHER_KEY,
+
+  /**
+   * Enter a PIN
+   */
+  CREDENTIALS_ENTER_PIN,
+
+  /**
+   * Information panel asking user to press the Trezor "confirm" button
+   */
+  CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK,
+
+  /**
+   * Report on whether the wallet loaded successfully or not
+   */
+  CREDENTIALS_LOAD_WALLET_REPORT,
 
    /**
    * Special case state used by the restore button action to trigger

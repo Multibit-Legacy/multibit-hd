@@ -15,7 +15,7 @@ import java.awt.geom.AffineTransform;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class RotatingIcon implements Icon {
 
@@ -57,7 +57,7 @@ public class RotatingIcon implements Icon {
   /**
    * The number of steps to make per rotation (power of 2)
    */
-  private final int maxStepCount = 16;
+  private final static int maxStepCount = 16;
 
   /**
    * Starting position is "North"
@@ -162,7 +162,7 @@ public class RotatingIcon implements Icon {
     g2.setRenderingHints(ImageDecorator.smoothRenderingHints());
 
     // Required to center the image within the component
-    int xCenteringOffset = 11;
+    int xCenteringOffset = 0;
     int yCenteringOffset = 0;
 
     // Required to compensate for centroid movements during placement within the component

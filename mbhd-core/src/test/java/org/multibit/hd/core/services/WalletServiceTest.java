@@ -1,10 +1,10 @@
 package org.multibit.hd.core.services;
 
-import com.google.bitcoin.core.Coin;
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.crypto.MnemonicCode;
-import com.google.bitcoin.wallet.DeterministicSeed;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Wallet;
+import org.bitcoinj.crypto.MnemonicCode;
+import org.bitcoinj.wallet.DeterministicSeed;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -15,10 +15,10 @@ import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.managers.WalletManagerTest;
 import org.multibit.hd.core.utils.Addresses;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.utils.Dates;
@@ -49,42 +49,42 @@ public class WalletServiceTest {
 
   public static final String CHANGED_PASSWORD2 = "3the quick brown fox jumps over the lazy dog";
 
-  private static final Logger log = LoggerFactory.getLogger(WalletServiceTest.class);
+  public static final String CHANGED_PASSWORD3 = "4bebop a doolah shen am o bing bang";
 
-  private String firstAddress;
+  private static final Logger log = LoggerFactory.getLogger(WalletServiceTest.class);
 
 
   @Before
   public void setUp() throws Exception {
 
+    InstallationManager.unrestricted = true;
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
     networkParameters = BitcoinNetwork.current().get();
 
     // Create a random temporary directory where the wallet directory will be written
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
     // Create a wallet from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     walletId = new WalletId(seed1);
 
-    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
     InstallationManager.setCurrentApplicationDataDirectory(temporaryDirectory);
 
     long nowInSeconds = Dates.nowInSeconds();
     walletSummary = WalletManager
             .INSTANCE
-            .getOrCreateWalletSummary(
+            .getOrCreateMBHDSoftWalletSummaryFromSeed(
                     temporaryDirectory,
                     seed1,
                     nowInSeconds,
                     PASSWORD,
                     "Example",
-                    "Example"
-            );
-    WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
+                    "Example",
+              false); // No need to sync
 
-    firstAddress = walletSummary.getWallet().freshReceiveKey().toString();
+    WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
 
     walletService = new WalletService(networkParameters);
 
@@ -156,9 +156,39 @@ public class WalletServiceTest {
     WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD1, CHANGED_PASSWORD2);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD2)).isTrue();
 
-    // And change ti back to the original value just for good measure
+    // And change it back to the original value just for good measure
     WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD2, PASSWORD);
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
+
+    // Change the credentials again
+    WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD3);
+    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD3)).isTrue();
+  }
+
+  @Test
+  /**
+   * A repeat of the change password test to check raciness (issue #322)
+   */
+  public void testChangePasswordRepeat() throws Exception {
+    log.debug("Start of testChangePassword repeat");
+
+    assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
+
+    // Change the credentials once
+    WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD1);
+    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD1)).isTrue();
+
+    // Change the credentials again
+    WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD1, CHANGED_PASSWORD2);
+    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD2)).isTrue();
+
+    // Change it back to the original value
+    WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD2, PASSWORD);
+    assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
+
+    // Change the credentials again
+    WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD3);
+    assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD3)).isTrue();
   }
 
   @Test
@@ -177,7 +207,7 @@ public class WalletServiceTest {
 
 
     // Test encrypt / decrypt with empty passphrase
-    DeterministicSeed seed1 = new DeterministicSeed(split, "", creationTimeSecs);
+    DeterministicSeed seed1 = new DeterministicSeed(split, null, "", creationTimeSecs);
 
     Wallet wallet1 = Wallet.fromSeed(networkParameters, seed1);
 

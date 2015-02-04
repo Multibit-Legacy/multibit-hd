@@ -1,7 +1,7 @@
 package org.multibit.hd.core.utils;
 
-import com.google.bitcoin.core.NetworkParameters;
-import com.google.bitcoin.params.MainNetParams;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.params.MainNetParams;
 import org.multibit.hd.core.config.Configurations;
 
 import java.util.Locale;
@@ -13,7 +13,7 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum BitcoinNetwork {
 

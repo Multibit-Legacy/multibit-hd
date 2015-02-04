@@ -17,7 +17,6 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class ImageDecorator {
 
@@ -212,11 +211,11 @@ public class ImageDecorator {
   public static BufferedImage rotate(BufferedImage image, double theta) {
 
     // Calculate the center of rotation
-    double x = image.getWidth() / 2;
-    double y = image.getHeight() / 2;
+    double x = (double) image.getWidth() / 2;
+    double y = (double) image.getHeight() / 2;
 
     // Copy the image
-    BufferedImage copy = image.getSubimage(0,0, image.getWidth(), image.getHeight());
+    BufferedImage copy = image.getSubimage(0, 0, image.getWidth(), image.getHeight());
 
     // Get the graphics context
     Graphics2D g2 = copy.createGraphics();
@@ -236,4 +235,30 @@ public class ImageDecorator {
     return copy;
   }
 
+  /**
+   * @param image    The source image
+   * @param maxWidth The maximum width (assumes a landscape image)
+   *
+   * @return The re-sized image with no blurring and preserved transparency
+   */
+  public static BufferedImage resizeSharp(BufferedImage image, int maxWidth) {
+
+    // Assume a screen shot and calculate the appropriate ratio
+    // for minimum UI width
+    double ratio = (double) image.getWidth(null) / maxWidth;
+    int height = (int) (image.getHeight(null) / ratio);
+
+    // Preserve transparency
+    BufferedImage thumbnail = new BufferedImage(maxWidth, height, BufferedImage.TYPE_INT_ARGB);
+
+    // Perform a bi-cubic interpolation with anti-aliasing for sharp result
+    Graphics2D g = thumbnail.createGraphics();
+    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    g.drawImage(image, 0, 0, maxWidth, height, null);
+    g.dispose();
+
+    return thumbnail;
+
+  }
 }

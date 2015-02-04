@@ -1,13 +1,14 @@
 package org.multibit.hd.core.crypto;
 
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
 import com.google.protobuf.ByteString;
+import org.bitcoinj.crypto.KeyCrypterScrypt;
 import org.bitcoinj.wallet.Protos;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
-import org.multibit.hd.core.files.Files;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.WalletManager;
 import org.slf4j.Logger;
@@ -17,19 +18,20 @@ import org.spongycastle.crypto.params.KeyParameter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 
 /**
- *  <p>Reader / Writer to provide the following to Services:<br>
- *  <ul>
- *  <li>load an AES encrypted file</li>
+ * <p>Reader / Writer to provide the following to Services:<br>
+ * <ul>
+ * <li>load an AES encrypted file</li>
  * <li>write an AES encrypted file</li>
- *  </ul>
- *  Example:<br>
- *  <pre>
- *  </pre>
- *  </p>
- *  
+ * </ul>
+ * Example:<br>
+ * <pre>
+ * </pre>
+ * </p>
+ *
  */
 public class EncryptedFileReaderWriter {
   private static final Logger log = LoggerFactory.getLogger(EncryptedFileReaderWriter.class);
@@ -44,7 +46,7 @@ public class EncryptedFileReaderWriter {
     Preconditions.checkNotNull(password);
     try {
       // Read the encrypted file in and decrypt it.
-      byte[] encryptedWalletBytes = org.multibit.hd.brit.utils.FileUtils.readFile(encryptedProtobufFile);
+      byte[] encryptedWalletBytes = Files.toByteArray(encryptedProtobufFile);
       //log.debug("Encrypted wallet bytes after load:\n" + Utils.HEX.encode(encryptedWalletBytes));
 
       KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(salt));
@@ -64,23 +66,23 @@ public class EncryptedFileReaderWriter {
    */
   public static void encryptAndWrite(byte[] unencryptedBytes, CharSequence password, File outputFile) throws EncryptedFileReaderWriterException {
     try {
-      KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(WalletManager.SCRYPT_SALT));
+      KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(WalletManager.scryptSalt()));
       KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
 
       // Create an AES encoded version of the unencryptedBytes, using the credentials
-      byte[] encryptedBytes = AESUtils.encrypt(unencryptedBytes, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
+      byte[] encryptedBytes = AESUtils.encrypt(unencryptedBytes, keyParameter, WalletManager.aesInitialisationVector());
 
       //log.debug("Encrypted wallet bytes (original):\n" + Utils.HEX.encode(encryptedBytes));
 
       // Check that the encryption is reversible
-      byte[] rebornBytes = AESUtils.decrypt(encryptedBytes, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
+      byte[] rebornBytes = AESUtils.decrypt(encryptedBytes, keyParameter, WalletManager.aesInitialisationVector());
 
       if (Arrays.equals(unencryptedBytes, rebornBytes)) {
         // Save encrypted bytes
 
         ByteArrayInputStream encryptedWalletByteArrayInputStream = new ByteArrayInputStream(encryptedBytes);
         File temporaryFile = new File(outputFile.getAbsolutePath() + TEMPORARY_FILE_EXTENSION);
-        Files.writeFile(encryptedWalletByteArrayInputStream, temporaryFile, outputFile);
+        SecureFiles.writeFile(encryptedWalletByteArrayInputStream, temporaryFile, outputFile);
       } else {
         throw new EncryptedFileReaderWriterException("The encryption was not reversible so aborting.");
       }
@@ -102,37 +104,55 @@ public class EncryptedFileReaderWriter {
      Preconditions.checkNotNull(encryptedBackupAESKey);
      try {
        // Decrypt the backup AES key stored in the wallet summary
-       KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(password.getBytes(Charsets.UTF_8), WalletManager.SCRYPT_SALT);
-       byte[] backupAESKeyBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(encryptedBackupAESKey, walletPasswordDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+       KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(password.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
+       byte[] backupAESKeyBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(encryptedBackupAESKey, walletPasswordDerivedAESKey, WalletManager.aesInitialisationVector());
        KeyParameter backupAESKey = new KeyParameter(backupAESKeyBytes);
+       File destinationFile =  new File(fileToEncrypt.getAbsoluteFile() + WalletManager.MBHD_AES_SUFFIX);
 
-       return encryptAndDeleteOriginal(fileToEncrypt, backupAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+       return encryptAndDeleteOriginal(fileToEncrypt, destinationFile, backupAESKey, WalletManager.aesInitialisationVector());
      } catch (Exception e) {
        throw new EncryptedFileReaderWriterException("Could not decrypt backup AES key", e);
      }
    }
 
+  /**
+     * Encrypt the file specified using an AES key derived from the supplied credentials
+     * @param fileToEncrypt file to encrypt
+     * @param password credentials to use to do the encryption
+     * @return the resultant encrypted file
+     * @throws EncryptedFileReaderWriterException
+     */
+    public static File makeAESEncryptedCopyAndDeleteOriginal(File fileToEncrypt, CharSequence password) throws EncryptedFileReaderWriterException {
+      Preconditions.checkNotNull(fileToEncrypt);
+      Preconditions.checkNotNull(password);
+
+      File destinationFile =  new File(fileToEncrypt.getAbsoluteFile() + WalletManager.MBHD_AES_SUFFIX);
+      return makeAESEncryptedCopyAndDeleteOriginal(fileToEncrypt, destinationFile, password);
+    }
 
   /**
    * Encrypt the file specified using an AES key derived from the supplied credentials
    * @param fileToEncrypt file to encrypt
+   * @param destinationFile destination file (if not set then fileToEncrypt + .aes
    * @param password credentials to use to do the encryption
    * @return the resultant encrypted file
    * @throws EncryptedFileReaderWriterException
    */
-  public static File makeAESEncryptedCopyAndDeleteOriginal(File fileToEncrypt, CharSequence password) throws EncryptedFileReaderWriterException {
+  public static File makeAESEncryptedCopyAndDeleteOriginal(File fileToEncrypt, File destinationFile, CharSequence password) throws EncryptedFileReaderWriterException {
     Preconditions.checkNotNull(fileToEncrypt);
+    Preconditions.checkNotNull(destinationFile);
     Preconditions.checkNotNull(password);
 
-    KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(WalletManager.SCRYPT_SALT));
+    KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(WalletManager.scryptSalt()));
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
-    return encryptAndDeleteOriginal(fileToEncrypt, keyParameter, WalletManager.AES_INITIALISATION_VECTOR);
+    return encryptAndDeleteOriginal(fileToEncrypt, destinationFile, keyParameter, WalletManager.aesInitialisationVector());
   }
 
-  private static File encryptAndDeleteOriginal(File fileToEncrypt, KeyParameter keyParameter, byte[] initialisationVector) throws EncryptedFileReaderWriterException {
+  private static File encryptAndDeleteOriginal(File fileToEncrypt, File encryptedFilename, KeyParameter keyParameter, byte[] initialisationVector) throws EncryptedFileReaderWriterException {
+    FileOutputStream encryptedWalletOutputStream = null;
     try {
       // Read in the file
-      byte[] unencryptedBytes = org.multibit.hd.brit.utils.FileUtils.readFile(fileToEncrypt);
+      byte[] unencryptedBytes = Files.toByteArray(fileToEncrypt);
 
       // Create an AES encoded version of the fileToEncrypt, using the KeyParameter supplied
       byte[] encryptedBytes = AESUtils.encrypt(unencryptedBytes, keyParameter, initialisationVector);
@@ -144,25 +164,33 @@ public class EncryptedFileReaderWriter {
 
       if (Arrays.equals(unencryptedBytes, rebornBytes)) {
         // Save encrypted bytes
-        File encryptedFilename = new File(fileToEncrypt.getAbsoluteFile() + WalletManager.MBHD_AES_SUFFIX);
         ByteArrayInputStream encryptedWalletByteArrayInputStream = new ByteArrayInputStream(encryptedBytes);
-        FileOutputStream encryptedWalletOutputStream = new FileOutputStream(encryptedFilename);
-        Files.writeFile(encryptedWalletByteArrayInputStream, encryptedWalletOutputStream);
+        encryptedWalletOutputStream = new FileOutputStream(encryptedFilename);
+        ByteStreams.copy(encryptedWalletByteArrayInputStream, encryptedWalletOutputStream);
+        encryptedWalletOutputStream.flush();
 
         if (encryptedFilename.length() == encryptedBytes.length) {
           SecureFiles.secureDelete(fileToEncrypt);
         } else {
           // The saved file isn't the correct size - do not delete the original
-          return null;
+          throw new EncryptedFileReaderWriterException("The saved file " + encryptedFilename + " is not the size of the encrypted bytes - not deleting the original file");
         }
 
         return encryptedFilename;
       } else {
-        log.error("The file encryption was not reversible. Aborting. This means the file {} is being stored unencrypted", fileToEncrypt.getAbsolutePath());
-        return null;
+        throw new EncryptedFileReaderWriterException("The file encryption was not reversible. Aborting. This means the file " + fileToEncrypt.getAbsolutePath() +  " is being stored unencrypted");
       }
     } catch (Exception e) {
       throw new EncryptedFileReaderWriterException("Cannot make encrypted copy for file '" + fileToEncrypt.getAbsolutePath() + "'", e);
+    } finally {
+      if (encryptedWalletOutputStream != null) {
+        try {
+          encryptedWalletOutputStream.close();
+          encryptedWalletOutputStream = null;
+        } catch (IOException e) {
+          log.error("Cannot close wallet outpur stream", e);
+        }
+      }
     }
   }
 

@@ -1,18 +1,18 @@
 package org.multibit.hd.ui.views.screens.wallet;
 
-import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.BitcoinNetworkStatus;
+import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentType;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
+import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
@@ -41,7 +41,7 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenModel> {
 
@@ -74,7 +74,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
   @Override
   public JPanel initialiseScreenViewPanel() {
 
-    walletService = CoreServices.getCurrentWalletService();
+    walletService = CoreServices.getCurrentWalletService().get();
 
     MigLayout layout = new MigLayout(
       Panels.migXYDetailLayout(),
@@ -88,7 +88,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        SendBitcoinParameter parameter = new SendBitcoinParameter(Optional.<BitcoinURI>absent(), false);
+        SendBitcoinParameter parameter = new SendBitcoinParameter(Optional.<BitcoinURI>absent());
 
         Panels.showLightBox(Wizards.newSendBitcoinWizard(parameter).getWizardScreenHolder());
       }
@@ -205,6 +205,11 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     update();
   }
 
+  @Subscribe
+  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+    update();
+  }
+
   /**
    * Update the payments when a walletDetailsChangedEvent occurs
    */
@@ -257,7 +262,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
     boolean currentEnabled = sendBitcoin.isEnabled();
 
-    final boolean newEnabled;
+    boolean newEnabled;
 
     // NOTE: Both send and request are disabled when the network is not available
     // because it is possible that a second wallet is generating transactions using
@@ -265,34 +270,38 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     // address being used twice.
     switch (event.getSummary().getSeverity()) {
       case RED:
-        // Always disabled on RED
-        newEnabled = false;
+        // Enable on RED only if unrestricted (allows FEST tests without a network)
+        newEnabled = InstallationManager.unrestricted;
         break;
       case AMBER:
         // Enable on AMBER only if unrestricted
         newEnabled = InstallationManager.unrestricted;
         break;
       case GREEN:
-        // Enable on GREEN only if synchronized or unrestricted
-        newEnabled = BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus()) || InstallationManager.unrestricted;
+        // Enable on GREEN
+        newEnabled = true;
+        break;
+      case PINK:
+      case EMPTY:
+        // Maintain the status quo unless unrestricted
+        newEnabled = currentEnabled || InstallationManager.unrestricted;
         break;
       default:
         // Unknown status
-        throw new IllegalStateException("Unknown event severity " + event.getSummary().getStatus());
+        throw new IllegalStateException("Unknown event severity " + event.getSummary().getSeverity());
     }
 
     // Test for a change in condition
     if (currentEnabled != newEnabled) {
+      final boolean finalNewEnabled = newEnabled;
 
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          sendBitcoin.setEnabled(newEnabled);
-          requestBitcoin.setEnabled(newEnabled);
+          sendBitcoin.setEnabled(finalNewEnabled);
+          requestBitcoin.setEnabled(finalNewEnabled);
         }
       });
-
     }
-
   }
 }

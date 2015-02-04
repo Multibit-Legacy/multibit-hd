@@ -15,6 +15,7 @@
  */
 package org.multibit.hd.ui.platform.builder.mac;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.ui.platform.GenericApplication;
 import org.multibit.hd.ui.platform.GenericApplicationSpecification;
 import org.multibit.hd.ui.platform.builder.generic.DefaultApplicationBuilder;
@@ -80,6 +81,8 @@ public class MacApplicationBuilder {
    *
    * @return A {@link org.multibit.hd.ui.platform.GenericApplication}
    */
+  // The Apple system library location for Java
+  @SuppressFBWarnings({"DMI_HARDCODED_ABSOLUTE_FILENAME"})
   @SuppressWarnings("unchecked")
   public GenericApplication build(GenericApplicationSpecification specification) {
 
@@ -106,9 +109,9 @@ public class MacApplicationBuilder {
         }
       }
 
-      // Must have successfully loaded the Apple JDK or its not there
+      // Must have successfully loaded the Apple JDK or it's not there
 
-      // Try to loadContacts the EAWT support classes
+      // Try to load the EAWT support classes
       Class nativeApplicationClass = Class.forName("com.apple.eawt.Application");
       // Instantiate through getApplication()
       nativeApplication = nativeApplicationClass.getMethod("getApplication", new Class[0]).invoke(null);

@@ -1,17 +1,25 @@
 package org.multibit.hd.ui;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.Uninterruptibles;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.OSUtils;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
-import org.multibit.hd.ui.controllers.SidebarController;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.platform.GenericApplicationFactory;
 import org.multibit.hd.ui.platform.GenericApplicationSpecification;
 import org.multibit.hd.ui.services.BitcoinURIListeningService;
@@ -27,6 +35,7 @@ import javax.swing.text.DefaultEditorKit;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Main entry point to the application</p>
@@ -37,17 +46,23 @@ public class MultiBitHD {
 
   private MainController mainController;
 
+  private final ListeningExecutorService cacertsExecutorService = SafeExecutors.newSingleThreadExecutor("install-cacerts");
+
   /**
    * <p>Main entry point to the application</p>
    *
    * @param args None specified
    */
-  public static void main(final String[] args) throws Exception {
+  public static void main(String[] args) throws Exception {
 
     if (args != null) {
+      // Show the command line arguments
       for (int i = 0; i < args.length; i++) {
         log.debug("MultiBit launched with args[{}]: '{}'", i, args[i]);
       }
+    } else {
+      // Provide empty arguments to avoid potential NPEs
+      args = new String[]{};
     }
 
     // Hand over to an instance to simplify FEST tests
@@ -55,23 +70,37 @@ public class MultiBitHD {
     if (!multiBitHD.start(args)) {
 
       // Failed to start so issue a hard shutdown
-      multiBitHD.stop(ShutdownEvent.ShutdownType.HARD);
+      CoreServices.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 
     } else {
 
       // Initialise the UI views in the EDT
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
 
-          multiBitHD.initialiseUIViews();
+            multiBitHD.initialiseUIViews();
 
-        }
-      });
+          }
+        });
 
     }
 
     log.debug("Bootstrap complete.");
+
+  }
+
+  public void stop() {
+
+    log.debug("Stopping MultiBit HD");
+
+    mainController = null;
+
+    // final purge in case anything gets missed
+    ViewEvents.unsubscribeAll();
+    ControllerEvents.unsubscribeAll();
+    CoreEvents.unsubscribeAll();
 
   }
 
@@ -89,6 +118,9 @@ public class MultiBitHD {
     // Prepare the JVM (Nimbus, system properties etc)
     initialiseJVM();
 
+    // Start core services (logging, security alerts, configuration, Bitcoin URI handling etc)
+    initialiseCore(args);
+
     // Create controllers so that the generic app can access listeners
     if (!initialiseUIControllers(args)) {
 
@@ -100,25 +132,15 @@ public class MultiBitHD {
     // Prepare platform-specific integration (protocol handlers, quit events etc)
     initialiseGenericApp();
 
-    // Start core services (logging, security alerts, configuration, Bitcoin URI handling etc)
-    initialiseCore(args);
-
     // Must be OK to be here
     return true;
   }
 
   /**
-   * @param shutdownType The shutdown type to use
-   */
-  public void stop(ShutdownEvent.ShutdownType shutdownType) {
-
-    CoreEvents.fireShutdownEvent(shutdownType);
-
-  }
-
-  /**
    * <p>Initialise the JVM. This occurs before anything else is called.</p>
    */
+  // Calling exit(-1) is required
+  @SuppressFBWarnings({"DM_EXIT"})
   private void initialiseJVM() throws Exception {
 
     log.debug("Initialising JVM...");
@@ -160,6 +182,22 @@ public class MultiBitHD {
 
       }
 
+      // Execute the CA certificates download on a separate thread to avoid slowing
+      // the startup time
+      cacertsExecutorService.submit(
+        new Runnable() {
+          @Override
+          public void run() {
+            SSLManager.INSTANCE.installCACertificates(
+              InstallationManager.getOrCreateApplicationDataDirectory(),
+              InstallationManager.CA_CERTS_NAME,
+              false // Do not force loading if they are already present
+            );
+
+          }
+        });
+
+
     } catch (SecurityException se) {
       log.error(se.getClass().getName() + " " + se.getMessage());
     }
@@ -187,7 +225,8 @@ public class MultiBitHD {
 
     if (OSUtils.isWindowsXPOrEarlier()) {
       log.error("Windows XP or earlier detected. Forcing shutdown.");
-      JOptionPane.showMessageDialog(null, "This version of Windows is not supported for security reasons.\nPlease upgrade.", "Error",
+      JOptionPane.showMessageDialog(
+        null, "This version of Windows is not supported for security reasons.\nPlease upgrade.", "Error",
         JOptionPane.ERROR_MESSAGE);
       return false;
     }
@@ -195,9 +234,11 @@ public class MultiBitHD {
     // Including the other controllers avoids dangling references during a soft shutdown
     mainController = new MainController(
       bitcoinURIListeningService,
-      new HeaderController(),
-      new SidebarController()
+      new HeaderController()
     );
+
+    // Start the hardware wallet support to allow credentials screen to be selected
+    mainController.handleHardwareWallets();
 
     // Set the tooltip delay to be slightly longer
     ToolTipManager.sharedInstance().setInitialDelay(1000);
@@ -273,28 +314,67 @@ public class MultiBitHD {
 
     Preconditions.checkNotNull(mainController, "'mainController' must be present. FEST will cause this if another instance is running.");
 
+    log.debug("Switching theme...");
+
     // Ensure that we are using the configured theme
     ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme());
     Themes.switchTheme(themeKey.theme());
+
+    final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    if (hardwareWalletService.isPresent()) {
+      // Give MultiBit Hardware a chance to process any attached hardware wallet
+      // and for MainController to subsequently process the events
+      // The delay observed in reality and FEST tests ranges from 1400-2200ms and if
+      // not included results in wiped hardware wallets being missed on startup
+      log.debug("Allowing time for hardware wallet state transition");
+      Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+    }
+
+    log.debug("Building MainView...");
 
     // Build a new MainView
     final MainView mainView = new MainView();
     mainController.setMainView(mainView);
 
+    log.debug("Checking for pre-existing wallets...");
+
     // Check for any pre-existing wallets in the application directory
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
 
-    if (walletDirectories.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted()) {
+    // Check for fresh install
+    boolean showWelcomeWizard = walletDirectories.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted();
 
-      log.debug("No wallets in the directory or licence not accepted - showing the welcome wizard");
+    if (showWelcomeWizard) {
+      log.debug("Wallet directory is empty or no licence accepted");
+    }
+
+    // Check for fresh hardware wallet
+    if (hardwareWalletService.isPresent()) {
+
+      if (hardwareWalletService.get().isDeviceReady() && !hardwareWalletService.get().isWalletPresent()) {
+
+        log.debug("Wiped hardware wallet detected");
+
+        // Must show the welcome wizard in hardware wallet mode
+        // regardless of wallet or licence situation
+        // MainController should have handled the events
+        showWelcomeWizard = true;
+
+      }
+
+    }
+
+    if (showWelcomeWizard) {
+
+      log.debug("Showing the welcome wizard");
       mainView.setShowExitingWelcomeWizard(true);
-      mainView.setShowExitingPasswordWizard(false);
+      mainView.setShowExitingCredentialsWizard(false);
 
     } else {
 
-      log.debug("Wallets are present - showing the credentials wizard");
-      mainView.setShowExitingPasswordWizard(true);
+      log.debug("Showing the credentials wizard");
+      mainView.setShowExitingCredentialsWizard(true);
       mainView.setShowExitingWelcomeWizard(false);
 
     }

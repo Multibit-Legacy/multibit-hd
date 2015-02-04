@@ -7,6 +7,7 @@ import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
+import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -48,7 +49,7 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> {
 
@@ -95,7 +96,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     JButton undoButton = Buttons.newUndoButton(getUndoAction());
     JButton exportButton = Buttons.newExportButton(getExportAction());
 
-    WalletService walletService = CoreServices.getCurrentWalletService();
+    WalletService walletService = CoreServices.getCurrentWalletService().get();
     List<PaymentData> paymentList = walletService.getPaymentDataList();
 
     paymentsTable = Tables.newPaymentsTable(paymentList, detailsButton);
@@ -123,12 +124,17 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     return contentPanel;
   }
 
+  /**
+   * @param transactionSeenEvent The event (very high frequency during synchronisation)
+   */
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
 
     log.trace("Received a TransactionSeenEvent: {}", transactionSeenEvent);
 
     if (transactionSeenEvent.isFirstAppearanceInWallet()) {
+      log.debug("Firing an alert for a new transaction");
+      transactionSeenEvent.setFirstAppearanceInWallet(false);
       Sounds.playPaymentReceived();
       AlertModel alertModel = Models.newPaymentReceivedAlertModel(transactionSeenEvent);
       ControllerEvents.fireAddAlertEvent(alertModel);
@@ -156,6 +162,16 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   }
 
   /**
+    * Update the payments when a transactionCreationEvent occurs
+    */
+   @Subscribe
+   public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+     log.trace("Received a TransactionCreationEvent.");
+
+     update(true);
+   }
+
+   /**
    * <p>Called when the search box is updated</p>
    *
    * @param event The "component changed" event
@@ -182,7 +198,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
             // Remember the selected row
             int selectedTableRow = paymentsTable.getSelectedRow();
 
-            WalletService walletService = CoreServices.getCurrentWalletService();
+            WalletService walletService = CoreServices.getCurrentWalletService().get();
 
             // Refresh the wallet payment list if asked
             if (refreshData) {
@@ -215,7 +231,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        WalletService walletService = CoreServices.getCurrentWalletService();
+        WalletService walletService = CoreServices.getCurrentWalletService().get();
 
         int selectedTableRow = paymentsTable.getSelectedRow();
 
@@ -225,7 +241,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
         }
         int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
         PaymentData paymentData = ((PaymentTableModel) paymentsTable.getModel()).getPaymentData().get(selectedModelRow);
-        //log.debug("getDetailsAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow + ", paymentData = " + paymentData.toString());
+        log.debug("getDetailsAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow + ", paymentData = " + paymentData.toString());
 
         PaymentsWizard wizard = Wizards.newPaymentsWizard(paymentData);
         // If the payment is a transaction, then fetch the matching payment request data and put them in the model
@@ -265,7 +281,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        CoreServices.getCurrentWalletService().undoDeletePaymentRequest();
+        CoreServices.getCurrentWalletService().get().undoDeletePaymentRequest();
         fireWalletDetailsChanged();
 
       }
@@ -292,7 +308,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
         if (paymentData instanceof PaymentRequestData) {
           // We can delete this
-          CoreServices.getCurrentWalletService().deletePaymentRequest((PaymentRequestData) paymentData);
+          CoreServices.getCurrentWalletService().get().deletePaymentRequest((PaymentRequestData) paymentData);
           fireWalletDetailsChanged();
         }
       }
@@ -308,11 +324,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
        public void mousePressed(MouseEvent e) {
 
-         log.debug("Mouse click");
-
          if (e.getClickCount() == 2) {
-
-           log.debug("Mouse click 2");
 
            detailsButton.doClick();
          }
@@ -324,7 +336,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   private void fireWalletDetailsChanged() {
 
     // Ensure the views that display payments update
-    WalletDetail walletDetail = new WalletDetail();
+    final WalletDetail walletDetail = new WalletDetail();
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
       walletDetail.setApplicationDirectory(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath());
@@ -336,8 +348,14 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
-      walletDetail.setNumberOfPayments(CoreServices.getCurrentWalletService().getPaymentDataList().size());
-      ViewEvents.fireWalletDetailChangedEvent(walletDetail);
+      walletDetail.setNumberOfPayments(CoreServices.getCurrentWalletService().get().getPaymentDataList().size());
+
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          ViewEvents.fireWalletDetailChangedEvent(walletDetail);
+        }
+      });
 
     }
   }

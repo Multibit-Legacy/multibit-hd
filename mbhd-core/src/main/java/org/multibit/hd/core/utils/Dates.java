@@ -1,19 +1,24 @@
 package org.multibit.hd.core.utils;
 
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.ReadableInstant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.sntp.NtpMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Locale;
+import java.util.concurrent.Callable;
 
 /**
  * <p>Utility to provide the following to all layers:</p>
@@ -23,11 +28,17 @@ import java.util.Locale;
  * <p>All times use the UTC time zone unless otherwise specified</p>
  *
  * @since 0.0.1
- *  
  */
 public class Dates {
 
+  private static final Logger log = LoggerFactory.getLogger(Dates.class);
+
   public static final int CHECKSUM_MODULUS = 97;
+
+  /**
+   * Provides asynchronous NTP lookup
+   */
+  private static final ListeningExecutorService systemTimeDriftExecutorService = SafeExecutors.newSingleThreadExecutor("system-time-drift");
 
   /**
    * Utilities have private constructor
@@ -327,7 +338,7 @@ public class Dates {
    * @param when   The instant
    * @param locale The required locale
    *
-   * @return The instant formatted as "ddd, MMM dd" (Saturday, January 01) in UTC
+   * @return The instant formatted as "dd MMM yyyy HH:mm" (01 Jan 2000 23:59) in UTC
    */
   public static String formatTransactionDate(ReadableInstant when, Locale locale) {
     if (when == null) {
@@ -548,8 +559,8 @@ public class Dates {
     Preconditions.checkArgument(separatorIndex > 3, "'" + text + "' does not contain '/' in the correct location");
 
     try {
-      int days = Integer.valueOf(text.substring(0, separatorIndex));
-      int checksum = Integer.valueOf(text.substring(separatorIndex + 1));
+      int days = Integer.parseInt(text.substring(0, separatorIndex));
+      int checksum = Integer.parseInt(text.substring(separatorIndex + 1));
 
       Preconditions.checkArgument(days % CHECKSUM_MODULUS == checksum, "'" + text + "' has incorrect checksum. Days=" + days + " checksum=" + checksum);
 
@@ -572,58 +583,73 @@ public class Dates {
   }
 
   /**
-   * <p>Blocking call to an SNTP time server (max 1 second)</p>
+   * <p>Non-blocking call to an SNTP time server.</p>
    *
-   * @param sntpHost The SNTP host (e.g. "pool.ntp.org")
-   * @return The number of milliseconds of drift from a SNTP timeserver time
+   * @param sntpHost The SNTP host (e.g. "pool.ntp.org" or "")
+   *
+   * @return The number of milliseconds of drift from a SNTP timeserver time. Add this figure to local time to become correct. Thus -ve means local clock is ahead of server.
    */
-  public static int calculateDriftInMillis(String sntpHost) throws IOException {
+  public static ListenableFuture<Integer> calculateDriftInMillis(final String sntpHost) {
 
-    // Send request
-    DatagramSocket socket = new DatagramSocket();
-    socket.setSoTimeout(1000);
-    InetAddress address = InetAddress.getByName(sntpHost);
-    byte[] buf = new NtpMessage().toByteArray();
+    return systemTimeDriftExecutorService.submit(
+      new Callable<Integer>() {
+        @Override
+        public Integer call() throws Exception {
 
-    // Build the SNTP datagram on port 123
-    DatagramPacket packet = new DatagramPacket(
-      buf,
-      buf.length,
-      address,
-      123
-    );
+          log.debug("Checking system time drift against '{}'", sntpHost);
 
-    // Set the transmit timestamp *just* before sending the packet
-    NtpMessage.encodeTimestamp(
-      packet.getData(),
-      40,
-      // Offset from 01-01-1900T00:00:00Z
-      (System.currentTimeMillis() / 1000.0) + 2208988800.0
-    );
+          // Send request
+          DatagramSocket socket = new DatagramSocket();
+          // Typical response time for SNTP on domestic broadband is around 40ms
+          // This very high setting allows for
+          // * firewall negotiation where the user manually allows the connection
+          // * DNS and UPnP issues at the router
+          // * very poor network performance
+          socket.setSoTimeout(60_000);
+          InetAddress address = InetAddress.getByName(sntpHost);
+          byte[] buf = new NtpMessage().toByteArray();
 
-    socket.send(packet);
+          // Build the SNTP datagram on port 123
+          DatagramPacket packet = new DatagramPacket(
+            buf,
+            buf.length,
+            address,
+            123
+          );
 
-    // Wait for response response
-    packet = new DatagramPacket(buf, buf.length);
-    socket.receive(packet);
+          // Set the transmit timestamp *just* before sending the packet
+          NtpMessage.encodeTimestamp(
+            packet.getData(),
+            40,
+            // Offset from 01-01-1900T00:00:00Z
+            (System.currentTimeMillis() / 1_000.0) + 2_208_988_800.0
+          );
 
-    // Set the receive timestamp *just* after receiving the packet
-    double destinationTimestamp =
-      // Offset from 01-01-1900T00:00:00Z
-      (System.currentTimeMillis() / 1000.0) + 2208988800.0;
+          socket.send(packet);
 
-    // Close the socket since we have all the data in the packet buffer
-    socket.close();
+          // Wait for response response
+          packet = new DatagramPacket(buf, buf.length);
+          socket.receive(packet);
 
-    // Process response
-    NtpMessage msg = new NtpMessage(packet.getData());
+          // Set the receive timestamp *just* after receiving the packet
+          double destinationTimestamp =
+            // Offset from 01-01-1900T00:00:00Z
+            (System.currentTimeMillis() / 1_000.0) + 2_208_988_800.0;
 
-    // Calculate local offset in microseconds
-    double localClockOffset = ((msg.receiveTimestamp - msg.originateTimestamp)
-      + (msg.transmitTimestamp - destinationTimestamp)) / 2;
+          // Close the socket since we have all the data in the packet buffer
+          socket.close();
 
-    // Provide current time with offset applied
-    return (int) (localClockOffset * 1000);
+          // Process response
+          NtpMessage msg = new NtpMessage(packet.getData());
+
+          // Calculate local offset in microseconds
+          double localClockOffset = ((msg.receiveTimestamp - msg.originateTimestamp)
+            + (msg.transmitTimestamp - destinationTimestamp)) / 2;
+
+          // Provide current time with offset applied
+          return (int) (localClockOffset * 1_000);
+        }
+      });
 
   }
 

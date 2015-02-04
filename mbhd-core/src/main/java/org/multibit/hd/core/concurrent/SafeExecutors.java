@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * to the ExceptionHandler.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class SafeExecutors {
 
@@ -26,7 +26,7 @@ public class SafeExecutors {
   /**
    * The number of seconds to wait before terminating the thread during a shutdown
    */
-  private static final long DURATION_BEFORE_QUIT = 5;
+  private static final long DURATION_BEFORE_QUIT = 1;
 
   /**
    * Creates an Executor that uses a single worker thread operating

@@ -1,12 +1,13 @@
 package org.multibit.hd.ui.models;
 
-import com.google.bitcoin.uri.BitcoinURI;
 import com.google.common.base.Optional;
+import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -14,7 +15,6 @@ import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.Wizards;
-import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
 
 import javax.swing.*;
@@ -27,7 +27,7 @@ import java.awt.event.ActionEvent;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class Models {
 
@@ -104,7 +104,7 @@ public class Models {
 
         ControllerEvents.fireRemoveAlertEvent();
 
-        SendBitcoinParameter parameter = new SendBitcoinParameter(Optional.fromNullable(bitcoinURI), false);
+        SendBitcoinParameter parameter = new SendBitcoinParameter(Optional.fromNullable(bitcoinURI));
 
         Panels.showLightBox(Wizards.newSendBitcoinWizard(parameter).getWizardScreenHolder());
 
@@ -149,7 +149,7 @@ public class Models {
   /**
    * @param event The hardware wallet event (e.g. SHOW_PIN_ENTRY etc)
    *
-   * @return An alert model suitable for use for displaying the information, absent if the Bitcoin URI does not contain sufficient information
+   * @return An alert model suitable for use for displaying the information
    */
   public static AlertModel newHardwareWalletAlertModel(HardwareWalletEvent event) {
 
@@ -165,23 +165,20 @@ public class Models {
         // Provide action to allow user to enter PIN
         // (required if device prompts when providing
         // encrypted info to unlock wallet)
-        JButton button = Buttons.newAlertPanelButton(new AbstractAction() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            // Open the Credentials wizard, asking for a Trezor PIN entry screen
-            Panels.showLightBox(Wizards.newExitingCredentialsWizard(CredentialsRequestType.TREZOR_PIN).getWizardScreenHolder());
-          }
-        }, MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);
+
+        JButton button = Buttons.newAlertPanelButton(
+          getAlertButtonAction(),
+          // Considered using Shield + Trezor tools wizard message but screen
+          // gets cluttered with shields everywhere and looks confused
+          MessageKey.YES,
+          MessageKey.YES_TOOLTIP,
+          AwesomeIcon.CHECK
+        );
 
         return Models.newAlertModel(
-          Languages.safeText(MessageKey.TREZOR_CONNECTED_ALERT, label),
+          Languages.safeText(MessageKey.TREZOR_ATTACHED_ALERT, label),
           RAGStatus.GREEN,
           button
-        );
-      case SHOW_DEVICE_DETACHED:
-        return Models.newAlertModel(
-          Languages.safeText(MessageKey.TREZOR_DISCONNECTED_ALERT),
-          RAGStatus.AMBER
         );
       case SHOW_DEVICE_FAILED:
         return Models.newAlertModel(
@@ -191,6 +188,26 @@ public class Models {
       default:
         throw new IllegalStateException("Unknown hardware wallet system event");
     }
+
+  }
+
+  /**
+   *
+   * @return A suitable action for the alert button
+   */
+  private static AbstractAction getAlertButtonAction() {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        // Remove the alert since it's been dealt with
+        ControllerEvents.fireRemoveAlertEvent();
+
+        // Perform a switch wallet, which will close down the old wallet and then fire up a credentials wizard
+        ViewEvents.fireSwitchWalletEvent();
+      }
+    };
 
   }
 

@@ -1,6 +1,6 @@
 package org.multibit.hd.brit.dto;
 
-import com.google.bitcoin.core.Utils;
+import org.bitcoinj.core.Utils;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.brit.exceptions.MatcherStoreException;
@@ -85,7 +85,7 @@ public class WalletToEncounterDateLink {
    */
   public static WalletToEncounterDateLink parse(String serialisedWalletToEncounterDate) {
 
-    log.debug("Attempting to parse walletToEncounterDateLink:\n{}", serialisedWalletToEncounterDate);
+    log.trace("Attempting to parse walletToEncounterDateLink:\n{}", serialisedWalletToEncounterDate);
 
     if (serialisedWalletToEncounterDate == null) {
       return null;

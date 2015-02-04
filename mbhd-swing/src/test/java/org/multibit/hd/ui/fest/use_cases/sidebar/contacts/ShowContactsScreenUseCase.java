@@ -16,7 +16,7 @@ import static org.fest.swing.timing.Pause.pause;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ShowContactsScreenUseCase extends AbstractFestUseCase {
 

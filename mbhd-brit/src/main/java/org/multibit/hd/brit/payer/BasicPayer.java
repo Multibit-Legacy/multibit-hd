@@ -1,14 +1,14 @@
 package org.multibit.hd.brit.payer;
 
-import com.google.bitcoin.crypto.KeyCrypterException;
 import com.google.common.base.Optional;
+import com.google.common.io.ByteStreams;
+import org.bitcoinj.crypto.KeyCrypterException;
 import org.bouncycastle.openpgp.PGPException;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.dto.*;
 import org.multibit.hd.brit.exceptions.MatcherResponseException;
 import org.multibit.hd.brit.exceptions.PayerRequestException;
-import org.multibit.hd.brit.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -17,6 +17,7 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -50,7 +51,7 @@ public class BasicPayer implements Payer {
   public PayerRequest newPayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Optional<Date> firstTransactionDate) {
 
     this.britWalletId = britWalletId;
-    this.sessionKey = sessionKey;
+    this.sessionKey = Arrays.copyOf(sessionKey, sessionKey.length);
     return new PayerRequest(britWalletId, sessionKey, firstTransactionDate);
 
   }
@@ -68,12 +69,18 @@ public class BasicPayer implements Payer {
       File tempFile = File.createTempFile("req", "tmp");
 
       // Write serialised payerRequest to the temporary file
-      FileUtils.writeFile(new ByteArrayInputStream(serialisedPayerRequest), new FileOutputStream(tempFile));
+      try (OutputStream tempStream = new FileOutputStream(tempFile)) {
+        // Copy the original to the temporary location
+        ByteStreams.copy(new ByteArrayInputStream(serialisedPayerRequest), tempStream);
+        // Attempt to force the bits to hit the disk. In reality the OS or hard disk itself may still decide
+        // to not write through to physical media for at least a few seconds, but this is the best we can do.
+        tempStream.flush();
+      }
 
       // PGP encrypt the file
       PGPUtils.encryptFile(encryptedBytesOutputStream, tempFile, payerConfig.getMatcherPublicKey());
 
-      // TODO Secure file delete (or avoid File altogether)
+      // TODO Secure file delete (or avoid File altogether) - consider recommendations from #295 (MultiBit Common)
       if (!tempFile.delete()) {
         throw new IOException("Could not delete file + '" + tempFile.getAbsolutePath() + "'");
       }
@@ -99,4 +106,5 @@ public class BasicPayer implements Payer {
       throw new MatcherResponseException("Could not decrypt MatcherResponse", e);
     }
   }
+
 }

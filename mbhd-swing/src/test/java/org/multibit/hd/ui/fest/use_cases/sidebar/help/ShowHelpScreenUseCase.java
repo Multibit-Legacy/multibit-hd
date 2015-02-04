@@ -15,7 +15,6 @@ import static org.fest.assertions.Assertions.assertThat;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class ShowHelpScreenUseCase extends AbstractFestUseCase {
 
@@ -46,6 +45,11 @@ public class ShowHelpScreenUseCase extends AbstractFestUseCase {
       .requireDisabled();
 
     window
+      .button(MessageKey.HOME.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
       .button(MessageKey.VIEW_IN_EXTERNAL_BROWSER.getKey())
       .requireVisible()
       .requireEnabled();
@@ -54,6 +58,15 @@ public class ShowHelpScreenUseCase extends AbstractFestUseCase {
       .scrollPane(MessageKey.HELP.getKey())
       .requireVisible()
       .requireEnabled();
+
+    // Allow time for internal help to show
+    pauseForPreparationDisplay();
+
+    String helpContents = window
+      .textBox(MessageKey.HELP.getKey()+".editorPane")
+      .text();
+
+    assertThat(helpContents).contains("Getting started");
 
   }
 

@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.events.view;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 
 import java.math.BigDecimal;
@@ -12,7 +12,7 @@ import java.math.BigDecimal;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class BalanceChangedEvent implements ViewEvent {
 
@@ -52,5 +52,14 @@ public class BalanceChangedEvent implements ViewEvent {
    */
   public Optional<String> getRateProvider() {
     return rateProvider;
+  }
+
+  @Override
+  public String toString() {
+    return "BalanceChangedEvent{" +
+            "coinBalance=" + coinBalance +
+            ", localBalance=" + localBalance +
+            ", rateProvider=" + rateProvider +
+            '}';
   }
 }

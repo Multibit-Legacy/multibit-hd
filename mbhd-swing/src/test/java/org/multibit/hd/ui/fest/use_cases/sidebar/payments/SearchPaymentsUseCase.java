@@ -17,7 +17,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <p>Requires standard transactions to be present</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class SearchPaymentsUseCase extends AbstractFestUseCase {
 

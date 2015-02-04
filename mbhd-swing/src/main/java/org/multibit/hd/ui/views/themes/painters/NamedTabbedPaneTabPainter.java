@@ -15,7 +15,7 @@ import java.awt.geom.Rectangle2D;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public final class NamedTabbedPaneTabPainter extends AbstractNamedRegionPainter {
 
@@ -115,6 +115,8 @@ public final class NamedTabbedPaneTabPainter extends AbstractNamedRegionPainter 
       case BACKGROUND_SELECTED_PRESSED_FOCUSED:
         insets = new Insets(7, 9, 3, 9);
         break;
+      default:
+        throw new IllegalStateException("Unknown state:" + state);
     }
     this.ctx = new AbstractRegionPainter.PaintContext(insets, new Dimension(10, 20), false);
   }
@@ -157,6 +159,8 @@ public final class NamedTabbedPaneTabPainter extends AbstractNamedRegionPainter 
       case BACKGROUND_SELECTED_PRESSED_FOCUSED:
         paintBackgroundSelectedAndPressedAndFocused(g);
         break;
+      default:
+        throw new IllegalStateException("Unknown state:" + state);
 
     }
   }

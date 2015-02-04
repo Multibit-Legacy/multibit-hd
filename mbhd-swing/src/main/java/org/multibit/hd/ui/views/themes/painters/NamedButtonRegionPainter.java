@@ -15,7 +15,7 @@ import java.awt.geom.RoundRectangle2D;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
 
@@ -151,7 +151,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
       case BACKGROUND_PRESSED_FOCUSED:
         paintBackgroundPressedAndFocused(g);
         break;
-
+      default:
+        throw new IllegalStateException("Unknown state:" + state);
     }
   }
 
@@ -206,6 +207,9 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
           getComponentColor(c, "background", color23, -0.14126986f, 0.15686274f, 0),
           getComponentColor(c, "background", color24, -0.20852983f, 0.2588235f, 0)};
         break;
+      case BACKGROUND_DISABLED:
+        // Do nothing
+        break;
       case BACKGROUND_ENABLED:
         extendedCacheKeys = new Object[]{
           getComponentColor(c, "background", color35, -0.10655806f, 0.24313724f, 0),
@@ -252,6 +256,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
           getComponentColor(c, "background", color50, -0.0212406f, 0.13333333f, 0),
           getComponentColor(c, "background", color51, -0.030845039f, 0.23921567f, 0)};
         break;
+      default:
+        throw new IllegalStateException("Unknown state:" + state);
     }
     return extendedCacheKeys;
   }

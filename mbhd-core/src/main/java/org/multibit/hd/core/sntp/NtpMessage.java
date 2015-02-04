@@ -1,8 +1,11 @@
 package org.multibit.hd.core.sntp;
 
+import com.google.common.base.Charsets;
+
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 
 /**
@@ -31,7 +34,7 @@ import java.util.Date;
  *
  * // Get response
  * socket.receive(packet);
- * System.out.println(msg.toString());
+ * // Print msg.toString();
  * </pre>
  *
  * This code is copyright (c) Adam Buckley 2004
@@ -207,6 +210,11 @@ public class NtpMessage {
   public double transmitTimestamp = 0;
 
   /**
+   * Lightweight random number generator for use with LSB filling
+   */
+  private static final Random random = new Random();
+
+  /**
    * Constructs a new NtpMessage from an array of bytes.
    */
   public NtpMessage(byte[] array) {
@@ -367,9 +375,9 @@ public class NtpMessage {
 
     // From RFC 2030: It is advisable to fill the non-significant
     // low order bits of the timestamp with a random, unbiased
-    // bitstring, both to avoid systematic roundoff errors and as
-    // a means of loop detection and replay detection.
-    array[7] = (byte) (Math.random() * 255.0);
+    // bitstring, both to avoid systematic rounding errors and as
+    // a means of loop detection and replay detection
+    array[7] = (byte) random.nextInt(256);
 
   }
 
@@ -409,7 +417,7 @@ public class NtpMessage {
     // or stratum-1 (primary) servers, this is a four-character ASCII
     // string, left justified and zero padded to 32 bits.
     if (stratum == 0 || stratum == 1) {
-      return new String(ref);
+      return new String(ref, Charsets.UTF_8);
     }
 
     // In NTP Version 3 secondary servers, this is the 32-bit IPv4

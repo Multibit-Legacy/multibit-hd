@@ -7,9 +7,14 @@ package org.multibit.hd.core.dto;
  * </ul>
  *
  * @since 0.0.1
- *         
+ *
  */
 public enum BitcoinNetworkStatus {
+
+  /**
+   * Connected to the network
+   */
+  CONNECTED,
 
   /**
    * No connection to the network

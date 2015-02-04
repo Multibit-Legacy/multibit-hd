@@ -1,11 +1,11 @@
 package org.multibit.hd.core.services;
 
-import com.google.bitcoin.core.*;
-import com.google.bitcoin.store.BlockStoreException;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
+import org.bitcoinj.core.*;
+import org.bitcoinj.store.BlockStoreException;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -13,14 +13,16 @@ import org.junit.Test;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.events.BitcoinSentEvent;
+import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.managers.WalletManagerTest;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +75,7 @@ public class BitcoinNetworkServiceFunctionalTest {
   @Before
   public void setUp() throws IOException {
     CoreServices.main(null);
-    CoreServices.uiEventBus.register(this);
+    CoreEvents.subscribe(this);
 
     walletManager = WalletManager.INSTANCE;
 
@@ -99,9 +101,9 @@ public class BitcoinNetworkServiceFunctionalTest {
   public void testSyncSingleWallet() throws Exception {
 
     // Create a random temporary directory and use it for wallet storage
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
-    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
 
     // Create a wallet from the WALLET_SEED_1_PROPERTY_NAME
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
@@ -137,8 +139,8 @@ public class BitcoinNetworkServiceFunctionalTest {
   public void testSendBetweenTwoRealWallets() throws Exception {
 
     // Create a random temporary directory to writeContacts the wallets
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
-    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
+    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
 
     // Create two wallets from the two seeds
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
@@ -167,7 +169,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     Coin walletBalance2 = walletSummary2.getWallet().getBalance();
 
     // Set the current wallet to be wallet1 and synchronize that
-    Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot1);
+    Configurations.currentConfiguration.getWallet().setLastSoftWalletRoot(walletRoot1);
     walletManager.setCurrentWalletSummary(walletSummary1);
     replayWallet(timestamp1);
 
@@ -201,7 +203,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     }
 
     // Ensure MBHD has the correct current wallet (which will be used for the send)
-    Configurations.currentConfiguration.getWallet().setCurrentWalletRoot(walletRoot);
+    Configurations.currentConfiguration.getWallet().setLastSoftWalletRoot(walletRoot);
     walletManager.setCurrentWalletSummary(sourceWalletSummary);
 
     // Start up the bitcoin network connection
@@ -236,7 +238,7 @@ public class BitcoinNetworkServiceFunctionalTest {
       assertThat(bitcoinSentEvent).isNotNull();
       assertThat(bitcoinSentEvent.isSendWasSuccessful()).isTrue();
     } finally {
-      bitcoinNetworkService.stopAndWait();
+      CoreServices.stopBitcoinNetworkService();
     }
   }
 
@@ -259,14 +261,15 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    WalletSummary walletSummary = walletManager.getOrCreateWalletSummary(
-      walletDirectory,
-      seed,
-      nowInSeconds,
-      WALLET_PASSWORD,
-      name,
-      notes
-    );
+    WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
+            walletDirectory,
+            seed,
+            nowInSeconds,
+            WALLET_PASSWORD,
+            name,
+            notes,
+      true); // Perform sync
+
     assertThat(walletSummary).isNotNull();
     assertThat(walletSummary.getWallet()).isNotNull();
 
@@ -283,7 +286,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Clear percentage complete
     percentComplete = 0;
 
-    bitcoinNetworkService.replayWallet(replayDate);
+    bitcoinNetworkService.replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()));
 
     int timeout = 0;
     while (timeout < MAX_TIMEOUT && (percentComplete < 100)) {
@@ -299,7 +302,8 @@ public class BitcoinNetworkServiceFunctionalTest {
       throw new IllegalStateException("Download did not complete.");
     }
 
-    bitcoinNetworkService.stopAndWait();
+    CoreServices.stopBitcoinNetworkService();
+
   }
 
   /**

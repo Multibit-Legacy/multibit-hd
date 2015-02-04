@@ -2,7 +2,10 @@ package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.*;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 
 /**
  * <p>Service to provide the following to application:</p>
@@ -12,19 +15,53 @@ import org.multibit.hd.core.events.*;
  * <p>Having this service allows the UI to catch up with previous events after a locale change or slow startup</p>
  *
  * @since 0.0.1
- *  
  */
-public class ApplicationEventService {
+public class ApplicationEventService extends AbstractService {
 
   private Optional<ExchangeRateChangedEvent> latestExchangeRateChangedEvent = Optional.absent();
   private Optional<SecurityEvent> latestSecurityEvent = Optional.absent();
   private Optional<BitcoinNetworkChangedEvent> latestBitcoinNetworkChangedEvent = Optional.absent();
+  private Optional<HardwareWalletEvent> latestHardwareWalletEvent = Optional.absent();
 
-  /**
-   * Reduced visibility constructor to prevent accidental instance creation outside of CoreServices
-   */
-  ApplicationEventService() {
-    CoreServices.uiEventBus.register(this);
+  private boolean isRegistered = false;
+
+  @Override
+  protected boolean startInternal() {
+
+    HardwareWalletEvents.subscribe(this);
+    isRegistered = true;
+
+    return false;
+  }
+
+  @Override
+  protected boolean shutdownNowInternal(ShutdownEvent.ShutdownType shutdownType) {
+
+    switch (shutdownType) {
+
+      case HARD:
+      case SOFT:
+        if (isRegistered) {
+          // Unsubscribe from hardware wallet events
+          HardwareWalletEvents.unsubscribe(this);
+          isRegistered=false;
+        }
+
+        // Allow ongoing cleanup
+        return true;
+      case SWITCH:
+        // Clear all the events to prevent inaccurate UI
+        latestBitcoinNetworkChangedEvent = Optional.absent();
+        latestExchangeRateChangedEvent = Optional.absent();
+        latestHardwareWalletEvent = Optional.absent();
+        latestSecurityEvent = Optional.absent();
+
+        // Avoid ongoing cleanup
+        return false;
+      default:
+        throw new IllegalStateException("Unsupported state: " + shutdownType.name());
+    }
+
   }
 
   /**
@@ -49,9 +86,20 @@ public class ApplicationEventService {
   }
 
   /**
+   * @return The latest "hardware wallet" event
+   */
+  public Optional<HardwareWalletEvent> getLatestHardwareWalletEvent() {
+    return latestHardwareWalletEvent;
+  }
+
+  /**
    * <p>Repeats the latest events since the UI has become out of synch due to a restart of some kind</p>
    */
   public void repeatLatestEvents() {
+
+    // Don't replay security events - it gives a false positive
+
+    // Don't replay hardware events - it gives a false positive and race conditions
 
     if (latestBitcoinNetworkChangedEvent.isPresent()) {
       CoreEvents.fireBitcoinNetworkChangedEvent(latestBitcoinNetworkChangedEvent.get().getSummary());
@@ -64,20 +112,6 @@ public class ApplicationEventService {
         latestExchangeRateChangedEvent.get().getRateProvider(),
         latestExchangeRateChangedEvent.get().getExpires()
       );
-    }
-
-  }
-
-  /**
-   * @param event The "shutdown" event
-   */
-  @Subscribe
-  public void onShutdownEvent(ShutdownEvent event) {
-
-    // Clear the non-essential events
-    if (ShutdownEvent.ShutdownType.SOFT.equals(event.getShutdownType())) {
-      latestBitcoinNetworkChangedEvent = Optional.absent();
-      latestExchangeRateChangedEvent = Optional.absent();
     }
 
   }
@@ -99,11 +133,22 @@ public class ApplicationEventService {
   }
 
   /**
-   * @param event The "Bitcoin network changed" event
+   * @param event The "Bitcoin network changed" event (excluding peer count notifications)
    */
   @Subscribe
   public void onBitcoinNetworkChangedEvent(BitcoinNetworkChangedEvent event) {
-    latestBitcoinNetworkChangedEvent = Optional.of(event);
+    // Do not remember peer count notifications (RAGStatus of empty
+    if (!RAGStatus.EMPTY.equals(event.getSummary().getSeverity())) {
+      latestBitcoinNetworkChangedEvent = Optional.of(event);
+    }
+  }
+
+  /**
+   * @param event The "hardware wallet" event
+   */
+  @Subscribe
+  public void onHardwareWalletEvent(HardwareWalletEvent event) {
+    latestHardwareWalletEvent = Optional.of(event);
   }
 
 }

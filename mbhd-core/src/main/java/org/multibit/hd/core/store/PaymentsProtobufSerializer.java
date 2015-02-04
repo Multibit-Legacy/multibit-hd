@@ -18,8 +18,8 @@
 
 package org.multibit.hd.core.store;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -107,7 +107,7 @@ public class PaymentsProtobufSerializer {
 
   /**
    * <p>Parses a Payments from the given stream, using the provided Payments instance to loadContacts data into.
-   * <p>A Payments db can be unreadable for various reasons, such as inability to open the file, corrupt data, internally
+   * <p>A Payments db can be unreadable for various reasons, such as inability to present the file, corrupt data, internally
    * inconsistent data, You should always
    * handle {@link org.multibit.hd.core.exceptions.PaymentsLoadException} and communicate failure to the user in an appropriate manner.</p>
    *
@@ -127,7 +127,7 @@ public class PaymentsProtobufSerializer {
   /**
    * <p>Loads payments data from the given protocol buffer and inserts it into the given Payments object.
    * <p/>
-   * <p>A payments db can be unreadable for various reasons, such as inability to open the file, corrupt data, internally
+   * <p>A payments db can be unreadable for various reasons, such as inability to present the file, corrupt data, internally
    * inconsistent data, a wallet extension marked as mandatory that cannot be handled and so on. You should always
    * handle {@link org.multibit.hd.core.exceptions.PaymentsLoadException} and communicate failure to the user in an appropriate manner.</p>
    *
@@ -145,6 +145,7 @@ public class PaymentsProtobufSerializer {
         Optional<Address> address = Addresses.parse(paymentRequestProto.getAddress());
         if (address.isPresent()) {
           paymentRequestData.setAddress(address.get());
+        } else {
           log.warn("Failed to parse address: '{}'", paymentRequestProto.getAddress());
         }
 
@@ -365,7 +366,7 @@ public class PaymentsProtobufSerializer {
     }
 
     Optional<Coin> minerFee = transactionInfo.getMinerFee();
-    if (minerFee != null && minerFee.isPresent() && transactionInfo.getMinerFee().get() != null) {
+    if (minerFee != null && minerFee.isPresent() && minerFee.get() != null) {
       transactionInfoBuilder.setMinerFee(minerFee.get().longValue());
     } else {
       transactionInfoBuilder.setMinerFee(ABSENT_VALUE);

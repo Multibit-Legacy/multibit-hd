@@ -1,8 +1,8 @@
 package org.multibit.hd.ui.views.wizards.empty_wallet;
 
-import com.google.bitcoin.core.Coin;
-import com.google.bitcoin.core.Transaction;
-import com.google.bitcoin.core.Wallet;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.Wallet;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.dto.FeeState;
@@ -21,6 +21,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -31,9 +33,11 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, String> {
+
+  private static final Logger log = LoggerFactory.getLogger(EmptyWalletConfirmPanelView.class);
 
   // View components
   private ModelAndView<DisplayAmountModel, DisplayAmountView> transactionDisplayAmountMaV;
@@ -109,7 +113,7 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     contentPanel.add(Labels.newTransactionFee(), "top");
     contentPanel.add(transactionFeeDisplayAmountMaV.getView().newComponentPanel(), "span 3,wrap");
 
-    contentPanel.add(Labels.newDeveloperFee(), "top");
+    contentPanel.add(Labels.newClientFee(), "top");
     contentPanel.add(clientFeeDisplayAmountMaV.getView().newComponentPanel(), "top");
     contentPanel.add(clientFeeInfoLabel, "top");
 
@@ -146,7 +150,7 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the client fee
-    Optional<FeeState> feeStateOptional = WalletManager.INSTANCE.calculateBRITFeeState();
+    Optional<FeeState> feeStateOptional = WalletManager.INSTANCE.calculateBRITFeeState(true);
     log.debug("Fee state at beforeShow {}", feeStateOptional);
     String feeText;
     if (feeStateOptional.isPresent()) {

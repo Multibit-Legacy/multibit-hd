@@ -30,7 +30,6 @@ import java.io.IOException;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class Labels {
 
@@ -62,6 +61,26 @@ public class Labels {
   }
 
   /**
+   * @param key    The resource key for the language message text
+   * @param values The data values for token replacement in the message text
+   *
+   * @return A new label with default styling
+   */
+  public static JLabel newLabel(CoreMessageKey key, Object... values) {
+
+    JLabel label = new JLabel(Languages.safeText(key, values));
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(label, key);
+
+    // Apply theme
+    label.setForeground(Themes.currentTheme.text());
+
+    return label;
+
+  }
+
+  /**
    * @return A new blank label with default styling
    */
   public static JLabel newBlankLabel() {
@@ -78,11 +97,12 @@ public class Labels {
   /**
    * <p>A convenience method for creating a themed label with direct text. This is not internationalised.</p>
    *
-   * @return A new value label with default styling for placing direct text
+   * @return A new wrapping value label with default styling for placing direct text
    */
   public static JLabel newValueLabel(String value) {
 
-    JLabel label = new JLabel(value);
+    String htmlText = HtmlUtils.localiseWithLineBreaks(new String[]{value});
+    JLabel label = new JLabel(htmlText);
 
     // Apply theme
     label.setForeground(Themes.currentTheme.text());
@@ -154,12 +174,44 @@ public class Labels {
   /**
    * <p>Create a new label with appropriate font/theme for a note. Interpret the contents of the text as Markdown for HTML translation.</p>
    *
+   * @param key    The message key referencing simple HTML (standard wrapping/breaking elements like {@literal <html></html>} and {@literal <br/>} will be provided)
+   * @param values The substitution values if applicable
+   *
+   * @return A new label with HTML formatting to correctly render the line break and contents
+   */
+  public static JLabel newNoteLabel(MessageKey key, Object[] values) {
+
+    String line;
+    if (values != null && values.length > 0) {
+      // Substitution is required
+      line = Languages.safeText(key, values);
+    } else {
+      // Key only
+      line = Languages.safeText(key);
+    }
+
+    // Wrap in HTML to ensure LTR/RTL and line breaks are respected
+    JLabel label = new JLabel(HtmlUtils.localiseWithLineBreaks(new String[] {line}));
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(label, key);
+
+    // Theme
+    label.setForeground(Themes.currentTheme.text());
+
+    return label;
+
+  }
+
+  /**
+   * <p>Create a new label with appropriate font/theme for a note. Interpret the contents of the text as Markdown for HTML translation.</p>
+   *
    * @param keys   The message keys for each line referencing simple HTML (standard wrapping/breaking elements like {@literal <html></html>} and {@literal <br/>} will be provided)
    * @param values The substitution values for each line if applicable
    *
    * @return A new label with HTML formatting to correctly render the line break and contents
    */
-  static public JLabel newNoteLabel(MessageKey[] keys, Object[][] values) {
+  public static JLabel newNoteLabel(MessageKey[] keys, Object[][] values) {
 
     String[] lines = new String[keys.length];
     for (int i = 0; i < keys.length; i++) {
@@ -194,7 +246,7 @@ public class Labels {
    *
    * @return A new label with icon binding to allow the AwesomeDecorator to update it
    */
-  static JLabel newStatusLabel(MessageKey key, Object[] values, boolean status) {
+  public static JLabel newStatusLabel(MessageKey key, Object[] values, boolean status) {
     return newStatusLabel(Optional.of(key), values, Optional.of(status));
   }
 
@@ -217,42 +269,59 @@ public class Labels {
       label = newBlankLabel();
     }
 
-    decorateStatusLabel(label, status);
+    LabelDecorator.applyStatusLabel(label, status);
 
     return label;
   }
 
   /**
-   * <p>Decorate a label with HTML-wrapped text respecting LTR/RTL to ensure line breaks occur predictably</p>
+   * <p>A "status" label sets a label with no icon, a check or cross icon</p>
    *
-   * @param label The label to decorate
-   * @param value The text to show (will be wrapped in HTML)
+   * @param key    The message key - if not present then empty text is put on the label
+   * @param values The substitution values
+   * @param status True if a check icon is required, false for a cross
+   *
+   * @return A new label with icon binding to allow the AwesomeDecorator to update it
    */
-  public static void decorateWrappingLabel(JLabel label, String value) {
+  public static JLabel newCoreStatusLabel(Optional<CoreMessageKey> key, Object[] values, Optional<Boolean> status) {
 
-    Preconditions.checkNotNull(value,"'value' must be present");
+    JLabel label;
 
-    String htmlText = HtmlUtils.localiseWithLineBreaks(value.split("\n"));
+    if (key.isPresent()) {
+      label = newLabel(key.get(), values);
+    } else {
+      label = newBlankLabel();
+    }
 
-    label.setText(htmlText);
+    LabelDecorator.applyStatusLabel(label, status);
 
+    return label;
   }
 
   /**
-   * @param statusLabel The status label to decorate
-   * @param status      True for check, false for cross, absent for nothing (useful for initial message)
+   * <p>An "icon" label sets a label with an icon in the leading position. Useful for lists of notes.</p>
+   *
+   * @param icon   The icon to place in the leading position
+   * @param key    The message key - if not present then empty text is put on the label
+   * @param values The substitution values
+   *
+   * @return A new label with icon binding to allow the AwesomeDecorator to update it
    */
-  public static void decorateStatusLabel(JLabel statusLabel, Optional<Boolean> status) {
+  public static JLabel newIconLabel(AwesomeIcon icon, Optional<MessageKey> key, Object[] values) {
 
-    if (status.isPresent()) {
-      if (status.get()) {
-        AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, statusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-      } else {
-        AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, statusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
-      }
+    JLabel label;
+
+    if (key.isPresent()) {
+      label = newLabel(key.get(), values);
+    } else {
+      label = newBlankLabel();
     }
 
+    AwesomeDecorator.bindIcon(icon, label, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return label;
   }
+
 
   /**
    * @param image The optional image
@@ -335,12 +404,13 @@ public class Labels {
   public static JLabel newSeedPhraseCreatedStatus(boolean status) {
     return newStatusLabel(MessageKey.SEED_PHRASE_CREATED_STATUS, null, status);
   }
+
   /**
    * @param status True if the address is acceptable (i.e. not mine)
    *
    * @return A new "address is mine" status label
    */
-  public static JLabel newAddressIsMineStatusLabel (boolean status) {
+  public static JLabel newAddressIsMineStatusLabel(boolean status) {
     return newStatusLabel(MessageKey.ADDRESS_IS_MINE_STATUS, null, status);
   }
 
@@ -381,10 +451,17 @@ public class Labels {
   /**
    * @param status True if the status is "good"
    *
-   * @return A new "backup location" status label
+   * @return A new "CA certs installed" status label
    */
   public static JLabel newCACertsInstalledStatus(boolean status) {
     return newStatusLabel(MessageKey.CACERTS_INSTALLED_STATUS, null, status);
+  }
+
+  /**
+   * @return A new "wipe Trezor message" status label
+   */
+  public static JLabel newWipeTrezorLabel() {
+    return newLabel(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
   }
 
   /**
@@ -415,6 +492,9 @@ public class Labels {
 
     label.setIcon(rotatingIcon);
 
+    // Require a small border when placing in a central position
+    label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
     return label;
   }
 
@@ -426,10 +506,10 @@ public class Labels {
     JLabel label = Labels.newLabel(MessageKey.DISPLAY_LANGUAGE);
 
     AwesomeDecorator.applyIcon(
-      AwesomeIcon.GLOBE,
-      label,
-      true,
-      MultiBitUI.NORMAL_PLUS_ICON_SIZE
+            AwesomeIcon.GLOBE,
+            label,
+            true,
+            MultiBitUI.NORMAL_PLUS_ICON_SIZE
     );
 
     return label;
@@ -673,6 +753,58 @@ public class Labels {
   }
 
   /**
+   * @return A new "Trezor device label" label
+   */
+  public static JLabel newEnterTrezorLabel() {
+    return newLabel(MessageKey.ENTER_TREZOR_LABEL);
+  }
+
+  /**
+   * @return A new "Press Confirm on device" label
+   */
+  public static JLabel newPressConfirmOnDevice() {
+
+    return newLabel(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
+
+  }
+
+  /**
+   * @return A new "enter current PIN"
+   */
+  public static JLabel newEnterCurrentPin() {
+
+    return newLabel(MessageKey.ENTER_CURRENT_PIN);
+
+  }
+
+  /**
+   * @return A new "enter new PIN"
+   */
+  public static JLabel newEnterNewPin() {
+
+    return newLabel(MessageKey.ENTER_NEW_PIN);
+
+  }
+
+  /**
+   * @return A new "confirm new PIN"
+   */
+  public static JLabel newConfirmNewPin() {
+
+    return newLabel(MessageKey.CONFIRM_NEW_PIN);
+
+  }
+
+  /**
+   * @return A new "enter PIN look at device"
+   */
+  public static JLabel newEnterPinLookAtDevice() {
+
+    return newLabel(MessageKey.ENTER_PIN_LOOK_AT_DEVICE);
+
+  }
+
+  /**
    * @return A new "Enter credentials" label
    */
   public static JLabel newEnterPassword() {
@@ -787,10 +919,17 @@ public class Labels {
   }
 
   /**
-   * @return A new "developer fee" message
+   * @return A new "client fee" message
    */
-  public static JLabel newDeveloperFee() {
+  public static JLabel newClientFee() {
     return newLabel(MessageKey.CLIENT_FEE);
+  }
+
+  /**
+   * @return A new "running total" message
+   */
+  public static JLabel newClientFeeRunningTotal() {
+    return newLabel(MessageKey.CLIENT_FEE_RUNNING_TOTAL);
   }
 
   /**
@@ -805,6 +944,13 @@ public class Labels {
    */
   public static JLabel newTimestamp() {
     return newLabel(MessageKey.TIMESTAMP);
+  }
+
+  /**
+   * @return A new "seed phrase" message
+   */
+  public static JLabel newSeedPhrase() {
+    return newLabel(MessageKey.SEED_PHRASE);
   }
 
   /**
@@ -885,6 +1031,13 @@ public class Labels {
   }
 
   /**
+   * @return a new "select Trezor" for lab settings
+   */
+  public static JLabel newSelectTrezor() {
+    return newLabel(MessageKey.SELECT_TREZOR);
+  }
+
+  /**
    * @return a new "peer count" for verifying network
    */
   public static JLabel newPeerCount() {
@@ -917,6 +1070,13 @@ public class Labels {
    */
   public static JLabel newSignature() {
     return newLabel(MessageKey.SIGNATURE);
+  }
+
+  /**
+   * @return A new "communicating with Trezor" label
+   */
+  public static JLabel newCommunicatingWithTrezor() {
+    return newLabel(MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION);
   }
 
   /**
@@ -966,6 +1126,28 @@ public class Labels {
       MessageKey.WALLET_PASSWORD_NOTE_1,
       MessageKey.WALLET_PASSWORD_NOTE_2,
       MessageKey.WALLET_PASSWORD_NOTE_3
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "press Confirm on Trezor" note
+   */
+  public static JLabel newPressConfirmOnTrezorNoteShort() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.TREZOR_PRESS_CONFIRM_OPERATION
+    }, new Object[][]{});
+
+  }
+
+  /**
+   * @return A new "language change" note
+   */
+  public static JLabel newBuyTrezorCommentNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.BUY_TREZOR_COMMENT
     }, new Object[][]{});
 
   }
@@ -1032,20 +1214,20 @@ public class Labels {
   }
 
   /**
-   * @return A new "seed warning" note
+   * @return A new "create wallet preparation" note
    */
-  public static JLabel newSeedWarningNote() {
+  public static JLabel newCreateWalletPreparationNote() {
 
     JLabel label = newNoteLabel(new MessageKey[]{
-      MessageKey.SEED_WARNING_NOTE_1,
-      MessageKey.SEED_WARNING_NOTE_2,
-      MessageKey.SEED_WARNING_NOTE_3,
-      MessageKey.SEED_WARNING_NOTE_4,
-      MessageKey.SEED_WARNING_NOTE_5,
+      MessageKey.PREPARATION_NOTE_1,
+      MessageKey.PREPARATION_NOTE_2,
+      MessageKey.PREPARATION_NOTE_3,
+      MessageKey.PREPARATION_NOTE_4,
+      MessageKey.PREPARATION_NOTE_5,
     }, new Object[][]{});
 
     // Allow FEST to find this
-    label.setName(MessageKey.SEED_WARNING_NOTE_1.getKey());
+    label.setName(MessageKey.PREPARATION_NOTE_1.getKey());
 
     // Allow for danger theme
     label.setForeground(Themes.currentTheme.dangerAlertText());
@@ -1062,8 +1244,7 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.CONFIRM_SEED_PHRASE_NOTE_1,
       MessageKey.CONFIRM_SEED_PHRASE_NOTE_2,
-      MessageKey.CONFIRM_SEED_PHRASE_NOTE_3,
-      MessageKey.CONFIRM_SEED_PHRASE_NOTE_4
+      MessageKey.CONFIRM_SEED_PHRASE_NOTE_3
     }, new Object[][]{});
   }
 
@@ -1080,6 +1261,17 @@ public class Labels {
   }
 
   /**
+   * @return A new "timestamp" note
+   */
+  public static JLabel newTimestampNote() {
+
+    return newNoteLabel(new MessageKey[]{
+        MessageKey.TIMESTAMP_NOTE_1,
+        MessageKey.TIMESTAMP_NOTE_2
+      }, new Object[][]{});
+  }
+
+  /**
    * @return A new "restore from timestamp" note
    */
   public static JLabel newRestoreFromTimestampNote() {
@@ -1087,9 +1279,18 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.RESTORE_TIMESTAMP_NOTE_1,
       MessageKey.RESTORE_TIMESTAMP_NOTE_2,
-      MessageKey.RESTORE_TIMESTAMP_NOTE_3,
-      MessageKey.RESTORE_TIMESTAMP_NOTE_4,
+      MessageKey.RESTORE_TIMESTAMP_NOTE_3
     }, new Object[][]{});
+  }
+
+  /**
+   * @return A new "restore password" note
+   */
+  public static JLabel newRestorePasswordNote() {
+
+    return newNoteLabel(new MessageKey[]{
+        MessageKey.RESTORE_PASSWORD_NOTE_1
+      }, new Object[][]{});
   }
 
   /**
@@ -1288,7 +1489,7 @@ public class Labels {
       MessageKey.REPAIR_WALLET_NOTE_1,
       MessageKey.REPAIR_WALLET_NOTE_2,
       MessageKey.REPAIR_WALLET_NOTE_3,
-      MessageKey.REPAIR_WALLET_NOTE_4
+      MessageKey.CLICK_NEXT_TO_CONTINUE
     }, new Object[][]{});
 
   }

@@ -1,10 +1,9 @@
 package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
-import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
-import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.BackupManager;
 import org.slf4j.Logger;
@@ -55,37 +54,38 @@ import java.util.concurrent.TimeUnit;
  * is not worth the bother of writing a wallet extension to track it.
  *
  * @since 0.0.1
- *  
  */
 public class BackupService extends AbstractService {
-
-  /**
-   * Initial delay in seconds after startup before making a backup.
-   * This delay is so that the wallet can sync.
-   */
-  private static final int INITIAL_DELAY = 60;
-
-  /**
-   * This is the fastest tick in seconds used for backups.
-   * Everything else is done on a multiple of this
-   */
-  private static final int TICK_TIME_SECONDS = 120;
-  /**
-   * The slowdown rate for performing local zip backups
-   */
-  private static final int LOCAL_ZIP_BACKUP_MODULO = 5;
-  /**
-   * The slowdown rate for performing local zip backups
-   */
-
-  private static final int CLOUD_ZIP_BACKUP_MODULO = 15;
 
   private static final Logger log = LoggerFactory.getLogger(BackupService.class);
 
   /**
-   * The number of times the backup main loop has incremented
+   * Initial delay in seconds after startup before making a backup
+   * This delay is so that the wallet can sync
    */
-  private static int tickCount;
+  private static final int INITIAL_DELAY = 60;
+
+  /**
+   * This is the fastest tick in seconds used for backups
+   * Everything else is done on a multiple of this
+   */
+  private static final int TICK_TIME_SECONDS = 120;
+
+  /**
+   * The slowdown rate for performing local zip backups
+   */
+  private static final int LOCAL_ZIP_BACKUP_MODULO = 5;
+
+  /**
+   * The slowdown rate for performing local zip backups
+   */
+  private static final int CLOUD_ZIP_BACKUP_MODULO = 15;
+
+  /**
+   * The number of times the backup main loop has incremented
+   * We expect this service to be a singleton
+   */
+  private int tickCount;
 
   /**
    * The wallet summary to use for the next rolling backup
@@ -127,15 +127,8 @@ public class BackupService extends AbstractService {
    */
   private boolean backupsAreRunning = false;
 
-
-  public BackupService() {
-
-  }
-
   @Override
-  public boolean start() {
-
-    log.debug("Starting service");
+  protected boolean startInternal() {
 
     // The first tick (at time INITIAL_DELAY seconds) all of a rolling backup,
     // local backup and a cloud backup
@@ -146,40 +139,84 @@ public class BackupService extends AbstractService {
     requireSingleThreadScheduledExecutor("backup");
 
     // Use the provided executor service management
-    getScheduledExecutorService().scheduleAtFixedRate(new Runnable() {
-      public void run() {
-        backupsAreRunning = true;
-        try {
-          // Main backup loop
-          //log.debug("The tickCount is {}", tickCount);
+    getScheduledExecutorService().scheduleAtFixedRate(
+      new Runnable() {
+        public void run() {
+          backupsAreRunning = true;
+          try {
+            // Main backup loop
+            //log.debug("The tickCount is {}", tickCount);
 
-          // A rolling backup is performed every tick
-          if (backupsAreEnabled) {
-            performRollingBackup();
+            // A rolling backup is performed every tick
+            if (backupsAreEnabled) {
+              performRollingBackup();
+            }
+
+            // Local zip backups are done every LOCAL_ZIP_BACKUP_MODULO number of ticks
+            if (backupsAreEnabled && tickCount % LOCAL_ZIP_BACKUP_MODULO == 0) {
+              performLocalZipBackup();
+            }
+
+            // Check if a cloud zip backup is required
+            // Cloud backups are done every CLOUD_ZIP_BACKUP_MODULO number of ticks
+            if (backupsAreEnabled && tickCount % CLOUD_ZIP_BACKUP_MODULO == 0) {
+              performCloudZipBackup();
+            }
+
+          } finally {
+            tickCount++;
+            backupsAreRunning = false;
           }
-
-          // Local zip backups are done every LOCAL_ZIP_BACKUP_MODULO number of ticks
-          if (backupsAreEnabled && tickCount % LOCAL_ZIP_BACKUP_MODULO == 0) {
-            performLocalZipBackup();
-          }
-
-          // Check if a cloud zip backup is required
-          // Cloud backups are done every CLOUD_ZIP_BACKUP_MODULO number of ticks
-          if (backupsAreEnabled && tickCount % CLOUD_ZIP_BACKUP_MODULO == 0) {
-            performCloudZipBackup();
-          }
-
-        } finally {
-          tickCount++;
-          backupsAreRunning = false;
         }
       }
-    }
-            , INITIAL_DELAY, TICK_TIME_SECONDS, TimeUnit.SECONDS);
+      , INITIAL_DELAY, TICK_TIME_SECONDS, TimeUnit.SECONDS);
 
     return true;
   }
 
+  @Override
+  protected boolean shutdownNowInternal(ShutdownEvent.ShutdownType shutdownType) {
+
+    switch (shutdownType) {
+
+      case HARD:
+        // A hard shutdown does not give enough time to wait gracefully
+        break;
+      case SOFT:
+        // A soft shutdown occurs during FEST testing so the backups may not be running
+        if (isBackupsAreRunning()) {
+          log.debug("Performing backups at shutdown");
+
+          // Disable any new backups
+          this.setBackupsAreEnabled(false);
+
+          getScheduledExecutorService().schedule(
+            new Runnable() {
+              public void run() {
+                // Wait for any current backups to complete
+                while (isBackupsAreRunning()) {
+                  Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+                }
+
+                performRollingBackup();
+
+                performLocalZipBackup();
+
+                performCloudZipBackup();
+
+              }
+
+            }, 0, TimeUnit.MILLISECONDS);
+        }
+        break;
+      case SWITCH:
+        break;
+    }
+
+    // Backup service is tied to a wallet so should be completely shutdown
+    return true;
+
+  }
 
   /**
    * Remember a wallet summary and credentials.
@@ -205,7 +242,7 @@ public class BackupService extends AbstractService {
         rememberedWalletSummaryForRollingBackup = Optional.absent();
         rememberedPasswordForRollingBackup = Optional.absent();
       } catch (IOException ioe) {
-        ioe.printStackTrace();
+        log.error("Failed to perform rolling backup", ioe);
         // TODO handle exception (which is thrown inside the main runnable)
       }
     }
@@ -235,7 +272,7 @@ public class BackupService extends AbstractService {
         rememberedWalletIdForLocalBackup = Optional.absent();
         rememberedPasswordForLocalBackup = Optional.absent();
       } catch (IOException ioe) {
-        ioe.printStackTrace();
+        log.error("Failed to perform local backup", ioe);
         // TODO handle exception (which is thrown inside the main runnable)
       }
     }
@@ -265,52 +302,18 @@ public class BackupService extends AbstractService {
         rememberedWalletIdForCloudBackup = Optional.absent();
         rememberedPasswordForCloudBackup = Optional.absent();
       } catch (IOException ioe) {
-        ioe.printStackTrace();
-        // TODO handle exception (which is thrown inside the main runnable)
+        log.error("Failed to perform cloud backup", ioe);
+        CoreServices.logHistory("Failed to perform cloud backup. Message: " + ioe.getMessage());
+        CoreEvents.fireSecurityEvent(SecuritySummary.newBackupFailed());
       }
     }
-  }
-
-  /**
-   * On shutdown disable any more backups, wait until any current backup is finished and then perform
-   * a rolling, local and cloud backup
-   * @param shutdownEvent Shutdown event
-   */
-  @Subscribe
-  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
-
-    // A hard shutdown does not give enough time to wait gracefully
-    // A soft shutdown occurs during FEST testing so the backups may not be running
-    if (shutdownEvent.getShutdownType() == ShutdownEvent.ShutdownType.SOFT && isBackupsAreRunning()) {
-      log.debug("Performing backups at shutdown");
-
-      // Disable any new backups
-      this.setBackupsAreEnabled(false);
-
-      getScheduledExecutorService().schedule(new Runnable() {
-        public void run() {
-          // Wait for any current backups to complete
-          while (isBackupsAreRunning()) {
-            Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
-          }
-
-          performRollingBackup();
-
-          performLocalZipBackup();
-
-          performCloudZipBackup();
-
-        }
-
-      }, 0, TimeUnit.MILLISECONDS);
-    }
-
   }
 
   /**
    * Set whether backups are enabled.
    * Can be called on any thread.
    * Only affects backups starting subsequently
+   *
    * @param backupsAreEnabled whether backups should be performed (true) or not (false)
    */
   public void setBackupsAreEnabled(boolean backupsAreEnabled) {
@@ -319,6 +322,7 @@ public class BackupService extends AbstractService {
 
   /**
    * Indicates whether backups are currently running in the main scheduled loop
+   *
    * @return true if a backup is running in the main scheduled loop
    */
   public boolean isBackupsAreRunning() {

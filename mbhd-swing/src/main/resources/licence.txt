@@ -1,4 +1,4 @@
-Copyright (c) 2014 MultiBit Developers
+Copyright (c) 2015 Bitcoin Solutions Ltd
 
 1) This software and associated documentation files is denoted
 the "Software".
@@ -7,7 +7,7 @@ the "Software".
 the MultiBit developers, are denoted the 'Installers'.
 
 3) If you install the Software using any of the Installers 
-you agree to pay a fee to the MultiBit developers of 
+you agree to pay a fee to Bitcoin Solutions Ltd of
 1000 satoshi (0.00001 bitcoin) for each Bitcoin transaction 
 you send using the Software.
 

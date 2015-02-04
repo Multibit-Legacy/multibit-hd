@@ -1,4 +1,4 @@
-package org.multibit.hd.core.dto;
+  package org.multibit.hd.core.dto;
 
 /**
  * <p>Enum to provide the following to application:</p>
@@ -14,7 +14,7 @@ package org.multibit.hd.core.dto;
  * <p>Resource keys are simply the message key enum name prefixed with "core_" in lower case.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum CoreMessageKey {
 
@@ -37,15 +37,22 @@ public enum CoreMessageKey {
 
   // Security
   DEBUGGER_ATTACHED("core_debugger_attached"),
+  SYSTEM_TIME_DRIFT("core_system_time_drift"),
   BACKUP_FAILED("core_backup_failed"),
   CERTIFICATE_FAILED("core_certificate_failed"),
   SECURITY_ADVICE("core_security_advice"),
   BACKUP_WALLET_WAS_LOADED("core_backup_wallet_was_loaded"),
 
-  // Errors
+  // Connection / Sync
   THE_ERROR_WAS("core_the_error_was"),
   COULD_NOT_CONNECT_TO_BITCOIN_NETWORK("core_could_not_connect_to_bitcoin_network"),
+  CONNECTING_TO_BITCOIN_NETWORK("core_connecting_to_bitcoin_network"),
+  CONNECTED_TO_BITCOIN_NETWORK("core_connected_to_bitcoin_network"),
   NO_ACTIVE_WALLET("core_no_active_wallet"),
+  PREPARING_TO_SYNCHRONISE("core_preparing_to_synchronise"),
+  SYNCHRONISING("core_synchronising"),
+  SYNCHRONISED("core_synchronised"),
+  WALLET_IS_READY_TO_USE("core_wallet_is_ready_to_use"),
 
   // Transaction/Payment adaption
   PAYMENT_REQUESTED("core_payment_requested"),
@@ -99,6 +106,17 @@ public enum CoreMessageKey {
   VERIFY_MESSAGE_FAILURE("core_verify_message_failure"),
   VERIFY_MESSAGE_VERIFY_SUCCESS("core_verify_message_verify_success"),
   VERIFY_MESSAGE_VERIFY_FAILURE("core_verify_message_verify_failure"),
+
+  WALLET_CAPABILITIES("core_wallet_capabilities"),
+  WALLET_CAPABILITY_MBHD_SOFT("core_wallet_capability_mbhd_soft"),
+  WALLET_CAPABILITY_TREZOR_HARD("core_wallet_capability_trezor_hard"),
+  WALLET_CAPABILITY_TREZOR_SOFT("core_wallet_capability_trezor_soft"),
+  WALLET_CAPABILITY_UNKNOWN("core_wallet_capability_unknown"),
+
+  WALLET_LOADING("core_wallet_loading"),
+  WALLET_LOADED_OK("core_wallet_loaded_ok"),
+  WALLET_FAILED_TO_LOAD("core_wallet_failed_to_load"),
+  WALLET_BAD_PASSWORD("core_wallet_bad_password"),
 
   // End of enum
   ;

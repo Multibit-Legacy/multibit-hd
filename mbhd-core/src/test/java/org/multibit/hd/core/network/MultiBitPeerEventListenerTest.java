@@ -5,7 +5,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.events.CoreEvents;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -15,7 +15,7 @@ public class MultiBitPeerEventListenerTest {
   @Before
   public void setUp() {
 
-    CoreServices.uiEventBus.register(this);
+    CoreEvents.subscribe(this);
     test =false;
 
   }
@@ -23,7 +23,7 @@ public class MultiBitPeerEventListenerTest {
   @After
   public void tearDown() {
 
-    CoreServices.uiEventBus.unregister(this);
+    CoreEvents.unsubscribe(this);
   }
 
   @Test

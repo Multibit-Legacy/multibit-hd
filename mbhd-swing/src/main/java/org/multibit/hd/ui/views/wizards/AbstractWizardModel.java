@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.events.view.ViewEvents;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -15,7 +15,6 @@ import javax.swing.event.DocumentListener;
  * @param <S> The state object type
  *
  * @since 0.0.1
- *  
  */
 public abstract class AbstractWizardModel<S> implements DocumentListener {
 
@@ -35,9 +34,23 @@ public abstract class AbstractWizardModel<S> implements DocumentListener {
 
     this.state = state;
 
-    // All wizard models can receive UI events
-    CoreServices.uiEventBus.register(this);
+    // All wizard models can receive ViewEvents
+    ViewEvents.subscribe(this);
 
+  }
+
+  /**
+   * Called when the wizard is closing (hide)
+   */
+  public void unsubscribe() {
+    ViewEvents.unsubscribe(this);
+  }
+
+  /**
+   * @return The current wizard model state
+   */
+  public S getState() {
+    return state;
   }
 
   /**
@@ -83,11 +96,11 @@ public abstract class AbstractWizardModel<S> implements DocumentListener {
     setDirty(true);
   }
 
+
   @Override
   public void removeUpdate(DocumentEvent e) {
     setDirty(true);
   }
-
 
   @Override
   public void changedUpdate(DocumentEvent e) {

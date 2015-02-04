@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.request_bitcoin;
 
-import com.google.bitcoin.core.Coin;
-import com.google.bitcoin.uri.BitcoinURI;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
@@ -36,6 +36,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -49,10 +51,12 @@ import java.util.Currency;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 
 public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView<RequestBitcoinWizardModel, RequestBitcoinEnterDetailsPanelModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(RequestBitcoinEnterDetailsPanelView.class);
 
   // Panel specific components
   private JTextArea notesTextArea;
@@ -83,14 +87,14 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     // See if there is a credentials entered for the wallet
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     Optional<CharSequence> passwordParameter = Optional.absent();
-    CharSequence password = currentWalletSummary.get().getPassword();
+    CharSequence password = currentWalletSummary.get().getWalletPassword().getPassword();
     if (currentWalletSummary.isPresent()) {
       if (!(password == null) && !"".equals(password)) {
         passwordParameter = Optional.of(password);
       }
     }
     // Get the next receiving address from the wallet service
-    String nextAddress = CoreServices.getCurrentWalletService().generateNextReceivingAddress(passwordParameter);
+    String nextAddress = CoreServices.getCurrentWalletService().get().generateNextReceivingAddress(passwordParameter);
 
     // Recreate bloom filter
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
@@ -188,7 +192,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
 
     log.debug("Saving payment request");
 
-    WalletService walletService = CoreServices.getCurrentWalletService();
+    WalletService walletService = CoreServices.getCurrentWalletService().get();
 
     // Fail fast
     Preconditions.checkNotNull(walletService, "'walletService' must be present");
@@ -220,10 +224,12 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
 
     walletService.addPaymentRequest(paymentRequestData);
     try {
+      log.debug("Saving payment information");
       walletService.writePayments();
     } catch (PaymentsSaveException pse) {
       ExceptionHandler.handleThrowable(pse);
     }
+
 
     // Ensure the views that display payments update through a "wallet detail changed" event
     final WalletDetail walletDetail = new WalletDetail();
@@ -232,6 +238,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     final File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get();
 
     final WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
+
     ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());
 
     walletDetail.setApplicationDirectory(applicationDataDirectory.getAbsolutePath());
@@ -239,7 +246,14 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     walletDetail.setNumberOfContacts(contactService.allContacts().size());
     walletDetail.setNumberOfPayments(walletService.getPaymentDataList().size());
 
-    ViewEvents.fireWalletDetailChangedEvent(walletDetail);
+    log.debug("A new receiving address has been issued. The number of external keys is now {}", walletSummary.getWallet().getActiveKeychain().getIssuedExternalKeys());
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        ViewEvents.fireWalletDetailChangedEvent(walletDetail);
+      }
+    });
 
   }
 

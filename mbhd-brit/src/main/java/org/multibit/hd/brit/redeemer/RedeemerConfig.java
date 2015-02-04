@@ -1,6 +1,6 @@
 package org.multibit.hd.brit.redeemer;
 
-import com.google.bitcoin.core.ECKey;
+import org.bitcoinj.core.ECKey;
 
 /**
  * * <p>Value object to provide the following to BRIT API:</p>

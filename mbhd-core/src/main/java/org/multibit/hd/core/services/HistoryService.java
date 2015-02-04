@@ -8,12 +8,11 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *  <p>Interface to provide the following to History API:</p>
- *  <ul>
- *  <li>Common methods for history data access</li>
- *  </ul>
- *  </p>
- *  
+ * <p>Interface to provide the following to History API:</p>
+ * <ul>
+ * <li>Common methods for history data access</li>
+ * </ul>
+ *
  */
 public interface HistoryService {
 
@@ -56,7 +55,7 @@ public interface HistoryService {
    *
    * @throws HistoryLoadException If something goes wrong
    */
-  void loadHistory() throws HistoryLoadException;
+  void loadHistory(String password) throws HistoryLoadException;
 
   /**
    * @param selectedEntries The selected entries to remove from the store
@@ -77,8 +76,4 @@ public interface HistoryService {
    */
   void writeHistory() throws HistorySaveException;
 
-  /**
-   * <p>Create some demonstration entries for testing purposes</p>
-   */
-  void addDemoHistory();
 }

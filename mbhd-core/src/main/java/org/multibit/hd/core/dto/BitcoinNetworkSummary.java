@@ -1,6 +1,7 @@
 package org.multibit.hd.core.dto;
 
 import com.google.common.base.Optional;
+import org.multibit.hd.core.services.CoreServices;
 
 /**
  * <p>Value object to provide the following to Core API:</p>
@@ -9,13 +10,13 @@ import com.google.common.base.Optional;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class BitcoinNetworkSummary {
 
   private final BitcoinNetworkStatus status;
 
-  private final int peerCount;
+  private final Optional<Integer> peerCount;
   private final int percent;
   private final int blocksLeft;
 
@@ -35,7 +36,7 @@ public class BitcoinNetworkSummary {
       RAGStatus.RED,
       Optional.of(CoreMessageKey.NOT_INITIALISED),
       Optional.<Object[]>absent(),
-      0,
+      Optional.of(0),
       -1,
       -1
     );
@@ -52,7 +53,7 @@ public class BitcoinNetworkSummary {
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.CHAIN_DOWNLOAD),
       Optional.of(new Object[]{"0"}),
-      0,
+      Optional.<Integer>absent(),
       0,
       -1
     );
@@ -73,7 +74,7 @@ public class BitcoinNetworkSummary {
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.CHAIN_DOWNLOAD),
       Optional.of(new Object[]{percent}),
-      0,
+      Optional.<Integer>absent(),
       percent,
       blocksLeft
     );
@@ -81,21 +82,40 @@ public class BitcoinNetworkSummary {
   }
 
   /**
-   * <p>The network is only ready when 100% synchronization has been achieved</p>
+    * <p>The network has completed</p>
+    *
+    * @return A new "progress update" summary
+    */
+   public static BitcoinNetworkSummary newChainDownloadCompleted() {
+
+     // Also include peer count so that that can be used by the footer if needed
+     return new BitcoinNetworkSummary(
+       BitcoinNetworkStatus.SYNCHRONIZED,
+       RAGStatus.GREEN,
+       Optional.of(CoreMessageKey.CHAIN_DOWNLOAD),
+       Optional.of(new Object[]{100}),
+       Optional.of(CoreServices.getOrCreateBitcoinNetworkService().getNumberOfConnectedPeers()),
+       100,
+       0
+     );
+
+   }
+  /**
+   * <p>The network peer count has changed</p>
    *
    * @param peerCount The peer count
    *
    * @return A new "network ready with peer count" summary
    */
-  public static BitcoinNetworkSummary newNetworkReady(int peerCount) {
+  public static BitcoinNetworkSummary newNetworkPeerCount(int peerCount) {
     return new BitcoinNetworkSummary(
-      BitcoinNetworkStatus.SYNCHRONIZED,
-      RAGStatus.GREEN,
+      BitcoinNetworkStatus.CONNECTED,
+      RAGStatus.EMPTY,  // Not specified - peer count can change whilst syncing or after
       Optional.of(CoreMessageKey.PEER_COUNT),
       Optional.of(new Object[]{peerCount}),
-      peerCount,
-      -1, /* Do not show the progress bar when the peer count changes - confusing */
-      0
+      Optional.of(peerCount),
+      -1, // Do not show the progress bar when the peer count changes - confusing
+      -1  // No block information
     );
   }
 
@@ -112,7 +132,7 @@ public class BitcoinNetworkSummary {
       RAGStatus.RED,
       Optional.of(messageKey),
       messageData,
-      0,
+      Optional.<Integer>absent(),
       -1,
       -1
     );
@@ -123,16 +143,16 @@ public class BitcoinNetworkSummary {
    * @param severity    The severity (Red, Amber, Green)
    * @param messageKey  The error key to allow localisation
    * @param messageData The error data for insertion into the error message
-   * @param peerCount   The current peer count
+   * @param peerCount   The current peer count or Optional.empty if this avilable is not being messaged
    * @param percent     The percentage of blocks downloaded (-1 means "hide", 0-99 "in progress", 100 "success")
    * @param blocksLeft  The number of blocks left (-1 means "hide", 0+ "show")
    */
-  public BitcoinNetworkSummary(
+  private BitcoinNetworkSummary(
     BitcoinNetworkStatus status,
     RAGStatus severity,
     Optional<CoreMessageKey> messageKey,
     Optional<Object[]> messageData,
-    int peerCount,
+    Optional<Integer> peerCount,
     int percent,
     int blocksLeft) {
 
@@ -145,10 +165,6 @@ public class BitcoinNetworkSummary {
     this.peerCount = peerCount;
     this.percent = percent;
     this.blocksLeft = blocksLeft;
-  }
-
-  public int getPeerCount() {
-    return peerCount;
   }
 
   /**

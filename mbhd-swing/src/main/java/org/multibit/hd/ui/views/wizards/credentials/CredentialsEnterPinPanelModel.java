@@ -4,7 +4,7 @@ import org.multibit.hd.ui.views.components.enter_pin.EnterPinModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 
 /**
- * <p>Panel model to provide the following to "enter credentials" wizard:</p>
+ * <p>Panel model to provide the following to "use Trezor" wizard:</p>
  * <ul>
  * <li>Storage of state for the "enter pin" panel</li>
  * </ul>
@@ -21,8 +21,8 @@ public class CredentialsEnterPinPanelModel extends AbstractWizardPanelModel {
    * @param enterPinModel The "enter pin" component model
    */
   public CredentialsEnterPinPanelModel(
-          String panelName,
-          EnterPinModel enterPinModel
+    String panelName,
+    EnterPinModel enterPinModel
   ) {
     super(panelName);
     this.enterPinModel = enterPinModel;

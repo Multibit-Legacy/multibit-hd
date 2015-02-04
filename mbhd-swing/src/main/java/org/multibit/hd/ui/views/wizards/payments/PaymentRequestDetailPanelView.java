@@ -1,8 +1,8 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.Coin;
-import com.google.bitcoin.uri.BitcoinURI;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
@@ -39,7 +39,7 @@ import java.awt.event.ActionEvent;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<PaymentsWizardModel, PaymentRequestDetailPanelModel> {
 
@@ -239,8 +239,11 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
         LabelDecorator.applyBitcoinSymbolLabel(
           exchangeRateLabel,
           Configurations.currentConfiguration.getBitcoin(),
-          Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL) + " " + amountFiat.getCurrency().get().getCurrencyCode()
-            + Formats.EXCHANGE_RATE_SEPARATOR);
+          Languages.safeText(
+            MessageKey.EXCHANGE_RATE_LABEL)
+            + " "
+            + amountFiat.getCurrency().get().getCurrencyCode()
+            + " / ");
       } else {
         amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
         exchangeRateLabel.setText(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));

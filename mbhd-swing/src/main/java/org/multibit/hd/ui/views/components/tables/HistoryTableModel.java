@@ -7,6 +7,7 @@ import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +19,6 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class HistoryTableModel extends AbstractTableModel {
 
@@ -73,12 +73,12 @@ public class HistoryTableModel extends AbstractTableModel {
    */
   public Class getColumnClass(int c) {
     if (c == CHECKBOX_COLUMN_INDEX) {
-       return Boolean.class;
-     } else if (c == CREATED_COLUMN_INDEX) {
-       return DateTime.class;
-     } else {
-       return String.class;
-     }
+      return Boolean.class;
+    } else if (c == CREATED_COLUMN_INDEX) {
+      return DateTime.class;
+    } else {
+      return String.class;
+    }
 
   }
 
@@ -177,7 +177,7 @@ public class HistoryTableModel extends AbstractTableModel {
       // Build row manually to allow for flexible column index reporting
       final Object[] rowData = new Object[COLUMN_COUNT];
       // Attempt to preserve the earlier checkboxes
-      rowData[CHECKBOX_COLUMN_INDEX] = data[row][CHECKBOX_COLUMN_INDEX] == null ? false: data[row][CHECKBOX_COLUMN_INDEX];
+      rowData[CHECKBOX_COLUMN_INDEX] = data[row][CHECKBOX_COLUMN_INDEX] == null ? false : data[row][CHECKBOX_COLUMN_INDEX];
       rowData[CREATED_COLUMN_INDEX] = historyEntry.getCreated();
       rowData[DESCRIPTION_COLUMN_INDEX] = historyEntry.getDescription();
       rowData[NOTES_COLUMN_INDEX] = historyEntry.getNotes().or("");
@@ -189,7 +189,15 @@ public class HistoryTableModel extends AbstractTableModel {
     }
 
     if (fireTableDataChanged) {
-      fireTableDataChanged();
+
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            fireTableDataChanged();
+          }
+        });
+
     }
 
   }

@@ -15,7 +15,7 @@ import java.awt.geom.RoundRectangle2D;
  * <p>Adapted from <a href="http://stackoverflow.com/a/16909994/396747">this Stack Overflow answer</a></p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class TextBubbleBorder extends AbstractBorder {
 

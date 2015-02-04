@@ -19,7 +19,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class Buttons {
 
@@ -233,7 +233,7 @@ public class Buttons {
 
     JButton button = newButton(action, MessageKey.DELETE_PAYMENT_REQUEST, MessageKey.DELETE_PAYMENT_REQUEST_TOOLTIP);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_O, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -248,7 +248,25 @@ public class Buttons {
 
     JButton button = newButton(action, MessageKey.DELETE, MessageKey.DELETE_TOOLTIP);
 
-    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH_O, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.TRASH, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "backspace delete" button with icon
+   */
+  public static JButton newBackspaceDeleteButton(Action action) {
+
+    JButton button = newButton(action);
+
+    // Ensure FEST can find it
+    button.setName(MessageKey.DELETE.getKey());
+
+    AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ARROW_CIRCLE_O_LEFT, AwesomeIcon.ARROW_CIRCLE_O_RIGHT);
+    AwesomeDecorator.applyIcon(icon, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
   }
@@ -339,7 +357,7 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "Unlock" button with icon (this is a finish button but just looks differently)
+   * @return A new "Unlock" button with icon (this is a finish button but just looks different)
    */
   public static JButton newUnlockButton(Action action) {
 
@@ -395,6 +413,24 @@ public class Buttons {
     AccessibilityDecorator.apply(button, MessageKey.REFRESH, MessageKey.REFRESH_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.REFRESH, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "Home" button with icon
+   */
+  public static JButton newHomeButton(Action action) {
+
+    JButton button = newButton(action);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.HOME, MessageKey.HOME_TOOLTIP);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.HOME, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
     return button;
 
@@ -530,7 +566,7 @@ public class Buttons {
     JButton button = newButton(action);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(button, MessageKey.CLOSE);
+    AccessibilityDecorator.apply(button, MessageKey.CLOSE, MessageKey.CLOSE_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, button, true, MultiBitUI.SMALL_ICON_SIZE);
 
@@ -781,6 +817,28 @@ public class Buttons {
   }
 
   /**
+     * @param action The click action
+     *
+     * @return A new "Trezor tools" wizard button with icon
+     */
+    public static JButton newShowUseTrezorWizardButton(Action action) {
+
+      JButton button = newLargeButton(action, MessageKey.SHOW_TREZOR_TOOLS_WIZARD, MessageKey.SHOW_TREZOR_TOOLS_WIZARD_TOOLTIP);
+
+      AwesomeDecorator.applyIcon(
+        // Cannot use LOCK even though it is the closest icon to the Trezor logo
+        // since it affects the established iconography throughout the application
+        AwesomeIcon.SHIELD,
+        button,
+        true,
+        JLabel.BOTTOM,
+        MultiBitUI.LARGE_ICON_SIZE
+      );
+
+      return button;
+    }
+
+  /**
    * @param action The click action
    *
    * @return A new "language settings" wizard button with icon
@@ -887,7 +945,7 @@ public class Buttons {
    */
   public static JButton newShowLabSettingsWizardButton(Action action) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_LAB_WIZARD, MessageKey.SHOW_LAB_WIZARD_TOOLTIP);
+    JButton button = newLargeButton(action, MessageKey.SHOW_LABS_WIZARD, MessageKey.SHOW_LABS_WIZARD_TOOLTIP);
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.FLASK,
@@ -943,6 +1001,26 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "change PIN" button with icon
+   */
+  public static JButton newShowChangePinButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_CHANGE_PIN_WIZARD, MessageKey.SHOW_CHANGE_PIN_WIZARD_TOOLTIP);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.TH,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "verify network" button with icon
    */
   public static JButton newShowVerifyNetworkButton(Action action) {
@@ -951,6 +1029,26 @@ public class Buttons {
 
     AwesomeDecorator.applyIcon(
       AwesomeIcon.SITEMAP,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "history" button with icon
+   */
+  public static JButton newShowHistoryScreenButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.HISTORY, MessageKey.HISTORY_TOOLTIP);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.HISTORY,
       button,
       true,
       JLabel.BOTTOM,
@@ -1003,6 +1101,26 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "wallet details" button with icon
+   */
+  public static JButton newShowWalletDetailsButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_WALLET_DETAILS_WIZARD, MessageKey.SHOW_WALLET_DETAILS_WIZARD_TOOLTIP);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.DASHBOARD,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "empty wallet" button with icon
    */
   public static JButton newShowEmptyWalletButton(Action action) {
@@ -1019,5 +1137,31 @@ public class Buttons {
 
     return button;
   }
+
+  /**
+   * @param action The click action
+   *
+   * @param festName
+   * @return A new "PIN matrix" button with icon
+   */
+  public static JButton newPinMatixButton(Action action, String festName) {
+
+    JButton button = newButton(action);
+
+    // Ensure FEST can find it
+    button.setName(festName);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.QUESTION,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.NORMAL_ICON_SIZE
+    );
+
+    return button;
+  }
+
+
 
 }

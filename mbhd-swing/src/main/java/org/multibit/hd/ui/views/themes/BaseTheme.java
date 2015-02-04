@@ -9,7 +9,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public abstract class BaseTheme implements Theme {
 
@@ -37,7 +37,7 @@ public abstract class BaseTheme implements Theme {
 
   @Override
   public Color statusGreen() {
-    return new Color(71, 164, 71);
+    return new Color(67, 160, 67);
   }
 
   @Override

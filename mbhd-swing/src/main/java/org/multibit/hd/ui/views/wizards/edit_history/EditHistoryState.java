@@ -7,7 +7,7 @@ package org.multibit.hd.ui.views.wizards.edit_history;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum EditHistoryState {
 

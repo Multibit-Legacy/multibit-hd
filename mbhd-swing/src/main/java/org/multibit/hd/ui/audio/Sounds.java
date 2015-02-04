@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutorService;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class Sounds {
 

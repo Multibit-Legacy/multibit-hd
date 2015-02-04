@@ -23,7 +23,6 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class DetailView extends AbstractView {
 
@@ -51,6 +50,16 @@ public class DetailView extends AbstractView {
     // Add the screen holder to the overall content panel
     contentPanel.add(screenPanel, "grow");
 
+  }
+
+  @Override
+  public void unregister() {
+    super.unregister();
+
+    // Unsubscribe the screens
+    for (Map.Entry<Screen, AbstractScreenView> entry : screenViewMap.entrySet()) {
+      entry.getValue().unsubscribe();
+    }
   }
 
   /**
@@ -92,27 +101,22 @@ public class DetailView extends AbstractView {
 
     Preconditions.checkState(!screenViewMap.isEmpty(), "'screenViewMap' has not been initialised. DetailView is not ready.");
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    Screen screen = event.getScreen();
 
-        Screen screen = event.getScreen();
-        AbstractScreenView view = screenViewMap.get(screen);
+    Preconditions.checkState(screenViewMap.containsKey(screen), "Screen '" + screen.name() + "' has not been added to screenViewMap.");
 
-        if (!view.isInitialised()) {
+    AbstractScreenView view = screenViewMap.get(screen);
 
-          // Initialise the panel and add it to the card layout parent
-          screenPanel.add(view.getScreenViewPanel(), screen.name());
+    if (!view.isInitialised()) {
 
-        }
+      // Initialise the panel and add it to the card layout parent
+      screenPanel.add(view.getScreenViewPanel(), screen.name());
 
-        cardLayout.show(screenPanel, event.getScreen().name());
+    }
 
-        view.afterShow();
+    cardLayout.show(screenPanel, event.getScreen().name());
 
-      }
-    });
-
+    view.afterShow();
 
   }
 

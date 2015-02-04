@@ -4,6 +4,8 @@ import com.google.common.base.Optional;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
+import javax.swing.*;
+
 /**
  * <p>Model to provide the following to view:</p>
  * <ul>
@@ -11,7 +13,7 @@ import org.multibit.hd.ui.models.Model;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EnterSearchModel implements Model<String> {
 
@@ -35,8 +37,13 @@ public class EnterSearchModel implements Model<String> {
   public void setValue(String value) {
     this.selectedFile = value;
 
-    // Ensure the "next" button is kept disabled
-    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Ensure the "next" button is kept disabled
+        ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
+      }
+    });
 
   }
 

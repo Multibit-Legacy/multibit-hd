@@ -1,13 +1,14 @@
 package org.multibit.hd.core.services;
 
-import com.google.bitcoin.core.Address;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.bitcoinj.core.Address;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.exceptions.ContactsSaveException;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
@@ -33,9 +34,9 @@ import java.util.UUID;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
-public class PersistentContactService implements ContactService {
+public class PersistentContactService extends AbstractService implements ContactService {
 
   private static final Logger log = LoggerFactory.getLogger(PersistentContactService.class);
 
@@ -61,10 +62,9 @@ public class PersistentContactService implements ContactService {
    */
   PersistentContactService(WalletId walletId) {
 
-    Preconditions.checkNotNull(walletId, "'walletId' must be present");
+    super();
 
-    // Register for events
-    CoreServices.uiEventBus.register(this);
+    Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
     // Work out where to writeContacts the contacts for this wallet id.
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
@@ -100,6 +100,23 @@ public class PersistentContactService implements ContactService {
       loadContacts();
     }
 
+  }
+
+  @Override
+  protected boolean startInternal() {
+
+    Preconditions.checkNotNull(protobufSerializer,"protobufSerializer not present. Have you called initialise()?");
+
+    return true;
+  }
+
+  @Override
+  protected boolean shutdownNowInternal(ShutdownEvent.ShutdownType shutdownType) {
+
+    protobufSerializer = null;
+    backingStoreFile = null;
+
+    return true;
   }
 
   /**
@@ -251,13 +268,13 @@ public class PersistentContactService implements ContactService {
   @Override
   public void loadContacts() throws ContactsLoadException {
 
-    log.debug("Loading contacts from '{}'", backingStoreFile.getAbsolutePath());
+    log.debug("Loading contacts from\n'{}'", backingStoreFile.getAbsolutePath());
 
     try {
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
-        WalletManager.SCRYPT_SALT,
-        WalletManager.AES_INITIALISATION_VECTOR);
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
+        WalletManager.scryptSalt(),
+        WalletManager.aesInitialisationVector());
       Set<Contact> loadedContacts = protobufSerializer.readContacts(decryptedInputStream);
       contacts.clear();
       contacts.addAll(loadedContacts);
@@ -314,7 +331,7 @@ public class PersistentContactService implements ContactService {
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
 
       protobufSerializer.writeContacts(contacts, byteArrayOutputStream);
-      EncryptedFileReaderWriter.encryptAndWrite(byteArrayOutputStream.toByteArray(), WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(), backingStoreFile);
+      EncryptedFileReaderWriter.encryptAndWrite(byteArrayOutputStream.toByteArray(), WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), backingStoreFile);
 
     } catch (Exception e) {
       throw new ContactsSaveException("Could not save contacts db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");

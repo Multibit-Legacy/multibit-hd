@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.text_fields;
 
-import com.google.bitcoin.core.Address;
+import org.bitcoinj.core.Address;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -24,7 +24,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ThemeAwareRecipientInputVerifier extends InputVerifier {
 

@@ -1,6 +1,6 @@
 package org.multibit.hd.core.store;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentRequestData;
-import org.multibit.hd.core.managers.WalletManagerTest;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.Addresses;
 
@@ -31,7 +31,7 @@ public class PaymentsProtobufSerializerTest {
   @Before
   public void setUp() throws Exception {
 
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
     paymentsFile = new File(temporaryDirectory.getAbsolutePath() + File.separator + WalletService.PAYMENTS_DATABASE_NAME);
 
     serializer = new PaymentsProtobufSerializer();

@@ -18,13 +18,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <!-- Snapshot library versions (require local builds) -->
-    <bitcoinj.version>0.12-SNAPSHOT</bitcoinj.version>
-
     <!-- Library versions with multiple modules -->
     <slf4j.version>1.7.2</slf4j.version>
-    <xchange.version>2.0.0</xchange.version>
-    <jackson.version>2.2.2</jackson.version>
+    <xchange.version>2.1.0</xchange.version>
+    <jackson.version>2.3.2</jackson.version>
+    <findbugs.version>3.0.0</findbugs.version>
 
     <!-- 2.0M10/1.2.1 -->
     <fest.version>1.2.1</fest.version>
@@ -34,7 +32,6 @@
     <module>mbhd-brit</module>
     <module>mbhd-core</module>
     <module>mbhd-swing</module>
-    <module>mbhd-install</module>
   </modules>
 
   <url>http://github.com/bitcoin-solutions/multibit-hd</url>
@@ -203,6 +200,32 @@
         </configuration>
       </plugin>
 
+      <!-- Findbugs
+           Notes:
+           See Issue #323 for initial response to introduction and supporting notes
+           See target/findBugs.xml for report
+           Use Findbugs-IDEA plugin with "Medium" (default) or "Low" (recommended) threshold
+      -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>${findbugs.version}</version>
+        <configuration>
+          <effort>Max</effort>
+          <!-- The project currently passes with Medium but Low is desired -->
+          <threshold>Medium</threshold>
+          <xmlOutput>true</xmlOutput>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- Filter out functional and FEST UI tests by Maven (an IDE will run all tests including functional) -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -220,7 +243,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.2.1</version>
+        <version>2.4</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -253,7 +276,7 @@
       <dependency>
         <groupId>org.multibit.hd.hardware</groupId>
         <artifactId>trezor</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>develop-SNAPSHOT</version>
       </dependency>
 
       <!-- Logging is through SLF4J and Logback -->
@@ -284,15 +307,15 @@
       <!-- Findbugs annotations -->
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
-        <artifactId>jsr305</artifactId>
-        <version>1.3.9</version>
+        <artifactId>annotations</artifactId>
+        <version>2.0.1</version>
       </dependency>
 
       <!-- Bitcoinj for Bitcoin operations -->
       <dependency>
-        <groupId>com.google</groupId>
-        <artifactId>bitcoinj</artifactId>
-        <version>${bitcoinj.version}</version>
+        <groupId>org.bitcoinj</groupId>
+        <artifactId>bitcoinj-core</artifactId>
+        <version>0.13-alice-SNAPSHOT</version>
       </dependency>
 
       <!-- Crypto -->
@@ -363,10 +386,6 @@
     <!-- All logging is through SLF4J and Logback -->
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
       <artifactId>jul-to-slf4j</artifactId>
     </dependency>
     <dependency>
@@ -383,13 +402,13 @@
     <!-- Findbugs annotations -->
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
-      <artifactId>jsr305</artifactId>
+      <artifactId>annotations</artifactId>
     </dependency>
 
     <!-- Bitcoinj for Bitcoin operations -->
     <dependency>
-      <groupId>com.google</groupId>
-      <artifactId>bitcoinj</artifactId>
+      <groupId>org.bitcoinj</groupId>
+      <artifactId>bitcoinj-core</artifactId>
     </dependency>
 
     <!-- Joda time for timestamps -->

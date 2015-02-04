@@ -29,7 +29,7 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<PaymentsWizardModel, ChoosePaymentRequestPanelModel> implements ActionListener {
 
@@ -61,7 +61,7 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[]10[][]", // Column constraints
-      "[]30[]30[]" // Row constraints
+      "10[24]30[24]30[24]10" // Row constraints
     ));
 
     // Apply the theme

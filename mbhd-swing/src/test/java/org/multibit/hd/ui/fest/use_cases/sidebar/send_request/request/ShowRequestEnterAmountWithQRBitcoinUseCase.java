@@ -19,7 +19,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <p>Requires the "send/request" screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ShowRequestEnterAmountWithQRBitcoinUseCase extends AbstractFestUseCase {
 
@@ -50,7 +50,7 @@ public class ShowRequestEnterAmountWithQRBitcoinUseCase extends AbstractFestUseC
 
     // Enter a transaction label
     window
-      .textBox(MessageKey.TRANSACTION_LABEL.getKey())
+      .textBox(MessageKey.QR_CODE_LABEL.getKey())
       .requireVisible()
       .requireEnabled()
       .requireEmpty()

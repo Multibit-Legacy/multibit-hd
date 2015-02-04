@@ -11,7 +11,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class LanguageSettingsWizardModel extends AbstractWizardModel<LanguageSettingsState> {
 

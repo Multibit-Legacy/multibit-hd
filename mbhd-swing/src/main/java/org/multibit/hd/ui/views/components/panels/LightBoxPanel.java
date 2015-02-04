@@ -17,7 +17,7 @@ import java.awt.event.MouseListener;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class LightBoxPanel extends JPanel {
 
@@ -180,7 +180,7 @@ public class LightBoxPanel extends JPanel {
   /**
    * Prevent mouse events reaching through the light box border
    */
-  private class ModalMouseListener implements MouseListener {
+  static class ModalMouseListener implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {

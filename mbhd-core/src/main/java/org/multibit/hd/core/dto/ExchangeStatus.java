@@ -10,7 +10,7 @@ package org.multibit.hd.core.dto;
  * </pre>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum ExchangeStatus {
 

@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.password.RestoreButtonUseCase;
+import org.multibit.hd.ui.fest.use_cases.credentials.RestoreButtonUseCase;
 import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectExistingWalletUseCase;
 
@@ -15,7 +15,6 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class WelcomeWizardUseExistingWalletRequirements {
 

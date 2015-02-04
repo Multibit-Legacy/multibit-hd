@@ -3,3 +3,9 @@ jdk:
   - oraclejdk7
   - openjdk7
   - oraclejdk8
+after_success:
+  - coveralls
+notifications:
+  email:
+    - gary.rowe@bitcoin-solutions.co.uk
+    - jim.burton@bitcoin-solutions.co.uk

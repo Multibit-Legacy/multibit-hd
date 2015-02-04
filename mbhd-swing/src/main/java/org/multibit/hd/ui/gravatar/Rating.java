@@ -7,7 +7,7 @@ package org.multibit.hd.ui.gravatar;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum Rating {
 

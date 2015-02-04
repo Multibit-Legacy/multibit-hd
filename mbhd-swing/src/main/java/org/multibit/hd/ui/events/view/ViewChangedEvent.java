@@ -9,7 +9,7 @@ import org.multibit.hd.ui.views.ViewKey;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ViewChangedEvent implements ViewEvent {
 
@@ -39,5 +39,13 @@ public class ViewChangedEvent implements ViewEvent {
    */
   public boolean isVisible() {
     return visible;
+  }
+
+  @Override
+  public String toString() {
+    return "ViewChangedEvent{" +
+            "viewKey=" + viewKey +
+            ", visible=" + visible +
+            '}';
   }
 }

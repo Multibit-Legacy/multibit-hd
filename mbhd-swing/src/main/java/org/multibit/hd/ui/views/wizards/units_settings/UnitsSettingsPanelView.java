@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.wizards.units_settings;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
@@ -36,7 +36,7 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardModel, UnitsSettingsPanelModel> implements ActionListener {
 

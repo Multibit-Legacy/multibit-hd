@@ -7,9 +7,11 @@ package org.multibit.hd.ui.views.screens;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum Screen {
+
+  // Sidebar screens
 
   /**
    * The send/request screen
@@ -32,24 +34,32 @@ public enum Screen {
   HELP,
 
   /**
-   * The history screen
-   */
-  HISTORY,
-
-  /**
-   * The settings screen
+   * The settings screen (language, units, theme etc)
    */
   SETTINGS,
 
   /**
-   * The tools screen
+   * The manage wallet screen (edit, empty, repair wallet etc)
+   */
+  MANAGE_WALLET,
+
+  /**
+   * The tools screen (sign, verify, Trezor etc)
    */
   TOOLS,
 
   /**
    * The exit screen
    */
-  EXIT
+  EXIT,
+
+  // Specialised screens from buttons
+  /**
+   * The history screen
+   */
+  HISTORY,
+
+
 
   // End of enum
   ;

@@ -158,7 +158,7 @@ public class MacApplication implements GenericApplication {
     // nativeQuitHandler is a proxy that actually uses the generic handler
     callNativeMethod(nativeApplication, "setQuitHandler", new Class[]{nativeQuitHandlerClass}, new Object[]{nativeQuitHandler});
 
-    log.debug("GenericAboutHandler configured");
+    log.debug("GenericQuitHandler configured");
 
   }
 

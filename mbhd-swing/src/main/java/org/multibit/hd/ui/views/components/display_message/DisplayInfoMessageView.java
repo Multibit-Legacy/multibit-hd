@@ -16,11 +16,9 @@ import java.awt.event.ActionEvent;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class DisplayInfoMessageView extends AbstractComponentView<DisplayInfoMessageModel> {
-
-  private JLabel infoMessage;
 
   private JButton panelCloseButton;
 
@@ -66,10 +64,13 @@ public class DisplayInfoMessageView extends AbstractComponentView<DisplayInfoMes
 
         Panels.hideLightBoxPopoverIfPresent();
 
-        // Issue the wizard popover hide event
-        ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
-
-
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            // Issue the wizard popover hide event
+            ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
+          }
+        });
       }
 
     };

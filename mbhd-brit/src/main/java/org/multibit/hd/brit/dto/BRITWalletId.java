@@ -1,8 +1,8 @@
 package org.multibit.hd.brit.dto;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.crypto.KeyCrypterScrypt;
 import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
@@ -81,9 +81,9 @@ public class BRITWalletId {
    * @return the raw wallet id as a byte[]
    */
   public byte[] getBytes() {
-    return britWalletId;
-  }
 
+    return Arrays.copyOf(britWalletId, britWalletId.length);
+  }
 
   @Override
   public String toString() {

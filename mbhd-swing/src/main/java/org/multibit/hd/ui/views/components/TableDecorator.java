@@ -16,7 +16,7 @@ import static org.multibit.hd.ui.MultiBitUI.TABLE_SPACER;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class TableDecorator {
 

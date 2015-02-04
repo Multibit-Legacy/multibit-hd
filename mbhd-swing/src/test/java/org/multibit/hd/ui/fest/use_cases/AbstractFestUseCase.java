@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.fest.swing.core.matcher.JButtonMatcher;
 import org.fest.swing.core.matcher.JLabelMatcher;
 import org.fest.swing.core.matcher.JTextComponentMatcher;
@@ -27,7 +28,6 @@ import static org.fest.assertions.Assertions.assertThat;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public abstract class AbstractFestUseCase {
 
@@ -37,19 +37,24 @@ public abstract class AbstractFestUseCase {
   protected static final int PAYMENTS_ROW = 1;
   protected static final int CONTACTS_ROW = 2;
   protected static final int HELP_ROW = 3;
-  protected static final int HISTORY_ROW = 4;
-  protected static final int SETTINGS_ROW = 5;
+  protected static final int SETTINGS_ROW = 4;
+  protected static final int MANAGE_WALLET_ROW = 5;
   protected static final int TOOLS_ROW = 6;
   protected static final int EXIT_ROW = 7;
 
-
   protected final FrameFixture window;
 
+  /**
+   * @param window The FEST window frame fixture
+   */
   public AbstractFestUseCase(FrameFixture window) {
+
+    Preconditions.checkNotNull(window, "'window' must be present");
+
     this.window = window;
 
-    log.info("New use case: {}", this.getClass().getSimpleName());
-
+    // Make this message stand out
+    log.warn("New use case: {}", this.getClass().getSimpleName());
   }
 
   /**
@@ -299,10 +304,10 @@ public abstract class AbstractFestUseCase {
   }
 
   /**
-   * The standard length of time for a wallet to unlock
+   * The standard length of time for a wallet to show the unlock report screen
    */
   protected void pauseForWalletUnlock() {
-    Pause.pause(7, TimeUnit.SECONDS);
+    Pause.pause(5, TimeUnit.SECONDS);
   }
 
   /**
@@ -313,17 +318,24 @@ public abstract class AbstractFestUseCase {
   }
 
   /**
-   * The standard length of time for a wallet to be created (at least 15 seconds with CA certs which take at least 6 seconds on broadband)
+   * The standard length of time for a wallet to be created (at least 10 seconds with CA certs which take at least 6 seconds on broadband)
    */
   protected void pauseForWalletCreation() {
-    Pause.pause(15, TimeUnit.SECONDS);
+    Pause.pause(10, TimeUnit.SECONDS);
   }
 
   /**
-   * The standard length of time for a wallet to be restored (at least 15 seconds with CA certs which take at least 6 seconds on broadband)
+   * The standard length of time for a wallet to be restored (at least 20 seconds with CA certs which take at least 6 seconds on broadband)
    */
   protected void pauseForWalletRestore() {
     Pause.pause(20, TimeUnit.SECONDS);
+  }
+
+  /**
+   * The standard length of time for a wallet to be switched (at least 5 seconds)
+   */
+  protected void pauseForWalletSwitch() {
+    Pause.pause(5, TimeUnit.SECONDS);
   }
 
   /**
@@ -344,6 +356,29 @@ public abstract class AbstractFestUseCase {
    * The standard length of time for a component reset to occur (e.g. exchange list)
    */
   protected void pauseForComponentReset() {
+    Pause.pause(1, TimeUnit.SECONDS);
+  }
+
+  /**
+   * The standard length of time for a user to respond to something (e.g. hardware wallet button press)
+   */
+  protected void pauseForUserInput() {
+    Pause.pause(1, TimeUnit.SECONDS);
+  }
+
+  /**
+   * The standard length of time for a preparation view to occur (e.g. wallet create notes, help screen rendering etc)
+   */
+  protected void pauseForPreparationDisplay() {
+    Pause.pause(4, TimeUnit.SECONDS);
+  }
+
+  /**
+   * The standard length of time for a hardware wallet event to be processed
+   * This rather long duration emulates user actions and is in line with typical
+   * responses from a real life Trezor
+   */
+  protected void pauseForHardwareEvent() {
     Pause.pause(1, TimeUnit.SECONDS);
   }
 

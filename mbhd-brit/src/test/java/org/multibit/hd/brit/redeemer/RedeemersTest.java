@@ -16,7 +16,7 @@ package org.multibit.hd.brit.redeemer;
  * limitations under the License.
  */
 
-import com.google.bitcoin.core.ECKey;
+import org.bitcoinj.core.ECKey;
 import org.junit.Before;
 import org.junit.Test;
 

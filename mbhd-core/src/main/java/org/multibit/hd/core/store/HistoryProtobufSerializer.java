@@ -72,7 +72,7 @@ public class HistoryProtobufSerializer {
 
   /**
    * <p>Parses a HistoryEntry from the given stream, using the provided HistoryEntry instance to loadHistoryEntry data into.
-   * <p>A HistoryEntry db can be unreadable for various reasons, such as inability to open the file, corrupt data, internally
+   * <p>A HistoryEntry db can be unreadable for various reasons, such as inability to present the file, corrupt data, internally
    * inconsistent data, You should always
    * handle {@link org.multibit.hd.core.exceptions.HistoryLoadException} and communicate failure to the user in an appropriate manner.</p>
    *
@@ -107,7 +107,7 @@ public class HistoryProtobufSerializer {
   /**
    * <p>Loads history data from the given protocol buffer and inserts it into the given Set of history entries.</p>
    *
-   * <p>A history db can be unreadable for various reasons, such as inability to open the file, corrupt data, internally
+   * <p>A history db can be unreadable for various reasons, such as inability to present the file, corrupt data, internally
    * inconsistent data, an extension marked as mandatory that cannot be handled and so on.</p>
    *
    * <p>You should always handle {@link org.multibit.hd.core.exceptions.HistoryLoadException} and communicate failure to the user in an appropriate manner.</p>

@@ -1,9 +1,12 @@
 package org.multibit.hd.ui.fest.use_cases.create_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
+import java.io.File;
 import java.util.Map;
 
 /**
@@ -13,7 +16,7 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class CreateWalletSelectBackupLocationWalletUseCase extends AbstractFestUseCase {
 
@@ -27,8 +30,10 @@ public class CreateWalletSelectBackupLocationWalletUseCase extends AbstractFestU
     // Verify that the title appears
     assertLabelText(MessageKey.SELECT_BACKUP_LOCATION_TITLE);
 
+    // This may be populated with the current cloud backup depending on the test
+    // so just leave it unspecified for now
     window
-      .textBox()
+      .textBox(MessageKey.SELECT_FILE.getKey())
       .requireEnabled()
       .requireVisible();
 
@@ -42,6 +47,14 @@ public class CreateWalletSelectBackupLocationWalletUseCase extends AbstractFestU
       .fileChooser()
       .requireVisible()
       .cancel();
+
+    // Create a backup location off the InstallationManager
+    File festCloudBackupsDirectory = SecureFiles.verifyOrCreateDirectory(InstallationManager.getOrCreateApplicationDataDirectory(), "fest-cloud-backups");
+
+    // Enter the directory path
+    window
+      .textBox(MessageKey.SELECT_FILE.getKey())
+      .setText(festCloudBackupsDirectory.getAbsolutePath());
 
     // OK to proceed
     window

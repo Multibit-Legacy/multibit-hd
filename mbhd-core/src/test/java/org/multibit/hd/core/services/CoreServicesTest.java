@@ -1,6 +1,7 @@
 package org.multibit.hd.core.services;
 
-import com.google.bitcoin.core.Wallet;
+import com.google.common.base.Optional;
+import org.bitcoinj.core.Wallet;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.multibit.hd.brit.dto.FeeState;
@@ -11,9 +12,9 @@ import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.managers.WalletManagerTest;
 import org.multibit.hd.core.utils.Dates;
 
 import java.io.File;
@@ -47,25 +48,25 @@ public class CoreServicesTest {
     assertThat(feeService).isNotNull();
 
     // Create a random temporary directory where the wallet directory will be written
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+    File temporaryDirectory = SecureFiles.createTemporaryDirectory();
 
     // Create a wallet from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
-    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
 
     long nowInSeconds = Dates.nowInSeconds();
     WalletSummary walletSummary = WalletManager
       .INSTANCE
-      .getOrCreateWalletSummary(
-        temporaryDirectory,
-        seed,
-        nowInSeconds,
-        PASSWORD,
-        "Example",
-        "Example"
-      );
+      .getOrCreateMBHDSoftWalletSummaryFromSeed(
+              temporaryDirectory,
+              seed,
+              nowInSeconds,
+              PASSWORD,
+              "Example",
+              "Example",
+        false); // No need to sync
 
     Wallet wallet  = walletSummary.getWallet();
 

@@ -1,6 +1,8 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
@@ -8,9 +10,10 @@ import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.WalletIdTest;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.managers.WalletManagerTest;
 import org.multibit.hd.core.utils.Addresses;
 import org.multibit.hd.core.utils.Dates;
 
@@ -26,33 +29,47 @@ public class PersistentContactServiceTest {
 
   @Before
   public void setUp() throws Exception {
+
+    InstallationManager.unrestricted = true;
+
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
-    File temporaryDirectory = WalletManagerTest.makeRandomTemporaryApplicationDirectory();
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Create a wallet from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
-    BackupManager.INSTANCE.initialise(temporaryDirectory, null);
+    BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     long nowInSeconds = Dates.nowInSeconds();
     WalletManager
       .INSTANCE
-      .getOrCreateWalletSummary(
-        temporaryDirectory,
-        seed1,
-        nowInSeconds,
-        WalletServiceTest.PASSWORD,
-        "Example",
-        "Example"
-      );
+      .getOrCreateMBHDSoftWalletSummaryFromSeed(
+              applicationDirectory,
+              seed1,
+              nowInSeconds,
+              WalletServiceTest.PASSWORD,
+              "Example",
+              "Example",
+        false); // No need to sync
 
-    File contactDbFile = new File(temporaryDirectory.getAbsolutePath() + File.separator + ContactService.CONTACTS_DATABASE_NAME);
+    File contactDbFile = new File(applicationDirectory.getAbsolutePath() + File.separator + ContactService.CONTACTS_DATABASE_NAME);
 
     contactService = new PersistentContactService(contactDbFile);
     contactService.addDemoContacts();
 
+  }
+
+  @After
+  public void tearDown() throws Exception {
+
+    // Order is important here
+    CoreServices.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
+
+    InstallationManager.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
+    BackupManager.INSTANCE.shutdownNow();
+    WalletManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.HARD);
   }
 
   @Test

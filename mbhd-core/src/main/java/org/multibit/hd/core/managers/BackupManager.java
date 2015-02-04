@@ -1,23 +1,23 @@
 package org.multibit.hd.core.managers;
 
-import com.google.bitcoin.core.Wallet;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.ListeningScheduledExecutorService;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
+import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.brit.utils.FileUtils;
-import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.BackupSummary;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.events.WalletLoadEvent;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
@@ -39,7 +39,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static org.multibit.hd.core.dto.WalletId.LENGTH_OF_FORMATTED_WALLET_ID;
 import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SEPARATOR;
@@ -72,13 +71,10 @@ public enum BackupManager {
   private static final Logger log = LoggerFactory.getLogger(BackupManager.class);
 
   // Where wallets are stored
-  private File applicationDataDirectory;
+  private File applicationDataDirectory = null;
 
   // Where the cloud backups are stored (this is typically specified by the user and is a SpiderOak etc sync directory)
   private Optional<File> cloudBackupDirectory;
-
-  // Notification scheduler
-  private ListeningScheduledExecutorService backupNotifier;
 
   /**
    * Initialise the backup manager to use the specified cloudBackupDirectory.
@@ -86,18 +82,19 @@ public enum BackupManager {
    * Note that each wallet also have a local copy of the zip backups.
    */
   public void initialise(File applicationDataDirectory, Optional<File> cloudBackupDirectory) {
-    Preconditions.checkNotNull(applicationDataDirectory);
+
+    Preconditions.checkNotNull(applicationDataDirectory, "'applicationDataDirectory' must be present");
+    Preconditions.checkNotNull(cloudBackupDirectory, "'cloudBackupDirectory' must not be null");
 
     this.applicationDataDirectory = applicationDataDirectory;
     this.cloudBackupDirectory = cloudBackupDirectory;
   }
 
   /**
-   * @param shutdownEvent The shutdown event
    */
-  public void onShutdownEvent(ShutdownEvent shutdownEvent) {
-
+  public void shutdownNow() {
     this.applicationDataDirectory = null;
+    this.cloudBackupDirectory = Optional.absent();
   }
 
   /**
@@ -111,6 +108,7 @@ public enum BackupManager {
    * Get all the backups available in the local zip backup directory for the wallet id specified.
    */
   public List<BackupSummary> getLocalZipBackups(WalletId walletId) {
+    createApplicationDataDirectoryIfNotSet();
 
     // Find the wallet root directory for this wallet id
     File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
@@ -132,6 +130,7 @@ public enum BackupManager {
    *
    * @param walletId      The walletId to subset on
    * @param directoryName The directory to look in
+   *
    * @return The wallet backups available
    */
   public List<BackupSummary> getWalletBackups(WalletId walletId, File directoryName) {
@@ -146,11 +145,11 @@ public enum BackupManager {
 
     // Look for filenames with format "mbhd-" + [formatted wallet id ] + "-YYYYMMDDHHMMSS.aes"
     String backupRegex = WalletManager.WALLET_DIRECTORY_PREFIX
-            + WALLET_ID_SEPARATOR
-            + walletId.toFormattedString()
-            + WALLET_ID_SEPARATOR
-            + "\\d{14}"
-            + ENCRYPTED_BACKUP_ZIP_FILE_EXTENSION_REGEX;
+      + WALLET_ID_SEPARATOR
+      + walletId.toFormattedString()
+      + WALLET_ID_SEPARATOR
+      + "\\d{14}"
+      + ENCRYPTED_BACKUP_ZIP_FILE_EXTENSION_REGEX;
 
     if (files != null) {
       for (File file : files) {
@@ -176,6 +175,7 @@ public enum BackupManager {
       }
     }
 
+    log.debug("For the walletId {}, looking in directory {}, there were {} backups", walletId, directoryName, walletBackups.size());
     return walletBackups;
   }
 
@@ -184,17 +184,18 @@ public enum BackupManager {
    * These are ordered in the order of timestamp i.e  the oldest one is first, the newest one is last
    *
    * @param walletId the wallet id of the wallet to search for rolling backups for
+   *
    * @return a list of filenames of the rolling backups, oldest first
    */
   public List<File> getRollingBackups(WalletId walletId) {
     Preconditions.checkNotNull(walletId);
-    Preconditions.checkNotNull(applicationDataDirectory);
+    createApplicationDataDirectoryIfNotSet();
 
     // Calculate the directory the rolling backups are stored in for this wallet id
     String rollingBackupDirectoryName = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId)) +
-            File.separator + ROLLING_BACKUP_DIRECTORY_NAME;
-    log.debug("applicationDataDirectory = " + applicationDataDirectory);
-    log.debug("rollingBackupDirectoryName =" + rollingBackupDirectoryName);
+      File.separator + ROLLING_BACKUP_DIRECTORY_NAME;
+    log.debug("Application data directory\n'{}'", applicationDataDirectory);
+    log.debug("Rolling backup directory\n'{}'", rollingBackupDirectoryName);
     File rollingBackupDirectory = new File(rollingBackupDirectoryName);
 
     if (!rollingBackupDirectory.exists()) {
@@ -232,10 +233,10 @@ public enum BackupManager {
 
     List<File> walletBackups = Lists.newArrayList();
 
-    for (Long key : mapOfTimeToFile.keySet()) {
-      // Note that these are added in order of creation time, oldest first
-      // log.debug("Adding rolling backup '" + mapOfTimeToFile.get(key).getAbsoluteFile() + "' to rolling backup results");
-      walletBackups.add(mapOfTimeToFile.get(key));
+    // Iterate over entry set for efficiency
+    for (Map.Entry<Long, File> entry : mapOfTimeToFile.entrySet()) {
+      // Note that these are added in order of creation time, oldest first (tree map)
+      walletBackups.add(entry.getValue());
     }
 
     return walletBackups;
@@ -248,17 +249,20 @@ public enum BackupManager {
    * There is a maximum number of rolling backups, removals are done using a first in - first out rule.
    *
    * @param walletSummary The wallet data with the wallet to backup
+   *
    * @return the File of the created rolling wallet backup
+   *
    * @throws java.io.IOException if the wallet backup could not be created
    */
   public File createRollingBackup(WalletSummary walletSummary, CharSequence password) throws IOException {
     Preconditions.checkNotNull(walletSummary, "'walletSummary' must be present");
     Preconditions.checkNotNull(walletSummary.getWallet(), "'wallet' must be present");
     Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
-    Preconditions.checkNotNull(applicationDataDirectory, "'applicationDataDirectory' must be present. Check BackupManager has been initialised");
+    createApplicationDataDirectoryIfNotSet();
 
     // Find the wallet root directory for this wallet id
-    File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletSummary.getWalletId())
+    File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(
+      applicationDataDirectory, WalletManager.createWalletRoot(walletSummary.getWalletId())
     );
 
     if (!walletRootDirectory.exists()) {
@@ -266,24 +270,24 @@ public enum BackupManager {
     }
 
     String rollingBackupDirectoryName = walletRootDirectory
-            + File.separator
-            + BackupManager.ROLLING_BACKUP_DIRECTORY_NAME;
+      + File.separator
+      + BackupManager.ROLLING_BACKUP_DIRECTORY_NAME;
     SecureFiles.verifyOrCreateDirectory(new File(rollingBackupDirectoryName));
 
     String walletBackupFilename = rollingBackupDirectoryName
-            + File.separator
-            + WalletManager.MBHD_WALLET_PREFIX
-            + WALLET_ID_SEPARATOR
-            + Dates.formatBackupDate(Dates.nowUtc())
-            + WalletManager.MBHD_WALLET_SUFFIX;
+      + File.separator
+      + WalletManager.MBHD_WALLET_PREFIX
+      + WALLET_ID_SEPARATOR
+      + Dates.formatBackupDate(Dates.nowUtc())
+      + WalletManager.MBHD_WALLET_SUFFIX;
 
     File walletBackupFile = new File(walletBackupFilename);
-    log.debug("Creating rolling-backup '" + walletBackupFilename + "'");
+    log.debug("Creating rolling-backup\n'{}'", walletBackupFilename);
     walletSummary.getWallet().saveToFile(walletBackupFile);
-    log.debug("Created rolling-backup successfully. Size = " + walletBackupFile.length() + " bytes");
+    log.debug("Created rolling-backup successfully. Size = {}", walletBackupFile.length());
 
     File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletBackupFile, password);
-    log.debug("Created rolling-backup AES copy successfully as file '{}'", encryptedAESCopy == null ? "null" : encryptedAESCopy.getAbsolutePath());
+    log.debug("Created rolling-backup AES copy successfully as file:\n'{}'", encryptedAESCopy.getAbsolutePath());
 
     List<File> rollingBackups = getRollingBackups(walletSummary.getWalletId());
 
@@ -310,8 +314,8 @@ public enum BackupManager {
    * @return The created local backup as a file
    */
   public File createLocalBackup(WalletId walletId, CharSequence password) throws IOException {
-    Preconditions.checkNotNull(applicationDataDirectory);
     Preconditions.checkNotNull(walletId);
+    createApplicationDataDirectoryIfNotSet();
 
     // Find the wallet root directory for this wallet id
     File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
@@ -326,17 +330,20 @@ public enum BackupManager {
     SecureFiles.verifyOrCreateDirectory(localBackupDirectory);
 
     String backupFilename = WalletManager.WALLET_DIRECTORY_PREFIX
-            + WALLET_ID_SEPARATOR
-            + walletId.toFormattedString()
-            + WALLET_ID_SEPARATOR
-            + Dates.formatBackupDate(Dates.nowUtc())
-            + BACKUP_ZIP_FILE_EXTENSION;
+      + WALLET_ID_SEPARATOR
+      + walletId.toFormattedString()
+      + WALLET_ID_SEPARATOR
+      + Dates.formatBackupDate(Dates.nowUtc())
+      + BACKUP_ZIP_FILE_EXTENSION;
     String localBackupFilename = localBackupDirectory.getAbsolutePath() + File.separator + backupFilename;
 
-    log.debug("Creating local zip-backup '" + localBackupFilename + "'");
+    log.debug("Creating local zip-backup\n'{}'", localBackupFilename);
     ZipFiles.zipFolder(walletRootDirectory.getAbsolutePath(), localBackupFilename, false);
-    File localBackupEncryptedFilename = EncryptedFileReaderWriter.makeBackupAESEncryptedCopyAndDeleteOriginal(new File(localBackupFilename), (String) password, walletSummary.getEncryptedBackupKey());
-    log.debug("Created encrypted local zip-backup successfully. Size = " + (localBackupEncryptedFilename).length() + " bytes");
+    File localBackupEncryptedFilename = EncryptedFileReaderWriter.makeBackupAESEncryptedCopyAndDeleteOriginal(
+      new File(localBackupFilename),
+      (String) password,
+      walletSummary.getEncryptedBackupKey());
+    log.debug("Created encrypted local zip-backup successfully. Size = {} bytes", localBackupEncryptedFilename.length());
 
     // Thin the local backup directory
     thinBackupDirectory(walletId, localBackupDirectory);
@@ -353,8 +360,8 @@ public enum BackupManager {
    * @return The created cloud backup as a file or null if nothing was generated
    */
   public File createCloudBackup(WalletId walletId, CharSequence password) throws IOException {
-    Preconditions.checkNotNull(applicationDataDirectory);
     Preconditions.checkNotNull(walletId);
+    createApplicationDataDirectoryIfNotSet();
 
     // Find the wallet root directory for this wallet id
     File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
@@ -367,17 +374,20 @@ public enum BackupManager {
 
 
     String backupFilename = WalletManager.WALLET_DIRECTORY_PREFIX
-            + WALLET_ID_SEPARATOR
-            + walletId.toFormattedString()
-            + WALLET_ID_SEPARATOR
-            + Dates.formatBackupDate(Dates.nowUtc())
-            + BACKUP_ZIP_FILE_EXTENSION;
+      + WALLET_ID_SEPARATOR
+      + walletId.toFormattedString()
+      + WALLET_ID_SEPARATOR
+      + Dates.formatBackupDate(Dates.nowUtc())
+      + BACKUP_ZIP_FILE_EXTENSION;
 
     if (cloudBackupDirectory.isPresent() && cloudBackupDirectory.get().exists()) {
       String cloudBackupFilename = cloudBackupDirectory.get().getAbsolutePath() + File.separator + backupFilename;
       log.debug("Creating cloud zip-backup '" + cloudBackupFilename + "'");
       ZipFiles.zipFolder(walletRootDirectory.getAbsolutePath(), cloudBackupFilename, false);
-      File cloudBackupEncryptedFilename = EncryptedFileReaderWriter.makeBackupAESEncryptedCopyAndDeleteOriginal(new File(cloudBackupFilename), (String) password, walletSummary.getEncryptedBackupKey());
+      File cloudBackupEncryptedFilename = EncryptedFileReaderWriter.makeBackupAESEncryptedCopyAndDeleteOriginal(
+        new File(cloudBackupFilename),
+        (String) password,
+        walletSummary.getEncryptedBackupKey());
 
       log.debug("Created encrypted cloud zip-backup successfully. Size = " + (cloudBackupEncryptedFilename).length() + " bytes");
 
@@ -395,8 +405,9 @@ public enum BackupManager {
    * Load a rolling backup file.
    * A BackupWalletLoadedEvent is emitted
    *
-   * @param walletId  The walletId of the wallet
-   * @param password  The credentials used to decrypt the encrypted wallet backup
+   * @param walletId The walletId of the wallet
+   * @param password The credentials used to decrypt the encrypted wallet backup
+   *
    * @throws WalletLoadException if no rolling backup could be loaded successfully, or none are available
    */
   public Wallet loadRollingBackup(final WalletId walletId, CharSequence password) throws WalletLoadException {
@@ -413,13 +424,13 @@ public enum BackupManager {
       // Try loading each rolling backup in turn, newest first
       for (int i = rollingBackupFiles.size(); i > 0; i--) {
         try {
-          wallet = WalletManager.loadWalletFromFile(rollingBackupFiles.get(i - 1), password);
-          log.debug("Wallet at read in from rolling backup file:\n" + wallet.toString());
+          wallet = WalletManager.INSTANCE.loadWalletFromFile(rollingBackupFiles.get(i - 1), password);
+          log.debug("Wallet read in from rolling backup file:\n'{}'", wallet.toString());
           fileLoaded = rollingBackupFiles.get(i - 1);
           break;
         } catch (Exception e) {
           // Log the initial error (and then carry on to the next rolling backup
-          log.error("Could not load rolling backup " + rollingBackupFiles.get(i - 1).getAbsolutePath() + ", error was '" + e.getClass().getCanonicalName() + " " + e.getMessage() + "'");
+          log.error("Could not load rolling backup:\n'{}'", rollingBackupFiles.get(i - 1).getAbsolutePath(), e);
         }
       }
 
@@ -427,21 +438,11 @@ public enum BackupManager {
         // No rolling backup was successfully loaded
         throw new WalletLoadException("Could not load any rolling backup successfully.");
       } else {
-        // Emit backupWalletLoadedEvent for notification on GUI
-        // This is delayed a few seconds to ensure the UI has initialised to accept alerts
+        // Emit WalletLoadedEvent for notification on GUI
         if (fileLoaded != null) {
-          log.debug("Loaded backup wallet " + fileLoaded.getAbsolutePath() + " ok.");
+          log.debug("Loaded backup wallet file:\n'{}'", fileLoaded.getAbsolutePath());
+          CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), false, CoreMessageKey.BACKUP_WALLET_WAS_LOADED, null, Optional.of(fileLoaded)));
         }
-        if (backupNotifier == null) {
-          backupNotifier = SafeExecutors.newSingleThreadScheduledExecutor("backup-notification");
-        }
-        final File finalFileLoaded = fileLoaded;
-        backupNotifier.schedule(new Runnable() {
-          @Override
-          public void run() {
-            CoreEvents.fireBackupWalletLoadedEvent(walletId, finalFileLoaded);
-          }
-        }, 4, TimeUnit.SECONDS);
         return wallet;
       }
     }
@@ -449,47 +450,59 @@ public enum BackupManager {
 
   /**
    * Load a zip backup file, copying all the backup files to the appropriate wallet root directory
+   *
+   * @param backupFileToLoad The encrypted backup file to load
+   * @param seedPhrase       The seed phrase to use to decrypt the backup file
    */
   public WalletId loadZipBackup(File backupFileToLoad, List<String> seedPhrase) throws IOException {
+    try {
+      SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
+      byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
 
-    SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
+      KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, WalletManager.scryptSalt());
 
-    // Work out the walletId of the backup file being loaded
-    String backupFilename = backupFileToLoad.getName();
-
-    // Remove "mbhd-" prefix
-    String walletRoot = backupFilename.replace(WalletManager.WALLET_DIRECTORY_PREFIX + WALLET_ID_SEPARATOR, "");
-
-    // Remove  ".zip.aes" suffix
-    walletRoot = walletRoot.replace(ENCRYPTED_BACKUP_FILE_EXTENSION, "");
-
-    // Remove the timestamp
-    if (walletRoot.length() > LENGTH_OF_FORMATTED_WALLET_ID) {
-      walletRoot = walletRoot.substring(0, LENGTH_OF_FORMATTED_WALLET_ID);
+      return loadZipBackup(backupFileToLoad, seedDerivedAESKey);
+    } catch (Exception e) {
+      throw new EncryptedFileReaderWriterException("Cannot read and decrypt the backup file '" + backupFileToLoad.getAbsolutePath() + "'", e);
     }
-    WalletId walletId = new WalletId(walletRoot);
+  }
 
-    // Make a backup of all the current file in the wallet root directory if it exists
-    File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
-
+  /**
+   * Load a zip backup file, copying all the backup files to the appropriate wallet root directory
+   *
+   * @param backupFileToLoad The encrypted backup file to load
+   * @param backupAESKey     The AES key to use to decrypt the backup file
+   */
+  public WalletId loadZipBackup(File backupFileToLoad, KeyParameter backupAESKey) throws IOException {
     File temporaryFile = null;
     try {
-      // Read the encrypted file in.
-      byte[] encryptedBytes = org.multibit.hd.brit.utils.FileUtils.readFile(new File(backupFileToLoad.getAbsolutePath()));
+      // Work out the walletId of the backup file being loaded
+      String backupFilename = backupFileToLoad.getName();
 
-      KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, WalletManager.SCRYPT_SALT);
+      // Remove "mbhd-" prefix
+      String walletRoot = backupFilename.replace(WalletManager.WALLET_DIRECTORY_PREFIX + WALLET_ID_SEPARATOR, "");
+
+      // Remove  ".zip.aes" suffix
+      walletRoot = walletRoot.replace(ENCRYPTED_BACKUP_FILE_EXTENSION, "");
+
+      // Remove the timestamp
+      if (walletRoot.length() > LENGTH_OF_FORMATTED_WALLET_ID) {
+        walletRoot = walletRoot.substring(0, LENGTH_OF_FORMATTED_WALLET_ID);
+      }
+      WalletId walletId = new WalletId(walletRoot);
+
+      File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
+
+      // Read the encrypted file in.
+      byte[] encryptedBytes = Files.toByteArray(new File(backupFileToLoad.getAbsolutePath()));
 
       // Decrypt the backup bytes
-      byte[] decryptedBytes = AESUtils.decrypt(encryptedBytes, seedDerivedAESKey, WalletManager.AES_INITIALISATION_VECTOR);
+      byte[] decryptedBytes = AESUtils.decrypt(encryptedBytes, backupAESKey, WalletManager.aesInitialisationVector());
 
-      File tempDirectory = FileUtils.makeRandomTemporaryDirectory();
+      File tempDirectory = Files.createTempDir();
       temporaryFile = File.createTempFile("backup", "zip", tempDirectory);
-      FileOutputStream outputFileStream = new FileOutputStream(temporaryFile);
-      try {
-        FileUtils.writeFile(new ByteArrayInputStream(decryptedBytes), outputFileStream);
-      } finally {
-        outputFileStream.close();
+      try (FileOutputStream outputFileStream = new FileOutputStream(temporaryFile)) {
+        ByteStreams.copy(new ByteArrayInputStream(decryptedBytes), outputFileStream);
       }
 
       // Unzip the backup into the wallet root directory - this overwrites files if already present (hence the backup just done)
@@ -513,7 +526,7 @@ public enum BackupManager {
    * @param walletId        the wallet id of wallet backups to thin
    * @param backupDirectory the directory to thin
    */
-  void thinBackupDirectory(WalletId walletId, File backupDirectory) {
+  private void thinBackupDirectory(WalletId walletId, File backupDirectory) {
     if (dateFormat == null) {
       dateFormat = new SimpleDateFormat(BACKUP_TIMESTAMP_SUFFIX_FORMAT);
     }
@@ -538,16 +551,16 @@ public enum BackupManager {
     // 44 chars of walletId
     // 1 char separator
     // 14 chars of timestamp
-    // 8 chars of filetype suffix
+    // 8 chars of file type suffix
     Map<File, Date> mapOfFileToBackupTimes = new HashMap<>();
-    for (int i = 0; i < backups.size(); i++) {
-      String filename = backups.get(i).getName();
+    for (BackupSummary backup : backups) {
+      String filename = backup.getName();
       if (filename.length() > 71) {
         int startOfTimestamp = filename.length() - BACKUP_TIMESTAMP_SUFFIX_FORMAT.length() - ENCRYPTED_BACKUP_FILE_EXTENSION.length();
         String timestampText = filename.substring(startOfTimestamp, startOfTimestamp + BACKUP_TIMESTAMP_SUFFIX_FORMAT.length());
         try {
           Date parsedTimestamp = dateFormat.parse(timestampText);
-          mapOfFileToBackupTimes.put(backups.get(i).getFile(), parsedTimestamp);
+          mapOfFileToBackupTimes.put(backup.getFile(), parsedTimestamp);
         } catch (ParseException pe) {
           // Cannot parse text - may be some other type of file the user has put in the directory.
           log.debug("For wallet '" + filename + " could not parse the timestamp of '" + timestampText + "'.");
@@ -561,7 +574,7 @@ public enum BackupManager {
 
     for (int i = 0; i < backups.size(); i++) {
       if ((i < NUMBER_OF_FIRST_WALLET_ZIP_BACKUPS_TO_ALWAYS_KEEP)
-              || (i >= backups.size() - NUMBER_OF_LAST_WALLET_ZIP_BACKUPS_TO_ALWAYS_KEEP)) {
+        || (i >= backups.size() - NUMBER_OF_LAST_WALLET_ZIP_BACKUPS_TO_ALWAYS_KEEP)) {
         // Keep the very first and last wallets always.
       } else {
         // Work out how quickly the wallet is replaced by the next backup.
@@ -581,8 +594,12 @@ public enum BackupManager {
     if (walletBackupToDeleteIndex > -1) {
       try {
         // Secure delete the chosen backup wallet.
-        log.debug("To save space, secure deleting backup wallet '"
-                + backups.get(walletBackupToDeleteIndex).getFile().getAbsolutePath() + "'.");
+        log.debug(
+          "To save space, secure deleting backup wallet\n'{}'", backups
+            .get(walletBackupToDeleteIndex)
+            .getFile()
+            .getAbsolutePath()
+        );
         SecureFiles.secureDelete(backups.get(walletBackupToDeleteIndex).getFile());
       } catch (IOException ioe) {
         log.error(ioe.getClass().getName() + " " + ioe.getMessage());
@@ -592,5 +609,13 @@ public enum BackupManager {
 
   public void setApplicationDataDirectory(File applicationDataDirectory) {
     this.applicationDataDirectory = applicationDataDirectory;
+  }
+
+  private void createApplicationDataDirectoryIfNotSet() {
+    if (applicationDataDirectory == null) {
+      // Locate the standard installation directory
+      applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+      log.debug("Setting the application data directory\n'{}'", applicationDataDirectory);
+    }
   }
 }

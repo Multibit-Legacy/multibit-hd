@@ -1,7 +1,10 @@
 package org.multibit.hd.core.config;
 
 import com.google.common.base.Optional;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.testing.FixtureAsserts;
 
 import java.io.ByteArrayOutputStream;
@@ -11,12 +14,26 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class ConfigurationsTest {
 
+  @Before
+  public void setUp() {
+
+    InstallationManager.unrestricted = true;
+
+  }
+
+  @After
+  public void tearDown() throws Exception {
+
+    InstallationManager.unrestricted = false;
+
+  }
+
   @Test
   public void testReadConfiguration_ExampleWithUnknown() throws Exception {
 
     InputStream is = ConfigurationsTest.class.getResourceAsStream("/fixtures/example-configuration.yaml");
 
-    Optional<Configuration> configuration = Configurations.readYaml(is, Configuration.class);
+    Optional<Configuration> configuration = Yaml.readYaml(is, Configuration.class);
 
     assertThat(configuration.isPresent()).isTrue();
     assertThat(configuration.get().getAppearance().getCurrentScreen()).isEqualTo("TOOLS");
@@ -29,15 +46,17 @@ public class ConfigurationsTest {
 
     InputStream is = ConfigurationsTest.class.getResourceAsStream("/fixtures/example-configuration.yaml");
 
-    Optional<Configuration> configuration = Configurations.readYaml(is, Configuration.class);
+    Optional<Configuration> configuration = Yaml.readYaml(is, Configuration.class);
 
     assertThat(configuration.isPresent()).isTrue();
     assertThat(configuration.get().getAppearance().getCurrentScreen()).isEqualTo("TOOLS");
+    assertThat(configuration.get().isTrezor()).isTrue();
 
     assertThat(configuration.get().any().isEmpty()).isFalse();
 
+    // Write to a byte array to prevent overwriting the local settings
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    Configurations.writeYaml(baos, configuration.get());
+    Yaml.writeYaml(baos, configuration.get());
 
     FixtureAsserts.assertStringMatchesNormalisedStringFixture(
       "Writing out fields does not match original fixture",

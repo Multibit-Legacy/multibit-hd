@@ -1,7 +1,7 @@
 package org.multibit.hd.core.network;
 
-import com.google.bitcoin.core.*;
 import com.google.common.base.Optional;
+import org.bitcoinj.core.*;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Semaphore;
+import java.util.Set;
 
 public class MultiBitPeerEventListener implements PeerEventListener {
 
@@ -21,30 +21,20 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   private int originalBlocksLeft = -1;
   private int lastPercent = 0;
-  private Semaphore done = new Semaphore(0);
-  private boolean caughtUp = false;
 
   private int numberOfConnectedPeers = 0;
-
-  // Start with peer count suppression until blocks start to arrive
-  private boolean suppressPeerCountMessages = true;
 
   public MultiBitPeerEventListener() {
   }
 
   @Override
+  public void onPeersDiscovered(Set<PeerAddress> peerAddresses) {
+    // Do nothing - this is a list of potential peers to connect to, not actually connected peers
+  }
+
+  @Override
   public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
     log.trace("Number of blocks left = {}", blocksLeft);
-
-    if (caughtUp) {
-      return;
-    }
-
-    if (blocksLeft == 0) {
-      caughtUp = true;
-      doneDownload();
-      done.release();
-    }
 
     if (blocksLeft < 0 || originalBlocksLeft <= 0) {
       return;
@@ -56,28 +46,19 @@ public class MultiBitPeerEventListener implements PeerEventListener {
         progress(pct, blocksLeft, new Date(block.getTimeSeconds() * 1000));
       }
       lastPercent = (int) pct;
+
+      // Fire the download percentage when it changes
+      CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(lastPercent, blocksLeft));
     }
 
-    // Determine if peer count message should be suppressed
-    // (avoids UI confusion between synchronizing and peer count)
-    suppressPeerCountMessages = blocksLeft > 0;
-
-    // Keep track of the download progress
-    //updateDownloadPercent(blocksLeft);
-
-    // Fire the download percentage
-    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(lastPercent, blocksLeft));
-
-    if (!suppressPeerCountMessages) {
-      // Fully synchronized so switch to showing the peer count
-      CoreEvents.fireBitcoinNetworkChangedEvent(
-        BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
-    }
+    if (blocksLeft == 0) {
+       doneDownload();
+     }
   }
 
   @Override
   public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-    log.debug("Chain download started with number of blocks left = {}", blocksLeft);
+    log.trace("Chain download started with number of blocks left = {}", blocksLeft);
 
     startDownload(blocksLeft);
     // Only mark this the first time, because this method can be called more than once during a chain download
@@ -87,60 +68,35 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     } else {
       log.info("Chain download switched to {}", peer);
     }
+
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(lastPercent, blocksLeft));
+
     if (blocksLeft == 0) {
       doneDownload();
-      done.release();
-    }
-
-    // Reset the number of blocks at the start of the download
-    //numberOfBlocksAtStart = blocksLeft;
-
-    // Determine if peer count message should be suppressed
-    // (avoids UI confusion between synchronizing and peer count)
-    suppressPeerCountMessages = blocksLeft > 0;
-
-    // Keep track of the download progress
-    //updateDownloadPercent(blocksLeft);
-
-    // When the blocks are being downloaded - update the display
-    if (suppressPeerCountMessages) {
-      CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(lastPercent, blocksLeft));
-    } else {
-      // Fully synchronized so switch to showing the peer count
-      CoreEvents.fireBitcoinNetworkChangedEvent(
-        BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
     }
   }
 
   @Override
   public void onPeerConnected(Peer peer, int peerCount) {
-    log.trace("(connect) Number of peers = " + peerCount + ", lastPercent = " + lastPercent);
+    log.debug("(connect) Number of peers = " + peerCount + ", lastPercent = " + lastPercent);
 
     numberOfConnectedPeers = peerCount;
 
-    // Only show peers after synchronization to avoid confusion
-    if (!suppressPeerCountMessages) {
-      // Fully synchronized so switch to showing the peer count
-      CoreEvents.fireBitcoinNetworkChangedEvent(
-        BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
-    }
+    CoreEvents.fireBitcoinNetworkChangedEvent(
+            BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
   }
 
   @Override
   public void onPeerDisconnected(Peer peer, int peerCount) {
-    log.trace("(disconnect) Number of peers = " + peerCount);
+    log.debug("(disconnect) Number of peers = " + peerCount);
     if (peerCount == numberOfConnectedPeers) {
       // Don't fire an event - not useful
       return;
     }
     numberOfConnectedPeers = peerCount;
 
-    // Only show peers after synchronization to avoid confusion
-    if (!suppressPeerCountMessages) {
-      // Fully synchronized so switch to showing the peer count
-      CoreEvents.fireBitcoinNetworkChangedEvent(
-        BitcoinNetworkSummary.newNetworkReady(numberOfConnectedPeers));
-    }
+    CoreEvents.fireBitcoinNetworkChangedEvent(
+            BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
   }
 
   @Override
@@ -151,41 +107,62 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   @Override
   public void onTransaction(Peer peer, Transaction transaction) {
 
-    // Loop through all the wallets, seeing if the transaction is relevant and adding them as pending if so.
+    // See if the transaction is relevant and adding them as pending if so.
     if (transaction != null) {
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-      if (currentWalletSummary.isPresent()) {
-        if (currentWalletSummary.get() != null) {
-          Wallet currentWallet = currentWalletSummary.get().getWallet();
-          if (currentWallet != null) {
-            try {
-              if (currentWallet.isTransactionRelevant(transaction)) {
-                if (!(transaction.isTimeLocked() && transaction.getConfidence().getSource() != TransactionConfidence.Source.SELF)) {
-                  if (currentWallet.getTransaction(transaction.getHash()) == null) {
+      if (currentWalletSummary.isPresent() && currentWalletSummary.get() != null) {
+        Wallet currentWallet = currentWalletSummary.get().getWallet();
+        if (currentWallet != null) {
+          try {
+            if (currentWallet.isTransactionRelevant(transaction)) {
+              if (!(transaction.isTimeLocked() && transaction.getConfidence().getSource() != TransactionConfidence.Source.SELF)) {
+                Sha256Hash transactionHash = transaction.getHash();
+                if (currentWallet.getTransaction(transactionHash) == null) {
+                  int transactionIdentityHashCode = System.identityHashCode(transaction);
 
-                    log.debug(
-                      "MultiBitHD adding a new pending transaction for the wallet '{}'\n{}",
-                      currentWalletSummary.get().getWalletId(),
-                      transaction.toString()
-                    );
-                    currentWallet.receivePending(transaction, null);
+                  log.debug(
+                          "MultiBitHD adding a new pending transaction for the wallet '{}'\n{}",
+                          currentWalletSummary.get().getWalletId(),
+                          transaction.toString()
+                  );
 
-                    // Emit an event so that GUI elements can update as required
-                    Coin value = transaction.getValue(currentWallet);
-                    TransactionSeenEvent transactionSeenEvent = new TransactionSeenEvent(transaction, value);
-                    transactionSeenEvent.setFirstAppearanceInWallet(true);
+                  try {
+                    // If this transaction is zero confirmations, add it to the wallet
+                    if (transaction.isPending()) {
+                      currentWallet.receivePending(transaction, null);
 
-                    CoreEvents.fireTransactionSeenEvent(transactionSeenEvent);
+                      // Emit an event so that GUI elements can update as required
+                      Coin value = transaction.getValue(currentWallet);
+                      TransactionSeenEvent transactionSeenEvent = new TransactionSeenEvent(transaction, value);
+
+                      // Check this is the first time we have seen this transaction
+
+                      // Check the transaction in the wallet is the same object we put in
+                      // If it is different then some other thread put this tx in so this one is not the first.
+                      // (Probably this tx was reported by another peer)
+                      Transaction transactionInWallet = currentWallet.getTransaction(transactionHash);
+                      if (transactionInWallet != null) {
+                        int transactionInWalletIdentityHashCode = System.identityHashCode(transactionInWallet);
+                        if (transactionIdentityHashCode == transactionInWalletIdentityHashCode) {
+                          // This is the first time we have seen this transaction
+                          transactionSeenEvent.setFirstAppearanceInWallet(true);
+                          CoreEvents.fireTransactionSeenEvent(transactionSeenEvent);
+                          log.debug("Firing transaction seen event {}", transactionSeenEvent);
+                        }
+                      }
+                    }
+                  } catch (IllegalStateException e) {
+                    log.warn("Illegal state receiving pending transaction", e);
+                    // Carry on regardless to give user confidence that something happened
                   }
                 }
               }
-            } catch (ScriptException se) {
-              // Cannot understand this transaction - carry on
             }
+          } catch (ScriptException se) {
+            // Cannot understand this transaction - carry on
           }
         }
       }
-
     }
   }
 
@@ -201,12 +178,14 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    * @param date the date of the last block downloaded
    */
   protected void progress(double pct, int blocksSoFar, Date date) {
+
+    // Logging this information in production is not necessary
     log.trace(
-      String.format(
-        "Chain download %d%% done with %d blocks to go, block date %s",
-        (int) pct,
-        blocksSoFar,
-        DateFormat.getDateTimeInstance().format(date))
+            String.format(
+                    "Chain download %d%% done with %d blocks to go, block date %s",
+                    (int) pct,
+                    blocksSoFar,
+                    DateFormat.getDateTimeInstance().format(date))
     );
   }
 
@@ -216,6 +195,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    * @param blocks the number of blocks to download, estimated
    */
   protected void startDownload(int blocks) {
+    log.debug("Started download with {} blocks to download", blocks);
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadStarted());
 
   }
 
@@ -223,13 +204,20 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    * Called when we are done downloading the block chain.
    */
   protected void doneDownload() {
-  }
 
-  /**
-   * Wait for the chain to be downloaded.
-   */
-  public void await() throws InterruptedException {
-    done.acquire();
+    log.debug("Download of block chain complete");
+
+    // Fire that we have completed the sync
+    lastPercent = 100;
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(100, 0));
+
+    // Used to indicate sync has finished
+    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadCompleted());
+
+    // Then fire the number of connected peers
+    CoreEvents.fireBitcoinNetworkChangedEvent(
+            BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
+
   }
 }
 

@@ -1,8 +1,8 @@
 package org.multibit.hd.core.crypto;
 
-import com.google.bitcoin.core.ECKey;
-import com.google.bitcoin.core.Utils;
-import com.google.bitcoin.crypto.KeyCrypterScrypt;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.Utils;
+import org.bitcoinj.crypto.KeyCrypterScrypt;
 import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
 import org.bitcoinj.wallet.Protos;
@@ -74,9 +74,8 @@ public class AESUtils {
     byte[] publicKey = point.getEncoded();
 
     // SHA256RIPE160 to generate final walletId bytes from the 'public key'
-    byte[] entropy = Utils.sha256hash160(publicKey);
 
-    return entropy;
+    return Utils.sha256hash160(publicKey);
   }
 
   /**

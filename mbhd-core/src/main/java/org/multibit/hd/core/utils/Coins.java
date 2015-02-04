@@ -1,6 +1,6 @@
 package org.multibit.hd.core.utils;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 

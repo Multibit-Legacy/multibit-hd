@@ -12,6 +12,7 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.AccessibilityDecorator;
+import org.multibit.hd.ui.views.components.LabelDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -30,7 +31,7 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ChangePasswordReportPanelView extends AbstractWizardPanelView<ChangePasswordWizardModel, String> {
 
@@ -118,15 +119,14 @@ public class ChangePasswordReportPanelView extends AbstractWizardPanelView<Chang
 
   @Subscribe
   public void onChangePasswordResultEvent(final ChangePasswordResultEvent changePasswordResultEvent) {
-
-    // Enable and focus the finish button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
-
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
+        // Enable and focus the finish button
+        ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+
         passwordChangedStatusLabel.setText(Languages.safeText(changePasswordResultEvent.getChangePasswordResultKey(), changePasswordResultEvent.getChangePasswordResultData()));
-        Labels.decorateStatusLabel(passwordChangedStatusLabel, Optional.of(changePasswordResultEvent.isChangePasswordWasSuccessful()));
+        LabelDecorator.applyStatusLabel(passwordChangedStatusLabel, Optional.of(changePasswordResultEvent.isChangePasswordWasSuccessful()));
         getFinishButton().requestFocusInWindow();
       }
     });

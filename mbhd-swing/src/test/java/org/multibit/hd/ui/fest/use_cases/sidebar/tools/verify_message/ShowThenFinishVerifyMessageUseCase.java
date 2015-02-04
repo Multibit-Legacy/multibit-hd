@@ -16,7 +16,7 @@ import java.util.Map;
  * <p>Requires the "tools" screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ShowThenFinishVerifyMessageUseCase extends AbstractFestUseCase {
 
@@ -150,7 +150,7 @@ public class ShowThenFinishVerifyMessageUseCase extends AbstractFestUseCase {
 
     // Verify the underlying screen is back
     window
-      .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
+      .button(MessageKey.SHOW_SIGN_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
   }

@@ -18,6 +18,8 @@ import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.themes.NimbusDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -29,9 +31,9 @@ import java.awt.event.ActionEvent;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class HeaderView extends AbstractView {
+  private static final Logger log = LoggerFactory.getLogger(HeaderView.class);
 
   private final ModelAndView<DisplayAmountModel, DisplayAmountView> balanceDisplayMaV;
 
@@ -49,16 +51,16 @@ public class HeaderView extends AbstractView {
     super();
 
     contentPanel = Panels.newPanel(new MigLayout(
-      Panels.migLayout("fillx,insets 10 10 5 10,hidemode 3"), // Layout insets ensure border is tight to sidebar
-      "[][]", // Columns
-      "[][shrink]" // Rows
+            Panels.migLayout("fillx,insets 10 10 5 10,hidemode 3"), // Layout insets ensure border is tight to sidebar
+            "[][]", // Columns
+            "[][shrink]" // Rows
     ));
 
     // Create the alert panel
     alertPanel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[grow][][][]", // Columns
-      "[]" // Rows
+            Panels.migXLayout(),
+            "[grow][][][]", // Columns
+            "[]" // Rows
     ));
 
     // Start off in hiding
@@ -68,8 +70,9 @@ public class HeaderView extends AbstractView {
     contentPanel.setBackground(Themes.currentTheme.headerPanelBackground());
     contentPanel.setOpaque(true);
 
-    // Create the balance display hiding it initially
+    // Create the balance display not displaying it initially
     balanceDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER, true, "header.balance");
+    log.debug("header is now visible");
     balanceDisplayMaV.getView().setVisible(false);
 
     // Provide a fixed height to avoid an annoying "slide down" during unlock
@@ -96,24 +99,19 @@ public class HeaderView extends AbstractView {
   @Subscribe
   public void onBalanceChangedEvent(final BalanceChangedEvent event) {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    log.trace("Saw an onBalanceChangedEvent: {}", event);
 
-        // Handle the update
-        balanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
-        balanceDisplayMaV.getModel().setCoinAmount(event.getCoinBalance());
-        balanceDisplayMaV.getModel().setRateProvider(event.getRateProvider());
-        if (event.getRateProvider().isPresent()) {
-          balanceDisplayMaV.getModel().setLocalAmountVisible(true);
-        }
+    // Handle the update
+    balanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
+    balanceDisplayMaV.getModel().setCoinAmount(event.getCoinBalance());
+    balanceDisplayMaV.getModel().setRateProvider(event.getRateProvider());
+    if (event.getRateProvider().isPresent()) {
+      balanceDisplayMaV.getModel().setLocalAmountVisible(true);
+    }
 
-        // Do not set the visibility here, use the ViewChangedEvent
+    // Do not set the visibility here, use the ViewChangedEvent
 
-        balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
-      }
-    });
-
+    balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
   }
 
   /**
@@ -124,66 +122,59 @@ public class HeaderView extends AbstractView {
   @Subscribe
   public void onAlertAddedEvent(final AlertAddedEvent event) {
 
-
     Preconditions.checkNotNull(event, "'event' must be present");
 
     final AlertModel alertModel = event.getAlertModel();
 
     Preconditions.checkNotNull(alertModel, "'alertModel' must be present");
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    log.debug("Received 'alert added event': {}", event.getAlertModel());
 
-        // Update the text according to the model
-        alertMessageLabel.setText(alertModel.getLocalisedMessage());
-        alertRemainingLabel.setText(alertModel.getRemainingText());
+    // Update the text according to the model
+    alertMessageLabel.setText(alertModel.getLocalisedMessage());
+    alertRemainingLabel.setText(alertModel.getRemainingText());
 
-        if (alertModel.getButton().isPresent()) {
+    if (alertModel.getButton().isPresent()) {
 
-          JButton button = alertModel.getButton().get();
-          alertButton.setAction(button.getAction());
-          alertButton.setText(button.getText());
-          alertButton.setIcon(button.getIcon());
-          alertButton.setName(button.getName());
-          alertButton.setToolTipText(button.getToolTipText());
+      JButton button = alertModel.getButton().get();
+      alertButton.setAction(button.getAction());
+      alertButton.setText(button.getText());
+      alertButton.setIcon(button.getIcon());
+      alertButton.setName(button.getName());
+      alertButton.setToolTipText(button.getToolTipText());
 
-          alertButton.setVisible(true);
-        } else {
-          alertButton.setVisible(false);
-        }
+      alertButton.setVisible(true);
+    } else {
+      alertButton.setVisible(false);
+    }
 
-        // Don't play sounds here since this will be called each time an alert is dismissed
-        switch (alertModel.getSeverity()) {
-          case RED:
-            PanelDecorator.applyDangerTheme(alertPanel);
-            NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), alertButton);
-            NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), closeButton);
-            break;
-          case AMBER:
-            PanelDecorator.applyWarningTheme(alertPanel);
-            NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), alertButton);
-            NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), closeButton);
-            break;
-          case GREEN:
-            PanelDecorator.applySuccessTheme(alertPanel);
-            NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), alertButton);
-            NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), closeButton);
-            break;
-          case PINK:
-            PanelDecorator.applyPendingTheme(alertPanel);
-            NimbusDecorator.applyThemeColor(Themes.currentTheme.pendingAlertBackground(), alertButton);
-            NimbusDecorator.applyThemeColor(Themes.currentTheme.pendingAlertBackground(), closeButton);
-            break;
-          default:
-            throw new IllegalStateException("Unknown severity: " + alertModel.getSeverity().name());
-        }
+    // Don't play sounds here since this will be called each time an alert is dismissed
+    switch (alertModel.getSeverity()) {
+      case RED:
+        PanelDecorator.applyDangerTheme(alertPanel);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), alertButton);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), closeButton);
+        break;
+      case AMBER:
+        PanelDecorator.applyWarningTheme(alertPanel);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), alertButton);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.warningAlertBackground(), closeButton);
+        break;
+      case GREEN:
+        PanelDecorator.applySuccessTheme(alertPanel);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), alertButton);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.successAlertBackground(), closeButton);
+        break;
+      case PINK:
+        PanelDecorator.applyPendingTheme(alertPanel);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.pendingAlertBackground(), alertButton);
+        NimbusDecorator.applyThemeColor(Themes.currentTheme.pendingAlertBackground(), closeButton);
+        break;
+      default:
+        throw new IllegalStateException("Unknown severity: " + alertModel.getSeverity().name());
+    }
 
-        alertPanel.setVisible(true);
-
-      }
-    });
-
+    alertPanel.setVisible(true);
   }
 
   /**
@@ -193,15 +184,9 @@ public class HeaderView extends AbstractView {
    */
   @Subscribe
   public void onAlertRemovedEvent(RemoveAlertEvent event) {
-
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        // Hide the alert panel
-        alertPanel.setVisible(false);
-      }
-    });
-
+    // Hide the alert panel and clear the label
+    alertPanel.setVisible(false);
+    alertMessageLabel.setText("");
   }
 
   /**
@@ -211,29 +196,23 @@ public class HeaderView extends AbstractView {
    */
   @Subscribe
   public void onViewChangedEvent(final ViewChangedEvent event) {
-
     if (event.getViewKey().equals(ViewKey.HEADER)) {
+      log.trace("Saw a ViewChangedEvent {}", event);
 
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
+      log.debug("Header now has visibility: {} ", event.isVisible());
+      balanceDisplayMaV.getView().setVisible(event.isVisible());
+      if (alertMessageLabel.getText().length() != 0 && event.isVisible()) {
+        alertPanel.setVisible(event.isVisible());
+      }
 
-          balanceDisplayMaV.getView().setVisible(event.isVisible());
-          if (alertMessageLabel.getText().length() != 0 && event.isVisible()) {
-            alertPanel.setVisible(event.isVisible());
-          }
-        }
-      });
-
+      balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
     }
-
   }
 
   /**
    * <p>Populate the alert panel in preparation for any alerts</p>
    */
   private void populateAlertPanel() {
-
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
 
     alertPanel.removeAll();
@@ -275,13 +254,8 @@ public class HeaderView extends AbstractView {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-
         ControllerEvents.fireRemoveAlertEvent();
-
       }
-
     };
   }
-
-
 }

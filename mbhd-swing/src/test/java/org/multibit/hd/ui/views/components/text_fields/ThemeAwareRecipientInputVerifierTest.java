@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.text_fields;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.NetworkParameters;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.NetworkParameters;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.junit.Before;

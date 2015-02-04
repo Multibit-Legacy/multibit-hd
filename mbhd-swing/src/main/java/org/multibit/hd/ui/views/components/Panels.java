@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.managers.WalletManager;
@@ -30,7 +31,6 @@ import java.awt.event.ActionListener;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class Panels {
 
@@ -39,6 +39,7 @@ public class Panels {
   /**
    * A global reference to the application frame
    */
+  @SuppressFBWarnings({"MS_CANNOT_BE_FINAL"})
   public static JFrame applicationFrame;
 
   private static Optional<LightBoxPanel> lightBoxPanel = Optional.absent();
@@ -121,11 +122,12 @@ public class Panels {
    */
   public static JPanel newPanel() {
 
-    return Panels.newPanel(new MigLayout(
-      migXYLayout(), // Layout
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    return Panels.newPanel(
+      new MigLayout(
+        migXYLayout(), // Layout
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
   }
 
@@ -156,11 +158,12 @@ public class Panels {
    */
   public static JPanel newRoundedPanel() {
 
-    return newRoundedPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    return newRoundedPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
   }
 
@@ -189,19 +192,21 @@ public class Panels {
   public static BackgroundPanel newDetailBackgroundPanel(AwesomeIcon icon) {
 
     // Create an image from the AwesomeIcon
-    Image image = ImageDecorator.toImageIcon(AwesomeDecorator.createIcon(
-      icon,
-      Themes.currentTheme.fadedText(),
-      MultiBitUI.HUGE_ICON_SIZE
-    )).getImage();
+    Image image = ImageDecorator.toImageIcon(
+      AwesomeDecorator.createIcon(
+        icon,
+        Themes.currentTheme.fadedText(),
+        MultiBitUI.HUGE_ICON_SIZE
+      )).getImage();
 
     BackgroundPanel panel = new BackgroundPanel(image, BackgroundPanel.ACTUAL);
 
-    panel.setLayout(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    panel.setLayout(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
     panel.setAlpha(MultiBitUI.DETAIL_PANEL_BACKGROUND_ALPHA);
     panel.setPaint(Themes.currentTheme.detailPanelBackground());
     panel.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -220,7 +225,11 @@ public class Panels {
     log.debug("Show light box");
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "LightBox requires the EDT");
-    Preconditions.checkState(!lightBoxPanel.isPresent(), "Light box should never be called twice");
+
+    // Do not override this to replace the existing light box
+    // The problem is that the new light box is tripping up due to a race condition in the code
+    // which needs to be dealt with rather than masked behind deferred clean up
+    Preconditions.checkState(!lightBoxPanel.isPresent(), "Light box should never be called twice ");
 
     // Prevent focus
     allowFocus(Panels.applicationFrame, false);
@@ -232,7 +241,6 @@ public class Panels {
 
   /**
    * <p>Hides the currently showing light box panel (and any popover)</p>
-   *
    */
   public synchronized static void hideLightBoxIfPresent() {
 
@@ -289,6 +297,42 @@ public class Panels {
   }
 
   /**
+   * <p>An "exit selector" panel confirms an exit or switch operation</p>
+   *
+   * @param listener      The action listener
+   * @param exitCommand   The exit command name
+   * @param switchCommand The switch command name
+   *
+   * @return A new "exit selector" panel
+   */
+  public static JPanel newExitSelector(
+    ActionListener listener,
+    String exitCommand,
+    String switchCommand
+  ) {
+
+    JPanel panel = Panels.newPanel();
+
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.EXIT_WALLET);
+    radio1.setSelected(true);
+    radio1.setActionCommand(exitCommand);
+
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.SWITCH_WALLET);
+    radio2.setActionCommand(switchCommand);
+
+    // Wallet selection is mutually exclusive
+    ButtonGroup group = new ButtonGroup();
+    group.add(radio1);
+    group.add(radio2);
+
+    // Add to the panel
+    panel.add(radio1, "wrap");
+    panel.add(radio2, "wrap");
+
+    return panel;
+  }
+
+  /**
    * <p>A "licence selector" panel provides a means of ensuring the user agrees with the licence</p>
    *
    * @param listener        The action listener
@@ -325,24 +369,22 @@ public class Panels {
   }
 
   /**
-   * <p>A "wallet selector" panel provides a means of choosing how a wallet is to be created/accessed</p>
+   * <p>A standard "wallet selector" panel provides a means of choosing how a wallet is to be created/accessed</p>
    *
    * @param listener               The action listener
    * @param createCommand          The create command name
+   * @param existingWalletCommand  The existing wallet command name
    * @param restorePasswordCommand The restore credentials command name
    * @param restoreWalletCommand   The restore wallet command name
-   * @param hardwareWalletCommand  The hardware wallet command name
-   * @param existingWalletCommand  The existing wallet command name
    *
    * @return A new "wallet selector" panel
    */
   public static JPanel newWalletSelector(
     ActionListener listener,
     String createCommand,
+    String existingWalletCommand,
     String restorePasswordCommand,
-    String restoreWalletCommand,
-    String hardwareWalletCommand,
-    String existingWalletCommand
+    String restoreWalletCommand
   ) {
 
     JPanel panel = Panels.newPanel();
@@ -351,24 +393,19 @@ public class Panels {
     radio1.setSelected(true);
     radio1.setActionCommand(createCommand);
 
-    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_PASSWORD);
-    radio2.setActionCommand(restorePasswordCommand);
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.USE_EXISTING_WALLET);
+    radio2.setActionCommand(existingWalletCommand);
 
-    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_WALLET);
-    radio3.setActionCommand(restoreWalletCommand);
+    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_PASSWORD);
+    radio3.setActionCommand(restorePasswordCommand);
 
-    JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.USE_HARDWARE_WALLET);
-    radio4.setActionCommand(hardwareWalletCommand);
-    radio4.setEnabled(false);
-    radio4.setForeground(UIManager.getColor("RadioButton.disabledText"));
-
-    JRadioButton radio5 = RadioButtons.newRadioButton(listener, MessageKey.USE_EXISTING_WALLET);
-    radio5.setActionCommand(existingWalletCommand);
+    JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_WALLET);
+    radio4.setActionCommand(restoreWalletCommand);
 
     // Check for existing wallets
-    if (WalletManager.getWalletSummaries().isEmpty()) {
-      radio5.setEnabled(false);
-      radio5.setForeground(UIManager.getColor("RadioButton.disabledText"));
+    if (WalletManager.getSoftWalletSummaries().isEmpty()) {
+      radio2.setEnabled(false);
+      radio2.setForeground(UIManager.getColor("RadioButton.disabledText"));
     }
 
     // Wallet selection is mutually exclusive
@@ -377,14 +414,140 @@ public class Panels {
     group.add(radio2);
     group.add(radio3);
     group.add(radio4);
-    group.add(radio5);
 
     // Add to the panel
     panel.add(radio1, "wrap");
     panel.add(radio2, "wrap");
     panel.add(radio3, "wrap");
     panel.add(radio4, "wrap");
-    panel.add(radio5, "wrap");
+
+    return panel;
+  }
+
+  /**
+   * <p>A "hardware wallet selector" panel provides a means of choosing how a hardware wallet is to be created/accessed</p>
+   *
+   * @param listener              The action listener
+   * @param createCommand         The create command name
+   * @param existingWalletCommand The existing wallet command name
+   * @param restoreWalletCommand  The restore wallet command name
+   *
+   * @return A new "wallet selector" panel
+   */
+  public static JPanel newHardwareWalletSelector(
+    ActionListener listener,
+    String createCommand,
+    String existingWalletCommand,
+    String restoreWalletCommand
+  ) {
+
+    JPanel panel = Panels.newPanel();
+
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.TREZOR_CREATE_WALLET);
+    radio1.setSelected(true);
+    radio1.setActionCommand(createCommand);
+
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.USE_EXISTING_WALLET);
+    radio2.setActionCommand(existingWalletCommand);
+
+    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_WALLET);
+    radio3.setActionCommand(restoreWalletCommand);
+
+    // Check for existing wallets
+    if (WalletManager.getWalletSummaries().isEmpty()) {
+      radio2.setEnabled(false);
+      radio2.setForeground(UIManager.getColor("RadioButton.disabledText"));
+    }
+
+    // Wallet selection is mutually exclusive
+    ButtonGroup group = new ButtonGroup();
+    group.add(radio1);
+    group.add(radio2);
+    group.add(radio3);
+
+    // Add to the panel
+    panel.add(radio1, "wrap");
+    panel.add(radio2, "wrap");
+    panel.add(radio3, "wrap");
+
+    return panel;
+  }
+
+  /**
+   * <p>A "Trezor select PIN" panel provides a means of choosing how a device PIN is to be changed/removed</p>
+   *
+   * @param listener      The action listener
+   * @param changeCommand The change PIN command name
+   * @param removeCommand The remove PIN command name
+   *
+   * @return A new "wallet selector" panel
+   */
+  public static JPanel newChangePinSelector(
+    ActionListener listener,
+    String changeCommand,
+    String removeCommand
+  ) {
+
+    JPanel panel = Panels.newPanel();
+
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.CHANGE_PIN_OPTION);
+    radio1.setSelected(true);
+    radio1.setActionCommand(changeCommand);
+
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.REMOVE_PIN_OPTION);
+    radio2.setActionCommand(removeCommand);
+
+    // Wallet selection is mutually exclusive
+    ButtonGroup group = new ButtonGroup();
+    group.add(radio1);
+    group.add(radio2);
+
+    // Add to the panel
+    panel.add(radio1, "wrap");
+    panel.add(radio2, "wrap");
+
+    return panel;
+  }
+
+  /**
+   * <p>A "Trezor tool selector" panel provides a means of choosing which Trezor tool to run</p>
+   *
+   * @param listener            The action listener
+   * @param buyTrezorCommand    The buy trezor command
+   * @param verifyDeviceCommand The verify device command name
+   * @param wipeDeviceCommand   The wipe device command name
+   *
+   * @return A new "use Trezor selector" panel
+   */
+  public static JPanel newUseTrezorSelector(
+    ActionListener listener,
+    String buyTrezorCommand,
+    String verifyDeviceCommand,
+    String wipeDeviceCommand
+  ) {
+
+    JPanel panel = Panels.newPanel();
+
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.BUY_TREZOR);
+    radio1.setActionCommand(buyTrezorCommand);
+    radio1.setSelected(true);
+
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.VERIFY_DEVICE);
+    radio2.setActionCommand(verifyDeviceCommand);
+
+    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.WIPE_DEVICE);
+    radio3.setActionCommand(wipeDeviceCommand);
+
+    // Action selection is mutually exclusive
+    ButtonGroup group = new ButtonGroup();
+    group.add(radio1);
+    group.add(radio2);
+    group.add(radio3);
+
+    // Add to the panel
+    panel.add(radio1, "wrap");
+    panel.add(radio2, "wrap");
+    panel.add(radio3, "wrap");
 
     return panel;
   }
@@ -396,11 +559,12 @@ public class Panels {
    */
   public static JPanel newConfirmSeedPhrase() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXYLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Add to the panel
     panel.add(Labels.newConfirmSeedPhraseNote(), "grow,push");
@@ -415,16 +579,15 @@ public class Panels {
    */
   public static JPanel newSeedPhraseWarning() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
-
-    PanelDecorator.applyDangerFadedTheme(panel);
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Add to the panel
-    panel.add(Labels.newSeedWarningNote(), "grow,push");
+    panel.add(Labels.newCreateWalletPreparationNote(), "grow,push");
 
     return panel;
   }
@@ -436,11 +599,12 @@ public class Panels {
    */
   public static JPanel newDebuggerWarning() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(panel, CoreMessageKey.DEBUGGER_ATTACHED);
@@ -460,11 +624,12 @@ public class Panels {
    */
   public static JPanel newLanguageChange() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     PanelDecorator.applySuccessFadedTheme(panel);
 
@@ -481,11 +646,12 @@ public class Panels {
    */
   public static JPanel newRestoreFromBackup() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Add to the panel
     panel.add(Labels.newRestoreFromBackupNote(), "grow,push");
@@ -500,33 +666,15 @@ public class Panels {
    */
   public static JPanel newRestoreFromSeedPhrase() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Add to the panel
     panel.add(Labels.newRestoreFromSeedPhraseNote(), "grow,push");
-
-    return panel;
-  }
-
-  /**
-   * <p>A "restore from timestamp" panel displays the instructions to restore from a seed phrase and timestamp</p>
-   *
-   * @return A new "restore from timestamp" panel
-   */
-  public static JPanel newRestoreFromTimestamp() {
-
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
-
-    // Add to the panel
-    panel.add(Labels.newRestoreFromTimestampNote(), "grow,push");
 
     return panel;
   }
@@ -538,11 +686,12 @@ public class Panels {
    */
   public static JPanel newSelectBackupDirectory() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Add to the panel
     panel.add(Labels.newSelectBackupLocationNote(), "grow,push");
@@ -557,11 +706,12 @@ public class Panels {
    */
   public static JPanel newSelectExportPaymentsDirectory() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
 
     // Add to the panel
     panel.add(Labels.newSelectExportPaymentsLocationNote(), "grow,push");

@@ -1,10 +1,17 @@
 package org.multibit.hd.ui.views.components.enter_pin;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.views.components.AbstractComponentView;
-import org.multibit.hd.ui.views.components.Buttons;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.audio.Sounds;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -16,9 +23,18 @@ import java.awt.event.ActionEvent;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class EnterPinView extends AbstractComponentView<EnterPinModel> {
+
+  /**
+   * A read only indicator of the number of pin characters entered
+   */
+  private JTextField pinText;
+
+  /**
+   * A status indicator used to tell the user if PIN is incorrect
+   */
+  private JLabel pinStatus;
 
   /**
    * @param model The model backing this view
@@ -30,59 +46,148 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
   @Override
   public JPanel newComponentPanel() {
 
-    panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(), // Layout
-      "[]12[]12[]", // Columns
-      "[][][]" // Rows
-    ));
+    // Outer panel to align the inner panels
+    panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(), // Layout
+        "[]", // Columns
+        "[][]" // Rows
+      ));
 
-    // Create an array of buttons - the pin matrix buttons
-    int NUMBER_OF_PIN_BUTTONS = 9;
-    JButton[] pinButtons = new JButton[NUMBER_OF_PIN_BUTTONS];
+    // PIN matrix display
+    JPanel pinMatrixPanel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(), // Layout
+        "[]12[]12[]", // Columns
+        "[][][]" // Rows
+      ));
 
-    final EnterPinModel finalModel = getModel().get();
+    // PIN display
+    JPanel pinDisplayPanel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(), // Layout
+        "[]", // Columns
+        "[][]" // Rows
+      ));
 
-    for (int i = 0; i < NUMBER_OF_PIN_BUTTONS; i++) {
-      final int finalButtonNumber = i;
 
-      Action buttonAction = new AbstractAction() {
-        final int buttonNumber = finalButtonNumber;
+    // Arrange PIN matrix buttons to mimic a numeric keypad (1 bottom left, 9 top right)
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(7), getModel().get().getPanelName() + ".button_7"), MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(8), getModel().get().getPanelName() + ".button_8"), MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(9), getModel().get().getPanelName() + ".button_9"), MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(4), getModel().get().getPanelName() + ".button_4"), MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(5), getModel().get().getPanelName() + ".button_5"), MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(6), getModel().get().getPanelName() + ".button_6"), MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(1), getModel().get().getPanelName() + ".button_1"), MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(2), getModel().get().getPanelName() + ".button_2"), MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(3), getModel().get().getPanelName() + ".button_3"), MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          finalModel.addButtonPressed(buttonNumber);
-        }
-      };
+    pinText = TextBoxes.newReadOnlyTextField(10, MessageKey.ENTER_CURRENT_PIN, MessageKey.ENTER_CURRENT_PIN);
+    pinText.setName(getModel().get().getPanelName()+".textbox");
+    TitleFontDecorator.apply(pinText, (float) (MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE * 0.6));
 
-      pinButtons[i] = Buttons.newButton(buttonAction);
-      pinButtons[i].setText("?");
+    pinStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
 
-      // Ensure it is accessible
-      pinButtons[i].setName("pin " + i);
-      pinButtons[i].getAccessibleContext().setAccessibleName("pin " + i);
-    }
+    // Provide a display of numbers entered so far with delete button
+    pinDisplayPanel.add(pinText,"wmax 150,hmax 35");
+    pinDisplayPanel.add(Buttons.newBackspaceDeleteButton(getRemoveLastButtonPressedAction()), "wrap");
 
-    panel.add(pinButtons[0], MultiBitUI.MEDIUM_BUTTON_MIG);
-    panel.add(pinButtons[1], MultiBitUI.MEDIUM_BUTTON_MIG);
-    panel.add(pinButtons[2], MultiBitUI.MEDIUM_BUTTON_MIG + ", wrap");
-    panel.add(pinButtons[3], MultiBitUI.MEDIUM_BUTTON_MIG);
-    panel.add(pinButtons[4], MultiBitUI.MEDIUM_BUTTON_MIG);
-    panel.add(pinButtons[5], MultiBitUI.MEDIUM_BUTTON_MIG + ", wrap");
-    panel.add(pinButtons[6], MultiBitUI.MEDIUM_BUTTON_MIG);
-    panel.add(pinButtons[7], MultiBitUI.MEDIUM_BUTTON_MIG);
-    panel.add(pinButtons[8], MultiBitUI.MEDIUM_BUTTON_MIG + ", wrap");
+    pinDisplayPanel.add(pinStatus, "wrap");
+
+    panel.add(pinMatrixPanel,"align center,wrap");
+    panel.add(pinDisplayPanel,"align center,wrap");
+
+    // Ensure we hide the status display ensure the panel presents correctly
+    setPinStatus(false, false);
 
     return panel;
 
   }
 
   @Override
-  public void requestInitialFocus() {
+  public void updateModelFromView() {
+    // The view is driven from the model
   }
 
   @Override
-  public void updateModelFromView() {
-    // Do nothing the model is updated from key release events
+  public void updateViewFromModel() {
+
+    // Update the PIN indicator with the length of the entered PIN
+    CharSequence pin = getModel().get().getValue();
+    pinText.setText(Strings.repeat("*", pin.length()));
+
+    // Ensure we hide the status display (entering new values)
+    setPinStatus(true, false);
+
   }
 
+  /**
+   * @return An action that updates the underlying model to remove the last button pressed
+   */
+  private AbstractAction getRemoveLastButtonPressedAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        getModel().get().removeLastButtonPressed();
+        updateViewFromModel();
+
+      }
+    };
+  }
+
+  /**
+   * @param position The button position
+   *
+   * @return An action that updates the underlying model with the given position
+   */
+  private Action getPinMatrixButtonAction(final int position) {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        getModel().get().addButtonPressed(position);
+        updateViewFromModel();
+
+      }
+    };
+  }
+
+
+  @Override
+  public void requestInitialFocus() {
+  }
+
+  /**
+   * @param status  True if successful (check mark), false for failure (cross)
+   * @param visible True if the PIN status should be visible
+   */
+  public void setPinStatus(boolean status, boolean visible) {
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
+
+    // Check if we had to provide a PIN
+    if (pinStatus == null) {
+      return;
+    }
+
+    pinStatus.setVisible(visible);
+
+    if (status) {
+      // Success
+      pinStatus.setText(Languages.safeText(MessageKey.PIN_SUCCESS));
+      AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, pinStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+    } else {
+      if (visible) {
+        // Failure rather than default hide
+        Sounds.playBeep();
+      }
+      pinStatus.setText(Languages.safeText(MessageKey.PIN_FAILURE));
+      AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, pinStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+      // Clear any previously entered PIN
+      getModel().get().setValue("");
+      pinText.setText("");
+    }
+  }
 }

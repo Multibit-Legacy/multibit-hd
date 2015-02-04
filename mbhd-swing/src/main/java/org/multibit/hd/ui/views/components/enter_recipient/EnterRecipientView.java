@@ -5,11 +5,14 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.utils.BitcoinNetwork;
+import org.bitcoinj.core.Address;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.Addresses;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.views.components.*;
@@ -17,6 +20,8 @@ import org.multibit.hd.ui.views.components.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 /**
@@ -28,7 +33,6 @@ import java.awt.image.BufferedImage;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class EnterRecipientView extends AbstractComponentView<EnterRecipientModel> {
 
@@ -49,11 +53,12 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   @Override
   public JPanel newComponentPanel() {
 
-    JPanel panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(),
-      "[][][][]", // Columns
-      "[]" // Rows
-    ));
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[][][][]", // Columns
+        "[]" // Rows
+      ));
 
     // Start with an invisible gravatar image label
     imageLabel = Labels.newImageLabel(Optional.<BufferedImage>absent());
@@ -73,16 +78,32 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
     }
 
     // Bind an action listener to allow instant update of UI to matched contacts
-    recipientComboBox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        updateModelFromView();
+    recipientComboBox.addActionListener(
+      new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          updateModelFromView();
+        }
+      });
+
+    // Extra listener to cater for direct paste into recipientComboBox using ctrl-V
+    recipientComboBox.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent event) {
+        if (event.getKeyChar() == 'v' && event.isMetaDown()) {
+          performPaste();
+
+          // Consume the event to stop a double paste
+          event.consume();
+
+          // Fire a component change event so that handlers for things like button enabling get to run
+          ViewEvents.fireComponentChangedEvent(getModel().get().getPanelName(), getModel());
+        }
       }
     });
 
     panel.add(Labels.newRecipient());
     // Specify minimum width for consistent appearance across contact names and locales
-    panel.add(recipientComboBox, "growx,"+MultiBitUI.COMBO_BOX_WIDTH_MIG +",push");
+    panel.add(recipientComboBox, "growx," + MultiBitUI.COMBO_BOX_WIDTH_MIG + ",push");
     panel.add(Buttons.newPasteButton(getPasteAction()), "shrink");
     panel.add(imageLabel, "shrink,wrap");
 
@@ -149,7 +170,7 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
   /**
    * <p>Display the contact image of the recipient</p>
    *
-   * @param recipient The recipient (must have an email address)F
+   * @param recipient The recipient (must have an email address)
    */
   private void displayContactImage(Recipient recipient) {
 
@@ -157,22 +178,43 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
     String emailAddress = recipient.getContact().get().getEmail().get();
 
     final ListenableFuture<Optional<BufferedImage>> imageFuture = Gravatars.retrieveGravatar(emailAddress);
-    Futures.addCallback(imageFuture, new FutureCallback<Optional<BufferedImage>>() {
-      public void onSuccess(Optional<BufferedImage> image) {
-        if (image.isPresent()) {
+    Futures.addCallback(
+      imageFuture, new FutureCallback<Optional<BufferedImage>>() {
 
-          // Apply the rounded corners
-          ImageIcon imageIcon = new ImageIcon(ImageDecorator.applyRoundedCorners(image.get(), MultiBitUI.IMAGE_CORNER_RADIUS));
+        @Override
+        public void onSuccess(final Optional<BufferedImage> image) {
+          if (image.isPresent()) {
 
-          imageLabel.setIcon(imageIcon);
-          imageLabel.setVisible(true);
+            SwingUtilities.invokeLater(
+              new Runnable() {
+                @Override
+                public void run() {
+                  // Apply the rounded corners
+                  ImageIcon imageIcon = new ImageIcon(
+                    ImageDecorator.applyRoundedCorners(
+                      image.get(),
+                      MultiBitUI.IMAGE_CORNER_RADIUS)
+                  );
+
+                  imageLabel.setIcon(imageIcon);
+                  imageLabel.setVisible(true);
+                }
+              });
+          }
         }
-      }
 
-      public void onFailure(Throwable thrown) {
-        imageLabel.setVisible(false);
-      }
-    });
+        @Override
+        public void onFailure(Throwable thrown) {
+
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+                imageLabel.setVisible(false);
+              }
+            });
+        }
+      });
   }
 
   /**
@@ -185,18 +227,28 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
       @Override
       public void actionPerformed(ActionEvent e) {
-
-        Optional<String> pastedText = ClipboardUtils.pasteStringFromClipboard();
-
-        if (pastedText.isPresent()) {
-
-          recipientComboBox.getEditor().setItem(pastedText.get());
-          updateModelFromView();
-
-        }
-
+      performPaste();
       }
     };
+  }
+
+  private void performPaste() {
+    Optional<String> pastedText = ClipboardUtils.pasteStringFromClipboard();
+    if (pastedText.isPresent()) {
+      Optional<Address> address = Addresses.parse(pastedText.get());
+      if (address.isPresent()) {
+        Recipient recipient = new Recipient(address.get());
+        recipientComboBox.getEditor().setItem(recipient);
+      } else {
+        recipientComboBox.getEditor().setItem(pastedText.get());
+      }
+
+      // Clear the gravatar
+      imageLabel.setVisible(false);
+
+      updateModelFromView();
+
+    }
   }
 
 }

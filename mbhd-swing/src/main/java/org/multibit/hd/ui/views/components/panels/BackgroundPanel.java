@@ -16,7 +16,7 @@ import java.awt.*;
  * <p>Images and paint can be adjusted after creation for animation effects</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class BackgroundPanel extends JPanel {
 

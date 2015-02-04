@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.display_amount;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.models.Model;
 
@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class DisplayAmountModel implements Model<DisplayAmountModel> {
 

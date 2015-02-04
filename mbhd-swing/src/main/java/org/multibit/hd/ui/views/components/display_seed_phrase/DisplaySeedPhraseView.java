@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.display_seed_phrase;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.components.*;
 
 import javax.swing.*;
@@ -16,7 +17,6 @@ import java.awt.event.ActionListener;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhraseModel> implements ActionListener {
 
@@ -53,13 +53,16 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
 
     // Add to the panel
     panel.add(Labels.newTimestamp());
-    panel.add(seedTimestamp, "grow");
-    panel.add(Labels.newSeedSize(), "span 2,grow");
-    panel.add(seedSize, "grow,push,wrap");
+    panel.add(seedTimestamp, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
-    panel.add(seedPhrase, "span 2,grow");
+    panel.add(Labels.newSeedPhrase());
+    panel.add(seedPhrase, MultiBitUI.WIZARD_MAX_WIDTH_SEED_PHRASE_MIG);
     panel.add(Buttons.newHideButton(toggleDisplayAction), "shrink");
-    panel.add(Buttons.newRefreshButton(refreshAction), "shrink");
+    panel.add(Buttons.newRefreshButton(refreshAction), "shrink,wrap");
+
+    // Advanced controls are placed at the end
+    panel.add(Labels.newSeedSize(), "");
+    panel.add(seedSize, "wrap");
 
     // Allowing printing of seed phrase is fraught with security hazards
     // Could use BIP38 encrypted QR code once webcam scanning is introduced
@@ -82,6 +85,27 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
   }
 
   /**
+   * <p>Trigger a new seed phrase</p>
+   *
+   * @param size The size to use (provided by the model)
+   */
+  public void newSeedPhrase(SeedPhraseSize size) {
+
+    final DisplaySeedPhraseModel model = getModel().get();
+
+    model.newSeedPhrase(size);
+
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        seedPhrase.setText(model.displaySeedPhrase());
+
+      }
+    });
+
+  }
+
+  /**
    * <p>Handle the "change seed phrase size" action event</p>
    *
    * @param e The action event
@@ -91,11 +115,22 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
 
     JComboBox source = (JComboBox) e.getSource();
 
-    DisplaySeedPhraseModel model = getModel().get();
+    newSeedPhrase(SeedPhraseSize.fromOrdinal(source.getSelectedIndex()));
 
-    model.newSeedPhrase(SeedPhraseSize.fromOrdinal(source.getSelectedIndex()));
-    seedPhrase.setText(model.displaySeedPhrase());
+  }
 
+  /**
+   * @return A new action for generating a new seed phrase
+   */
+  private Action getRefreshAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        newSeedPhrase(getModel().get().getCurrentSeedSize());
+
+      }
+    };
   }
 
   /**
@@ -132,23 +167,6 @@ public class DisplaySeedPhraseView extends AbstractComponentView<DisplaySeedPhra
 
       }
 
-    };
-  }
-
-  /**
-   * @return A new action for generating a new seed phrase
-   */
-  private Action getRefreshAction() {
-    return new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-
-        final DisplaySeedPhraseModel model = getModel().get();
-
-        model.newSeedPhrase(model.getCurrentSeedSize());
-        seedPhrase.setText(model.displaySeedPhrase());
-
-      }
     };
   }
 }

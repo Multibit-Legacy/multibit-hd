@@ -5,6 +5,7 @@ import com.google.common.base.Optional;
 import com.google.common.io.Resources;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
@@ -20,6 +21,8 @@ import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -33,9 +36,11 @@ import java.io.IOException;
  * </ul>
  *
  * @since 0.0.3
- *  
+ *
  */
 public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
+
+  private static final Logger log = LoggerFactory.getLogger(WelcomeLicencePanelView.class);
 
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
 
@@ -134,7 +139,7 @@ public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWiza
 
         // Check for any security alerts
         Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
-        if (securityEvent.isPresent()) {
+        if (securityEvent.isPresent() && securityEvent.get().is(SecuritySummary.AlertType.DEBUGGER_ATTACHED)) {
 
           displaySecurityPopoverMaV.getModel().setValue(securityEvent.get());
 

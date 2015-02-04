@@ -39,7 +39,7 @@ import java.io.File;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<ExportPaymentsWizardModel, String> {
 
@@ -158,7 +158,7 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
       TransactionHeaderConverter transactionHeaderConverter = new TransactionHeaderConverter();
       TransactionConverter transactionConverter = new TransactionConverter();
 
-      CoreServices.getCurrentWalletService().exportPayments(
+      CoreServices.getCurrentWalletService().get().exportPayments(
         exportPaymentsLocationFile,
         stems[0],
         stems[1],

@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components.display_amount;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.BitcoinConfiguration;
@@ -15,6 +15,8 @@ import org.multibit.hd.ui.views.components.LabelDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.util.Locale;
@@ -26,9 +28,10 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel> {
+  private static final Logger log = LoggerFactory.getLogger(DisplayAmountView.class);
 
   // View components
   private JLabel leadingSymbolLabel;
@@ -108,6 +111,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
     Preconditions.checkNotNull(configuration, "'configuration' must be present");
 
+    log.trace("in update view visible: {}", visible);
     // Determine initial visibility
     leadingSymbolLabel.setVisible(visible);
     primaryBalanceLabel.setVisible(visible);
@@ -123,6 +127,7 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
     // The exchange rate provider can override the intention of the local amount visibility
     if (ExchangeKey.NONE.equals(exchangeKey)) {
       getModel().get().setLocalAmountVisible(false);
+      exchangeLabel.setVisible(false);
     }
 
     Coin coin = getModel().get().getCoinAmount();

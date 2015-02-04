@@ -16,10 +16,10 @@ package org.multibit.hd.brit.matcher;
  * limitations under the License.
  */
 
+import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.crypto.PGPUtilsTest;
-import org.multibit.hd.brit.utils.FileUtils;
 
 import java.io.File;
 
@@ -39,7 +39,7 @@ public class MatchersTest {
     MatcherConfig matcherConfig = new MatcherConfig(matcherSecretKeyFile, PGPUtilsTest.TEST_DATA_PASSWORD);
 
     // Create a random temporary directory for the matcher store to use
-    File matcherStoreDirectory = FileUtils.makeRandomTemporaryDirectory();
+    File matcherStoreDirectory = Files.createTempDir();
     MatcherStore matcherStore = MatcherStores.newBasicMatcherStore(matcherStoreDirectory);
 
     Matcher matcher = Matchers.newBasicMatcher(matcherConfig, matcherStore);

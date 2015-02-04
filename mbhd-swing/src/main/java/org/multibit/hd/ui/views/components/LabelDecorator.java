@@ -1,5 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
@@ -7,6 +9,8 @@ import org.multibit.hd.core.dto.PaymentStatus;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.utils.HtmlUtils;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -21,7 +25,6 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class LabelDecorator {
 
@@ -159,6 +162,67 @@ public class LabelDecorator {
       default:
         // Unknown status
         throw new IllegalStateException("Unknown status " + paymentStatus.getStatus());
+    }
+
+  }
+
+  /**
+   * Apply the hardware wallet report message key and status to a label resulting in a check mark or cross
+   * and the appropriate message
+   *
+   * @param label               The label to decorate
+   * @param reportMessageKey    The report message key (if not present then label is not visible)
+   * @param reportMessageStatus The status (true then label has a check mark otherwise a cross)
+   */
+  public static void applyReportMessage(JLabel label, Optional<MessageKey> reportMessageKey, boolean reportMessageStatus) {
+
+    if (reportMessageKey.isPresent()) {
+      label.setText(Languages.safeText(reportMessageKey.get()));
+      AccessibilityDecorator.apply(
+        label,
+        reportMessageKey.get()
+      );
+      applyStatusLabel(
+        label,
+        Optional.of(reportMessageStatus)
+      );
+
+      label.setVisible(true);
+    } else {
+      label.setVisible(false);
+    }
+
+
+  }
+
+  /**
+   * <p>Decorate a label with HTML-wrapped text respecting LTR/RTL to ensure line breaks occur predictably</p>
+   *
+   * @param label The label to decorate
+   * @param value The text to show (will be wrapped in HTML)
+   */
+  public static void applyWrappingLabel(JLabel label, String value) {
+
+    Preconditions.checkNotNull(value, "'value' must be present");
+
+    String htmlText = HtmlUtils.localiseWithLineBreaks(value.split("\n"));
+
+    label.setText(htmlText);
+
+  }
+
+  /**
+   * @param statusLabel The status label to decorate
+   * @param status      True for check, false for cross, absent for nothing (useful for initial message)
+   */
+  public static void applyStatusLabel(JLabel statusLabel, Optional<Boolean> status) {
+
+    if (status.isPresent()) {
+      if (status.get()) {
+        AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, statusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+      } else {
+        AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, statusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
+      }
     }
 
   }

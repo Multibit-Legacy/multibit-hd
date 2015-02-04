@@ -1,10 +1,11 @@
 package org.multibit.hd.ui.views.components.enter_amount;
 
-import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
+import org.bitcoinj.core.Coin;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
+import javax.swing.*;
 import java.math.BigDecimal;
 
 /**
@@ -14,7 +15,7 @@ import java.math.BigDecimal;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EnterAmountModel implements Model<EnterAmountModel> {
 
@@ -62,9 +63,13 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
 
     coinAmount = Optional.of(value);
 
-    // Fire a component model updated event
-    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
-
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Fire a component model updated event
+        ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
+      }
+    });
   }
 
   /**

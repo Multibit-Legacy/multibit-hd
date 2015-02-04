@@ -1,8 +1,13 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
-import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.hardware.core.HardwareWalletService;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.*;
+import org.multibit.hd.ui.views.wizards.welcome.create_wallet.*;
+import org.multibit.hd.ui.views.wizards.welcome.restore_wallet.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -19,9 +24,8 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
  * </ol>
  *
  * @since 0.0.1
- *  
  */
-public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
+public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardModel> {
 
   public WelcomeWizard(WelcomeWizardModel model, boolean isExiting) {
     super(model, isExiting, Optional.absent());
@@ -43,6 +47,10 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
       new WelcomeSelectWalletPanelView(this, WELCOME_SELECT_WALLET.name()));
 
     wizardViewMap.put(
+      CREATE_WALLET_PREPARATION.name(),
+      new CreateWalletPreparationPanelView(this, CREATE_WALLET_PREPARATION.name()));
+
+    wizardViewMap.put(
       CREATE_WALLET_SELECT_BACKUP_LOCATION.name(),
       new CreateWalletSelectBackupLocationPanelView(this, CREATE_WALLET_SELECT_BACKUP_LOCATION.name()));
 
@@ -61,6 +69,42 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
     wizardViewMap.put(
       CREATE_WALLET_REPORT.name(),
       new CreateWalletReportPanelView(this, CREATE_WALLET_REPORT.name()));
+
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_PREPARATION.name(),
+      new CreateTrezorWalletPreparationPanelView(this, TREZOR_CREATE_WALLET_PREPARATION.name()));
+
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION.name(),
+      new CreateTrezorWalletSelectBackupLocationPanelView(this, TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION.name()));
+
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_ENTER_DETAILS.name(),
+      new CreateTrezorWalletEnterDetailsPanelView(this, TREZOR_CREATE_WALLET_ENTER_DETAILS.name()));
+
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET.name(),
+      new CreateTrezorWalletRequestCreateWalletPanelView(this, TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET.name()));
+
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET.name(),
+      new CreateTrezorWalletConfirmCreateWalletPanelView(this, TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET.name()));
+
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_ENTER_NEW_PIN.name(),
+      new CreateTrezorWalletEnterNewPinPanelView(this, TREZOR_CREATE_WALLET_ENTER_NEW_PIN.name()));
+
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name(),
+      new CreateTrezorWalletConfirmNewPinPanelView(this, TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()));
+
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_CONFIRM_WORD.name(),
+      new CreateTrezorWalletConfirmWordPanelView(this, TREZOR_CREATE_WALLET_CONFIRM_WORD.name()));
+
+    wizardViewMap.put(
+      TREZOR_CREATE_WALLET_REPORT.name(),
+      new CreateTrezorWalletReportPanelView(this, TREZOR_CREATE_WALLET_REPORT.name()));
 
     wizardViewMap.put(
       RESTORE_PASSWORD_SEED_PHRASE.name(),
@@ -95,7 +139,7 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
   @Override
   public <P> Action getNextAction(final AbstractWizardPanelView<WelcomeWizardModel, P> wizardPanelView) {
 
-    // Merge the Next and Finish button behaviour
+    // Provide specific behaviour depending on state
 
     return new AbstractAction() {
       @Override
@@ -104,25 +148,70 @@ public class WelcomeWizard extends AbstractWizard<WelcomeWizardModel> {
         // Ensure the panel updates its model (the button is outside of the panel itself)
         wizardPanelView.updateFromComponentModels(Optional.absent());
 
-        if (WelcomeWizardState.SELECT_EXISTING_WALLET.equals(getWizardModel().getSelectWalletChoice())) {
 
-          // Treat as a Finish
-          hide(getWizardModel().getPanelName(), false);
 
-        } else {
+        switch (getWizardModel().getState()) {
 
-          // Treat as a Next
+          case WELCOME_SELECT_LANGUAGE:
+            // Check for initialised hardware wallet on cold start
+            Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+            if (hardwareWalletService.isPresent()
+              && hardwareWalletService.get().isDeviceReady()
+              && hardwareWalletService.get().isWalletPresent()) {
+              // Initialised hardware wallet is attached so move directly to credentials
+              // We cannot move from WELCOME_SELECT_LANGUAGE due to complications
+              // with language changes in soft wallets, so a state progress is made first
+              // followed by a hide
+              getWizardModel().showNext();
+              hide(WelcomeWizardState.WELCOME_SELECT_WALLET.name(), false);
+            } else {
+              standardNext();
+            }
+            break;
+          case WELCOME_SELECT_WALLET:
 
-          // Move to the next state
-          getWizardModel().showNext();
+            // Radio buttons indicate the next state
+            switch (getWizardModel().getSelectWalletChoice()) {
+              case WELCOME_SELECT_WALLET:
+                // Transition to credentials
+                hide(getWizardModel().getPanelName(), false);
+                break;
+              default:
+                standardNext();
+                break;
+            }
 
-          // Show the panel based on the state
-          show(getWizardModel().getPanelName());
+            break;
+          case TREZOR_CREATE_WALLET_ENTER_NEW_PIN:
+          case TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN:
+            // Treat as a PIN entry
+            getWizardModel().providePin(getWizardModel().getMostRecentPin());
+            break;
+          default:
+            // Treat as a Next
+
+            // Move to the next state
+            standardNext();
+
+            break;
+
         }
-      }
 
-      ;
+      }
     };
 
+  }
+
+  /**
+   * Standard "next" button handling
+   */
+  private void standardNext() {
+    // Treat as a Next
+
+    // Move to the next state
+    getWizardModel().showNext();
+
+    // Show the panel based on the state
+    show(getWizardModel().getPanelName());
   }
 }

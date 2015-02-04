@@ -5,10 +5,6 @@ import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import javax.swing.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 /**
  * <p>Decorator to provide the following to application:</p>
@@ -17,7 +13,6 @@ import java.awt.event.MouseEvent;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class AccessibilityDecorator {
 

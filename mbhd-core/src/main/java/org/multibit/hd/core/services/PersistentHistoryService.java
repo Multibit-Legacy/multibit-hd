@@ -5,9 +5,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.HistoryEntry;
-import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletPassword;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.HistoryLoadException;
 import org.multibit.hd.core.exceptions.HistorySaveException;
 import org.multibit.hd.core.files.SecureFiles;
@@ -32,9 +32,9 @@ import java.util.UUID;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
-public class PersistentHistoryService implements HistoryService {
+public class PersistentHistoryService extends AbstractService implements HistoryService {
 
   private static final Logger log = LoggerFactory.getLogger(PersistentHistoryService.class);
 
@@ -54,20 +54,19 @@ public class PersistentHistoryService implements HistoryService {
   private HistoryProtobufSerializer protobufSerializer;
 
   /**
-   * <p>Create a HistoryService for a Wallet with the given walletId</p>
+   * <p>Create a HistoryService for a Wallet with the given walletPassword</p>
    *
    * <p>Reduced visibility constructor to prevent accidental instance creation outside of CoreServices.</p>
    */
-  PersistentHistoryService(WalletId walletId) {
+  PersistentHistoryService(WalletPassword walletPassword) {
 
-    Preconditions.checkNotNull(walletId, "'walletId' must be present");
+    super();
 
-    // Register for events
-    CoreServices.uiEventBus.register(this);
+    Preconditions.checkNotNull(walletPassword, "'walletPassword' must be present");
 
     // Work out where to store the history for this wallet id.
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-    String walletRoot = WalletManager.createWalletRoot(walletId);
+    String walletRoot = WalletManager.createWalletRoot(walletPassword.getWalletId());
 
     File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
@@ -76,7 +75,7 @@ public class PersistentHistoryService implements HistoryService {
 
     this.backingStoreFile = new File(historyDirectory.getAbsolutePath() + File.separator + HISTORY_DATABASE_NAME);
 
-    initialise();
+    initialise((String)walletPassword.getPassword());
   }
 
   /**
@@ -87,18 +86,36 @@ public class PersistentHistoryService implements HistoryService {
 
     this.backingStoreFile = backingStoreFile;
 
-    initialise();
+    initialise((String)WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
   }
 
-  private void initialise() {
+  private void initialise(String password) {
 
     protobufSerializer = new HistoryProtobufSerializer();
 
     // Load the history data from the backing writeHistory if it exists
     if (backingStoreFile.exists()) {
-      loadHistory();
+      loadHistory(password);
     }
 
+  }
+
+
+  @Override
+  protected boolean startInternal() {
+
+    Preconditions.checkNotNull(protobufSerializer,"protobufSerializer not present. Have you called initialise()?");
+
+    return true;
+  }
+
+  @Override
+  protected boolean shutdownNowInternal(ShutdownEvent.ShutdownType shutdownType) {
+
+    protobufSerializer = null;
+    backingStoreFile = null;
+
+    return true;
   }
 
   @Override
@@ -149,20 +166,20 @@ public class PersistentHistoryService implements HistoryService {
   }
 
   @Override
-  public void loadHistory() throws HistoryLoadException {
+  public void loadHistory(String password) throws HistoryLoadException {
 
-    log.debug("Loading history from '{}'", backingStoreFile.getAbsolutePath());
+    log.debug("Loading history from\n'{}'", backingStoreFile.getAbsolutePath());
     try {
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
-              WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
-              WalletManager.SCRYPT_SALT,
-              WalletManager.AES_INITIALISATION_VECTOR);
+              password,
+              WalletManager.scryptSalt(),
+              WalletManager.aesInitialisationVector());
       Set<HistoryEntry> loadedHistory = protobufSerializer.readHistoryEntries(decryptedInputStream);
       history.clear();
       history.addAll(loadedHistory);
 
     } catch (EncryptedFileReaderWriterException e) {
-      ExceptionHandler.handleThrowable(new HistoryLoadException("Could not loadHistory history db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'."));
+      throw new HistoryLoadException("Could not loadHistory history db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
     }
   }
 
@@ -217,7 +234,7 @@ public class PersistentHistoryService implements HistoryService {
       protobufSerializer.writeHistoryEntries(history, byteArrayOutputStream);
       EncryptedFileReaderWriter.encryptAndWrite(
         byteArrayOutputStream.toByteArray(),
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getPassword(),
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
         backingStoreFile
       );
 
@@ -226,30 +243,33 @@ public class PersistentHistoryService implements HistoryService {
     }
   }
 
-  @Override
-  public void addDemoHistory() {
+  /**
+   * Provided for test purposes
+   */
+  /* package */ void addDemoHistory() {
 
     // Only add the demo history if there are none present
     if (!history.isEmpty()) {
       return;
     }
 
+    // Expect filter inclusion on "1"
     HistoryEntry history1 = newHistoryEntry("Something happened 1");
     history1.setNotes("This is a really long note that should span over several lines when finally rendered to the screen. It began with Alice Capital.");
 
     HistoryEntry history2 = newHistoryEntry("Something happened 2");
     history2.setNotes("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
-    HistoryEntry history3 = newHistoryEntry("Something happened 2");
-    history2.setNotes("Charles Capital's note 1\n\nCharles Capital's note 2");
+    // Expect filter inclusion on "1"
+    HistoryEntry history3 = newHistoryEntry("Something happened 3");
+    history3.setNotes("Charles Capital's note 1\n\nCharles Capital's note 3");
 
-    // No email for Derek
-    HistoryEntry history4 = newHistoryEntry("Something happened 2");
-    history2.setNotes("Derek Capital's note 1\n\nDerek Capital's note 2");
+    HistoryEntry history4 = newHistoryEntry("Something happened 4");
+    history4.setNotes("Derek Capital's note 2\n\nDerek Capital's note 4");
 
-    HistoryEntry history5 = newHistoryEntry("Something happened 2");
+    newHistoryEntry("Something happened 5");
 
-    HistoryEntry history6 = newHistoryEntry("Something happened 2");
+    newHistoryEntry("Something happened 6");
 
   }
 

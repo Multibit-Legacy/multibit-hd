@@ -17,7 +17,6 @@ package org.multibit.hd.ui.platform.builder.mac;
 
 import org.multibit.hd.ui.platform.handler.GenericHandler;
 import org.multibit.hd.ui.platform.listener.GenericEvent;
-import org.multibit.hd.ui.platform.handler.GenericHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,15 +76,19 @@ public abstract class BaseMacResponseInvocationHandler<H extends GenericHandler,
     try {
       log.debug("Created event {}", genericEventClass.getSimpleName());
 
-      // Access the equivalent method on the generic handler (e.g. handleQuitRequestWith(GenericQuitEvent event, GenericQuitResponse resonse))
-      Method method = genericHandler.getClass().getMethod(nativeMethod.getName(), new Class[]{genericEventClass, genericResponseClass});
+      // Access the equivalent method on the generic handler (e.g. handleQuitRequestWith(GenericQuitEvent event, GenericQuitResponse response))
+      Method method = genericHandler.getClass().getMethod(nativeMethod.getName(), genericEventClass, genericResponseClass);
 
       // Invoke the method passing in the event (e.g. GenericURIEvent)
-      log.debug("Invoking {}.{}({},{}) ", new Object[]{genericHandler.getClass().getSimpleName(), method.getName(), method.getParameterTypes()[0].getSimpleName(), method.getParameterTypes()[1].getSimpleName()});
+      log.debug("Invoking {}.{}({},{}) ",
+        genericHandler.getClass().getSimpleName(),
+        method.getName(),
+        method.getParameterTypes()[0].getSimpleName(),
+        method.getParameterTypes()[1].getSimpleName()
+      );
       return method.invoke(genericHandler, event, response);
     } catch (NoSuchMethodException e) {
-      log.warn("Got a NoSuchMethodException. Method = '" + nativeMethod.getName() + "'");
-      e.printStackTrace();
+      log.warn("Got a NoSuchMethodException. Method = '{}'", nativeMethod.getName(), e);
       if (nativeMethod.getName().equals("equals") && objects.length == 1) {
         return object == objects[0];
       }

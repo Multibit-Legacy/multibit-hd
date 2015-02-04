@@ -21,7 +21,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
 
@@ -99,12 +99,12 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 10));
           setIconTextGap(9);
           break;
-        case HISTORY:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.HISTORY, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
-          setIconTextGap(9);
-          break;
         case SETTINGS:
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 1));
+          setIconTextGap(6);
+          break;
+        case MANAGE_WALLET:
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.EDIT, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
           setIconTextGap(6);
           break;
         case TOOLS:
@@ -115,6 +115,8 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.SIGN_OUT, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 2));
           setIconTextGap(6);
           break;
+        default:
+          throw new IllegalStateException("Unexpected screen:" + nodeInfo.getDetailScreen());
       }
 
     } else {

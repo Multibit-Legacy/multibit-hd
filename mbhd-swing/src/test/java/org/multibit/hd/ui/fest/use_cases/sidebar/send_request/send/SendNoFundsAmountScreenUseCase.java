@@ -19,7 +19,7 @@ import static org.fest.swing.timing.Timeout.timeout;
  * <p>Requires the "send/request" screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class SendNoFundsAmountScreenUseCase extends AbstractFestUseCase {
 

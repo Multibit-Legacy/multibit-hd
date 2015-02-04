@@ -1,16 +1,20 @@
 package org.multibit.hd.core.events;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.Coin;
 import com.google.common.base.Optional;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
 
 import java.util.Arrays;
 
 /**
- *  <p>Event to provide the following to UIEventbus subscribers
- *  <ul>
- *  <li>Success/ failure of send bitcoins</li>
- *  </ul>
+ * <p>Event to provide the following to UIEventbus subscribers:</p>
+ * <ul>
+ * <li>Success/ failure of send bitcoins</li>
+ * </ul>
+ * <p>This is an infrequent event</p>
+ *
+ * @since 0.0.1
  */
 public class BitcoinSentEvent implements CoreEvent {
 
@@ -31,6 +35,13 @@ public class BitcoinSentEvent implements CoreEvent {
 
   private final String sendFailureReasonKey;
 
+  /**
+   * TODO Consider a List<String> instead
+   */
+  private final String[] sendFailureReasonData;
+
+  // The fix for this is more complex than leaving it in place
+  @SuppressFBWarnings({"EI_EXPOSE_REP2"})
   public BitcoinSentEvent(
     Address destinationAddress,
     Coin amount,
@@ -52,8 +63,6 @@ public class BitcoinSentEvent implements CoreEvent {
     this.sendFailureReasonData = sendFailureReasonData;
 
   }
-
-  private final String[] sendFailureReasonData;
 
   public Coin getAmount() {
     return amount;
@@ -79,6 +88,8 @@ public class BitcoinSentEvent implements CoreEvent {
     return sendFailureReasonKey;
   }
 
+  // The fix for this is more complex than leaving it in place
+  @SuppressFBWarnings({"EI_EXPOSE_REP"})
   public String[] getSendFailureReasonData() {
     return sendFailureReasonData;
   }
@@ -86,14 +97,14 @@ public class BitcoinSentEvent implements CoreEvent {
   @Override
   public String toString() {
     return "BitcoinSentEvent{" +
-            "amount=" + amount +
-            ", miningFeePaid=" + miningFeePaid +
-            ", clientFeePaid=" + clientFeePaid +
-            ", destinationAddress='" + destinationAddress + '\'' +
-            ", changeAddress='" + changeAddress + '\'' +
-            ", sendWasSuccessful=" + sendWasSuccessful +
-            ", sendFailureReasonKey='" + sendFailureReasonKey + '\'' +
-            ", sendFailureReasonData=" + Arrays.toString(sendFailureReasonData) +
-            '}';
+      "amount=" + amount +
+      ", miningFeePaid=" + miningFeePaid +
+      ", clientFeePaid=" + clientFeePaid +
+      ", destinationAddress='" + destinationAddress + '\'' +
+      ", changeAddress='" + changeAddress + '\'' +
+      ", sendWasSuccessful=" + sendWasSuccessful +
+      ", sendFailureReasonKey='" + sendFailureReasonKey + '\'' +
+      ", sendFailureReasonData=" + Arrays.toString(sendFailureReasonData) +
+      '}';
   }
 }

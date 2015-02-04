@@ -14,7 +14,7 @@ package org.multibit.hd.ui.languages;
  * <p>Resource keys are simply the message key enum name in lower case.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum MessageKey {
 
@@ -31,6 +31,9 @@ public enum MessageKey {
   EXIT("exit"),
   EXIT_TOOLTIP("exit_tooltip"),
 
+  SWITCH("switch"),
+  SWITCH_TOOLTIP("switch_tooltip"),
+
   SEND("send"),
   SEND_TOOLTIP("send_tooltip"),
 
@@ -39,6 +42,9 @@ public enum MessageKey {
 
   REFRESH("refresh"),
   REFRESH_TOOLTIP("refresh_tooltip"),
+
+  HOME("home"),
+  HOME_TOOLTIP("home_tooltip"),
 
   FINISH("finish"),
   FINISH_TOOLTIP("finish_tooltip"),
@@ -187,6 +193,7 @@ public enum MessageKey {
   CLIENT_FEE_LATER_PLURAL("client_fee_later_plural"),
   CLIENT_FEE_LATER_SINGULAR("client_fee_later_singular"),
   CLIENT_FEE_OVERPAID("client_fee_overpaid"),
+  CLIENT_FEE_RUNNING_TOTAL("client_fee_running_total"),
 
   COINBASE("coinbase"),
 
@@ -256,6 +263,9 @@ public enum MessageKey {
   SELECT_TOR("select_tor"),
   SELECT_TOR_TOOLTIP("select_tor_tooltip"),
 
+  SELECT_TREZOR("select_trezor"),
+  SELECT_TREZOR_TOOLTIP("select_trezor_tooltip"),
+
   // Sidebar
 
   SIDEBAR_TREE("sidebar_tree"),
@@ -267,11 +277,17 @@ public enum MessageKey {
 
   PAYMENTS("payments"),
 
+  PREFERENCES("preferences"),
+  MANAGE_WALLET("manage_wallet"),
+  TOOLS("tools"),
+
+  EXIT_OR_SWITCH("exit_or_switch"),
+  EXIT_WALLET("exit_wallet"),
+  SWITCH_WALLET("switch_wallet"),
+
+  // Tools
   HISTORY("history"),
   HISTORY_TOOLTIP("history_tooltip"),
-
-  PREFERENCES("preferences"),
-  TOOLS("tools"),
 
   // Placeholders
   APPROXIMATELY("approximately"),
@@ -287,8 +303,9 @@ public enum MessageKey {
   PAYMENT_SENT_ALERT("payment_sent_label"),
 
   // Trezor alerts
-  TREZOR_CONNECTED_ALERT("trezor_connected_alert"),
-  TREZOR_DISCONNECTED_ALERT("trezor_disconnected_alert"),
+  TREZOR_ATTACHED_ALERT("trezor_attached_alert"),
+  TREZOR_DETACHED_ALERT("trezor_detached_alert"),
+  TREZOR_STOPPED_ALERT("trezor_stopped_alert"),
   TREZOR_FAILURE_ALERT("trezor_failure_alert"),
 
   PEER_COUNT("peer_count"),
@@ -319,7 +336,7 @@ public enum MessageKey {
   CONFIRM_SEND_TITLE("confirm_send_title"),
   SEND_PROGRESS_TITLE("send_progress_title"),
 
-  EXIT_TITLE("exit_title"),
+  EXIT_OR_SWITCH_TITLE("exit_or_switch_title"),
 
   ABOUT_TITLE("about_title"),
 
@@ -328,11 +345,20 @@ public enum MessageKey {
   WELCOME_TITLE("welcome_title"),
   SELECT_LANGUAGE_TITLE("select_language_title"),
   SELECT_WALLET_TITLE("select_wallet_title"),
+
+  CREATE_WALLET_PREPARATION_TITLE("create_wallet_preparation_title"),
+  SELECT_BACKUP_LOCATION_TITLE("select_backup_location_title"),
   CREATE_WALLET_SEED_PHRASE_TITLE("create_wallet_seed_phrase_title"),
   CONFIRM_WALLET_SEED_PHRASE_TITLE("confirm_wallet_seed_phrase_title"),
   CREATE_WALLET_PASSWORD_TITLE("create_wallet_password_title"),
-  SELECT_BACKUP_LOCATION_TITLE("select_backup_location_title"),
   CREATE_WALLET_REPORT_TITLE("create_wallet_report_title"),
+
+  LOAD_WALLET_REPORT_TITLE("load_wallet_report_title"),
+
+  // Trezor
+  CREATE_TREZOR_WALLET_PREPARATION_TITLE("create_trezor_wallet_preparation_title"),
+  CREATE_TREZOR_WALLET_ENTER_DETAILS_TITLE("create_trezor_wallet_enter_details_title"),
+  CREATE_TREZOR_WALLET_REQUEST_CREATE_WALLET_TITLE("create_trezor_wallet_request_create_wallet_title"),
 
   RESTORE_PASSWORD_SEED_PHRASE_TITLE("restore_password_seed_phrase_title"),
   RESTORE_PASSWORD_BACKUP_LOCATION_TITLE("restore_password_backup_location_title"),
@@ -361,9 +387,80 @@ public enum MessageKey {
   PASSWORD_UNLOCK("password_unlock"),
   PASSWORD_UNLOCK_TOOLTIP("password_unlock_tooltip"),
 
+  // Credentials
+  TREZOR_UNLOCK_TITLE("trezor_unlock_title"),
   PIN_TITLE("pin_title"),
+  CHANGE_PIN_TITLE("change_pin_title"),
+  CHANGE_PIN_REPORT_TITLE("change_pin_report_title"),
   PIN_INTRODUCTION("pin_introduction"),
+
   PIN_FAILURE("pin_failure"),
+  PIN_SUCCESS("pin_success"),
+
+  // Use Trezor
+  TREZOR_CONFIRM_ADD_PIN_TITLE("trezor_confirm_add_pin_title"),
+  TREZOR_CONFIRM_CHANGE_PIN_TITLE("trezor_confirm_change_pin_title"),
+  TREZOR_CONFIRM_REMOVE_PIN_TITLE("trezor_confirm_remove_pin_title"),
+  TREZOR_PRESS_CONFIRM_TITLE("trezor_press_confirm_title"),
+  TREZOR_PRESS_NEXT_TITLE("trezor_press_next_title"),
+
+  // Operations
+  TREZOR_PRESS_CONFIRM_OPERATION("trezor_press_confirm_operation"),
+  TREZOR_PRESS_NEXT_OPERATION("trezor_press_next_operation"),
+  TREZOR_NO_WALLET_OPERATION("trezor_no_wallet_operation"),
+  TREZOR_NO_WALLET_RECOVERY("trezor_no_wallet_recovery"),
+  TREZOR_FAILURE_OPERATION("trezor_failure_operation"),
+  TREZOR_REMOVE_PIN_OPERATION("trezor_remove_pin_operation"),
+  SEARCHING_FOR_A_CONNECTED_TREZOR_OPERATION("searching_for_a_connected_trezor_operation"),
+  COMMUNICATING_WITH_TREZOR_OPERATION("communicating_with_trezor_operation"),
+
+  // Recovery
+  TREZOR_FAILURE_RECOVERY("trezor_failure_recovery"),
+
+  // Reports
+  TREZOR_CHANGE_PIN_SUCCESS("trezor_change_pin_success"),
+  TREZOR_REMOVE_PIN_SUCCESS("trezor_remove_pin_success"),
+  TREZOR_WIPE_DEVICE_SUCCESS("trezor_wipe_device_success"),
+
+  TREZOR_INCORRECT_PIN_FAILURE("trezor_incorrect_pin_failure"),
+  TREZOR_WIPE_DEVICE_FAILURE("trezor_wipe_device_failure"),
+
+  TREZOR_SIGN_FAILURE("trezor_sign_failure"),
+
+  // Trezor display text
+  TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY("trezor_encrypt_multibit_hd_unlock_display"),
+  TREZOR_ADD_PIN_DISPLAY("trezor_add_pin_display"),
+  TREZOR_CHANGE_PIN_DISPLAY("trezor_change_pin_display"),
+  TREZOR_REMOVE_PIN_DISPLAY("trezor_remove_pin_display"),
+  TREZOR_WORD_DISPLAY("trezor_word_display"),
+  TREZOR_CHECK_WORD_DISPLAY("trezor_check_word_display"),
+  TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY("trezor_transaction_output_confirm_display"),
+  TREZOR_SIGN_CONFIRM_DISPLAY("trezor_sign_confirm_display"),
+  TREZOR_WIPE_CONFIRM_DISPLAY("trezor_wipe_confirm_display"),
+
+  USE_TREZOR_REPORT_TITLE("use_trezor_report_title"),
+  USE_TREZOR_REPORT_MESSAGE_SUCCESS("use_trezor_report_message_success"),
+  USE_TREZOR_REPORT_MESSAGE_FAILURE("use_trezor_report_message_failure"),
+
+  USE_TREZOR_WALLET("use_trezor_wallet"),
+
+  VERIFY_DEVICE("verify_device"),
+  VERIFY_DEVICE_TITLE("verify_device_title"),
+  WIPE_DEVICE("wipe_device"),
+  WIPE_DEVICE_TITLE("wipe_device_title"),
+
+  BUY_TREZOR_TITLE("buy_trezor_title"),
+  BUY_TREZOR_COMMENT("buy_trezor_comment"),
+  BUY_TREZOR("buy_trezor"),
+  BUY_TREZOR_TOOLTIP("buy_trezor_tooltip"),
+
+  TREZOR_FOUND("trezor_found"),
+  NO_TREZOR_FOUND("no_trezor_found"),
+
+  TREZOR_TRANSACTION_CREATED_OPERATION("trezor_transaction_created"),
+
+  ENTER_TREZOR_LABEL("enter_trezor_label"),
+  ENTER_TREZOR_LABEL_TOOLTIP("enter_trezor_label_tooltip"),
 
   // Settings titles
 
@@ -373,14 +470,22 @@ public enum MessageKey {
   APPEARANCE_SETTINGS_TITLE("appearance_settings_title"),
   SOUNDS_SETTINGS_TITLE("sounds_settings_title"),
   FEES_SETTINGS_TITLE("fees_settings_title"),
+  LABS_SETTINGS_TITLE("labs_settings_title"),
 
-  // Tools titles
+  // Manage wallet titles
 
-  SIGN_MESSAGE_TITLE("sign_message_title"),
-  VERIFY_MESSAGE_TITLE("verify_message_title"),
   EDIT_WALLET_TITLE("edit_wallet_title"),
+  WALLET_DETAILS_TITLE("wallet_details_title"),
+
   CHANGE_PASSWORD_TITLE("change_password_title"),
-  VERIFY_NETWORK_TITLE("verify_network_title"),
+
+  CHANGE_PIN_SELECT_OPTION_TITLE("change_pin_select_option_title"),
+  CHANGE_PIN_OPTION("change_pin_option"),
+  REMOVE_PIN_OPTION("remove_pin_option"),
+  CHANGE_PIN_ENTER_CURRENT_PIN_TITLE("change_pin_enter_current_pin_title"),
+  CHANGE_PIN_ENTER_NEW_PIN_TITLE("change_pin_enter_new_pin_title"),
+  CHANGE_PIN_CONFIRM_NEW_PIN_TITLE("change_pin_confirm_new_pin_title"),
+  CHANGE_PIN_CONFIRM_CHANGE_PIN_TITLE("change_pin_confirm_change_pin_title"),
 
   REPAIR_WALLET_TITLE("repair_wallet_title"),
   REPAIR_WALLET_PROGRESS_TITLE("repair_wallet_progress_title"),
@@ -388,6 +493,14 @@ public enum MessageKey {
   EMPTY_WALLET_TITLE("empty_wallet_title"),
   EMPTY_WALLET_CONFIRM_TITLE("empty_wallet_confirm_title"),
   EMPTY_WALLET_PROGRESS_TITLE("empty_wallet_progress_title"),
+
+  // Tools titles
+
+  SIGN_MESSAGE_TITLE("sign_message_title"),
+  VERIFY_MESSAGE_TITLE("verify_message_title"),
+
+  VERIFY_NETWORK_TITLE("verify_network_title"),
+  USE_TREZOR_TITLE("use_trezor_title"),
 
   // Labels
   CONFIRM_SEND_MESSAGE("confirm_send_message"),
@@ -424,16 +537,29 @@ public enum MessageKey {
   EXCHANGE_FIAT_RATE("exchange_fiat_rate"),
   EXCHANGE_FIAT_RATE_WITH_PROVIDER("exchange_fiat_rate_with_provider"),
 
+  CLICK_NEXT_TO_CONTINUE("click_next_to_continue"),
+  CLICK_FINISH_TO_CONTINUE("click_finish_to_continue"),
+
   SELECT_LANGUAGE("select_language"),
   SELECT_LANGUAGE_TOOLTIP("select_language_tooltip"),
+
+  SELECT_WALLET_TYPE("select_wallet_type"),
+  SELECT_WALLET_TYPE_TOOLTIP("select_wallet_type_tooltip"),
+  SELECT_WALLET_TYPE_BIP32("select_wallet_type_bip32"),
+  SELECT_WALLET_TYPE_BIP44("select_wallet_type_bip44"),
 
   SEED_SIZE("seed_size"),
   SEED_SIZE_TOOLTIP("seed_size_tooltip"),
 
   SEED_PHRASE("seed_phrase"),
   SEED_PHRASE_TOOLTIP("seed_phrase_tooltip"),
+
   TIMESTAMP("timestamp"),
   TIMESTAMP_TOOLTIP("timestamp_tooltip"),
+
+  TIMESTAMP_NOTE_1("timestamp_note_1"),
+  TIMESTAMP_NOTE_2("timestamp_note_2"),
+
   MULTI_EDIT_NOTE("multi_edit_note"),
 
   TRANSACTION_CONSTRUCTION_STATUS_SUMMARY("transaction_construction_status_summary"),
@@ -455,8 +581,8 @@ public enum MessageKey {
   SHOW_SOUNDS_WIZARD("show_sounds_wizard"),
   SHOW_SOUNDS_WIZARD_TOOLTIP("show_sounds_wizard_tooltip"),
 
-  SHOW_LAB_WIZARD("show_lab_wizard"),
-  SHOW_LAB_WIZARD_TOOLTIP("show_lab_wizard_tooltip"),
+  SHOW_LABS_WIZARD("show_labs_wizard"),
+  SHOW_LABS_WIZARD_TOOLTIP("show_labs_wizard_tooltip"),
 
   SHOW_UNITS_WIZARD("show_units_wizard"),
   SHOW_UNITS_WIZARD_TOOLTIP("show_units_wizard_tooltip"),
@@ -476,11 +602,17 @@ public enum MessageKey {
   SHOW_CHANGE_PASSWORD_WIZARD("show_change_password_wizard"),
   SHOW_CHANGE_PASSWORD_WIZARD_TOOLTIP("show_change_password_wizard_tooltip"),
 
+  SHOW_CHANGE_PIN_WIZARD("show_change_pin_wizard"),
+  SHOW_CHANGE_PIN_WIZARD_TOOLTIP("show_change_pin_wizard_tooltip"),
+
   SHOW_VERIFY_NETWORK_WIZARD("show_verify_network_wizard"),
   SHOW_VERIFY_NETWORK_WIZARD_TOOLTIP("show_verify_network_wizard_tooltip"),
 
   SHOW_REPAIR_WALLET_WIZARD("show_repair_wallet_wizard"),
   SHOW_REPAIR_WALLET_WIZARD_TOOLTIP("show_repair_wallet_wizard_tooltip"),
+
+  SHOW_WALLET_DETAILS_WIZARD("show_wallet_details_wizard"),
+  SHOW_WALLET_DETAILS_WIZARD_TOOLTIP("show_wallet_details_wizard_tooltip"),
 
   SHOW_EMPTY_WALLET_WIZARD("show_empty_wallet_wizard"),
   SHOW_EMPTY_WALLET_WIZARD_TOOLTIP("show_empty_wallet_wizard_tooltip"),
@@ -494,6 +626,9 @@ public enum MessageKey {
   SHOW_ABOUT_WIZARD("show_about_wizard"),
   SHOW_ABOUT_WIZARD_TOOLTIP("show_about_wizard_tooltip"),
 
+  SHOW_TREZOR_TOOLS_WIZARD("show_trezor_tools_wizard"),
+  SHOW_TREZOR_TOOLS_WIZARD_TOOLTIP("show_trezor_tools_wizard_tooltip"),
+
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),
 
@@ -501,8 +636,8 @@ public enum MessageKey {
   CREATE_WALLET("create_wallet"),
   RESTORE_PASSWORD("restore_password"),
   RESTORE_WALLET("restore_wallet"),
-  USE_HARDWARE_WALLET("use_hardware_wallet"),
   USE_EXISTING_WALLET("use_existing_wallet"),
+  TREZOR_CREATE_WALLET("trezor_create_wallet"),
 
   RESTORE_FROM_SEED_PHRASE("restore_from_seed_phrase"),
   RESTORE_FROM_BACKUP("restore_from_backup"),
@@ -522,14 +657,28 @@ public enum MessageKey {
   ABOUT_NOTE_2("about_note_2"),
   ABOUT_NOTE_3("about_note_3"),
 
+  SELECT_BACKUP_NOTE_1("select_backup_note_1"),
+  SELECT_BACKUP_NOTE_1_TOOLTIP("select_backup_note_1_tooltip"),
+  SELECT_BACKUP_NOTE_2("select_backup_note_2"),
+
+  PREPARATION_NOTE_1("preparation_note_1"),
+  PREPARATION_NOTE_2("preparation_note_2"),
+  PREPARATION_NOTE_3("preparation_note_3"),
+  PREPARATION_NOTE_4("preparation_note_4"),
+  PREPARATION_NOTE_5("preparation_note_5"),
+  PREPARATION_NOTE_6("preparation_note_6"),
+
+  TREZOR_PREPARATION_NOTE_1("trezor_preparation_note_1"),
+  TREZOR_PREPARATION_NOTE_2("trezor_preparation_note_2"),
+  TREZOR_PREPARATION_NOTE_3("trezor_preparation_note_3"),
+  TREZOR_PREPARATION_NOTE_4("trezor_preparation_note_4"),
+  TREZOR_PREPARATION_NOTE_5("trezor_preparation_note_5"),
+  TREZOR_PREPARATION_NOTE_6("trezor_preparation_note_6"),
+
   SELECT_BACKUP_LOCATION_NOTE_1("select_backup_location_note_1"),
   SELECT_BACKUP_LOCATION_NOTE_2("select_backup_location_note_2"),
   SELECT_BACKUP_LOCATION_NOTE_3("select_backup_location_note_3"),
   SELECT_BACKUP_LOCATION_NOTE_4("select_backup_location_note_4"),
-
-  SELECT_BACKUP_NOTE_1("select_backup_note_1"),
-  SELECT_BACKUP_NOTE_1_TOOLTIP("select_backup_note_1_tooltip"),
-  SELECT_BACKUP_NOTE_2("select_backup_note_2"),
 
   SEED_WARNING_NOTE_1("seed_warning_note_1"),
   SEED_WARNING_NOTE_2("seed_warning_note_2"),
@@ -540,7 +689,6 @@ public enum MessageKey {
   CONFIRM_SEED_PHRASE_NOTE_1("confirm_seed_phrase_note_1"),
   CONFIRM_SEED_PHRASE_NOTE_2("confirm_seed_phrase_note_2"),
   CONFIRM_SEED_PHRASE_NOTE_3("confirm_seed_phrase_note_3"),
-  CONFIRM_SEED_PHRASE_NOTE_4("confirm_seed_phrase_note_4"),
 
   WALLET_PASSWORD_NOTE_1("wallet_password_note_1"),
   WALLET_PASSWORD_NOTE_2("wallet_password_note_2"),
@@ -562,7 +710,8 @@ public enum MessageKey {
   RESTORE_TIMESTAMP_NOTE_1("restore_timestamp_note_1"),
   RESTORE_TIMESTAMP_NOTE_2("restore_timestamp_note_2"),
   RESTORE_TIMESTAMP_NOTE_3("restore_timestamp_note_3"),
-  RESTORE_TIMESTAMP_NOTE_4("restore_timestamp_note_4"),
+
+  RESTORE_PASSWORD_NOTE_1("restore_password_note_1"),
 
   PASSWORD_NOTE_1("password_note_1"),
 
@@ -572,6 +721,11 @@ public enum MessageKey {
 
   CHANGE_PASSWORD_NOTE_1("change_password_note_1"),
   CHANGE_PASSWORD_NOTE_2("change_password_note_2"),
+
+  ENTER_CURRENT_PIN("enter_current_pin"),
+  ENTER_NEW_PIN("enter_new_pin"),
+  CONFIRM_NEW_PIN("confirm_new_pin"),
+  ENTER_PIN_LOOK_AT_DEVICE("enter_pin_look_at_device"),
 
   VERIFY_NETWORK_NOTE_1("verify_network_note_1"),
   VERIFY_NETWORK_NOTE_2("verify_network_note_2"),
@@ -678,7 +832,6 @@ public enum MessageKey {
   REPAIR_WALLET_NOTE_1("repair_wallet_note_1"),
   REPAIR_WALLET_NOTE_2("repair_wallet_note_2"),
   REPAIR_WALLET_NOTE_3("repair_wallet_note_3"),
-  REPAIR_WALLET_NOTE_4("repair_wallet_note_4"),
 
   SPENDABLE_BALANCE_IS_LOWER("spendable_balance_is_lower"),
 

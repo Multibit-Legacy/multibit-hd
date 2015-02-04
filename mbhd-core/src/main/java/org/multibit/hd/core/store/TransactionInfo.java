@@ -1,16 +1,16 @@
 package org.multibit.hd.core.store;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
 import org.multibit.hd.core.dto.FiatPayment;
 
 /**
- *  <p>DTO to provide the following to WalletService:</p>
- *  <ul>
- *  <li>Additional information related to a transaction that is not stored in the bitcoinj transaction</li>
- *  </ul>
- *  </p>
- *  
+ * <p>DTO to provide the following to WalletService:</p>
+ * <ul>
+ * <li>Additional information related to a transaction that is not stored in the bitcoinj transaction</li>
+ * </ul>
+ * </p>
+ *
  */
 public class TransactionInfo {
 

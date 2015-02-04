@@ -7,7 +7,7 @@ package org.multibit.hd.ui.views.wizards;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum WizardButton {
 
@@ -15,7 +15,7 @@ public enum WizardButton {
   CANCEL,
   NEXT,
   PREVIOUS,
-  FINISH,
+  FINISH, // TODO Make Unlock its own button
   APPLY,
   RESTORE
 

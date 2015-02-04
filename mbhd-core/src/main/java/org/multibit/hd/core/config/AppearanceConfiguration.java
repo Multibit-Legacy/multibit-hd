@@ -1,5 +1,7 @@
 package org.multibit.hd.core.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * <p>Configuration to provide the following to application:</p>
  * <ul>
@@ -9,7 +11,7 @@ package org.multibit.hd.core.config;
  * <p>This configuration is for general appearance parameters</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class AppearanceConfiguration {
 
@@ -31,13 +33,14 @@ public class AppearanceConfiguration {
   /**
    * The version field cannot contain "/" or "(" or ")" since it is used in the PeerGroup of Bitcoinj
    */
-  private String version = "0.0.3";
+  private final String currentVersion = "0.0.5beta";
+  private String version = currentVersion;
 
   /**
    * Good default width and height for centered initial screen and balance displayed
    * Arranged as either W,H (centered) or X,Y,W,H (absolute)
    */
-  private String lastFrameBounds = "1000,650";
+  private String lastFrameBounds = "900,550";
 
   private String sidebarWidth = "180";
 
@@ -108,10 +111,19 @@ public class AppearanceConfiguration {
   }
 
   /**
-   * @return The current version number
+   * @return The version number stored in the YAML
    */
   public String getVersion() {
     return version;
+  }
+
+  /**
+   *
+   * @return the current version (hardwired in the code)
+   */
+  @JsonIgnore
+  public String getCurrentVersion() {
+    return currentVersion;
   }
 
   public void setVersion(String version) {

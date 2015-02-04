@@ -14,7 +14,7 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class AcceptLicenceUseCase extends AbstractFestUseCase {
 
@@ -60,6 +60,8 @@ public class AcceptLicenceUseCase extends AbstractFestUseCase {
     window
       .radioButton(MessageKey.ACCEPT_LICENCE.getKey())
       .click();
+
+    pauseForComponentReset();
 
     // Verify the next button is enabled
     window

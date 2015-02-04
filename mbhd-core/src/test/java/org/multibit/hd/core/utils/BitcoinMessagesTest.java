@@ -1,9 +1,11 @@
 package org.multibit.hd.core.utils;
 
 import com.google.common.base.Optional;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.testing.FixtureAsserts;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -13,7 +15,15 @@ public class BitcoinMessagesTest {
   @Before
   public void setUp() throws Exception {
 
+    InstallationManager.unrestricted = true;
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+
+  }
+
+  @After
+  public void tearDown() throws Exception {
+
+    InstallationManager.unrestricted = false;
 
   }
 

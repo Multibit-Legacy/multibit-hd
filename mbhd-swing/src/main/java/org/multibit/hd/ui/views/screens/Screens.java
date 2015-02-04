@@ -12,6 +12,8 @@ import org.multibit.hd.ui.views.screens.help.HelpScreenModel;
 import org.multibit.hd.ui.views.screens.help.HelpScreenView;
 import org.multibit.hd.ui.views.screens.history.HistoryScreenModel;
 import org.multibit.hd.ui.views.screens.history.HistoryScreenView;
+import org.multibit.hd.ui.views.screens.manage_wallet.ManageWalletScreenModel;
+import org.multibit.hd.ui.views.screens.manage_wallet.ManageWalletScreenView;
 import org.multibit.hd.ui.views.screens.payments.PaymentsScreenModel;
 import org.multibit.hd.ui.views.screens.payments.PaymentsScreenView;
 import org.multibit.hd.ui.views.screens.settings.SettingsScreenModel;
@@ -49,7 +51,7 @@ import org.multibit.hd.ui.views.screens.wallet.SendRequestScreenView;
  * will handle all the work for you.</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class Screens {
 
@@ -61,8 +63,11 @@ public class Screens {
     final AbstractScreenView view;
 
     switch (screen) {
+
+      // Sidebar screens
+
       case SEND_REQUEST:
-        view = new SendRequestScreenView(new SendRequestScreenModel(screen), screen, MessageKey.CONTACTS);
+        view = new SendRequestScreenView(new SendRequestScreenModel(screen), screen, MessageKey.SEND_OR_REQUEST);
         break;
       case CONTACTS:
         // Expect a current contact service
@@ -70,24 +75,30 @@ public class Screens {
         view = new ContactsScreenView(new ContactsScreenModel(contactService, screen), screen, MessageKey.CONTACTS);
         break;
       case TRANSACTIONS:
-        view = new PaymentsScreenView(new PaymentsScreenModel(screen), screen, MessageKey.CONTACTS);
+        view = new PaymentsScreenView(new PaymentsScreenModel(screen), screen, MessageKey.PAYMENTS);
         break;
       case HELP:
-        view = new HelpScreenView(new HelpScreenModel(screen), screen, MessageKey.CONTACTS);
+        view = new HelpScreenView(new HelpScreenModel(screen), screen, MessageKey.HELP);
         break;
+      case SETTINGS:
+        view = new SettingsScreenView(new SettingsScreenModel(screen), screen, MessageKey.SETTINGS);
+        break;
+      case MANAGE_WALLET:
+        view = new ManageWalletScreenView(new ManageWalletScreenModel(screen), screen, MessageKey.MANAGE_WALLET);
+        break;
+      case TOOLS:
+        view = new ToolsScreenView(new ToolsScreenModel(screen), screen, MessageKey.TOOLS);
+        break;
+      case EXIT:
+        view = new ExitScreenView(new ExitScreenModel(screen), screen, MessageKey.EXIT);
+        break;
+
+      // Non-sidebar screens
+
       case HISTORY:
         // Expect a current history service
         HistoryService historyService = CoreServices.getCurrentHistoryService();
-        view = new HistoryScreenView(new HistoryScreenModel(historyService, screen), screen, MessageKey.CONTACTS);
-        break;
-      case SETTINGS:
-        view = new SettingsScreenView(new SettingsScreenModel(screen), screen, MessageKey.CONTACTS);
-        break;
-      case TOOLS:
-        view = new ToolsScreenView(new ToolsScreenModel(screen), screen, MessageKey.CONTACTS);
-        break;
-      case EXIT:
-        view = new ExitScreenView(new ExitScreenModel(screen), screen, MessageKey.CONTACTS);
+        view = new HistoryScreenView(new HistoryScreenModel(historyService, screen), screen, MessageKey.HISTORY);
         break;
       default:
         throw new IllegalStateException("Unknown screen:" + screen.name());

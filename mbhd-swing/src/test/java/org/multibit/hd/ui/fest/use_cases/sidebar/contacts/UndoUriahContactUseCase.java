@@ -17,7 +17,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * <p>Requires the "Uriah Heep" contact to have ben deleted</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class UndoUriahContactUseCase extends AbstractFestUseCase {
 

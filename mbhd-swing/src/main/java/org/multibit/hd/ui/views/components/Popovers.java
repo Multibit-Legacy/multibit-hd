@@ -17,7 +17,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class Popovers {
 
@@ -36,7 +36,7 @@ public class Popovers {
   public static ModelAndView<EnterYesNoModel, EnterYesNoView> newDiscardYesNoPopoverMaV(String panelName) {
 
     EnterYesNoModel model = new EnterYesNoModel(panelName);
-    EnterYesNoView view = new EnterYesNoView(model, AwesomeIcon.TRASH_O, true);
+    EnterYesNoView view = new EnterYesNoView(model, AwesomeIcon.TRASH, true);
 
     return new ModelAndView<>(model, view);
 

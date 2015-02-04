@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases.sidebar.tools.sign_message;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.crypto.DeterministicKey;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.crypto.DeterministicKey;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.dto.CoreMessageKey;
@@ -22,7 +22,7 @@ import java.util.Map;
  * <p>Requires the "tools" screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ShowThenFinishSignMessageUseCase extends AbstractFestUseCase {
 
@@ -180,7 +180,7 @@ public class ShowThenFinishSignMessageUseCase extends AbstractFestUseCase {
 
     // Verify the underlying screen is back
     window
-      .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
+      .button(MessageKey.SHOW_SIGN_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
   }

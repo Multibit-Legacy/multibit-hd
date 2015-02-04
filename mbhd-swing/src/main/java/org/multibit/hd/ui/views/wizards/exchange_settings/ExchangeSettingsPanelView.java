@@ -13,6 +13,7 @@ import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.CoreServices;
@@ -50,7 +51,7 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeSettingsWizardModel, ExchangeSettingsPanelModel> implements ActionListener {
 
@@ -205,7 +206,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
           exchangeRateProviderBrowserButton.setEnabled(true);
 
           // Get all the currencies available at the exchange
-          ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(bitcoinConfiguration);
+          final ExchangeTickerService exchangeTickerService = CoreServices.createAndStartExchangeService(bitcoinConfiguration);
 
           ListenableFuture<String[]> futureAllCurrencies = exchangeTickerService.allCurrencies();
           Futures.addCallback(futureAllCurrencies, new FutureCallback<String[]>() {
@@ -223,6 +224,9 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
                   ComboBoxes.selectFirstMatch(currencyCodeComboBox, allCurrencies, bitcoinConfiguration.getLocalCurrencyCode());
 
+                  // Dispose of the exchange ticker service
+                  exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
+
                 }
               });
 
@@ -230,6 +234,9 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
             @Override
             public void onFailure(Throwable t) {
+
+              // Dispose of the exchange ticker service
+              exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 
               handleFailure(t);
             }
@@ -408,7 +415,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     getWizardModel().getConfiguration().getBitcoin().setCurrentExchange(exchangeKey.name());
 
     // Reset the available currencies
-    ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(getWizardModel().getConfiguration().getBitcoin());
+    final ExchangeTickerService exchangeTickerService = CoreServices.createAndStartExchangeService(getWizardModel().getConfiguration().getBitcoin());
     ListenableFuture<String[]> futureAllCurrencies = exchangeTickerService.allCurrencies();
     Futures.addCallback(futureAllCurrencies, new FutureCallback<String[]>() {
       @Override
@@ -447,6 +454,8 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
           }
         });
 
+        // Dispose of the exchange ticker service
+        exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 
       }
 
@@ -456,6 +465,9 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
         // Clear the currency combo
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         currencyCodeComboBox.setModel(model);
+
+        // Dispose of the exchange ticker service
+        exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 
         handleFailure(t);
 
@@ -510,7 +522,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     BitcoinConfiguration bitcoinConfiguration = getWizardModel().getConfiguration().getBitcoin();
 
     // Build a custom exchange ticker service from the wizard model
-    ExchangeTickerService exchangeTickerService = CoreServices.newExchangeService(bitcoinConfiguration);
+    final ExchangeTickerService exchangeTickerService = CoreServices.createAndStartExchangeService(bitcoinConfiguration);
     ListenableFuture<Ticker> futureTicker = exchangeTickerService.latestTicker();
 
     // Avoid freezing the UI
@@ -550,11 +562,16 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
           }
         });
 
+        // Dispose of the exchange ticker service
+        exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 
       }
 
       @Override
       public void onFailure(Throwable t) {
+
+        // Dispose of the exchange ticker service
+        exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 
         handleFailure(t);
 

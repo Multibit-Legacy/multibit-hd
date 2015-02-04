@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ResourceBundleTools {
 
@@ -148,6 +148,7 @@ public class ResourceBundleTools {
         String otherContent = baseBundle.getString(bundleKey);
 
         if (otherContent.contains(content)) {
+          // Printing resource info
           System.out.printf("MessageKey: '%s' ('%s')%n'%s' ('%s'))%n", messageKey.getKey(), content, bundleKey, otherContent);
           System.out.println("---");
         }

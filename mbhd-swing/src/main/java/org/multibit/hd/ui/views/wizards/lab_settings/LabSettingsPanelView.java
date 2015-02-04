@@ -26,13 +26,14 @@ import java.awt.event.ActionListener;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 
 public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWizardModel, LabSettingsPanelModel> implements ActionListener {
 
   // Panel specific components
   private JComboBox<String> torYesNoComboBox;
+  private JComboBox<String> trezorYesNoComboBox;
 
   /**
    * @param wizard    The wizard managing the states
@@ -40,7 +41,7 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
    */
   public LabSettingsPanelView(AbstractWizard<LabSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SHOW_LAB_WIZARD, AwesomeIcon.FLASK);
+    super(wizard, panelName, MessageKey.LABS_SETTINGS_TITLE, AwesomeIcon.FLASK);
 
   }
 
@@ -70,11 +71,15 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
     torYesNoComboBox = ComboBoxes.newTorYesNoComboBox(this, configuration.isTor());
+    trezorYesNoComboBox = ComboBoxes.newTrezorYesNoComboBox(this, configuration.isTrezor());
 
     contentPanel.add(Labels.newLabChangeNote(), "growx,span 2,wrap");
 
     contentPanel.add(Labels.newSelectTor(), "shrink");
     contentPanel.add(torYesNoComboBox, "growx,wrap");
+
+    contentPanel.add(Labels.newSelectTrezor(), "shrink");
+    contentPanel.add(trezorYesNoComboBox, "growx,wrap");
 
   }
 
@@ -144,6 +149,9 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
     JComboBox source = (JComboBox) e.getSource();
     if (ComboBoxes.TOR_COMMAND.equals(e.getActionCommand())) {
       configuration.setTor(source.getSelectedIndex() == 0);
+    }
+    if (ComboBoxes.TREZOR_COMMAND.equals(e.getActionCommand())) {
+      configuration.setTrezor(source.getSelectedIndex() == 0);
     }
 
     // Update the model

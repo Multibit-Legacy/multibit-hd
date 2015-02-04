@@ -7,9 +7,9 @@ import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.TextBoxes;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.File;
 
 /**
@@ -20,7 +20,7 @@ import java.io.File;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class SelectFileView extends AbstractComponentView<SelectFileModel> {
 
@@ -51,14 +51,22 @@ public class SelectFileView extends AbstractComponentView<SelectFileModel> {
     // Fill the text area with appropriate content
     selectedFileTextField.setText(model.getValue());
 
-    // Bind a key listener to allow instant update of UI to entered data
-    selectedFileTextField.addKeyListener(new KeyAdapter() {
-
+    // Bind a document listener to allow instant update of UI to entered data
+    selectedFileTextField.getDocument().addDocumentListener(new DocumentListener() {
       @Override
-      public void keyReleased(KeyEvent e) {
+      public void insertUpdate(DocumentEvent e) {
         updateModelFromView();
       }
 
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        updateModelFromView();
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        updateModelFromView();
+      }
     });
 
     // Configure the actions

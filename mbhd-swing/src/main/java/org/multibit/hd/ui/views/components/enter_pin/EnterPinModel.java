@@ -7,6 +7,7 @@ import org.multibit.hd.ui.models.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class EnterPinModel implements Model<String> {
 
@@ -45,19 +46,22 @@ public class EnterPinModel implements Model<String> {
   }
 
   /**
-   * @return a String consisting of the button positions of the PIN
+   * @return The button positions of the PIN using a numerical keyboard layout (1 bottom left, 9 top right)
    */
   @Override
   public String getValue() {
+
     StringBuilder builder = new StringBuilder();
     for (Integer buttonPosition : buttonPositionsPressed) {
       builder.append(buttonPosition.toString());
     }
+
     return builder.toString();
   }
 
   @Override
   public void setValue(String value) {
+
     Preconditions.checkNotNull(value, "'value' must be present");
 
     buttonPositionsPressed = new ArrayList<>();
@@ -66,28 +70,35 @@ public class EnterPinModel implements Model<String> {
     }
   }
 
-//  public void setPin(char[] pin) {
-//
-//    this.pin = Optional.of(pin);
-//
-//    // Alert the panel model that a component has changed
-//    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
-//  }
-
   public void addButtonPressed(int buttonPosition) {
-    log.debug("Saw a button pressed at position " + buttonPosition);
+
     buttonPositionsPressed.add(buttonPosition);
 
-    // Alert the panel model that a component has changed
-    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        // Alert the panel model that a component has changed
+        ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
+
+      }
+    });
   }
 
   public void removeLastButtonPressed() {
+
     if (!buttonPositionsPressed.isEmpty()) {
       buttonPositionsPressed.remove(buttonPositionsPressed.size() - 1);
 
-      // Alert the panel model that a component has changed
-      ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
+
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          // Alert the panel model that a component has changed
+          ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
+        }
+      });
+
     }
+
   }
 }

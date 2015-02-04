@@ -7,7 +7,7 @@ package org.multibit.hd.ui.views.wizards.change_password;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public enum ChangePasswordState {
 

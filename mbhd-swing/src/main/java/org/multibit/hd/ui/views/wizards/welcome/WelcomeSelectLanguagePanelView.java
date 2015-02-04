@@ -17,6 +17,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -30,9 +32,11 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
+
+  private static final Logger log = LoggerFactory.getLogger(WelcomeSelectLanguagePanelView.class);
 
   private JComboBox<String> languagesComboBox;
 
@@ -135,6 +139,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
 
     // Trigger the wizard hide process manually (no suitable button available)
     // using a deferred hide (control passes directly to handleHide)
+
     ViewEvents.fireWizardDeferredHideEvent(getPanelName(), false);
 
     // Make the switch immediately

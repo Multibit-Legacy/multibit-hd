@@ -1,20 +1,22 @@
 package org.multibit.hd.brit.matcher;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.AddressFormatException;
-import com.google.bitcoin.params.MainNetParams;
 import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.AddressFormatException;
+import org.bitcoinj.params.MainNetParams;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.multibit.hd.brit.dto.BRITWalletId;
 import org.multibit.hd.brit.dto.WalletToEncounterDateLink;
-import org.multibit.hd.brit.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +94,22 @@ public class BasicMatcherStore implements MatcherStore {
   }
 
   /**
+   * Work out the file part of a filename
+   *
+   * @param name of file
+   *
+   * @return file part of filename
+   */
+  public static String filePart(String name) {
+    int s = name.lastIndexOf(File.separatorChar);
+    if (s == -1) {
+      return name;
+    } else {
+      return name.substring(s + 1);
+    }
+  }
+
+  /**
    * Initialise the Bitcoin addresses
    */
   private void initialiseAddresses() {
@@ -114,7 +132,7 @@ public class BasicMatcherStore implements MatcherStore {
       }
     }
 
-    byte[] walletToEncounterDatesAsBytes = FileUtils.readFile(walletToEncounterDateFile); // Will scale better if streaming
+    byte[] walletToEncounterDatesAsBytes = Files.toByteArray(walletToEncounterDateFile);
     String walletToEncounterDates = new String(walletToEncounterDatesAsBytes, Charsets.UTF_8);
 
     // Split into lines - each line contains a serialised WalletToEncounterDateLink
@@ -130,6 +148,7 @@ public class BasicMatcherStore implements MatcherStore {
 
   }
 
+  @SuppressFBWarnings({"PATH_TRAVERSAL_IN"})
   private void buildEncounterMaps() {
 
     encounterDateToBitcoinAddressesMap = Maps.newHashMap();
@@ -140,7 +159,7 @@ public class BasicMatcherStore implements MatcherStore {
 
     if (linksFiles != null) {
       for (File linkFile : linksFiles) {
-        String filePart = FileUtils.filePart(linkFile.getAbsolutePath());
+        String filePart = filePart(linkFile.getAbsolutePath());
         // Remove any .txt
         filePart = filePart.replace(LINKS_FILENAME_SUFFIX, "");
 
@@ -169,15 +188,13 @@ public class BasicMatcherStore implements MatcherStore {
     // Update the in memory data representation
     previousEncounterMap.put(walletToEncounterDateLink.getBritWalletId(), walletToEncounterDateLink);
 
-    // Append link data to backing file
-    try {
-      // true = append file
-      FileWriter fileWriter = new FileWriter(walletToEncounterDateFile, true);
-      BufferedWriter bufferWriter = new BufferedWriter(fileWriter);
+    // Require this awkward approach to ensure UTF-8 is used and streams are closed
+    try (Writer fileWriter = new OutputStreamWriter(new FileOutputStream(walletToEncounterDateFile, true), Charsets.UTF_8);
+         BufferedWriter bufferWriter = new BufferedWriter(fileWriter)) {
+
       bufferWriter.write(walletToEncounterDateLink.serialise() + "\n");
-      bufferWriter.close();
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error(e.getMessage(), e);
     }
 
   }
@@ -197,6 +214,7 @@ public class BasicMatcherStore implements MatcherStore {
     return encounterDateToBitcoinAddressesMap.get(convertToMidnight(encounterDate));
   }
 
+  @SuppressFBWarnings({"PATH_TRAVERSAL_IN", "PATH_TRAVERSAL_IN"})
   @Override
   public void storeBitcoinAddressesForDate(Set<Address> bitcoinAddresses, Date encounterDate) {
 
@@ -204,8 +222,11 @@ public class BasicMatcherStore implements MatcherStore {
     encounterDateToBitcoinAddressesMap.put(convertToMidnight(encounterDate), bitcoinAddresses);
 
     // Also write to a file in the by-date directory
-    String linksDirectory = backingStoreDirectory + File.separator + NAME_OF_DIRECTORY_CONTAINING_BITCOIN_ADDRESSES_BY_DATE;
-    FileUtils.createDirectoryIfNecessary(new File(linksDirectory));
+    File linksDirectory = new File(backingStoreDirectory + File.separator + NAME_OF_DIRECTORY_CONTAINING_BITCOIN_ADDRESSES_BY_DATE);
+    if (!linksDirectory.exists()) {
+      Preconditions.checkState(linksDirectory.mkdir(), "Could not create the directory of '" + linksDirectory + "'");
+    }
+    Preconditions.checkState(linksDirectory.isDirectory(), "Incorrectly identified the directory of '" + linksDirectory + " as a file");
 
     String filename = linksDirectory + File.separator
       + utcShortDateWithHyphensFormatter.print(new DateTime(encounterDate, DateTimeZone.UTC)) + LINKS_FILENAME_SUFFIX;
@@ -220,7 +241,7 @@ public class BasicMatcherStore implements MatcherStore {
     try {
       storeBitcoinAddressesToFile(bitcoinAddresses, filename);
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("Failed to store Bitcoin addresses for date", e);
     }
   }
 
@@ -235,7 +256,7 @@ public class BasicMatcherStore implements MatcherStore {
     try {
       storeBitcoinAddressesToFile(allBitcoinAddresses, allBitcoinAddressesFilename);
     } catch (IOException e) {
-      e.printStackTrace();
+      log.error("Failed to store all Bitcoin addresses", e);
     }
   }
 
@@ -251,6 +272,7 @@ public class BasicMatcherStore implements MatcherStore {
     return (new DateTime(inputDate, DateTimeZone.UTC)).toDateMidnight().toDate();
   }
 
+  @SuppressFBWarnings({"PATH_TRAVERSAL_OUT"})
   private void storeBitcoinAddressesToFile(Set<Address> bitcoinAddresses, String filename) throws IOException {
 
     // Convert the bitcoin addresses to a byte array
@@ -263,10 +285,11 @@ public class BasicMatcherStore implements MatcherStore {
     byte[] bitcoinAddressesAsBytes = builder.toString().getBytes(Charsets.UTF_8);
 
     FileOutputStream bitcoinAddressesFileOutputStream = new FileOutputStream(filename);
-    FileUtils.writeFile(new ByteArrayInputStream(bitcoinAddressesAsBytes), bitcoinAddressesFileOutputStream);
+    ByteStreams.copy(new ByteArrayInputStream(bitcoinAddressesAsBytes), bitcoinAddressesFileOutputStream);
 
   }
 
+  @SuppressFBWarnings({"PATH_TRAVERSAL_IN"})
   private Set<Address> readBitcoinAddresses(String filename) {
 
     Set<Address> addresses = Sets.newHashSet();

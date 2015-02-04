@@ -17,7 +17,7 @@ import static org.fest.swing.timing.Timeout.timeout;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class CreateWalletReportUseCase extends AbstractFestUseCase {
 
@@ -61,29 +61,6 @@ public class CreateWalletReportUseCase extends AbstractFestUseCase {
       .button(MessageKey.FINISH.getKey())
       .requireEnabled(timeout(2, TimeUnit.SECONDS))
       .click();
-
-    // Wait for credentials wizard Exit button to appear
-    pauseForViewReset();
-
-    window
-      .button(MessageKey.EXIT.getKey())
-      .requireVisible()
-        // Allow a short time to overcome initialisation delays
-      .requireEnabled(timeout(3, TimeUnit.SECONDS));
-
-    // Examine the list
-    window
-      .comboBox(MessageKey.SELECT_WALLET.getKey())
-      .requireEnabled()
-      .requireSelection(0)
-      .requireNotEditable();
-
-    String description =window
-      .label(MessageKey.DESCRIPTION.getKey())
-      .text();
-
-    assertThat(description).startsWith("Wallet created");
-
 
   }
 

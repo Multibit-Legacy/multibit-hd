@@ -1,12 +1,13 @@
 package org.multibit.hd.ui.views.components;
 
-import com.google.bitcoin.core.NetworkParameters;
+import org.bitcoinj.core.NetworkParameters;
 import com.google.common.base.Preconditions;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.comparators.BackupSummaryDescendingComparator;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.utils.BitcoinSymbol;
@@ -40,7 +41,7 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ComboBoxes {
 
@@ -101,6 +102,10 @@ public class ComboBoxes {
    * The "Tor" combo box action command
    */
   public static final String TOR_COMMAND = "tor";
+  /**
+   * The "Trezor" combo box action command
+   */
+  public static final String TREZOR_COMMAND = "trezor";
 
   /**
    * Utilities have no public constructor
@@ -251,6 +256,24 @@ public class ComboBoxes {
     AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_TOR, MessageKey.SELECT_TOR_TOOLTIP);
 
     comboBox.setActionCommand(TOR_COMMAND);
+
+    return comboBox;
+  }
+
+  /**
+   * @param listener The action listener to alert when the selection is made
+   * @param useTor   True if the "yes" option should be pre-selected
+   *
+   * @return A new "yes/no" combo box
+   */
+  public static JComboBox<String> newTrezorYesNoComboBox(ActionListener listener, boolean useTor) {
+
+    JComboBox<String> comboBox = newYesNoComboBox(listener, useTor);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_TREZOR, MessageKey.SELECT_TREZOR_TOOLTIP);
+
+    comboBox.setActionCommand(TREZOR_COMMAND);
 
     return comboBox;
   }
@@ -608,6 +631,9 @@ public class ComboBoxes {
     ListCellRenderer<BackupSummary> renderer = new BackupSummaryListCellRenderer();
     comboBox.setRenderer(renderer);
 
+    // Use a sorted model for maximum compatibility across platforms
+    comboBox.setModel(new SortedComboBoxModel<>(new BackupSummaryDescendingComparator()));
+
     // Ensure we start with nothing selected
     comboBox.setSelectedIndex(-1);
 
@@ -728,6 +754,29 @@ public class ComboBoxes {
   }
 
   /**
+   * @param listener The action listener
+   *
+   * @return A new "restore wallet type" combo box
+   */
+  public static JComboBox<String> newRestoreWalletTypeComboBox(ActionListener listener) {
+
+    JComboBox<String> comboBox = newReadOnlyComboBox(new String[]{
+        Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP32),
+        Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP44)
+      });
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_WALLET_TYPE, MessageKey.SELECT_WALLET_TYPE_TOOLTIP);
+
+    comboBox.setSelectedIndex(0);
+
+    // Add the listener at the end to avoid false events
+    comboBox.addActionListener(listener);
+
+    return comboBox;
+  }
+
+  /**
    * @param comboBox The combo box to set the selection on
    * @param items    The items in the model
    * @param item     the item that should be matched using a case-sensitive "starts with" approach
@@ -750,5 +799,4 @@ public class ComboBoxes {
     }
 
   }
-
 }

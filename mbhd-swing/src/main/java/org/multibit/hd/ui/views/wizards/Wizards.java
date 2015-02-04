@@ -15,7 +15,12 @@ import org.multibit.hd.ui.views.wizards.appearance_settings.AppearanceSettingsWi
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordState;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizard;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizardModel;
+import org.multibit.hd.ui.views.wizards.change_pin.ChangePinState;
+import org.multibit.hd.ui.views.wizards.change_pin.ChangePinWizard;
+import org.multibit.hd.ui.views.wizards.change_pin.ChangePinWizardModel;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsState;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizardModel;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizard;
@@ -46,8 +51,6 @@ import org.multibit.hd.ui.views.wizards.lab_settings.LabSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsState;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizard;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizardModel;
-import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
-import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsState;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsWizard;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsWizardModel;
@@ -70,13 +73,20 @@ import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsState;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsWizard;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsWizardModel;
+import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorState;
+import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorWizard;
+import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorWizardModel;
 import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageState;
 import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageWizard;
 import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageWizardModel;
 import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkState;
 import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkWizard;
 import org.multibit.hd.ui.views.wizards.verify_network.VerifyNetworkWizardModel;
+import org.multibit.hd.ui.views.wizards.wallet_details.WalletDetailsState;
+import org.multibit.hd.ui.views.wizards.wallet_details.WalletDetailsWizard;
+import org.multibit.hd.ui.views.wizards.wallet_details.WalletDetailsWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
@@ -113,11 +123,12 @@ import java.util.List;
  * will handle all the work for you.</p>
  *
  * @since 0.0.1
- *  
  */
 public class Wizards {
 
   private static final Logger log = LoggerFactory.getLogger(Wizards.class);
+
+  private static CredentialsWizard credentialsWizard = null;
 
   /**
    * @return A new "exit" wizard
@@ -125,7 +136,7 @@ public class Wizards {
   public static ExitWizard newExitWizard() {
 
     log.debug("New 'Exit wizard'");
-    return new ExitWizard(new ExitWizardModel(ExitState.EXIT_CONFIRM), true);
+    return new ExitWizard(new ExitWizardModel(ExitState.SELECT_RESET_OPTION), true);
   }
 
   /**
@@ -203,13 +214,13 @@ public class Wizards {
   /**
    * @return A new "welcome" wizard for the initial set up
    */
-  public static WelcomeWizard newExitingWelcomeWizard(WelcomeWizardState initialState) {
+  public static WelcomeWizard newExitingWelcomeWizard(WelcomeWizardState initialState, WelcomeWizardMode mode) {
 
-    log.debug("New 'Exiting welcome wizard'");
+    log.debug("New 'Exiting welcome wizard'. Initial state: {}, mode: {}", initialState, mode);
 
     Preconditions.checkNotNull(initialState, "'initialState' must be present");
 
-    return new WelcomeWizard(new WelcomeWizardModel(initialState), true);
+    return new WelcomeWizard(new WelcomeWizardModel(initialState, mode), true);
 
   }
 
@@ -236,30 +247,45 @@ public class Wizards {
   }
 
   /**
-   * @return A new "credentials" wizard for a warm start - requesting the user enters a Password
+   * @param credentialsRequestType whether the user enters a password or PIN
+   *
+   * @return A new "credentials" wizard for a warm start
    */
-  public static CredentialsWizard newExitingCredentialsWizard() {
+  public static CredentialsWizard newExitingCredentialsWizard(CredentialsRequestType credentialsRequestType) {
 
-    return newExitingCredentialsWizard(CredentialsRequestType.PASSWORD);
+    log.debug("Creating 'Credentials wizard' with credentialsRequestType = " + credentialsRequestType);
+    CredentialsWizardModel model;
+    switch (credentialsRequestType) {
+      case TREZOR:
+        model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY, credentialsRequestType);
+        break;
+      case PASSWORD:
+        model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD, credentialsRequestType);
+        break;
+      default:
+        throw new UnsupportedOperationException("The '" + credentialsRequestType.name() + "' is not supported");
+    }
+
+    // TODO This needs to be fixed (see #348)
+    synchronized (Wizards.class) {
+      if (credentialsWizard != null) {
+        // Clear down all existing subscriptions
+        credentialsWizard.unsubscribeAll();
+      }
+      credentialsWizard = new CredentialsWizard(model, true);
+      log.debug("CredentialsWizard: {}", credentialsWizard);
+    }
+    return credentialsWizard;
 
   }
 
   /**
-    * @return A new "credentials" wizard for a warm start
-    */
-   public static CredentialsWizard newExitingCredentialsWizard(CredentialsRequestType credentialsRequestType) {
+   * @return A new "use trezor" wizard
+   */
+  public static UseTrezorWizard newUseTrezorWizard() {
 
-     log.debug("New 'Credentials wizard' with credentialsRequestType = " + credentialsRequestType);
-     switch (credentialsRequestType) {
-       case NO_TREZOR_PIN:
-         throw new UnsupportedOperationException("TODO: No Trezor PIN support in Credentials Wizard");
-       case TREZOR_PIN:
-         return new CredentialsWizard(new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PIN, credentialsRequestType), true);
-       case PASSWORD:
-       default:
-         return new CredentialsWizard(new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD, credentialsRequestType), true);
-     }
-   }
+    return new UseTrezorWizard(new UseTrezorWizardModel(UseTrezorState.SELECT_TREZOR_ACTION), false);
+  }
 
   /**
    * @return A new "change credentials" wizard
@@ -269,6 +295,17 @@ public class Wizards {
     log.debug("New 'Change credentials wizard'");
 
     return new ChangePasswordWizard(new ChangePasswordWizardModel(ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD), false);
+
+  }
+
+  /**
+   * @return A new "change PIN" wizard
+   */
+  public static ChangePinWizard newChangePinWizard() {
+
+    log.debug("New 'Change PIN wizard'");
+
+    return new ChangePinWizard(new ChangePinWizardModel(ChangePinState.SELECT_OPTION), false);
 
   }
 
@@ -426,6 +463,19 @@ public class Wizards {
     Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present");
 
     return new EditWalletWizard(new EditWalletWizardModel(EditWalletState.EDIT_WALLET, currentWalletSummary.get()), false);
+  }
+
+  /**
+   * @return A new "wallet details" wizard for reviewing wallet capabilities
+   */
+  public static WalletDetailsWizard newWalletDetailsWizard() {
+
+    log.debug("New 'Wallet details wizard'");
+
+    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present");
+
+    return new WalletDetailsWizard(new WalletDetailsWizardModel(WalletDetailsState.WALLET_DETAILS, currentWalletSummary.get()), false);
   }
 
 }

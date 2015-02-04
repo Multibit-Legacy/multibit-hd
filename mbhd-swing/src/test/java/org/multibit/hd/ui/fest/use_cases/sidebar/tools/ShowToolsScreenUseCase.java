@@ -15,7 +15,7 @@ import static org.fest.assertions.Assertions.assertThat;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ShowToolsScreenUseCase extends AbstractFestUseCase {
 
@@ -35,36 +35,8 @@ public class ShowToolsScreenUseCase extends AbstractFestUseCase {
       .selectRow(TOOLS_ROW);
 
     // Expect the Tools screen to show
-    window
-      .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
-      .requireVisible()
-      .requireEnabled();
 
-    window
-      .button(MessageKey.SHOW_CHANGE_PASSWORD_WIZARD.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .button(MessageKey.SHOW_EMPTY_WALLET_WIZARD.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .button(MessageKey.SHOW_VERIFY_NETWORK_WIZARD.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .button(MessageKey.SHOW_REPAIR_WALLET_WIZARD.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
-      .button(MessageKey.SHOW_ABOUT_WIZARD.getKey())
-      .requireVisible()
-      .requireEnabled();
-
+    // Row 1
     window
       .button(MessageKey.SHOW_SIGN_WIZARD.getKey())
       .requireVisible()
@@ -74,6 +46,23 @@ public class ShowToolsScreenUseCase extends AbstractFestUseCase {
       .button(MessageKey.SHOW_VERIFY_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
+
+    // Row 2
+    window
+      .button(MessageKey.SHOW_VERIFY_NETWORK_WIZARD.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .button(MessageKey.SHOW_ABOUT_WIZARD.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    window
+      .button(MessageKey.SHOW_TREZOR_TOOLS_WIZARD.getKey())
+      .requireVisible()
+      .requireEnabled();
+
   }
 
 }

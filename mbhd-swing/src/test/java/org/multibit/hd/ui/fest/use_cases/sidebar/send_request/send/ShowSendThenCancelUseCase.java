@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  * <p>Requires the "send" screen to be showing</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ShowSendThenCancelUseCase extends AbstractFestUseCase {
 
@@ -31,6 +31,7 @@ public class ShowSendThenCancelUseCase extends AbstractFestUseCase {
     window
       .button(MessageKey.SHOW_SEND_WIZARD.getKey())
         // Allow time for the Bitcoin network to initialise
+        // This should occur quickly since we're in test mode
       .requireEnabled(Timeout.timeout(5, TimeUnit.SECONDS))
       .click();
 
@@ -46,29 +47,25 @@ public class ShowSendThenCancelUseCase extends AbstractFestUseCase {
     // Verify empty fields to start
     window
       .comboBox(MessageKey.RECIPIENT.getKey())
-      .requireVisible()
-      .requireEnabled()
+      .requireEnabled(Timeout.timeout(5, TimeUnit.SECONDS))
       .requireEditable()
       .requireNoSelection();
 
     window
       .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
-      .requireVisible()
-      .requireEnabled()
+      .requireEnabled(Timeout.timeout(5, TimeUnit.SECONDS))
       .requireEmpty();
 
     // Click Cancel
     window
       .button(MessageKey.CANCEL.getKey())
-      .requireVisible()
-      .requireEnabled()
+      .requireEnabled(Timeout.timeout(5, TimeUnit.SECONDS))
       .click();
 
     // Verify the underlying screen is back
     window
       .button(MessageKey.SHOW_SEND_WIZARD.getKey())
-      .requireVisible()
-      .requireEnabled();
+      .requireVisible();
 
   }
 

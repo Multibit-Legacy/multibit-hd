@@ -5,11 +5,13 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -19,9 +21,10 @@ import java.awt.event.KeyEvent;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(EnterPasswordView.class);
 
   // View components
   private JPasswordField password;
@@ -40,11 +43,12 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
   @Override
   public JPanel newComponentPanel() {
 
-    panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(), // Layout
-      "[][][][]", // Columns
-      "[]" // Rows
-    ));
+    panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(), // Layout
+        "[][][][]", // Columns
+        "[]" // Rows
+      ));
 
     // Keep track of the credentials fields
     password = TextBoxes.newPassword();
@@ -56,20 +60,36 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
     // Configure the actions
     Action toggleDisplayAction = getToggleDisplayAction();
 
-    // Bind a key listener to allow instant update of UI to matched passwords
-    password.addKeyListener(new KeyAdapter() {
+    // Bind a document listener to allow instant update of UI to matched passwords
+    password.getDocument().addDocumentListener(
+      new DocumentListener() {
 
-      @Override
-      public void keyReleased(KeyEvent e) {
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+          updateModel();
+        }
 
-        // Reset the credentials background
-        password.setBackground(Themes.currentTheme.dataEntryBackground());
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+          updateModel();
+        }
 
-        getModel().get().setPassword(password.getPassword());
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+          updateModel();
+        }
 
-      }
+        /**
+         * Trigger any UI updates
+         */
+        private void updateModel() {
+          // Reset the credentials background
+          password.setBackground(Themes.currentTheme.dataEntryBackground());
 
-    });
+          getModel().get().setPassword(password.getPassword());
+        }
+
+      });
 
     showButton = Buttons.newShowButton(toggleDisplayAction);
 
@@ -77,11 +97,11 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
     if (isAddLabel()) {
       panel.add(Labels.newEnterPassword(), "grow,push");
     }
-    panel.add(password, "grow,push");
+    panel.add(password, "growx,h 32,push");
     panel.add(showButton, "shrink");
 
     // Ensure the icon label is a size suitable for rotation
-    panel.add(spinner, "grow,"+ MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG+",wrap");
+    panel.add(spinner, MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG + ",wrap");
 
     return panel;
 
@@ -133,13 +153,13 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
   }
 
   /**
-   * @param showSpinner True if the view should show the spinner and disable other components
+   * @param visible True if the view should show the spinner and disable other components
    */
-  public void setSpinnerVisibility(boolean showSpinner) {
+  public void setSpinnerVisible(boolean visible) {
 
-    spinner.setVisible(showSpinner);
-    password.setEnabled(!showSpinner);
-    showButton.setEnabled(!showSpinner);
+    spinner.setVisible(visible);
+    password.setEnabled(!visible);
+    showButton.setEnabled(!visible);
 
   }
 
@@ -156,7 +176,7 @@ public class EnterPasswordView extends AbstractComponentView<EnterPasswordModel>
    */
   public void incorrectPassword() {
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(),"Must execute on EDT.");
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must execute on EDT.");
 
     password.setBackground(Themes.currentTheme.invalidDataEntryBackground());
 

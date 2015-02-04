@@ -2,9 +2,7 @@ package org.multibit.hd.ui.views.screens.contacts;
 
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.comparators.ContactNameComparator;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
@@ -37,7 +35,7 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> implements ActionListener {
 
@@ -51,8 +49,6 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
   private ContactTableModel contactsTableModel;
 
   private JButton editButton;
-
-  private final ListeningExecutorService persistenceExecutorService = SafeExecutors.newSingleThreadExecutor("persist-contacts");
 
   /**
    * @param panelModel The model backing this panel view

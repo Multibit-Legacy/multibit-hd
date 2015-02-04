@@ -22,7 +22,7 @@ import java.io.File;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class WalletDetailModel implements Model<WalletDetail> {
 
@@ -55,7 +55,7 @@ public class WalletDetailModel implements Model<WalletDetail> {
 
     Preconditions.checkNotNull(walletDetail, "Wallet detail must be set");
 
-    WalletService walletService = CoreServices.getCurrentWalletService();
+    WalletService walletService = CoreServices.getCurrentWalletService().get();
 
     // TODO Add this to a wallet service
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {

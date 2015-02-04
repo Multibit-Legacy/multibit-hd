@@ -21,7 +21,7 @@ import static org.multibit.hd.core.files.SecureFiles.verifyOrCreateDirectory;
  * <p>Uses Java new I/O and Guava Files where possible</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ZipFiles {
 
@@ -56,7 +56,7 @@ public class ZipFiles {
       if (new File(srcFolder).list() != null) {
         for (String fileName : new File(srcFolder).list()) {
           if (!includeBlockStore && fileName.endsWith(InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX)) {
-            // Do not include the block writeContacts (to save space)
+            // Do not include the block chain (to save space)
             continue;
           }
           addFileToZip(srcFolder, fileName, zip, includeBlockStore);
@@ -128,11 +128,12 @@ public class ZipFiles {
     } else {
       byte[] buf = new byte[1024];
       int len;
-      FileInputStream in = new FileInputStream(srcFileOnDisk);
-      zip.putNextEntry(new ZipEntry(srcFile));
+      try (FileInputStream in = new FileInputStream(srcFileOnDisk)) {
+        zip.putNextEntry(new ZipEntry(srcFile));
 
-      while ((len = in.read(buf)) > 0) {
-        zip.write(buf, 0, len);
+        while ((len = in.read(buf)) > 0) {
+          zip.write(buf, 0, len);
+        }
       }
     }
   }

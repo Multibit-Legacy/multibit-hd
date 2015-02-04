@@ -1,27 +1,34 @@
 package org.multibit.hd.ui.views;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.Images;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
+import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -34,7 +41,6 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *  
  */
 public class MainView extends JFrame {
 
@@ -47,13 +53,18 @@ public class MainView extends JFrame {
 
   // Need to track if a wizard was showing before a refresh occurred
   private boolean showExitingWelcomeWizard = false;
-  private boolean showExitingPasswordWizard = false;
+  private boolean showExitingCredentialsWizard = false;
   private boolean isCentered = false;
 
-  public MainView() {
+  /**
+   * The credentials type to show when starting the credentials wizard
+   */
+  private CredentialsRequestType credentialsRequestType = CredentialsRequestType.PASSWORD;
+  private boolean repeatLatestEvents = true;
 
-    // Ensure we can respond to UI events
-    CoreServices.uiEventBus.register(this);
+  // The Panel.applicationFrame is a global singleton in nature
+  @SuppressFBWarnings({"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"})
+  public MainView() {
 
     // Define the minimum size for the frame
     setMinimumSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
@@ -61,35 +72,102 @@ public class MainView extends JFrame {
     // Set the starting size
     setSize(new Dimension(MultiBitUI.UI_MIN_WIDTH, MultiBitUI.UI_MIN_HEIGHT));
 
+    // Ensure app does not have Java coffee up icon on Windows
+    if (OSUtils.isWindows()) {
+      setIconImage(Images.newLogoIconImage());
+    }
+
     // Provide all panels with a reference to the main frame
     Panels.applicationFrame = this;
 
-    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-    addComponentListener(new ComponentAdapter() {
-
+    // Add a glass pane which dims the whole screen - used for switch (MainController#handleSwitchWallet)
+    // It also absorbs keystrokes and mouse events
+    JComponent glassPane = new JComponent() {
+            public void paintComponent(Graphics g) {
+                g.setColor(new Color(0, 0, 0, 50));
+                g.fillRect(0, 0, getWidth(), getHeight());
+                super.paintComponent(g);
+            }
+    };
+    glassPane.addKeyListener(new KeyListener() {
       @Override
-      public void componentMoved(ComponentEvent e) {
-        updateConfiguration();
+      public void keyTyped(KeyEvent e) {
+
       }
 
       @Override
-      public void componentResized(ComponentEvent e) {
-        updateConfiguration();
+      public void keyPressed(KeyEvent e) {
+
       }
 
-      /**
-       * Keep the current configuration updated
-       */
-      private void updateConfiguration() {
-
-        Rectangle bounds = getBounds();
-        String lastFrameBounds = String.format("%d,%d,%d,%d", bounds.x, bounds.y, bounds.width, bounds.height);
-
-        Configurations.currentConfiguration.getAppearance().setLastFrameBounds(lastFrameBounds);
+      @Override
+      public void keyReleased(KeyEvent e) {
 
       }
     });
+    glassPane.addMouseListener(new MouseListener() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+
+      }
+
+      @Override
+      public void mousePressed(MouseEvent e) {
+
+      }
+
+      @Override
+      public void mouseReleased(MouseEvent e) {
+
+      }
+
+      @Override
+      public void mouseEntered(MouseEvent e) {
+
+      }
+
+      @Override
+      public void mouseExited(MouseEvent e) {
+
+      }
+    });
+    getRootPane().setGlassPane(glassPane);
+
+    addWindowListener(
+      new WindowAdapter() {
+        @Override
+        public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+
+          log.info("Hard shutdown from 'window closing' event");
+          CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
+        }
+      });
+
+    addComponentListener(
+      new ComponentAdapter() {
+
+        @Override
+        public void componentMoved(ComponentEvent e) {
+          updateConfiguration();
+        }
+
+        @Override
+        public void componentResized(ComponentEvent e) {
+          updateConfiguration();
+        }
+
+        /**
+         * Keep the current configuration updated
+         */
+        private void updateConfiguration() {
+
+          Rectangle bounds = getBounds();
+          String lastFrameBounds = String.format("%d,%d,%d,%d", bounds.x, bounds.y, bounds.width, bounds.height);
+
+          Configurations.currentConfiguration.getAppearance().setLastFrameBounds(lastFrameBounds);
+
+        }
+      });
 
   }
 
@@ -97,6 +175,24 @@ public class MainView extends JFrame {
    * <p>Rebuild the contents of the main view based on the current configuration and theme</p>
    */
   public void refresh() {
+    if (SwingUtilities.isEventDispatchThread()) {
+      refreshOnEventThread();
+    } else {
+      // Start the main view refresh on the EDT
+      SwingUtilities.invokeLater(
+              new Runnable() {
+                @Override
+                public void run() {
+                  refreshOnEventThread();
+                }
+              });
+    }
+  }
+
+  /**
+   * <p>Rebuild the contents of the main view based on the current configuration and theme on the Swing Event thread</p>
+   */
+  private void refreshOnEventThread() {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
 
@@ -128,31 +224,53 @@ public class MainView extends JFrame {
     // Rebuild the main content
     getContentPane().add(createMainContent());
 
-    // Catch up on recent events
-    CoreServices.getApplicationEventService().repeatLatestEvents();
+    // Usually the latest events need to be repeated after a configuration change
+    // Switch wallet should ignore them
+    if (repeatLatestEvents) {
+      log.debug("Repeating earlier events...");
+
+      // Ensure the wallet balance is propagated out
+      if (WalletManager.INSTANCE.getCurrentWalletBalance().isPresent()) {
+        ViewEvents.fireBalanceChangedEvent(WalletManager.INSTANCE.getCurrentWalletBalance().get(), null, Optional.<String>absent());
+      }
+
+      // Catch up on recent events
+      CoreServices.getApplicationEventService().repeatLatestEvents();
+    }
 
     // Check for any wizards that were showing before the refresh occurred
     if (showExitingWelcomeWizard) {
 
       // This section must come after a deferred hide has completed
 
+      // Determine if we are in Trezor mode for the welcome wizard
+      WelcomeWizardMode mode = CredentialsRequestType.TREZOR.equals(credentialsRequestType) ? WelcomeWizardMode.TREZOR: WelcomeWizardMode.STANDARD;
+
       // Determine the appropriate starting screen for the welcome wizard
       if (Configurations.currentConfiguration.isLicenceAccepted()) {
-        log.debug("Showing exiting welcome wizard (select language)");
-        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE).getWizardScreenHolder());
+
+        // Must have run before so perform some additional checks
+        if (WelcomeWizardMode.TREZOR.equals(mode)) {
+          // Starting with an uninitialised Trezor
+          log.debug("Showing exiting welcome wizard (select wallet)");
+          Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET, mode).getWizardScreenHolder());
+        } else {
+          log.debug("Showing exiting welcome wizard (select language)");
+          Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE, mode).getWizardScreenHolder());
+        }
       } else {
         log.debug("Showing exiting welcome wizard (licence agreement)");
-        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_LICENCE).getWizardScreenHolder());
+        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_LICENCE, mode).getWizardScreenHolder());
       }
 
-    } else if (showExitingPasswordWizard) {
+    } else if (showExitingCredentialsWizard) {
 
       // This section must come after a deferred hide has completed
 
       log.debug("Showing exiting credentials wizard");
 
       // Force an exit if the user can't get through
-      Panels.showLightBox(Wizards.newExitingCredentialsWizard().getWizardScreenHolder());
+      Panels.showLightBox(Wizards.newExitingCredentialsWizard(credentialsRequestType).getWizardScreenHolder());
 
     } else {
 
@@ -162,10 +280,6 @@ public class MainView extends JFrame {
       // The AbstractWizard.handleHide credentials unlock thread will close the wizard later
       // to get the effect of everything happening behind the wizard
       detailViewAfterWalletOpened();
-
-      // Show the header information dependent on the overall configuration settings
-      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, Configurations.currentConfiguration.getAppearance().isShowBalance());
-
     }
 
     log.debug("Pack and show UI");
@@ -195,13 +309,13 @@ public class MainView extends JFrame {
 
   }
 
+
   /**
    * @return True if the exiting welcome wizard will be shown on a reset
    */
   public boolean isShowExitingWelcomeWizard() {
     return showExitingWelcomeWizard;
   }
-
 
   /**
    * @param show True if the exiting welcome wizard should be shown during the next refresh
@@ -212,20 +326,12 @@ public class MainView extends JFrame {
 
   }
 
-
-  /**
-   * @return True if the exiting credentials wizard will be shown on a reset
-   */
-  public boolean isShowExitingPasswordWizard() {
-    return showExitingPasswordWizard;
-  }
-
   /**
    * @param show True if the exiting credentials wizard should be shown during the next refresh
    */
-  public void setShowExitingPasswordWizard(boolean show) {
+  public void setShowExitingCredentialsWizard(boolean show) {
 
-    showExitingPasswordWizard = show;
+    showExitingCredentialsWizard = show;
 
   }
 
@@ -267,30 +373,30 @@ public class MainView extends JFrame {
     MigLayout layout = new MigLayout(
       Panels.migXYLayout(),
       "[]", // Columns
-      "0[]0[]0[]"  // Rows
+      "0[]0[]0[33:33:33]"  // Rows
     );
     JPanel mainPanel = Panels.newPanel(layout);
 
     // Require opaque to ensure the color is shown
     mainPanel.setOpaque(true);
 
-    // Deregister any previous references
+    // Unsubscribe from events
     if (headerView != null) {
 
-      log.debug("Deregister earlier views");
-      CoreServices.uiEventBus.unregister(headerView);
-      CoreServices.uiEventBus.unregister(sidebarView);
-      CoreServices.uiEventBus.unregister(detailView);
-      CoreServices.uiEventBus.unregister(footerView);
+      log.debug("Unsubscribe existing views");
+      unsubscribe();
 
     }
 
+    log.debug("Creating fresh views under MainView...");
     // Create supporting views (rebuild every time for language support)
     headerView = new HeaderView();
     // At present we are always in single wallet mode
     sidebarView = new SidebarView(false);
     detailView = new DetailView();
     footerView = new FooterView();
+
+    log.debug("Creating split pane...");
 
     // Create a splitter pane
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -300,7 +406,7 @@ public class MainView extends JFrame {
 
     int sidebarWidth = MultiBitUI.SIDEBAR_LHS_PREF_WIDTH;
     try {
-      sidebarWidth = Integer.valueOf(Configurations.currentConfiguration.getAppearance().getSidebarWidth());
+      sidebarWidth = Integer.parseInt(Configurations.currentConfiguration.getAppearance().getSidebarWidth());
     } catch (NumberFormatException e) {
       log.warn("Sidebar width configuration is not a number - using default");
     }
@@ -317,14 +423,16 @@ public class MainView extends JFrame {
 
     // Sets the colouring for divider and borders
     splitPane.setBackground(Themes.currentTheme.text());
-    splitPane.setBorder(BorderFactory.createMatteBorder(
-      1, 0, 1, 0,
-      Themes.currentTheme.text()
-    ));
+    splitPane.setBorder(
+      BorderFactory.createMatteBorder(
+        1, 0, 1, 0,
+        Themes.currentTheme.text()
+      ));
 
     splitPane.applyComponentOrientation(Languages.currentComponentOrientation());
 
-    splitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
+    splitPane.addPropertyChangeListener(
+      JSplitPane.DIVIDER_LOCATION_PROPERTY,
       new PropertyChangeListener() {
         @Override
         public void propertyChange(PropertyChangeEvent pce) {
@@ -339,9 +447,21 @@ public class MainView extends JFrame {
     // Add the supporting panels
     mainPanel.add(headerView.getContentPanel(), "growx,shrink,wrap"); // Ensure header size remains fixed
     mainPanel.add(splitPane, "grow,push,wrap");
-    mainPanel.add(footerView.getContentPanel(), "growx,shrink"); // Ensure footer size remains fixed
+    mainPanel.add(footerView.getContentPanel(), "growx, growy"); // Ensure footer size remains fixed using row height sizing
 
     return mainPanel;
+  }
+
+  /**
+   * This view is about to close so all child views should unsubscribe from events
+   */
+  public void unsubscribe() {
+
+    headerView.unregister();
+    sidebarView.unregister();
+    detailView.unregister();
+    footerView.unregister();
+
   }
 
   /**
@@ -359,10 +479,10 @@ public class MainView extends JFrame {
         log.debug("Using absolute coordinates");
 
         try {
-          int x = Integer.valueOf(lastFrameDimension[0]);
-          int y = Integer.valueOf(lastFrameDimension[1]);
-          int w = Integer.valueOf(lastFrameDimension[2]);
-          int h = Integer.valueOf(lastFrameDimension[3]);
+          int x = Integer.parseInt(lastFrameDimension[0]);
+          int y = Integer.parseInt(lastFrameDimension[1]);
+          int w = Integer.parseInt(lastFrameDimension[2]);
+          int h = Integer.parseInt(lastFrameDimension[3]);
           Rectangle newBounds = new Rectangle(x, y, w, h);
 
           // Not centered
@@ -383,8 +503,8 @@ public class MainView extends JFrame {
         log.debug("Using partial coordinates");
 
         try {
-          int w = Integer.valueOf(lastFrameDimension[0]);
-          int h = Integer.valueOf(lastFrameDimension[1]);
+          int w = Integer.parseInt(lastFrameDimension[0]);
+          int h = Integer.parseInt(lastFrameDimension[1]);
           Dimension newBounds = new Dimension(w, h);
 
           // Center in main screen
@@ -442,4 +562,19 @@ public class MainView extends JFrame {
     return devices;
   }
 
+  public void setCredentialsRequestType(CredentialsRequestType credentialsRequestType) {
+    this.credentialsRequestType = credentialsRequestType;
+  }
+
+  public CredentialsRequestType getCredentialsRequestType() {
+    return credentialsRequestType;
+  }
+
+  public void setRepeatLatestEvents(boolean repeatLatestEvents) {
+    this.repeatLatestEvents = repeatLatestEvents;
+  }
+
+  public boolean isRepeatLatestEvents() {
+    return repeatLatestEvents;
+  }
 }

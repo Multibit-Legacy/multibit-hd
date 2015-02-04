@@ -32,6 +32,8 @@ import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
 import org.multibit.hd.ui.views.components.select_wallet.SelectWalletModel;
 import org.multibit.hd.ui.views.components.select_wallet.SelectWalletView;
+import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayModel;
+import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailModel;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetailView;
 
@@ -44,7 +46,7 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class Components {
 
@@ -302,4 +304,19 @@ public class Components {
     return new ModelAndView<>(model, view);
 
   }
+
+  /**
+   * <p>A "Trezor display" model and view handles presentation of a Trezor operation and display text</p>
+   *
+   * @return A new "Trezor display" model and view
+   */
+  public static ModelAndView<TrezorDisplayModel, TrezorDisplayView> newTrezorDisplayMaV(String panelName) {
+
+    TrezorDisplayModel model = new TrezorDisplayModel(panelName);
+    TrezorDisplayView view = new TrezorDisplayView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
 }

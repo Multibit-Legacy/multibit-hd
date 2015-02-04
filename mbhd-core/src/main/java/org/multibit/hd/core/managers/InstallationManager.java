@@ -2,13 +2,18 @@ package org.multibit.hd.core.managers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.security.Permission;
@@ -16,13 +21,12 @@ import java.security.PermissionCollection;
 import java.util.Map;
 
 /**
- *  <p>Manager to provide the following to other core classes:</p>
- *  <ul>
- *  <li>Location of the installation directory</li>
- *  <li>Access the configuration file</li>
+ * <p>Manager to provide the following to other core classes:</p>
+ * <ul>
+ * <li>Location of the installation directory</li>
+ * <li>Access the configuration file</li>
  * <li>Utility methods eg copying checkpoint files from installation directory</li>
- *  </ul>
- *  
+ * </ul>
  */
 public class InstallationManager {
 
@@ -34,9 +38,9 @@ public class InstallationManager {
   public static final URI MBHD_WEBSITE_URI = URI.create("https://multibit.org");
 
   /**
-   * The main MultiBit help site (HTTP in case HTTPS fails and user needs to discover how to access repair wallet)
+   * The main MultiBit help site (HTTPS to allow secure connection without redirect, with fall back to local help on failure)
    */
-  public static final String MBHD_WEBSITE_HELP_DOMAIN = "http://beta.multibit.org";  // TODO remove beta when release-4.0.0 website pushed to multibit.org
+  public static final String MBHD_WEBSITE_HELP_DOMAIN = "https://beta.multibit.org";  // TODO remove beta when release-4.0.0 website pushed to multibit.org
   public static final String MBHD_WEBSITE_HELP_BASE = MBHD_WEBSITE_HELP_DOMAIN + "/hd0.1";
 
   public static final String MBHD_APP_NAME = "MultiBitHD";
@@ -50,19 +54,38 @@ public class InstallationManager {
   /**
    * The current application data directory
    */
-  public static File currentApplicationDataDirectory = null;
+  private static File currentApplicationDataDirectory = null;
 
   /**
    * A test flag to allow FEST tests to run efficiently
    */
+  // This arises from the global nature of the flag - consider deriving it from test classpath presence
+  @SuppressFBWarnings({"MS_SHOULD_BE_FINAL"})
   public static boolean unrestricted = false;
 
   /**
-   * @param shutdownEvent The shutdown event
+   * <p>Handle any shutdown code</p>
+   *
+   * @param shutdownType The shutdown type
    */
-  public static void onShutdownEvent(ShutdownEvent shutdownEvent) {
+  public static void shutdownNow(ShutdownEvent.ShutdownType shutdownType) {
 
-    currentApplicationDataDirectory = null;
+    log.debug("Received shutdown: {}", shutdownType.name());
+
+    switch (shutdownType) {
+
+      case HARD:
+      case SOFT:
+        // Force a reset of the application directory (useful for persistence tests)
+        currentApplicationDataDirectory = null;
+        break;
+      case SWITCH:
+        // Reset of the current application directory causes problems during
+        // switch and is not required in normal operation
+        break;
+    }
+
+    // Reset of the unrestricted field causes problems during FEST tests
 
   }
 
@@ -78,11 +101,38 @@ public class InstallationManager {
   /**
    * <p>Get the directory for the user's application data, creating if not present</p>
    * <p>Checks a few OS-dependent locations first</p>
+   * <p>For tests (unrestricted mode) this will create a long-lived temporary directory - use reset() to clear in the tearDown() phase</p>
+   *
+   * @return A suitable application directory for the OS and if running unit tests (unrestricted mode)
    */
   public static File getOrCreateApplicationDataDirectory() {
 
     if (currentApplicationDataDirectory != null) {
       return currentApplicationDataDirectory;
+    }
+
+    if (unrestricted) {
+      try {
+        log.debug("Unrestricted mode requires a temporary application directory");
+        // In order to preserve the same behaviour between the test and production environments
+        // this must be maintained throughout the lifetime of a unit test
+        // At tearDown() use reset() to clear
+        currentApplicationDataDirectory = SecureFiles.createTemporaryDirectory();
+        return currentApplicationDataDirectory;
+      } catch (IOException e) {
+        log.error("Failed to create temporary directory", e);
+        return null;
+      }
+    } else {
+
+      // Fail safe check for unit tests to avoid overwriting existing configuration file
+      try {
+        Class.forName("org.multibit.hd.core.managers.InstallationManagerTest");
+        throw new IllegalStateException("Cannot run without unrestricted when unit tests are present. You could overwrite live configuration.");
+      } catch (ClassNotFoundException e) {
+        // We have passed the fail safe check
+      }
+
     }
 
     // Check the current working directory for the configuration file
@@ -114,7 +164,7 @@ public class InstallationManager {
       applicationDataDirectoryName = System.getProperty("user.home") + "/." + MBHD_APP_NAME;
     }
 
-    log.debug("Application data directory is '{}'", applicationDataDirectoryName);
+    log.debug("Application data directory is\n'{}'", applicationDataDirectoryName);
 
     // Create the application data directory if it does not exist
     File applicationDataDirectory = new File(applicationDataDirectoryName);
@@ -157,15 +207,21 @@ public class InstallationManager {
       }
 
       // Create the output stream
-      FileOutputStream sinkCheckpointsStream = new FileOutputStream(destinationCheckpointsFile);
+      long bytes;
+      try (FileOutputStream sinkCheckpointsStream = new FileOutputStream(destinationCheckpointsFile)) {
 
-      // Copy the checkpoints
-      long bytes = ByteStreams.copy(sourceCheckpointsStream, sinkCheckpointsStream);
+        // Copy the checkpoints
+        bytes = ByteStreams.copy(sourceCheckpointsStream, sinkCheckpointsStream);
 
-      // Clean up
-      sourceCheckpointsStream.close();
-      sinkCheckpointsStream.flush();
-      sinkCheckpointsStream.close();
+        // Clean up
+        sourceCheckpointsStream.close();
+        sinkCheckpointsStream.flush();
+        sinkCheckpointsStream.close();
+      } finally {
+        if (sourceCheckpointsStream != null) {
+          sourceCheckpointsStream.close();
+        }
+      }
 
       log.debug("New checkpoints are {} bytes in length.", bytes);
 
@@ -181,7 +237,7 @@ public class InstallationManager {
   }
 
   /**
-   * Use for testing only
+   * Use for testing only (several different test packages use this)
    *
    * @param currentApplicationDataDirectory the application data directory to use
    */

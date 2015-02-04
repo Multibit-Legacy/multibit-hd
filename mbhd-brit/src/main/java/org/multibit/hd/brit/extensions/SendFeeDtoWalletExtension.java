@@ -1,9 +1,9 @@
 package org.multibit.hd.brit.extensions;
 
-import com.google.bitcoin.core.Address;
-import com.google.bitcoin.core.Wallet;
-import com.google.bitcoin.core.WalletExtension;
-import com.google.bitcoin.params.MainNetParams;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Wallet;
+import org.bitcoinj.core.WalletExtension;
+import org.bitcoinj.params.MainNetParams;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import org.multibit.hd.brit.dto.SendFeeDto;
@@ -76,7 +76,7 @@ public class SendFeeDtoWalletExtension implements WalletExtension {
   @Override
   public void deserializeWalletExtension(Wallet containingWallet, byte[] data) throws Exception {
 
-    String serialisedString = new String(data);
+    String serialisedString = new String(data, Charsets.UTF_8);
     log.debug("Parsing string '{}'", serialisedString);
 
     String[] tokens = Strings.split(serialisedString, SEPARATOR);
@@ -89,8 +89,8 @@ public class SendFeeDtoWalletExtension implements WalletExtension {
         try {
           nextFeeSendCount = Optional.of(Integer.parseInt(countString));
         } catch (NumberFormatException nfe) {
-          // return Optional.absent();
-          nfe.printStackTrace();
+          log.warn("Number format exception", nfe);
+          nextFeeSendCount = Optional.absent();
         }
       }
 

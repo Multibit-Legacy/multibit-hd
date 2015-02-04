@@ -21,7 +21,7 @@ import java.util.Map;
  * <p>Requires at least one payment to be present</p>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class ShowDetailPaymentsUseCase extends AbstractFestUseCase {
 

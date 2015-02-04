@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
-import com.google.bitcoin.core.Coin;
+import org.bitcoinj.core.Coin;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.*;
@@ -28,7 +28,7 @@ import static org.multibit.hd.ui.MultiBitUI.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class Tables {
 

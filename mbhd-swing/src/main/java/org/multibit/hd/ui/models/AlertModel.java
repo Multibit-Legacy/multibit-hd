@@ -14,7 +14,7 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class AlertModel implements Model<String> {
 
@@ -74,4 +74,13 @@ public class AlertModel implements Model<String> {
     this.localisedMessage = value;
   }
 
+  @Override
+  public String toString() {
+    return "AlertModel{" +
+      "button=" + button +
+      ", severity=" + severity +
+      ", localisedMessage='" + localisedMessage + '\'' +
+      ", remaining=" + remaining +
+      '}';
+  }
 }

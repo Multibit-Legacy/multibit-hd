@@ -14,7 +14,7 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class BitcoinSymbolListCellRenderer extends JLabel implements ListCellRenderer<BitcoinSymbol> {
 

@@ -30,6 +30,7 @@ public class MessageKeyTest {
 
         failed = true;
 
+        // Check for {} instead of {0} etc
         log.error("FAILED - MessageKey.{} is not resolved in languages.properties for locale {}", messageKey.name(), Languages.currentLocale());
 
       }

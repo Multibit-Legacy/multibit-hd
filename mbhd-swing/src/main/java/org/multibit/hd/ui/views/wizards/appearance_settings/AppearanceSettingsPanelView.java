@@ -28,7 +28,7 @@ import java.awt.event.ActionListener;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 
 public class AppearanceSettingsPanelView extends AbstractWizardPanelView<AppearanceSettingsWizardModel, AppearanceSettingsPanelModel> implements ActionListener {

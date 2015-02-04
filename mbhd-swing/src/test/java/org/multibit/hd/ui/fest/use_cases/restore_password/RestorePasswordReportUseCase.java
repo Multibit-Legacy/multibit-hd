@@ -18,7 +18,7 @@ import static org.fest.swing.timing.Timeout.timeout;
  * </ul>
  *
  * @since 0.0.1
- *  
+ *
  */
 public class RestorePasswordReportUseCase extends AbstractFestUseCase {
 
@@ -34,8 +34,11 @@ public class RestorePasswordReportUseCase extends AbstractFestUseCase {
     // Verify that the title appears
     assertLabelText(MessageKey.RESTORE_PASSWORD_REPORT_TITLE);
 
+    // Allow a short delay while password is recovered
+    pauseForWalletPasswordChange();
+
     // Restoring the credentials should be instant
-    assertLabelContainsValue(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, WalletFixtures.STANDARD_PASSWORD.toString());
+    assertLabelContainsValue(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, WalletFixtures.STANDARD_PASSWORD);
 
     // OK to proceed
     window
