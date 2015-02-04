@@ -83,14 +83,15 @@ public class Configuration {
     return getLanguage().getLocale();
   }
 
-  /**
+
+ /**
    * <p>Shortcut to the application version</p>
    *
    * @return The current version
    */
   @JsonIgnore
   public String getCurrentVersion() {
-    return getAppearance().getCurrentVersion();
+    return AppearanceConfiguration.CURRENT_VERSION;
   }
 
   /**
