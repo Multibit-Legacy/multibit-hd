@@ -83,10 +83,7 @@ public class MessageEventFixtures {
    * @return A new device reset success (wallet created)
    */
   public static Success newDeviceResetSuccess() {
-    return new Success(
-      "Device reset",
-      new byte[]{}
-    );
+    return new Success("Device reset");
   }
 
   /**
@@ -94,21 +91,17 @@ public class MessageEventFixtures {
    */
   public static Success newDeviceWipedSuccess() {
 
-    return new Success(
-      "Device wiped",
-      new byte[]{}
-    );
+    return new Success("Device wiped");
 
   }
 
   /**
    * @return A new cipher key success ("abandon" wallet)
    */
-  public static Success newCipherKeySuccess() {
-    return new Success(
-      "",
-      Utils.HEX.decode("ec406a3c796099050400f65ab311363e")
-    );
+  public static CipheredKeyValue newCipheredKeyValue() {
+
+    return new CipheredKeyValue(true, Utils.HEX.decode("ec406a3c796099050400f65ab311363e"));
+
   }
 
   /**

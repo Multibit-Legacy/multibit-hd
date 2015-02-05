@@ -105,7 +105,7 @@ public class TrezorWipedFixture extends AbstractHardwareWalletFixture {
     // Cipher key success
     final MessageEvent event4 = new MessageEvent(
       MessageEventType.SUCCESS,
-      Optional.<HardwareWalletMessage>of(newCipherKeySuccess()),
+      Optional.<HardwareWalletMessage>of(newCipheredKeyValue()),
       Optional.<Message>absent()
     );
 

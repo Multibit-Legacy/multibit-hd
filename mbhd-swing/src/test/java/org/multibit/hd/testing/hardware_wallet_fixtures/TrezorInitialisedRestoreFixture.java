@@ -64,7 +64,7 @@ public class TrezorInitialisedRestoreFixture extends AbstractHardwareWalletFixtu
     // Cipher key success (first unlock)
     final MessageEvent event1 = new MessageEvent(
       MessageEventType.SUCCESS,
-      Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCipherKeySuccess()),
+      Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCipheredKeyValue()),
       Optional.<Message>absent()
     );
 
@@ -73,7 +73,7 @@ public class TrezorInitialisedRestoreFixture extends AbstractHardwareWalletFixtu
     // Cipher key success (second unlock after restore)
     final MessageEvent event2 = new MessageEvent(
       MessageEventType.SUCCESS,
-      Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCipherKeySuccess()),
+      Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCipheredKeyValue()),
       Optional.<Message>absent()
     );
 
