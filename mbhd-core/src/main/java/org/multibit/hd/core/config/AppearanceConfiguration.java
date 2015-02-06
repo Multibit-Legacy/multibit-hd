@@ -31,7 +31,7 @@ public class AppearanceConfiguration {
   /**
    * The version field cannot contain "/" or "(" or ")" since it is used in the PeerGroup of Bitcoinj
    */
-  public static final String CURRENT_VERSION = "0.0.5beta";
+  public static final String CURRENT_VERSION = "0.0.6beta";
   private String version = CURRENT_VERSION;
 
   /**
