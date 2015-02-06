@@ -51,8 +51,6 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
     enterSeedPhraseMaV = Components.newEnterSeedPhraseMaV(getPanelName(), true, true);
     setPanelModel(enterSeedPhraseMaV.getModel().getValue());
 
-    getWizardModel().setCreateWalletEnterSeedPhraseModel(enterSeedPhraseMaV.getModel());
-
     // Register components
     registerComponents(enterSeedPhraseMaV);
 

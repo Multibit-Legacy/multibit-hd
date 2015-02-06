@@ -89,7 +89,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private SelectFileModel trezorCloudBackupLocationSelectFileModel;
   private SelectFileModel restoreLocationSelectFileModel;
 
-  private EnterSeedPhraseModel createWalletEnterSeedPhraseModel;
   private EnterSeedPhraseModel restorePasswordEnterSeedPhraseModel;
   private EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel;
 
@@ -107,7 +106,11 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   private ConfirmPasswordModel restoreWalletConfirmPasswordModel;
   private String trezorWalletLabel = "multibit.org " + random.nextInt(1000);
-  private SeedPhraseSize trezorSeedSize = SeedPhraseSize.TWELVE_WORDS;
+
+  /**
+   * The Trezor seed phrase size
+   */
+  private SeedPhraseSize trezorSeedPhraseSize = SeedPhraseSize.TWELVE_WORDS;
 
   private String mostRecentPin;
   private CreateTrezorWalletConfirmWordPanelView trezorConfirmWordPanelView;
@@ -145,7 +148,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         state = WELCOME_SELECT_LANGUAGE;
         break;
       case WELCOME_SELECT_LANGUAGE:
-          state = WELCOME_SELECT_WALLET;
+        state = WELCOME_SELECT_WALLET;
         break;
       case WELCOME_SELECT_WALLET:
         hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
@@ -384,7 +387,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
             getTrezorWalletLabel(),
             false, // For now we hide the supplied entropy (too confusing for mainstream)
             true, // A PIN is mandatory for mainstream
-            getSeedPhraseSize().getStrength()
+            getTrezorSeedPhraseSize().getStrength()
           );
 
           // Must have successfully sent the message to be here
@@ -494,7 +497,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         switch (buttonRequest.getButtonRequestType()) {
           case CONFIRM_WORD:
             trezorWordCount++;
-            if (trezorWordCount > trezorSeedSize.getSize()) {
+            if (trezorWordCount > trezorSeedPhraseSize.getSize()) {
               log.debug("Reset word count for confirm phase");
               trezorWordCount = 1;
               trezorChecking = true;
@@ -651,10 +654,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   }
 
-  private SeedPhraseSize getSeedPhraseSize() {
-    return SeedPhraseSize.TWELVE_WORDS;
-  }
-
   @Override
   public String getPanelName() {
     return state.name();
@@ -774,8 +773,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
       return cloudBackupLocation1;
     } else {
       if (!Strings.isNullOrEmpty(cloudBackupLocation2)) {
-            return cloudBackupLocation2;
-          } else {
+        return cloudBackupLocation2;
+      } else {
         return "";
       }
     }
@@ -814,13 +813,13 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   }
 
   /**
-    * <p>Reduced visibility for panel models</p>
-    *
-    * @param trezorCloudBackupLocationSelectFileModel The "cloud backup location" select file model
-    */
-   public void setTrezorCloudBackupLocationSelectFileModel(SelectFileModel trezorCloudBackupLocationSelectFileModel) {
-     this.trezorCloudBackupLocationSelectFileModel = trezorCloudBackupLocationSelectFileModel;
-   }
+   * <p>Reduced visibility for panel models</p>
+   *
+   * @param trezorCloudBackupLocationSelectFileModel The "cloud backup location" select file model
+   */
+  public void setTrezorCloudBackupLocationSelectFileModel(SelectFileModel trezorCloudBackupLocationSelectFileModel) {
+    this.trezorCloudBackupLocationSelectFileModel = trezorCloudBackupLocationSelectFileModel;
+  }
 
   /**
    * <p>Reduced visibility for panel models</p>
@@ -838,16 +837,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
    */
   void setSelectWalletChoice(WelcomeWizardState selectWalletChoice) {
     this.selectWalletChoice = selectWalletChoice;
-  }
-
-  /**
-   * <p>Reduced visibility for panel models</p>
-   * TODO Check if this can be removed (it is not used)
-   *
-   * @param createWalletEnterSeedPhraseModel The "create wallet enter seed phrase" model
-   */
-  public void setCreateWalletEnterSeedPhraseModel(EnterSeedPhraseModel createWalletEnterSeedPhraseModel) {
-    this.createWalletEnterSeedPhraseModel = createWalletEnterSeedPhraseModel;
   }
 
   /**
@@ -964,12 +953,16 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   /**
    * @return The Trezor wallet seed size (12, 18, 24 words)
    */
-  public SeedPhraseSize getTrezorSeedSize() {
-    return trezorSeedSize;
+  public SeedPhraseSize getTrezorSeedPhraseSize() {
+    return trezorSeedPhraseSize;
   }
 
-  public void setTrezorSeedSize(SeedPhraseSize trezorSeedSize) {
-    this.trezorSeedSize = trezorSeedSize;
+  /**
+   *
+   * @param seedPhraseSize The seed phrase size
+   */
+  public void setTrezorSeedPhraseSize(SeedPhraseSize seedPhraseSize) {
+    this.trezorSeedPhraseSize = seedPhraseSize;
   }
 
   /**
