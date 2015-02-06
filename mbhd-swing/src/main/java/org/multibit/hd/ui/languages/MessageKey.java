@@ -389,6 +389,7 @@ public enum MessageKey {
 
   // Credentials
   TREZOR_UNLOCK_TITLE("trezor_unlock_title"),
+  TREZOR_UNLOCK_OPERATION("trezor_unlock_operation"),
   PIN_TITLE("pin_title"),
   CHANGE_PIN_TITLE("change_pin_title"),
   CHANGE_PIN_REPORT_TITLE("change_pin_report_title"),
