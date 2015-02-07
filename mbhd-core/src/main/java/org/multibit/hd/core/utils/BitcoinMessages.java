@@ -130,9 +130,9 @@ public class BitcoinMessages {
     if ((block.contains(BEGIN_SIGNED_MESSAGE) || block.contains(BEGIN_SIGNATURE))
       && block.contains(END_BITCOIN_SIGNATURE)) {
 
-      // Determine line separator format by examining the first header
+      // Determine line separator format by checking for CRLF
       String ls;
-      if (block.contains(BEGIN_SIGNED_MESSAGE + "\r\n")) {
+      if (block.contains("\r\n")) {
         ls = "\r\n";
       } else {
         ls = "\n";
