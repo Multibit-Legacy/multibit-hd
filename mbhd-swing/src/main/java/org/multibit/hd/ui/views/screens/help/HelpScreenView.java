@@ -7,6 +7,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.RAGStatus;
@@ -234,7 +235,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
                 try {
                   editorPane.setPage(currentPage());
                 } catch (IOException e) {
-                  log.warn(e.getMessage(), e);
+                  log.warn("Unable to load current page ", e);
                 }
               }
             });
@@ -266,7 +267,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
     } catch (MalformedURLException e) {
       // This is a coding error so should blow up
-      log.error(e.getMessage(), e);
+      log.error("Unable to load help home page ", e);
       return null;
     } catch (IOException e) {
       log.warn("Problem with MultiBit.org so switching to internal help", e);
@@ -331,6 +332,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     editorPane.addHyperlinkListener(
             new HyperlinkListener() {
 
+              @SuppressFBWarnings({"ITU_INAPPROPRIATE_TOSTRING_USE", "S508C_SET_COMP_COLOR", "S508C_SET_COMP_COLOR"})
               @Override
               public void hyperlinkUpdate(HyperlinkEvent e) {
 
@@ -560,6 +562,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
     SwingUtilities.invokeLater(
             new Runnable() {
+              @SuppressFBWarnings({"S508C_SET_COMP_COLOR"})
               @Override
               public void run() {
                 try {
@@ -571,7 +574,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
                 } catch (IOException e) {
                   // Log the error and report a failure to the user via the alerts
-                  log.error(e.getMessage(), e);
+                  log.error("Unable to load page " + url, e);
                   ControllerEvents.fireAddAlertEvent(
                           Models.newAlertModel(
                                   Languages.safeText(MessageKey.NETWORK_CONFIGURATION_ERROR),
