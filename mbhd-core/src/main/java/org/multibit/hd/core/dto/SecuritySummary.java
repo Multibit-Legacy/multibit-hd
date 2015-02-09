@@ -18,7 +18,11 @@ public class SecuritySummary {
     DEBUGGER_ATTACHED,
     SYSTEM_TIME_DRIFT,
     BACKUP_FAILED,
-    CERTIFICATE_FAILED
+    CERTIFICATE_FAILED,
+    UNSUPPORTED_FIRMWARE_ATTACHED,
+
+    // End of enum
+    ;
 
   }
 
@@ -93,9 +97,9 @@ public class SecuritySummary {
   public static SecuritySummary newUnsupportedFirmware() {
     return new SecuritySummary(
       RAGStatus.AMBER,
-      Optional.of(CoreMessageKey.DEBUGGER_ATTACHED),
+      Optional.of(CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED),
       Optional.<Object[]>absent(),
-      AlertType.DEBUGGER_ATTACHED
+      AlertType.UNSUPPORTED_FIRMWARE_ATTACHED
     );
   }
 

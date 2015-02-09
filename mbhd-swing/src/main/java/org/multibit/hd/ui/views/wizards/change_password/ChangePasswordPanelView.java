@@ -5,12 +5,10 @@ import com.google.common.base.Strings;
 import com.google.common.util.concurrent.*;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletPassword;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -126,16 +124,8 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
 
         enterPasswordMaV.getView().requestInitialFocus();
 
-        // Check for any security alerts
-        Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
-        if (securityEvent.isPresent() && securityEvent.get().is(SecuritySummary.AlertType.DEBUGGER_ATTACHED)) {
-
-          displaySecurityPopoverMaV.getModel().setValue(securityEvent.get());
-
-          // Show the security alert as a popover
-          Panels.showLightBoxPopover(displaySecurityPopoverMaV.getView().newComponentPanel());
-
-        }
+        // This requires a security popover check
+        checkForSecurityEventPopover(displaySecurityPopoverMaV);
 
       }
     });

@@ -37,13 +37,11 @@ public class DisplaySecurityAlertView extends AbstractComponentView<DisplaySecur
 
     panel = Panels.newRoundedPanel();
 
-
     panelCloseButton = Buttons.newPanelCloseButton(getClosePopoverAction());
     panelCloseButton.setName("security_alert."+ MessageKey.CLOSE.getKey());
 
     panel.add(panelCloseButton, "aligny top,alignx right,shrink,wrap");
     panel.add(Labels.newTitleLabel(MessageKey.SECURITY_TITLE), "aligny top, alignx center,shrink,wrap");
-    panel.add(Panels.newDebuggerWarning(), "align center,wrap");
 
     // Set size
     panel.setSize(MultiBitUI.POPOVER_PREF_WIDTH, MultiBitUI.POPOVER_PREF_HEIGHT);
