@@ -851,6 +851,8 @@ public class MainController extends AbstractController implements
 
     log.debug("Received hardware event: '{}'", event.getEventType().name());
 
+    Optional<WalletSummary> walletSummary = Optional.absent();
+
     // Quick check for relevancy
     switch (event.getEventType()) {
       case SHOW_DEVICE_STOPPED:
@@ -860,12 +862,75 @@ public class MainController extends AbstractController implements
         deferredCredentialsRequestType = CredentialsRequestType.PASSWORD;
         break;
       case SHOW_DEVICE_FAILED:
+
+        // Show an alert if the Trezor connects when
+        // - there is a current wallet
+        // - the current wallet is not the same "hard" Trezor wallet as in the alert
+        // - there has not been a "wipe Trezor" in the last few seconds
+        walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+        if (walletSummary.isPresent()) {
+          Optional<HardwareWalletService> hardwareWalletService1 = CoreServices.getOrCreateHardwareWalletService();
+
+          boolean showAlert = false;
+          if (!WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
+            // Not currently using a Trezor hard wallet so show the alert
+            showAlert = true;
+          } else {
+            if (hardwareWalletService1.isPresent()) {
+              Optional<Features> features = hardwareWalletService1.get().getContext().getFeatures();
+              String currentWalletName = walletSummary.get().getName();
+              if (features.isPresent() && !features.get().getDeviceId().equals(currentWalletName)) {
+                // The newly plugged in Trezor is a different one
+                showAlert = true;
+              }
+            }
+          }
+          if (hardwareWalletService1.isPresent()) {
+            if (lastWipedTrezorDateTime
+              .plusSeconds(TREZOR_WIPE_TIME_THRESHOLD)
+              .isAfter(Dates.nowUtc())) {
+              log.debug("Suppressing the alert due to recent confirmed Trezor wipe operation");
+              showAlert = false;
+            }
+          }
+
+          if (showAlert) {
+
+            // Determine the alert type (alert bar or popover)
+            if (Panels.isLightBoxShowing() && !Panels.isLightBoxPopoverShowing()) {
+              // Can show the popover
+              CoreServices.logHistory("Unsupported firmware attached");
+              CoreEvents.fireSecurityEvent(SecuritySummary.newUnsupportedFirmware());
+            } else {
+              // Use the alert bar mechanism
+
+              log.debug("Trezor attached during an unlocked soft wallet session - showing alert");
+
+              SwingUtilities.invokeLater(
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    // Attempt to create a suitable alert model in addition to view event
+                    AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+                    ControllerEvents.fireAddAlertEvent(alertModel);
+                  }
+                });
+
+            }
+
+
+          }
+        }
+        // Set the deferred credentials request type
+        deferredCredentialsRequestType = CredentialsRequestType.TREZOR;
+        break;
+
       case SHOW_DEVICE_READY:
         // Show an alert if the Trezor connects when
         // - there is a current wallet
         // - the current wallet is not the same "hard" Trezor wallet as in the alert
         // - there has not been a "wipe Trezor" in the last few seconds
-        Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+        walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
         if (walletSummary.isPresent()) {
           Optional<HardwareWalletService> hardwareWalletService1 = CoreServices.getOrCreateHardwareWalletService();
 

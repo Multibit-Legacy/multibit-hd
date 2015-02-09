@@ -147,7 +147,7 @@ public class Models {
   }
 
   /**
-   * @param event The hardware wallet event (e.g. SHOW_PIN_ENTRY etc)
+   * @param event The hardware wallet event (e.g. SHOW_DEVICE_FAILED etc)
    *
    * @return An alert model suitable for use for displaying the information
    */
@@ -162,9 +162,7 @@ public class Models {
           label=features.getLabel();
         }
 
-        // Provide action to allow user to enter PIN
-        // (required if device prompts when providing
-        // encrypted info to unlock wallet)
+        // Provide action to allow user to see a wizard
 
         JButton button = Buttons.newAlertPanelButton(
           getAlertButtonAction(),
@@ -181,6 +179,9 @@ public class Models {
           button
         );
       case SHOW_DEVICE_FAILED:
+        if (event.getMessage().isPresent()) {
+
+        }
         return Models.newAlertModel(
           Languages.safeText(MessageKey.TREZOR_FAILURE_ALERT),
           RAGStatus.RED

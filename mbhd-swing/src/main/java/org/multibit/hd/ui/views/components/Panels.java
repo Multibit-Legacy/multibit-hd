@@ -216,6 +216,17 @@ public class Panels {
   }
 
   /**
+   * <p>Test if a light box is showing</p>
+   *
+   * @return True if the light box panel is visible
+   */
+  public synchronized static boolean isLightBoxShowing() {
+
+    return lightBoxPanel.isPresent();
+
+  }
+
+  /**
    * <p>Show a light box</p>
    *
    * @param panel The panel to act as the focus of the light box
@@ -258,6 +269,17 @@ public class Panels {
 
     // Finally allow focus
     allowFocus(Panels.applicationFrame, true);
+
+  }
+
+  /**
+   * <p>Test if a light box popover is showing</p>
+   *
+   * @return True if the popover panel is visible
+   */
+  public synchronized static boolean isLightBoxPopoverShowing() {
+
+    return lightBoxPopoverPanel.isPresent();
 
   }
 
