@@ -86,6 +86,20 @@ public class SecuritySummary {
   }
 
   /**
+   * <p>A hardware wallet with unsupported firmware is attached - could expose user to risk</p>
+   *
+   * @return A new "unsupported firmware" summary
+   */
+  public static SecuritySummary newUnsupportedFirmware() {
+    return new SecuritySummary(
+      RAGStatus.AMBER,
+      Optional.of(CoreMessageKey.DEBUGGER_ATTACHED),
+      Optional.<Object[]>absent(),
+      AlertType.DEBUGGER_ATTACHED
+    );
+  }
+
+  /**
    * @param severity    The severity (Red, Amber, Green)
    * @param messageKey  The error key to allow localisation
    * @param messageData The error data for insertion into the error message

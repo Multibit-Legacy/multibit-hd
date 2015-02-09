@@ -42,6 +42,7 @@ public enum CoreMessageKey {
   CERTIFICATE_FAILED("core_certificate_failed"),
   SECURITY_ADVICE("core_security_advice"),
   BACKUP_WALLET_WAS_LOADED("core_backup_wallet_was_loaded"),
+  UNSUPPORTED_FIRMWARE_ATTACHED("core_unsupported_firmware_attached"),
 
   // Connection / Sync
   THE_ERROR_WAS("core_the_error_was"),
