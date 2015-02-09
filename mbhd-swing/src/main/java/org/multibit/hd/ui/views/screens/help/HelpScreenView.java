@@ -3,7 +3,11 @@ package org.multibit.hd.ui.views.screens.help;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.RAGStatus;
@@ -22,6 +26,7 @@ import org.multibit.hd.ui.views.themes.Themes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -89,48 +94,48 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
    * as an interim solution
    */
   private static final Iterable<String> imageNames = Splitter.on("\n").split(
-    // In Intellij just highlight the names and paste into "" to get the list
-    "about.png\n" +
-      "accept-licence.png\n" +
-      "appearance.png\n" +
-      "change-password.png\n" +
-      "confirm-seed-phrase.png\n" +
-      "contacts.png\n" +
-      "create-password.png\n" +
-      "create-seed-phrase.png\n" +
-      "create-wallet-report.png\n" +
-      "edit-contact.png\n" +
-      "edit-wallet.png\n" +
-      "empty-wallet.png\n" +
-      "enter-password.png\n" +
-      "exchange-rates.png\n" +
-      "history.png\n" +
-      "installer-1.png\n" +
-      "installer-2.png\n" +
-      "installer-3.png\n" +
-      "installer-4.png\n" +
-      "installer-5.png\n" +
-      "labs.png\n" +
-      "languages.png\n" +
-      "payments.png\n" +
-      "preferences.png\n" +
-      "prepare-create-wallet.png\n" +
-      "repair-wallet.png\n" +
-      "request-payment.png\n" +
-      "restorePassword.png\n" +
-      "select-backup-location.png\n" +
-      "select-create-wallet.png\n" +
-      "select-language.png\n" +
-      "send-payment.png\n" +
-      "send-receive.png\n" +
-      "sign-message.png\n" +
-      "sounds.png\n" +
-      "tools.png\n" +
-      "transaction-detail.png\n" +
-      "transaction-overview.png\n" +
-      "units.png\n" +
-      "verify-message.png\n" +
-      "verify-network.png"
+          // In Intellij just highlight the names and paste into "" to get the list
+          "about.png\n" +
+                  "accept-licence.png\n" +
+                  "appearance.png\n" +
+                  "change-password.png\n" +
+                  "confirm-seed-phrase.png\n" +
+                  "contacts.png\n" +
+                  "create-password.png\n" +
+                  "create-seed-phrase.png\n" +
+                  "create-wallet-report.png\n" +
+                  "edit-contact.png\n" +
+                  "edit-wallet.png\n" +
+                  "empty-wallet.png\n" +
+                  "enter-password.png\n" +
+                  "exchange-rates.png\n" +
+                  "history.png\n" +
+                  "installer-1.png\n" +
+                  "installer-2.png\n" +
+                  "installer-3.png\n" +
+                  "installer-4.png\n" +
+                  "installer-5.png\n" +
+                  "labs.png\n" +
+                  "languages.png\n" +
+                  "payments.png\n" +
+                  "preferences.png\n" +
+                  "prepare-create-wallet.png\n" +
+                  "repair-wallet.png\n" +
+                  "request-payment.png\n" +
+                  "restorePassword.png\n" +
+                  "select-backup-location.png\n" +
+                  "select-create-wallet.png\n" +
+                  "select-language.png\n" +
+                  "send-payment.png\n" +
+                  "send-receive.png\n" +
+                  "sign-message.png\n" +
+                  "sounds.png\n" +
+                  "tools.png\n" +
+                  "transaction-detail.png\n" +
+                  "transaction-overview.png\n" +
+                  "units.png\n" +
+                  "verify-message.png\n" +
+                  "verify-network.png"
   );
   private URL homeUrl;
 
@@ -146,6 +151,9 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
   private final String exitedLinkHexColor = String.format("#%02x%02x%02x", exitedLinkColor.getRed(), exitedLinkColor.getGreen(), exitedLinkColor.getBlue());
 
   private final String headingHexColor = "#973131";
+
+  private final ListeningExecutorService cacertsExecutorService = SafeExecutors.newSingleThreadExecutor("help-repair-cacerts");
+
 
   /**
    * @param panelModel The model backing this panel view
@@ -166,9 +174,9 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
   public JPanel initialiseScreenViewPanel() {
 
     MigLayout layout = new MigLayout(
-      Panels.migXYDetailLayout(),
-      "[][][][][]push[]", // Column constraints
-      "[shrink]10[grow]" // Row constraints
+            Panels.migXYDetailLayout(),
+            "[][][][][]push[]", // Column constraints
+            "[shrink]10[grow]" // Row constraints
     );
 
     // Create the content panel
@@ -220,17 +228,17 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
   public void afterShow() {
 
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          // Load the current page in the history
-          try {
-            editorPane.setPage(currentPage());
-          } catch (IOException e) {
-            log.warn(e.getMessage(), e);
-          }
-        }
-      });
+            new Runnable() {
+              @Override
+              public void run() {
+                // Load the current page in the history
+                try {
+                  editorPane.setPage(currentPage());
+                } catch (IOException e) {
+                  log.warn("Unable to load current page ", e);
+                }
+              }
+            });
 
   }
 
@@ -238,6 +246,9 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
    * @return An editor pane with support for basic HTML (v3.2)
    */
   private JEditorPane createBrowser() {
+    // If the remote help does not load it could be due to an out of date multibit.org SSLcert so
+    // refresh all the certs in the background
+    boolean refreshCerts = false;
 
     // Test the main website help is available
     // Look up the standard MultiBit help (via HTTPS)
@@ -251,15 +262,17 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
         // Something is wrong at the server end so switch to internal mode
         log.warn("Content from MultiBit.org does not contain <li> so switching to internal help");
         useInternalHelp = true;
+        refreshCerts = true;
       }
 
     } catch (MalformedURLException e) {
       // This is a coding error so should blow up
-      log.error(e.getMessage(), e);
+      log.error("Unable to load help home page ", e);
       return null;
     } catch (IOException e) {
       log.warn("Problem with MultiBit.org so switching to internal help", e);
       useInternalHelp = true;
+      refreshCerts = true;
     }
 
     // Always use internal help for FEST tests to provide predictable output
@@ -317,74 +330,106 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     editorPane.setDocument(htmlDocument);
 
     editorPane.addHyperlinkListener(
-      new HyperlinkListener() {
+            new HyperlinkListener() {
 
-        @Override
-        public void hyperlinkUpdate(HyperlinkEvent e) {
+              @SuppressFBWarnings({"ITU_INAPPROPRIATE_TOSTRING_USE", "S508C_SET_COMP_COLOR", "S508C_SET_COMP_COLOR"})
+              @Override
+              public void hyperlinkUpdate(HyperlinkEvent e) {
 
-          final URL url = e.getURL();
+                final URL url = e.getURL();
 
-          if (url != null) {
-            boolean multiBitHelp = url.toString().startsWith(InstallationManager.MBHD_WEBSITE_HELP_DOMAIN)
-                    && url.toString().contains("/hd")
-                    && url.toString().endsWith(".html");
+                if (url != null) {
+                  boolean multiBitHelp = url.toString().startsWith(InstallationManager.MBHD_WEBSITE_HELP_DOMAIN)
+                          && url.toString().contains("/hd")
+                          && url.toString().endsWith(".html");
 
-            if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
+                  if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
 
-              if (!multiBitHelp) {
+                    if (!multiBitHelp) {
 
-                // Indicate an external link
-                if (launchBrowserButton.isEnabled()) {
-                  launchBrowserButton.setBackground(Themes.currentTheme.infoAlertBackground());
+                      // Indicate an external link
+                      if (launchBrowserButton.isEnabled()) {
+                        launchBrowserButton.setBackground(Themes.currentTheme.infoAlertBackground());
+                      }
+
+                    }
+                  }
+
+                  if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
+
+                    if (launchBrowserButton.isEnabled()) {
+                      launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
+                    }
+                  }
+
+                  if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+
+                    // Force the main browser if not MultiBit HD help (i.e. a relative link to the FAQ)
+                    if (!multiBitHelp) {
+
+                      listeningExecutorService.submit(
+                              new Runnable() {
+                                @Override
+                                public void run() {
+                                  try {
+                                    if (launchBrowserButton.isEnabled()) {
+                                      Desktop.getDesktop().browse(url.toURI());
+                                    } else {
+                                      // No browser available
+                                      Sounds.playBeep();
+                                    }
+                                  } catch (IOException | URISyntaxException e1) {
+                                    Sounds.playBeep();
+                                  }
+                                }
+                              });
+
+                    } else {
+
+                      // User has clicked on the link so treat as a new page
+                      addPage(e.getURL());
+
+                      // We are allowed to browse to this page
+                      browse(currentPage());
+                    }
+                  }
                 }
 
               }
-            }
+            });
 
-            if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
-
-              if (launchBrowserButton.isEnabled()) {
-                launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
-              }
-            }
-
-            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-
-              // Force the main browser if not MultiBit HD help (i.e. a relative link to the FAQ)
-              if (!multiBitHelp) {
-
-                listeningExecutorService.submit(
-                        new Runnable() {
-                          @Override
-                          public void run() {
-                            try {
-                              if (launchBrowserButton.isEnabled()) {
-                                Desktop.getDesktop().browse(url.toURI());
-                              } else {
-                                // No browser available
-                                Sounds.playBeep();
-                              }
-                            } catch (IOException | URISyntaxException e1) {
-                              Sounds.playBeep();
-                            }
-                          }
-                        });
-
-              } else {
-
-                // User has clicked on the link so treat as a new page
-                addPage(e.getURL());
-
-                // We are allowed to browse to this page
-                browse(currentPage());
-              }
-            }
-          }
-
-        }
-      });
+    // Refresh certs in background if necessary
+    if (refreshCerts) {
+      refreshCertsInBackground();
+    }
 
     return editorPane;
+  }
+
+  private void refreshCertsInBackground() {
+    ListenableFuture cacertsFuture = cacertsExecutorService.submit(new Runnable() {
+      @Override
+      public void run() {
+        log.debug("Starting refresh of SSL certs...");
+        SSLManager.INSTANCE.installCACertificates(
+                InstallationManager.getOrCreateApplicationDataDirectory(),
+                InstallationManager.CA_CERTS_NAME,
+                true
+        );
+
+      }
+    });
+    Futures.addCallback(cacertsFuture, new FutureCallback() {
+      @Override
+      public void onSuccess(@Nullable Object result) {
+        log.debug("SSL certs have been updated.");
+      }
+
+      @Override
+      public void onFailure(Throwable t) {
+        log.error("SSL certs update FAILED - error was {}", t);
+      }
+    });
   }
 
   /**
@@ -412,58 +457,58 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
     // Run the decryption on a different thread
     listeningExecutorService.submit(
-      new Runnable() {
-        @Override
-        public void run() {
+            new Runnable() {
+              @Override
+              public void run() {
 
-          try {
+                try {
 
-            for (String imageName : imageNames) {
+                  for (String imageName : imageNames) {
 
-              // Only interested in /assets/images
-              // Images are directly under the domain so we build a suitable
-              // absolute URL to fool the JEditorPane
-              // Note that we have "mbhd-0.1" in the URL but not the resource path
-              URL mockUrl = new URL(
-                InstallationManager.MBHD_WEBSITE_HELP_DOMAIN +
-                  "/images/en/screenshots/mbhd-0.1/" +
-                  imageName
-              );
+                    // Only interested in /assets/images
+                    // Images are directly under the domain so we build a suitable
+                    // absolute URL to fool the JEditorPane
+                    // Note that we have "mbhd-0.1" in the URL but not the resource path
+                    URL mockUrl = new URL(
+                            InstallationManager.MBHD_WEBSITE_HELP_DOMAIN +
+                                    "/images/en/screenshots/mbhd-0.1/" +
+                                    imageName
+                    );
 
-              // Load the image from the classpath (no "mbhd-0.1")
-              InputStream is = HelpScreenView.class.getResourceAsStream(
-                "/assets/images/en/screenshots/mbhd-01/" +
-                  imageName
-              );
-              if (is == null) {
-                throw new IOException("Could not locate: '" + imageName + "' on the /assets classpath");
+                    // Load the image from the classpath (no "mbhd-0.1")
+                    InputStream is = HelpScreenView.class.getResourceAsStream(
+                            "/assets/images/en/screenshots/mbhd-01/" +
+                                    imageName
+                    );
+                    if (is == null) {
+                      throw new IOException("Could not locate: '" + imageName + "' on the /assets classpath");
+                    }
+                    BufferedImage image = ImageIO.read(is);
+                    image.flush();
+
+                    // Resize it if necessary
+                    final int MAX_WIDTH = 670;
+                    if (image.getWidth(null) > MAX_WIDTH) {
+
+                      image = ImageDecorator.resizeSharp(image, MAX_WIDTH);
+
+                    }
+
+                    // Cache it for later
+                    internalImageCache.put(mockUrl, image);
+
+                    log.debug("Cached /asset '{}'", imageName);
+
+                  }
+
+
+                } catch (IOException e) {
+                  // This is a coding error
+                  log.error("Problem with the internal image assets.", e);
+                }
+
               }
-              BufferedImage image = ImageIO.read(is);
-              image.flush();
-
-              // Resize it if necessary
-              final int MAX_WIDTH = 670;
-              if (image.getWidth(null) > MAX_WIDTH) {
-
-                image = ImageDecorator.resizeSharp(image, MAX_WIDTH);
-
-              }
-
-              // Cache it for later
-              internalImageCache.put(mockUrl, image);
-
-              log.debug("Cached /asset '{}'", imageName);
-
-            }
-
-
-          } catch (IOException e) {
-            // This is a coding error
-            log.error("Problem with the internal image assets.", e);
-          }
-
-        }
-      });
+            });
 
   }
 
@@ -516,28 +561,29 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
   private void browse(final URL url) {
 
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          try {
+            new Runnable() {
+              @SuppressFBWarnings({"S508C_SET_COMP_COLOR"})
+              @Override
+              public void run() {
+                try {
 
-            editorPane.setPage(url);
+                  editorPane.setPage(url);
 
-            // Reset the button background
-            launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
+                  // Reset the button background
+                  launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
 
-          } catch (IOException e) {
-            // Log the error and report a failure to the user via the alerts
-            log.error(e.getMessage(), e);
-            ControllerEvents.fireAddAlertEvent(
-              Models.newAlertModel(
-                Languages.safeText(MessageKey.NETWORK_CONFIGURATION_ERROR),
-                RAGStatus.AMBER
-              ));
-          }
+                } catch (IOException e) {
+                  // Log the error and report a failure to the user via the alerts
+                  log.error("Unable to load page " + url, e);
+                  ControllerEvents.fireAddAlertEvent(
+                          Models.newAlertModel(
+                                  Languages.safeText(MessageKey.NETWORK_CONFIGURATION_ERROR),
+                                  RAGStatus.AMBER
+                          ));
+                }
 
-        }
-      });
+              }
+            });
   }
 
   /**
