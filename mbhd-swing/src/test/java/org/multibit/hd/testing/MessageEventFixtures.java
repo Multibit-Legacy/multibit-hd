@@ -38,7 +38,7 @@ public class MessageEventFixtures {
 
     Features features = new Features();
     features.setVendor("bitcointrezor.com");
-    features.setVersion("1.2.1");
+    features.setVersion("1.3.0");
     features.setBootloaderMode(false);
     features.setDeviceId("D18894FA25FA90CD589EDE57");
     features.setPinProtection(true);
@@ -62,7 +62,7 @@ public class MessageEventFixtures {
 
     Features features = new Features();
     features.setVendor("bitcointrezor.com");
-    features.setVersion("1.2.1");
+    features.setVersion("1.3.0");
     features.setBootloaderMode(false);
     features.setDeviceId("D18894FA25FA90CD589EDE57");
     features.setPinProtection(false);
@@ -71,6 +71,30 @@ public class MessageEventFixtures {
     features.setLabel(STANDARD_LABEL);
     features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin"));
     features.setInitialized(false);
+    features.setRevision(Utils.HEX.decode("524f2a957afb66e6a869384aceaca1cb7f9cba60"));
+    features.setBootloaderHash(Utils.HEX.decode("c4c32539b4a025a8e753a4c46264285911a45fcb14f4718179e711b1ce990524"));
+    features.setImported(false);
+
+    return features;
+
+  }
+
+  /**
+   * @return An "initialised" Features for use with FEST testing (abandon wallet) with unsupported firmware (1.2.0)
+   */
+  public static Features newUnsupportedFirmwareFeatures() {
+
+    Features features = new Features();
+    features.setVendor("bitcointrezor.com");
+    features.setVersion("1.2.1");
+    features.setBootloaderMode(false);
+    features.setDeviceId("D18894FA25FA90CD589EDE57");
+    features.setPinProtection(true);
+    features.setPassphraseProtection(false);
+    features.setLanguage("english");
+    features.setLabel(STANDARD_LABEL);
+    features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin"));
+    features.setInitialized(true);
     features.setRevision(Utils.HEX.decode("524f2a957afb66e6a869384aceaca1cb7f9cba60"));
     features.setBootloaderHash(Utils.HEX.decode("c4c32539b4a025a8e753a4c46264285911a45fcb14f4718179e711b1ce990524"));
     features.setImported(false);
