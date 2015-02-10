@@ -465,9 +465,6 @@ public class MainController extends AbstractController implements
               summary.getSeverity())
           );
 
-          // Remove the popover security event since the user will have seen it and a popover at a random time
-          // will be confusing
-          CoreServices.getApplicationEventService().onSecurityEvent(null);
         }
         break;
       default:
@@ -875,7 +872,7 @@ public class MainController extends AbstractController implements
         // An alert tends to stack and gets messy/irrelevant
         deferredCredentialsRequestType = CredentialsRequestType.PASSWORD;
 
-        // Clear any UNSUPPORTED_FIRMWARE_ATTACHED events as the user has detached the causative Trezor
+        // Clear any UNSUPPORTED_FIRMWARE_ATTACHED events as the user has detached the causative device
         Optional<SecurityEvent> lastSecurityEventOptional = CoreServices.getApplicationEventService().getLatestSecurityEvent();
         if (lastSecurityEventOptional.isPresent()
                 && lastSecurityEventOptional.get().is(SecuritySummary.AlertType.UNSUPPORTED_FIRMWARE_ATTACHED)) {
