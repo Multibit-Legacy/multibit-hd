@@ -466,7 +466,7 @@ public class MainController extends AbstractController implements
           );
 
           // Allow a short time for the popover security event to be registered with the application event service
-          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+          Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
 
           // Remove the popover security event since the user will have seen it and a popover at a random time
           // will be confusing
