@@ -112,7 +112,7 @@ public class AESUtils {
       return decryptedBytes;
     } catch (RuntimeException | InvalidCipherTextException e) {
       // Most likely a bad password
-      throw new KeyCrypterException("Could not decrypt: " + e.getMessage());
+      throw new KeyCrypterException("Could not decrypt: " + e.getMessage() , e);
     }
   }
 }
