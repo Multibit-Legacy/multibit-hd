@@ -465,9 +465,6 @@ public class MainController extends AbstractController implements
               summary.getSeverity())
           );
 
-          // Allow a short time for the popover security event to be registered with the application event service
-          Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
-
           // Remove the popover security event since the user will have seen it and a popover at a random time
           // will be confusing
           CoreServices.getApplicationEventService().onSecurityEvent(null);
@@ -877,6 +874,14 @@ public class MainController extends AbstractController implements
         // Rely on the hardware wallet wizard to inform the user
         // An alert tends to stack and gets messy/irrelevant
         deferredCredentialsRequestType = CredentialsRequestType.PASSWORD;
+
+        // Clear any UNSUPPORTED_FIRMWARE_ATTACHED events as the user has detached the causative Trezor
+        Optional<SecurityEvent> lastSecurityEventOptional = CoreServices.getApplicationEventService().getLatestSecurityEvent();
+        if (lastSecurityEventOptional.isPresent()
+                && lastSecurityEventOptional.get().is(SecuritySummary.AlertType.UNSUPPORTED_FIRMWARE_ATTACHED)) {
+          CoreServices.getApplicationEventService().onSecurityEvent(null);
+        }
+
         break;
       case SHOW_DEVICE_FAILED:
         handleShowDeviceFailed(event);

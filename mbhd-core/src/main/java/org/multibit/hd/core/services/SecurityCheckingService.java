@@ -1,6 +1,8 @@
 package org.multibit.hd.core.services;
 
 import org.joda.time.DateTime;
+import org.multibit.hd.core.dto.SecuritySummary;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.core.utils.OSUtils;
@@ -58,7 +60,7 @@ public class SecurityCheckingService extends AbstractService {
             nextDebuggerAlert = Dates.nowUtc().plusMinutes(5);
 
             // Issue the alert
-            //CoreEvents.fireSecurityEvent(SecuritySummary.newDebuggerAttached());
+            CoreEvents.fireSecurityEvent(SecuritySummary.newDebuggerAttached());
 
           }
 
