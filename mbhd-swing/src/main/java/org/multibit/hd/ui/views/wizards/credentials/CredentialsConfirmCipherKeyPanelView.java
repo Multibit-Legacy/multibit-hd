@@ -81,7 +81,7 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
       @Override public void run() {
 
         // Set the confirm text
-        trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
+        trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_UNLOCK_OPERATION);
 
         // Show unlock message
         trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY);

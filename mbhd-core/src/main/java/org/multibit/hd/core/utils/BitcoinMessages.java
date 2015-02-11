@@ -124,15 +124,20 @@ public class BitcoinMessages {
       return new SignedMessage("", "", "", "", "");
     }
 
-    // Configure line separator for platform
-    String ls = String.format("%n").intern();
-    int lsLength = ls.length();
-
     // Attempt to parse as Bitcoin signed message
     String block = signatureBlock.get();
 
     if ((block.contains(BEGIN_SIGNED_MESSAGE) || block.contains(BEGIN_SIGNATURE))
       && block.contains(END_BITCOIN_SIGNATURE)) {
+
+      // Determine line separator format by checking for CRLF
+      String ls;
+      if (block.contains("\r\n")) {
+        ls = "\r\n";
+      } else {
+        ls = "\n";
+      }
+      int lsLength = ls.length();
 
       // Split the block into lines using line separator
       List<String> lines = Splitter.on(ls).splitToList(block);

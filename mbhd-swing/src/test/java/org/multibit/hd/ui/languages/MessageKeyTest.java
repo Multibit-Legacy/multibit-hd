@@ -37,7 +37,7 @@ public class MessageKeyTest {
 
     }
 
-    assertThat(failed).isFalse();
+    assertThat(failed).describedAs("A MessageKey is not resolved in languages.properties. See error log.").isFalse();
 
   }
 

@@ -1170,6 +1170,23 @@ public class Labels {
   }
 
   /**
+   * @return A new "unsupported firmware" note
+   */
+  public static JLabel newUnsupportedFirmwareNote() {
+
+    JLabel label = newNoteLabel(new CoreMessageKey[]{
+        CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED,
+        CoreMessageKey.SECURITY_ADVICE
+      }, new Object[][]{});
+
+    // Allow for warning theme
+    label.setForeground(Themes.currentTheme.warningAlertText());
+
+    return label;
+
+  }
+
+  /**
    * @return A new "language change" note
    */
   public static JLabel newLanguageChangeNote() {

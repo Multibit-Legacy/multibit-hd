@@ -216,6 +216,17 @@ public class Panels {
   }
 
   /**
+   * <p>Test if a light box is showing</p>
+   *
+   * @return True if the light box panel is visible
+   */
+  public synchronized static boolean isLightBoxShowing() {
+
+    return lightBoxPanel.isPresent();
+
+  }
+
+  /**
    * <p>Show a light box</p>
    *
    * @param panel The panel to act as the focus of the light box
@@ -258,6 +269,17 @@ public class Panels {
 
     // Finally allow focus
     allowFocus(Panels.applicationFrame, true);
+
+  }
+
+  /**
+   * <p>Test if a light box popover is showing</p>
+   *
+   * @return True if the popover panel is visible
+   */
+  public synchronized static boolean isLightBoxPopoverShowing() {
+
+    return lightBoxPopoverPanel.isPresent();
 
   }
 
@@ -573,26 +595,6 @@ public class Panels {
   }
 
   /**
-   * <p>A "seed phrase warning" panel displays the instructions to write down the seed phrase on a piece of paper</p>
-   *
-   * @return A new "seed phrase warning" panel
-   */
-  public static JPanel newSeedPhraseWarning() {
-
-    JPanel panel = Panels.newPanel(
-      new MigLayout(
-        Panels.migXLayout(),
-        "[]", // Columns
-        "[]" // Rows
-      ));
-
-    // Add to the panel
-    panel.add(Labels.newCreateWalletPreparationNote(), "grow,push");
-
-    return panel;
-  }
-
-  /**
    * <p>A "debugger warning" panel displays instructions to the user about a debugger being attached</p>
    *
    * @return A new "debugger warning" panel
@@ -612,7 +614,32 @@ public class Panels {
     PanelDecorator.applyDangerFadedTheme(panel);
 
     // Add to the panel
-    panel.add(Labels.newDebuggerWarningNote(), "grow,push");
+    panel.add(Labels.newDebuggerWarningNote(), "w 350");
+
+    return panel;
+  }
+
+  /**
+   * <p>An "unsupported firmware" panel displays instructions to the user about a hardware wallet with unsupported firmware (security risk) being attached</p>
+   *
+   * @return A new "unsupported firmware" panel
+   */
+  public static JPanel newUnsupportedFirmware() {
+
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(panel, CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED);
+
+    PanelDecorator.applyWarningTheme(panel);
+
+    // Add to the panel
+    panel.add(Labels.newUnsupportedFirmwareNote(), "w 350");
 
     return panel;
   }

@@ -18,7 +18,11 @@ public class SecuritySummary {
     DEBUGGER_ATTACHED,
     SYSTEM_TIME_DRIFT,
     BACKUP_FAILED,
-    CERTIFICATE_FAILED
+    CERTIFICATE_FAILED,
+    UNSUPPORTED_FIRMWARE_ATTACHED,
+
+    // End of enum
+    ;
 
   }
 
@@ -82,6 +86,20 @@ public class SecuritySummary {
       Optional.of(CoreMessageKey.CERTIFICATE_FAILED),
       Optional.<Object[]>absent(),
       AlertType.CERTIFICATE_FAILED
+    );
+  }
+
+  /**
+   * <p>A hardware wallet with unsupported firmware is attached - could expose user to risk</p>
+   *
+   * @return A new "unsupported firmware" summary
+   */
+  public static SecuritySummary newUnsupportedFirmware() {
+    return new SecuritySummary(
+      RAGStatus.AMBER,
+      Optional.of(CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED),
+      Optional.<Object[]>absent(),
+      AlertType.UNSUPPORTED_FIRMWARE_ATTACHED
     );
   }
 

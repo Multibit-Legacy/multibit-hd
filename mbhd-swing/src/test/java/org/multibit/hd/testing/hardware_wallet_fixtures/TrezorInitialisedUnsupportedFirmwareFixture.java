@@ -28,12 +28,12 @@ import static org.mockito.Mockito.when;
  * <li>Low level events and client handling</li>
  * </ul>
  *
- * <p>Emulates an attached initialised Trezor during the Restore use case</p>
+ * <p>Emulates an attached initialised Trezor during the unsupported firmware use case</p>
  *
  * @since 0.0.1
  *  
  */
-public class TrezorInitialisedRestoreFixture extends AbstractHardwareWalletFixture {
+public class TrezorInitialisedUnsupportedFirmwareFixture extends AbstractHardwareWalletFixture {
 
   @Override
   public void setUpClient() {
@@ -107,7 +107,7 @@ public class TrezorInitialisedRestoreFixture extends AbstractHardwareWalletFixtu
       new Answer<Optional<MessageEvent>>() {
         public Optional<MessageEvent> answer(InvocationOnMock invocation) throws Throwable {
 
-          Features features = MessageEventFixtures.newStandardFeatures();
+          Features features = MessageEventFixtures.newUnsupportedFirmwareFeatures();
 
           MessageEvent event = new MessageEvent(
             MessageEventType.FEATURES,

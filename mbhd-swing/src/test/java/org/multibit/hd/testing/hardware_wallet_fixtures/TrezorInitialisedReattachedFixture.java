@@ -81,8 +81,8 @@ public class TrezorInitialisedReattachedFixture extends AbstractHardwareWalletFi
 
     // ButtonAck -> Cipher key success
     final MessageEvent event3 = new MessageEvent(
-      MessageEventType.SUCCESS,
-      Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCipherKeySuccess()),
+      MessageEventType.CIPHERED_KEY_VALUE,
+      Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCipheredKeyValue()),
       Optional.<Message>absent()
     );
 

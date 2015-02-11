@@ -454,6 +454,19 @@ public class MainController extends AbstractController implements
             button)
         );
         break;
+      case UNSUPPORTED_FIRMWARE_ATTACHED:
+        Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+        if (walletSummary.isPresent() && !Panels.isLightBoxShowing()) {
+          // Present the localised message as an alert bar since a popover won't appear any time soon
+          ControllerEvents.fireAddAlertEvent(
+            Models.newAlertModel(
+              localisedMessage,
+              summary.getSeverity())
+          );
+
+        }
+        break;
       default:
         throw new IllegalStateException("Unknown alert type: " + summary.getAlertType());
     }
@@ -858,59 +871,20 @@ public class MainController extends AbstractController implements
         // Rely on the hardware wallet wizard to inform the user
         // An alert tends to stack and gets messy/irrelevant
         deferredCredentialsRequestType = CredentialsRequestType.PASSWORD;
+
+        // Clear any UNSUPPORTED_FIRMWARE_ATTACHED events as the user has detached the causative device
+        Optional<SecurityEvent> lastSecurityEventOptional = CoreServices.getApplicationEventService().getLatestSecurityEvent();
+        if (lastSecurityEventOptional.isPresent()
+                && lastSecurityEventOptional.get().is(SecuritySummary.AlertType.UNSUPPORTED_FIRMWARE_ATTACHED)) {
+          CoreServices.getApplicationEventService().onSecurityEvent(null);
+        }
+
         break;
       case SHOW_DEVICE_FAILED:
+        handleShowDeviceFailed(event);
+        break;
       case SHOW_DEVICE_READY:
-        // Show an alert if the Trezor connects when
-        // - there is a current wallet
-        // - the current wallet is not the same "hard" Trezor wallet as in the alert
-        // - there has not been a "wipe Trezor" in the last few seconds
-        Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-        if (walletSummary.isPresent()) {
-          Optional<HardwareWalletService> hardwareWalletService1 = CoreServices.getOrCreateHardwareWalletService();
-
-          boolean showAlert = false;
-          if (!WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
-            // Not currently using a Trezor hard wallet so show the alert
-            showAlert = true;
-          } else {
-            if (hardwareWalletService1.isPresent()) {
-              Optional<Features> features = hardwareWalletService1.get().getContext().getFeatures();
-              String currentWalletName = walletSummary.get().getName();
-              if (features.isPresent() && !features.get().getDeviceId().equals(currentWalletName)) {
-                // The newly plugged in Trezor is a different one
-                showAlert = true;
-              }
-            }
-          }
-          if (hardwareWalletService1.isPresent()) {
-            if (lastWipedTrezorDateTime
-              .plusSeconds(TREZOR_WIPE_TIME_THRESHOLD)
-              .isAfter(Dates.nowUtc())) {
-              log.debug("Suppressing the alert due to recent confirmed Trezor wipe operation");
-              showAlert = false;
-            }
-          }
-
-          if (showAlert) {
-
-            // TODO Currently getting a false positive due to FEST test use of WalletManager during fixture creation
-
-            log.debug("Trezor attached during an unlocked soft wallet session - showing alert");
-
-            SwingUtilities.invokeLater(
-              new Runnable() {
-                @Override
-                public void run() {
-                  // Attempt to create a suitable alert model in addition to view event
-                  AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
-                  ControllerEvents.fireAddAlertEvent(alertModel);
-                }
-              });
-          }
-        }
-        // Set the deferred credentials request type
-        deferredCredentialsRequestType = CredentialsRequestType.TREZOR;
+        handleShowDeviceReady(event);
         break;
       default:
         // The AbstractHardwareWalletWizard handles everything when a wizard is showing
@@ -923,6 +897,109 @@ public class MainController extends AbstractController implements
     if (mainView != null) {
       mainView.setCredentialsRequestType(deferredCredentialsRequestType);
     }
+
+  }
+
+  /**
+   * <p>Handle the "show device failure" event</p>
+   * <p>There are two conditions to check here: a failed device from a USB communication
+   * problem, or one that has unsupported firmware (e.g. Trezor 1.2.x).</p>
+   * <p>If the device is unsupported then two forms of alert are needed: a popover if a
+   * light box is showing; an alert bar if a wallet is open.</p>
+   *
+   * @param event The hardware wallet event
+   */
+  private void handleShowDeviceFailed(final HardwareWalletEvent event) {
+
+    // Determine the nature of the failure
+    Optional<Features> featuresOptional = hardwareWalletService.get().getContext().getFeatures();
+
+    boolean isUnsupportedFirmware = featuresOptional.isPresent() && !featuresOptional.get().isSupported();
+
+    if (isUnsupportedFirmware) {
+      // Show as a security popover
+      CoreEvents.fireSecurityEvent(SecuritySummary.newUnsupportedFirmware());
+    } else {
+      // Use the alert bar mechanism
+
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            // Attempt to create a suitable alert model in addition to view event
+            AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+            ControllerEvents.fireAddAlertEvent(alertModel);
+          }
+        });
+
+    }
+
+    // Set the deferred credentials request type to be password since the device has failed
+    deferredCredentialsRequestType = CredentialsRequestType.PASSWORD;
+
+  }
+
+  /**
+   * <p>Handle the "show device ready" event</p>
+   * <p>Show an alert if the Trezor connects when:</p>
+   * <ul>
+   * <li>there is a current wallet</li>
+   * <li>the current wallet is not the same "hard" Trezor wallet as in the alert</li>
+   * <li>there has not been a "wipe Trezor" in the last few seconds</li>
+   * </ul>
+   *
+   * @param event The hardware wallet event
+   */
+  private void handleShowDeviceReady(final HardwareWalletEvent event) {
+
+    Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+    if (walletSummary.isPresent()) {
+      Optional<HardwareWalletService> hardwareWalletService1 = CoreServices.getOrCreateHardwareWalletService();
+
+      boolean showAlert = false;
+      if (!WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
+        // Not currently using a Trezor hard wallet so show the alert
+        showAlert = true;
+      } else {
+        if (hardwareWalletService1.isPresent()) {
+          Optional<Features> features = hardwareWalletService.get().getContext().getFeatures();
+          String currentWalletName = walletSummary.get().getName();
+          if (features.isPresent() && !features.get().getDeviceId().equals(currentWalletName)) {
+            // The newly plugged in Trezor is a different one
+            showAlert = true;
+          }
+        }
+      }
+      if (hardwareWalletService.isPresent()) {
+        if (lastWipedTrezorDateTime
+          .plusSeconds(TREZOR_WIPE_TIME_THRESHOLD)
+          .isAfter(Dates.nowUtc())) {
+          log.debug("Suppressing the alert due to recent confirmed Trezor wipe operation");
+          showAlert = false;
+        }
+      }
+
+      if (showAlert) {
+
+        // TODO Currently getting a false positive due to FEST test use of WalletManager during fixture creation
+
+        log.debug("Trezor attached during an unlocked soft wallet session - showing alert");
+
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              // Attempt to create a suitable alert model in addition to view event
+              AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+              ControllerEvents.fireAddAlertEvent(alertModel);
+            }
+          });
+      }
+    }
+
+    // Set the deferred credentials request type
+    deferredCredentialsRequestType = CredentialsRequestType.TREZOR;
 
   }
 
@@ -1410,12 +1487,13 @@ public class MainController extends AbstractController implements
 
                   // The transaction has not been sent correctly, or change is not spendable, throw a warning alert
                   final AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER), RAGStatus.AMBER, button);
-                  SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                      ViewEvents.fireAlertAddedEvent(alertModel);
-                    }
-                  });
+                  SwingUtilities.invokeLater(
+                    new Runnable() {
+                      @Override
+                      public void run() {
+                        ViewEvents.fireAlertAddedEvent(alertModel);
+                      }
+                    });
                 }
               }
             }

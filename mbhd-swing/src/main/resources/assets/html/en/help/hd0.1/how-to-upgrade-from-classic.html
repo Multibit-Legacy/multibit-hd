@@ -5,23 +5,28 @@
 
 <p>At that time the concept of hierarchical deterministic (HD) wallets was unknown and all Bitcoin wallets relied on random private keys. In order to simplify matters for non-technical people these private keys were re-used resulting in a weakened security model but having the advantage of allowing for more reliable data recovery if something went wrong with a user's computer.</p> 
 
-<p>With the introduction of HD through the Bitcoin Improvement Process (BIP) it became possible for different bitcoin wallets to be able to share a common piece of data, the "seed phrase", from which an enormous number of fresh private keys could be generated. This greatly simplified the problem of safely storing user's private keys and as a result MultiBit HD was born.</p>
+<p>With the introduction of HD through the Bitcoin Improvement Process (BIP) it became possible for different bitcoin wallets to be able to share a common piece of data, the
+  "wallet words" or "seed phrase", from which an enormous number of fresh private keys could be generated. This greatly simplified the problem of safely storing user's private keys
+  and as a result MultiBit HD was born.</p>
 
 <h4>Spending is the safest way</h4>
 <p>One of the problems with random private keys is that they cannot be easily regenerated. It is for this reason that we, the MultiBit developers, have decided against direct import of a MultiBit Classic wallet. To illustrate this, consider the following example.</p>
 
-<p>Alice imports a collection of random private keys in addition to a seed phrase into a combined wallet. Time passes and one day Alice has her computer stolen along with her backups. Fortunately she has her seed phrase and so all the bitcoins associated with it can be recovered. However, those bitcoins that remained with the random private keys are only protected by backups which have been stolen as well so they cannot be recovered.</p>
+<p>Alice imports a collection of random private keys in addition to her wallet words into a combined wallet. Time passes and one day Alice has her computer stolen along with her
+  backups. Fortunately she has her wallet words and so all the bitcoins associated with it can be recovered. However, those bitcoins that remained with the random private keys are
+  only protected by backups which have been stolen as well so they cannot be recovered.</p>
 
 <p>In the remainder of the article we discuss how to safely upgrade from MultiBit Classic to MultiBit HD and still retain control over old private keys.</p>
 
 <h4>Step 1 - Preparation</h4>
 <p>If you have a large amount stored in bitcoin (typically over 500 USD worth) then you should seriously consider purchasing a Trezor device. This will provide the best possible protection for your bitcoins while still enabling you to use them without undue hassle.</p>
 
-<p>You may decide that you want to take this opportunity to split your bitcoin up into smaller amounts and spread them across multiple wallets, each with its own seed phrase. If you choose to do this then we'd suggest the following approach:</p>
+<p>You may decide that you want to take this opportunity to split your bitcoin up into smaller amounts and spread them across multiple wallets, each with its own set of wallet
+  words. If you choose to do this then we'd suggest the following approach:</p>
 
 <ol>
   <li>Arrange a collection of A5 cards for each wallet</li>
-  <li>On each card write a section for Timestamp, Seed phrase (leave space for 24 words), Wallet type (MultiBit HD, Trezor) and first receiving Address</li>
+  <li>On each card write a section for Timestamp, Wallet words (leave space for 24 words), Wallet type (MultiBit HD, Trezor) and first receiving Address</li>
 </ol>
 
 <h4>Step 2 - Spend from MultiBit Classic to MultiBit HD</h4>

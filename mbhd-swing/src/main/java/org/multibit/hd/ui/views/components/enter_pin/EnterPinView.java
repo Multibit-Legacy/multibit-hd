@@ -36,6 +36,18 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
    */
   private JLabel pinStatus;
 
+  private final JButton button7 = Buttons.newPinMatixButton(getPinMatrixButtonAction(7), getModel().get().getPanelName() + ".button_7");
+  private final JButton button8 = Buttons.newPinMatixButton(getPinMatrixButtonAction(8), getModel().get().getPanelName() + ".button_8");
+  private final JButton button9 = Buttons.newPinMatixButton(getPinMatrixButtonAction(9), getModel().get().getPanelName() + ".button_9");
+  private final JButton button4 = Buttons.newPinMatixButton(getPinMatrixButtonAction(4), getModel().get().getPanelName() + ".button_4");
+  private final JButton button5 = Buttons.newPinMatixButton(getPinMatrixButtonAction(5), getModel().get().getPanelName() + ".button_5");
+  private final JButton button6 = Buttons.newPinMatixButton(getPinMatrixButtonAction(6), getModel().get().getPanelName() + ".button_6");
+  private final JButton button1 = Buttons.newPinMatixButton(getPinMatrixButtonAction(1), getModel().get().getPanelName() + ".button_1");
+  private final JButton button2 = Buttons.newPinMatixButton(getPinMatrixButtonAction(2), getModel().get().getPanelName() + ".button_2");
+  private final JButton button3 = Buttons.newPinMatixButton(getPinMatrixButtonAction(3), getModel().get().getPanelName() + ".button_3");
+
+  private final JButton backspaceDeleteButton = Buttons.newBackspaceDeleteButton(getRemoveLastButtonPressedAction());
+
   /**
    * @param model The model backing this view
    */
@@ -72,30 +84,30 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
 
 
     // Arrange PIN matrix buttons to mimic a numeric keypad (1 bottom left, 9 top right)
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(7), getModel().get().getPanelName() + ".button_7"), MultiBitUI.SMALL_BUTTON_MIG);
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(8), getModel().get().getPanelName() + ".button_8"), MultiBitUI.SMALL_BUTTON_MIG);
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(9), getModel().get().getPanelName() + ".button_9"), MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(4), getModel().get().getPanelName() + ".button_4"), MultiBitUI.SMALL_BUTTON_MIG);
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(5), getModel().get().getPanelName() + ".button_5"), MultiBitUI.SMALL_BUTTON_MIG);
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(6), getModel().get().getPanelName() + ".button_6"), MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(1), getModel().get().getPanelName() + ".button_1"), MultiBitUI.SMALL_BUTTON_MIG);
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(2), getModel().get().getPanelName() + ".button_2"), MultiBitUI.SMALL_BUTTON_MIG);
-    pinMatrixPanel.add(Buttons.newPinMatixButton(getPinMatrixButtonAction(3), getModel().get().getPanelName() + ".button_3"), MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
+    pinMatrixPanel.add(button7, MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(button8, MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(button9, MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
+    pinMatrixPanel.add(button4, MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(button5, MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(button6, MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
+    pinMatrixPanel.add(button1, MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(button2, MultiBitUI.SMALL_BUTTON_MIG);
+    pinMatrixPanel.add(button3, MultiBitUI.SMALL_BUTTON_MIG + ", wrap");
 
     pinText = TextBoxes.newReadOnlyTextField(10, MessageKey.ENTER_CURRENT_PIN, MessageKey.ENTER_CURRENT_PIN);
-    pinText.setName(getModel().get().getPanelName()+".textbox");
+    pinText.setName(getModel().get().getPanelName() + ".textbox");
     TitleFontDecorator.apply(pinText, (float) (MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE * 0.6));
 
     pinStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
 
     // Provide a display of numbers entered so far with delete button
-    pinDisplayPanel.add(pinText,"wmax 150,hmax 35");
-    pinDisplayPanel.add(Buttons.newBackspaceDeleteButton(getRemoveLastButtonPressedAction()), "wrap");
+    pinDisplayPanel.add(pinText, "wmax 150,hmax 35");
+    pinDisplayPanel.add(backspaceDeleteButton, "wrap");
 
     pinDisplayPanel.add(pinStatus, "wrap");
 
-    panel.add(pinMatrixPanel,"align center,wrap");
-    panel.add(pinDisplayPanel,"align center,wrap");
+    panel.add(pinMatrixPanel, "align center,wrap");
+    panel.add(pinDisplayPanel, "align center,wrap");
 
     // Ensure we hide the status display ensure the panel presents correctly
     setPinStatus(false, false);
@@ -189,5 +201,23 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
       getModel().get().setValue("");
       pinText.setText("");
     }
+  }
+
+  /**
+   * @param enabled True if all buttons should be enabled
+   */
+  public void setEnabled(final boolean enabled) {
+
+    button1.setEnabled(enabled);
+    button2.setEnabled(enabled);
+    button3.setEnabled(enabled);
+    button4.setEnabled(enabled);
+    button5.setEnabled(enabled);
+    button6.setEnabled(enabled);
+    button7.setEnabled(enabled);
+    button8.setEnabled(enabled);
+    button9.setEnabled(enabled);
+
+    backspaceDeleteButton.setEnabled(enabled);
   }
 }

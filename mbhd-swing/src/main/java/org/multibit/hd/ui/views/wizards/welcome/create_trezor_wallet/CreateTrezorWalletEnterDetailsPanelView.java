@@ -113,7 +113,7 @@ public class CreateTrezorWalletEnterDetailsPanelView extends AbstractWizardPanel
   public void updateFromComponentModels(Optional componentModel) {
 
     getWizardModel().setTrezorWalletLabel(trezorLabel.getText());
-    getWizardModel().setTrezorSeedSize(SeedPhraseSize.fromOrdinal(seedSize.getSelectedIndex()));
+    getWizardModel().setTrezorSeedPhraseSize(SeedPhraseSize.fromOrdinal(seedSize.getSelectedIndex()));
 
   }
 

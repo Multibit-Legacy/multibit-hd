@@ -5,6 +5,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.events.SecurityEvent;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -13,6 +15,8 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
+import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.slf4j.Logger;
@@ -34,7 +38,6 @@ import java.util.List;
  * @param <P> the wizard panel model
  *
  * @since 0.0.1
- *
  */
 public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> {
 
@@ -56,7 +59,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   /**
    * The optional panel model (some panels are read only views)
    */
-  private Optional<P> panelModel=Optional.absent();
+  private Optional<P> panelModel = Optional.absent();
 
   /**
    * The wizard screen panel (title, contents, buttons)
@@ -142,6 +145,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
     CoreEvents.unsubscribe(this);
 
   }
+
   /**
    * <p>Called when the wizard is first created to initialise the panel model.</p>
    *
@@ -390,6 +394,46 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   }
 
   /**
+   * <p>Standard handling for security popovers</p>
+   *
+   * @param displaySecurityPopoverMaV The display security popover MaV
+   */
+  protected void checkForSecurityEventPopover(ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV) {
+
+    // Check for any security alerts
+    Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
+
+    if (securityEvent.isPresent()) {
+
+      displaySecurityPopoverMaV.getModel().setValue(securityEvent.get());
+
+      // Show the security alert as a popover
+      JPanel popoverPanel = displaySecurityPopoverMaV.getView().newComponentPanel();
+
+      // Potentially decorate the panel (or do nothing)
+      switch (securityEvent.get().getSummary().getAlertType()) {
+        case DEBUGGER_ATTACHED:
+          popoverPanel.add(Panels.newDebuggerWarning(), "align center,wrap");
+          break;
+        case UNSUPPORTED_FIRMWARE_ATTACHED:
+          popoverPanel.add(Panels.newUnsupportedFirmware(), "align center,wrap");
+          break;
+        default:
+          // Do nothing
+          return;
+      }
+
+      // Show the popover
+      Panels.showLightBoxPopover(popoverPanel);
+
+      // Discard the security event now that the user is aware (this prevents multiple showings)
+      CoreServices.getApplicationEventService().onSecurityEvent(null);
+
+
+    }
+  }
+
+  /**
    * <p>Called before this wizard is about to be hidden.</p>
    *
    * <p>Typically this is where a panel view would {@link #updateFromComponentModels}, but implementations will vary</p>
@@ -484,50 +528,51 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
       return;
     }
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        // Enable the button if present
-        switch (event.getWizardButton()) {
-          case CANCEL:
-            if (cancelButton.isPresent()) {
-              cancelButton.get().setEnabled(event.isEnabled());
-            }
-            break;
-          case EXIT:
-            if (exitButton.isPresent()) {
-              exitButton.get().setEnabled(event.isEnabled());
-            }
-            break;
-          case NEXT:
-            if (nextButton.isPresent()) {
-              nextButton.get().setEnabled(event.isEnabled());
-            }
-            break;
-          case PREVIOUS:
-            if (previousButton.isPresent()) {
-              previousButton.get().setEnabled(event.isEnabled());
-            }
-            break;
-          case FINISH:
-            if (finishButton.isPresent()) {
-              finishButton.get().setEnabled(event.isEnabled());
-            }
-            break;
-          case APPLY:
-            if (applyButton.isPresent()) {
-              applyButton.get().setEnabled(event.isEnabled());
-            }
-            break;
-          case RESTORE:
-            if (restoreButton.isPresent()) {
-              restoreButton.get().setEnabled(event.isEnabled());
-            }
-            break;
-        }
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          // Enable the button if present
+          switch (event.getWizardButton()) {
+            case CANCEL:
+              if (cancelButton.isPresent()) {
+                cancelButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+            case EXIT:
+              if (exitButton.isPresent()) {
+                exitButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+            case NEXT:
+              if (nextButton.isPresent()) {
+                nextButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+            case PREVIOUS:
+              if (previousButton.isPresent()) {
+                previousButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+            case FINISH:
+              if (finishButton.isPresent()) {
+                finishButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+            case APPLY:
+              if (applyButton.isPresent()) {
+                applyButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+            case RESTORE:
+              if (restoreButton.isPresent()) {
+                restoreButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+          }
 
-      }
-    });
+        }
+      });
 
 
   }

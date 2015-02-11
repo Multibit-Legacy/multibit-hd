@@ -3,8 +3,6 @@ package org.multibit.hd.ui.views.wizards.credentials;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.SecuritySummary;
-import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -119,23 +117,19 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
 
     registerDefaultButton(getFinishButton());
 
+    // Finally check that the firmware is supported (we do not tolerate any absent values at this point)
+    final boolean enabled = CoreServices.getOrCreateHardwareWalletService().get().getContext().getFeatures().get().isSupported();
+
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
         public void run() {
 
           enterPinMaV.getView().requestInitialFocus();
+          enterPinMaV.getView().setEnabled(enabled);
 
-          // Check for any security alerts
-          Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
-          if (securityEvent.isPresent() && securityEvent.get().is(SecuritySummary.AlertType.DEBUGGER_ATTACHED)) {
-
-            displaySecurityPopoverMaV.getModel().setValue(securityEvent.get());
-
-            // Show the security alert as a popover
-            Panels.showLightBoxPopover(displaySecurityPopoverMaV.getView().newComponentPanel());
-
-          }
+          // This requires a security popover check
+          checkForSecurityEventPopover(displaySecurityPopoverMaV);
 
         }
       });
@@ -214,9 +208,6 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
    */
   private boolean isFinishEnabled() {
 
-    log.debug("PIN: {}", getPanelModel().get()
-            .getEnterPinModel()
-            .getValue());
     return !Strings.isNullOrEmpty(
       getPanelModel().get()
         .getEnterPinModel()

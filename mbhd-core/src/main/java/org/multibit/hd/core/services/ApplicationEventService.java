@@ -129,7 +129,7 @@ public class ApplicationEventService extends AbstractService {
    */
   @Subscribe
   public void onSecurityEvent(SecurityEvent event) {
-    latestSecurityEvent = Optional.of(event);
+    latestSecurityEvent = Optional.fromNullable(event);
   }
 
   /**

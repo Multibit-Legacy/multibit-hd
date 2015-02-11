@@ -4,11 +4,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.SecuritySummary;
 import org.multibit.hd.core.dto.WalletSummary;
-import org.multibit.hd.core.events.SecurityEvent;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -136,16 +133,8 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
 
         enterPasswordMaV.getView().requestInitialFocus();
 
-        // Check for any security alerts
-        Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
-        if (securityEvent.isPresent() && securityEvent.get().is(SecuritySummary.AlertType.DEBUGGER_ATTACHED)) {
-
-          displaySecurityPopoverMaV.getModel().setValue(securityEvent.get());
-
-          // Show the security alert as a popover
-          Panels.showLightBoxPopover(displaySecurityPopoverMaV.getView().newComponentPanel());
-
-        }
+        // This requires a security popover check
+        checkForSecurityEventPopover(displaySecurityPopoverMaV);
 
         selectWalletMaV.getView().updateViewFromModel();
 

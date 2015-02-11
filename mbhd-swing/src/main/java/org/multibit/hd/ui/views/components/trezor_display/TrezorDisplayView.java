@@ -61,7 +61,7 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
     // Add to the panel
     panel.add(operationText, "align center,wrap");
     panel.add(recoveryText, "align center,wrap");
-    panel.add(deviceDisplayTextArea, "align center," + MultiBitUI.TREZOR_DISPLAY_MAX_WIDTH_MIG + ",wrap");
+    panel.add(deviceDisplayTextArea, "align center,w 170,wrap");
     panel.add(spinner, "align center,wrap");
 
     return panel;

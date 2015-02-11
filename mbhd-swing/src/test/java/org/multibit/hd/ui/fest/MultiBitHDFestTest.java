@@ -513,6 +513,27 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
   }
 
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with standard application directory</li>
+   * <li>Show the PIN entry, unlock screen and restore from there. This FEST test creates a local backup</li>
+   * </ul>
+   */
+  @Test
+  public void verifyUnsupportedTrezorFirmware() throws Exception {
+
+    // Prepare an initialised and attached Trezor device that will be restored then unlocked
+    HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedUnsupportedFirmwareFixture();
+
+    // Start with the empty hardware wallet fixture
+    arrangeStandard(Optional.of(hardwareWalletFixture));
+
+    // Verify up to the restore
+    UnlockTrezorHardwareWalletUnsupportedFirmwareRequirements.verifyUsing(window, hardwareWalletFixture);
+
+  }
+
   ////////////////////////////////////////////////////////////////
 
   /**

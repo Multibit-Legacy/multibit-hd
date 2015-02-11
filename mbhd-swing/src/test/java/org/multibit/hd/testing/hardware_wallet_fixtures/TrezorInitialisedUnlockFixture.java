@@ -63,8 +63,8 @@ public class TrezorInitialisedUnlockFixture extends AbstractHardwareWalletFixtur
 
     // Cipher key success
     final MessageEvent event1 = new MessageEvent(
-      MessageEventType.SUCCESS,
-      Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCipherKeySuccess()),
+      MessageEventType.CIPHERED_KEY_VALUE,
+      Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCipheredKeyValue()),
       Optional.<Message>absent()
     );
 

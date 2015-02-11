@@ -272,18 +272,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
                   }
                 });
 
-        if (event.getMessage().get() instanceof Success) {
+        if (event.getMessage().get() instanceof CipheredKeyValue) {
 
           // Payload contains entropy so use it directly
-          byte[] payload = ((Success) event.getMessage().get()).getPayload();
-          String message = ((Success) event.getMessage().get()).getMessage();
+          byte[] payload = ((CipheredKeyValue) event.getMessage().get()).getPayload().get();
 
           // Do not write the payload into the logs since it can unlock a wallet!
-          log.info(
-                  "Message:'{}'\nPayload length: {}",
-                  message,
-                  payload == null ? 0 : payload.length
-          );
+          log.info("Payload length: {}", payload == null ? 0 : payload.length);
 
           log.debug("Using the payload as entropy");
           entropy = Optional.fromNullable(payload);
