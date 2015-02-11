@@ -1,13 +1,13 @@
 <h3>Wallet backups</h3>
 
-<p><strong>So long as you know your seed phrase</strong> you can use a wallet backup to <a href="restore-wallet.html">recover</a>:</p>
+<p><strong>So long as you know your wallet words</strong> (seed phrase) you can use a wallet backup to <a href="restore-wallet.html">recover</a>:</p>
 <ul>
   <li>your bitcoin</li>
   <li>your contacts and notes</li>
   <li>your payment history and notes.</li>
 </ul>
 
-<p><strong>You can always recover your bitcoin <a href="restore-wallet.html">through your seed phrase.</a></strong></p>
+<p><strong>You can always recover your bitcoin <a href="restore-wallet.html">through your wallet words.</a></strong></p>
 
 <p>Hardware and software can fail, be lost or stolen so MultiBit HD ensures that an automatic encrypted backup is made of your wallet
   to a location that you specify.</p>
@@ -25,6 +25,44 @@
   computer you still have access to the backups.</p>
 
 <p>To tell Multibit where your cloud backup is on your computer, use the <a href="edit-wallet.html">"Edit wallet"</a> screen.</p>
+
+<h3>Technical details of rolling backup process</h3>
+
+<p>MultiBit HD maintains a comprehensive backup strategy consisting of local and cloud backups. While technical in nature
+  interested readers may find the following information helpful.</p>
+
+<p>After successfully unlocking a wallet MultiBit HD will follow this process to maintain backups:</p>
+<ol>
+  <li>Wait 1 minutes after MBHD starts and then start "ticking" every 2 minutes.</li>
+  <li>Every "tick" (2 minutes), create a rolling wallet backup. This is a copy of the encrypted wallet stored in the 
+  wallet's <code>rolling-backup</code> sub-directory. It is timestamped and encrypted with the wallet password. 
+  There are up to 4 of these in place covering the last 8 minutes of activity.</li>
+  <li>Every "tick modulo 5" (10 minutes), create a zip backup in the wallet <code>zip-backup</code> directory. These 
+  are the local zip backups. This is everything in the wallet directory except the blockstore (always retrievable from
+  the Bitcoin network) and the zip-backups themselves. Note that the rolling backups are put in the zip backup. 
+  It is actually a zip file which is then AES encrypted using a very long key derived from your "wallet words".</li>
+  <li>Every "tick modulo 15" (30 minutes), copy the just created zip backup to the cloud backup directory if one has
+  been set.</li>
+</ol>
+
+<p>In summary:</p>
+<ul>
+  <li>Rolling backups are made at 1, 3, 5, 7 ... minutes after start up</li>
+  <li>Local zip backups at 1, 11, 21, 31, 41 ... minutes after start up</li>
+  <li>Cloud zip backups at 1, 31, 61, 91 ... minutes after start up</li>
+</ul>
+
+<p>To avoid excessive unnecessary data storage the rolling backups are pruned, oldest first, when there are more than 4
+backups using a secure delete mechanism.</p>
+
+<p>The local and cloud zip backups are pruned when there are more than 60 using the following process:</p>
+<ul>
+  <li>The first 2 are always kept</li>
+  <li>The last 8 are always kept</li> 
+  <li>For the remaining, the backup that was most rapidly replaced is secure deleted</li>
+</ul>
+<p>This approach gradually spaces out the backups so that there is protection for the most recent changes and also the 
+ability to go all the way back to the beginning if necessary.</p>
 
 <h4>Related</h4>
 

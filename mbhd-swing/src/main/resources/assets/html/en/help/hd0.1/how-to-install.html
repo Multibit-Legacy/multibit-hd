@@ -1,130 +1,18 @@
 <h3>How to install</h3>
 
-<p>After downloading the installer from the website you will see the installation application. This article will guide you through the process of installing MultiBit HD on Windows,
-  Mac and Linux using this application.</p>
+<p>After downloading the installer from the multibit.org website you will see the installation application. Installation is slightly different for Windows, Mac and Linux users so choose the article below for your operating system:</p>
 
-<h4>Launch the installer</h4>
-
-<p>Double click the installer to begin the process.</p>
-
-<img class="img-responsive" src="/images/en/screenshots/mbhd-0.1/installer-1.png" title="Installer screen shot"/>
-
-<img class="img-responsive" src="/images/en/screenshots/mbhd-0.1/installer-2.png" title="Installer screen shot"/>
-
-<p>At this point you can choose to overwrite a previous installation, if present, or choose a new installation location. Your wallet and configuration files will be shared
-  between each installation of MultiBit HD so it is generally best to select the overwrite option.</p>
-
-<img class="img-responsive" src="/images/en/screenshots/mbhd-0.1/installer-3.png" title="Installer screen shot"/>
-
-
-<img class="img-responsive" src="/images/en/screenshots/mbhd-0.1/installer-4.png" title="Installer screen shot"/>
-
-<p>Finalise the installation</p>
-
-<img class="img-responsive" src="/images/en/screenshots/mbhd-0.1/installer-5.png" title="Installer screen shot"/>
-
-<p>The MultiBit HD installer contains its own Java Runtime Environment (JRE) which is set apart from any other that may be present on your system. After you click Finish you
-  can launch MultiBit HD in the usual manner for your operating system - usually a double click of its shortcut. At this point the JRE will configure itself which may take up
-  to 30 seconds to complete. Subsequent launches will not incur this one-off time delay.</p>
-
-<h3>Operating system specific help</h3>
-
-<p>While the vast majority of installations proceed without a hitch, there are occasions when certain configurations cause problems. Fortunately, the MultiBit user community
-  has given us feedback about these problems and the workarounds they found to work. We present a list below in the hope that you will find them useful to you.</p>
-
-<h3>OS X</h3>
-<p>The MultiBit HD installer is slightly different from a standard OS X installer in that it doesn't rely on a single drag and drop into the Applications directory. However,
-  once the installer has completed the resulting package in Applications can be dragged to the launch bar as usual.</p>
-
-<h3>Linux</h3>
-
-<h4>How to get a launch icon into the dock (Ubuntu 12.04+)</h4>
-<p>The following script will:</p>
 <ul>
-  <li>build a suitable <code>multibit-hd.desktop</code> file and register it with Unity</li>
-  <li>configure the USB HID rules to allow a Trezor device to work</li>
-  <li>create a symlink to MultiBit as <code>/usr/bin/multibit-hd</code></li>
+    <li><a href="how-to-install-windows.html">How to install on Windows</a></li>
+    <li><a href="how-to-install-osx.html">How to install on OSX (Mac)</a></li>
+    <li><a href="how-to-install-linux.html">How to install on Linux</a></li>
 </ul>
-
-<pre>
-#!/bin/sh
-echo Move into position...
-mkdir /opt/multibit-hd
-cp mbhd-$1-linux /opt/multibit-hd/multibit-hd
-cp logo.png /usr/share/icons/hicolor/128x128/apps/multibit-hd.png
-chmod +x /opt/multibit-hd/multibit-hd
-
-echo Create symlink...
-ln -s /opt/multibit-hd/multibit-hd /usr/bin/multibit-hd
-
-echo Activate HID USB...
-cat << _EOF_ > /etc/udev/rules.d/99-multibit-hd.rules
-# Trezor HID device
-ATTRS{idProduct}=="0001", ATTRS{idVendor}=="534c", MODE="0660", GROUP="plugdev"
-_EOF_
-
-echo Build Unity desktop...
-cat << _EOF_ > multibit-hd.desktop
-[Desktop Entry]
-Version=1.0
-Type=Application
-Terminal=false
-Exec=/opt/multibit-hd/multibit-hd %U
-Icon=/usr/share/icons/hicolor/128x128/apps/multibit-hd.png
-Name[en_US]=MultiBit HD
-Comment=Secure lightweight international Bitcoin wallet
-Comment[en_US]=Secure lightweight international Bitcoin wallet
-Name=MultiBit HD
-Categories=Network;X-Bitcoin;
-MimeType=x-scheme-handler/bitcoin;
-_EOF_
-
-echo Install to Unity...
-desktop-file-validate multibit-hd.desktop
-desktop-file-install multibit-hd.desktop
-update-desktop-database
-
-echo Done. Please check the Unity dock.
-</pre>
-
-<p>To run it, launch <code>gedit</code> and copy-paste the above and save as <code>install-ubuntu.sh</code>. Use <code>chmod +x install-ubuntu.sh</code> to allow it to
-  execute then launch with <code>sudo ./install-ubuntu.sh</code>. When complete you will have a launch icon in the dock that you can locate using "MultiBit" in the search.</p>
-
-<h4>How to run MultiBit HD manually</h4>
-<p>You can run MultiBit HD manually as follows:</p>
-<ol>
-  <li>Open a terminal window and <code>cd</code> to your installation directory (e.g. <code>/opt/multibit-hd</code>)</li>
-  <li>Launch with <code>multibit-hd.sh</code></li>
-</ol>
-
-<h4>How to install Java on Linux</h4>
-<p>MultiBit recommends Java 7. To install Java on a recent copy of <strong>Ubuntu</strong> open a terminal window and type:</p>
-<pre>sudo apt-get install openjdk-7-jdk</pre>
-<p>You will be prompted for your system password and then it will install the required packages.</p>
-<p>If you are running an older version of Ubuntu (e.g. something like Ubuntu 10.4 LTS) you will have to use the following:</p>
-<pre>sudo apt-get install openjdk-<b>6</b>-jdk</pre>
-
-<p>For <b>RedHat / CentOS</b> the installation command is:</p>
-<pre>yum install java</pre>
-
-<h4>OpenJDK doesn't work for me...</h4>
-<p>Some people have had issues using MultiBit with OpenJDK on Arch Linux and OpenSuse distributions. The error manifests when trying to add a password to a wallet and occurs deep
-  within the platform-specific parts of the JVM. If this affects you the error will be like this:</p>
-<pre>
-SIGSEGV (0xb) at pc=0x00007f97ec7d06a0, pid=588, tid=140289289742080
-</pre>
-
-<p>After some research <a href="https://github.com/jim618/multibit/issues/325" target="_blank">members of the MultiBit community</a> found that installing the Oracle Java 7 JVM
-  fixed the problem. To install Oracle's JDK do the following:</p>
-<pre>
-sudo add-apt-repository ppa:webupd8team/java
-sudo apt-get update
-sudo apt-get install oracle-java7-installer
-</pre>
 
 <h4>Related articles</h4>
 <p>Here are some related articles:</p>
 <ul>
   <li><a href="how-to-upgrade.html">How to upgrade</a></li>
   <li><a href="how-to-upgrade-from-classic.html">How to upgrade from MultiBit Classic</a></li>
+  <li><a href="/blog/2013/07/24/how-to-check-signatures.html">How to check signatures</a></li>
 </ul>
+

@@ -1,0 +1,103 @@
+<h3>How to install on Linux</h3>
+<p>The Linux installer does not come with a pre-packaged Java installation due to the huge variety of Linux distros that are available. Consequently you will need to arrange for a suitable JVM to be installed prior to running the installer. We recommend <a href="http://openjdk.java.net/install/" target="_blank">Open Java 1.7.0_72</a>.</p>
+
+<p>Assuming you have a suitable JVM installed and have downloaded the installer to your home directory, do the following at the command shell:</p>
+<pre>
+cd ~
+chmod +x multibit-hd-unix-0.0.5.sh
+./multibit-hd-unix-0.0.5.sh
+</pre>
+<p>After a short time MultiBit HD will show a wizard and install into <code>~/multibit-hd</code>. Your application directory will be <code>~/.multibit-hd</code> and will hold all your configuration and wallet files. It will appear on first startup. A basic Unity <code>.desktop</code> file will be created and registered if available so you should be able to simply open Unity and search for "MultiBit" to get started (but see later). Alternatively you can run from the command line as follows (you'll see a lot of logging messages this way):</p>
+<pre>
+cd multibit-hd
+./multibit-hd &
+</pre>
+
+<p>After running the installer you may need to run some scripts to further integrate MultiBit HD into your environment. In particular the Trezor support requires certain <code>udev</code> rules to be in place. The following sections provide these scripts. If you have a distro that is not included and have a script you'd like to share please let us know through the website issue link at the foot of the page.</p>
+
+<h4>Ubuntu</h4>
+<p>This script will activate the USB HID rules for Trezor and will ensure that MultiBit HD can respond correctly to Bitcoin links in web pages:</p>
+<pre>
+#!/bin/sh
+echo Activate HID USB...
+cat << _EOF_ > /etc/udev/rules.d/99-multibit-hd.rules
+# Trezor HID device
+ATTRS{idProduct}=="0001", ATTRS{idVendor}=="534c", MODE="0660", GROUP="plugdev"
+_EOF_
+
+echo Build Unity desktop...
+unityExec=$(ls -d $PWD/multibit-hd)
+unityIcon=$(ls -d $PWD/.install4j/multibit-hd.png)
+cat << _EOF_ > multibit-hd.desktop
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Exec=$unityExec %U
+Icon=$unityIcon
+Name[en_US]=MultiBit HD
+Comment=Secure lightweight international Bitcoin wallet
+Comment[en_US]=Secure lightweight international Bitcoin wallet
+Name=MultiBit HD
+Categories=Network;X-Bitcoin;
+MimeType=x-scheme-handler/bitcoin;
+_EOF_
+
+echo Install to Unity...
+desktop-file-validate multibit-hd.desktop
+desktop-file-install multibit-hd.desktop
+update-desktop-database
+
+echo Done. Please check the Unity dock.
+</pre>
+
+<p>To run it, launch <code>gedit</code> and copy-paste the above and save as <code>~/multibit-hd/post-install.sh</code>. Then do the following:</p>
+
+<pre>
+cd ~/multibit-hd
+chmod +x post-install.sh
+sudo ./post-install.sh
+</pre>
+<p>When complete you will have a launch icon in the dock that you can locate using "MultiBit" in the search.</p>
+
+<h4>How to run MultiBit HD manually</h4>
+<p>You can run MultiBit HD manually as follows:</p>
+<pre>
+cd ~/multibit-hd
+java -jar multibit-hd.jar
+</pre>
+
+<h4>OpenJDK doesn't work for me...</h4>
+<p>Some people have had issues using MultiBit with OpenJDK on Arch Linux and OpenSuse distributions. The error manifests when trying to add a password to a wallet and occurs deep
+  within the platform-specific parts of the JVM. If this affects you the error will be like this:</p>
+<pre>
+SIGSEGV (0xb) at pc=0x00007f97ec7d06a0, pid=588, tid=140289289742080
+</pre>
+
+<p>After some research <a href="https://github.com/jim618/multibit/issues/325" target="_blank">members of the MultiBit community</a> found that installing the Oracle Java 7 JVM fixed the problem. To install Oracle's JDK do the following:</p>
+<pre>
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java7-installer
+</pre>
+<p>However further research found a reliable workaround involving deleting libscrypt.so from the JAR:</p>
+<pre>
+zip -d "multibit-hd.jar" lib/x86_64/{freebsd,linux}/libscrypt.so
+deleting: lib/x86_64/freebsd/libscrypt.so
+deleting: lib/x86_64/linux/libscrypt.so
+</pre>
+
+<h4>Clicking a Bitcoin link in Firefox doesn't work</h4>
+<p>Assuming that you have installed MultiBit HD and run the post-install script this should work out of the box. However some people have fixed this by manually editing the <code>~/.mozilla/firefox/YOUR_PROFILE.default/mimeTypes.rdf</code> file with an entry as follows:</p> 
+<pre>  &lt;RDF:Description RDF:about="urn:scheme:bitcoin"
+                   NC:value="~/multibit-hd/multibit-hd”&gt;
+    &lt;NC:handlerProp RDF:resource="urn:scheme:handler:bitcoin"/&gt;
+  &lt;/RDF:Description&gt; 
+</pre>
+<p>Save and restart Firefox and click a Bitcoin URI. It should prompt for a handler and give you the option to make this choice permanent.</p>
+
+<h4>Related articles</h4>
+<p>Here are some related articles:</p>
+<ul>
+  <li><a href="/blog/2013/07/24/how-to-check-signatures.html">How to check signatures</a></li>
+</ul>
