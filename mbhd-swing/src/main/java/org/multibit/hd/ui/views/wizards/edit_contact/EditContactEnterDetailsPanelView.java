@@ -54,7 +54,6 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
   private JTextField emailAddress;
   private JTextField bitcoinAddress;
-  private JTextField extendedPublicKey;
 
   private JTextArea notes;
 
@@ -121,7 +120,6 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
     });
 
     bitcoinAddress = TextBoxes.newEnterBitcoinAddress(getWizardModel(), multiEdit);
-    extendedPublicKey = TextBoxes.newEnterExtendedPublicKey(getWizardModel(), multiEdit);
 
     // Always allow non-unique fields
     notes = TextBoxes.newEnterPrivateNotes(getWizardModel());
@@ -170,7 +168,6 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
         emailAddress.setText(firstContact.getEmail().or("").trim());
 
         bitcoinAddress.setText(firstContact.getBitcoinAddress().isPresent()? firstContact.getBitcoinAddress().get().toString() : "");
-        extendedPublicKey.setText(firstContact.getExtendedPublicKey().or("").trim());
         notes.setText(firstContact.getNotes().or("").trim());
 
         // Base the tags on first contact tags
@@ -181,7 +178,6 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
         name.setText("");
         emailAddress.setText("");
         bitcoinAddress.setText("");
-        extendedPublicKey.setText("");
         notes.setText("");
 
         // Empty tags
@@ -207,10 +203,6 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
 
       contentPanel.add(Labels.newBitcoinAddress());
       contentPanel.add(bitcoinAddress, "grow,span 2,push,wrap");
-
-      contentPanel.add(Labels.newExtendedPublicKey());
-      contentPanel.add(extendedPublicKey, "grow,span 2,push,wrap");
-
     }
 
     // Provide a note
@@ -324,7 +316,6 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
         contact.setName(name.getText().trim());
         contact.setEmail(emailAddress.getText().trim());
         contact.setBitcoinAddress(Addresses.parse(bitcoinAddress.getText().trim()).orNull());
-        contact.setExtendedPublicKey(extendedPublicKey.getText().trim());
 
         // Notes are not appended
         contact.setNotes(notes.getText().trim());

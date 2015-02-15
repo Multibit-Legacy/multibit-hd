@@ -982,13 +982,6 @@ public class Labels {
   }
 
   /**
-   * @return A new "contact extended public key" label
-   */
-  public static JLabel newExtendedPublicKey() {
-    return newLabel(MessageKey.EXTENDED_PUBLIC_KEY);
-  }
-
-  /**
    * @return A new "names" label
    */
   public static JLabel newNames() {
