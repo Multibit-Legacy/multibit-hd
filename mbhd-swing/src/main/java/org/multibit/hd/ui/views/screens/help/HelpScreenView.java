@@ -142,15 +142,10 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
   // View components
 
   /**
-   * The unvisited link color
+   * The link color
    */
-  private final Color enteredLinkColor = Themes.currentTheme.sidebarSelectedText();
-  private final String enteredLinkHexColor = String.format("#%02x%02x%02x", enteredLinkColor.getRed(), enteredLinkColor.getGreen(), enteredLinkColor.getBlue());
-
-  private final Color exitedLinkColor = Themes.currentTheme.sidebarSelectedText();
-  private final String exitedLinkHexColor = String.format("#%02x%02x%02x", exitedLinkColor.getRed(), exitedLinkColor.getGreen(), exitedLinkColor.getBlue());
-
-  private final String headingHexColor = "#973131";
+  private final Color linkColor = Themes.currentTheme.sidebarSelectedText();
+  private final String linkHexColor = String.format("#%02x%02x%02x", linkColor.getRed(), linkColor.getGreen(), linkColor.getBlue());
 
   private final ListeningExecutorService cacertsExecutorService = SafeExecutors.newSingleThreadExecutor("help-repair-cacerts");
 
@@ -319,6 +314,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
 
     // Apply theme
     editorPane.setBackground(Themes.currentTheme.detailPanelBackground());
+    editorPane.setForeground(Themes.currentTheme.text());
 
     // Create the HTML editor kit (contains style rules etc)
     HTMLEditorKit kit = createEditorKit();
@@ -540,13 +536,14 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     // Avoid setting the background here since it can bleed through the look and feel
     styleSheet.addRule("body{font-family:\"Helvetica Neue\",\"Liberation Sans\",Arial,sans-serif;margin:0;padding:0;}");
     styleSheet.addRule("h1,h2{font-family:\"Helvetica Neue\",\"Liberation Sans\",Arial,sans-serif;font-weight:normal;}");
-    styleSheet.addRule("h1{color:" + headingHexColor + ";font-size:200%;}");
-    styleSheet.addRule("h2{color:" + headingHexColor + ";font-size:180%;}");
-    styleSheet.addRule("h3{color:" + headingHexColor + ";font-size:150%;}");
-    styleSheet.addRule("h4{color:" + headingHexColor + ";font-size:120%;}");
+    Color headingHexColor = Themes.currentTheme.text();
+    String headingHexColorString =  String.format("#%02x%02x%02x", headingHexColor.getRed(), headingHexColor.getGreen(), headingHexColor.getBlue());
+    styleSheet.addRule("h1{color:" + headingHexColorString + ";font-size:200%;}");
+    styleSheet.addRule("h2{color:" + headingHexColorString + ";font-size:180%;}");
+    styleSheet.addRule("h3{color:" + headingHexColorString + ";font-size:150%;}");
+    styleSheet.addRule("h4{color:" + headingHexColorString + ";font-size:120%;}");
     styleSheet.addRule("h1 img,h2 img,h3 img{vertical-align:middle;margin-right:5px;}");
-    styleSheet.addRule("a:link:hover,a:visited:hover,a:active:hover{color:" + enteredLinkHexColor + ";}");
-    styleSheet.addRule("a:link,a:visited,a:active{color:" + exitedLinkHexColor + ";}");
+    styleSheet.addRule("a { color: " + linkHexColor + "; font-weight:bold;}");
     styleSheet.addRule("a img{border:0;}");
 
     return kit;
