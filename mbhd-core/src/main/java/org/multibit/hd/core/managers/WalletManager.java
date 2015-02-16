@@ -649,6 +649,12 @@ public enum WalletManager implements WalletEventListener {
     // Set up auto-save on the wallet.
     addAutoSaveListener(walletSummary.getWallet(), walletSummary.getWalletFile());
 
+    // Remember the info required for the next backups
+    BackupService backupService = CoreServices.getOrCreateBackupService();
+    backupService.rememberWalletSummaryAndPasswordForRollingBackup(walletSummary, walletSummary.getWalletPassword().getPassword());
+    backupService.rememberWalletIdAndPasswordForLocalZipBackup(walletSummary.getWalletId(), walletSummary.getWalletPassword().getPassword());
+    backupService.rememberWalletIdAndPasswordForCloudZipBackup(walletSummary.getWalletId(), walletSummary.getWalletPassword().getPassword());
+
     // Check if the wallet needs to synch (not required during FEST tests)
     if (performSync) {
       log.info("Wallet configured - performing synchronization");

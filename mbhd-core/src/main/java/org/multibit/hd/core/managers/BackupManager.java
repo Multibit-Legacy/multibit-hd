@@ -618,4 +618,9 @@ public enum BackupManager {
       log.debug("Setting the application data directory\n'{}'", applicationDataDirectory);
     }
   }
+
+  public void setCloudBackupDirectory(Optional<File> cloudBackupDirectory) {
+    Preconditions.checkNotNull(cloudBackupDirectory, "'cloudBackupDirectory' must not be null");
+    this.cloudBackupDirectory = cloudBackupDirectory;
+  }
 }
