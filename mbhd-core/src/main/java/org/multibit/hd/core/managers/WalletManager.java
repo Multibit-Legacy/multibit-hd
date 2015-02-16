@@ -1084,7 +1084,7 @@ public enum WalletManager implements WalletEventListener {
   /**
    *
    * <p>This list contains MBHD soft wallets and Trezor soft wallets</p>
-   * @return A list of soft wallet summaries based on the current application directory contents (never null)
+   * @return A list of soft wallet summaries based on the current application directory contents (never null), ordered by wallet name
    *
    */
   public static List<WalletSummary> getSoftWalletSummaries() {
@@ -1100,6 +1100,24 @@ public enum WalletManager implements WalletEventListener {
         softWalletSummaries.add(walletSummary);
       }
     }
+
+    // Sort by name of wallet
+    Collections.sort(softWalletSummaries, new Comparator() {
+      @Override
+      public int compare(Object o1, Object o2) {
+        WalletSummary me = (WalletSummary)o1;
+        WalletSummary other = (WalletSummary)o2;
+        String myName = me.getName();
+        if (myName == null) {
+          myName = "";
+        }
+        String otherName = other.getName();
+        if (otherName == null) {
+          otherName = "";
+        }
+        return myName.compareTo(otherName);
+      }
+    });
 
     return softWalletSummaries;
   }
