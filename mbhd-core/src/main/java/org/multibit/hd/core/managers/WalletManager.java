@@ -1102,11 +1102,9 @@ public enum WalletManager implements WalletEventListener {
     }
 
     // Sort by name of wallet
-    Collections.sort(softWalletSummaries, new Comparator() {
+    Collections.sort(softWalletSummaries, new Comparator<WalletSummary>() {
       @Override
-      public int compare(Object o1, Object o2) {
-        WalletSummary me = (WalletSummary)o1;
-        WalletSummary other = (WalletSummary)o2;
+      public int compare(WalletSummary me, WalletSummary other) {
         String myName = me.getName();
         if (myName == null) {
           myName = "";
