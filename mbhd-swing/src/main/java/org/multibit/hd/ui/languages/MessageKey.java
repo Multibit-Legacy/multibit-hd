@@ -319,7 +319,8 @@ public enum MessageKey {
 
   // Panels
 
-  NETWORK_CONFIGURATION_ERROR("network_configuration_error"),
+  GENERAL_NETWORK_CONFIGURATION_ERROR("general_network_configuration_error"),
+  BITCOIN_NETWORK_CONFIGURATION_ERROR("bitcoin_network_configuration_error"),
   HELP("help"),
 
   SETTINGS("settings"),

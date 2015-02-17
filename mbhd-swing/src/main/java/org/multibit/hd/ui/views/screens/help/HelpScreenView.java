@@ -35,6 +35,8 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -51,7 +53,7 @@ import java.util.LinkedList;
  *
  * @since 0.0.1
  */
-public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
+public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implements PropertyChangeListener {
 
   private static final Logger log = LoggerFactory.getLogger(HelpScreenView.class);
 
@@ -72,6 +74,8 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
    * True if relative and MultiBit URLs should be modified to point to the internal help
    */
   private boolean useInternalHelp = false;
+
+  private boolean expectingPropertyChange = false;
 
   /**
    * Handles the loading of the internal images (lazy initialisation to avoid delays on start)
@@ -175,6 +179,20 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
                 }
               }
             });
+
+  }
+
+  @Override
+  public void propertyChange(PropertyChangeEvent evt) {
+
+    // TODO Find some way of detecting failed load "page" and "document" don't give anything
+
+    // Tried a "expect property change" flag but asynchronous load takes random time and we'll
+    // end up with many false positives, could have a "watchdog" thread that expects the
+    // flag to be cleared after a set period (e.g. 30s or something)
+
+    // Given the variation in network performance across the world, there is no right way to
+    // easily achieve this so leaving it for now
 
   }
 
@@ -330,6 +348,9 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
               }
             });
 
+    // Keep track of loading events
+    editorPane.addPropertyChangeListener(this);
+
     // Refresh certs in background if necessary
     if (refreshCerts) {
       refreshCertsInBackground();
@@ -375,9 +396,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
       @Override
       public Document createDefaultDocument() {
 
-        Document document = super.createDefaultDocument();
-
-        return document;
+        return super.createDefaultDocument();
       }
 
     };
@@ -409,30 +428,33 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
    */
   private void browse(final URL url) {
 
-    SwingUtilities.invokeLater(
-            new Runnable() {
-              @SuppressFBWarnings({"S508C_SET_COMP_COLOR"})
-              @Override
-              public void run() {
-                try {
+    listeningExecutorService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          try {
 
-                  editorPane.setPage(url);
+            editorPane.setPage(url);
 
-                  // Reset the button background
-                  launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
+            // Reset the button background
+            launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
 
-                } catch (IOException e) {
-                  // Log the error and report a failure to the user via the alerts
-                  log.error("Unable to load page " + url, e);
-                  ControllerEvents.fireAddAlertEvent(
-                          Models.newAlertModel(
-                                  Languages.safeText(MessageKey.NETWORK_CONFIGURATION_ERROR),
-                                  RAGStatus.AMBER
-                          ));
-                }
+          } catch (IOException e) {
+            // Log the error and report a failure to the user via the alerts
+            log.warn("Unable to load page " + url, e);
+            ControllerEvents.fireAddAlertEvent(
+              Models.newAlertModel(
+                Languages.safeText(MessageKey.GENERAL_NETWORK_CONFIGURATION_ERROR),
+                RAGStatus.AMBER
+              ));
+            // Switch to internal mode if not already using it
+            if (!useInternalHelp) {
+              editorPane = createBrowser();
+            }
+          }
+        }
+      });
 
-              }
-            });
   }
 
   /**
