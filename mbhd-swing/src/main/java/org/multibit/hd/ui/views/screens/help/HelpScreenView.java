@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.screens.help;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import com.google.common.util.concurrent.FutureCallback;
@@ -27,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -37,15 +35,12 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.LinkedList;
 
 /**
@@ -82,61 +77,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
    * Handles the loading of the internal images (lazy initialisation to avoid delays on start)
    */
   private ListeningExecutorService listeningExecutorService = SafeExecutors.newSingleThreadExecutor("load-internal-help");
-  ;
 
-  /**
-   * We have to use a Hashtable here because of Swing internal handling
-   */
-  private Hashtable internalImageCache = new Hashtable();
-
-  /**
-   * Dynamic resource lookup is not well supported so hard coded values are used
-   * as an interim solution
-   */
-  private static final Iterable<String> imageNames = Splitter.on("\n").split(
-          // In Intellij just highlight the names and paste into "" to get the list
-          "about.png\n" +
-                  "accept-licence.png\n" +
-                  "appearance.png\n" +
-                  "change-password.png\n" +
-                  "confirm-seed-phrase.png\n" +
-                  "contacts.png\n" +
-                  "create-password.png\n" +
-                  "create-seed-phrase.png\n" +
-                  "create-wallet-report.png\n" +
-                  "edit-contact.png\n" +
-                  "edit-wallet.png\n" +
-                  "empty-wallet.png\n" +
-                  "enter-password.png\n" +
-                  "exchange-rates.png\n" +
-                  "history.png\n" +
-                  "installer-1.png\n" +
-                  "installer-2.png\n" +
-                  "installer-3.png\n" +
-                  "installer-4.png\n" +
-                  "installer-5.png\n" +
-                  "labs.png\n" +
-                  "languages.png\n" +
-                  "payments.png\n" +
-                  "preferences.png\n" +
-                  "prepare-create-wallet.png\n" +
-                  "repair-wallet.png\n" +
-                  "request-payment.png\n" +
-                  "restorePassword.png\n" +
-                  "select-backup-location.png\n" +
-                  "select-create-wallet.png\n" +
-                  "select-language.png\n" +
-                  "send-payment.png\n" +
-                  "send-receive.png\n" +
-                  "sign-message.png\n" +
-                  "sounds.png\n" +
-                  "tools.png\n" +
-                  "transaction-detail.png\n" +
-                  "transaction-overview.png\n" +
-                  "units.png\n" +
-                  "verify-message.png\n" +
-                  "verify-network.png"
-  );
   private URL homeUrl;
 
   // View components
@@ -273,11 +214,6 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
     // Always use internal help for FEST tests to provide predictable output
     if (InstallationManager.unrestricted) {
       useInternalHelp = true;
-    }
-
-    // Only populate the image cache if we have to
-    if (useInternalHelp) {
-      populateImageCache();
     }
 
     // Create an editor pane to wrap the HTML editor kit
@@ -429,86 +365,6 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
   }
 
   /**
-   * Binds the image cache to the given document (a new one per page)
-   *
-   * @param document The document (usually from the editor kit)
-   */
-  private void bindImageCache(Document document) {
-
-    Dictionary cache = (Dictionary) document.getProperty("imageCache");
-    if (cache == null) {
-      cache = internalImageCache;
-      document.putProperty("imageCache", cache);
-    }
-
-  }
-
-  /**
-   * Populate the image cache with internal images using their external URL as a key
-   */
-  @SuppressWarnings("unchecked")
-  private void populateImageCache() {
-
-    internalImageCache = new Hashtable();
-
-    // Run the decryption on a different thread
-    listeningExecutorService.submit(
-            new Runnable() {
-              @Override
-              public void run() {
-
-                try {
-
-                  for (String imageName : imageNames) {
-
-                    // Only interested in /assets/images
-                    // Images are directly under the domain so we build a suitable
-                    // absolute URL to fool the JEditorPane
-                    // Note that we have "mbhd-0.1" in the URL but not the resource path
-                    URL mockUrl = new URL(
-                            InstallationManager.MBHD_WEBSITE_HELP_DOMAIN +
-                                    "/images/en/screenshots/mbhd-0.1/" +
-                                    imageName
-                    );
-
-                    // Load the image from the classpath (no "mbhd-0.1")
-                    InputStream is = HelpScreenView.class.getResourceAsStream(
-                            "/assets/images/en/screenshots/mbhd-01/" +
-                                    imageName
-                    );
-                    if (is == null) {
-                      throw new IOException("Could not locate: '" + imageName + "' on the /assets classpath");
-                    }
-                    BufferedImage image = ImageIO.read(is);
-                    image.flush();
-
-                    // Resize it if necessary
-                    final int MAX_WIDTH = 670;
-                    if (image.getWidth(null) > MAX_WIDTH) {
-
-                      image = ImageDecorator.resizeSharp(image, MAX_WIDTH);
-
-                    }
-
-                    // Cache it for later
-                    internalImageCache.put(mockUrl, image);
-
-                    log.debug("Cached /asset '{}'", imageName);
-
-                  }
-
-
-                } catch (IOException e) {
-                  // This is a coding error
-                  log.error("Problem with the internal image assets.", e);
-                }
-
-              }
-            });
-
-  }
-
-  /**
    * @return The HTML editor kit providing the CSS styles
    */
   private HTMLEditorKit createEditorKit() {
@@ -520,10 +376,6 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
       public Document createDefaultDocument() {
 
         Document document = super.createDefaultDocument();
-
-        if (useInternalHelp) {
-          bindImageCache(document);
-        }
 
         return document;
       }
@@ -729,5 +581,4 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> {
       }
     };
   }
-
 }
