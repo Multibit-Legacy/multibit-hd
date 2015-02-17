@@ -23,6 +23,7 @@ import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.Locale;
 
 /**
  * <p>Factory to provide the following to views:</p>
@@ -425,7 +426,7 @@ public class Panels {
     radio4.setActionCommand(restoreWalletCommand);
 
     // Check for existing wallets
-    if (WalletManager.getSoftWalletSummaries().isEmpty()) {
+    if (WalletManager.getSoftWalletSummaries(Optional.<Locale>absent()).isEmpty()) {
       radio2.setEnabled(false);
       radio2.setForeground(UIManager.getColor("RadioButton.disabledText"));
     }

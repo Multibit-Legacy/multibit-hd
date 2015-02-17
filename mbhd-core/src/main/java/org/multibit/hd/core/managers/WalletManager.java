@@ -49,6 +49,7 @@ import org.multibit.hd.core.services.BackupService;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.BitcoinNetwork;
+import org.multibit.hd.core.utils.Collators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -64,6 +65,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import static org.multibit.hd.core.dto.WalletId.*;
+import static org.multibit.hd.core.utils.Collators.*;
 
 /**
  * <p>Manager to provide the following to core users:</p>
@@ -1084,10 +1086,11 @@ public enum WalletManager implements WalletEventListener {
   /**
    *
    * <p>This list contains MBHD soft wallets and Trezor soft wallets</p>
+   * @param Locale the locale to sort results by
    * @return A list of soft wallet summaries based on the current application directory contents (never null), ordered by wallet name
    *
    */
-  public static List<WalletSummary> getSoftWalletSummaries() {
+  public static List<WalletSummary> getSoftWalletSummaries(final Optional<Locale> localeOptional) {
 
     List<File> walletDirectories = findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
     Optional<String> walletRoot = INSTANCE.getCurrentWalletRoot();
@@ -1113,7 +1116,7 @@ public enum WalletManager implements WalletEventListener {
         if (otherName == null) {
           otherName = "";
         }
-        return myName.compareTo(otherName);
+        return Collators.newCollator(localeOptional).compare(myName, otherName);
       }
     });
 

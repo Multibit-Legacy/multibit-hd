@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -23,6 +24,7 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -113,8 +115,14 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
 
   @Override
   public boolean beforeShow() {
+    Optional<Locale> localeOptional;
+    if (Configurations.currentConfiguration != null && Configurations.currentConfiguration.getLocale() != null) {
+      localeOptional = Optional.of(Configurations.currentConfiguration.getLocale());
+    } else {
+      localeOptional = Optional.absent();
+    }
 
-    List<WalletSummary> wallets = WalletManager.getSoftWalletSummaries();
+    List<WalletSummary> wallets = WalletManager.getSoftWalletSummaries(localeOptional);
 
     selectWalletMaV.getModel().setWalletList(wallets);
     selectWalletMaV.getView().setEnabled(true);
