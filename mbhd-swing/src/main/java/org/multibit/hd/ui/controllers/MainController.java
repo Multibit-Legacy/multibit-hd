@@ -754,10 +754,17 @@ public class MainController extends AbstractController implements
   public void onAboutEvent(GenericAboutEvent event) {
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+      SwingUtilities.invokeLater(
+              new Runnable() {
+                @Override
+                public void run() {
+                  // Show the Tools screen
+                  ViewEvents.fireShowDetailScreenEvent(Screen.TOOLS);
+                }
+              });
 
       // Show the About screen
       Panels.showLightBox(Wizards.newAboutWizard().getWizardScreenHolder());
-
     }
   }
 

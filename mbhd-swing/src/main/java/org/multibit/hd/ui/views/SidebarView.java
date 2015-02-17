@@ -64,6 +64,11 @@ public class SidebarView extends AbstractView {
    */
   private DefaultMutableTreeNode settingsNode;
 
+  /**
+   * The tools tree node
+   */
+  private DefaultMutableTreeNode toolsNode;
+
   private final boolean multiWallet;
 
   /**
@@ -248,7 +253,8 @@ public class SidebarView extends AbstractView {
     settingsNode = TreeNodes.newSidebarTreeNode(MessageKey.SETTINGS, Screen.SETTINGS);
     root.add(settingsNode);
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.MANAGE_WALLET, Screen.MANAGE_WALLET));
-    root.add(TreeNodes.newSidebarTreeNode(MessageKey.TOOLS, Screen.TOOLS));
+    toolsNode = TreeNodes.newSidebarTreeNode(MessageKey.TOOLS, Screen.TOOLS);
+    root.add(toolsNode);
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.EXIT_OR_SWITCH, Screen.EXIT));
 
     return root;
@@ -315,11 +321,21 @@ public class SidebarView extends AbstractView {
 
         Screen screen = event.getScreen();
 
-        // Double check that the settings / preferences screen has just been selected
-        if (Screen.SETTINGS.equals(screen)) {
-          if (settingsNode != null && sidebarTree != null) {
-            // Select the settings node
-            sidebarTree.setSelectionPath(new TreePath(settingsNode.getPath()));
+        if (sidebarTree != null) {
+          // Check that the settings / preferences screen has just been selected
+          if (Screen.SETTINGS.equals(screen)) {
+            if (settingsNode != null) {
+              // Select the settings node
+              sidebarTree.setSelectionPath(new TreePath(settingsNode.getPath()));
+            }
+          }
+
+          // Check that the tools screen has just been selected
+          if (Screen.TOOLS.equals(screen)) {
+            if (toolsNode != null) {
+              // Select the tools node
+              sidebarTree.setSelectionPath(new TreePath(toolsNode.getPath()));
+            }
           }
         }
       }
