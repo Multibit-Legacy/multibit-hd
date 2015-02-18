@@ -67,6 +67,8 @@ public class BitcoinNetworkService extends AbstractService {
   public static final Coin DEFAULT_FEE_PER_KB = Transaction.REFERENCE_DEFAULT_MIN_TX_FEE; // Currently 1,000 satoshi
   public static final int MAXIMUM_NUMBER_OF_PEERS = 6;
 
+  private static final int SIZE_OF_SIGNATURE = 72; // bytes
+
   /**
    * The boundary for when more mining fee is due
    */
@@ -452,9 +454,8 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @return True if no error was encountered
    */
-  private boolean appendClientFee(SendRequestSummary sendRequestSummary, boolean forceNow) {
-
-    log.debug("Appending client fee (if required)");
+  private boolean workOutIfClientFeeIsRequired (SendRequestSummary sendRequestSummary, boolean forceNow) {
+    log.debug("Working out if client fee is required");
 
     boolean isClientFeeRequired;
     if (sendRequestSummary.getFeeState().isPresent()) {
@@ -468,17 +469,21 @@ public class BitcoinNetworkService extends AbstractService {
         isClientFeeRequired = false;
       }
 
+      // Never send a client fee larger than the recipient amount with a wallet empty (as recipient is adjusted down by client fee on empty wallet)
+      if (sendRequestSummary.isEmptyWallet() && sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(sendRequestSummary.getAmount()) > 0) {
+        isClientFeeRequired = false;
+      }
+
     } else {
       // Nothing more to be done
+      sendRequestSummary.setApplyClientFee(false);
       return true;
     }
 
     // May need to add the client fee
+    sendRequestSummary.setApplyClientFee(isClientFeeRequired);
     if (isClientFeeRequired) {
-      Address feeAddress = sendRequestSummary.getFeeState().get().getNextFeeAddress();
-      sendRequestSummary.setFeeAddress(Optional.of(feeAddress));
-
-      log.debug("Added client fee to address: '{}'", feeAddress);
+      log.debug("Client fee will be added to address: '{}'",  sendRequestSummary.getFeeState().get().getNextFeeAddress());
     } else {
       log.debug("No client fee address added for this tx");
     }
@@ -495,7 +500,6 @@ public class BitcoinNetworkService extends AbstractService {
    * @return True if the wallet summary is present
    */
   private boolean checkWalletSummary(SendRequestSummary sendRequestSummary) {
-
     if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
 
       // Declare the transaction creation a failure - no wallet
@@ -529,7 +533,6 @@ public class BitcoinNetworkService extends AbstractService {
    * @param sendRequestSummary The information required to send bitcoin
    */
   private boolean appendSendRequest(SendRequestSummary sendRequestSummary) {
-
     log.debug("Appending send request based on: {}", sendRequestSummary);
 
     try {
@@ -549,11 +552,11 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Only include the fee output if not emptying since it interferes
       // with the coin selector
-      if (!sendRequest.emptyWallet && sendRequestSummary.getFeeAddress().isPresent()) {
+      if (!sendRequest.emptyWallet && sendRequestSummary.isApplyClientFee()) {
         // Work out the size of the transaction in bytes (the fee solver will have calculated the fee for this size)
         int initialSize;
         try {
-          initialSize = calculateSize(sendRequest.tx);
+          initialSize = calculateSizeWithSignatures(sendRequest.tx);
           log.debug("Size of transaction before adding the client fee was {}", initialSize);
         } catch (IOException ioe) {
           log.error("Could not calculate initial transaction size. " + ioe.getMessage());
@@ -567,7 +570,7 @@ public class BitcoinNetworkService extends AbstractService {
         } else {
           sendRequest.tx.addOutput(
             sendRequestSummary.getFeeState().get().getFeeOwed(),
-            sendRequestSummary.getFeeAddress().get()
+            sendRequestSummary.getFeeState().get().getNextFeeAddress()
           );
           sendRequestSummary.setClientFeeAdded(Optional.of(sendRequestSummary.getFeeState().get().getFeeOwed()));
 
@@ -575,7 +578,7 @@ public class BitcoinNetworkService extends AbstractService {
           // This increases the size of the transaction, and may require more fee if it pushes it over a 1000 byte size boundary
           int updatedSize;
           try {
-            updatedSize = calculateSize(sendRequest.tx);
+            updatedSize = calculateSizeWithSignatures(sendRequest.tx);
             log.debug("Size of transaction after adding the client fee was {}", updatedSize);
           } catch (IOException ioe) {
             log.error("Could not calculate updated transaction size. " + ioe.getMessage());
@@ -615,9 +618,8 @@ public class BitcoinNetworkService extends AbstractService {
         }
       } else {
         log.debug(
-          "Not adding client fee output due to !sendRequest.emptyWallet = {} or sendRequestSummary.getFeeAddress().isPresent() = {}",
-          sendRequest.emptyWallet,
-          sendRequestSummary.getFeeAddress().isPresent());
+          "Not adding client fee output due to !sendRequest.emptyWallet = {} or sendRequestSummary.isApplyClientFee() = {}",
+          sendRequest.emptyWallet,  sendRequestSummary.isApplyClientFee());
       }
 
       // Append the Bitcoinj send request to the summary
@@ -673,12 +675,11 @@ public class BitcoinNetworkService extends AbstractService {
     Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
 
     // Build and append the client fee (if required)
-    if (!appendClientFee(sendRequestSummary, sendRequestSummary.isEmptyWallet())) {
+    if (!workOutIfClientFeeIsRequired(sendRequestSummary, sendRequestSummary.isEmptyWallet())) {
       return false;
     }
 
     if (!sendRequestSummary.isEmptyWallet()) {
-
       // This is a standard send so proceed as normal
       log.debug("Treating as standard send");
 
@@ -715,41 +716,36 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Determine the maximum amount allowing for client fees
       Coin recipientAmount = sendRequest.tx.getOutput(0).getValue();
-      Coin clientFeeAmount = sendRequestSummary.getFeeState().get().getFeeOwed();
-
-      // Adjust the send request summary accordingly
-      recipientAmount = recipientAmount.subtract(clientFeeAmount);
-      log.debug("Adjusted recipientAmount = " + recipientAmount.toString() + ", clientFeeAmount = " + clientFeeAmount.toString());
-
-      // Update the SendRequestSummary with the new values and ensure it is not an "empty wallet"
-      SendRequestSummary emptyWalletSendRequestSummary = new SendRequestSummary(
-        sendRequestSummary.getDestinationAddress(),
-        recipientAmount,
-        sendRequestSummary.getFiatPayment(),
-        sendRequestSummary.getChangeAddress(),
-        sendRequestSummary.getFeePerKB(),
-        sendRequestSummary.getPassword(),
-        sendRequestSummary.getFeeState(),
-        false
-      );
-      emptyWalletSendRequestSummary.setNotes(sendRequestSummary.getNotes());
-      if (sendRequestSummary.getKeyParameter().isPresent()) {
-        emptyWalletSendRequestSummary.setKeyParameter(sendRequestSummary.getKeyParameter().get());
+      Optional<Coin> clientFeeAmountOptional;
+      if (sendRequestSummary.isApplyClientFee()) {
+        clientFeeAmountOptional = Optional.of(sendRequestSummary.getFeeState().get().getFeeOwed());
+        // Adjust the send request summary accordingly
+        recipientAmount = recipientAmount.subtract(clientFeeAmountOptional.get());
+        sendRequestSummary.setAmount(recipientAmount);
+      } else {
+        clientFeeAmountOptional = Optional.absent();
       }
 
+      log.debug("Adjusted recipientAmount = " + recipientAmount.toString() + ", clientFeeAmount = " + clientFeeAmountOptional);
+
+      // Update the SendRequestSummary to ensure it is not an "empty wallet" and has the adjusted recipient amount and client fee
+      sendRequestSummary.setEmptyWallet(false);
+
+      sendRequestSummary.setClientFeeAdded(clientFeeAmountOptional);
+
       // Attempt to build and append the send request as if it were standard
-      // (This may now add on a client fee output and also adjust the size of the output amounts)
-      if (!appendSendRequest(emptyWalletSendRequestSummary)) {
+      // (This may now add on a client fee transaction output and also adjust the size of the output amounts)
+      if (!appendSendRequest(sendRequestSummary)) {
         return false;
       }
 
       // Attempt to completeWithoutSigning it
-      if (!completeWithoutSigning(emptyWalletSendRequestSummary, wallet)) {
+      if (!completeWithoutSigning(sendRequestSummary, wallet)) {
         return false;
       }
 
       // Set the fiat equivalent amount into the emptyWalletSendRequestSummary - this will take into account the transaction fee and client fee
-      setFiatEquivalent(emptyWalletSendRequestSummary);
+      setFiatEquivalent(sendRequestSummary);
     }
 
     // Must be OK to be here
@@ -898,6 +894,10 @@ public class BitcoinNetworkService extends AbstractService {
           wallet
         );
 
+        // Shuffle the outputs
+        log.debug("Shuffling the outputs");
+        sendRequest.tx.shuffleOutputs();
+
         // Sign the transaction using the Trezor device
         hardwareWalletService.get().signTx(sendRequest.tx, receivingAddressPathMap, changeAddressPathMap);
 
@@ -933,6 +933,10 @@ public class BitcoinNetworkService extends AbstractService {
         throw new IllegalStateException("Should not have an unencrypted wallet");
       }
       sendRequest.aesKey = wallet.getKeyCrypter().deriveKey(sendRequestSummary.getPassword());
+
+      // Shuffle the outputs
+      log.debug("Shuffling the outputs");
+      sendRequest.tx.shuffleOutputs();
 
       // Sign the transaction
       sendRequest.signInputs = true;
@@ -1421,10 +1425,14 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @return size of the transaction
    */
-  private int calculateSize(Transaction transaction) throws IOException {
+  private int calculateSizeWithSignatures(Transaction transaction) throws IOException {
     ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
     transaction.bitcoinSerialize(byteOutputStream);
-    return byteOutputStream.size();
+
+    int unsignedSize = byteOutputStream.size();
+
+    // Add on size of signatures
+    return unsignedSize + SIZE_OF_SIGNATURE * transaction.getInputs().size();
   }
 
   public Optional<SendRequestSummary> getLastSendRequestSummaryOptional() {

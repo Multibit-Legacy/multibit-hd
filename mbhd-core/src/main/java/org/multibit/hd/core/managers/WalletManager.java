@@ -1225,18 +1225,11 @@ public enum WalletManager implements WalletEventListener {
       feeService.setTransactionSentBySelfProvider(transactionSentBySelfProvider);
 
       File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-      Optional<File> walletFileOptional = getCurrentWalletFile(applicationDataDirectory);
-      if (walletFileOptional.isPresent()) {
-        log.debug("Wallet file prior to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
-      }
       FeeState feeState = feeService.calculateFeeState(wallet, false);
       if (includeOneExtraFee) {
         feeState.setFeeOwed(feeState.getFeeOwed().add(FeeService.FEE_PER_SEND));
       }
       Optional<FeeState> feeStateOptional = Optional.of(feeState);
-      if (walletFileOptional.isPresent()) {
-        log.debug("Wallet file after to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
-      }
 
       return feeStateOptional;
     } else {
