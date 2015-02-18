@@ -145,6 +145,9 @@ public class MultiBitHD {
 
     log.debug("Initialising JVM...");
 
+    // Configure system anti-aliasing for better font rendering
+    System.setProperty("awt.useSystemAAFontSettings", "off");
+
     // Although we guarantee the JVM through the packager it is possible that
     // a power user will use their own
     try {
