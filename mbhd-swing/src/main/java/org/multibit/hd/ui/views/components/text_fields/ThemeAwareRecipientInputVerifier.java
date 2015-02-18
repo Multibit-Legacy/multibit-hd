@@ -42,7 +42,6 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
     Preconditions.checkNotNull(contactService, "'contactService' must be present");
 
     this.contactService = contactService;
-
   }
 
   @Override
@@ -91,9 +90,7 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
 
             }
           }
-
         }
-
       }
 
       // Apply the appropriate color based on the result
@@ -104,7 +101,17 @@ public class ThemeAwareRecipientInputVerifier extends InputVerifier {
     } else {
       throw new IllegalArgumentException("'component' must be a JTextField. Actual: " + component.getClass().getCanonicalName());
     }
-
   }
 
+  /**
+   * The user can always move from the Recipient field
+   *
+   * @param input the component to verify
+   * @return always true
+   */
+  @Override
+  public boolean shouldYieldFocus(JComponent input) {
+    verify(input);
+    return true;
+  }
 }
