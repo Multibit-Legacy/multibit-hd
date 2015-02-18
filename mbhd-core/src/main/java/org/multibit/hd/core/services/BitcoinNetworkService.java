@@ -387,7 +387,7 @@ public class BitcoinNetworkService extends AbstractService {
     }
 
     // Attempt to broadcast it
-    if (!broadcast(sendRequestSummary, wallet)) {
+    if (!broadcast(sendRequestSummary)) {
       return false;
     }
 
@@ -454,7 +454,7 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @return True if no error was encountered
    */
-  private boolean workOutIfClientFeeIsRequired (SendRequestSummary sendRequestSummary, boolean forceNow) {
+  private boolean workOutIfClientFeeIsRequired(SendRequestSummary sendRequestSummary, boolean forceNow) {
     log.debug("Working out if client fee is required");
 
     boolean isClientFeeRequired;
@@ -465,7 +465,7 @@ public class BitcoinNetworkService extends AbstractService {
       isClientFeeRequired = (currentNumberOfSends == nextFeeSendCount) || forceNow;
 
       // Never send a client fee that is dust
-      if (isClientFeeRequired && sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) <0) {
+      if (isClientFeeRequired && sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) < 0) {
         isClientFeeRequired = false;
       }
 
@@ -483,7 +483,7 @@ public class BitcoinNetworkService extends AbstractService {
     // May need to add the client fee
     sendRequestSummary.setApplyClientFee(isClientFeeRequired);
     if (isClientFeeRequired) {
-      log.debug("Client fee will be added to address: '{}'",  sendRequestSummary.getFeeState().get().getNextFeeAddress());
+      log.debug("Client fee will be added to address: '{}'", sendRequestSummary.getFeeState().get().getNextFeeAddress());
     } else {
       log.debug("No client fee address added for this tx");
     }
@@ -619,7 +619,7 @@ public class BitcoinNetworkService extends AbstractService {
       } else {
         log.debug(
           "Not adding client fee output due to !sendRequest.emptyWallet = {} or sendRequestSummary.isApplyClientFee() = {}",
-          sendRequest.emptyWallet,  sendRequestSummary.isApplyClientFee());
+          sendRequest.emptyWallet, sendRequestSummary.isApplyClientFee());
       }
 
       // Append the Bitcoinj send request to the summary
@@ -726,7 +726,7 @@ public class BitcoinNetworkService extends AbstractService {
         clientFeeAmountOptional = Optional.absent();
       }
 
-      log.debug("Adjusted recipientAmount = " + recipientAmount.toString() + ", clientFeeAmount = " + clientFeeAmountOptional);
+      log.debug("Adjusted recipientAmount: {}, clientFeeAmount: {}", recipientAmount.toString(), clientFeeAmountOptional.orNull());
 
       // Update the SendRequestSummary to ensure it is not an "empty wallet" and has the adjusted recipient amount and client fee
       sendRequestSummary.setEmptyWallet(false);
@@ -894,8 +894,7 @@ public class BitcoinNetworkService extends AbstractService {
           wallet
         );
 
-        // Shuffle the outputs
-        log.debug("Shuffling the outputs");
+        // Shuffle the outputs to obfuscate change and payment addresses
         sendRequest.tx.shuffleOutputs();
 
         // Sign the transaction using the Trezor device
@@ -928,29 +927,30 @@ public class BitcoinNetworkService extends AbstractService {
     Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 
     try {
-      // Ensure the aeskey for decrypting the keys is present in the sendRequest
+      // Ensure the AES key for decrypting the keys is present in the sendRequest
       if (wallet.getKeyCrypter() == null) {
         throw new IllegalStateException("Should not have an unencrypted wallet");
       }
       sendRequest.aesKey = wallet.getKeyCrypter().deriveKey(sendRequestSummary.getPassword());
 
-      // Shuffle the outputs
-      log.debug("Shuffling the outputs");
+      // Shuffle the outputs to obfuscate change and payment addresses
       sendRequest.tx.shuffleOutputs();
 
       // Sign the transaction
       sendRequest.signInputs = true;
-      log.debug("sendRequest just before signing " + sendRequest);
+      log.debug("sendRequest just before signing: {} ", sendRequest);
       wallet.signTransaction(sendRequest);
 
       // Check the signatures are canonical - non-canonical signatures are not relayed
       for (TransactionInput txInput : sendRequest.tx.getInputs()) {
         byte[] signature = txInput.getScriptSig().getChunks().get(0).data;
-        log.debug(
-          "Is signature canonical test result '{}' for txInput '{}', signature '{}'",
-          TransactionSignature.isEncodingCanonical(signature),
-          txInput.toString(),
-          Utils.HEX.encode(signature));
+        if (signature != null) {
+          log.debug(
+            "Is signature canonical test result '{}' for txInput '{}', signature '{}'",
+            TransactionSignature.isEncodingCanonical(signature),
+            txInput.toString(),
+            Utils.HEX.encode(signature));
+        }
       }
     } catch (Exception e) {
 
@@ -1066,7 +1066,7 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @return True if the broadcast operation was successful
    */
-  private boolean broadcast(SendRequestSummary sendRequestSummary, Wallet wallet) {
+  private boolean broadcast(SendRequestSummary sendRequestSummary) {
 
     log.debug("Attempting to broadcast transaction");
 
@@ -1234,7 +1234,8 @@ public class BitcoinNetworkService extends AbstractService {
 
   /**
    * <p>Create a new peer group</p>
-   * @param wallet the wallet to add to the peer group after constructio
+   *
+   * @param wallet the wallet to add to the peer group after construction
    */
   private void createNewPeerGroup(Wallet wallet) throws TimeoutException {
 
@@ -1381,7 +1382,7 @@ public class BitcoinNetworkService extends AbstractService {
 
   /**
    * Restart the network, using the given blockstore
-   * THe curent wallet is hooked up to the blockchain and new peergroup
+   * THe current wallet is hooked up to the blockchain and new peer group
    *
    * @param blockStore the blockstore to use for the network connection
    *
@@ -1404,6 +1405,12 @@ public class BitcoinNetworkService extends AbstractService {
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
     }
+
+    if (wallet == null) {
+      log.error("No wallet is present to allow restart to occur");
+      return;
+    }
+
     blockChain.addWallet(wallet);
     log.debug("Created block chain '{}' with height '{}'", blockChain, blockChain.getBestChainHeight());
 

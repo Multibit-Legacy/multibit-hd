@@ -1,9 +1,9 @@
 package org.multibit.hd.core.dto;
 
+import com.google.common.base.Optional;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Wallet;
-import com.google.common.base.Optional;
 import org.multibit.hd.brit.dto.FeeState;
 import org.spongycastle.crypto.params.KeyParameter;
 
@@ -88,6 +88,7 @@ public class SendRequestSummary {
   public void setAmount(Coin recipientAmount) {
     amount = recipientAmount;
   }
+
   /**
    * @return The total amount sent, including the client fee
    */
@@ -201,14 +202,14 @@ public class SendRequestSummary {
     return "SendRequestSummary{" +
       "destinationAddress=" + destinationAddress +
       ", amount=" + amount +
-      ", fiatPayment=" +fiatPayment +
+      ", fiatPayment=" + fiatPayment +
       ", changeAddress=" + changeAddress +
       ", feePerKB=" + feePerKB +
       ", credentials=***" +
       ", feeStateOptional=" + feeState +
       ", clientFeeAdded=" + clientFeeAdded +
-      ", notes=" + notes +
-            ", applyClientFee= " + applyClientFee +
+      ", notes=***" +
+      ", applyClientFee= " + applyClientFee +
       '}';
   }
 }
