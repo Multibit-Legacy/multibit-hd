@@ -1223,8 +1223,7 @@ public enum WalletManager implements WalletEventListener {
       // Set the transaction sent by self provider to use TransactionInfos
       TransactionSentBySelfProvider transactionSentBySelfProvider = new TransactionInfoSentBySelfProvider(getCurrentWalletSummary().get().getWalletId());
       feeService.setTransactionSentBySelfProvider(transactionSentBySelfProvider);
-
-      File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+      
       FeeState feeState = feeService.calculateFeeState(wallet, false);
       if (includeOneExtraFee) {
         feeState.setFeeOwed(feeState.getFeeOwed().add(FeeService.FEE_PER_SEND));
