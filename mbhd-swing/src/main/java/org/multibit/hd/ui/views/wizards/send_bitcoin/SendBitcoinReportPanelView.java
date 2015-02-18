@@ -136,6 +136,9 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
           LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
           transactionConstructionStatusDetail.setText("");
+          transactionBroadcastStatusSummary.setText("");
+          transactionBroadcastStatusDetail.setText("");
+          transactionConfirmationStatus.setText("");
         }
       });
     return true;

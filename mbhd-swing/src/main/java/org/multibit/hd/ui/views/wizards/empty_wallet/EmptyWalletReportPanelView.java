@@ -138,6 +138,9 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
           LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
           transactionConstructionStatusDetail.setText("");
+          transactionBroadcastStatusSummary.setText("");
+          transactionBroadcastStatusDetail.setText("");
+          transactionConfirmationStatus.setText("");
         }
       });
     return true;
