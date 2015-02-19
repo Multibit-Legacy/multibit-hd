@@ -128,12 +128,18 @@ public class ZipFiles {
     } else {
       byte[] buf = new byte[1024];
       int len;
-      try (FileInputStream in = new FileInputStream(srcFileOnDisk)) {
-        zip.putNextEntry(new ZipEntry(srcFile));
+      if (srcFileOnDisk.exists()) {
+        try (FileInputStream in = new FileInputStream(srcFileOnDisk)) {
+          zip.putNextEntry(new ZipEntry(srcFile));
 
-        while ((len = in.read(buf)) > 0) {
-          zip.write(buf, 0, len);
+          while ((len = in.read(buf)) > 0) {
+            zip.write(buf, 0, len);
+          }
+        } catch (IOException ioe) {
+          log.error("Failed to save file to cloud backup. Error was {}", ioe);
         }
+      } else {
+        log.debug("Not adding file {} to backup as it does not exist.", srcFileOnDisk);
       }
     }
   }
