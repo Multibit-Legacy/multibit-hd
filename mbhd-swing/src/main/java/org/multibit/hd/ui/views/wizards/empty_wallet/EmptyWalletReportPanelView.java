@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentStatus;
+import org.multibit.hd.core.events.BitcoinSendingEvent;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
@@ -51,6 +52,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
   private JLabel reportStatusLabel;
 
   private TransactionCreationEvent lastTransactionCreationEvent;
+  private BitcoinSendingEvent lastBitcoinSendingEvent;
   private BitcoinSentEvent lastBitcoinSentEvent;
   private TransactionSeenEvent lastTransactionSeenEvent;
 
@@ -72,6 +74,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
   public void newPanelModel() {
 
     lastTransactionCreationEvent = null;
+    lastBitcoinSendingEvent = null;
     lastBitcoinSentEvent = null;
     lastTransactionSeenEvent = null;
 
@@ -123,11 +126,8 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
   @Override
   protected void initialiseButtons(AbstractWizard<EmptyWalletWizardModel> wizard) {
-
     PanelDecorator.addFinish(this, wizard);
-
   }
-
 
   @Override
   public boolean beforeShow() {
@@ -167,6 +167,12 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
               onTransactionCreationEvent(lastTransactionCreationEvent);
               lastTransactionCreationEvent = null;
             }
+
+            if (lastBitcoinSendingEvent != null) {
+              onBitcoinSendingEvent(lastBitcoinSendingEvent);
+              lastBitcoinSendingEvent = null;
+            }
+
             if (lastBitcoinSentEvent != null) {
               onBitcoinSentEvent(lastBitcoinSentEvent);
               lastBitcoinSentEvent = null;
@@ -215,6 +221,28 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
       LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
     }
   }
+
+  @Subscribe
+  public void onBitcoinSendingEvent(final BitcoinSendingEvent bitcoinSendingEvent) {
+    log.debug("Received the BitcoinSendingEvent: " + bitcoinSendingEvent);
+
+    lastBitcoinSendingEvent = bitcoinSendingEvent;
+
+    // The event may be fired before the UI has initialised
+    if (!initialised) {
+      return;
+    }
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.SENDING_BITCOIN));
+          LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
+        }
+      });
+  }
+
 
   @Subscribe
   public void onBitcoinSentEvent(final BitcoinSentEvent bitcoinSentEvent) {
@@ -289,7 +317,6 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
           }
         });
-
     }
   }
 }
