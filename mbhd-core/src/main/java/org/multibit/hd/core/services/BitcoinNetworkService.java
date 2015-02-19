@@ -555,6 +555,7 @@ public class BitcoinNetworkService extends AbstractService {
         // Work out the size of the transaction in bytes (the fee solver will have calculated the fee for this size)
         int initialSize;
         try {
+          // TODO Not sure if this is being done at the right place - input coins need to be selected prior to the size check
           initialSize = calculateSizeWithSignatures(sendRequest.tx);
           log.debug("Size of transaction before adding the client fee was {}", initialSize);
         } catch (IOException ioe) {
@@ -1136,7 +1137,7 @@ public class BitcoinNetworkService extends AbstractService {
                           Optional.<Coin>absent(),
                           false,
                           CoreMessageKey.THE_ERROR_WAS.getKey(),
-                          new String[]{throwable.getMessage()}
+                          new String[]{throwable == null ? "No message" : throwable.getMessage()}
                   ));
 
         }

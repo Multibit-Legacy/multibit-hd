@@ -84,6 +84,8 @@ public enum WalletManager implements WalletEventListener {
     public void onCoinsReceived(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
       // Emit an event so that GUI elements can update as required
       Coin value = tx.getValue(wallet);
+      log.debug("Received transaction {} with value {}", tx, value);
+
       CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx, value));
     }
 
