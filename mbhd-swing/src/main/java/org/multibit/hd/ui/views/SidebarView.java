@@ -36,6 +36,7 @@ import java.awt.event.MouseEvent;
  *
  * @since 0.0.1
  *
+ * @TODO THe multi wallet support is not needed now so this class can be simplified
  */
 public class SidebarView extends AbstractView {
 
