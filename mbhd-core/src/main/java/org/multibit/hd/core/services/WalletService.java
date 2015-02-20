@@ -452,7 +452,7 @@ public class WalletService extends AbstractService {
           return paymentStatus;
         } else {
           // Not out in the network
-          return new PaymentStatus(RAGStatus.RED, CoreMessageKey.NOT_BROADCAST);
+          return new PaymentStatus(RAGStatus.AMBER, CoreMessageKey.NOT_BROADCAST);
         }
       } else if (TransactionConfidence.ConfidenceType.DEAD.equals(confidenceType)) {
         // Dead

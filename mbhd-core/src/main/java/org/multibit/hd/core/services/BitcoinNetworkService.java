@@ -391,7 +391,7 @@ public class BitcoinNetworkService extends AbstractService {
     }
 
     // Must be OK to be here
-    log.debug("Commit and broadcast of coins has completed");
+    log.debug("Forgetting last SendRequest and Wallet ");
     lastSendRequestSummaryOptional = Optional.absent();
     lastWalletOptional = Optional.absent();
 
@@ -1076,7 +1076,6 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Ping the peers to check the Bitcoin network connection
       if (!pingPeers()) {
-
         // Declare the send a failure
         CoreEvents.fireBitcoinSentEvent(
           new BitcoinSentEvent(
@@ -1103,6 +1102,14 @@ public class BitcoinNetworkService extends AbstractService {
                       sendRequestSummary.getClientFeeAdded()
               ));
 
+      // Receive it in the wallet
+      if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+        try {
+          WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().receivePending(sendRequest.tx, null);
+        } catch (VerificationException e) {
+          throw new RuntimeException(e);   // Cannot fail to verify a tx we created ourselves.
+        }
+      }
       // Broadcast to network
       ListenableFuture<Transaction> broadcastFuture = peerGroup.broadcastTransaction(sendRequest.tx);
       Futures.addCallback(broadcastFuture, new FutureCallback<Transaction>() {
