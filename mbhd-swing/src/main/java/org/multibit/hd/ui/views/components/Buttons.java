@@ -718,6 +718,19 @@ public class Buttons {
 
     return button;
   }
+  /**
+   * @param action The click action
+   *
+   * @return A new "launch browser" button with icon and message
+   */
+  public static JButton newLaunchBrowserButton(Action action, MessageKey key, MessageKey tooltipKey, Object blockExplorerId) {
+
+    JButton button = newButton(action, key, tooltipKey, blockExplorerId);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
 
   /**
    * @param action The click action

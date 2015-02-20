@@ -219,6 +219,8 @@ public enum MessageKey {
   SHOW_BALANCE("show_balance"),
   SHOW_BALANCE_TOOLTIP("show_balance_tooltip"),
 
+  BLOCK_EXPLORER("block_explorer"),
+
   SELECT_THEME("select_theme"),
   SELECT_THEME_TOOLTIP("select_theme_tooltip"),
 
@@ -738,8 +740,6 @@ public enum MessageKey {
 
   LANGUAGE_CHANGE_NOTE_1("language_change_note_1"),
 
-  THEME_CHANGE_NOTE_1("theme_change_note_1"),
-
   SOUND_CHANGE_NOTE_1("sound_change_note_1"),
 
   LAB_CHANGE_NOTE_1("lab_change_note_1"),
@@ -797,8 +797,8 @@ public enum MessageKey {
   TRANSACTION_HASH("transaction_hash"),
   RAW_TRANSACTION("raw_transaction"),
 
-  VIEW_IN_BLOCKCHAIN_INFO("view_in_blockchain_info"),
-  VIEW_IN_BLOCKCHAIN_INFO_TOOLTIP("view_in_blockchain_info_tooltip"),
+  VIEW_IN_BLOCK_EXPLORER("view_in_block_explorer"),
+  VIEW_IN_BLOCK_EXPLORER_TOOLTIP("view_in_block_explorer_tooltip"),
 
   VIEW_IN_EXTERNAL_BROWSER("view_in_external_browser"),
   VIEW_IN_EXTERNAL_BROWSER_TOOLTIP("view_in_external_browser_tooltip"),

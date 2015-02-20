@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.blockexplorer.BlockExplorer;
 import org.multibit.hd.core.blockexplorer.BlockExplorers;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.dto.TransactionData;
@@ -90,13 +91,13 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
     // Raw transaction requires its own scroll pane
     JScrollPane scrollPane = ScrollPanes.newReadOnlyScrollPane(rawTransactionTextArea);
 
-    JButton blockchainInfoBrowserButton = Buttons.newLaunchBrowserButton(getBlockchainInfoBrowserAction(), MessageKey.VIEW_IN_BLOCKCHAIN_INFO, MessageKey.VIEW_IN_BLOCKCHAIN_INFO_TOOLTIP);
+    BlockExplorer blockExplorer = lookupBlockExplorer();
+    JButton blockExplorerBrowserButton = Buttons.newLaunchBrowserButton(getBlockExplorerBrowserAction(), MessageKey.VIEW_IN_BLOCK_EXPLORER, MessageKey.VIEW_IN_BLOCK_EXPLORER_TOOLTIP, blockExplorer.getName());
 
     contentPanel.add(transactionHashLabel, "wrap");
     contentPanel.add(transactionHashValue, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
-    // Consider adding more providers here (buttons break up the information overload)
-    contentPanel.add(blockchainInfoBrowserButton, "shrink,alignx left,span 2,wrap");
+    contentPanel.add(blockExplorerBrowserButton, "shrink,alignx left,span 2,wrap");
 
     contentPanel.add(rawTransactionLabel, "wrap");
     contentPanel.add(scrollPane, "grow,push,span 2," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
@@ -151,9 +152,9 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
   }
 
   /**
-   * @return The "blockchain info browser" action
+   * @return The "block explorer browser" action
    */
-  private Action getBlockchainInfoBrowserAction() {
+  private Action getBlockExplorerBrowserAction() {
 
     return new AbstractAction() {
       @Override
@@ -166,7 +167,8 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
             TransactionData transactionData = (TransactionData) paymentData;
 
             // Create block explorer lookup
-            BlockExplorer blockExplorer = BlockExplorers.getDefaultBlockExplorer();
+            BlockExplorer blockExplorer = lookupBlockExplorer();
+
             MessageFormat formatter = blockExplorer.getTransactionLookupMessageFormat();
             String lookupString = formatter.format(new String[]{transactionData.getTransactionId()});
             lookupURL = URI.create(lookupString);
@@ -189,5 +191,19 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
         }
       }
     };
+  }
+
+  private BlockExplorer lookupBlockExplorer() {
+    Optional<BlockExplorer> blockExplorerOptional = BlockExplorers.getBlockExplorerById(Configurations.currentConfiguration.getAppearance().getBlockExplorerId());
+    BlockExplorer blockExplorer;
+    if (blockExplorerOptional.isPresent()) {
+      blockExplorer = blockExplorerOptional.get();
+    } else {
+      // Use the default
+      blockExplorer = BlockExplorers.getDefaultBlockExplorer();
+      // Remember for next time
+      Configurations.currentConfiguration.getAppearance().setBlockExplorerId(blockExplorer.getId());
+    }
+    return blockExplorer;
   }
 }

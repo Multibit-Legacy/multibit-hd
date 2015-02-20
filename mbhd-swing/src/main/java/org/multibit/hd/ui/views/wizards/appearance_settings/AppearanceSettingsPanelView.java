@@ -2,6 +2,8 @@ package org.multibit.hd.ui.views.wizards.appearance_settings;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.blockexplorer.BlockExplorer;
+import org.multibit.hd.core.blockexplorer.BlockExplorers;
 import org.multibit.hd.core.config.AppearanceConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
@@ -36,6 +38,7 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
   // Panel specific components
   private JComboBox<String> themesComboBox;
   private JComboBox<String> showBalanceComboBox;
+  private JComboBox<String> blockExplorerComboBox;
 
   /**
    * @param wizard    The wizard managing the states
@@ -74,14 +77,16 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
 
     themesComboBox = ComboBoxes.newThemesComboBox(this);
     showBalanceComboBox = ComboBoxes.newShowBalanceYesNoComboBox(this, appearanceConfiguration.isShowBalance());
-
-    contentPanel.add(Labels.newThemeChangeNote(), "growx,span 2,wrap");
+    blockExplorerComboBox = ComboBoxes.newBlockExplorerComboBox(this, appearanceConfiguration.getBlockExplorerId());
 
     contentPanel.add(Labels.newSelectTheme(), "shrink");
     contentPanel.add(themesComboBox, "growx,shrinky,width min:250:,push,wrap");
 
     contentPanel.add(Labels.newShowBalance(), "shrink");
     contentPanel.add(showBalanceComboBox, "growx,shrinky,width min:250:,push,wrap");
+
+    contentPanel.add(Labels.newBlockExplorer(), "shrink");
+    contentPanel.add(blockExplorerComboBox, "growx,shrinky,width min:250:,push,wrap");
 
     contentPanel.add(Labels.newBlankLabel(), "grow,span 2,push,wrap"); // Fill out the remainder
 
@@ -174,6 +179,22 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
 
     }
 
+    // Block explorer
+    if (ComboBoxes.BLOCK_EXPLORER_COMMAND.equalsIgnoreCase(e.getActionCommand())) {
+
+      int blockExplorerIndex = source.getSelectedIndex();
+
+      if (0 <= blockExplorerIndex && blockExplorerIndex < BlockExplorers.getAll().size()) {
+        BlockExplorer blockExplorer = BlockExplorers.getAll().get(blockExplorerIndex);
+
+        Configuration configuration = getWizardModel().getConfiguration();
+        configuration.getAppearance().setBlockExplorerId(blockExplorer.getId());
+
+        // Update the model
+        getWizardModel().setConfiguration(configuration);
+      }
+
+    }
   }
 
 }

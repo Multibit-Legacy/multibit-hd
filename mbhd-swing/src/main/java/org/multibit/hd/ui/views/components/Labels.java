@@ -525,6 +525,15 @@ public class Labels {
   }
 
   /**
+   * @return A new "Block explorer" label
+   */
+  public static JLabel newBlockExplorer() {
+
+    return Labels.newLabel(MessageKey.BLOCK_EXPLORER);
+
+  }
+
+  /**
    * @return A new "select theme" label
    */
   public static JLabel newSelectTheme() {
@@ -1186,17 +1195,6 @@ public class Labels {
 
     return newNoteLabel(new MessageKey[]{
       MessageKey.LANGUAGE_CHANGE_NOTE_1
-    }, new Object[][]{});
-
-  }
-
-  /**
-   * @return A new "theme change" note
-   */
-  public static JLabel newThemeChangeNote() {
-
-    return newNoteLabel(new MessageKey[]{
-      MessageKey.THEME_CHANGE_NOTE_1
     }, new Object[][]{});
 
   }

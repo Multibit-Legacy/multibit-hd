@@ -1,5 +1,7 @@
 package org.multibit.hd.core.config;
 
+import org.multibit.hd.core.blockexplorer.BlockChainInfoBlockExplorer;
+
 /**
  * <p>Configuration to provide the following to application:</p>
  * <ul>
@@ -46,6 +48,11 @@ public class AppearanceConfiguration {
   private String sidebarWidth = "180";
 
   private String cloudBackupLocation = "";
+
+  /**
+   * The id of the blockexplorer used to drill down into transactions
+   */
+  private String blockExplorerId = BlockChainInfoBlockExplorer.ID;
 
   /**
    * @return The application directory path (e.g. ".")
@@ -144,12 +151,27 @@ public class AppearanceConfiguration {
     this.sidebarWidth = sidebarWidth;
   }
 
+  /**
+   * @return The cloud backup location
+   */
   public String getCloudBackupLocation() {
     return cloudBackupLocation;
   }
 
   public void setCloudBackupLocation(String cloudBackupLocation) {
     this.cloudBackupLocation = cloudBackupLocation;
+  }
+
+
+  /**
+   * @return The id of the current block explorer
+   */
+  public String getBlockExplorerId() {
+    return blockExplorerId;
+  }
+
+  public void setBlockExplorerId(String blockExplorerId) {
+    this.blockExplorerId = blockExplorerId;
   }
 
   /**
@@ -166,11 +188,10 @@ public class AppearanceConfiguration {
     app.setSidebarWidth(getSidebarWidth());
     app.setCurrentTheme(getCurrentTheme());
     app.setShowBalance(isShowBalance());
-
-    // TODO Consider moving these to a higher level
     app.setApplicationDirectory(getApplicationDirectory());
     app.setVersion(getVersion());
     app.setCloudBackupLocation(getCloudBackupLocation());
+    app.setBlockExplorerId(getBlockExplorerId());
 
     return app;
   }

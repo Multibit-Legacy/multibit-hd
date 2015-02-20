@@ -13,6 +13,7 @@ appearance:
   lastFrameBounds: "0,0,1000,560"
   sidebarWidth: "180"
   cloudBackupLocation: ""
+  blockExplorerId: "blockchain"
 bitcoin:
   bitcoinSymbol: "MICON"
   bitcoinNetwork: "MAIN_NET"

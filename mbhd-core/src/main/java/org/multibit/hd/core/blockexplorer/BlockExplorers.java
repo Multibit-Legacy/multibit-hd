@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  *  <p>Factory to provide the following to [related classes]:<br>
@@ -19,7 +19,7 @@ import java.util.Collection;
  */
 public class BlockExplorers {
 
-  private static final Collection<BlockExplorer> allBlockExplorers = Lists.newArrayList();
+  private static final List<BlockExplorer> allBlockExplorers = Lists.newArrayList();
 
   static {
     // Add all block explorers in alphabetic order
@@ -35,7 +35,7 @@ public class BlockExplorers {
   private BlockExplorers() {
   }
 
-  public static Collection<BlockExplorer> getAll() {
+  public static List<BlockExplorer> getAll() {
     return allBlockExplorers;
   }
 
