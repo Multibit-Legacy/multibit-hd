@@ -2,6 +2,8 @@ package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.blockexplorer.BlockExplorer;
+import org.multibit.hd.core.blockexplorer.BlockExplorers;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.dto.TransactionData;
@@ -23,6 +25,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.net.URI;
+import java.text.MessageFormat;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -36,8 +39,6 @@ import java.net.URI;
 public class TransactionDetailPanelView extends AbstractWizardPanelView<PaymentsWizardModel, TransactionDetailPanelModel> {
 
   private static final Logger log = LoggerFactory.getLogger(TransactionDetailPanelView.class);
-
-  private static final String BLOCKCHAIN_INFO_PREFIX = "https://blockchain.info/tx-index/";
 
   private static final int  MAXIMUM_ERROR_LENGTH = 100;
 
@@ -158,17 +159,22 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        URI blockchainInfoURL = null;
+        URI lookupURL = null;
         try {
           PaymentData paymentData = getWizardModel().getPaymentData();
           if (paymentData != null && paymentData instanceof TransactionData) {
             TransactionData transactionData = (TransactionData) paymentData;
-            blockchainInfoURL = URI.create(BLOCKCHAIN_INFO_PREFIX + transactionData.getTransactionId());
-            Desktop.getDesktop().browse(blockchainInfoURL);
+
+            // Create block explorer lookup
+            BlockExplorer blockExplorer = BlockExplorers.getDefaultBlockExplorer();
+            MessageFormat formatter = blockExplorer.getTransactionLookupMessageFormat();
+            String lookupString = formatter.format(new String[]{transactionData.getTransactionId()});
+            lookupURL = URI.create(lookupString);
+            Desktop.getDesktop().browse(lookupURL);
           }
         } catch (Exception ex) {
           // Log the error but carry on (no need to shut down for this type of error - just show an alert)
-          log.error("Failed to open URL " + blockchainInfoURL, ex);
+          log.error("Failed to open URL " + lookupURL, ex);
           String message = ex.toString();
           if (message.length() >MAXIMUM_ERROR_LENGTH) {
             message = message.substring(0, MAXIMUM_ERROR_LENGTH) + ELLIPSIS;
