@@ -3,6 +3,7 @@ package org.multibit.hd.ui.fest;
 import com.google.common.base.Optional;
 import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.Uninterruptibles;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiQuery;
@@ -60,6 +61,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
   }
 
+  @SuppressFBWarnings({"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"})
   @Before
   public void setUp() {
 
@@ -602,6 +604,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    *
    * @throws Exception If something goes wrong
    */
+  @SuppressFBWarnings({"OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE"})
   private void arrangeStandard(Optional<HardwareWalletFixture> hardwareWalletFixture) throws Exception {
 
     log.info("Arranging standard wallet fixture environment...");

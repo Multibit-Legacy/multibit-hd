@@ -66,7 +66,6 @@ public class ManageWalletScreenRequirements {
 
     // Verify the "history" screen change
     verifyHistoryScreen(window, parameters);
-
   }
 
   /**
@@ -90,9 +89,5 @@ public class ManageWalletScreenRequirements {
 
     // Search for the first entry
     new SearchHistoryUseCase(window).execute(parameters);
-
-
-
   }
-
 }
