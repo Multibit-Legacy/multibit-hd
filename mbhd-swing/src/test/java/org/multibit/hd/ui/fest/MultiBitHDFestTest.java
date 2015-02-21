@@ -563,6 +563,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    *
    * @throws Exception If something goes wrong
    */
+  @SuppressFBWarnings({"OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE"})
   private WalletSummary arrangeEmpty(Optional<HardwareWalletFixture> hardwareWalletFixture) throws Exception {
     log.info("Arranging empty wallet fixture environment with hardwareWalletFixtureType: {} ...", hardwareWalletFixture);
 
