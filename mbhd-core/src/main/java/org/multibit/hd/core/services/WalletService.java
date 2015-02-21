@@ -445,13 +445,13 @@ public class WalletService extends AbstractService {
         return paymentStatus;
 
       } else if (TransactionConfidence.ConfidenceType.PENDING.equals(confidenceType)) {
-        if (numberOfPeers >= 1) {
+        if (numberOfPeers >= 2) {
           // Seen by the network but not confirmed yet
           PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER, CoreMessageKey.BROADCAST);
           paymentStatus.setStatusData(new Object[]{numberOfPeers});
           return paymentStatus;
         } else {
-          // Not out in the network
+          // Not definitely out in the network (seen by one peer is probably the peer first broadcast to, which will INV it back
           return new PaymentStatus(RAGStatus.AMBER, CoreMessageKey.NOT_BROADCAST);
         }
       } else if (TransactionConfidence.ConfidenceType.DEAD.equals(confidenceType)) {
