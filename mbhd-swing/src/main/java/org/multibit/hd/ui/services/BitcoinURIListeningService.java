@@ -206,86 +206,7 @@ public class BitcoinURIListeningService extends AbstractService {
    */
   private Runnable getInstanceServerRunnable(final ServerSocket serverSocket) {
 
-    return new Runnable() {
-
-      // Guava will call this due to the annotation
-      @SuppressFBWarnings({"UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"})
-      // Requires its own shutdown subscriber to ensure correct shutdown
-      @Subscribe
-      public void onShutdownEvent(ShutdownEvent event) {
-
-        if (ShutdownEvent.ShutdownType.SWITCH.equals(event.getShutdownType())) {
-          // Can ignore the shutdown
-          log.debug("Instance server runnable ignoring wallet switch shutdown event");
-          return;
-        }
-
-        try {
-          serverSocket.close();
-        } catch (IOException e) {
-          log.error(e.getMessage(), e);
-        }
-
-      }
-
-      @Override
-      public void run() {
-
-        CoreEvents.subscribe(this);
-
-        boolean socketClosed = false;
-
-
-        while (!socketClosed) {
-
-          if (serverSocket.isClosed()) {
-            socketClosed = true;
-          } else {
-
-            try {
-
-              Socket client = serverSocket.accept();
-
-              String message;
-              try (InputStreamReader reader = new InputStreamReader(client.getInputStream(), Charsets.UTF_8)) {
-                message = CharStreams.toString(reader);
-                if (!message.startsWith(MESSAGE_START)) {
-                  // Message not following the correct format so is likely an error
-                  continue;
-                }
-                // Strip off the message start/end tags to leave a raw Bitcoin URI
-                message = message.replace(MESSAGE_START, "").replace(MESSAGE_END, "");
-              }
-              client.close();
-
-              log.debug("Received Bitcoin URI message: '{}'", message);
-
-              // Validate the data
-              final BitcoinURI bitcoinURI;
-              try {
-                bitcoinURI = new BitcoinURI(message);
-              } catch (BitcoinURIParseException e) {
-                // Quietly ignore
-                continue;
-              }
-
-              // Attempt to create an alert model from the Bitcoin URI
-              Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI);
-
-              // If successful the fire the event
-              if (alertModel.isPresent()) {
-                ControllerEvents.fireAddAlertEvent(alertModel.get());
-              }
-
-            } catch (IOException e) {
-              socketClosed = true;
-            }
-          }
-        } // End of while
-
-
-      }
-    };
+    return new MessageServerRunnable(serverSocket);
   }
 
   /**
@@ -334,4 +255,94 @@ public class BitcoinURIListeningService extends AbstractService {
 
   }
 
+
+  /**
+   * The Bitcoin URI listening server
+   */
+  private static class MessageServerRunnable implements Runnable {
+
+    private final ServerSocket serverSocket;
+
+    public MessageServerRunnable(ServerSocket serverSocket) {
+      this.serverSocket = serverSocket;
+    }
+
+    // Guava will call this due to the annotation
+    @SuppressFBWarnings({"UMAC_UNCALLABLE_METHOD_OF_ANONYMOUS_CLASS"})
+    // Requires its own shutdown subscriber to ensure correct shutdown
+    @Subscribe
+    public void onShutdownEvent(ShutdownEvent event) {
+
+      if (ShutdownEvent.ShutdownType.SWITCH.equals(event.getShutdownType())) {
+        // Can ignore the shutdown
+        log.debug("Instance server runnable ignoring wallet switch shutdown event");
+        return;
+      }
+
+      try {
+        serverSocket.close();
+      } catch (IOException e) {
+        log.error(e.getMessage(), e);
+      }
+
+    }
+
+    @Override
+    public void run() {
+
+      CoreEvents.subscribe(this);
+
+      boolean socketClosed = false;
+
+
+      while (!socketClosed) {
+
+        if (serverSocket.isClosed()) {
+          socketClosed = true;
+        } else {
+
+          try {
+
+            Socket client = serverSocket.accept();
+
+            String message;
+            try (InputStreamReader reader = new InputStreamReader(client.getInputStream(), Charsets.UTF_8)) {
+              message = CharStreams.toString(reader);
+              if (!message.startsWith(MESSAGE_START)) {
+                // Message not following the correct format so is likely an error
+                continue;
+              }
+              // Strip off the message start/end tags to leave a raw Bitcoin URI
+              message = message.replace(MESSAGE_START, "").replace(MESSAGE_END, "");
+            }
+            client.close();
+
+            log.debug("Received Bitcoin URI message: '{}'", message);
+
+            // Validate the data
+            final BitcoinURI bitcoinURI;
+            try {
+              bitcoinURI = new BitcoinURI(message);
+            } catch (BitcoinURIParseException e) {
+              // Quietly ignore
+              continue;
+            }
+
+            // Attempt to create an alert model from the Bitcoin URI
+            Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI);
+
+            // If successful the fire the event
+            if (alertModel.isPresent()) {
+              ControllerEvents.fireAddAlertEvent(alertModel.get());
+            }
+
+          } catch (IOException e) {
+            socketClosed = true;
+          }
+        }
+      } // End of while
+
+
+    }
+  }
 }
