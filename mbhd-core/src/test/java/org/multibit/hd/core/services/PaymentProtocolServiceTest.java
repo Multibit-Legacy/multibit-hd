@@ -2,15 +2,20 @@ package org.multibit.hd.core.services;
 
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.params.TestNet3Params;
-import org.bitcoinj.uri.BitcoinURI;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.PaymentSessionStatus;
+import org.multibit.hd.core.dto.PaymentSessionSummary;
+import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.WalletManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import java.net.URI;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -29,44 +34,117 @@ public class PaymentProtocolServiceTest {
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
     testObject = new PaymentProtocolService(networkParameters);
+    testObject.start();
+
+  }
+
+  @After
+  public void tearDown() {
+
+    // Order is important here
+    CoreServices.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
+
+    InstallationManager.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
+    BackupManager.INSTANCE.shutdownNow();
+    WalletManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 
   }
 
   @Test
-  public void testPaymentProtocolURI_SinglePaymentRequestUrl() throws Exception {
+  public void testProbeForPaymentSession_ProtobufError() throws Exception {
 
     // Act
-    BitcoinURI bitcoinURI = new BitcoinURI(networkParameters, "bitcoin:mrhz5ZgSF3C1BSdyCKt3gEdhKoRL5BNfJV?r=https://example.org/abc123&amount=1");
+    final URI uri = URI.create("/fixtures/payments/test-net-faucet-broken.bitcoinpaymentrequest");
+    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, true, null);
 
     // Assert
-    final List<String> paymentRequestUrls = bitcoinURI.getPaymentRequestUrls();
-    assertThat(paymentRequestUrls.size()).isEqualTo(1);
-
-    // The primary payment request URL is in its own field
-    assertThat(bitcoinURI.getPaymentRequestUrl()).isEqualTo("https://example.org/abc123");
-    assertThat(paymentRequestUrls.get(0)).isEqualTo("https://example.org/abc123");
+    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.ERROR);
 
   }
 
   @Test
-  public void testPaymentProtocolURI_MultiplePaymentRequestUrls() throws Exception {
+  public void testProbeForPaymentSession_NoPKI_Error() throws Exception {
 
     // Act
-    BitcoinURI bitcoinURI = new BitcoinURI(networkParameters, "bitcoin:mrhz5ZgSF3C1BSdyCKt3gEdhKoRL5BNfJV?r=https://example.org/abc123&r1=https://example" +
-      ".org/def456&r2=https://example.org/ghi789&amount=1");
+    final URI uri = URI.create("/fixtures/payments/test-net-faucet.bitcoinpaymentrequest");
+    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, true, null);
 
     // Assert
-    final List<String> paymentRequestUrls = bitcoinURI.getPaymentRequestUrls();
-    assertThat(paymentRequestUrls.size()).isEqualTo(3);
-
-    // The primary payment request URL is in its own field
-    assertThat(bitcoinURI.getPaymentRequestUrl()).isEqualTo("https://example.org/abc123");
-
-    // Backup payment request URLs are in reverse order
-    assertThat(paymentRequestUrls.get(0)).isEqualTo("https://example.org/ghi789");
-    assertThat(paymentRequestUrls.get(1)).isEqualTo("https://example.org/def456");
-    assertThat(paymentRequestUrls.get(2)).isEqualTo("https://example.org/abc123");
+    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.PKI_MISSING);
 
   }
+
+  @Test
+  public void testGetPaymentSession_NoPKI_Expected() throws Exception {
+
+    // Act
+    final URI uri = URI.create("/fixtures/payments/test-net-faucet.bitcoinpaymentrequest");
+    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, null);
+
+    // Assert
+    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK);
+
+  }
+
+  @Test
+  public void testNotify_BIP72_SingePaymentRequestUrl() throws Exception {
+
+//    // Start the payment protocol request server to resolve https://localhost:8443
+//    final SSLServerSocketFactory factory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+//    final SSLServerSocket serverSocket = (SSLServerSocket) factory.createServerSocket(8443);
+//
+//    String[] suites = serverSocket.getSupportedCipherSuites();
+//    serverSocket.setEnabledCipherSuites(suites);
+//
+//    executorService.submit(
+//      new Runnable() {
+//        @Override
+//        public void run() {
+//          try {
+//
+//            // Wait for a client connection
+//            SSLSocket socket = (SSLSocket) serverSocket.accept();
+//
+//            // Serve the payment request protobuf
+//            DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+//            dos.write("Hi".getBytes());
+//
+//            dos.close();
+//            socket.close();
+//            serverSocket.close();
+//          } catch (BindException e) {
+//            fail("Address already in use - is another test already running?");
+//          } catch (IOException e) {
+//            fail("IOException:" + e.getMessage());
+//          }
+//
+//        }
+//      });
+
+//    String[] args = new String[]{
+//      PAYMENT_REQUEST_BIP72_SINGLE
+//    };
+//
+//    testObject = new BitcoinURIListeningService(args);
+//    testObject.start();
+//
+//    Socket client = serverSocket.accept();
+//
+//    String text;
+//    try (InputStreamReader reader = new InputStreamReader(client.getInputStream(), Charsets.UTF_8)) {
+//      text = CharStreams.toString(reader);
+//    }
+//    client.close();
+//
+//    String expectedMessage = BitcoinURIListeningService.MESSAGE_START + PAYMENT_REQUEST_BIP72_SINGLE + BitcoinURIListeningService.MESSAGE_END;
+//    assertThat(text).isEqualTo(expectedMessage);
+//
+//    // Don't crash the JVM
+//    CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
+//
+//    assertThat(testObject.getServerSocket().isPresent()).isFalse();
+
+  }
+
 
 }
