@@ -1,6 +1,7 @@
 package org.multibit.hd.core.managers;
 
 import com.google.common.base.Charsets;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.files.SecureFiles;
@@ -55,6 +56,23 @@ public enum SSLManager {
     try (final InputStream in = con.getInputStream();
          final InputStreamReader inr = new InputStreamReader(in, Charsets.UTF_8)) {
       return CharStreams.toString(inr);
+    }
+
+  }
+
+  /**
+   * @param httpsUrl The HTTPS URL from which to get the data
+   *
+   * @return The contents of the URL as bytes
+   *
+   * @throws IOException If something goes wrong
+   */
+  public static byte[] getContentAsBytes(URL httpsUrl) throws IOException {
+
+    HttpsURLConnection con = (HttpsURLConnection) httpsUrl.openConnection();
+
+    try (final InputStream in = con.getInputStream()) {
+      return ByteStreams.toByteArray(in);
     }
 
   }
@@ -230,7 +248,7 @@ public enum SSLManager {
       return false;
     }
 
-    log.debug("Server sent " + chain.length + " certificate(s) which you can now add to the trust store:");
+    log.debug("Server sent " + chain.length + " certificate(s) which you can now add to the trust store:\n'{}'", appCacertsFile.getAbsolutePath());
     final MessageDigest sha1 = MessageDigest.getInstance("SHA1");
     final MessageDigest md5 = MessageDigest.getInstance("MD5");
     for (int index = 0; index < chain.length; index++) {

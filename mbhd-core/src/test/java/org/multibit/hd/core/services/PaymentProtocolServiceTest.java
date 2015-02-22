@@ -15,6 +15,8 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.hardware.core.concurrent.SafeExecutors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -67,17 +69,6 @@ public class PaymentProtocolServiceTest {
     serverSocket = (SSLServerSocket) factory.createServerSocket(8443);
     String[] suites = serverSocket.getSupportedCipherSuites();
     serverSocket.setEnabledCipherSuites(suites);
-
-    // Start the SSL server to ensure we have its certificate
-    executorService.submit(new PaymentProtocolServerRunnable(serverSocket, "/fixtures/payments/test-net-faucet.bitcoinpaymentrequest"));
-
-    SSLManager.INSTANCE.installCACertificates(
-      InstallationManager.getOrCreateApplicationDataDirectory(),
-      InstallationManager.CA_CERTS_NAME,
-      new String[]{"localhost:8443"},
-      true
-    );
-
   }
 
   @AfterClass
@@ -90,6 +81,16 @@ public class PaymentProtocolServiceTest {
 
   @Before
   public void setUp() throws Exception {
+
+    // Start the SSL server to ensure we have its certificate
+    executorService.submit(new PaymentProtocolServerRunnable(serverSocket, "/fixtures/payments/test-net-faucet.bitcoinpaymentrequest"));
+
+    SSLManager.INSTANCE.installCACertificates(
+      InstallationManager.getOrCreateApplicationDataDirectory(),
+      InstallationManager.CA_CERTS_NAME,
+      new String[]{"localhost:8443"},
+      true
+    );
 
     testObject = new PaymentProtocolService(networkParameters);
     testObject.start();
@@ -193,6 +194,8 @@ public class PaymentProtocolServiceTest {
    */
   private static class PaymentProtocolServerRunnable implements Runnable {
 
+    private static final Logger log = LoggerFactory.getLogger(PaymentProtocolServerRunnable.class);
+
     private final ServerSocket serverSocket;
     private final String fixture;
 
@@ -220,13 +223,16 @@ public class PaymentProtocolServiceTest {
           try {
 
             // Wait for a client connection
+            log.debug("Await client connection to SSLSocket");
             SSLSocket socket = (SSLSocket) serverSocket.accept();
+            socket.startHandshake();
 
             // Serve the payment request protobuf
             InputStream inputStream = PaymentProtocolServiceTest.class.getResourceAsStream(fixture);
             ByteStreams.copy(inputStream, socket.getOutputStream());
 
             // Release resources
+            log.debug("Closing SSLSocket...");
             socket.close();
 
           } catch (IOException e) {

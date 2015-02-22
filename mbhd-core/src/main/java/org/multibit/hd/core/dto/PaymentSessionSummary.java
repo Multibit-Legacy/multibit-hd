@@ -3,6 +3,8 @@ package org.multibit.hd.core.dto;
 import com.google.common.base.Optional;
 import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeoutException;
 
@@ -15,6 +17,8 @@ import java.util.concurrent.TimeoutException;
  * @since 0.0.7
  */
 public class PaymentSessionSummary {
+
+  private static final Logger log = LoggerFactory.getLogger(PaymentSessionSummary.class);
 
   private final PaymentSessionStatus status;
   private final Optional<PaymentSession> paymentSession;
@@ -47,6 +51,8 @@ public class PaymentSessionSummary {
    * @return A suitable payment session summary
    */
   public static PaymentSessionSummary newPaymentSessionFromException(Exception e, String hostName) {
+
+    log.warn("Failed payment server: Host={} Failure={}", hostName, e.getMessage());
 
     // Default handling is ERROR
 
@@ -86,6 +92,10 @@ public class PaymentSessionSummary {
    * @return A suitable payment session summary
    */
   public static PaymentSessionSummary newPaymentSessionFromException(PaymentProtocolException e, String hostName) {
+
+    log.warn("Failed payment session: Host={} Failure={}", hostName, e.getMessage());
+
+    // Default handling is ERROR
 
     if (e instanceof PaymentProtocolException.Expired) {
       return new PaymentSessionSummary(
