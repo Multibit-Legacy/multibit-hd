@@ -191,7 +191,7 @@ public class MultiBitHD {
             SSLManager.INSTANCE.installCACertificates(
               InstallationManager.getOrCreateApplicationDataDirectory(),
               InstallationManager.CA_CERTS_NAME,
-              false // Do not force loading if they are already present
+              null, false // Do not force loading if they are already present
             );
 
           }

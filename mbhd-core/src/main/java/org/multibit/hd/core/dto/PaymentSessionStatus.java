@@ -28,7 +28,7 @@ public enum PaymentSessionStatus {
   /**
    * The payment request does not contain a PKI entry (suspicious)
    */
-  PKI_MISSING,
+  PKI_INVALID,
 
   /**
    * The payment request contains an untrusted CA (user must import)

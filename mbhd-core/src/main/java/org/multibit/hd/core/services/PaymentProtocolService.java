@@ -86,6 +86,8 @@ public class PaymentProtocolService extends AbstractService {
 
     Preconditions.checkNotNull(paymentRequestUri, "'paymentRequestUri' must be present");
 
+    log.info("Probing '{}'", paymentRequestUri);
+
     String scheme = paymentRequestUri.getScheme() == null ? "" : paymentRequestUri.getScheme();
     String hostName = paymentRequestUri.getHost() == null ? "" : paymentRequestUri.getHost();
 
@@ -95,8 +97,9 @@ public class PaymentProtocolService extends AbstractService {
 
       if (scheme.startsWith("bitcoin")) {
         // Remote resource serving payment requests indirectly
+        final BitcoinURI bitcoinUri = new BitcoinURI(networkParameters, paymentRequestUri.toString());
         final PaymentSession paymentSession = PaymentSession
-          .createFromBitcoinUri(new BitcoinURI(networkParameters, paymentRequestUri.toString()), checkPKI, trustStoreLoader)
+          .createFromBitcoinUri(bitcoinUri, checkPKI, trustStoreLoader)
           .get(PAYMENT_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         return PaymentSessionSummary.newPaymentSessionOK(paymentSession);

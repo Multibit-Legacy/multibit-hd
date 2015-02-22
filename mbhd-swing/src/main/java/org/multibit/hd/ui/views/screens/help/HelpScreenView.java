@@ -367,7 +367,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
         SSLManager.INSTANCE.installCACertificates(
                 InstallationManager.getOrCreateApplicationDataDirectory(),
                 InstallationManager.CA_CERTS_NAME,
-                true
+          null, true
         );
 
       }

@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -34,7 +33,7 @@ public class PaymentSessionSummary {
    */
   public static PaymentSessionSummary newPaymentSessionOK(PaymentSession paymentSession) {
     return new PaymentSessionSummary(
-      Optional.<PaymentSession>absent(),
+      Optional.fromNullable(paymentSession),
       PaymentSessionStatus.OK,
       RAGStatus.GREEN,
       Optional.of(CoreMessageKey.PAYMENT_SESSION_OK),
@@ -51,15 +50,6 @@ public class PaymentSessionSummary {
 
     // Default handling is ERROR
 
-    if (e instanceof ExecutionException) {
-      return new PaymentSessionSummary(
-        Optional.<PaymentSession>absent(),
-        PaymentSessionStatus.DOWN,
-        RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_DOWN),
-        Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
-      );
-    }
     if (e instanceof InterruptedException) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
@@ -100,7 +90,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.Expired) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
-        PaymentSessionStatus.PKI_MISSING,
+        PaymentSessionStatus.PKI_INVALID,
         RAGStatus.AMBER,
         Optional.of(CoreMessageKey.PAYMENT_SESSION_EXPIRED),
         Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
@@ -109,7 +99,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidNetwork) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
-        PaymentSessionStatus.PKI_MISSING,
+        PaymentSessionStatus.PKI_INVALID,
         RAGStatus.AMBER,
         Optional.of(CoreMessageKey.PAYMENT_SESSION_INVALID_NETWORK),
         Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
@@ -118,7 +108,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidOutputs) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
-        PaymentSessionStatus.PKI_MISSING,
+        PaymentSessionStatus.PKI_INVALID,
         RAGStatus.AMBER,
         Optional.of(CoreMessageKey.PAYMENT_SESSION_INVALID_OUTPUTS),
         Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
@@ -127,7 +117,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidPaymentRequestURL) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
-        PaymentSessionStatus.PKI_MISSING,
+        PaymentSessionStatus.PKI_INVALID,
         RAGStatus.AMBER,
         Optional.of(CoreMessageKey.PAYMENT_SESSION_INVALID_REQUEST_URL),
         Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
@@ -136,7 +126,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidPaymentURL) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
-        PaymentSessionStatus.PKI_MISSING,
+        PaymentSessionStatus.PKI_INVALID,
         RAGStatus.AMBER,
         Optional.of(CoreMessageKey.PAYMENT_SESSION_INVALID_PAYMENT_URL),
         Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
@@ -145,7 +135,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidVersion) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
-        PaymentSessionStatus.PKI_MISSING,
+        PaymentSessionStatus.PKI_INVALID,
         RAGStatus.AMBER,
         Optional.of(CoreMessageKey.PAYMENT_SESSION_INVALID_VERSION),
         Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
@@ -154,7 +144,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidPkiData) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
-        PaymentSessionStatus.PKI_MISSING,
+        PaymentSessionStatus.PKI_INVALID,
         RAGStatus.AMBER,
         Optional.of(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID),
         Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
@@ -163,7 +153,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidPkiType) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
-        PaymentSessionStatus.PKI_MISSING,
+        PaymentSessionStatus.PKI_INVALID,
         RAGStatus.AMBER,
         Optional.of(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID_TYPE),
         Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
@@ -172,7 +162,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.PkiVerificationException) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
-        PaymentSessionStatus.PKI_MISSING,
+        PaymentSessionStatus.PKI_INVALID,
         RAGStatus.AMBER,
         Optional.of(CoreMessageKey.PAYMENT_SESSION_PKI_MISSING),
         Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
@@ -215,6 +205,13 @@ public class PaymentSessionSummary {
     this.messageKey = messageKey;
     this.messageData = messageData;
 
+  }
+
+  /**
+   * @return The payment session containing the payment request and other meta data
+   */
+  public Optional<PaymentSession> getPaymentSession() {
+    return paymentSession;
   }
 
   /**

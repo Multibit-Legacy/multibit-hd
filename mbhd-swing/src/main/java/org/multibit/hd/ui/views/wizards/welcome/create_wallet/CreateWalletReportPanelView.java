@@ -285,7 +285,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       SSLManager.INSTANCE.installCACertificates(
         InstallationManager.getOrCreateApplicationDataDirectory(),
         InstallationManager.CA_CERTS_NAME,
-        false);
+        null, false);
 
       // Update the UI after the BRIT exchange completes
       SwingUtilities.invokeLater(new Runnable() {

@@ -39,7 +39,25 @@ public enum SSLManager {
    *
    * For convenience we use the same as the default JVM
    */
-  private final char[] PASSPHRASE = "changeit".toCharArray();
+  public static final char[] PASSPHRASE = "changeit".toCharArray();
+
+  /**
+   * @param httpsUrl The HTTPS URL from which to get the data
+   *
+   * @return The contents of the URL as a String (UTF-8 encoding expected)
+   *
+   * @throws IOException If something goes wrong
+   */
+  public static String getContentAsString(URL httpsUrl) throws IOException {
+
+    HttpsURLConnection con = (HttpsURLConnection) httpsUrl.openConnection();
+
+    try (final InputStream in = con.getInputStream();
+         final InputStreamReader inr = new InputStreamReader(in, Charsets.UTF_8)) {
+      return CharStreams.toString(inr);
+    }
+
+  }
 
   /**
    * <p>Handles the process of installing all CA certificates for MultiBit and supporting services (e.g. exchanges)</p>
@@ -48,26 +66,19 @@ public enum SSLManager {
    *
    * @param applicationDirectory The application directory that must be writable
    * @param localTrustStoreName  The name of the local trust store (e.g. "appname-cacerts")
+   * @param hosts                A list of host names to provide the initial trusted certificates (if null or empty the default list is used)
    * @param force                True if the SSL certificate should be refreshed from the main server
    */
-  public void installCACertificates(File applicationDirectory, String localTrustStoreName, boolean force) {
+  public void installCACertificates(File applicationDirectory, String localTrustStoreName, String[] hosts, boolean force) {
 
     try {
 
       // Create an empty blank file if required
       final File appCacertsFile = SecureFiles.verifyOrCreateFile(applicationDirectory, localTrustStoreName);
-
-      // Load the key store (could be empty)
-      final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-      try (InputStream in = new FileInputStream(appCacertsFile)) {
-        ks.load(in, PASSPHRASE);
-      } catch (EOFException e) {
-        // Key store is empty so load from null
-        ks.load(null, PASSPHRASE);
-      }
+      final KeyStore ks = getKeyStore(appCacertsFile);
 
       // Provide a quick startup option if the aliases are in place and we're not forcing a refresh
-      if (ks.containsAlias("multibit.org-1") && ks.containsAlias("multibit.org-2") && !force) {
+      if (!force && ks.containsAlias("multibit.org-1") && ks.containsAlias("multibit.org-2")) {
 
         // Must have finished to be here so define the cacerts file to be the one used for all SSL
         System.setProperty("javax.net.ssl.trustStore", appCacertsFile.getAbsolutePath());
@@ -93,39 +104,30 @@ public enum SSLManager {
       // Create the SSL factory and expose it for general use
       SSLSocketFactory factory = context.getSocketFactory();
 
-      boolean isTrusted = false;
-
-      // Allocate space based on full population
-      String[] hosts = new String[ExchangeKey.values().length + 1];
-      int i = 0;
-      hosts[i] = "multibit.org";
-      i++;
-      hosts[i] = "beta.multibit.org";
-      i++;
-      hosts[i] = "www.multibit.org";
-      i++;
-      for (ExchangeKey exchangeKey : ExchangeKey.values()) {
-        if (ExchangeKey.NONE.equals(exchangeKey)) {
-          continue;
-        }
-        String sslUri = exchangeKey.getExchange().get().getExchangeSpecification().getSslUri();
-        if (sslUri != null && sslUri.startsWith("https://")) {
-          hosts[i] = URI.create(sslUri).getHost();
-          log.debug("Added {}' to SSL hosts", hosts[i]);
-          i++;
-        }
+      // Determine which hosts will be loaded
+      if (hosts == null || hosts.length == 0) {
+        hosts = populateHosts();
       }
 
       for (String host : hosts) {
+
+        boolean isTrusted = false;
 
         // There may be gaps in the hosts
         if (host == null) {
           continue;
         }
 
-        log.info("Opening connection to '{}:443'...", host);
         try {
-          final SSLSocket socket = (SSLSocket) factory.createSocket(host, 443);
+          final SSLSocket socket;
+          if (host.contains(":")) {
+            String[] endpoint = host.split(":");
+            log.info("Opening connection to '{}'...", host);
+            socket = (SSLSocket) factory.createSocket(endpoint[0], Integer.valueOf(endpoint[1]));
+          } else {
+            log.info("Opening default connection to '{}:443'...", host);
+            socket = (SSLSocket) factory.createSocket(host, 443);
+          }
           socket.setSoTimeout(5000);
 
           log.info("Starting SSL handshake...");
@@ -135,46 +137,21 @@ public enum SSLManager {
 
           isTrusted = true;
         } catch (UnknownHostException | SocketTimeoutException | SocketException e) {
-          // The host is unavailable or the network is down - quit now and use JVM defaults
-          return;
+          // The host is unavailable or the network is down - continue to the next one
+          continue;
         } catch (SSLException e) {
           // Need to import the certificate
         }
 
         if (!isTrusted) {
-
-          final X509Certificate[] chain = tm.chain;
-          if (chain == null) {
-            log.warn("Could not obtain server certificate chain");
-            return;
-          }
-
-          log.debug("Server sent " + chain.length + " certificate(s) which you can now add to the trust store:");
-          final MessageDigest sha1 = MessageDigest.getInstance("SHA1");
-          final MessageDigest md5 = MessageDigest.getInstance("MD5");
-          for (int index = 0; index < chain.length; index++) {
-
-            X509Certificate cert = chain[index];
-            sha1.update(cert.getEncoded());
-            md5.update(cert.getEncoded());
-            String alias = host + "-" + (index + 1);
-            ks.setCertificateEntry(alias, cert);
-
-            log.debug("-> {}: Subject '{}'", (index + 1), cert.getSubjectDN());
-            log.debug("->   : Issuer '{}'", cert.getIssuerDN());
-            log.debug("->   : SHA1 '{}'", toHexString(sha1.digest()));
-            log.debug("->   : MD5 '{}'", toHexString(md5.digest()));
-            log.debug("->   : Alias '{}'", alias);
-            try (OutputStream out = new FileOutputStream(appCacertsFile)) {
-              ks.store(out, PASSPHRASE);
-            }
-
-          }
+          // Attempt to store the X509 certificate
+          storeX509Certificate(appCacertsFile, ks, tm, host);
         }
       }
 
       // Must have finished to be here so define the cacerts file to be the one used for all SSL
       System.setProperty("javax.net.ssl.trustStore", appCacertsFile.getAbsolutePath());
+
     } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException | KeyManagementException e) {
 
       throw new IllegalStateException("CA Certificate update has failed.", e);
@@ -183,22 +160,100 @@ public enum SSLManager {
 
   }
 
+  private String[] populateHosts() {
+    String[] hosts = new String[ExchangeKey.values().length + 1];
+    int i = 0;
+    hosts[i] = "multibit.org";
+    i++;
+    hosts[i] = "beta.multibit.org";
+    i++;
+    hosts[i] = "www.multibit.org";
+    i++;
+    for (ExchangeKey exchangeKey : ExchangeKey.values()) {
+      if (ExchangeKey.NONE.equals(exchangeKey)) {
+        continue;
+      }
+      String sslUri = exchangeKey.getExchange().get().getExchangeSpecification().getSslUri();
+      if (sslUri != null && sslUri.startsWith("https://")) {
+        hosts[i] = URI.create(sslUri).getHost();
+        log.debug("Added {}' to SSL hosts", hosts[i]);
+        i++;
+      }
+    }
+    return hosts;
+  }
+
   /**
-   * @param httpsUrl The HTTPS URL from which to get the data
+   * @param appCacertsFile The app CA certs file for the trust store
    *
-   * @return The contents of the URL as a String (UTF-8 encoding expected)
+   * @return A key store loaded from the CA certs file
    *
-   * @throws IOException If something goes wrong
+   * @throws KeyStoreException
+   * @throws IOException
+   * @throws NoSuchAlgorithmException
+   * @throws CertificateException
    */
-  public static String getContentAsString(URL httpsUrl) throws IOException {
+  private KeyStore getKeyStore(File appCacertsFile) throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
 
-    HttpsURLConnection con = (HttpsURLConnection) httpsUrl.openConnection();
-
-    try (final InputStream in = con.getInputStream();
-         final InputStreamReader inr = new InputStreamReader(in, Charsets.UTF_8)) {
-      return CharStreams.toString(inr);
+    // Load the key store (could be empty)
+    final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+    try (InputStream in = new FileInputStream(appCacertsFile)) {
+      ks.load(in, PASSPHRASE);
+    } catch (EOFException e) {
+      // Key store is empty so load from null
+      ks.load(null, PASSPHRASE);
     }
 
+    return ks;
+
+  }
+
+  /**
+   * @param appCacertsFile The app CA certs file for the trust store
+   * @param ks             The keystore
+   * @param tm             The trust manager
+   * @param host           The host
+   *
+   * @return True if the certificate was stored
+   *
+   * @throws NoSuchAlgorithmException
+   * @throws KeyStoreException
+   * @throws IOException
+   * @throws CertificateException
+   */
+  public boolean storeX509Certificate(File appCacertsFile, KeyStore ks, SavingTrustManager tm, String host)
+    throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
+
+    final X509Certificate[] chain = tm.chain;
+    if (chain == null) {
+      log.warn("Could not obtain server certificate chain");
+      return false;
+    }
+
+    log.debug("Server sent " + chain.length + " certificate(s) which you can now add to the trust store:");
+    final MessageDigest sha1 = MessageDigest.getInstance("SHA1");
+    final MessageDigest md5 = MessageDigest.getInstance("MD5");
+    for (int index = 0; index < chain.length; index++) {
+
+      X509Certificate cert = chain[index];
+      sha1.update(cert.getEncoded());
+      md5.update(cert.getEncoded());
+      String alias = host + "-" + (index + 1);
+      ks.setCertificateEntry(alias, cert);
+
+      log.debug("-> {}: Subject '{}'", (index + 1), cert.getSubjectDN());
+      log.debug("->   : Issuer '{}'", cert.getIssuerDN());
+      log.debug("->   : SHA1 '{}'", toHexString(sha1.digest()));
+      log.debug("->   : MD5 '{}'", toHexString(md5.digest()));
+      log.debug("->   : Alias '{}'", alias);
+      try (OutputStream out = new FileOutputStream(appCacertsFile)) {
+        ks.store(out, PASSPHRASE);
+      }
+
+    }
+
+    // Must be OK to be here
+    return true;
   }
 
   /**

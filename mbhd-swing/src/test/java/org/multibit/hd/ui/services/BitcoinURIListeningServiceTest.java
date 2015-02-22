@@ -2,7 +2,6 @@ package org.multibit.hd.ui.services;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.uri.BitcoinURI;
@@ -12,7 +11,6 @@ import org.junit.Test;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
-import org.multibit.hd.hardware.core.concurrent.SafeExecutors;
 
 import java.io.InputStreamReader;
 import java.net.BindException;
@@ -48,8 +46,6 @@ public class BitcoinURIListeningServiceTest {
   private ServerSocket serverSocket = null;
 
   private BitcoinURIListeningService testObject;
-
-  private final ListeningExecutorService executorService = SafeExecutors.newSingleThreadExecutor("bip70-server");
 
   @Before
   public void setUp() throws Exception {
