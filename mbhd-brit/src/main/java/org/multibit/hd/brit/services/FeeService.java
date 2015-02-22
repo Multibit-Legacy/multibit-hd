@@ -54,6 +54,7 @@ import java.util.Set;
  * <ul>
  * <li>perform a lookup to the BRIT server to get the list of Bitcoin addresses fees need to be paid to</li>
  * <li>provide the details of the next fee to be paid by the Payer</li>
+ * <li>the minimum, default and maximum feePerKB to use on spends in satoshi</li>
  * </ul>
  *
  * @since 0.0.1
@@ -61,6 +62,10 @@ import java.util.Set;
 public class FeeService {
 
   private static final Logger log = LoggerFactory.getLogger(FeeService.class);
+
+  public static final Coin MINIMUM_FEE_PER_KB = Coin.valueOf(1000);  // The minimum relay fee as per Bitcoin Core 0.9
+  public static final Coin DEFAULT_FEE_PER_KB = Coin.valueOf(3000);  // Logarithmically halfway ish between min and max
+  public static final Coin MAXIMUM_FEE_PER_KB = Coin.valueOf(10000); // 0.1 mBTC per KB - a long used fee structure
 
   /**
    * Always work with MainNet in BRIT (no access to wallet configuration)
@@ -328,6 +333,29 @@ public class FeeService {
     }
 
     return new FeeState(true, nextSendFeeAddress, currentNumberOfSends, nextSendFeeCount, FEE_PER_SEND, netFeeToBePaid);
+  }
+
+
+  /**
+   * Normalise the feePerKB so that it is always between the minimum and maximum values
+   * @param rawFeePerKB the raw value of feePerKB, as satoshi
+   * @return the normalised feePerKB, as Coin
+   */
+  public static Coin normaliseRawFeePerKB(long rawFeePerKB) {
+    if (rawFeePerKB == 0) {
+      return DEFAULT_FEE_PER_KB;
+    }
+
+    if (Coin.valueOf(rawFeePerKB).compareTo(MINIMUM_FEE_PER_KB) < 0) {
+      return MINIMUM_FEE_PER_KB;
+    }
+
+    if (Coin.valueOf(rawFeePerKB).compareTo(MAXIMUM_FEE_PER_KB) > 0) {
+      return MAXIMUM_FEE_PER_KB;
+    }
+
+    // Ok as is
+    return Coin.valueOf(rawFeePerKB);
   }
 
   /**

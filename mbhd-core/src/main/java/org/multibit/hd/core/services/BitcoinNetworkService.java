@@ -63,7 +63,6 @@ public class BitcoinNetworkService extends AbstractService {
 
   private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
 
-  public static final Coin DEFAULT_FEE_PER_KB = Transaction.REFERENCE_DEFAULT_MIN_TX_FEE; // Currently 1,000 satoshi
   public static final int MAXIMUM_NUMBER_OF_PEERS = 6;
 
   private static final int SIZE_OF_SIGNATURE = 72; // bytes
