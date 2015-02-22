@@ -40,6 +40,10 @@ public enum LanguageKey {
    */
   CS_CZ("cs_CZ", OPENSANS_SEMIBOLD),
   /**
+   * Catalan
+   */
+  CA_ES("ca_ES", CORBEN_REGULAR),
+  /**
    * Danish
    */
   DA_DK("da_DK", CORBEN_REGULAR),

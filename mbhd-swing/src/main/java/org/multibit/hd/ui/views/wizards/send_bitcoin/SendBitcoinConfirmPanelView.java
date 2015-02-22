@@ -146,7 +146,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     contentPanel.setLayout(
       new MigLayout(
         Panels.migXYLayout(),
-        "[][]", // Column constraints
+        "[]10[250]10[120]10[120]10[]", // Column constraints
         "[]10[]10[][][][][]10[][]" // Row constraints
       ));
 
@@ -186,7 +186,6 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
     // Register components
     registerComponents(transactionDisplayAmountMaV, transactionFeeDisplayAmountMaV, clientFeeDisplayAmountMaV, runningTotalClientFeeDisplayAmountMaV);
-
   }
 
   @Override

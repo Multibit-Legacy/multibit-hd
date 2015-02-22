@@ -3,6 +3,10 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.sidebar.settings.ShowSettingsScreenUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.appearance.ShowThenCancelAppearanceUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.appearance.VerifyAppearanceBlockExplorerUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.appearance.VerifyAppearanceShowBalanceUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.appearance.VerifyAppearanceThemeUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.settings.labs.VerifyLabsToggleTrezorUseCase;
 
 import java.util.Map;
@@ -28,7 +32,7 @@ public class SettingsScreenRequirements {
 //    new ShowThenCancelLanguageUseCase(window).execute(parameters);
 //    new ShowThenCancelUnitsUseCase(window).execute(parameters);
 //    new ShowThenCancelExchangeUseCase(window).execute(parameters);
-//    new ShowThenCancelAppearanceUseCase(window).execute(parameters);
+    new ShowThenCancelAppearanceUseCase(window).execute(parameters);
 //    new ShowThenCancelSoundsUseCase(window).execute(parameters);
 //    new ShowThenCancelLabsUseCase(window).execute(parameters);
 
@@ -40,9 +44,10 @@ public class SettingsScreenRequirements {
 //    new VerifyExchangeOERUseCase(window).execute(parameters);
 //    new VerifyExchangeNoneUseCase(window).execute(parameters);
 
-    // Application
-//    new VerifyAppearanceThemeUseCase(window).execute(parameters);
-//    new VerifyAppearanceShowBalanceUseCase(window).execute(parameters);
+    // Appearance
+    new VerifyAppearanceBlockExplorerUseCase(window).execute(parameters);
+    new VerifyAppearanceThemeUseCase(window).execute(parameters);
+    new VerifyAppearanceShowBalanceUseCase(window).execute(parameters);
 
     // TODO Sounds
 

@@ -81,7 +81,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
     contentPanel.setLayout(new MigLayout(
       Panels.migXLayout(),
       "[]", // Column constraints
-      "[]0[]32[]0[]32[]" // Row constraints
+      "[]0[]20[]0[]20[]" // Row constraints
     ));
 
     contentPanel.add(Labels.newPasswordNote(), "wrap");
