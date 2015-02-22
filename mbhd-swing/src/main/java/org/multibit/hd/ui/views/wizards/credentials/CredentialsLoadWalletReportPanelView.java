@@ -126,14 +126,16 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
       PanelDecorator.addExitRestorePreviousFinish(this, wizard);
     }
 
-    getPreviousButton().addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        // Clear any 'password failed' before moving back
-        walletLoadedStatusLabel.setText("");
-        walletLoadedStatusLabel.setIcon(null);
-      }
-    });
+    if (getPreviousButton() != null) {
+      getPreviousButton().addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          // Clear any 'password failed' before moving back
+          walletLoadedStatusLabel.setText("");
+          walletLoadedStatusLabel.setIcon(null);
+        }
+      });
+    }
   }
 
   @Override

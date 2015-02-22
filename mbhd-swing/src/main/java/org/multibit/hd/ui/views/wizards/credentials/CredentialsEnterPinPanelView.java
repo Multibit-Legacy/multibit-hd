@@ -74,15 +74,12 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
     contentPanel.setLayout(
       new MigLayout(
         Panels.migXLayout(),
-        "[120][][][40]", // Column constraints
-        "[]12[][][30]" // Row constraints
+        "[]", // Column constraints
+        "36[]10[]" // Row constraints
       ));
 
-    contentPanel.add(Labels.newBlankLabel());
-    contentPanel.add(Labels.newPinIntroductionNote(), "align left,span 2,wrap");
-
-    contentPanel.add(Labels.newBlankLabel());
-    contentPanel.add(enterPinMaV.getView().newComponentPanel(), "align left,span 2, wrap");
+    contentPanel.add(Labels.newPinIntroductionNote(), "align center,wrap");
+    contentPanel.add(enterPinMaV.getView().newComponentPanel(), "align center, wrap");
 
   }
 
