@@ -930,6 +930,25 @@ public class Buttons {
 
     return button;
   }
+  /**
+    * @param action The click action
+    *
+    * @return A new "Fee settings" wizard button with icon
+    */
+   public static JButton newShowFeeSettingsWizardButton(Action action) {
+
+     JButton button = newLargeButton(action, MessageKey.FEES_SETTINGS_TITLE, MessageKey.FEES_SETTINGS_TITLE);
+
+     AwesomeDecorator.applyIcon(
+       AwesomeIcon.TICKET,
+       button,
+       true,
+       JLabel.BOTTOM,
+       MultiBitUI.LARGE_ICON_SIZE
+     );
+
+     return button;
+   }
 
   /**
    * @param action The click action

@@ -895,6 +895,12 @@ public class Labels {
   }
 
   /**
+    * @return A new "Adjust transaction fee" message
+    */
+   public static JLabel newAdjustTransactionFee() {
+     return newLabel(MessageKey.ADJUST_TRANSACTION_FEE);
+   }
+  /**
    * @return A new "transaction hash" label
    */
   public static JLabel newTransactionHash() {

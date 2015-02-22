@@ -45,6 +45,9 @@ import org.multibit.hd.ui.views.wizards.exit.ExitWizardModel;
 import org.multibit.hd.ui.views.wizards.export_payments.ExportPaymentsWizard;
 import org.multibit.hd.ui.views.wizards.export_payments.ExportPaymentsWizardModel;
 import org.multibit.hd.ui.views.wizards.export_payments.ExportPaymentsWizardState;
+import org.multibit.hd.ui.views.wizards.fee_settings.FeeSettingsState;
+import org.multibit.hd.ui.views.wizards.fee_settings.FeeSettingsWizard;
+import org.multibit.hd.ui.views.wizards.fee_settings.FeeSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.lab_settings.LabSettingsState;
 import org.multibit.hd.ui.views.wizards.lab_settings.LabSettingsWizard;
 import org.multibit.hd.ui.views.wizards.lab_settings.LabSettingsWizardModel;
@@ -368,6 +371,18 @@ public class Wizards {
     return new AppearanceSettingsWizard(new AppearanceSettingsWizardModel(AppearanceSettingsState.APPEARANCE_ENTER_DETAILS, configuration));
   }
 
+  /**
+   * @return A new "fee settings" wizard for fee customisation
+   */
+  public static FeeSettingsWizard newFeeSettingsWizard() {
+
+    log.debug("New 'Fee settings wizard'");
+
+    // Ensure we work with a copy of the current configuration in case of cancellation
+    Configuration configuration = Configurations.currentConfiguration.deepCopy();
+
+    return new FeeSettingsWizard(new FeeSettingsWizardModel(FeeSettingsState.FEE_ENTER_DETAILS, configuration));
+  }
   /**
    * @return A new "sound settings" wizard for sound selection
    */

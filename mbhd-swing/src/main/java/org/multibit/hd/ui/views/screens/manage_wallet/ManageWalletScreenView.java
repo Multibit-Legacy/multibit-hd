@@ -66,8 +66,8 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
 
     MigLayout layout = new MigLayout(
       Panels.migXYDetailLayout(),
-      "6[]6[]6[]6", // Column constraints
-      "6[]6[]6[]6" // Row constraints
+      "6[]6[]6[]6[]6", // Column constraints
+      "6[]6[]6" // Row constraints
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
@@ -82,20 +82,19 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
     // Row 1
     contentPanel.add(primaryButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowWalletDetailsButton(getShowWalletDetailsAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(showEmptyWalletButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
+    contentPanel.add(showEmptyWalletButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    // Repair is in top right for good visibility
+    contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push, wrap");
 
     // Row 2
     contentPanel.add(Buttons.newShowHistoryScreenButton(getShowHistoryAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     WalletType walletType = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType();
 
     if (WalletType.TREZOR_HARD_WALLET.equals(walletType)) {
-      contentPanel.add(Buttons.newShowChangePinButton(getShowChangePinAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+      contentPanel.add(Buttons.newShowChangePinButton(getShowChangePinAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
     } else {
-      contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+      contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
     }
-
-    // Repair is in bottom right for fastest visibility
-    contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
 
     // Check for any Bitcoin network events that may have occurred before this screen
     // is initialised

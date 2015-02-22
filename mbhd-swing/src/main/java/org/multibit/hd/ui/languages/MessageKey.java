@@ -120,7 +120,6 @@ public enum MessageKey {
   ALL("all"),
   NONE("none"),
   ERROR("error"),
-  @Deprecated
   DEFAULT("default"),
 
   QR_CODE("qr_code"),
@@ -187,6 +186,10 @@ public enum MessageKey {
   LOCAL_AMOUNT_INCLUDING_FEES("local_amount_including_fees"),
   AMOUNT_PAID("amount_paid"),
   TRANSACTION_FEE("transaction_fee"),
+  ADJUST_TRANSACTION_FEE("adjust_transaction_fee"),
+  TRANSACTION_FEE_CHOSEN("transaction_fee_chosen"),
+  LOWER("lower"),
+  HIGHER("higher"),
 
   CLIENT_FEE("client_fee"),
   CLIENT_FEE_NOW("client_fee_now"),
