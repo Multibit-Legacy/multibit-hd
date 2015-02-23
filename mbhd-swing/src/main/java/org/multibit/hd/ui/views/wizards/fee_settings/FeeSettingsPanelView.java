@@ -83,7 +83,7 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     contentPanel.setLayout(new MigLayout(
             Panels.migXYLayout(),
             "[]20[]", // Column constraints
-            "[]2[]8[]2[]12[]2[]" // Row constraints
+            "[]2[]8[]2[]6[]6[]2[]" // Row constraints
     ));
 
     WalletConfiguration walletConfiguration = Configurations.currentConfiguration.getWallet().deepCopy();
@@ -121,12 +121,14 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     contentPanel.add(Labels.newExplainTransactionFee1(), "span 2, wrap");
     contentPanel.add(Labels.newExplainTransactionFee2(), "span 2, wrap");
     contentPanel.add(Labels.newAdjustTransactionFee(), "shrink");
-    contentPanel.add(feePerKBSlider, "growx,shrinky,width min:250:,push,wrap");
+    contentPanel.add(feePerKBSlider, "growx,shrinky,width min:250:,wrap");
 
     resultLabel = Labels.newBlankLabel();
     resultLabel.setText(Languages.safeText(MessageKey.TRANSACTION_FEE_CHOSEN));
-    contentPanel.add(resultLabel, "growx,shrinky");
+    contentPanel.add(resultLabel, "shrink");
     contentPanel.add(transactionFeeAmountViewPanel, "growx,shrinky,push,wrap");
+    contentPanel.add(Labels.newBlankLabel(), "span 2, push, wrap"); // spacer
+
     contentPanel.add(Labels.newExplainClientFee1(FeeService.FEE_PER_SEND), "span 2, wrap");
     contentPanel.add(Labels.newExplainClientFee2(), "span 2, wrap");
     Action donateAction = new AbstractAction() {
@@ -136,7 +138,7 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
           setChosenFee();
           // Set the new feePerKB
           Configurations.currentConfiguration.getWallet().setFeePerKB(configuration.getWallet().getFeePerKB());
-          
+
           Panels.hideLightBoxIfPresent();
 
           SendBitcoinParameter donateParameter = new SendBitcoinParameter(Optional.of(new BitcoinURI("bitcoin:" + FeeService.DONATION_ADDRESS + "?amount=" + FeeService.DEFAULT_DONATION_AMOUNT)));
@@ -149,6 +151,7 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     };
     contentPanel.add(Labels.newBlankLabel(), "");
     contentPanel.add(Buttons.newDonateNowButton(donateAction), "wrap");
+    contentPanel.add(Labels.newBlankLabel(), "span 2, push, wrap"); // spacer
     setChosenFee();
   }
 
