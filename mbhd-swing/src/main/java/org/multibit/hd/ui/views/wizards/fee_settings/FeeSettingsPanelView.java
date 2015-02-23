@@ -3,6 +3,8 @@ package org.multibit.hd.ui.views.wizards.fee_settings;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.uri.BitcoinURI;
+import org.bitcoinj.uri.BitcoinURIParseException;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
@@ -10,10 +12,7 @@ import org.multibit.hd.core.config.WalletConfiguration;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.ModelAndView;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
@@ -22,12 +21,15 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.event.ActionEvent;
 import java.util.Hashtable;
 
 /**
@@ -81,7 +83,7 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     contentPanel.setLayout(new MigLayout(
             Panels.migXYLayout(),
             "[][]", // Column constraints
-            "[]10[]" // Row constraints
+            "[]5[]10[]5[]20[]5[]" // Row constraints
     ));
 
     WalletConfiguration walletConfiguration = Configurations.currentConfiguration.getWallet().deepCopy();
@@ -116,6 +118,8 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     JPanel transactionFeeAmountViewPanel = transactionFeeDisplayAmountMaV.getView().newComponentPanel();
     transactionFeeDisplayAmountMaV.getView().setVisible(true);
 
+    contentPanel.add(Labels.newExplainTransactionFee1(), "span 2, wrap");
+    contentPanel.add(Labels.newExplainTransactionFee2(), "span 2, wrap");
     contentPanel.add(Labels.newAdjustTransactionFee(), "shrink");
     contentPanel.add(feePerKBSlider, "growx,shrinky,width min:250:,push,wrap");
 
@@ -123,10 +127,27 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     resultLabel.setText(Languages.safeText(MessageKey.TRANSACTION_FEE_CHOSEN));
     contentPanel.add(resultLabel, "growx,shrinky");
     contentPanel.add(transactionFeeAmountViewPanel, "growx,shrinky,push,wrap");
+    contentPanel.add(Labels.newExplainClientFee1(FeeService.FEE_PER_SEND), "span 2, wrap");
+    contentPanel.add(Labels.newExplainClientFee2(), "span 2, wrap");
+    Action donateAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        log.debug("Saw action event {}", e);
 
+        try {
+          Panels.hideLightBoxIfPresent();
+
+          SendBitcoinParameter donateParameter = new SendBitcoinParameter(Optional.of(new BitcoinURI("bitcoin:" + FeeService.DONATION_ADDRESS + "?amount=" + FeeService.DEFAULT_DONATION_AMOUNT)));
+          Panels.showLightBox(Wizards.newSendBitcoinWizard(donateParameter).getWizardScreenHolder());
+        } catch (BitcoinURIParseException pe) {
+          // Should not happen
+          log.error(pe.getMessage());
+        }
+      }
+    };
+    contentPanel.add(Labels.newBlankLabel(), "");
+    contentPanel.add(Buttons.newDonateNowButton(donateAction), "wrap");
     setChosenFee();
-
-    contentPanel.add(Labels.newBlankLabel(), "grow,span 2,push,wrap"); // Fill out the remainder
   }
 
   @Override
