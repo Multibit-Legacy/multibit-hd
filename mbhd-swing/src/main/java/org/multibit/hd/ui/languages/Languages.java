@@ -248,4 +248,23 @@ public class Languages {
     }
     return ordinal;
   }
+
+  /**
+   * Capitalise the first letter of a phrase
+   * @param phrase
+   * @return the phrase, with the first letter capitalised
+   */
+
+  public static String toCapitalCase(String phrase) {
+    if (phrase == null) {
+      return null;
+    }
+    if (phrase.length() == 0) {
+      return "";
+    }
+    if (phrase.length() == 1) {
+      return phrase.toUpperCase();
+    }
+    return Character.toString(phrase.charAt(0)).toUpperCase() + phrase.substring(1);
+  }
 }

@@ -32,6 +32,7 @@ wallet:
   lastSoftWalletRoot: null
   recentWalletDataValidity: 1419692967155
   recentWalletLabel: "multibit.org 178"
+  feePerKB: 3000
 licenceAccepted: false
 tor: false
 trezor: true

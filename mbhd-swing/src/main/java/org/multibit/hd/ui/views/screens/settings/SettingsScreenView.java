@@ -44,7 +44,7 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
 
     MigLayout layout = new MigLayout(
       Panels.migXYDetailLayout(),
-      "6[]6[]6[]6", // Column constraints
+      "6[]6[]6[]6[]6", // Column constraints
       "6[]6[]6" // Row constraints
     );
 
@@ -78,6 +78,13 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
         Panels.showLightBox(Wizards.newAppearanceSettingsWizard().getWizardScreenHolder());
       }
     };
+    Action showFeesAction = new AbstractAction() {
+       @Override
+       public void actionPerformed(ActionEvent e) {
+
+         Panels.showLightBox(Wizards.newFeeSettingsWizard().getWizardScreenHolder());
+       }
+     };
     Action showSoundAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -97,9 +104,10 @@ public class SettingsScreenView extends AbstractScreenView<SettingsScreenModel> 
 
     contentPanel.add(showLanguageSettingsWizardButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowUnitsSettingsWizardButton(showBitcoinAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push");
-    contentPanel.add(Buttons.newShowExchangeSettingsWizardButton(showExchangeAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
+    contentPanel.add(Buttons.newShowExchangeSettingsWizardButton(showExchangeAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push");
 
-    contentPanel.add(Buttons.newShowApplicationSettingsWizardButton(showApplicationAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowApplicationSettingsWizardButton(showApplicationAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
+    contentPanel.add(Buttons.newShowFeeSettingsWizardButton(showFeesAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowSoundSettingsWizardButton(showSoundAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push");
     contentPanel.add(Buttons.newShowLabSettingsWizardButton(showLabAction), MultiBitUI.LARGE_BUTTON_MIG + ",align center, push,wrap");
 

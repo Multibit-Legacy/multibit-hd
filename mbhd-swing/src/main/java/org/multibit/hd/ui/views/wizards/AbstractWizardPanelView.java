@@ -311,7 +311,11 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    * @return The "previous" button for this view
    */
   public JButton getPreviousButton() {
-    return previousButton.get();
+    if (previousButton.isPresent()) {
+      return previousButton.get();
+    } else {
+      return null;
+    }
   }
 
   public void setPreviousButton(JButton previousButton) {

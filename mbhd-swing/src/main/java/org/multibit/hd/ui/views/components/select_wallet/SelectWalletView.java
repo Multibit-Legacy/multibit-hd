@@ -70,7 +70,6 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
     panel.add(scrollPane, "grow," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     return panel;
-
   }
 
   @Override
@@ -92,21 +91,24 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
     selectedWalletComboBox.removeAllItems();
 
     List<WalletSummary> walletList = getModel().get().getWalletList();
-    Optional<WalletSummary> currentWallet = WalletManager.INSTANCE.getCurrentWalletSummary();
+    Optional<String> currentWalletRootFromConfiguration = WalletManager.INSTANCE.getCurrentWalletRoot();
 
-    if (currentWallet.isPresent()) {
-
-      // We have a current select so set that first then add more
-      WalletSummary current = currentWallet.get();
-      selectedWalletComboBox.addItem(currentWallet.get());
+    if (currentWalletRootFromConfiguration.isPresent()) {
+      // We have a current select so select that when we add it
+      String currentWalletRoot  = currentWalletRootFromConfiguration.get();
+      int index = 0;
       for (WalletSummary walletSummary : walletList) {
-        // Continue adding entries other than the current
-        if (!walletSummary.getWalletId().equals(current.getWalletId())) {
-          selectedWalletComboBox.addItem(walletSummary);
+        // Add all the wallet summaries
+        selectedWalletComboBox.addItem(walletSummary);
+
+        // Select this entry if the formatted wallet id matches the last seen soft wallet root
+        // (this is persisted in the WalletConfiguration)
+        if (currentWalletRoot.endsWith(walletSummary.getWalletId().toFormattedString())) {
+            selectedWalletComboBox.setSelectedIndex(index);
         }
+        index++;
       }
     } else {
-
       // We have no current selection so add anything that's available
       // so long as it isn't a Trezor hard wallet
       for (WalletSummary walletSummary : walletList) {
@@ -125,14 +127,11 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
       WalletSummary selectedWallet = (WalletSummary) selectedWalletComboBox.getSelectedItem();
 
       if (selectedWallet != null) {
-
         getModel().get().setValue(selectedWallet);
         descriptionTextArea.setText(selectedWallet.getNotes());
         descriptionTextArea.setCaretPosition(0);
-
       }
     }
-
   }
 
   /**
@@ -147,11 +146,9 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
     WalletSummary selectedWallet = (WalletSummary) source.getSelectedItem();
 
     if (selectedWallet != null) {
-
       getModel().get().setValue(selectedWallet);
 
       descriptionTextArea.setText(selectedWallet.getNotes());
-
     }
   }
 

@@ -1,6 +1,7 @@
 package org.multibit.hd.core.config;
 
 import com.google.common.base.Optional;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class ConfigurationsTest {
 
+  @SuppressFBWarnings({"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"})
   @Before
   public void setUp() {
 
@@ -21,6 +23,7 @@ public class ConfigurationsTest {
 
   }
 
+  @SuppressFBWarnings({"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"})
   @After
   public void tearDown() throws Exception {
 
@@ -41,6 +44,7 @@ public class ConfigurationsTest {
     assertThat(configuration.get().any().isEmpty()).isFalse();
   }
 
+  @SuppressFBWarnings({"DM_DEFAULT_ENCODING"})
   @Test
   public void testWriteConfiguration_ExampleWithUnknown() throws Exception {
 

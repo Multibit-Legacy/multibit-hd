@@ -636,6 +636,20 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "donate" button with icon
+   */
+  public static JButton newDonateNowButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.DONATE_NOW, MessageKey.DONATE_NOW);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.HEART, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "search" button with icon
    */
   public static JButton newSearchButton(Action action) {
@@ -932,6 +946,26 @@ public class Buttons {
   }
 
   /**
+    * @param action The click action
+    *
+    * @return A new "Fee settings" wizard button with icon
+    */
+   public static JButton newShowFeeSettingsWizardButton(Action action) {
+
+     JButton button = newLargeButton(action, MessageKey.FEES_SETTINGS_TITLE, MessageKey.FEES_SETTINGS_TITLE);
+
+     AwesomeDecorator.applyIcon(
+       AwesomeIcon.TICKET,
+       button,
+       true,
+       JLabel.BOTTOM,
+       MultiBitUI.LARGE_ICON_SIZE
+     );
+
+     return button;
+   }
+
+  /**
    * @param action The click action
    *
    * @return A new "Sound settings" wizard button with icon
@@ -1174,7 +1208,4 @@ public class Buttons {
 
     return button;
   }
-
-
-
 }
