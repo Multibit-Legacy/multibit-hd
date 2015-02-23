@@ -123,7 +123,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
 
     // Add the title to the wizard
     JLabel title = Labels.newTitleLabel(titleKey);
-    wizardScreenPanel.add(title, "span 4," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",shrink,aligny top,align center,wrap");
+    wizardScreenPanel.add(title, "span 4," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",shrink 200,aligny top,align center,h 100lp!,wrap");
 
     // Provide a basic empty content panel (allows lazy initialisation later)
     contentPanel = Panels.newDetailBackgroundPanel(backgroundIcon);
