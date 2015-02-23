@@ -10,7 +10,6 @@ import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.WalletConfiguration;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
@@ -30,7 +29,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
-import java.util.Hashtable;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -48,9 +46,6 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
 
   // Panel specific components
   private JSlider feePerKBSlider;
-  private static final int RESOLUTION = 100;
-
-  private JLabel resultLabel;
 
   private ModelAndView<DisplayAmountModel, DisplayAmountView> transactionFeeDisplayAmountMaV;
 
@@ -87,29 +82,7 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     ));
 
     WalletConfiguration walletConfiguration = Configurations.currentConfiguration.getWallet().deepCopy();
-
-    // Resolution is RESOLUTION satoshis per tick
-    int minimumPosition = (int)FeeService.MINIMUM_FEE_PER_KB.longValue()/RESOLUTION;
-    int defaultPosition = (int)FeeService.DEFAULT_FEE_PER_KB.longValue()/RESOLUTION;
-    int maximumPosition = (int)FeeService.MAXIMUM_FEE_PER_KB.longValue()/RESOLUTION;
-
-    // Make sure feePerKB is normalised first so that it will be in range of the slider
-    int currentPosition = (int)FeeService.normaliseRawFeePerKB(walletConfiguration.getFeePerKB()).longValue()/RESOLUTION;
-    feePerKBSlider = new JSlider(minimumPosition, maximumPosition,
-            currentPosition);
-    feePerKBSlider.setMajorTickSpacing(10);
-    feePerKBSlider.setMinorTickSpacing(2);
-    feePerKBSlider.setPaintTicks(true);
-
-    // Create the label table
-    Hashtable<Integer, JComponent> labelTable = new Hashtable<>();
-    labelTable.put( minimumPosition, new JLabel(Languages.safeText(MessageKey.LOWER)));
-    labelTable.put( defaultPosition, new JLabel(Languages.toCapitalCase(Languages.safeText(MessageKey.DEFAULT))));
-    labelTable.put( maximumPosition, new JLabel(Languages.safeText(MessageKey.HIGHER)));
-    feePerKBSlider.setLabelTable(labelTable);
-    feePerKBSlider.setPaintLabels(true);
-
-    feePerKBSlider.addChangeListener(this);
+    feePerKBSlider = Sliders.newAdjustTransactionFeeSlider(this, walletConfiguration.getFeePerKB());
 
     transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(
                 DisplayAmountStyle.PLAIN,
@@ -123,36 +96,41 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     contentPanel.add(Labels.newAdjustTransactionFee(), "shrink");
     contentPanel.add(feePerKBSlider, "growx,shrinky,width min:250:,wrap");
 
-    resultLabel = Labels.newBlankLabel();
-    resultLabel.setText(Languages.safeText(MessageKey.TRANSACTION_FEE_CHOSEN));
-    contentPanel.add(resultLabel, "shrink");
+    contentPanel.add(Labels.newLabel(MessageKey.TRANSACTION_FEE_CHOSEN), "shrink");
     contentPanel.add(transactionFeeAmountViewPanel, "growx,shrinky,push,wrap");
     contentPanel.add(Labels.newBlankLabel(), "span 2, push, wrap"); // spacer
 
     contentPanel.add(Labels.newExplainClientFee1(FeeService.FEE_PER_SEND), "span 2, wrap");
     contentPanel.add(Labels.newExplainClientFee2(), "span 2, wrap");
-    Action donateAction = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          setChosenFee();
-          // Set the new feePerKB
-          Configurations.currentConfiguration.getWallet().setFeePerKB(configuration.getWallet().getFeePerKB());
 
-          Panels.hideLightBoxIfPresent();
-
-          SendBitcoinParameter donateParameter = new SendBitcoinParameter(Optional.of(new BitcoinURI("bitcoin:" + FeeService.DONATION_ADDRESS + "?amount=" + FeeService.DEFAULT_DONATION_AMOUNT)));
-          Panels.showLightBox(Wizards.newSendBitcoinWizard(donateParameter).getWizardScreenHolder());
-        } catch (BitcoinURIParseException pe) {
-          // Should not happen
-          log.error(pe.getMessage());
-        }
-      }
-    };
     contentPanel.add(Labels.newBlankLabel(), "");
-    contentPanel.add(Buttons.newDonateNowButton(donateAction), "wrap");
+    contentPanel.add(Buttons.newDonateNowButton(createDonateNowAction()), "wrap");
     contentPanel.add(Labels.newBlankLabel(), "span 2, push, wrap"); // spacer
     setChosenFee();
+  }
+
+  /**
+   * @return Action to process the 'donate now' button press
+   */
+  private Action createDonateNowAction() {
+    return new AbstractAction() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            try {
+              setChosenFee();
+              // Set the new feePerKB
+              Configurations.currentConfiguration.getWallet().setFeePerKB(configuration.getWallet().getFeePerKB());
+
+              Panels.hideLightBoxIfPresent();
+
+              SendBitcoinParameter donateParameter = new SendBitcoinParameter(Optional.of(new BitcoinURI("bitcoin:" + FeeService.DONATION_ADDRESS + "?amount=" + FeeService.DEFAULT_DONATION_AMOUNT)));
+              Panels.showLightBox(Wizards.newSendBitcoinWizard(donateParameter).getWizardScreenHolder());
+            } catch (BitcoinURIParseException pe) {
+              // Should not happen
+              log.error(pe.getMessage());
+            }
+          }
+        };
   }
 
   @Override
@@ -196,11 +174,11 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
   @Override
   public void stateChanged(ChangeEvent e) {
     setChosenFee();
-    getPanelModel().get().getConfiguration().getWallet().setFeePerKB(feePerKBSlider.getValue() * RESOLUTION);
+    getPanelModel().get().getConfiguration().getWallet().setFeePerKB(feePerKBSlider.getValue() * Sliders.RESOLUTION);
   }
 
   private void setChosenFee() {
-    transactionFeeDisplayAmountMaV.getModel().setCoinAmount(Coin.valueOf(feePerKBSlider.getValue() * RESOLUTION));
+    transactionFeeDisplayAmountMaV.getModel().setCoinAmount(Coin.valueOf(feePerKBSlider.getValue() * Sliders.RESOLUTION));
     transactionFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
   }
