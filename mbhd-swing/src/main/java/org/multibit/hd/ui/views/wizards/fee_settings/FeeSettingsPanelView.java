@@ -82,8 +82,8 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
 
     contentPanel.setLayout(new MigLayout(
             Panels.migXYLayout(),
-            "[][]", // Column constraints
-            "[]5[]10[]5[]20[]5[]" // Row constraints
+            "[]20[]", // Column constraints
+            "[]2[]8[]2[]12[]2[]" // Row constraints
     ));
 
     WalletConfiguration walletConfiguration = Configurations.currentConfiguration.getWallet().deepCopy();
@@ -132,9 +132,11 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     Action donateAction = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        log.debug("Saw action event {}", e);
-
         try {
+          setChosenFee();
+          // Set the new feePerKB
+          Configurations.currentConfiguration.getWallet().setFeePerKB(configuration.getWallet().getFeePerKB());
+          
           Panels.hideLightBoxIfPresent();
 
           SendBitcoinParameter donateParameter = new SendBitcoinParameter(Optional.of(new BitcoinURI("bitcoin:" + FeeService.DONATION_ADDRESS + "?amount=" + FeeService.DEFAULT_DONATION_AMOUNT)));
