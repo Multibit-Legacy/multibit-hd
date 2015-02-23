@@ -124,7 +124,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
 
     List<WalletSummary> wallets = WalletManager.getSoftWalletSummaries(localeOptional);
 
-    selectWalletMaV.getModel().setWalletList(wallets);
+    selectWalletMaV.getModel().setWalletList(wallets, WalletManager.INSTANCE.getCurrentWalletSummary());
     selectWalletMaV.getView().setEnabled(true);
 
     return true;

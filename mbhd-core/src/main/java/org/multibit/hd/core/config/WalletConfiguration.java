@@ -43,7 +43,7 @@ public class WalletConfiguration {
 
   /**
    * The current soft wallet root
-   * @param lastSoftWalletRoot
+   * @param lastSoftWalletRoot the last soft wallet root
    */
   public void setLastSoftWalletRoot(String lastSoftWalletRoot) {
     this.lastSoftWalletRoot = lastSoftWalletRoot;

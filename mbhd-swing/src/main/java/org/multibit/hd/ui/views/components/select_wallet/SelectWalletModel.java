@@ -56,13 +56,24 @@ public class SelectWalletModel implements Model<WalletSummary> {
     return walletList;
   }
 
-  public void setWalletList(List<WalletSummary> walletList) {
+  public void setWalletList(List<WalletSummary> walletList, Optional<WalletSummary> currentWalletSummaryOptional) {
 
     this.walletList = walletList;
 
     // Initialise the selected value to the first wallet summary
     if (walletList != null && !walletList.isEmpty()) {
+      // By default select the first wallet in the list
       selectedWallet = walletList.get(0);
+
+      if (currentWalletSummaryOptional.isPresent()) {
+        // Select the current wallet summary from the list
+        for (WalletSummary loopWalletSummary : walletList) {
+          if (loopWalletSummary.getWalletId().equals(currentWalletSummaryOptional.get().getWalletId())) {
+            selectedWallet = loopWalletSummary;
+            break;
+          }
+        }
+      }
     }
   }
 }
