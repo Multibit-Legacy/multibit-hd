@@ -20,6 +20,7 @@ import java.net.URI;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+@Ignore
 public class PaymentProtocolServiceTest {
 
   private static final Logger log = LoggerFactory.getLogger(PaymentProtocolServiceTest.class);
