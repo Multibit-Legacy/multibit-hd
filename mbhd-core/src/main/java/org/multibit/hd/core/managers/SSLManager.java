@@ -40,7 +40,7 @@ public enum SSLManager {
    *
    * For convenience we use the same as the default JVM
    */
-  public static final char[] PASSPHRASE = "changeit".toCharArray();
+  public static final String PASSPHRASE = "changeit";
 
   /**
    * @param httpsUrl The HTTPS URL from which to get the data
@@ -141,7 +141,7 @@ public enum SSLManager {
           if (host.contains(":")) {
             String[] endpoint = host.split(":");
             log.info("Opening connection to '{}'...", host);
-            socket = (SSLSocket) factory.createSocket(endpoint[0], Integer.valueOf(endpoint[1]));
+            socket = (SSLSocket) factory.createSocket(endpoint[0], Integer.parseInt(endpoint[1]));
           } else {
             log.info("Opening default connection to '{}:443'...", host);
             socket = (SSLSocket) factory.createSocket(host, 443);
@@ -216,10 +216,10 @@ public enum SSLManager {
     // Load the key store (could be empty)
     final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
     try (InputStream in = new FileInputStream(appCacertsFile)) {
-      ks.load(in, PASSPHRASE);
+      ks.load(in, PASSPHRASE.toCharArray());
     } catch (EOFException e) {
       // Key store is empty so load from null
-      ks.load(null, PASSPHRASE);
+      ks.load(null, PASSPHRASE.toCharArray());
     }
 
     return ks;
@@ -265,7 +265,7 @@ public enum SSLManager {
       log.debug("->   : MD5 '{}'", toHexString(md5.digest()));
       log.debug("->   : Alias '{}'", alias);
       try (OutputStream out = new FileOutputStream(appCacertsFile)) {
-        ks.store(out, PASSPHRASE);
+        ks.store(out, PASSPHRASE.toCharArray());
       }
 
     }
