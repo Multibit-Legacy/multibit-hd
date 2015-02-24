@@ -21,6 +21,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.util.List;
@@ -35,6 +37,8 @@ import java.util.Locale;
  * @since 0.0.1
  */
 public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<CredentialsWizardModel, CredentialsEnterPasswordPanelModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(CredentialsEnterPasswordPanelView.class);
 
   // Panel specific components
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
@@ -91,7 +95,6 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
     contentPanel.add(selectWalletMaV.getView().newComponentPanel(), "wrap");
 
     contentPanel.add(Labels.newRestoreWalletNote(), "wrap");
-
   }
 
   @Override

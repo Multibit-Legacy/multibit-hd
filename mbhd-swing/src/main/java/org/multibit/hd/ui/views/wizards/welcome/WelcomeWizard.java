@@ -28,7 +28,7 @@ import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
 public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardModel> {
 
   public WelcomeWizard(WelcomeWizardModel model, boolean isExiting) {
-    super(model, isExiting, Optional.absent());
+    super(model, isExiting, Optional.absent(), false);
   }
 
   @Override

@@ -1,7 +1,9 @@
-package org.multibit.hd.ui.views.wizards.appearance_settings;
+package org.multibit.hd.ui.views.wizards.payment_settings;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.blockexplorer.BlockExplorer;
+import org.multibit.hd.core.blockexplorer.BlockExplorers;
 import org.multibit.hd.core.config.AppearanceConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
@@ -12,7 +14,6 @@ import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
-import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
@@ -24,26 +25,25 @@ import java.awt.event.ActionListener;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Appearance settings: switch theme</li>
+ * <li>Payment settings: switch block explorer</li>
  * </ul>
  *
  * @since 0.0.1
  *
  */
 
-public class AppearanceSettingsPanelView extends AbstractWizardPanelView<AppearanceSettingsWizardModel, AppearanceSettingsPanelModel> implements ActionListener {
+public class PaymentSettingsPanelView extends AbstractWizardPanelView<PaymentSettingsWizardModel, PaymentSettingsPanelModel> implements ActionListener {
 
   // Panel specific components
-  private JComboBox<String> themesComboBox;
-  private JComboBox<String> showBalanceComboBox;
+  private JComboBox<String> blockExplorerComboBox;
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name
    */
-  public AppearanceSettingsPanelView(AbstractWizard<AppearanceSettingsWizardModel> wizard, String panelName) {
+  public PaymentSettingsPanelView(AbstractWizard<PaymentSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.APPEARANCE_SETTINGS_TITLE, AwesomeIcon.DESKTOP);
+    super(wizard, panelName, MessageKey.PAYMENT_SETTINGS_TITLE, AwesomeIcon.MONEY);
 
   }
 
@@ -54,7 +54,7 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
     // Configure the panel model
-    setPanelModel(new AppearanceSettingsPanelModel(
+    setPanelModel(new PaymentSettingsPanelModel(
       getPanelName(),
       configuration
     ));
@@ -72,21 +72,17 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
 
     AppearanceConfiguration appearanceConfiguration = Configurations.currentConfiguration.getAppearance().deepCopy();
 
-    themesComboBox = ComboBoxes.newThemesComboBox(this);
-    showBalanceComboBox = ComboBoxes.newShowBalanceYesNoComboBox(this, appearanceConfiguration.isShowBalance());
+    blockExplorerComboBox = ComboBoxes.newBlockExplorerComboBox(this, appearanceConfiguration.getBlockExplorerId());
 
-    contentPanel.add(Labels.newSelectTheme(), "shrink");
-    contentPanel.add(themesComboBox, "growx,shrinky,width min:250:,push,wrap");
-
-    contentPanel.add(Labels.newShowBalance(), "shrink");
-    contentPanel.add(showBalanceComboBox, "growx,shrinky,width min:250:,push,wrap");
+    contentPanel.add(Labels.newBlockExplorer(), "shrink");
+    contentPanel.add(blockExplorerComboBox, "growx,shrinky,width min:250:,push,wrap");
 
     contentPanel.add(Labels.newBlankLabel(), "grow,span 2,push,wrap"); // Fill out the remainder
 
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<AppearanceSettingsWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<PaymentSettingsWizardModel> wizard) {
 
     PanelDecorator.addCancelApply(this, wizard);
 
@@ -107,7 +103,7 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
       @Override
       public void run() {
 
-        themesComboBox.requestFocusInWindow();
+        blockExplorerComboBox.requestFocusInWindow();
 
       }
     });
@@ -146,32 +142,22 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
 
     JComboBox source = (JComboBox) e.getSource();
 
-    // Themes
-    if (ComboBoxes.THEMES_COMMAND.equalsIgnoreCase(e.getActionCommand())) {
+    // Block explorer
+    if (ComboBoxes.BLOCK_EXPLORER_COMMAND.equalsIgnoreCase(e.getActionCommand())) {
 
-      String themeName = ThemeKey.values()[source.getSelectedIndex()].name();
+      int blockExplorerIndex = source.getSelectedIndex();
 
-      Configuration configuration = getWizardModel().getConfiguration();
-      configuration.getAppearance().setCurrentTheme(themeName);
+      if (0 <= blockExplorerIndex && blockExplorerIndex < BlockExplorers.getAll().size()) {
+        BlockExplorer blockExplorer = BlockExplorers.getAll().get(blockExplorerIndex);
 
-      // Update the model
-      getWizardModel().setConfiguration(configuration);
+        Configuration configuration = getWizardModel().getConfiguration();
+        configuration.getAppearance().setBlockExplorerId(blockExplorer.getId());
 
-    }
-
-    // Show balance
-    if (ComboBoxes.SHOW_BALANCE_COMMAND.equalsIgnoreCase(e.getActionCommand())) {
-
-      boolean showBalance = source.getSelectedIndex() == 0;
-
-      Configuration configuration = getWizardModel().getConfiguration();
-      configuration.getAppearance().setShowBalance(showBalance);
-
-      // Update the model
-      getWizardModel().setConfiguration(configuration);
+        // Update the model
+        getWizardModel().setConfiguration(configuration);
+      }
 
     }
-
   }
 
 }

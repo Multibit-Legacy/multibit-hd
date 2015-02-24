@@ -72,11 +72,22 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   private final static ListeningExecutorService wizardHideExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-hide");
 
   /**
+    * @param wizardModel     The overall wizard data model containing the aggregate information of all components in the wizard
+    * @param isExiting       True if the exit button should trigger an application shutdown
+    * @param wizardParameter An optional parameter that can be referenced during construction
+    */
+   protected AbstractWizard(M wizardModel, boolean isExiting, Optional wizardParameter) {
+     this(wizardModel, isExiting, wizardParameter, true);
+   }
+
+
+  /**
    * @param wizardModel     The overall wizard data model containing the aggregate information of all components in the wizard
    * @param isExiting       True if the exit button should trigger an application shutdown
    * @param wizardParameter An optional parameter that can be referenced during construction
+   * @param escapeIsCancel   If true, ESC cancels the wizard, if false, it does nothing
    */
-  protected AbstractWizard(M wizardModel, boolean isExiting, Optional wizardParameter) {
+  protected AbstractWizard(M wizardModel, boolean isExiting, Optional wizardParameter, boolean escapeIsCancel) {
 
     Preconditions.checkNotNull(wizardModel, "'model' must be present");
 
@@ -90,9 +101,11 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     ViewEvents.subscribe(this);
     CoreEvents.subscribe(this);
 
-    // Always bind the ESC key to a Cancel event (escape to safety)
-    wizardScreenHolder.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "quit");
-    wizardScreenHolder.getActionMap().put("quit", getCancelAction());
+    // Optionally bind the ESC key to a Cancel event (escape to safety)
+    if (escapeIsCancel) {
+      wizardScreenHolder.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "quit");
+      wizardScreenHolder.getActionMap().put("quit", getCancelAction());
+    }
 
     // TODO Bind the ENTER key to a Next/Finish/Apply event to speed up data entry through keyboard
     //wizardPanel.getInputMap(JPanel.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "next");

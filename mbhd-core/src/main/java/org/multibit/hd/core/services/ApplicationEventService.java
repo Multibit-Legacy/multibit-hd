@@ -137,7 +137,7 @@ public class ApplicationEventService extends AbstractService {
    */
   @Subscribe
   public void onBitcoinNetworkChangedEvent(BitcoinNetworkChangedEvent event) {
-    // Do not remember peer count notifications (RAGStatus of empty
+    // Do not remember peer count notifications (RAGStatus of empty)
     if (!RAGStatus.EMPTY.equals(event.getSummary().getSeverity())) {
       latestBitcoinNetworkChangedEvent = Optional.of(event);
     }

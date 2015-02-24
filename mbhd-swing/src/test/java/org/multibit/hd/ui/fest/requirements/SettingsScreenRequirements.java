@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.sidebar.settings.ShowSettingsScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.settings.appearance.ShowThenCancelAppearanceUseCase;
-import org.multibit.hd.ui.fest.use_cases.sidebar.settings.appearance.VerifyAppearanceBlockExplorerUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.settings.appearance.VerifyAppearanceShowBalanceUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.settings.appearance.VerifyAppearanceThemeUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.settings.exchange.ShowThenCancelExchangeUseCase;
@@ -56,7 +55,6 @@ public class SettingsScreenRequirements {
     new VerifyExchangeNoneUseCase(window).execute(parameters);
 
     // Appearance
-    new VerifyAppearanceBlockExplorerUseCase(window).execute(parameters);
     new VerifyAppearanceThemeUseCase(window).execute(parameters);
     new VerifyAppearanceShowBalanceUseCase(window).execute(parameters);
 

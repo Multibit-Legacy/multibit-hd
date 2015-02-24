@@ -24,7 +24,7 @@ public class CredentialsWizard extends AbstractHardwareWalletWizard<CredentialsW
   private static final Logger log = LoggerFactory.getLogger(CredentialsWizard.class);
 
   public CredentialsWizard(CredentialsWizardModel model, boolean isExiting) {
-    super(model, isExiting, Optional.absent());
+    super(model, isExiting, Optional.absent(), false);
     log.debug("Created CredentialsWizard: {}",this);
   }
 

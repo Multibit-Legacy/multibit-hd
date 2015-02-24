@@ -31,12 +31,22 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
    * @param wizardParameter An optional parameter that can be referenced during construction
    */
   protected AbstractHardwareWalletWizard(M wizardModel, boolean isExiting, Optional wizardParameter) {
-    super(wizardModel, isExiting, wizardParameter);
-
-    // All hardware wallet wizards can receive hardware wallet events
-    HardwareWalletEvents.subscribe(this);
-
+    this(wizardModel, isExiting, wizardParameter, true);
   }
+
+  /**
+     * @param wizardModel     The overall wizard data model containing the aggregate information of all components in the wizard
+     * @param isExiting       True if the exit button should trigger an application shutdown
+     * @param wizardParameter An optional parameter that can be referenced during construction
+     * @param escapeIsCancel  A press of the ESC key cancels the wizard
+     */
+    protected AbstractHardwareWalletWizard(M wizardModel, boolean isExiting, Optional wizardParameter, boolean escapeIsCancel) {
+      super(wizardModel, isExiting, wizardParameter, escapeIsCancel);
+
+      // All hardware wallet wizards can receive hardware wallet events
+      HardwareWalletEvents.subscribe(this);
+
+    }
 
   /**
    * Unregister from hardware wallet events - called during the hide process

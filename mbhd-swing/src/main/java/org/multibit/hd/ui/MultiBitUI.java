@@ -101,7 +101,7 @@ public interface MultiBitUI {
   /**
    * Balance header large font
    */
-  float BALANCE_HEADER_LARGE_FONT_SIZE = 36.0f;
+  float BALANCE_HEADER_LARGE_FONT_SIZE = 34.0f;
   /**
    * Balance header normal font (decimals etc)
    */
@@ -145,7 +145,7 @@ public interface MultiBitUI {
   /**
    * Huge icon size (e.g. detail panel background)
    */
-  int HUGE_ICON_SIZE = 300;
+  int HUGE_ICON_SIZE = 270;
   /**
    * Large icon size (e.g. Gravatars)
    */

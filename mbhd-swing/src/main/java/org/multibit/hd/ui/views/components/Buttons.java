@@ -1188,7 +1188,27 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @param festName
+   * @return A new "Payment settings" wizard button with icon
+   */
+  public static JButton newShowPaymentSettingsWizardButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_PAYMENT_SETTINGS_WIZARD, MessageKey.SHOW_PAYMENT_SETTINGS_WIZARD_TOOLTIP);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.MONEY,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @param festName The FEST name
    * @return A new "PIN matrix" button with icon
    */
   public static JButton newPinMatixButton(Action action, String festName) {

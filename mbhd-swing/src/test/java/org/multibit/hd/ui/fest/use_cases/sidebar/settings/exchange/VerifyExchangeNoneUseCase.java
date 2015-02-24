@@ -83,7 +83,7 @@ public class VerifyExchangeNoneUseCase extends AbstractFestUseCase {
       .selectItem(0);
 
     // Allow time for currency to verify (can be slow)
-    pauseForViewReset();
+    pauseForPreparationDisplay();
 
     // Click Apply
     window

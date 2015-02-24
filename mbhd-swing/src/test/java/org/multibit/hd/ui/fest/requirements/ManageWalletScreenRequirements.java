@@ -9,6 +9,8 @@ import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.change_password.V
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.edit_wallet.ShowThenCancelEditWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.empty_wallet.ShowThenCancelEmptyWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.history.*;
+import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.payment_settings.ShowThenCancelPaymentSettingsUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.payment_settings.VerifyPaymentSettingsBlockExplorerUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.repair_wallet.ShowThenCancelRepairWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.wallet_details.ShowThenCancelWalletDetailsUseCase;
 
@@ -34,35 +36,26 @@ public class ManageWalletScreenRequirements {
 
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
-    // Show then cancel the "edit wallet" wizard
+    // Exercise the basic settings by showing and cancelling
     new ShowThenCancelEditWalletUseCase(window).execute(parameters);
-
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-
-    // Show then cancel the "wallet details" wizard
     new ShowThenCancelWalletDetailsUseCase(window).execute(parameters);
-
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     if (CoreServices.getOrCreateBitcoinNetworkService().isStartedOk()) {
       // Show then cancel the "empty wallet" wizard
       new ShowThenCancelEmptyWalletUseCase(window).execute(parameters);
 
-      Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
     }
-
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Show then cancel the "repair wallet" wizard
     // Verifying the repair will take too long
     new ShowThenCancelRepairWalletUseCase(window).execute(parameters);
+    new ShowThenCancelPaymentSettingsUseCase(window).execute(parameters);
 
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+    // Payment settings
+    new VerifyPaymentSettingsBlockExplorerUseCase(window).execute(parameters);
 
-    // Verify change password
+    // Change password
     new VerifyChangePasswordUseCase(window).execute(parameters);
-
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Verify the "history" screen change
     verifyHistoryScreen(window, parameters);

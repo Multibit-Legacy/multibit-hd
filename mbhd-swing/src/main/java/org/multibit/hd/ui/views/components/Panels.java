@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.managers.WalletManager;
@@ -33,6 +32,7 @@ import java.util.Locale;
  *
  * @since 0.0.1
  */
+
 public class Panels {
 
   private static final Logger log = LoggerFactory.getLogger(Panels.class);
@@ -40,7 +40,10 @@ public class Panels {
   /**
    * A global reference to the application frame
    */
-  @SuppressFBWarnings({"MS_CANNOT_BE_FINAL"})
+  @edu.umd.cs.findbugs.annotations.SuppressWarnings({
+    "MS_SHOULD_BE_FINAL",
+    "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"
+  })
   public static JFrame applicationFrame;
 
   private static Optional<LightBoxPanel> lightBoxPanel = Optional.absent();
