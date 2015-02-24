@@ -164,17 +164,18 @@ public class LightBoxPanel extends JPanel {
     // Reposition the center panel on the fly
     calculatePosition();
 
-    Graphics2D g = (Graphics2D) graphics;
+    if (graphics instanceof Graphics2D) {
+      Graphics2D g = (Graphics2D) graphics;
 
-    // Always use black even for light themes
-    g.setPaint(Color.BLACK);
+      // Always use black even for light themes
+      g.setPaint(Color.BLACK);
 
-    // Set the opacity
-    g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+      // Set the opacity
+      g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
 
-    // Create the darkened border rectangle (will appear beneath the panel layer)
-    g.fillRect(0, 0, Panels.applicationFrame.getWidth(), Panels.applicationFrame.getHeight());
-
+      // Create the darkened border rectangle (will appear beneath the panel layer)
+      g.fillRect(0, 0, Panels.applicationFrame.getWidth(), Panels.applicationFrame.getHeight());
+    }
   }
 
   /**

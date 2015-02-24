@@ -33,6 +33,7 @@ import java.util.Locale;
  *
  * @since 0.0.1
  */
+@SuppressFBWarnings({"MS_SHOULD_BE_FINAL"})
 public class Panels {
 
   private static final Logger log = LoggerFactory.getLogger(Panels.class);
@@ -40,7 +41,6 @@ public class Panels {
   /**
    * A global reference to the application frame
    */
-  @SuppressFBWarnings({"MS_CANNOT_BE_FINAL"})
   public static JFrame applicationFrame;
 
   private static Optional<LightBoxPanel> lightBoxPanel = Optional.absent();
