@@ -49,11 +49,9 @@ public class PaymentProtocolServiceTest {
     InstallationManager.unrestricted = true;
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
-    try {
-      server = new PaymentProtocolHttpsServer();
-    } catch (IOException e) {
-      log.error("Unable to start the Payment Protocol HTTPS server");
-    }
+    server = new PaymentProtocolHttpsServer();
+
+    assertThat(server.start()).isTrue();
 
   }
 

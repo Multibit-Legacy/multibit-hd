@@ -8,10 +8,32 @@ import org.multibit.hd.core.files.SecureFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.*;
-import java.io.*;
-import java.net.*;
-import java.security.*;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -104,16 +126,8 @@ public enum SSLManager {
         return;
       }
 
-      // Build the trust manager factory
-      final TrustManagerFactory tmf = TrustManagerFactory
-        .getInstance(
-          TrustManagerFactory
-            .getDefaultAlgorithm());
-      tmf.init(ks);
-
-      // Use X509
-      final X509TrustManager defaultTrustManager = (X509TrustManager) tmf.getTrustManagers()[0];
-      final SavingTrustManager tm = new SavingTrustManager(defaultTrustManager);
+      // Build the saving trust manager so we have a place to put our trusted certificates
+      final SavingTrustManager tm = getSavingTrustManager(ks);
 
       // Create an SSL context based on TLS
       final SSLContext context = SSLContext.getInstance("TLS");
@@ -178,7 +192,58 @@ public enum SSLManager {
 
   }
 
+  /**
+   * @param appCacertsFile The app CA certs file for the trust store
+   *
+   * @return A key store loaded from the CA certs file
+   *
+   * @throws KeyStoreException
+   * @throws IOException
+   * @throws NoSuchAlgorithmException
+   * @throws CertificateException
+   */
+  public KeyStore getKeyStore(File appCacertsFile) throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
+
+    // Load the key store (could be empty)
+    final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+    try (InputStream in = new FileInputStream(appCacertsFile)) {
+      ks.load(in, PASSPHRASE.toCharArray());
+    } catch (EOFException e) {
+      // Key store is empty so load from null
+      ks.load(null, PASSPHRASE.toCharArray());
+    }
+
+    return ks;
+
+  }
+
+  /**
+   * @param ks The keystore
+   *
+   * @return A saving trust manager so that certificates can be stored
+   *
+   * @throws NoSuchAlgorithmException
+   * @throws KeyStoreException
+   */
+  private SavingTrustManager getSavingTrustManager(KeyStore ks) throws NoSuchAlgorithmException, KeyStoreException {
+
+    final TrustManagerFactory tmf = TrustManagerFactory
+      .getInstance(
+        TrustManagerFactory
+          .getDefaultAlgorithm());
+    tmf.init(ks);
+
+    // Use X509
+    final X509TrustManager defaultTrustManager = (X509TrustManager) tmf.getTrustManagers()[0];
+
+    return new SavingTrustManager(defaultTrustManager);
+  }
+
+  /**
+   * @return The default list of hosts requiring entry to the trust store
+   */
   private String[] populateHosts() {
+
     String[] hosts = new String[ExchangeKey.values().length + 1];
     int i = 0;
     hosts[i] = "multibit.org";
@@ -199,31 +264,6 @@ public enum SSLManager {
       }
     }
     return hosts;
-  }
-
-  /**
-   * @param appCacertsFile The app CA certs file for the trust store
-   *
-   * @return A key store loaded from the CA certs file
-   *
-   * @throws KeyStoreException
-   * @throws IOException
-   * @throws NoSuchAlgorithmException
-   * @throws CertificateException
-   */
-  private KeyStore getKeyStore(File appCacertsFile) throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
-
-    // Load the key store (could be empty)
-    final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-    try (InputStream in = new FileInputStream(appCacertsFile)) {
-      ks.load(in, PASSPHRASE.toCharArray());
-    } catch (EOFException e) {
-      // Key store is empty so load from null
-      ks.load(null, PASSPHRASE.toCharArray());
-    }
-
-    return ks;
-
   }
 
   /**

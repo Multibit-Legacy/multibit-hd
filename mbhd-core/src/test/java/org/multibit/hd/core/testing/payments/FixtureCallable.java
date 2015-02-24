@@ -9,6 +9,7 @@ import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
+import java.util.concurrent.Callable;
 
 /**
  * <p>Runnable to provide the following to Payment Protocol server:</p>
@@ -19,9 +20,9 @@ import java.net.ServerSocket;
  * @since 0.0.7
  *  
  */
-public class FixtureRunnable implements Runnable {
+public class FixtureCallable implements Callable<Boolean> {
 
-  private static final Logger log = LoggerFactory.getLogger(FixtureRunnable.class);
+  private static final Logger log = LoggerFactory.getLogger(FixtureCallable.class);
 
   private final ServerSocket serverSocket;
   private String fixture;
@@ -30,7 +31,7 @@ public class FixtureRunnable implements Runnable {
    * @param serverSocket The server socket accept client connections over SSL
    * @param fixture      The classpath reference to the fixture to serve as a byte[]
    */
-  public FixtureRunnable(ServerSocket serverSocket, String fixture) {
+  public FixtureCallable(ServerSocket serverSocket, String fixture) {
 
     this.serverSocket = serverSocket;
     this.fixture = fixture;
@@ -38,10 +39,11 @@ public class FixtureRunnable implements Runnable {
   }
 
   @Override
-  public void run() {
+  public Boolean call() {
 
     if (serverSocket.isClosed()) {
       log.warn("Server socket is closed. Aborting.");
+      return false;
     } else {
 
       try {
@@ -49,6 +51,7 @@ public class FixtureRunnable implements Runnable {
         // Wait for a client connection
         log.debug("Await client connection to SSLSocket");
         SSLSocket socket = (SSLSocket) serverSocket.accept();
+        socket.startHandshake();
 
         // Serve the payment request protobuf
         log.debug("Serving fixture: {}", fixture);
@@ -60,8 +63,10 @@ public class FixtureRunnable implements Runnable {
         socket.getOutputStream().flush();
         socket.close();
 
+        return true;
+
       } catch (IOException e) {
-        log.error("Unexpected IO exception", e);
+        throw new IllegalStateException("Unexpected IOException", e);
       }
 
     }
