@@ -6,7 +6,6 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
-import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
@@ -45,8 +44,6 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
 
   private JButton showEmptyWalletButton;
 
-  private Optional<BitcoinNetworkChangedEvent> unprocessedBitcoinNetworkChangedEvent = Optional.absent();
-
   /**
    * @param panelModel The model backing this panel view
    * @param screen     The screen to filter events from components
@@ -63,7 +60,6 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
 
   @Override
   public JPanel initialiseScreenViewPanel() {
-
     MigLayout layout = new MigLayout(
       Panels.migXYDetailLayout(),
       "6[]6[]6[]6[]6", // Column constraints
@@ -96,22 +92,27 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
       contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
     }
 
-    // Check for any Bitcoin network events that may have occurred before this screen
-    // is initialised
-    unprocessedBitcoinNetworkChangedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
-
     setInitialised(true);
 
     return contentPanel;
   }
 
   @Override
-  public void afterShow() {
+   public boolean beforeShow() {
+     // Ensure the empty wallet button is kept up to date
+     Optional<BitcoinNetworkChangedEvent> changedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
+     if (changedEvent.isPresent()) {
+       updateEmptyButton(changedEvent.get());
+     }
+    return true;
+  }
 
-    // Ensure any unprocessed bitcoin network change events are dealt with
-    if (unprocessedBitcoinNetworkChangedEvent.isPresent()) {
-      updateEmptyButton(unprocessedBitcoinNetworkChangedEvent.get());
-      unprocessedBitcoinNetworkChangedEvent = Optional.absent();
+  @Override
+  public void afterShow() {
+    // Ensure the empty wallet button is kept up to date
+    Optional<BitcoinNetworkChangedEvent> changedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
+    if (changedEvent.isPresent()) {
+      updateEmptyButton(changedEvent.get());
     }
   }
 
@@ -121,11 +122,6 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
   @Subscribe
   public void onBitcoinNetworkChangeEvent(final BitcoinNetworkChangedEvent event) {
     if (!isInitialised()) {
-      // Remember the last bitcoin change event if the panel is not initialised and it has severity information
-      if (!event.getSummary().getSeverity().equals(RAGStatus.EMPTY)) {
-        unprocessedBitcoinNetworkChangedEvent = Optional.of(event);
-      }
-      log.trace("Not initialised so remembering the the unprocessed Bitcoin network change event " + event.getSummary());
       return;
     }
 
@@ -140,7 +136,6 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
 
     // Keep the UI response to a minimum due to the volume of these events
     updateEmptyButton(event);
-
   }
 
   /**
@@ -264,16 +259,13 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
    * @param event The "Bitcoin network changed" event - one per block downloaded during synchronization
    */
   private void updateEmptyButton(BitcoinNetworkChangedEvent event) {
-
-    boolean currentEnabled = showEmptyWalletButton.isEnabled();
-
     boolean newEnabled;
+    boolean canChange = true;
 
     // NOTE: Show empty wallet is disabled when the network is not available
     // because it is possible that a second wallet is generating transactions using
     // addresses that this one has not displayed yet. This would lead to the same
     // address being used twice.
-    log.trace("Empty button status is " + currentEnabled);
     switch (event.getSummary().getSeverity()) {
       case RED:
         // Enable on RED only if unrestricted (allows FEST tests without a network)
@@ -292,16 +284,18 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
         break;
       case PINK:
       case EMPTY:
-        // Maintain the status quo unless unrestricted
-        newEnabled = currentEnabled || InstallationManager.unrestricted;
+        // Maintain the status quo
+        newEnabled = showEmptyWalletButton.isEnabled();
+        canChange = false;
         break;
       default:
         // Unknown status
         throw new IllegalStateException("Unknown event severity " + event.getSummary().getSeverity());
     }
 
-    // Test for a change in condition
-    if (currentEnabled != newEnabled) {
+    log.debug("BitcoinNetworkChangedEvent = {}, showEmptyWalletButton.isEnabled() = {}, newEnabled = {}, canChange = {}", event, showEmptyWalletButton.isEnabled(), newEnabled, canChange);
+
+    if (canChange) {
       final boolean finalNewEnabled = newEnabled;
 
       SwingUtilities.invokeLater(
@@ -309,12 +303,9 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
           @Override
           public void run() {
             log.debug("Changing button enable state, newEnabled = " + finalNewEnabled);
-
             showEmptyWalletButton.setEnabled(finalNewEnabled);
           }
         });
-
     }
-
   }
 }

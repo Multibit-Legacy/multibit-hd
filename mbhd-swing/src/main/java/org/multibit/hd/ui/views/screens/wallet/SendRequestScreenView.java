@@ -47,7 +47,6 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
   private static final Logger log = LoggerFactory.getLogger(SendRequestScreenView.class);
 
-
   private JButton sendBitcoin;
   private JButton requestBitcoin;
 
@@ -160,7 +159,12 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
   }
 
   @Override
-  public boolean beforeShow() {
+   public boolean beforeShow() {
+     // Ensure the empty wallet button is kept up to date
+     Optional<BitcoinNetworkChangedEvent> changedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
+     if (changedEvent.isPresent()) {
+       updateSendRequestButtons(changedEvent.get());
+     }
     return true;
   }
 
@@ -259,10 +263,8 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
   }
 
   private void updateSendRequestButtons(BitcoinNetworkChangedEvent event) {
-
-    boolean currentEnabled = sendBitcoin.isEnabled();
-
     boolean newEnabled;
+    boolean canChange = true;
 
     // NOTE: Both send and request are disabled when the network is not available
     // because it is possible that a second wallet is generating transactions using
@@ -283,16 +285,16 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
         break;
       case PINK:
       case EMPTY:
-        // Maintain the status quo unless unrestricted
-        newEnabled = currentEnabled || InstallationManager.unrestricted;
+        // Maintain the status quo
+        newEnabled = sendBitcoin.isEnabled();
+        canChange = false;
         break;
       default:
         // Unknown status
         throw new IllegalStateException("Unknown event severity " + event.getSummary().getSeverity());
     }
 
-    // Test for a change in condition
-    if (currentEnabled != newEnabled) {
+    if (canChange) {
       final boolean finalNewEnabled = newEnabled;
 
       SwingUtilities.invokeLater(new Runnable() {

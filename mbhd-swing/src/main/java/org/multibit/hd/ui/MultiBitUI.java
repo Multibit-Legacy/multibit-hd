@@ -145,7 +145,7 @@ public interface MultiBitUI {
   /**
    * Huge icon size (e.g. detail panel background)
    */
-  int HUGE_ICON_SIZE = 300;
+  int HUGE_ICON_SIZE = 270;
   /**
    * Large icon size (e.g. Gravatars)
    */
