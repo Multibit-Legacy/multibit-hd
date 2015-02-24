@@ -506,6 +506,8 @@ public enum MessageKey {
   EMPTY_WALLET_CONFIRM_TITLE("empty_wallet_confirm_title"),
   EMPTY_WALLET_PROGRESS_TITLE("empty_wallet_progress_title"),
 
+  PAYMENT_SETTINGS_TITLE("payment_settings_title"),
+
   // Tools titles
 
   SIGN_MESSAGE_TITLE("sign_message_title"),
@@ -610,6 +612,9 @@ public enum MessageKey {
 
   SHOW_EDIT_WALLET_WIZARD("show_edit_wallet_wizard"),
   SHOW_EDIT_WALLET_WIZARD_TOOLTIP("show_edit_wallet_wizard_tooltip"),
+
+  SHOW_PAYMENT_SETTINGS_WIZARD("show_payment_settings_wizard"),
+  SHOW_PAYMENT_SETTINGS_WIZARD_TOOLTIP("show_payment_settings_wizard_tooltip"),
 
   SHOW_CHANGE_PASSWORD_WIZARD("show_change_password_wizard"),
   SHOW_CHANGE_PASSWORD_WIZARD_TOOLTIP("show_change_password_wizard_tooltip"),

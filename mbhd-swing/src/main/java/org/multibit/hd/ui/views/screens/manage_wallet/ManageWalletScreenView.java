@@ -80,17 +80,18 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
     contentPanel.add(Buttons.newShowWalletDetailsButton(getShowWalletDetailsAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(showEmptyWalletButton, MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     // Repair is in top right for good visibility
-    contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push, wrap");
+    contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
     // Row 2
     contentPanel.add(Buttons.newShowHistoryScreenButton(getShowHistoryAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     WalletType walletType = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType();
 
     if (WalletType.TREZOR_HARD_WALLET.equals(walletType)) {
-      contentPanel.add(Buttons.newShowChangePinButton(getShowChangePinAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
+      contentPanel.add(Buttons.newShowChangePinButton(getShowChangePinAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     } else {
-      contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
+      contentPanel.add(Buttons.newShowChangePasswordButton(getShowChangePasswordAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     }
+    contentPanel.add(Buttons.newShowPaymentSettingsWizardButton(getShowPaymentSettingsAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
     setInitialised(true);
 
@@ -226,6 +227,19 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
       public void actionPerformed(ActionEvent e) {
 
         Panels.showLightBox(Wizards.newEmptyWalletWizard().getWizardScreenHolder());
+      }
+    };
+  }
+
+  /**
+   * @return An action to show the "payment settings" tool
+   */
+  private AbstractAction getShowPaymentSettingsAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        Panels.showLightBox(Wizards.newPaymentSettingsWizard().getWizardScreenHolder());
       }
     };
   }

@@ -54,6 +54,9 @@ import org.multibit.hd.ui.views.wizards.lab_settings.LabSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsState;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizard;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizardModel;
+import org.multibit.hd.ui.views.wizards.payment_settings.PaymentSettingsState;
+import org.multibit.hd.ui.views.wizards.payment_settings.PaymentSettingsWizard;
+import org.multibit.hd.ui.views.wizards.payment_settings.PaymentSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsState;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsWizard;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsWizardModel;
@@ -342,6 +345,20 @@ public class Wizards {
     log.debug("New 'Empty wallet wizard'");
 
     return new EmptyWalletWizard(new EmptyWalletWizardModel(EmptyWalletState.EMPTY_WALLET_ENTER_DETAILS), false);
+
+  }
+
+  /**
+   * @return A new "payment settings" wizard
+   */
+  public static PaymentSettingsWizard newPaymentSettingsWizard() {
+
+    log.debug("New 'Payment wizard'");
+
+    // Ensure we work with a copy of the current configuration in case of cancellation
+    Configuration configuration = Configurations.currentConfiguration.deepCopy();
+
+    return new PaymentSettingsWizard(new PaymentSettingsWizardModel(PaymentSettingsState.PAYMENT_SETTINGS, configuration));
 
   }
 
