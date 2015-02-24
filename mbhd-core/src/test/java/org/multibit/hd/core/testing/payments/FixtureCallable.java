@@ -56,6 +56,21 @@ public class FixtureCallable implements Callable<Boolean> {
         // Serve the payment request protobuf
         log.debug("Serving fixture: {}", fixture);
         InputStream inputStream = PaymentProtocolServiceTest.class.getResourceAsStream(fixture);
+//        log.debug("Initialise the key store containing the private server keys");
+//        BufferedWriter w = new BufferedWriter(new OutputStreamWriter(c.getOutputStream()));
+//        BufferedReader r = new BufferedReader(new InputStreamReader(c.getInputStream()));
+//        String m = r.readLine();
+//        w.write("HTTP/1.0 200 OK");
+//        w.newLine();
+//        w.write("Content-Type: bitcoin/html");
+//        w.newLine();
+//        w.newLine();
+//        w.write("<html><body>Hello world!</body></html>");
+//        w.newLine();
+//        w.flush();
+//        w.close();
+//        r.close();
+//        c.close();
         ByteStreams.copy(inputStream, socket.getOutputStream());
 
         // Release resources

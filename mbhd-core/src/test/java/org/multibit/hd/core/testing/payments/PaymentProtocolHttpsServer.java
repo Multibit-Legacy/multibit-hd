@@ -5,8 +5,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import org.multibit.hd.core.files.SecureFiles;
-import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.hardware.core.concurrent.SafeExecutors;
 import org.slf4j.Logger;
@@ -18,7 +16,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.TrustManagerFactory;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -48,28 +45,17 @@ public class PaymentProtocolHttpsServer {
 
     try {
 
-      final File appCacertsFile = SecureFiles.verifyOrCreateFile(
-        InstallationManager.getOrCreateApplicationDataDirectory(),
-        InstallationManager.CA_CERTS_NAME
-      );
-
-      URL mbhdCacerts = PaymentProtocolHttpsServer.class.getResource("/mbhd-cacerts");
-
-      // Set the client trust store location
-      System.setProperty("javax.net.ssl.trustStore", mbhdCacerts.getFile());
+      log.debug("Initialise the trust store containing the trusted certificates (including localhost:8443)");
+      URL trustStoreUrl = PaymentProtocolHttpsServer.class.getResource("/mbhd-cacerts");
+      System.setProperty("javax.net.ssl.trustStore", trustStoreUrl.getFile());
       System.setProperty("javax.net.ssl.trustStorePassword", SSLManager.PASSPHRASE);
 
       SSLContext sslContext = SSLContext.getInstance("TLS");
 
-      log.debug("Initialise the key store containing the private server keys");
+      log.debug("Initialise the key store containing the private server keys (CN=localhost is required)");
       KeyStore ks = KeyStore.getInstance("JKS");
       InputStream is = PaymentProtocolHttpsServer.class.getResourceAsStream("/localhost.jks");
       ks.load(is, SSLManager.PASSPHRASE.toCharArray());
-
-      // Check for the localhost key
-      if (ks.containsAlias("localhost")) {
-        log.info("Found the 'localhost' alias");
-      }
 
       log.debug("Initialise the key manager factory");
       KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
@@ -91,15 +77,6 @@ public class PaymentProtocolHttpsServer {
       serverSocket.setWantClientAuth(false);
       String[] suites = serverSocket.getSupportedCipherSuites();
       serverSocket.setEnabledCipherSuites(suites);
-
-//      addFixture("/fixtures/payments/test-net-faucet.bitcoinpaymentrequest");
-//
-//      SSLManager.INSTANCE.installCACertificates(
-//        new File("C:\\Workspace\\Java\\GitHub\\multibit-hd\\mbhd-core\\src\\test\\resources"),
-//        "mbhd-cacerts",
-//        new String[]{"localhost:8443"},
-//        true
-//      );
 
       return true;
 
