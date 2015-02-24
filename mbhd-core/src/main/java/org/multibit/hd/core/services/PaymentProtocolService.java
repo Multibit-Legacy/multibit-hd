@@ -6,13 +6,14 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.crypto.TrustStoreLoader;
+import org.bitcoinj.protocols.payments.PaymentProtocol;
 import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.events.ShutdownEvent;
-import org.multibit.hd.core.managers.SSLManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.security.KeyStoreException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -96,60 +98,54 @@ public class PaymentProtocolService extends AbstractService {
 
       // Determine how to obtain the payment request based on the scheme
 
+      final PaymentSession paymentSession;
+
       if (scheme.startsWith("bitcoin")) {
-        // Remote resource serving payment requests indirectly
+        // Remote resource serving payment requests indirectly via BIP72 is supported in Bitcoinj
         final BitcoinURI bitcoinUri = new BitcoinURI(networkParameters, paymentRequestUri.toString());
         // TODO Consider multiple fallback URLs
-//        URL r = new URL(bitcoinUri.getPaymentRequestUrl());
-//        log.debug("Probing '{}' for payment request...", r);
-//        if (r.getProtocol().startsWith("https")) {
-//          // Read the protobuf bytes since HTTPS is not supported in Bitcoinj
-//          byte[] paymentRequestBytes = SSLManager.getContentAsBytes(r);
-//          Protos.PaymentRequest paymentRequest = Protos.PaymentRequest.parseFrom(paymentRequestBytes);
-//          PaymentSession paymentSession = new PaymentSession(paymentRequest, checkPKI, trustStoreLoader);
-//
-//          return PaymentSessionSummary.newPaymentSessionOK(paymentSession);
-//        } else {
-          // Remote resource serving payment requests directly over HTTP is supported in Bitcoinj
-          final PaymentSession paymentSession = PaymentSession
-            .createFromBitcoinUri(bitcoinUri, checkPKI, trustStoreLoader)
-            .get(PAYMENT_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-
-          return PaymentSessionSummary.newPaymentSessionOK(paymentSession);
-
-      } else if (scheme.startsWith("https")) {
-        // Read the protobuf bytes since HTTPS is not supported in Bitcoinj
-        byte[] paymentRequestBytes = SSLManager.getContentAsBytes(paymentRequestUri.toURL());
-        Protos.PaymentRequest paymentRequest = Protos.PaymentRequest.parseFrom(paymentRequestBytes);
-        PaymentSession paymentSession = new PaymentSession(paymentRequest, checkPKI, trustStoreLoader);
-
-        return PaymentSessionSummary.newPaymentSessionOK(paymentSession);
-
-      } else if (scheme.startsWith("http")) {
-        // Remote resource serving payment requests directly over HTTP is supported in Bitcoinj
-        final PaymentSession paymentSession = PaymentSession
-          .createFromUrl(paymentRequestUri.toString(), checkPKI, trustStoreLoader)
+        paymentSession = PaymentSession
+          .createFromBitcoinUri(bitcoinUri, checkPKI, trustStoreLoader)
           .get(PAYMENT_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
-        return PaymentSessionSummary.newPaymentSessionOK(paymentSession);
+      } else if (scheme.startsWith("http")) {
+        // Remote resource serving payment requests directly over HTTP/S is supported in Bitcoinj
+        paymentSession = PaymentSession
+          .createFromUrl(paymentRequestUri.toString(), checkPKI, trustStoreLoader)
+          .get(PAYMENT_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
       } else if (scheme.startsWith("file")) {
         // File based resource
         byte[] paymentRequestBytes = Resources.toByteArray(paymentRequestUri.toURL());
         Protos.PaymentRequest paymentRequest = Protos.PaymentRequest.parseFrom(paymentRequestBytes);
-        PaymentSession paymentSession = new PaymentSession(paymentRequest, checkPKI, trustStoreLoader);
-
-        return PaymentSessionSummary.newPaymentSessionOK(paymentSession);
+        paymentSession = new PaymentSession(paymentRequest, checkPKI, trustStoreLoader);
 
       } else {
         // Assume classpath resource
         InputStream inputStream = PaymentProtocolService.class.getResourceAsStream(paymentRequestUri.toString());
         Protos.PaymentRequest paymentRequest = Protos.PaymentRequest.parseFrom(inputStream);
-        PaymentSession paymentSession = new PaymentSession(paymentRequest, checkPKI, trustStoreLoader);
-
-        return PaymentSessionSummary.newPaymentSessionOK(paymentSession);
+        paymentSession = new PaymentSession(paymentRequest, checkPKI, trustStoreLoader);
 
       }
+
+      // Determine confidence in the payment request
+      if (!checkPKI) {
+        final TrustStoreLoader loader = trustStoreLoader != null ? trustStoreLoader : new TrustStoreLoader.DefaultTrustStoreLoader();
+            try {
+              PaymentProtocol.PkiVerificationData pkiVerificationData = PaymentProtocol.verifyPaymentRequestPki(
+                paymentSession.getPaymentRequest(),
+                loader.getKeyStore()
+              );
+
+            } catch (PaymentProtocolException e) {
+              return PaymentSessionSummary.newPaymentSessionAlmostOK(paymentSession, e);
+            } catch (KeyStoreException e) {
+              return PaymentSessionSummary.newPaymentSessionAlmostOK(paymentSession, e);
+            }
+      }
+
+      // Must be OK to be here
+      return PaymentSessionSummary.newPaymentSessionOK(paymentSession);
 
     } catch (PaymentProtocolException e) {
       // We can be more specific about handling the error

@@ -16,6 +16,11 @@ public enum PaymentSessionStatus {
   OK,
 
   /**
+   * The payment request does not contain a PKI entry (suspicious)
+   */
+  OK_PKI_INVALID,
+
+  /**
    * Payment request returned an error (malformed response etc)
    */
   ERROR,
@@ -24,15 +29,5 @@ public enum PaymentSessionStatus {
    * Server could not be reached (SSL error or unknown host etc)
    */
   DOWN,
-
-  /**
-   * The payment request does not contain a PKI entry (suspicious)
-   */
-  PKI_INVALID,
-
-  /**
-   * The payment request contains an untrusted CA (user must import)
-   */
-  PKI_UNTRUSTED_CA
 
 }
