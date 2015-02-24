@@ -99,7 +99,7 @@ public class PaymentProtocolHttpsServer {
 
     log.debug("Adding fixture: '{}'", fixture);
 
-    ListenableFuture<Boolean> listenableFuture = executorService.submit(new FixtureCallable(serverSocket, fixture));
+    ListenableFuture<Boolean> listenableFuture = executorService.submit(new FixtureCallable(serverSocket, "application/bitcoin-paymentrequest", fixture));
     Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
       @Override
       public void onSuccess(@Nullable Boolean result) {
