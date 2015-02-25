@@ -40,15 +40,19 @@ public class Panels {
   /**
    * A global reference to the application frame
    */
-  @edu.umd.cs.findbugs.annotations.SuppressWarnings({
-    "MS_SHOULD_BE_FINAL",
-    "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"
-  })
-  public static JFrame applicationFrame;
+  private static JFrame applicationFrame;
 
   private static Optional<LightBoxPanel> lightBoxPanel = Optional.absent();
 
   private static Optional<LightBoxPanel> lightBoxPopoverPanel = Optional.absent();
+
+  public static void setApplicationFrame(JFrame applicationFrame) {
+    Panels.applicationFrame = applicationFrame;
+  }
+
+  public static JFrame getApplicationFrame() {
+    return applicationFrame;
+  }
 
   /**
    * <p>A default MiG layout constraint with:</p>
@@ -247,7 +251,7 @@ public class Panels {
     Preconditions.checkState(!lightBoxPanel.isPresent(), "Light box should never be called twice ");
 
     // Prevent focus
-    allowFocus(Panels.applicationFrame, false);
+    allowFocus(Panels.getApplicationFrame(), false);
 
     // Add the light box panel
     lightBoxPanel = Optional.of(new LightBoxPanel(panel, JLayeredPane.MODAL_LAYER));
@@ -272,7 +276,7 @@ public class Panels {
     lightBoxPanel = Optional.absent();
 
     // Finally allow focus
-    allowFocus(Panels.applicationFrame, true);
+    allowFocus(Panels.getApplicationFrame(), true);
 
   }
 

@@ -527,7 +527,7 @@ public class MainController extends AbstractController implements
               @Override
               public void run() {
                 // Dim the application using the glass pane
-                Panels.applicationFrame.getRootPane().getGlassPane().setVisible(true);
+                Panels.getApplicationFrame().getRootPane().getGlassPane().setVisible(true);
               }
             });
 
@@ -573,7 +573,7 @@ public class MainController extends AbstractController implements
               @Override
               public void run() {
                 // Switch off the background dimming and trigger the showing of the wizard
-                Panels.applicationFrame.getRootPane().getGlassPane().setVisible(false);
+                Panels.getApplicationFrame().getRootPane().getGlassPane().setVisible(false);
                 mainView.refresh();
                 mainView.setRepeatLatestEvents(true);
               }
@@ -603,7 +603,7 @@ public class MainController extends AbstractController implements
             new Runnable() {
               @Override
               public void run() {
-                Panels.applicationFrame.setVisible(false);
+                Panels.getApplicationFrame().setVisible(false);
               }
             });
 
@@ -661,7 +661,7 @@ public class MainController extends AbstractController implements
         @Override
         public void run() {
           Panels.hideLightBoxIfPresent();
-          Panels.applicationFrame.dispose();
+          Panels.getApplicationFrame().dispose();
         }
       });
 
@@ -698,7 +698,7 @@ public class MainController extends AbstractController implements
           handleLocale();
 
           // Force a frame redraw
-          Panels.applicationFrame.invalidate();
+          Panels.getApplicationFrame().invalidate();
 
           // Rebuild the detail views and alert panels
           mainView.refresh();
@@ -741,7 +741,7 @@ public class MainController extends AbstractController implements
           handleLocale();
 
           // Force a frame redraw
-          Panels.applicationFrame.invalidate();
+          Panels.getApplicationFrame().invalidate();
 
           // Rebuild the detail views and alert panels
           mainView.refresh();
@@ -1094,10 +1094,10 @@ public class MainController extends AbstractController implements
     ResourceBundle.clearCache();
 
     // Update the frame to allow for LTR or RTL transition
-    Panels.applicationFrame.setLocale(locale);
+    Panels.getApplicationFrame().setLocale(locale);
 
     // Ensure LTR and RTL language formats are in place
-    Panels.applicationFrame.applyComponentOrientation(ComponentOrientation.getOrientation(locale));
+    Panels.getApplicationFrame().applyComponentOrientation(ComponentOrientation.getOrientation(locale));
 
   }
 
