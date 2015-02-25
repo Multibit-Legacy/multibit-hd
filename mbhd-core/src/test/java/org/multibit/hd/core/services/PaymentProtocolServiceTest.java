@@ -168,4 +168,24 @@ public class PaymentProtocolServiceTest {
 
   }
 
+  @Test
+  public void testProbeForPaymentSession_LocalPKI_AlmostOK_Multiple() throws Exception {
+
+    // Arrange
+    server.addFixture("/fixtures/payments/test-net-faucet-broken.bitcoinpaymentrequest");
+    server.addFixture("/fixtures/payments/test-net-faucet-broken.bitcoinpaymentrequest");
+    server.addFixture("/fixtures/payments/test-net-faucet.bitcoinpaymentrequest");
+
+    final URI uri = URI.create(PAYMENT_REQUEST_BIP72_MULTIPLE);
+
+    // Act
+    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, null);
+
+    // Assert
+    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK_PKI_INVALID);
+    assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isTrue();
+    assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
+
+  }
+
 }

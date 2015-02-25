@@ -11,7 +11,6 @@ import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
-import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.slf4j.Logger;
@@ -98,15 +97,30 @@ public class PaymentProtocolService extends AbstractService {
 
       // Determine how to obtain the payment request based on the scheme
 
-      final PaymentSession paymentSession;
+      PaymentSession paymentSession = null;
 
       if (scheme.startsWith("bitcoin")) {
         // Remote resource serving payment requests indirectly via BIP72 is supported in Bitcoinj
         final BitcoinURI bitcoinUri = new BitcoinURI(networkParameters, paymentRequestUri.toString());
-        // TODO Consider multiple fallback URLs
-        paymentSession = PaymentSession
-          .createFromBitcoinUri(bitcoinUri, checkPKI, trustStoreLoader)
-          .get(PAYMENT_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        if (bitcoinUri.getPaymentRequestUrls().size() == 1) {
+          // Single attempt only
+          paymentSession = PaymentSession
+            .createFromBitcoinUri(bitcoinUri, checkPKI, trustStoreLoader)
+            .get(PAYMENT_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } else {
+          // Multiple fallback URLs
+          for (String r : bitcoinUri.getPaymentRequestUrls()) {
+            try {
+              paymentSession = PaymentSession
+                .createFromUrl(r, checkPKI, trustStoreLoader)
+                .get(PAYMENT_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+              break;
+            } catch (Exception e) {
+              // In multiple mode any exception is considered a reason to move on to the next
+              log.warn("Payment request from '{}' produced an exception: {}", r, e.getMessage());
+            }
+          }
+        }
 
       } else if (scheme.startsWith("http")) {
         // Remote resource serving payment requests directly over HTTP/S is supported in Bitcoinj
@@ -129,19 +143,19 @@ public class PaymentProtocolService extends AbstractService {
       }
 
       // Determine confidence in the payment request
-      if (!checkPKI) {
+      if (!checkPKI && paymentSession != null) {
         final TrustStoreLoader loader = trustStoreLoader != null ? trustStoreLoader : new TrustStoreLoader.DefaultTrustStoreLoader();
-            try {
-              PaymentProtocol.PkiVerificationData pkiVerificationData = PaymentProtocol.verifyPaymentRequestPki(
-                paymentSession.getPaymentRequest(),
-                loader.getKeyStore()
-              );
+        try {
+          PaymentProtocol.verifyPaymentRequestPki(
+            paymentSession.getPaymentRequest(),
+            loader.getKeyStore()
+          );
 
-            } catch (PaymentProtocolException e) {
-              return PaymentSessionSummary.newPaymentSessionAlmostOK(paymentSession, e);
-            } catch (KeyStoreException e) {
-              return PaymentSessionSummary.newPaymentSessionAlmostOK(paymentSession, e);
-            }
+        } catch (PaymentProtocolException e) {
+          return PaymentSessionSummary.newPaymentSessionAlmostOK(paymentSession, e);
+        } catch (KeyStoreException e) {
+          return PaymentSessionSummary.newPaymentSessionAlmostOK(paymentSession, e);
+        }
       }
 
       // Must be OK to be here
