@@ -1,13 +1,10 @@
 package org.multibit.hd.core.services;
 
-import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Resources;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.bitcoin.protocols.payments.Protos;
-import org.bitcoinj.core.Address;
-import org.bitcoinj.core.AddressFormatException;
-import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.crypto.TrustStoreLoader;
 import org.bitcoinj.protocols.payments.PaymentProtocol;
@@ -16,19 +13,16 @@ import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
+import org.multibit.hd.core.dto.SignedPaymentRequestSummary;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.UnrecoverableKeyException;
+import java.security.*;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -192,42 +186,50 @@ public class PaymentProtocolService extends AbstractService {
   }
 
   /**
-   * @return A new BIP70 PaymentRequest
+   *
+   * @return A new signed BIP70 PaymentRequest or absent
    */
-  public Protos.PaymentRequest newSignedPaymentRequest(TrustStoreLoader trustStoreLoader) {
+  public Optional<Protos.PaymentRequest> newSignedPaymentRequest(SignedPaymentRequestSummary signedPaymentRequestSummary) {
+
+    KeyStore keyStore = signedPaymentRequestSummary.getKeyStore();
+    String keyAlias = signedPaymentRequestSummary.getKeyAlias();
+    char[] keyStorePassword = signedPaymentRequestSummary.getKeyStorePassword();
 
     Protos.PaymentRequest.Builder paymentRequest;
     try {
 
-      Address donationAddress = new Address(networkParameters, "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
-
       // Populate the PaymentRequest
       paymentRequest = PaymentProtocol.createPaymentRequest(
         networkParameters,
-        Coin.FIFTY_COINS,
-        donationAddress,
-        "Please donate to MultiBit",
-        "https://localhost:8443/payment",
-        "Test merchant data".getBytes(Charsets.UTF_8)
+        signedPaymentRequestSummary.getAmount(),
+        signedPaymentRequestSummary.getPaymentAddress(),
+        signedPaymentRequestSummary.getMemo(),
+        signedPaymentRequestSummary.getPaymentUrl().toString(),
+        signedPaymentRequestSummary.getMerchantData()
       );
 
-      // Get the X509 certificate chain
-      X509Certificate[] certificateChain = (X509Certificate[]) trustStoreLoader.getKeyStore().getCertificateChain("serverkey");
-      PrivateKey privateKey = (PrivateKey) trustStoreLoader.getKeyStore().getKey("serverkey", "changeit".toCharArray());
+      // Get the certificate chain and ensure it is X509
+      final java.security.cert.Certificate[] certificateChain = keyStore.getCertificateChain(keyAlias);
+      X509Certificate[] x509CertificateChain = new X509Certificate[certificateChain.length];
+      for (int i = 0; i < certificateChain.length; i++) {
+        if (certificateChain[i] instanceof X509Certificate) {
+          x509CertificateChain[i] = (X509Certificate) certificateChain[i];
+        } else {
+          log.error("Key store has an inconsistent chain of certificates (expected X509 throughout)");
+          return Optional.absent();
+        }
+      }
+
+      PrivateKey privateKey = (PrivateKey) keyStore.getKey(keyAlias, keyStorePassword);
 
       PaymentProtocol.signPaymentRequest(
         paymentRequest,
-        certificateChain,
+        x509CertificateChain,
         privateKey
       );
 
-      return paymentRequest.build();
+      return Optional.of(paymentRequest.build());
 
-    } catch (AddressFormatException e) {
-      e.printStackTrace();
-      return null;
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
     } catch (KeyStoreException e) {
       e.printStackTrace();
     } catch (UnrecoverableKeyException e) {
@@ -237,7 +239,7 @@ public class PaymentProtocolService extends AbstractService {
     }
 
     // Must have failed to be here
-    return null;
+    return Optional.absent();
 
   }
 

@@ -1,28 +1,32 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import org.bitcoin.protocols.payments.Protos;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.crypto.TrustStoreLoader;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.protocols.payments.PaymentProtocol;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentSessionStatus;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
+import org.multibit.hd.core.dto.SignedPaymentRequestSummary;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.testing.payments.PaymentProtocolHttpsServer;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
+import java.security.KeyStore;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Fail.fail;
@@ -219,24 +223,48 @@ public class PaymentProtocolServiceTest {
 
   }
 
-  @Ignore
+  @Test
   public void testNewSignedPaymentRequest() throws Exception {
 
     // Arrange
 
+    // Load the signing key store locally
+    KeyStore keyStore = KeyStore.getInstance("JKS");
+    InputStream keyStream = PaymentProtocolService.class.getResourceAsStream("/localhost.jks");
+    keyStore.load(keyStream, SSLManager.PASSPHRASE.toCharArray());
+
+    SignedPaymentRequestSummary signedPaymentRequestSummary = new SignedPaymentRequestSummary(
+      new Address(networkParameters, "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"),
+      Coin.CENT,
+      "Please donate to MultiBit",
+      new URL("https://localhost:8443/payment"),
+      "Donation 0001".getBytes(Charsets.UTF_8),
+      keyStore,
+      "serverkey",
+      SSLManager.PASSPHRASE.toCharArray()
+    );
+
     // Act
-    final Protos.PaymentRequest paymentRequest = testObject.newSignedPaymentRequest(trustStoreLoader);
+    final Optional<Protos.PaymentRequest> paymentRequest = testObject.newSignedPaymentRequest(signedPaymentRequestSummary);
 
     // Assert
-    assertThat(paymentRequest).isNotNull();
+    assertThat(paymentRequest.isPresent()).isTrue();
 
-    PaymentProtocol.PkiVerificationData pkiVerificationData = PaymentProtocol.verifyPaymentRequestPki(paymentRequest, trustStoreLoader.getKeyStore());
+    // Load the verifying trust store locally
+    KeyStore trustStore = KeyStore.getInstance("JKS");
+    InputStream certStream = PaymentProtocolService.class.getResourceAsStream("/mbhd-cacerts");
+    trustStore.load(certStream, SSLManager.PASSPHRASE.toCharArray());
+
+    PaymentProtocol.PkiVerificationData pkiVerificationData = PaymentProtocol.verifyPaymentRequestPki(
+      paymentRequest.get(),
+      trustStore
+    );
     if (pkiVerificationData == null) {
       fail();
       return;
     }
     assertThat(pkiVerificationData).isNotNull();
-    assertThat(pkiVerificationData.displayName).isEqualTo("");
+    assertThat(pkiVerificationData.displayName).isEqualTo("Test, Test, US");
 
   }
 
