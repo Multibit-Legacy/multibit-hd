@@ -6,6 +6,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.CoreMessageKey;
 
 import java.awt.*;
+import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Locale;
@@ -22,6 +23,11 @@ import java.util.ResourceBundle;
 public class Languages {
 
   public static final String BASE_NAME = "languages.language";
+
+  /**
+   * The Crowdin.com  MultiBit HD translate site (HTTPS)
+   */
+  public static final URI MBHD_TRANSLATION_WEBSITE_URI = URI.create("https://crowdin.com/project/multibit-hd");
 
   /**
    * Utilities have private constructors

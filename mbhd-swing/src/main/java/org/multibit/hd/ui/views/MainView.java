@@ -78,7 +78,7 @@ public class MainView extends JFrame {
     }
 
     // Provide all panels with a reference to the main frame
-    Panels.applicationFrame = this;
+    Panels.setApplicationFrame(this);
 
     // Add a glass pane which dims the whole screen - used for switch (MainController#handleSwitchWallet)
     // It also absorbs keystrokes and mouse events
@@ -418,7 +418,7 @@ public class MainView extends JFrame {
     } else {
       splitPane.setLeftComponent(detailView.getContentPanel());
       splitPane.setRightComponent(sidebarView.getContentPanel());
-      splitPane.setDividerLocation(Panels.applicationFrame.getWidth() - sidebarWidth);
+      splitPane.setDividerLocation(Panels.getApplicationFrame().getWidth() - sidebarWidth);
     }
 
     // Sets the colouring for divider and borders

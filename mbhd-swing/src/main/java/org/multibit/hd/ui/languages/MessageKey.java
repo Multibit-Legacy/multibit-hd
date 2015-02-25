@@ -752,6 +752,8 @@ public enum MessageKey {
   EXCHANGE_SETTINGS_NOTE_1("exchange_settings_note_1"),
 
   LANGUAGE_CHANGE_NOTE_1("language_change_note_1"),
+  LOCALISATION_IS_BY_VOLUNTEERS("localisation_is_by_volunteers"),
+  I_WOULD_LIKE_TO_HELP("i_would_like_to_help"),
 
   SOUND_CHANGE_NOTE_1("sound_change_note_1"),
 

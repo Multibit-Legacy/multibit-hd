@@ -130,7 +130,7 @@ public class SidebarView extends AbstractView {
         }
 
         // Always update the title
-        Panels.applicationFrame.setTitle(Languages.safeText(MessageKey.MULTIBIT_HD_TITLE) + " - " + name);
+        Panels.getApplicationFrame().setTitle(Languages.safeText(MessageKey.MULTIBIT_HD_TITLE) + " - " + name);
 
       }
     });
