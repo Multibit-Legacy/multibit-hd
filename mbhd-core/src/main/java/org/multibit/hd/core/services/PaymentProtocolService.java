@@ -1,9 +1,13 @@
 package org.multibit.hd.core.services;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Resources;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.bitcoin.protocols.payments.Protos;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.AddressFormatException;
+import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.crypto.TrustStoreLoader;
 import org.bitcoinj.protocols.payments.PaymentProtocol;
@@ -16,11 +20,16 @@ import org.multibit.hd.core.events.ShutdownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -179,6 +188,56 @@ public class PaymentProtocolService extends AbstractService {
     } catch (TimeoutException e) {
       return PaymentSessionSummary.newPaymentSessionFromException(e, hostName);
     }
+
+  }
+
+  /**
+   * @return A new BIP70 PaymentRequest
+   */
+  public Protos.PaymentRequest newSignedPaymentRequest(TrustStoreLoader trustStoreLoader) {
+
+    Protos.PaymentRequest.Builder paymentRequest;
+    try {
+
+      Address donationAddress = new Address(networkParameters, "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
+
+      // Populate the PaymentRequest
+      paymentRequest = PaymentProtocol.createPaymentRequest(
+        networkParameters,
+        Coin.FIFTY_COINS,
+        donationAddress,
+        "Please donate to MultiBit",
+        "https://localhost:8443/payment",
+        "Test merchant data".getBytes(Charsets.UTF_8)
+      );
+
+      // Get the X509 certificate chain
+      X509Certificate[] certificateChain = (X509Certificate[]) trustStoreLoader.getKeyStore().getCertificateChain("serverkey");
+      PrivateKey privateKey = (PrivateKey) trustStoreLoader.getKeyStore().getKey("serverkey", "changeit".toCharArray());
+
+      PaymentProtocol.signPaymentRequest(
+        paymentRequest,
+        certificateChain,
+        privateKey
+      );
+
+      return paymentRequest.build();
+
+    } catch (AddressFormatException e) {
+      e.printStackTrace();
+      return null;
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (KeyStoreException e) {
+      e.printStackTrace();
+    } catch (UnrecoverableKeyException e) {
+      e.printStackTrace();
+    } catch (NoSuchAlgorithmException e) {
+      e.printStackTrace();
+    }
+
+    // Must have failed to be here
+    return null;
 
   }
 

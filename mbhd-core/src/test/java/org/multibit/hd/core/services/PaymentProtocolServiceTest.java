@@ -1,8 +1,16 @@
 package org.multibit.hd.core.services;
 
+import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.crypto.TrustStoreLoader;
 import org.bitcoinj.params.MainNetParams;
-import org.junit.*;
+import org.bitcoinj.protocols.payments.PaymentProtocol;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentSessionStatus;
@@ -17,6 +25,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Fail.fail;
 
 @Ignore
 public class PaymentProtocolServiceTest {
@@ -39,6 +48,7 @@ public class PaymentProtocolServiceTest {
     "amount=1";
 
   private static PaymentProtocolHttpsServer server;
+  private static TrustStoreLoader trustStoreLoader;
 
   static {
 
@@ -48,6 +58,9 @@ public class PaymentProtocolServiceTest {
     server = new PaymentProtocolHttpsServer();
 
     assertThat(server.start()).isTrue();
+
+    // Wait until the HTTPS server is up before setting the trust store loader
+    trustStoreLoader = new TrustStoreLoader.DefaultTrustStoreLoader();
 
   }
 
@@ -95,7 +108,7 @@ public class PaymentProtocolServiceTest {
 
     // Act
     final URI uri = URI.create("/fixtures/payments/test-net-faucet-broken.bitcoinpaymentrequest");
-    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, true, null);
+    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, true, trustStoreLoader);
 
     // Assert
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.ERROR);
@@ -109,7 +122,7 @@ public class PaymentProtocolServiceTest {
 
     // Act
     final URI uri = URI.create("/fixtures/payments/test-net-faucet.bitcoinpaymentrequest");
-    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, true, null);
+    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, true, trustStoreLoader);
 
     // Assert
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK_PKI_INVALID);
@@ -123,7 +136,7 @@ public class PaymentProtocolServiceTest {
 
     // Act
     final URI uri = URI.create("/fixtures/payments/test-net-faucet.bitcoinpaymentrequest");
-    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, null);
+    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, trustStoreLoader);
 
     // Assert
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK_PKI_INVALID);
@@ -141,7 +154,7 @@ public class PaymentProtocolServiceTest {
     final URI uri = URI.create(PAYMENT_REQUEST_BIP72_SINGLE);
 
     // Act
-    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, true, null);
+    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, true, trustStoreLoader);
 
     // Assert
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.ERROR);
@@ -159,7 +172,7 @@ public class PaymentProtocolServiceTest {
     final URI uri = URI.create(PAYMENT_REQUEST_BIP72_SINGLE);
 
     // Act
-    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, null);
+    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, trustStoreLoader);
 
     // Assert
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK_PKI_INVALID);
@@ -179,12 +192,51 @@ public class PaymentProtocolServiceTest {
     final URI uri = URI.create(PAYMENT_REQUEST_BIP72_MULTIPLE);
 
     // Act
-    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, null);
+    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, trustStoreLoader);
 
     // Assert
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK_PKI_INVALID);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isTrue();
     assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
+
+  }
+
+  @Ignore
+  public void testProbeForPaymentSession_LocalPKI_OK() throws Exception {
+
+    // Arrange
+    server.addFixture("/fixtures/payments/localhost-signed.bitcoinpaymentrequest");
+
+    final URI uri = URI.create(PAYMENT_REQUEST_BIP72_MULTIPLE);
+
+    // Act
+    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, trustStoreLoader);
+
+    // Assert
+    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK_PKI_INVALID);
+    assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isTrue();
+    assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
+
+  }
+
+  @Ignore
+  public void testNewSignedPaymentRequest() throws Exception {
+
+    // Arrange
+
+    // Act
+    final Protos.PaymentRequest paymentRequest = testObject.newSignedPaymentRequest(trustStoreLoader);
+
+    // Assert
+    assertThat(paymentRequest).isNotNull();
+
+    PaymentProtocol.PkiVerificationData pkiVerificationData = PaymentProtocol.verifyPaymentRequestPki(paymentRequest, trustStoreLoader.getKeyStore());
+    if (pkiVerificationData == null) {
+      fail();
+      return;
+    }
+    assertThat(pkiVerificationData).isNotNull();
+    assertThat(pkiVerificationData.displayName).isEqualTo("");
 
   }
 
