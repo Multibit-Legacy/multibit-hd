@@ -1244,6 +1244,16 @@ public class Labels {
   }
 
   /**
+    * @return A new "MultiBit HD is localised by volunteers" note
+    */
+   public static JLabel newLocalisationByVolunteersNote() {
+
+     return newNoteLabel(new MessageKey[]{
+       MessageKey.LOCALISATION_IS_BY_VOLUNTEERS
+     }, new Object[][]{});
+
+   }
+  /**
    * @return A new "sound change" note
    */
   public static JLabel newSoundChangeNote() {
