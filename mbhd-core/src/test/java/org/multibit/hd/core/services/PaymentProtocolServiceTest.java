@@ -19,6 +19,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentSessionStatus;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.dto.SignedPaymentRequestSummary;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.BackupManager;
@@ -221,11 +222,18 @@ public class PaymentProtocolServiceTest {
     // Act
     final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, trustStoreLoader);
 
-    // Assert
+    // Assert the summary
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isTrue();
     assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_OK);
+    assertThat(paymentSessionSummary.getSeverity()).isEqualTo(RAGStatus.GREEN);
+    assertThat(paymentSessionSummary.getMessageData().isPresent()).isFalse();
 
+    // Assert the PaymentDetails
+    Protos.PaymentDetails paymentDetails = paymentSessionSummary.getPaymentSession().get().getPaymentDetails();
+    assertThat(paymentDetails.getMemo()).isEqualTo("Please donate to MultiBit");
+    assertThat(paymentDetails.getExpires()).isEqualTo(0L);
+    assertThat(paymentDetails.getPaymentUrl()).isEqualTo("https://localhost:8443/payment");
   }
 
   @Test
