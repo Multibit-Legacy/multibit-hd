@@ -9,7 +9,12 @@ import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.crypto.TrustStoreLoader;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.protocols.payments.PaymentProtocol;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentSessionStatus;
@@ -205,7 +210,7 @@ public class PaymentProtocolServiceTest {
 
   }
 
-  @Ignore
+  @Test
   public void testProbeForPaymentSession_LocalPKI_OK() throws Exception {
 
     // Arrange
@@ -217,9 +222,9 @@ public class PaymentProtocolServiceTest {
     final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, trustStoreLoader);
 
     // Assert
-    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK_PKI_INVALID);
+    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isTrue();
-    assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
+    assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_OK);
 
   }
 
