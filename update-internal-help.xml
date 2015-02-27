@@ -10,7 +10,7 @@
 
     <!-- Replace the directories -->
     <mkdir dir="${basedir}/../multibit-website/src/main/resources/views/html/en/help/hd0.1" />
-    <mkdir dir="${basedir}/../multibit-website/src/main/resources/assets/images/en/screenshots/mbhd-0.1" />
+    <!-- no screen shots in embedded help -->
 
     <!-- MultiBit HD help files for "en" -->
     <!-- Requires MultiBit branch release-4.0.0 or later to access the files -->
