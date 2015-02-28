@@ -223,6 +223,10 @@ public class MultiBitHD {
       return false;
     }
 
+    // TODO Place splash screen with progress bar here
+    // See http://stackoverflow.com/questions/11399971/make-splash-screen-with-progress-bar-like-eclipse
+    // for starting code
+
     if (OSUtils.isWindowsXPOrEarlier()) {
       log.error("Windows XP or earlier detected. Forcing shutdown.");
       JOptionPane.showMessageDialog(
