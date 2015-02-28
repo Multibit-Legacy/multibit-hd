@@ -11,14 +11,19 @@ package org.multibit.hd.core.dto;
 public enum PaymentSessionStatus {
 
   /**
-   * Successful communication with payment request server (no user action required)
+   * Successful communication with payment request server resulting
+   * in a trusted Payment Request
    */
-  OK,
+  TRUSTED,
 
   /**
-   * The payment request does not contain a PKI entry (suspicious)
+   * Successful communication with payment request server resulting
+   * in an  untrusted Payment Request
+   *
+   * The payment request may not contain a PKI entry or it may simply
+   * not have a certificate that is in the trust store
    */
-  OK_PKI_INVALID,
+  UNTRUSTED,
 
   /**
    * Payment request returned an error (malformed response etc)

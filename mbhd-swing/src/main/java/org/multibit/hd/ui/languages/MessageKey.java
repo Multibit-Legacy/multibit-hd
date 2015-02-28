@@ -308,6 +308,11 @@ public enum MessageKey {
   DECIMAL_POINT("decimal_point"),
   DECIMAL_SPACE("decimal_space"),
 
+  // Payment Protocol alerts
+  PAYMENT_PROTOCOL_TRUSTED_ALERT("payment_protocol_trusted_alert"),
+  PAYMENT_PROTOCOL_UNTRUSTED_ALERT("payment_protocol_untrusted_alert"),
+  PAYMENT_PROTOCOL_ERROR_ALERT("payment_protocol_error_alert"),
+
   BITCOIN_URI_ALERT("bitcoin_uri_label"),
   PAYMENT_RECEIVED_ALERT("payment_received_label"),
   PAYMENT_SENT_ALERT("payment_sent_label"),

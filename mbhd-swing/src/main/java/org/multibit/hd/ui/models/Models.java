@@ -2,6 +2,7 @@ package org.multibit.hd.ui.models;
 
 import com.google.common.base.Optional;
 import org.bitcoinj.uri.BitcoinURI;
+import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
@@ -104,7 +105,7 @@ public class Models {
 
         ControllerEvents.fireRemoveAlertEvent();
 
-        SendBitcoinParameter parameter = new SendBitcoinParameter(Optional.fromNullable(bitcoinURI));
+        SendBitcoinParameter parameter = new SendBitcoinParameter(bitcoinURI, null);
 
         Panels.showLightBox(Wizards.newSendBitcoinWizard(parameter).getWizardScreenHolder());
 
@@ -123,6 +124,45 @@ public class Models {
         RAGStatus.PINK,
         button
       ));
+
+    }
+
+    return Optional.absent();
+  }
+
+  /**
+   * @param paymentSessionSummary The payment session summary providing meta data
+   *
+   * @return An alert model suitable for use for displaying the payment request information, absent if the payment session summary does not contain sufficient information
+   */
+  public static Optional<AlertModel> newPaymentRequestAlertModel(final PaymentSessionSummary paymentSessionSummary) {
+
+    // Action to show the "send Bitcoin" wizard
+    AbstractAction action = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        ControllerEvents.fireRemoveAlertEvent();
+
+        SendBitcoinParameter parameter = new SendBitcoinParameter(null, paymentSessionSummary);
+
+        Panels.showLightBox(Wizards.newSendBitcoinWizard(parameter).getWizardScreenHolder());
+
+      }
+    };
+    JButton button = Buttons.newAlertPanelButton(action, MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);
+
+    // Attempt to decode the Bitcoin URI
+    Optional<String> alertMessage = Formats.formatAlertMessage(paymentSessionSummary);
+
+    // If there is sufficient information in the payment request display it to the user as an alert
+    if (alertMessage.isPresent()) {
+
+      return Optional.of(Models.newAlertModel(
+          alertMessage.get(),
+          RAGStatus.PINK,
+          button
+        ));
 
     }
 

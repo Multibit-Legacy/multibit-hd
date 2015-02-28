@@ -326,7 +326,8 @@ public class ExternalDataListeningService extends AbstractService {
 
       log.debug("Using '{}' to create payment protocol session summary", rawData);
       PaymentProtocolService paymentProtocolService = CoreServices.getPaymentProtocolService();
-      return Optional.fromNullable(paymentProtocolService.probeForPaymentSession(URI.create(rawData), true, null));
+      // TODO Switch this back to "true" for production
+      return Optional.fromNullable(paymentProtocolService.probeForPaymentSession(URI.create(rawData), false, null));
 
     } catch (UnsupportedEncodingException e) {
       log.error("UTF-8 is not supported on this platform");

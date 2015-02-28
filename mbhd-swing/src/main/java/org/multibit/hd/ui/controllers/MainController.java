@@ -1128,13 +1128,15 @@ public class MainController extends AbstractController implements
   }
 
   /**
-   * <p>Show any command line Bitcoin URI alerts (UI)</p>
+   * <p>Show any command line payment alerts</p>
    */
-  private void handleBitcoinURIAlert() {
+  private void handlePaymentAlert() {
 
     // Check for Bitcoin URI on the command line
     Optional<BitcoinURI> bitcoinURI = externalDataListeningService.getBitcoinURI();
+    Optional<PaymentSessionSummary> paymentSessionSummary = externalDataListeningService.getPaymentSessionSummary();
 
+    // Check for BIP21 Bitcoin URI
     if (bitcoinURI.isPresent()) {
 
       // Attempt to create an alert model from the Bitcoin URI
@@ -1146,6 +1148,20 @@ public class MainController extends AbstractController implements
       }
 
     }
+
+    // Check for Payment Protocol session
+    if (paymentSessionSummary.isPresent()) {
+
+      // Attempt to create an alert model
+      Optional<AlertModel> alertModel = Models.newPaymentRequestAlertModel(paymentSessionSummary.get());
+
+      // If successful the fire the event
+      if (alertModel.isPresent()) {
+        ControllerEvents.fireAddAlertEvent(alertModel.get());
+      }
+
+    }
+
   }
 
   /**
@@ -1454,7 +1470,7 @@ public class MainController extends AbstractController implements
 
             // Check for Bitcoin URIs
             log.debug("Check for Bitcoin URIs...");
-            handleBitcoinURIAlert();
+            handlePaymentAlert();
 
           } catch (Exception e) {
             // TODO localise and put on UI via an alert

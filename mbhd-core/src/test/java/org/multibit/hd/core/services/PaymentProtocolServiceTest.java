@@ -141,7 +141,7 @@ public class PaymentProtocolServiceTest {
     final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, true, trustStoreLoader);
 
     // Assert
-    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK_PKI_INVALID);
+    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.UNTRUSTED);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isFalse();
     assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_INVALID_REQUEST_URL);
 
@@ -155,21 +155,21 @@ public class PaymentProtocolServiceTest {
     final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, true, trustStoreLoader);
 
     // Assert
-    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK_PKI_INVALID);
+    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.UNTRUSTED);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isFalse();
     assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
 
   }
 
   @Test
-  public void testProbeForPaymentSession_NoPKI_AlmostOK() throws Exception {
+  public void testProbeForPaymentSession_NoPKI_Untrusted() throws Exception {
 
     // Act
     final URI uri = URI.create("/fixtures/payments/test-net-faucet.bitcoinpaymentrequest");
     final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, trustStoreLoader);
 
     // Assert
-    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK_PKI_INVALID);
+    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.UNTRUSTED);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isTrue();
     assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
 
@@ -194,7 +194,7 @@ public class PaymentProtocolServiceTest {
   }
 
   @Test
-  public void testProbeForPaymentSession_LocalPKI_AlmostOK() throws Exception {
+  public void testProbeForPaymentSession_LocalPKI_Untrusted() throws Exception {
 
     // Arrange
     server.addFixture("/fixtures/payments/test-net-faucet.bitcoinpaymentrequest");
@@ -205,14 +205,14 @@ public class PaymentProtocolServiceTest {
     final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, trustStoreLoader);
 
     // Assert
-    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK_PKI_INVALID);
+    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.UNTRUSTED);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isTrue();
     assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
 
   }
 
   @Test
-  public void testProbeForPaymentSession_LocalPKI_AlmostOK_Multiple() throws Exception {
+  public void testProbeForPaymentSession_LocalPKI_Untrusted_Multiple() throws Exception {
 
     // Arrange
     server.addFixture("/fixtures/payments/test-net-faucet-broken.bitcoinpaymentrequest");
@@ -225,14 +225,14 @@ public class PaymentProtocolServiceTest {
     final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, trustStoreLoader);
 
     // Assert
-    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK_PKI_INVALID);
+    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.UNTRUSTED);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isTrue();
     assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
 
   }
 
   @Test
-  public void testProbeForPaymentSession_LocalPKI_OK() throws Exception {
+  public void testProbeForPaymentSession_LocalPKI_Trusted() throws Exception {
 
     // Arrange
     server.addFixture("/fixtures/payments/localhost-signed.bitcoinpaymentrequest");
@@ -243,7 +243,7 @@ public class PaymentProtocolServiceTest {
     final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, false, trustStoreLoader);
 
     // Assert the summary
-    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK);
+    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.TRUSTED);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isTrue();
     assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_OK);
     assertThat(paymentSessionSummary.getSeverity()).isEqualTo(RAGStatus.GREEN);

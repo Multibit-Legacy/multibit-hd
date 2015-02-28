@@ -95,6 +95,8 @@ public class PaymentProtocolService extends AbstractService {
     String scheme = paymentRequestUri.getScheme() == null ? "" : paymentRequestUri.getScheme();
     String hostName = paymentRequestUri.getHost() == null ? "" : paymentRequestUri.getHost();
 
+    Protos.PaymentRequest paymentRequest = null;
+
     try {
 
       // Determine how to obtain the payment request based on the scheme
@@ -111,7 +113,7 @@ public class PaymentProtocolService extends AbstractService {
             .get();
           return new PaymentSessionSummary(
             Optional.of(paymentSession),
-            PaymentSessionStatus.OK_PKI_INVALID,
+            PaymentSessionStatus.UNTRUSTED,
             RAGStatus.PINK,
             Optional.of(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID),
             Optional.<Object[]>fromNullable(new String[]{paymentSession.getMemo()})
@@ -145,13 +147,13 @@ public class PaymentProtocolService extends AbstractService {
       } else if (scheme.startsWith("file")) {
         // File based resource
         byte[] paymentRequestBytes = Resources.toByteArray(paymentRequestUri.toURL());
-        Protos.PaymentRequest paymentRequest = Protos.PaymentRequest.parseFrom(paymentRequestBytes);
+        paymentRequest = Protos.PaymentRequest.parseFrom(paymentRequestBytes);
         paymentSession = new PaymentSession(paymentRequest, checkPKI, trustStoreLoader);
 
       } else {
         // Assume classpath resource
         InputStream inputStream = PaymentProtocolService.class.getResourceAsStream(paymentRequestUri.toString());
-        Protos.PaymentRequest paymentRequest = Protos.PaymentRequest.parseFrom(inputStream);
+        paymentRequest = Protos.PaymentRequest.parseFrom(inputStream);
         paymentSession = new PaymentSession(paymentRequest, checkPKI, trustStoreLoader);
 
       }
@@ -177,7 +179,7 @@ public class PaymentProtocolService extends AbstractService {
 
     } catch (PaymentProtocolException e) {
       // We can be more specific about handling the error
-      return PaymentSessionSummary.newPaymentSessionFromException(e, hostName);
+      return PaymentSessionSummary.newPaymentSessionFromException(e, paymentRequest, hostName);
     } catch (BitcoinURIParseException e) {
       return PaymentSessionSummary.newPaymentSessionFromException(e, hostName);
     } catch (ExecutionException e) {
