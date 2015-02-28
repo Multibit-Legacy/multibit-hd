@@ -22,7 +22,7 @@ import java.util.List;
 import static junit.framework.TestCase.fail;
 import static org.fest.assertions.Assertions.assertThat;
 
-public class BitcoinURIListeningServiceTest {
+public class ExternalDataListeningServiceTest {
 
   private static final String PAYMENT_REQUEST_BIP21_MINIMUM = "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty";
 
@@ -45,7 +45,7 @@ public class BitcoinURIListeningServiceTest {
 
   private ServerSocket serverSocket = null;
 
-  private BitcoinURIListeningService testObject;
+  private ExternalDataListeningService testObject;
 
   @Before
   public void setUp() throws Exception {
@@ -74,7 +74,7 @@ public class BitcoinURIListeningServiceTest {
       PAYMENT_REQUEST_BIP21
     };
 
-    testObject = new BitcoinURIListeningService(args);
+    testObject = new ExternalDataListeningService(args);
 
     // Act
     Address address = testObject.getBitcoinURI().get().getAddress();
@@ -100,7 +100,7 @@ public class BitcoinURIListeningServiceTest {
       PAYMENT_REQUEST_BIP21_MINIMUM
     };
 
-    testObject = new BitcoinURIListeningService(args);
+    testObject = new ExternalDataListeningService(args);
 
     // Act
     Address address = testObject.getBitcoinURI().get().getAddress();
@@ -165,7 +165,7 @@ public class BitcoinURIListeningServiceTest {
 
     // Arrange
     serverSocket = new ServerSocket(
-      BitcoinURIListeningService.MULTIBIT_HD_NETWORK_SOCKET,
+      ExternalDataListeningService.MULTIBIT_HD_NETWORK_SOCKET,
       10,
       InetAddress.getLoopbackAddress()
     );
@@ -174,7 +174,7 @@ public class BitcoinURIListeningServiceTest {
       PAYMENT_REQUEST_BIP21
     };
 
-    testObject = new BitcoinURIListeningService(args);
+    testObject = new ExternalDataListeningService(args);
     testObject.start();
 
     Socket client = serverSocket.accept();
@@ -186,7 +186,7 @@ public class BitcoinURIListeningServiceTest {
     client.close();
 
     // Act
-    String expectedMessage = BitcoinURIListeningService.MESSAGE_START + PAYMENT_REQUEST_BIP21 + BitcoinURIListeningService.MESSAGE_END;
+    String expectedMessage = ExternalDataListeningService.MESSAGE_START + PAYMENT_REQUEST_BIP21 + ExternalDataListeningService.MESSAGE_END;
 
     // Assert
     assertThat(text).isEqualTo(expectedMessage);
@@ -203,7 +203,7 @@ public class BitcoinURIListeningServiceTest {
     // Arrange
     try {
       serverSocket = new ServerSocket(
-        BitcoinURIListeningService.MULTIBIT_HD_NETWORK_SOCKET,
+        ExternalDataListeningService.MULTIBIT_HD_NETWORK_SOCKET,
         10,
         InetAddress.getLoopbackAddress()
       );
@@ -215,7 +215,7 @@ public class BitcoinURIListeningServiceTest {
       PAYMENT_REQUEST_BIP21_MINIMUM
     };
 
-    testObject = new BitcoinURIListeningService(args);
+    testObject = new ExternalDataListeningService(args);
     testObject.start();
 
     Socket client = serverSocket.accept();
@@ -227,7 +227,7 @@ public class BitcoinURIListeningServiceTest {
     client.close();
 
     // Act
-    String expectedMessage = BitcoinURIListeningService.MESSAGE_START + PAYMENT_REQUEST_BIP21_MINIMUM + BitcoinURIListeningService.MESSAGE_END;
+    String expectedMessage = ExternalDataListeningService.MESSAGE_START + PAYMENT_REQUEST_BIP21_MINIMUM + ExternalDataListeningService.MESSAGE_END;
 
     // Assert
     assertThat(text).isEqualTo(expectedMessage);
@@ -244,7 +244,7 @@ public class BitcoinURIListeningServiceTest {
 
     // Arrange
     serverSocket = new ServerSocket(
-      BitcoinURIListeningService.MULTIBIT_HD_NETWORK_SOCKET,
+      ExternalDataListeningService.MULTIBIT_HD_NETWORK_SOCKET,
       10,
       InetAddress.getLoopbackAddress()
     );
@@ -253,7 +253,7 @@ public class BitcoinURIListeningServiceTest {
       PAYMENT_REQUEST_BIP72_SINGLE
     };
 
-    testObject = new BitcoinURIListeningService(args);
+    testObject = new ExternalDataListeningService(args);
     testObject.start();
 
     Socket client = serverSocket.accept();
@@ -265,7 +265,7 @@ public class BitcoinURIListeningServiceTest {
     client.close();
 
     // Act
-    String expectedMessage = BitcoinURIListeningService.MESSAGE_START + PAYMENT_REQUEST_BIP72_SINGLE + BitcoinURIListeningService.MESSAGE_END;
+    String expectedMessage = ExternalDataListeningService.MESSAGE_START + PAYMENT_REQUEST_BIP72_SINGLE + ExternalDataListeningService.MESSAGE_END;
 
     // Assert
     assertThat(text).isEqualTo(expectedMessage);
@@ -281,7 +281,7 @@ public class BitcoinURIListeningServiceTest {
 
     // Arrange
     serverSocket = new ServerSocket(
-      BitcoinURIListeningService.MULTIBIT_HD_NETWORK_SOCKET,
+      ExternalDataListeningService.MULTIBIT_HD_NETWORK_SOCKET,
       10,
       InetAddress.getLoopbackAddress()
     );
@@ -290,7 +290,7 @@ public class BitcoinURIListeningServiceTest {
       PAYMENT_REQUEST_BIP72_MULTIPLE
     };
 
-    testObject = new BitcoinURIListeningService(args);
+    testObject = new ExternalDataListeningService(args);
     testObject.start();
 
     Socket client = serverSocket.accept();
@@ -302,7 +302,7 @@ public class BitcoinURIListeningServiceTest {
     client.close();
 
     // Act
-    String expectedMessage = BitcoinURIListeningService.MESSAGE_START + PAYMENT_REQUEST_BIP72_MULTIPLE + BitcoinURIListeningService.MESSAGE_END;
+    String expectedMessage = ExternalDataListeningService.MESSAGE_START + PAYMENT_REQUEST_BIP72_MULTIPLE + ExternalDataListeningService.MESSAGE_END;
 
     // Assert
     assertThat(text).isEqualTo(expectedMessage);

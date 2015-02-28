@@ -2,7 +2,6 @@ package org.multibit.hd.ui.services;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.io.CharStreams;
@@ -12,9 +11,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
+import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.AbstractService;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.PaymentProtocolService;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.models.Models;
@@ -28,15 +30,18 @@ import java.io.UnsupportedEncodingException;
 import java.net.*;
 
 /**
- * <p>Service to maintain a localhost server socket on port 8330. If this socket is taken, then another instance of MultiBit HD is likely
- * running and so this service will hand over any Bitcoin URI it was given on startup to whatever is listening on that port.</p>
+ * <p>Service to maintain a localhost server socket on port 8330.</p>
+ *
+ * <p>If this socket is taken, then another instance of MultiBit HD is likely to be already
+ * running and so this service will hand over any data it was given on startup to whatever
+ * is listening on that port.</p>
  */
-public class BitcoinURIListeningService extends AbstractService {
+public class ExternalDataListeningService extends AbstractService {
 
-  private static final Logger log = LoggerFactory.getLogger(BitcoinURIListeningService.class);
+  private static final Logger log = LoggerFactory.getLogger(ExternalDataListeningService.class);
 
   /**
-   * MultiBit port number as specified in <a href="http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers">the list of TCP and UDP port numbers</a>.
+   * MultiBit HD port number as specified in <a href="http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers">the list of TCP and UDP port numbers</a>.
    */
   public static final int MULTIBIT_HD_NETWORK_SOCKET = 8330;
 
@@ -51,25 +56,40 @@ public class BitcoinURIListeningService extends AbstractService {
   public static final String MESSAGE_END = "$$MBHD-End$$";
 
   private final Optional<BitcoinURI> bitcoinURI;
+  private final Optional<PaymentSessionSummary> paymentSessionSummary;
 
-  private final Optional<String> rawURI;
+  private final Optional<String> rawData;
 
   private Optional<ServerSocket> serverSocket = Optional.absent();
 
   /**
    * @param args The command line arguments
    */
-  public BitcoinURIListeningService(String[] args) {
+  public ExternalDataListeningService(String[] args) {
 
     super();
 
     if (args == null || args.length == 0) {
       this.bitcoinURI = Optional.absent();
-      rawURI = Optional.absent();
-    } else {
-      this.bitcoinURI = parseRawURI(args[0]);
-      rawURI = bitcoinURI.isPresent() ? Optional.of(args[0]) : Optional.<String>absent();
+      this.paymentSessionSummary = Optional.absent();
+      rawData = Optional.absent();
+      return;
     }
+
+    // Must have some command line arguments to be here
+
+    // Quick check for BIP21 Bitcoin URI
+    if (args[0].startsWith("bitcoin") && !args[0].contains("r=")) {
+      // Treat as BIP21 Bitcoin URI
+      this.bitcoinURI = parseBitcoinURI(args[0]);
+      this.paymentSessionSummary = Optional.absent();
+    } else {
+      // Treat as a Payment Protocol URI (could be direct via "http", "https", "file", "classpath" or use BIP72 variant of "bitcoin")
+      this.bitcoinURI = Optional.absent();
+      this.paymentSessionSummary = parsePaymentSessionSummary(args[0]);
+    }
+
+    rawData = Optional.of(args[0]);
 
   }
 
@@ -121,9 +141,13 @@ public class BitcoinURIListeningService extends AbstractService {
 
     } catch (IOException e) {
 
+      // Failed to own the server port so notify the other instance
+      log.info("Port is already taken. Notifying first instance.");
+
       if (bitcoinURI.isPresent()) {
-        // Failed to own the server port so notify the other instance
-        log.info("Port is already taken. Notifying first instance.");
+        notifyOtherInstance();
+      }
+      if (paymentSessionSummary.isPresent()) {
         notifyOtherInstance();
       }
 
@@ -141,21 +165,30 @@ public class BitcoinURIListeningService extends AbstractService {
   }
 
   /**
-   * <p>The parsed Bitcoin URI (if parsing was successful) provided during startup</p>
+   * <p>A BIP21 Bitcoin URI parsed from the command line arguments</p>
    *
-   * @return The Bitcoin URI
+   * @return The Bitcoin URI if present
    */
   public Optional<BitcoinURI> getBitcoinURI() {
     return bitcoinURI;
   }
 
   /**
-   * <p>The raw Bitcoin URI (if parsing was successful) provided during startup</p>
+   * <p>A Payment Protocol session summary parsed from the command line arguments</p>
    *
-   * @return The raw Bitcoin URI
+   * @return The payment session summary if present
    */
-  Optional<String> getRawURI() {
-    return rawURI;
+  public Optional<PaymentSessionSummary> getPaymentSessionSummary() {
+    return paymentSessionSummary;
+  }
+
+  /**
+   * <p>The most recent raw data received</p>
+   *
+   * @return The raw data
+   */
+  Optional<String> getRawData() {
+    return rawData;
   }
 
   /**
@@ -172,7 +205,10 @@ public class BitcoinURIListeningService extends AbstractService {
    */
   private void notifyOtherInstance() {
 
-    Preconditions.checkState(bitcoinURI.isPresent(), "'bitcoinURI' must be present");
+    if (!bitcoinURI.isPresent() && !paymentSessionSummary.isPresent()) {
+      // Nothing to do (the data was meaningless)
+      return;
+    }
 
     try {
       Socket clientSocket = new Socket(
@@ -182,9 +218,9 @@ public class BitcoinURIListeningService extends AbstractService {
 
       try (OutputStream out = clientSocket.getOutputStream()) {
 
-        // Write out the raw Bitcoin URI
+        // Write out the raw external data for parsing by the other instance
         out.write(MESSAGE_START.getBytes(Charsets.UTF_8));
-        out.write(rawURI.get().getBytes(Charsets.UTF_8));
+        out.write(rawData.get().getBytes(Charsets.UTF_8));
         out.write(MESSAGE_END.getBytes(Charsets.UTF_8));
 
         out.close();
@@ -220,44 +256,88 @@ public class BitcoinURIListeningService extends AbstractService {
    * <p>This is a really limited approach (no consideration of "amount=10.0&label=Black & White")
    * but should be OK for <a href="https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki">BIP21</a> use cases.</p>
    *
-   * @param rawURI The raw URI straight from an assumed untrusted external source
+   * @param rawData The raw data straight from an assumed untrusted external source
    */
-  private Optional<BitcoinURI> parseRawURI(String rawURI) {
+  private Optional<BitcoinURI> parseBitcoinURI(String rawData) {
 
-    log.debug("Decoding Bitcoin URI from '{}'", rawURI);
+    log.debug("Decoding BIP21 Bitcoin URI from '{}'", rawData);
 
-    if (Strings.isNullOrEmpty(rawURI)) {
+    if (Strings.isNullOrEmpty(rawData)) {
       return Optional.absent();
     }
 
     try {
 
       // Basic initial checking for URL encoding
-      int queryParamIndex = rawURI.indexOf('?');
-      if (queryParamIndex > 0 && !rawURI.contains("%")) {
+      int queryParamIndex = rawData.indexOf('?');
+      if (queryParamIndex > 0 && !rawData.contains("%")) {
         // Possibly encoded but more likely not
-        String encodedQueryParams = URLEncoder.encode(rawURI.substring(queryParamIndex + 1), "UTF-8");
-        rawURI = rawURI.substring(0, queryParamIndex) + "?" + encodedQueryParams;
-        rawURI = rawURI.replaceAll("%3D", "=");
-        rawURI = rawURI.replaceAll("%26", "&");
+        String encodedQueryParams = URLEncoder.encode(rawData.substring(queryParamIndex + 1), "UTF-8");
+        rawData = rawData.substring(0, queryParamIndex) + "?" + encodedQueryParams;
+        rawData = rawData.replaceAll("%3D", "=");
+        rawData = rawData.replaceAll("%26", "&");
       }
 
-      log.debug("Using '{}' to create Bitcoin URI", rawURI);
-      return Optional.of(new BitcoinURI(rawURI));
+      log.debug("Using '{}' to create BIP21 Bitcoin URI", rawData);
+      return Optional.of(new BitcoinURI(rawData));
 
     } catch (UnsupportedEncodingException e) {
       log.error("UTF-8 is not supported on this platform");
     } catch (BitcoinURIParseException e) {
-      log.error("Bitcoin URI not valid. Error ", e);
+      log.error("BIP21 Bitcoin URI not valid. Error ", e);
     }
 
     return Optional.absent();
 
   }
 
+  /**
+   * <p>Attempt to detect if the raw data is a valid URI for Payment Protocol.</p>
+   * <p>There are many reasons why a raw URI may be invalid:</p>
+   * <ul>
+   * <li>IE6-8 strips URL encoding when passing in URIs to a protocol handler</li>
+   * <li>a user could hand-craft a URI and pass it in with non-ASCII character encoding present in the label</li>
+   * </ul>
+   *
+   * <p>This is a substantial improvement over BIP21 URI handling
+   * and should be OK for <a href="https://github.com/bitcoin/bips/blob/master/bip-0072.mediawiki">BIP72</a> use cases.</p>
+   *
+   * @param rawData The raw data straight from an assumed untrusted external source
+   */
+  private Optional<PaymentSessionSummary> parsePaymentSessionSummary(String rawData) {
+
+    log.debug("Decoding URI from '{}'", rawData);
+
+    if (Strings.isNullOrEmpty(rawData)) {
+      return Optional.absent();
+    }
+
+    try {
+
+      // Basic initial checking for URL encoding
+      int queryParamIndex = rawData.indexOf('?');
+      if (queryParamIndex > 0 && !rawData.contains("%")) {
+        // Possibly encoded but more likely not
+        String encodedQueryParams = URLEncoder.encode(rawData.substring(queryParamIndex + 1), "UTF-8");
+        rawData = rawData.substring(0, queryParamIndex) + "?" + encodedQueryParams;
+        rawData = rawData.replaceAll("%3D", "=");
+        rawData = rawData.replaceAll("%26", "&");
+      }
+
+      log.debug("Using '{}' to create payment protocol session summary", rawData);
+      PaymentProtocolService paymentProtocolService = CoreServices.getPaymentProtocolService();
+      return Optional.fromNullable(paymentProtocolService.probeForPaymentSession(URI.create(rawData), true, null));
+
+    } catch (UnsupportedEncodingException e) {
+      log.error("UTF-8 is not supported on this platform");
+    }
+
+    return Optional.absent();
+
+  }
 
   /**
-   * The Bitcoin URI listening server
+   * The listening server
    */
   private static class MessageServerRunnable implements Runnable {
 
@@ -317,14 +397,14 @@ public class BitcoinURIListeningService extends AbstractService {
             }
             client.close();
 
-            log.debug("Received Bitcoin URI message: '{}'", message);
+            log.debug("Received external data: '{}'", message);
 
             // Validate the data
             final BitcoinURI bitcoinURI;
             try {
               bitcoinURI = new BitcoinURI(message);
             } catch (BitcoinURIParseException e) {
-              // Quietly ignore
+              // Quietly ignore (don't log to avoid flooding logs)
               continue;
             }
 

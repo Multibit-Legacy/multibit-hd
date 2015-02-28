@@ -47,6 +47,12 @@ public class PaymentProtocolServiceTest {
   /**
    * Bitcoin URI containing BIP72 Payment Protocol URI extensions
    */
+  private static final String PAYMENT_REQUEST_BIP21 = "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?" +
+    "amount=1";
+
+  /**
+   * Bitcoin URI containing BIP72 Payment Protocol URI extensions
+   */
   private static final String PAYMENT_REQUEST_BIP72_MULTIPLE = "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?" +
     "r=https://localhost:8443/abc123&" +
     "r1=https://localhost:8443/def456&" +
@@ -124,6 +130,20 @@ public class PaymentProtocolServiceTest {
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.ERROR);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isFalse();
     assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_ERROR);
+
+  }
+
+  @Test
+  public void testProbeForPaymentSession_BIP21() throws Exception {
+
+    // Act
+    final URI uri = URI.create(PAYMENT_REQUEST_BIP21);
+    final PaymentSessionSummary paymentSessionSummary = testObject.probeForPaymentSession(uri, true, trustStoreLoader);
+
+    // Assert
+    assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.OK_PKI_INVALID);
+    assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isFalse();
+    assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_INVALID_REQUEST_URL);
 
   }
 

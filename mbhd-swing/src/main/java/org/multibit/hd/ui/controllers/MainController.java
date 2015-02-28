@@ -39,7 +39,7 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.platform.listener.*;
-import org.multibit.hd.ui.services.BitcoinURIListeningService;
+import org.multibit.hd.ui.services.ExternalDataListeningService;
 import org.multibit.hd.ui.views.MainView;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -92,7 +92,7 @@ public class MainController extends AbstractController implements
 
   private Optional<HardwareWalletService> hardwareWalletService = Optional.absent();
 
-  private final BitcoinURIListeningService bitcoinURIListeningService;
+  private final ExternalDataListeningService externalDataListeningService;
 
   private final ListeningExecutorService handoverExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-handover");
 
@@ -127,11 +127,11 @@ public class MainController extends AbstractController implements
   private DateTime lastWipedTrezorDateTime = Dates.nowUtc().minusDays(1);
 
   /**
-   * @param bitcoinURIListeningService The Bitcoin URI listening service (must be present to permit a UI)
+   * @param ExternalDataListeningService The Bitcoin URI listening service (must be present to permit a UI)
    * @param headerController           The header controller
    */
   public MainController(
-    BitcoinURIListeningService bitcoinURIListeningService,
+    ExternalDataListeningService ExternalDataListeningService,
     HeaderController headerController
   ) {
 
@@ -140,10 +140,10 @@ public class MainController extends AbstractController implements
     // MainController must also subscribe to ViewEvents
     ViewEvents.subscribe(this);
 
-    Preconditions.checkNotNull(bitcoinURIListeningService, "'bitcoinURIListeningService' must be present");
+    Preconditions.checkNotNull(ExternalDataListeningService, "'bitcoinURIListeningService' must be present");
     Preconditions.checkNotNull(headerController, "'headerController' must be present");
 
-    this.bitcoinURIListeningService = bitcoinURIListeningService;
+    this.externalDataListeningService = ExternalDataListeningService;
     this.headerController = headerController;
 
   }
@@ -1133,7 +1133,7 @@ public class MainController extends AbstractController implements
   private void handleBitcoinURIAlert() {
 
     // Check for Bitcoin URI on the command line
-    Optional<BitcoinURI> bitcoinURI = bitcoinURIListeningService.getBitcoinURI();
+    Optional<BitcoinURI> bitcoinURI = externalDataListeningService.getBitcoinURI();
 
     if (bitcoinURI.isPresent()) {
 

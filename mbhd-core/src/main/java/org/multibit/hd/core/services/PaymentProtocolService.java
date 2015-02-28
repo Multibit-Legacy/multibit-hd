@@ -12,8 +12,7 @@ import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
-import org.multibit.hd.core.dto.PaymentSessionSummary;
-import org.multibit.hd.core.dto.SignedPaymentRequestSummary;
+import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +104,19 @@ public class PaymentProtocolService extends AbstractService {
       if (scheme.startsWith("bitcoin")) {
         // Remote resource serving payment requests indirectly via BIP72 is supported in Bitcoinj
         final BitcoinURI bitcoinUri = new BitcoinURI(networkParameters, paymentRequestUri.toString());
-        if (bitcoinUri.getPaymentRequestUrls().size() == 1) {
+        if (bitcoinUri.getPaymentRequestUrls().isEmpty()) {
+          // BIP 21 Bitcoin URI
+          paymentSession = PaymentSession
+            .createFromBitcoinUri(bitcoinUri, false, null)
+            .get();
+          return new PaymentSessionSummary(
+            Optional.of(paymentSession),
+            PaymentSessionStatus.OK_PKI_INVALID,
+            RAGStatus.PINK,
+            Optional.of(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID),
+            Optional.<Object[]>fromNullable(new String[]{paymentSession.getMemo()})
+          );
+        } else if (bitcoinUri.getPaymentRequestUrls().size() == 1) {
           // Single attempt only
           paymentSession = PaymentSession
             .createFromBitcoinUri(bitcoinUri, checkPKI, trustStoreLoader)
