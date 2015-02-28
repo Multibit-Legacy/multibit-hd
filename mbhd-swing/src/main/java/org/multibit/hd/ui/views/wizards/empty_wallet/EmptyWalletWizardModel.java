@@ -6,6 +6,7 @@ import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.params.MainNetParams;
 import org.multibit.hd.brit.dto.FeeState;
+import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
@@ -61,9 +62,9 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
   private int txOutputIndex = -1;
 
   /**
-   * The current wallet balance in coins
+   * The current wallet balance in coins less any fees
    */
-  private final Optional<Coin> coinAmount;
+  private Optional<Coin> coinAmount;
 
 
   private BitcoinNetworkService bitcoinNetworkService;
@@ -250,7 +251,7 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
       coinAmount.or(Coin.ZERO),
       fiatPayment,
       changeAddress,
-      BitcoinNetworkService.DEFAULT_FEE_PER_KB,
+      FeeService.normaliseRawFeePerKB(Configurations.currentConfiguration.getWallet().getFeePerKB()),
       password,
       feeState,
       true);
@@ -258,7 +259,12 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
     sendRequestSummary.setNotes(Optional.of(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE)));
 
     log.debug("Just about to prepare empty wallet transaction for sendRequestSummary: {}", sendRequestSummary);
-    return bitcoinNetworkService.prepareTransaction(sendRequestSummary);
+    boolean preparedOk = bitcoinNetworkService.prepareTransaction(sendRequestSummary);
+
+    // The amount to pay is now corrected for fees
+    log.debug("Correcting amount to pay to cater for fees from {} to {}", coinAmount, sendRequestSummary.getAmount());
+    coinAmount = Optional.of(sendRequestSummary.getAmount());
+    return preparedOk;
   }
 
   /**

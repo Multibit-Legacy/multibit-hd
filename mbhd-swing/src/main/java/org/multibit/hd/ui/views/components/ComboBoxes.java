@@ -1,7 +1,10 @@
 package org.multibit.hd.ui.views.components;
 
-import org.bitcoinj.core.NetworkParameters;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import org.bitcoinj.core.NetworkParameters;
+import org.multibit.hd.core.blockexplorer.BlockExplorer;
+import org.multibit.hd.core.blockexplorer.BlockExplorers;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.PaymentRequestData;
@@ -31,6 +34,7 @@ import org.multibit.hd.ui.views.themes.Themes;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -54,6 +58,10 @@ public class ComboBoxes {
    */
   public static final String SHOW_BALANCE_COMMAND = "showBalance";
   /**
+    * The "block explorer" combo box action command
+    */
+  public static final String BLOCK_EXPLORER_COMMAND = "blockExplorer";
+   /**
    * The "themes" combo box action command
    */
   public static final String THEMES_COMMAND = "themes";
@@ -206,6 +214,50 @@ public class ComboBoxes {
 
   }
 
+  /**
+   * @param listener  The action listener to alert when the selection is made
+   * @param blockExplorerId The id of the blockExplorer to select by default if the "yes" option [0] should be selected, otherwise "no" is selected [1]
+   *
+   * @return A new "yes/no" read only combo box
+   */
+  public static JComboBox<String> newBlockExplorerComboBox(ActionListener listener, String blockExplorerId) {
+
+    Collection<BlockExplorer> allBlockExplorers = BlockExplorers.getAll();
+
+    int selectedIndex = -1;
+    int index = 0;
+    List<String> comboBoxValues = Lists.newArrayList();
+    for (BlockExplorer blockExplorer : allBlockExplorers) {
+      comboBoxValues.add(blockExplorer.getName());
+      if (blockExplorer.getId().equals(blockExplorerId)) {
+        selectedIndex = index;
+      }
+      index++;
+    }
+
+    JComboBox<String> comboBox = newReadOnlyComboBox(comboBoxValues.toArray(new String[comboBoxValues.size()]));
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.BLOCK_EXPLORER);
+
+    comboBox.setEditable(false);
+
+    if (selectedIndex > -1) {
+      comboBox.setSelectedIndex(selectedIndex);
+    }
+
+    // Apply theme
+    comboBox.setBackground(Themes.currentTheme.readOnlyComboBox());
+
+    // Set the listener at the end to avoid spurious events
+    comboBox.addActionListener(listener);
+
+    comboBox.setActionCommand(BLOCK_EXPLORER_COMMAND);
+
+
+    return comboBox;
+
+  }
   /**
    * @param listener   The action listener to alert when the selection is made
    * @param alertSound True if the "yes" option should be pre-selected

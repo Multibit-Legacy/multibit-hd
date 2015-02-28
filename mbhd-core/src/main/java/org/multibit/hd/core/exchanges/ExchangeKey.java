@@ -61,7 +61,7 @@ public enum ExchangeKey {
   BTC_E(BTCEExchange.class.getName()),
   BTC_TRADE(BTCTradeExchange.class.getName()),
   BTER(BTERExchange.class.getName()),
-  // CA_VIRTEX(VirtExExchange.class.getName()), // Broken
+  // CA_VIRTEX(VirtExExchange.class.getName()), // Out of business
   CEXIO(CexIOExchange.class.getName()), // Weird GHS/NMC combo
   COINBASE(CoinbaseExchange.class.getName()), // No dynamic currency pair lookup
   // COINSETTER(CoinSetterExchange.class.getName()),// No 2.1.0 release

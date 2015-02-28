@@ -139,7 +139,7 @@ public class Gravatars {
         DateTime lastFailure = lastFailedDownload.get().get();
         if (lastFailure.plusMinutes(1).isBefore(now)) {
           // It's been a while since we had a failure so OK to notify the user again
-          ControllerEvents.fireAddAlertEvent(Models.newAlertModel(Languages.safeText(MessageKey.NETWORK_CONFIGURATION_ERROR), RAGStatus.AMBER));
+          ControllerEvents.fireAddAlertEvent(Models.newAlertModel(Languages.safeText(MessageKey.BITCOIN_NETWORK_CONFIGURATION_ERROR), RAGStatus.AMBER));
         }
       }
       lastFailedDownload.set(Optional.of(now));

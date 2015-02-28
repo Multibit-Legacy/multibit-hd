@@ -4,15 +4,12 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.managers.BackupManager;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.ModelAndView;
-import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.ScrollPanes;
-import org.multibit.hd.ui.views.components.TextBoxes;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.components.select_file.SelectFileView;
@@ -24,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.io.File;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -156,7 +154,11 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
     log.debug("selectFileMaV.getModel().getValue() = '" + selectFileMaV.getModel().getValue() + "', isSelected = " + selectFileMaV.getModel().isSelected());
     if (Configurations.currentConfiguration != null) {
       if (selectFileMaV.getModel().isSelected()) {
+        // The user has selected a cloud backup location - set it into the configuration and perform a cloud backup at the next backup tick
         Configurations.currentConfiguration.getAppearance().setCloudBackupLocation(selectFileMaV.getModel().getValue());
+        log.debug("Performing cloud backup at next backup tick as user has just set cloud backup location");
+        BackupManager.INSTANCE.setCloudBackupDirectory(Optional.of(new File(selectFileMaV.getModel().getValue())));
+        CoreServices.getOrCreateBackupService().setPerformCloudBackupAtNextTick(true);
       }
       log.debug("Cloud backup location:\n{}", Configurations.currentConfiguration.getAppearance().getCloudBackupLocation());
     }

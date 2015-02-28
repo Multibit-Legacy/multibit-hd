@@ -478,8 +478,6 @@ public class ViewEvents {
         }
       });
     }
-
-
   }
 
 }

@@ -7,7 +7,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import java.util.Map;
 
 /**
- * <p>Wizard to provide the following to UI for "edit contact" wizard:</p>
+ * <p>Wizard to provide the following to UI for "appearance" wizard:</p>
  * <ol>
  * <li>Enter details</li>
  * </ol>

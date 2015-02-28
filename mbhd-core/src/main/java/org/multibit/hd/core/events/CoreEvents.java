@@ -202,6 +202,22 @@ public class CoreEvents {
         }
       });
   }
+  /**
+    * <p>Broadcast BitcoinSendingEvent</p>
+    *
+    * @param bitcoinSendingEvent containing send information
+    */
+   public static void fireBitcoinSendingEvent(final BitcoinSendingEvent bitcoinSendingEvent) {
+
+     eventExecutor.submit(
+       new Runnable() {
+         @Override
+         public void run() {
+           log.trace("Firing 'bitcoin sending' event");
+           coreEventBus.post(bitcoinSendingEvent);
+         }
+       });
+   }
 
   /**
    * <p>Broadcast WalletLoadEvent</p>

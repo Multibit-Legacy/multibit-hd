@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -20,9 +21,12 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -33,6 +37,8 @@ import java.util.List;
  * @since 0.0.1
  */
 public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<CredentialsWizardModel, CredentialsEnterPasswordPanelModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(CredentialsEnterPasswordPanelView.class);
 
   // Panel specific components
   private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
@@ -79,7 +85,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
     contentPanel.setLayout(new MigLayout(
       Panels.migXLayout(),
       "[]", // Column constraints
-      "[]0[]32[]0[]32[]" // Row constraints
+      "[]0[]20[]0[]20[]" // Row constraints
     ));
 
     contentPanel.add(Labels.newPasswordNote(), "wrap");
@@ -89,7 +95,6 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
     contentPanel.add(selectWalletMaV.getView().newComponentPanel(), "wrap");
 
     contentPanel.add(Labels.newRestoreWalletNote(), "wrap");
-
   }
 
   @Override
@@ -113,10 +118,16 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
 
   @Override
   public boolean beforeShow() {
+    Optional<Locale> localeOptional;
+    if (Configurations.currentConfiguration != null && Configurations.currentConfiguration.getLocale() != null) {
+      localeOptional = Optional.of(Configurations.currentConfiguration.getLocale());
+    } else {
+      localeOptional = Optional.absent();
+    }
 
-    List<WalletSummary> wallets = WalletManager.getSoftWalletSummaries();
+    List<WalletSummary> wallets = WalletManager.getSoftWalletSummaries(localeOptional);
 
-    selectWalletMaV.getModel().setWalletList(wallets);
+    selectWalletMaV.getModel().setWalletList(wallets, WalletManager.INSTANCE.getCurrentWalletSummary());
     selectWalletMaV.getView().setEnabled(true);
 
     return true;

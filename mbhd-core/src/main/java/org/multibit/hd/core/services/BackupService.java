@@ -66,20 +66,26 @@ public class BackupService extends AbstractService {
   private static final int INITIAL_DELAY = 60;
 
   /**
-   * This is the fastest tick in seconds used for backups
+   * This is the fastest tick in seconds used for the backup scheduler
    * Everything else is done on a multiple of this
    */
-  private static final int TICK_TIME_SECONDS = 120;
+  private static final int TICK_TIME_SECONDS = 12;
+
+  /**
+    * The slowdown rate for performing rolling backups
+    */
+   private static final int ROLLING_BACKUP_MODULO = 10;
+
 
   /**
    * The slowdown rate for performing local zip backups
    */
-  private static final int LOCAL_ZIP_BACKUP_MODULO = 5;
+  private static final int LOCAL_ZIP_BACKUP_MODULO = 50;
 
   /**
-   * The slowdown rate for performing local zip backups
+   * The slowdown rate for performing cloud zip backups
    */
-  private static final int CLOUD_ZIP_BACKUP_MODULO = 15;
+  private static final int CLOUD_ZIP_BACKUP_MODULO = 150;
 
   /**
    * The number of times the backup main loop has incremented
@@ -127,6 +133,11 @@ public class BackupService extends AbstractService {
    */
   private boolean backupsAreRunning = false;
 
+  /**
+   * Whether a cloud backup should be performed at the next tick
+   */
+  private boolean performCloudBackupAtNextTick = false;
+
   @Override
   protected boolean startInternal() {
 
@@ -147,8 +158,8 @@ public class BackupService extends AbstractService {
             // Main backup loop
             //log.debug("The tickCount is {}", tickCount);
 
-            // A rolling backup is performed every tick
-            if (backupsAreEnabled) {
+            // A rolling backup is performed every ROLLING_BACKUP_MODULO tick
+            if (backupsAreEnabled  && tickCount % ROLLING_BACKUP_MODULO == 0) {
               performRollingBackup();
             }
 
@@ -158,8 +169,9 @@ public class BackupService extends AbstractService {
             }
 
             // Check if a cloud zip backup is required
-            // Cloud backups are done every CLOUD_ZIP_BACKUP_MODULO number of ticks
-            if (backupsAreEnabled && tickCount % CLOUD_ZIP_BACKUP_MODULO == 0) {
+            // Cloud backups are done every CLOUD_ZIP_BACKUP_MODULO number of ticks or if the performCloudBackupAtNextTick is set
+            if (backupsAreEnabled && (tickCount % CLOUD_ZIP_BACKUP_MODULO == 0 || performCloudBackupAtNextTick)) {
+              performCloudBackupAtNextTick = false;
               performCloudZipBackup();
             }
 
@@ -306,6 +318,8 @@ public class BackupService extends AbstractService {
         CoreServices.logHistory("Failed to perform cloud backup. Message: " + ioe.getMessage());
         CoreEvents.fireSecurityEvent(SecuritySummary.newBackupFailed());
       }
+    } else {
+      log.debug("Cannot perform cloud backup as no remembered wallet id or password is available");
     }
   }
 
@@ -327,5 +341,9 @@ public class BackupService extends AbstractService {
    */
   public boolean isBackupsAreRunning() {
     return backupsAreRunning;
+  }
+
+  public void setPerformCloudBackupAtNextTick(boolean performCloudBackupAtNextTick) {
+    this.performCloudBackupAtNextTick = performCloudBackupAtNextTick;
   }
 }

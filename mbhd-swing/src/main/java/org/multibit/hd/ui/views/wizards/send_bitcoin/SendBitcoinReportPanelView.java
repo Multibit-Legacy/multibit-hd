@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentStatus;
+import org.multibit.hd.core.events.BitcoinSendingEvent;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
@@ -17,6 +18,7 @@ import org.multibit.hd.ui.views.components.LabelDecorator;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
@@ -49,6 +51,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   private JLabel reportStatusLabel;
 
   private TransactionCreationEvent lastTransactionCreationEvent;
+  private BitcoinSendingEvent lastBitcoinSendingEvent;
   private BitcoinSentEvent lastBitcoinSentEvent;
   private TransactionSeenEvent lastTransactionSeenEvent;
 
@@ -70,9 +73,9 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   public void newPanelModel() {
 
     lastTransactionCreationEvent = null;
+    lastBitcoinSendingEvent = null;
     lastBitcoinSentEvent = null;
     lastTransactionSeenEvent = null;
-
   }
 
   @Override
@@ -122,9 +125,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   @Override
   protected void initialiseButtons(AbstractWizard<SendBitcoinWizardModel> wizard) {
-
     PanelDecorator.addFinish(this, wizard);
-
   }
 
   @Override
@@ -136,6 +137,9 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
           LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
           transactionConstructionStatusDetail.setText("");
+          transactionBroadcastStatusSummary.setText("");
+          transactionBroadcastStatusDetail.setText("");
+          transactionConfirmationStatus.setText("");
         }
       });
     return true;
@@ -143,7 +147,6 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   @Override
   public void afterShow() {
-
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
@@ -164,19 +167,24 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
               onTransactionCreationEvent(lastTransactionCreationEvent);
               lastTransactionCreationEvent = null;
             }
+
+            if (lastBitcoinSendingEvent != null) {
+              onBitcoinSendingEvent(lastBitcoinSendingEvent);
+              lastBitcoinSendingEvent = null;
+            }
+
             if (lastBitcoinSentEvent != null) {
               onBitcoinSentEvent(lastBitcoinSentEvent);
               lastBitcoinSentEvent = null;
             }
+
             if (lastTransactionSeenEvent != null) {
               onTransactionSeenEvent(lastTransactionSeenEvent);
               lastTransactionSeenEvent = null;
             }
           }
-
         }
       });
-
   }
 
   @Override
@@ -186,7 +194,6 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   @Subscribe
   public void onTransactionCreationEvent(final TransactionCreationEvent transactionCreationEvent) {
-
     log.debug("Received the TransactionCreationEvent: " + transactionCreationEvent);
 
     lastTransactionCreationEvent = transactionCreationEvent;
@@ -220,11 +227,29 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
             LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, detailMessage);
             LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
           }
-
         }
       });
+  }
 
+  @Subscribe
+  public void onBitcoinSendingEvent(final BitcoinSendingEvent bitcoinSendingEvent) {
+    log.debug("Received the BitcoinSendingEvent: " + bitcoinSendingEvent);
 
+    lastBitcoinSendingEvent = bitcoinSendingEvent;
+
+    // The event may be fired before the UI has initialised
+    if (!initialised) {
+      return;
+    }
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.SENDING_BITCOIN));
+          AwesomeDecorator.bindIcon(AwesomeIcon.BULLHORN, transactionBroadcastStatusSummary, true, MultiBitUI.NORMAL_ICON_SIZE);
+        }
+      });
   }
 
   @Subscribe
@@ -297,7 +322,6 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
           }
         });
-
     }
   }
 }

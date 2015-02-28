@@ -120,7 +120,6 @@ public enum MessageKey {
   ALL("all"),
   NONE("none"),
   ERROR("error"),
-  @Deprecated
   DEFAULT("default"),
 
   QR_CODE("qr_code"),
@@ -187,6 +186,15 @@ public enum MessageKey {
   LOCAL_AMOUNT_INCLUDING_FEES("local_amount_including_fees"),
   AMOUNT_PAID("amount_paid"),
   TRANSACTION_FEE("transaction_fee"),
+  ADJUST_TRANSACTION_FEE("adjust_transaction_fee"),
+  EXPLAIN_TRANSACTION_FEE1("explain_transaction_fee1"),
+  EXPLAIN_TRANSACTION_FEE2("explain_transaction_fee2"),
+  TRANSACTION_FEE_CHOSEN("transaction_fee_chosen"),
+  LOWER("lower"),
+  HIGHER("higher"),
+  EXPLAIN_CLIENT_FEE1("explain_client_fee1"),
+  EXPLAIN_CLIENT_FEE2("explain_client_fee2"),
+  DONATE_NOW("donate_now"),
 
   CLIENT_FEE("client_fee"),
   CLIENT_FEE_NOW("client_fee_now"),
@@ -218,6 +226,8 @@ public enum MessageKey {
 
   SHOW_BALANCE("show_balance"),
   SHOW_BALANCE_TOOLTIP("show_balance_tooltip"),
+
+  BLOCK_EXPLORER("block_explorer"),
 
   SELECT_THEME("select_theme"),
   SELECT_THEME_TOOLTIP("select_theme_tooltip"),
@@ -319,7 +329,8 @@ public enum MessageKey {
 
   // Panels
 
-  NETWORK_CONFIGURATION_ERROR("network_configuration_error"),
+  GENERAL_NETWORK_CONFIGURATION_ERROR("general_network_configuration_error"),
+  BITCOIN_NETWORK_CONFIGURATION_ERROR("bitcoin_network_configuration_error"),
   HELP("help"),
 
   SETTINGS("settings"),
@@ -495,6 +506,8 @@ public enum MessageKey {
   EMPTY_WALLET_CONFIRM_TITLE("empty_wallet_confirm_title"),
   EMPTY_WALLET_PROGRESS_TITLE("empty_wallet_progress_title"),
 
+  PAYMENT_SETTINGS_TITLE("payment_settings_title"),
+
   // Tools titles
 
   SIGN_MESSAGE_TITLE("sign_message_title"),
@@ -599,6 +612,9 @@ public enum MessageKey {
 
   SHOW_EDIT_WALLET_WIZARD("show_edit_wallet_wizard"),
   SHOW_EDIT_WALLET_WIZARD_TOOLTIP("show_edit_wallet_wizard_tooltip"),
+
+  SHOW_PAYMENT_SETTINGS_WIZARD("show_payment_settings_wizard"),
+  SHOW_PAYMENT_SETTINGS_WIZARD_TOOLTIP("show_payment_settings_wizard_tooltip"),
 
   SHOW_CHANGE_PASSWORD_WIZARD("show_change_password_wizard"),
   SHOW_CHANGE_PASSWORD_WIZARD_TOOLTIP("show_change_password_wizard_tooltip"),
@@ -736,8 +752,8 @@ public enum MessageKey {
   EXCHANGE_SETTINGS_NOTE_1("exchange_settings_note_1"),
 
   LANGUAGE_CHANGE_NOTE_1("language_change_note_1"),
-
-  THEME_CHANGE_NOTE_1("theme_change_note_1"),
+  LOCALISATION_IS_BY_VOLUNTEERS("localisation_is_by_volunteers"),
+  I_WOULD_LIKE_TO_HELP("i_would_like_to_help"),
 
   SOUND_CHANGE_NOTE_1("sound_change_note_1"),
 
@@ -796,8 +812,8 @@ public enum MessageKey {
   TRANSACTION_HASH("transaction_hash"),
   RAW_TRANSACTION("raw_transaction"),
 
-  VIEW_IN_BLOCKCHAIN_INFO("view_in_blockchain_info"),
-  VIEW_IN_BLOCKCHAIN_INFO_TOOLTIP("view_in_blockchain_info_tooltip"),
+  VIEW_IN_BLOCK_EXPLORER("view_in_block_explorer"),
+  VIEW_IN_BLOCK_EXPLORER_TOOLTIP("view_in_block_explorer_tooltip"),
 
   VIEW_IN_EXTERNAL_BROWSER("view_in_external_browser"),
   VIEW_IN_EXTERNAL_BROWSER_TOOLTIP("view_in_external_browser_tooltip"),

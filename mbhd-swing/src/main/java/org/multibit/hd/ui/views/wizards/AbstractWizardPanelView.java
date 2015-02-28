@@ -123,7 +123,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
 
     // Add the title to the wizard
     JLabel title = Labels.newTitleLabel(titleKey);
-    wizardScreenPanel.add(title, "span 4," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",shrink,aligny top,align center,wrap");
+    wizardScreenPanel.add(title, "span 4," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",shrink 200,aligny top,align center,h 96lp!,wrap");
 
     // Provide a basic empty content panel (allows lazy initialisation later)
     contentPanel = Panels.newDetailBackgroundPanel(backgroundIcon);
@@ -311,7 +311,11 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    * @return The "previous" button for this view
    */
   public JButton getPreviousButton() {
-    return previousButton.get();
+    if (previousButton.isPresent()) {
+      return previousButton.get();
+    } else {
+      return null;
+    }
   }
 
   public void setPreviousButton(JButton previousButton) {
@@ -478,14 +482,14 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    */
   public void registerDefaultButton(JButton button) {
 
-    Panels.applicationFrame.getRootPane().setDefaultButton(button);
+    Panels.getApplicationFrame().getRootPane().setDefaultButton(button);
 
     // Remove the binding for pressed
-    Panels.applicationFrame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+    Panels.getApplicationFrame().getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
       .put(KeyStroke.getKeyStroke("ENTER"), "none");
 
     // Target the binding for released
-    Panels.applicationFrame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+    Panels.getApplicationFrame().getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
       .put(KeyStroke.getKeyStroke("released ENTER"), "press");
 
   }
@@ -569,6 +573,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
                 restoreButton.get().setEnabled(event.isEnabled());
               }
               break;
+            default:
+              // No dothing
           }
 
         }

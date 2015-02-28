@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.exchanges.ExchangeKey;
@@ -16,6 +17,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -179,7 +181,7 @@ public class Labels {
    *
    * @return A new label with HTML formatting to correctly render the line break and contents
    */
-  public static JLabel newNoteLabel(MessageKey key, Object[] values) {
+  public static JLabel newNoteLabel(MessageKey key, @Nullable Object[] values) {
 
     String line;
     if (values != null && values.length > 0) {
@@ -521,6 +523,15 @@ public class Labels {
   public static JLabel newShowBalance() {
 
     return Labels.newLabel(MessageKey.SHOW_BALANCE);
+
+  }
+
+  /**
+   * @return A new "Block explorer" label
+   */
+  public static JLabel newBlockExplorer() {
+
+    return Labels.newLabel(MessageKey.BLOCK_EXPLORER);
 
   }
 
@@ -886,6 +897,48 @@ public class Labels {
   }
 
   /**
+    * @return A new "Adjust transaction fee" message
+    */
+   public static JLabel newAdjustTransactionFee() {
+     return newLabel(MessageKey.ADJUST_TRANSACTION_FEE);
+   }
+
+  /**
+    * @return A new "Explain transaction fee 1" message
+    */
+   public static JLabel newExplainTransactionFee1() {
+     return newNoteLabel(MessageKey.EXPLAIN_TRANSACTION_FEE1, null);
+   }
+
+  /**
+   * @return A new "Explain transaction fee 2" message
+   */
+  public static JLabel newExplainTransactionFee2() {
+    return newNoteLabel(MessageKey.EXPLAIN_TRANSACTION_FEE2, null);
+  }
+
+  /**
+   * @return A new "Explain client fee 1" message
+   */
+  public static JLabel newExplainClientFee1(Coin clientFee) {
+    return newNoteLabel(MessageKey.EXPLAIN_CLIENT_FEE1, new Object[]{String.valueOf(clientFee.longValue())});
+  }
+
+  /**
+   * @return A new "Explain client fee 2" message
+   */
+  public static JLabel newExplainClientFee2() {
+    return newNoteLabel(MessageKey.EXPLAIN_CLIENT_FEE2, null);
+  }
+
+  /**
+   * @return A new "Donate now" message
+   */
+  public static JLabel newDonateNow() {
+    return newLabel(MessageKey.DONATE_NOW);
+  }
+
+  /**
    * @return A new "transaction hash" label
    */
   public static JLabel newTransactionHash() {
@@ -979,13 +1032,6 @@ public class Labels {
    */
   public static JLabel newBitcoinAddress() {
     return newLabel(MessageKey.BITCOIN_ADDRESS);
-  }
-
-  /**
-   * @return A new "contact extended public key" label
-   */
-  public static JLabel newExtendedPublicKey() {
-    return newLabel(MessageKey.EXTENDED_PUBLIC_KEY);
   }
 
   /**
@@ -1198,16 +1244,15 @@ public class Labels {
   }
 
   /**
-   * @return A new "theme change" note
-   */
-  public static JLabel newThemeChangeNote() {
+    * @return A new "MultiBit HD is localised by volunteers" note
+    */
+   public static JLabel newLocalisationByVolunteersNote() {
 
-    return newNoteLabel(new MessageKey[]{
-      MessageKey.THEME_CHANGE_NOTE_1
-    }, new Object[][]{});
+     return newNoteLabel(new MessageKey[]{
+       MessageKey.LOCALISATION_IS_BY_VOLUNTEERS
+     }, new Object[][]{});
 
-  }
-
+   }
   /**
    * @return A new "sound change" note
    */

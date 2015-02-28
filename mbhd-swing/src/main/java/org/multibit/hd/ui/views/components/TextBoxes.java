@@ -370,31 +370,6 @@ public class TextBoxes {
   }
 
   /**
-   * @param listener The document listener for detecting changes to the content
-   * @param readOnly True if the field should be read only (i.e. in multi-edit mode)
-   *
-   * @return A new "enter extended public key" text field
-   */
-  public static JTextField newEnterExtendedPublicKey(DocumentListener listener, boolean readOnly) {
-
-    JTextField textField;
-    if (readOnly) {
-      textField = newReadOnlyTextField(40, MessageKey.EXTENDED_PUBLIC_KEY, MessageKey.EXTENDED_PUBLIC_KEY_TOOLTIP);
-    } else {
-      textField = newTextField(40);
-    }
-
-    // Detect changes
-    textField.getDocument().addDocumentListener(listener);
-
-    // Currently the extended public field does nothing so disable
-    textField.setEnabled(false);
-
-    return textField;
-
-  }
-
-  /**
    * @param maximum The largest value than can be accepted (typically the wallet Bitcoin balance) - no financial calculations are performed on this value
    *
    * @return A new text field for Bitcoin amount entry

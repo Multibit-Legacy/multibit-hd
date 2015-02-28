@@ -636,6 +636,20 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "donate" button with icon
+   */
+  public static JButton newDonateNowButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.DONATE_NOW, MessageKey.DONATE_NOW);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.HEART, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "search" button with icon
    */
   public static JButton newSearchButton(Action action) {
@@ -713,6 +727,19 @@ public class Buttons {
   public static JButton newLaunchBrowserButton(Action action, MessageKey key, MessageKey tooltipKey) {
 
     JButton button = newButton(action, key, tooltipKey);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+  /**
+   * @param action The click action
+   *
+   * @return A new "launch browser" button with icon and message
+   */
+  public static JButton newLaunchBrowserButton(Action action, MessageKey key, MessageKey tooltipKey, Object blockExplorerId) {
+
+    JButton button = newButton(action, key, tooltipKey, blockExplorerId);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.EXTERNAL_LINK, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -917,6 +944,26 @@ public class Buttons {
 
     return button;
   }
+
+  /**
+    * @param action The click action
+    *
+    * @return A new "Fee settings" wizard button with icon
+    */
+   public static JButton newShowFeeSettingsWizardButton(Action action) {
+
+     JButton button = newLargeButton(action, MessageKey.FEES_SETTINGS_TITLE, MessageKey.FEES_SETTINGS_TITLE);
+
+     AwesomeDecorator.applyIcon(
+       AwesomeIcon.TICKET,
+       button,
+       true,
+       JLabel.BOTTOM,
+       MultiBitUI.LARGE_ICON_SIZE
+     );
+
+     return button;
+   }
 
   /**
    * @param action The click action
@@ -1141,7 +1188,27 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @param festName
+   * @return A new "Payment settings" wizard button with icon
+   */
+  public static JButton newShowPaymentSettingsWizardButton(Action action) {
+
+    JButton button = newLargeButton(action, MessageKey.SHOW_PAYMENT_SETTINGS_WIZARD, MessageKey.SHOW_PAYMENT_SETTINGS_WIZARD_TOOLTIP);
+
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.MONEY,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
+   * @param festName The FEST name
    * @return A new "PIN matrix" button with icon
    */
   public static JButton newPinMatixButton(Action action, String festName) {
@@ -1161,7 +1228,4 @@ public class Buttons {
 
     return button;
   }
-
-
-
 }

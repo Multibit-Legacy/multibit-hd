@@ -41,21 +41,21 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
 
     MigLayout layout = new MigLayout(
       Panels.migXYDetailLayout(),
-      "6[]6[]6[]6", // Column constraints
-      "6[]6[]6[]6" // Row constraints
+      "6[]6[]6[]6[]6", // Column constraints
+      "6[]6[]6" // Row constraints
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
 
     // Row 1
     contentPanel.add(Buttons.newLargeShowSignMessageWizardButton(getShowSignMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newShowVerifyMessageWizardButton(getShowVerifyMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
+    contentPanel.add(Buttons.newShowVerifyMessageWizardButton(getShowVerifyMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowVerifyNetworkButton(getShowVerifyNetworkAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    // Trezor tool is in top right for good visibility
+    contentPanel.add(Buttons.newShowUseTrezorWizardButton(getShowUseTrezorWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
     // Row 2
-    contentPanel.add(Buttons.newShowVerifyNetworkButton(getShowVerifyNetworkAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    contentPanel.add(Buttons.newShowAboutButton(getShowAboutAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    // Trezor tool is in bottom right for fastest visibility
-    contentPanel.add(Buttons.newShowUseTrezorWizardButton(getShowUseTrezorWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
+    contentPanel.add(Buttons.newShowAboutButton(getShowAboutAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push, wrap");
 
     setInitialised(true);
     return contentPanel;

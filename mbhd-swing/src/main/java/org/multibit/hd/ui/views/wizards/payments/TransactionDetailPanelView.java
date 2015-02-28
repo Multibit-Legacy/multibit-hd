@@ -2,6 +2,9 @@ package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.blockexplorer.BlockExplorer;
+import org.multibit.hd.core.blockexplorer.BlockExplorers;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.dto.TransactionData;
@@ -23,6 +26,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.net.URI;
+import java.text.MessageFormat;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -36,8 +40,6 @@ import java.net.URI;
 public class TransactionDetailPanelView extends AbstractWizardPanelView<PaymentsWizardModel, TransactionDetailPanelModel> {
 
   private static final Logger log = LoggerFactory.getLogger(TransactionDetailPanelView.class);
-
-  private static final String BLOCKCHAIN_INFO_PREFIX = "https://blockchain.info/tx-index/";
 
   private static final int  MAXIMUM_ERROR_LENGTH = 100;
 
@@ -89,13 +91,13 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
     // Raw transaction requires its own scroll pane
     JScrollPane scrollPane = ScrollPanes.newReadOnlyScrollPane(rawTransactionTextArea);
 
-    JButton blockchainInfoBrowserButton = Buttons.newLaunchBrowserButton(getBlockchainInfoBrowserAction(), MessageKey.VIEW_IN_BLOCKCHAIN_INFO, MessageKey.VIEW_IN_BLOCKCHAIN_INFO_TOOLTIP);
+    BlockExplorer blockExplorer = lookupBlockExplorer();
+    JButton blockExplorerBrowserButton = Buttons.newLaunchBrowserButton(getBlockExplorerBrowserAction(), MessageKey.VIEW_IN_BLOCK_EXPLORER, MessageKey.VIEW_IN_BLOCK_EXPLORER_TOOLTIP, blockExplorer.getName());
 
     contentPanel.add(transactionHashLabel, "wrap");
     contentPanel.add(transactionHashValue, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
-    // Consider adding more providers here (buttons break up the information overload)
-    contentPanel.add(blockchainInfoBrowserButton, "shrink,alignx left,span 2,wrap");
+    contentPanel.add(blockExplorerBrowserButton, "shrink,alignx left,span 2,wrap");
 
     contentPanel.add(rawTransactionLabel, "wrap");
     contentPanel.add(scrollPane, "grow,push,span 2," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
@@ -150,25 +152,31 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
   }
 
   /**
-   * @return The "blockchain info browser" action
+   * @return The "block explorer browser" action
    */
-  private Action getBlockchainInfoBrowserAction() {
+  private Action getBlockExplorerBrowserAction() {
 
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        URI blockchainInfoURL = null;
+        URI lookupURL = null;
         try {
           PaymentData paymentData = getWizardModel().getPaymentData();
           if (paymentData != null && paymentData instanceof TransactionData) {
             TransactionData transactionData = (TransactionData) paymentData;
-            blockchainInfoURL = URI.create(BLOCKCHAIN_INFO_PREFIX + transactionData.getTransactionId());
-            Desktop.getDesktop().browse(blockchainInfoURL);
+
+            // Create block explorer lookup
+            BlockExplorer blockExplorer = lookupBlockExplorer();
+
+            MessageFormat formatter = blockExplorer.getTransactionLookupMessageFormat();
+            String lookupString = formatter.format(new String[]{transactionData.getTransactionId()});
+            lookupURL = URI.create(lookupString);
+            Desktop.getDesktop().browse(lookupURL);
           }
         } catch (Exception ex) {
           // Log the error but carry on (no need to shut down for this type of error - just show an alert)
-          log.error("Failed to open URL " + blockchainInfoURL, ex);
+          log.error("Failed to open URL " + lookupURL, ex);
           String message = ex.toString();
           if (message.length() >MAXIMUM_ERROR_LENGTH) {
             message = message.substring(0, MAXIMUM_ERROR_LENGTH) + ELLIPSIS;
@@ -183,5 +191,19 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
         }
       }
     };
+  }
+
+  private BlockExplorer lookupBlockExplorer() {
+    Optional<BlockExplorer> blockExplorerOptional = BlockExplorers.getBlockExplorerById(Configurations.currentConfiguration.getAppearance().getBlockExplorerId());
+    BlockExplorer blockExplorer;
+    if (blockExplorerOptional.isPresent()) {
+      blockExplorer = blockExplorerOptional.get();
+    } else {
+      // Use the default
+      blockExplorer = BlockExplorers.getDefaultBlockExplorer();
+      // Remember for next time
+      Configurations.currentConfiguration.getAppearance().setBlockExplorerId(blockExplorer.getId());
+    }
+    return blockExplorer;
   }
 }

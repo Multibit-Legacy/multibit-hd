@@ -1,14 +1,12 @@
 package org.multibit.hd.ui.views.wizards.empty_wallet;
 
-import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.Wallet;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.Wallet;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -150,26 +148,26 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 
     // Update the model and view for the client fee
-    Optional<FeeState> feeStateOptional = WalletManager.INSTANCE.calculateBRITFeeState(true);
+    Optional<FeeState> feeStateOptional = getWizardModel().getSendRequestSummary().getFeeState();
     log.debug("Fee state at beforeShow {}", feeStateOptional);
     String feeText;
     if (feeStateOptional.isPresent()) {
       FeeState feeState = feeStateOptional.get();
 
-      // With an empty wallet you always pay the client fee now (if above the dust level)
+      // Work out the fee text
       if (feeState.getFeeOwed().compareTo(Coin.ZERO) < 0) {
         // The user has overpaid
         feeText = Languages.safeText(MessageKey.CLIENT_FEE_OVERPAID);
       }  else {
-        if (feeState.getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) <= 0) {
-          // Below dust limit
-          feeText = "";
-        } else {
+        if (getWizardModel().getSendRequestSummary().isApplyClientFee()) {
           // The fee is due now
           feeText = Languages.safeText(MessageKey.CLIENT_FEE_NOW);
           clientFeeDisplayAmountMaV.getModel().setCoinAmount(feeState.getFeeOwed());
           clientFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
           clientFeeDisplayAmountMaV.getView().updateView(configuration);
+        } else {
+          // No client fee added
+          feeText = "";
         }
       }
     } else {

@@ -49,6 +49,7 @@ import org.multibit.hd.core.services.BackupService;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.BitcoinNetwork;
+import org.multibit.hd.core.utils.Collators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -64,6 +65,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import static org.multibit.hd.core.dto.WalletId.*;
+import static org.multibit.hd.core.utils.Collators.*;
 
 /**
  * <p>Manager to provide the following to core users:</p>
@@ -82,6 +84,8 @@ public enum WalletManager implements WalletEventListener {
     public void onCoinsReceived(Wallet wallet, Transaction tx, Coin prevBalance, Coin newBalance) {
       // Emit an event so that GUI elements can update as required
       Coin value = tx.getValue(wallet);
+      log.debug("Received transaction {} with value {}", tx, value);
+
       CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx, value));
     }
 
@@ -649,6 +653,12 @@ public enum WalletManager implements WalletEventListener {
     // Set up auto-save on the wallet.
     addAutoSaveListener(walletSummary.getWallet(), walletSummary.getWalletFile());
 
+    // Remember the info required for the next backups
+    BackupService backupService = CoreServices.getOrCreateBackupService();
+    backupService.rememberWalletSummaryAndPasswordForRollingBackup(walletSummary, walletSummary.getWalletPassword().getPassword());
+    backupService.rememberWalletIdAndPasswordForLocalZipBackup(walletSummary.getWalletId(), walletSummary.getWalletPassword().getPassword());
+    backupService.rememberWalletIdAndPasswordForCloudZipBackup(walletSummary.getWalletId(), walletSummary.getWalletPassword().getPassword());
+
     // Check if the wallet needs to synch (not required during FEST tests)
     if (performSync) {
       log.info("Wallet configured - performing synchronization");
@@ -1078,10 +1088,11 @@ public enum WalletManager implements WalletEventListener {
   /**
    *
    * <p>This list contains MBHD soft wallets and Trezor soft wallets</p>
-   * @return A list of soft wallet summaries based on the current application directory contents (never null)
+   * @param Locale the locale to sort results by
+   * @return A list of soft wallet summaries based on the current application directory contents (never null), ordered by wallet name
    *
    */
-  public static List<WalletSummary> getSoftWalletSummaries() {
+  public static List<WalletSummary> getSoftWalletSummaries(final Optional<Locale> localeOptional) {
 
     List<File> walletDirectories = findWalletDirectories(InstallationManager.getOrCreateApplicationDataDirectory());
     Optional<String> walletRoot = INSTANCE.getCurrentWalletRoot();
@@ -1094,6 +1105,22 @@ public enum WalletManager implements WalletEventListener {
         softWalletSummaries.add(walletSummary);
       }
     }
+
+    // Sort by name of wallet
+    Collections.sort(softWalletSummaries, new Comparator<WalletSummary>() {
+      @Override
+      public int compare(WalletSummary me, WalletSummary other) {
+        String myName = me.getName();
+        if (myName == null) {
+          myName = "";
+        }
+        String otherName = other.getName();
+        if (otherName == null) {
+          otherName = "";
+        }
+        return Collators.newCollator(localeOptional).compare(myName, otherName);
+      }
+    });
 
     return softWalletSummaries;
   }
@@ -1199,19 +1226,11 @@ public enum WalletManager implements WalletEventListener {
       TransactionSentBySelfProvider transactionSentBySelfProvider = new TransactionInfoSentBySelfProvider(getCurrentWalletSummary().get().getWalletId());
       feeService.setTransactionSentBySelfProvider(transactionSentBySelfProvider);
 
-      File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-      Optional<File> walletFileOptional = getCurrentWalletFile(applicationDataDirectory);
-      if (walletFileOptional.isPresent()) {
-        log.debug("Wallet file prior to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
-      }
       FeeState feeState = feeService.calculateFeeState(wallet, false);
       if (includeOneExtraFee) {
         feeState.setFeeOwed(feeState.getFeeOwed().add(FeeService.FEE_PER_SEND));
       }
       Optional<FeeState> feeStateOptional = Optional.of(feeState);
-      if (walletFileOptional.isPresent()) {
-        log.debug("Wallet file after to calculateFeeState is " + walletFileOptional.get().length() + " bytes");
-      }
 
       return feeStateOptional;
     } else {

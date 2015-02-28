@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -123,6 +125,17 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
     } else {
       PanelDecorator.addExitRestorePreviousFinish(this, wizard);
     }
+
+    if (getPreviousButton() != null) {
+      getPreviousButton().addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          // Clear any 'password failed' before moving back
+          walletLoadedStatusLabel.setText("");
+          walletLoadedStatusLabel.setIcon(null);
+        }
+      });
+    }
   }
 
   @Override
@@ -158,7 +171,6 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
           if (unprocessedWalletLoadEvent != null) {
             onWalletLoadEvent(unprocessedWalletLoadEvent);
           }
-
         }
       });
   }

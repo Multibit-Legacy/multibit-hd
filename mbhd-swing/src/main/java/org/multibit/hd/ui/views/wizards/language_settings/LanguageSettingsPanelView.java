@@ -6,11 +6,13 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.LanguageKey;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -21,8 +23,10 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.Locale;
 
 /**
@@ -45,14 +49,11 @@ public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageS
    * @param panelName The panel name
    */
   public LanguageSettingsPanelView(AbstractWizard<LanguageSettingsWizardModel> wizard, String panelName) {
-
     super(wizard, panelName, MessageKey.LANGUAGE_SETTINGS_TITLE, AwesomeIcon.GLOBE);
-
   }
 
   @Override
   public void newPanelModel() {
-
     // Use a deep copy to avoid reference leaks
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
@@ -61,16 +62,14 @@ public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageS
       getPanelName(),
       configuration
     ));
-
   }
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
-
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][]", // Column constraints
-      "[][]" // Row constraints
+      "[][][]" // Row constraints
     ));
 
     LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage().deepCopy();
@@ -85,56 +84,47 @@ public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageS
     contentPanel.add(Labels.newSelectLanguageLabel(), "shrink,aligny top");
     contentPanel.add(languagesComboBox, "growx," + MultiBitUI.COMBO_BOX_WIDTH_MIG + ",push,aligny top,wrap");
 
+    contentPanel.add(Labels.newLocalisationByVolunteersNote(), "span 2,wrap");
+    contentPanel.add(Labels.newBlankLabel());
+    contentPanel.add(Buttons.newLaunchBrowserButton(getLaunchBrowserAction(), MessageKey.I_WOULD_LIKE_TO_HELP, MessageKey.I_WOULD_LIKE_TO_HELP), "wrap");
+
+    contentPanel.add(Labels.newBlankLabel(), "span 2, push, wrap"); // spacer
   }
 
   @Override
   protected void initialiseButtons(AbstractWizard<LanguageSettingsWizardModel> wizard) {
-
     PanelDecorator.addCancelApply(this, wizard);
-
   }
 
   @Override
   public void fireInitialStateViewEvents() {
-
     // Apply button starts off enabled
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.APPLY, true);
-
   }
 
   @Override
   public void afterShow() {
-
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-
         languagesComboBox.requestFocusInWindow();
-
       }
     });
-
   }
 
   @Override
   public boolean beforeHide(boolean isExitCancel) {
-
     if (!isExitCancel) {
-
       // Switch the main configuration over to the new one
       Configurations.switchConfiguration(getWizardModel().getConfiguration());
-
     }
 
     // Must be OK to proceed
     return true;
-
   }
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
-
-
   }
 
 
@@ -145,7 +135,6 @@ public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageS
    */
   @Override
   public void actionPerformed(ActionEvent e) {
-
     JComboBox source = (JComboBox) e.getSource();
     String localeCode = LanguageKey.values()[source.getSelectedIndex()].getKey();
 
@@ -159,7 +148,22 @@ public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageS
 
     // Update the model
     getWizardModel().setConfiguration(configuration);
-
   }
 
+  /**
+    * @return The "launch browser" action
+    */
+   private Action getLaunchBrowserAction() {
+     return new AbstractAction() {
+       @Override
+       public void actionPerformed(ActionEvent e) {
+
+         try {
+           Desktop.getDesktop().browse(Languages.MBHD_TRANSLATION_WEBSITE_URI);
+         } catch (IOException e1) {
+           ExceptionHandler.handleThrowable(e1);
+         }
+       }
+     };
+   }
 }

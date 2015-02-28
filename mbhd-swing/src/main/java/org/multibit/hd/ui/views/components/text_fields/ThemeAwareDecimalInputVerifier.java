@@ -30,8 +30,8 @@ public class ThemeAwareDecimalInputVerifier extends InputVerifier {
   private final Color validColor = Themes.currentTheme.dataEntryBackground();
 
   public ThemeAwareDecimalInputVerifier() {
-    minValue = new BigDecimal(-Double.MAX_VALUE);
-    maxValue = new BigDecimal(Double.MAX_VALUE);
+    minValue = BigDecimal.valueOf(-Double.MAX_VALUE);
+    maxValue = BigDecimal.valueOf(Double.MAX_VALUE);
   }
 
   /**
@@ -53,6 +53,11 @@ public class ThemeAwareDecimalInputVerifier extends InputVerifier {
   }
 
   public boolean verify(JComponent component) {
+
+    if (!(component instanceof JTextComponent)) {
+      // Cannot verify a non-text component
+      return false;
+    }
 
     String text = ((JTextComponent) component).getText();
 

@@ -45,12 +45,18 @@ import org.multibit.hd.ui.views.wizards.exit.ExitWizardModel;
 import org.multibit.hd.ui.views.wizards.export_payments.ExportPaymentsWizard;
 import org.multibit.hd.ui.views.wizards.export_payments.ExportPaymentsWizardModel;
 import org.multibit.hd.ui.views.wizards.export_payments.ExportPaymentsWizardState;
+import org.multibit.hd.ui.views.wizards.fee_settings.FeeSettingsState;
+import org.multibit.hd.ui.views.wizards.fee_settings.FeeSettingsWizard;
+import org.multibit.hd.ui.views.wizards.fee_settings.FeeSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.lab_settings.LabSettingsState;
 import org.multibit.hd.ui.views.wizards.lab_settings.LabSettingsWizard;
 import org.multibit.hd.ui.views.wizards.lab_settings.LabSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsState;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizard;
 import org.multibit.hd.ui.views.wizards.language_settings.LanguageSettingsWizardModel;
+import org.multibit.hd.ui.views.wizards.payment_settings.PaymentSettingsState;
+import org.multibit.hd.ui.views.wizards.payment_settings.PaymentSettingsWizard;
+import org.multibit.hd.ui.views.wizards.payment_settings.PaymentSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsState;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsWizard;
 import org.multibit.hd.ui.views.wizards.payments.PaymentsWizardModel;
@@ -343,6 +349,20 @@ public class Wizards {
   }
 
   /**
+   * @return A new "payment settings" wizard
+   */
+  public static PaymentSettingsWizard newPaymentSettingsWizard() {
+
+    log.debug("New 'Payment wizard'");
+
+    // Ensure we work with a copy of the current configuration in case of cancellation
+    Configuration configuration = Configurations.currentConfiguration.deepCopy();
+
+    return new PaymentSettingsWizard(new PaymentSettingsWizardModel(PaymentSettingsState.PAYMENT_SETTINGS, configuration));
+
+  }
+
+  /**
    * @return A new "language settings" wizard for language selection
    */
   public static LanguageSettingsWizard newLanguageSettingsWizard() {
@@ -368,6 +388,18 @@ public class Wizards {
     return new AppearanceSettingsWizard(new AppearanceSettingsWizardModel(AppearanceSettingsState.APPEARANCE_ENTER_DETAILS, configuration));
   }
 
+  /**
+   * @return A new "fee settings" wizard for fee customisation
+   */
+  public static FeeSettingsWizard newFeeSettingsWizard() {
+
+    log.debug("New 'Fee settings wizard'");
+
+    // Ensure we work with a copy of the current configuration in case of cancellation
+    Configuration configuration = Configurations.currentConfiguration.deepCopy();
+
+    return new FeeSettingsWizard(new FeeSettingsWizardModel(FeeSettingsState.FEE_ENTER_DETAILS, configuration));
+  }
   /**
    * @return A new "sound settings" wizard for sound selection
    */

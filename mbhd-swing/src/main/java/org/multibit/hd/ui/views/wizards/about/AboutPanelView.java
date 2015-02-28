@@ -106,9 +106,7 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
         } catch (IOException e1) {
           ExceptionHandler.handleThrowable(e1);
         }
-
       }
     };
   }
-
 }

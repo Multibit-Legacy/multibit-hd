@@ -1,9 +1,9 @@
 package org.multibit.hd.core.dto;
 
+import com.google.common.base.Optional;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Wallet;
-import com.google.common.base.Optional;
 import org.multibit.hd.brit.dto.FeeState;
 import org.spongycastle.crypto.params.KeyParameter;
 
@@ -18,7 +18,6 @@ import org.spongycastle.crypto.params.KeyParameter;
 public class SendRequestSummary {
 
   private final Address destinationAddress;
-  private final Coin amount;
   private final Optional<FiatPayment> fiatPayment;
   private final Address changeAddress;
   private final Coin feePerKB;
@@ -26,11 +25,12 @@ public class SendRequestSummary {
 
   // Mutable values
   private boolean emptyWallet;
-  private Optional<Address> feeAddress = Optional.absent();
+  private Coin amount;
   private Optional<KeyParameter> keyParameter = Optional.absent();
   private Optional<Wallet.SendRequest> sendRequest = Optional.absent();
   private Optional<String> notes = Optional.absent();
   private String password;
+  private boolean applyClientFee = false;
 
   /**
    * The client fee added to the sendRequest.tx
@@ -68,7 +68,6 @@ public class SendRequestSummary {
     this.password = password;
     this.feeState = feeState;
     this.emptyWallet = emptyWallet;
-
   }
 
   /**
@@ -84,6 +83,10 @@ public class SendRequestSummary {
    */
   public Coin getAmount() {
     return amount;
+  }
+
+  public void setAmount(Coin recipientAmount) {
+    amount = recipientAmount;
   }
 
   /**
@@ -137,13 +140,6 @@ public class SendRequestSummary {
   }
 
   /**
-   * @return The client fee address (from BRIT)
-   */
-  public Optional<Address> getFeeAddress() {
-    return feeAddress;
-  }
-
-  /**
    * @return True if the wallet should be fully emptied including all payable fees
    */
   public boolean isEmptyWallet() {
@@ -152,10 +148,6 @@ public class SendRequestSummary {
 
   public void setEmptyWallet(boolean emptyWallet) {
     this.emptyWallet = emptyWallet;
-  }
-
-  public void setFeeAddress(Optional<Address> feeAddress) {
-    this.feeAddress = feeAddress;
   }
 
   /**
@@ -197,18 +189,27 @@ public class SendRequestSummary {
     this.clientFeeAdded = clientFeeAdded;
   }
 
+  public boolean isApplyClientFee() {
+    return applyClientFee;
+  }
+
+  public void setApplyClientFee(boolean applyClientFee) {
+    this.applyClientFee = applyClientFee;
+  }
+
   @Override
   public String toString() {
     return "SendRequestSummary{" +
       "destinationAddress=" + destinationAddress +
       ", amount=" + amount +
-      ", fiatPayment=" +fiatPayment +
+      ", fiatPayment=" + fiatPayment +
       ", changeAddress=" + changeAddress +
       ", feePerKB=" + feePerKB +
       ", credentials=***" +
       ", feeStateOptional=" + feeState +
       ", clientFeeAdded=" + clientFeeAdded +
-      ", notes = " + notes +
+      ", notes=***" +
+      ", applyClientFee= " + applyClientFee +
       '}';
   }
 }

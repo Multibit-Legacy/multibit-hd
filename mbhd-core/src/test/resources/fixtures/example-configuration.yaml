@@ -13,6 +13,7 @@ appearance:
   lastFrameBounds: "0,0,1000,560"
   sidebarWidth: "180"
   cloudBackupLocation: ""
+  blockExplorerId: "blockchain"
 bitcoin:
   bitcoinSymbol: "MICON"
   bitcoinNetwork: "MAIN_NET"
@@ -31,6 +32,7 @@ wallet:
   lastSoftWalletRoot: null
   recentWalletDataValidity: 1419692967155
   recentWalletLabel: "multibit.org 178"
+  feePerKB: 3000
 licenceAccepted: false
 tor: false
 trezor: true

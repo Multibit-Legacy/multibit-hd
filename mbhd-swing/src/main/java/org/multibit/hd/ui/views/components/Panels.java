@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.managers.WalletManager;
@@ -23,6 +22,7 @@ import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.Locale;
 
 /**
  * <p>Factory to provide the following to views:</p>
@@ -32,6 +32,7 @@ import java.awt.event.ActionListener;
  *
  * @since 0.0.1
  */
+
 public class Panels {
 
   private static final Logger log = LoggerFactory.getLogger(Panels.class);
@@ -39,12 +40,19 @@ public class Panels {
   /**
    * A global reference to the application frame
    */
-  @SuppressFBWarnings({"MS_CANNOT_BE_FINAL"})
-  public static JFrame applicationFrame;
+  private static JFrame applicationFrame;
 
   private static Optional<LightBoxPanel> lightBoxPanel = Optional.absent();
 
   private static Optional<LightBoxPanel> lightBoxPopoverPanel = Optional.absent();
+
+  public static void setApplicationFrame(JFrame applicationFrame) {
+    Panels.applicationFrame = applicationFrame;
+  }
+
+  public static JFrame getApplicationFrame() {
+    return applicationFrame;
+  }
 
   /**
    * <p>A default MiG layout constraint with:</p>
@@ -243,7 +251,7 @@ public class Panels {
     Preconditions.checkState(!lightBoxPanel.isPresent(), "Light box should never be called twice ");
 
     // Prevent focus
-    allowFocus(Panels.applicationFrame, false);
+    allowFocus(Panels.getApplicationFrame(), false);
 
     // Add the light box panel
     lightBoxPanel = Optional.of(new LightBoxPanel(panel, JLayeredPane.MODAL_LAYER));
@@ -268,7 +276,7 @@ public class Panels {
     lightBoxPanel = Optional.absent();
 
     // Finally allow focus
-    allowFocus(Panels.applicationFrame, true);
+    allowFocus(Panels.getApplicationFrame(), true);
 
   }
 
@@ -425,7 +433,7 @@ public class Panels {
     radio4.setActionCommand(restoreWalletCommand);
 
     // Check for existing wallets
-    if (WalletManager.getSoftWalletSummaries().isEmpty()) {
+    if (WalletManager.getSoftWalletSummaries(Optional.<Locale>absent()).isEmpty()) {
       radio2.setEnabled(false);
       radio2.setForeground(UIManager.getColor("RadioButton.disabledText"));
     }

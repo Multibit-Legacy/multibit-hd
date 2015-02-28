@@ -7,6 +7,7 @@ import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.hd.brit.dto.FeeState;
+import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
@@ -284,7 +285,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
             coin,
             fiatPayment,
             changeAddress,
-            BitcoinNetworkService.DEFAULT_FEE_PER_KB,
+            FeeService.normaliseRawFeePerKB(Configurations.currentConfiguration.getWallet().getFeePerKB()),
             null,
             feeState,
             false);

@@ -22,7 +22,7 @@ import java.util.Enumeration;
 public class Themes {
 
   // Always start with the Bootstrap theme and switch during startup if required
-  @SuppressFBWarnings({"MS_CANNOT_BE_FINAL"})
+  @SuppressFBWarnings({"MS_CANNOT_BE_FINAL", "MS_PKGPROTECT"})
   public static Theme currentTheme = new BootstrapTheme();
 
   /**

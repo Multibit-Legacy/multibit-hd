@@ -75,8 +75,6 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
     themesComboBox = ComboBoxes.newThemesComboBox(this);
     showBalanceComboBox = ComboBoxes.newShowBalanceYesNoComboBox(this, appearanceConfiguration.isShowBalance());
 
-    contentPanel.add(Labels.newThemeChangeNote(), "growx,span 2,wrap");
-
     contentPanel.add(Labels.newSelectTheme(), "shrink");
     contentPanel.add(themesComboBox, "growx,shrinky,width min:250:,push,wrap");
 

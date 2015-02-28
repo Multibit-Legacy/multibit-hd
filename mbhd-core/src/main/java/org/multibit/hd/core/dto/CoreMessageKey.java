@@ -28,8 +28,6 @@ public enum CoreMessageKey {
   TRANSACTION_CREATED_OK("core_transaction_created_ok"),
   TRANSACTION_CREATION_FAILED("core_transaction_creation_failed"),
 
-  // Not used
-  @Deprecated
   SENDING_BITCOIN("core_sending_bitcoin"),
 
   BITCOIN_SENT_OK("core_bitcoin_sent_ok"),
