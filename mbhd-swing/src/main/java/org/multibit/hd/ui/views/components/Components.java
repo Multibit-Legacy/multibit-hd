@@ -8,6 +8,8 @@ import org.multibit.hd.ui.views.components.display_address.DisplayBitcoinAddress
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
+import org.multibit.hd.ui.views.components.display_payment_request.DisplayPaymentRequestModel;
+import org.multibit.hd.ui.views.components.display_payment_request.DisplayPaymentRequestView;
 import org.multibit.hd.ui.views.components.display_payments.DisplayPaymentsModel;
 import org.multibit.hd.ui.views.components.display_payments.DisplayPaymentsView;
 import org.multibit.hd.ui.views.components.display_seed_phrase.DisplaySeedPhraseModel;
@@ -66,12 +68,25 @@ public class Components {
   /**
    * <p>A "display payments" panel provides summary details of the current wallet</p>
    *
-   * @return A new "walletDetail" panel
+   * @return A new "display payments" panel
    */
   public static ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> newDisplayPaymentsMaV(String panelName) {
 
     DisplayPaymentsModel model = new DisplayPaymentsModel(panelName);
     DisplayPaymentsView view = new DisplayPaymentsView(model);
+
+    return new ModelAndView<>(model, view);
+  }
+
+  /**
+   * <p>A "display payment request" panel provides details of a payment request from Payment Protocol</p>
+   *
+   * @return A new "display payment request" panel
+   */
+  public static ModelAndView<DisplayPaymentRequestModel, DisplayPaymentRequestView> newDisplayPaymentRequestMaV(String panelName) {
+
+    DisplayPaymentRequestModel model = new DisplayPaymentRequestModel(panelName);
+    DisplayPaymentRequestView view = new DisplayPaymentRequestView(model);
 
     return new ModelAndView<>(model, view);
   }

@@ -65,12 +65,14 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   private int txOutputIndex = -1;
 
   private final Optional<BitcoinURI> bitcoinURI;
+  private final Optional<PaymentSessionSummary> paymentSessionSummary;
 
   /**
    * The SendRequestSummary that initially contains all the tx details, and then is signed prior to sending
    */
   private SendRequestSummary sendRequestSummary;
   private SendBitcoinConfirmTrezorPanelView sendBitcoinConfirmTrezorPanelView;
+  private SendBitcoinPaymentRequestPanelModel paymentRequestPanelModel;
 
   /**
    * @param state     The state object
@@ -80,6 +82,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     super(state);
 
     this.bitcoinURI = parameter.getBitcoinURI();
+    this.paymentSessionSummary = parameter.getPaymentSessionSummary();
 
   }
 
@@ -201,6 +204,15 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   /**
    * <p>Reduced visibility for panel models only</p>
    *
+   * @param paymentRequestPanelModel The "payment request" panel model
+   */
+  void setPaymentRequestPanelModel(SendBitcoinPaymentRequestPanelModel paymentRequestPanelModel) {
+    this.paymentRequestPanelModel = paymentRequestPanelModel;
+  }
+
+  /**
+   * <p>Reduced visibility for panel models only</p>
+   *
    * @param enterAmountPanelModel The "enter amount" panel model
    */
   void setEnterAmountPanelModel(SendBitcoinEnterAmountPanelModel enterAmountPanelModel) {
@@ -230,6 +242,13 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    */
   public Optional<BitcoinURI> getBitcoinURI() {
     return bitcoinURI;
+  }
+
+  /**
+   * @return Any payment session summary used to initiate this wizard
+   */
+  public Optional<PaymentSessionSummary> getPaymentSessionSummary() {
+    return paymentSessionSummary;
   }
 
   /**
@@ -369,6 +388,65 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       enterAmountPanelModel
               .getEnterAmountModel()
               .setCoinAmount(amount.or(Coin.ZERO));
+    }
+  }
+
+  /**
+   * Populate the panel model with the payment session summary details
+   */
+  void handlePaymentSessionSummary() {
+
+    if (!paymentSessionSummary.isPresent()) {
+      return;
+    }
+
+    PaymentSessionSummary uri = paymentSessionSummary.get();
+
+//    paymentRequestPanelModel
+//      .getDisplayPaymentRequestModel()
+//      .setValue();
+
+    Optional<Address> address = Optional.fromNullable(null);
+    Optional<Coin> amount = Optional.fromNullable(null);
+
+    if (address.isPresent()) {
+
+      final Optional<Recipient> recipient;
+
+      // Get the current wallet
+      Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+      if (currentWalletSummary.isPresent()) {
+
+        // Attempt to locate a contact with the address in the Bitcoin URI to reassure user
+        List<Contact> contacts = CoreServices
+          .getOrCreateContactService(currentWalletSummary.get().getWalletId())
+          .filterContactsByBitcoinAddress(address.get());
+
+        if (!contacts.isEmpty()) {
+          // Offer the first contact with the matching address (already null checked)
+          Address bitcoinAddress = contacts.get(0).getBitcoinAddress().get();
+          recipient = Optional.of(new Recipient(bitcoinAddress));
+          recipient.get().setContact(contacts.get(0));
+        } else {
+          // No matching contact so make an anonymous Recipient
+          recipient = Optional.of(new Recipient(address.get()));
+        }
+
+      } else {
+        // No current wallet so make an anonymous Recipient
+        recipient = Optional.of(new Recipient(address.get()));
+      }
+
+      // Must have a valid address and therefore recipient to be here
+      enterAmountPanelModel
+        .getEnterRecipientModel()
+        .setValue(recipient.get());
+
+      // Add in any amount or treat as zero
+      enterAmountPanelModel
+        .getEnterAmountModel()
+        .setCoinAmount(amount.or(Coin.ZERO));
     }
   }
 
@@ -564,5 +642,4 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     }
 
   }
-
 }

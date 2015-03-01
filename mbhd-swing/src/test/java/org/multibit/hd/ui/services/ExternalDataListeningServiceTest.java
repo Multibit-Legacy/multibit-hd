@@ -77,7 +77,7 @@ public class ExternalDataListeningServiceTest {
     testObject = new ExternalDataListeningService(args);
 
     // Act
-    Address address = testObject.getBitcoinURI().get().getAddress();
+    Address address = testObject.getBitcoinURIQueue().poll().getAddress();
 
     // Assert
     if (address == null) {
@@ -103,7 +103,7 @@ public class ExternalDataListeningServiceTest {
     testObject = new ExternalDataListeningService(args);
 
     // Act
-    Address address = testObject.getBitcoinURI().get().getAddress();
+    Address address = testObject.getBitcoinURIQueue().poll().getAddress();
 
     // Assert
     if (address == null) {

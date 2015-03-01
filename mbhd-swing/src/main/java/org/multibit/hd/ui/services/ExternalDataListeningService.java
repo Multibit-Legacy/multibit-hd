@@ -2,20 +2,22 @@ package org.multibit.hd.ui.services;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Queues;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.io.CharStreams;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.AbstractService;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.PaymentProtocolService;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.models.AlertModel;
@@ -23,11 +25,13 @@ import org.multibit.hd.ui.models.Models;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
+import java.util.Queue;
 
 /**
  * <p>Service to maintain a localhost server socket on port 8330.</p>
@@ -55,12 +59,18 @@ public class ExternalDataListeningService extends AbstractService {
    */
   public static final String MESSAGE_END = "$$MBHD-End$$";
 
-  private final Optional<BitcoinURI> bitcoinURI;
-  private final Optional<PaymentSessionSummary> paymentSessionSummary;
-
-  private final Optional<String> rawData;
+  /**
+   * Track the incoming Bitcoin URIs (BIP21)
+   */
+  private static final Queue<BitcoinURI> bitcoinURIQueue = Queues.newArrayBlockingQueue(10);
+  /**
+   * Track the incoming Payment Protocol sessions
+   */
+  private static final Queue<PaymentSessionSummary> paymentSessionSummaryQueue = Queues.newArrayBlockingQueue(10);
 
   private Optional<ServerSocket> serverSocket = Optional.absent();
+
+  private String rawData;
 
   /**
    * @param args The command line arguments
@@ -70,26 +80,14 @@ public class ExternalDataListeningService extends AbstractService {
     super();
 
     if (args == null || args.length == 0) {
-      this.bitcoinURI = Optional.absent();
-      this.paymentSessionSummary = Optional.absent();
-      rawData = Optional.absent();
       return;
     }
 
     // Must have some command line arguments to be here
+    addToQueues(args[0], false);
 
-    // Quick check for BIP21 Bitcoin URI
-    if (args[0].startsWith("bitcoin") && !args[0].contains("r=")) {
-      // Treat as BIP21 Bitcoin URI
-      this.bitcoinURI = parseBitcoinURI(args[0]);
-      this.paymentSessionSummary = Optional.absent();
-    } else {
-      // Treat as a Payment Protocol URI (could be direct via "http", "https", "file", "classpath" or use BIP72 variant of "bitcoin")
-      this.bitcoinURI = Optional.absent();
-      this.paymentSessionSummary = parsePaymentSessionSummary(args[0]);
-    }
-
-    rawData = Optional.of(args[0]);
+    // May need to hand over
+    rawData = args[0];
 
   }
 
@@ -144,11 +142,9 @@ public class ExternalDataListeningService extends AbstractService {
       // Failed to own the server port so notify the other instance
       log.info("Port is already taken. Notifying first instance.");
 
-      if (bitcoinURI.isPresent()) {
-        notifyOtherInstance();
-      }
-      if (paymentSessionSummary.isPresent()) {
-        notifyOtherInstance();
+      if (!bitcoinURIQueue.isEmpty() || !paymentSessionSummaryQueue.isEmpty()) {
+        // Must have successfully parsed the data into something meaningful so resend
+        writeToSocket(rawData);
       }
 
       // Indicate that a shutdown should be performed
@@ -165,50 +161,13 @@ public class ExternalDataListeningService extends AbstractService {
   }
 
   /**
-   * <p>A BIP21 Bitcoin URI parsed from the command line arguments</p>
+   * <p>Write to the MultiBit HD network socket</p>
    *
-   * @return The Bitcoin URI if present
+   * @param message The message to send (appropriate wrapping will be added)
    */
-  public Optional<BitcoinURI> getBitcoinURI() {
-    return bitcoinURI;
-  }
+  public static synchronized void writeToSocket(String message) {
 
-  /**
-   * <p>A Payment Protocol session summary parsed from the command line arguments</p>
-   *
-   * @return The payment session summary if present
-   */
-  public Optional<PaymentSessionSummary> getPaymentSessionSummary() {
-    return paymentSessionSummary;
-  }
-
-  /**
-   * <p>The most recent raw data received</p>
-   *
-   * @return The raw data
-   */
-  Optional<String> getRawData() {
-    return rawData;
-  }
-
-  /**
-   * <p>The server socket created as the master if no other was in place</p>
-   *
-   * @return The server socket
-   */
-  Optional<ServerSocket> getServerSocket() {
-    return serverSocket;
-  }
-
-  /**
-   * <p>Handles the process of notifying another instance of the Bitcoin URI</p>
-   */
-  private void notifyOtherInstance() {
-
-    if (!bitcoinURI.isPresent() && !paymentSessionSummary.isPresent()) {
-      // Nothing to do (the data was meaningless)
-      return;
-    }
+    Preconditions.checkNotNull(message, "'message' must be present");
 
     try {
       Socket clientSocket = new Socket(
@@ -220,7 +179,7 @@ public class ExternalDataListeningService extends AbstractService {
 
         // Write out the raw external data for parsing by the other instance
         out.write(MESSAGE_START.getBytes(Charsets.UTF_8));
-        out.write(rawData.get().getBytes(Charsets.UTF_8));
+        out.write(message.getBytes(Charsets.UTF_8));
         out.write(MESSAGE_END.getBytes(Charsets.UTF_8));
 
         out.close();
@@ -231,7 +190,95 @@ public class ExternalDataListeningService extends AbstractService {
       log.error(e.getMessage(), e);
     }
 
-    log.info("Successfully notified first instance.");
+    log.debug("Successful write to external data listening service.");
+
+  }
+
+  /**
+   * <p>The queue of Bitcoin URIs provided externally (command line arguments or via the socket)</p>
+   *
+   * @return The Bitcoin URI queue (may be empty)
+   */
+  public Queue<BitcoinURI> getBitcoinURIQueue() {
+    return bitcoinURIQueue;
+  }
+
+  /**
+   * <p>The queue of PaymentSession summaries provided externally (command line arguments or via the socket)</p>
+   *
+   * @return The payment session summary queue (may be empty)
+   */
+  public Queue<PaymentSessionSummary> getPaymentSessionSummaryQueue() {
+    return paymentSessionSummaryQueue;
+  }
+
+  /**
+   * <p>The server socket created as the master if no other was in place</p>
+   * <p>Reduced visibility for testing</p>
+   *
+   * @return The server socket
+   */
+  Optional<ServerSocket> getServerSocket() {
+    return serverSocket;
+  }
+
+  /**
+   * <p>Parse the raw data into a Bitcoin URI or a PaymentSessionSummary as required</p>
+   *
+   * @param rawData           The raw data from the external source
+   * @param fireAddAlertEvent True if the act of adding to the queues should trigger the add alert event (requires an unlocked wallet)
+   */
+  public static void addToQueues(String rawData, boolean fireAddAlertEvent) {
+
+    // Quick check for BIP21 Bitcoin URI
+    if (rawData.startsWith("bitcoin") && !rawData.contains("r=")) {
+      // Treat as BIP21 Bitcoin URI
+      parseBitcoinURI(rawData);
+    } else {
+      // Treat as a Payment Protocol URI (could be direct via "http", "https", "file", "classpath" or use BIP72 variant of "bitcoin")
+      parsePaymentSessionSummary(rawData);
+    }
+
+    if (fireAddAlertEvent) {
+
+      log.debug("Checking for alert requirement");
+
+      // Check for BIP21 Bitcoin URI
+      if (bitcoinURIQueue.peek() != null) {
+
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              // Attempt to create an alert model from the Bitcoin URI
+              Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURIQueue.poll());
+
+              // If successful the fire the event
+              if (alertModel.isPresent()) {
+                ControllerEvents.fireAddAlertEvent(alertModel.get());
+              }
+            }
+          });
+      }
+
+      // Check for Payment Protocol session
+      if (paymentSessionSummaryQueue.peek() != null) {
+
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              // Attempt to create an alert model
+              Optional<AlertModel> alertModel = Models.newPaymentRequestAlertModel(paymentSessionSummaryQueue.poll());
+
+              // If successful the fire the event
+              if (alertModel.isPresent()) {
+                ControllerEvents.fireAddAlertEvent(alertModel.get());
+              }
+            }
+          });
+      }
+    }
 
   }
 
@@ -258,12 +305,12 @@ public class ExternalDataListeningService extends AbstractService {
    *
    * @param rawData The raw data straight from an assumed untrusted external source
    */
-  private Optional<BitcoinURI> parseBitcoinURI(String rawData) {
+  private static void parseBitcoinURI(String rawData) {
 
     log.debug("Decoding BIP21 Bitcoin URI from '{}'", rawData);
 
     if (Strings.isNullOrEmpty(rawData)) {
-      return Optional.absent();
+      return;
     }
 
     try {
@@ -279,15 +326,13 @@ public class ExternalDataListeningService extends AbstractService {
       }
 
       log.debug("Using '{}' to create BIP21 Bitcoin URI", rawData);
-      return Optional.of(new BitcoinURI(rawData));
+      bitcoinURIQueue.add(new BitcoinURI(rawData));
 
     } catch (UnsupportedEncodingException e) {
       log.error("UTF-8 is not supported on this platform");
     } catch (BitcoinURIParseException e) {
       log.error("BIP21 Bitcoin URI not valid. Error ", e);
     }
-
-    return Optional.absent();
 
   }
 
@@ -304,7 +349,7 @@ public class ExternalDataListeningService extends AbstractService {
    *
    * @param rawData The raw data straight from an assumed untrusted external source
    */
-  private Optional<PaymentSessionSummary> parsePaymentSessionSummary(String rawData) {
+  private static Optional<PaymentSessionSummary> parsePaymentSessionSummary(String rawData) {
 
     log.debug("Decoding URI from '{}'", rawData);
 
@@ -325,9 +370,12 @@ public class ExternalDataListeningService extends AbstractService {
       }
 
       log.debug("Using '{}' to create payment protocol session summary", rawData);
-      PaymentProtocolService paymentProtocolService = CoreServices.getPaymentProtocolService();
+      PaymentProtocolService paymentProtocolService = new PaymentProtocolService(MainNetParams.get());
       // TODO Switch this back to "true" for production
-      return Optional.fromNullable(paymentProtocolService.probeForPaymentSession(URI.create(rawData), false, null));
+      final PaymentSessionSummary paymentSessionSummary = paymentProtocolService.probeForPaymentSession(URI.create(rawData), false, null);
+      if (paymentSessionSummary != null) {
+        paymentSessionSummaryQueue.add(paymentSessionSummary);
+      }
 
     } catch (UnsupportedEncodingException e) {
       log.error("UTF-8 is not supported on this platform");
@@ -375,7 +423,6 @@ public class ExternalDataListeningService extends AbstractService {
 
       boolean socketClosed = false;
 
-
       while (!socketClosed) {
 
         if (serverSocket.isClosed()) {
@@ -386,36 +433,22 @@ public class ExternalDataListeningService extends AbstractService {
 
             Socket client = serverSocket.accept();
 
-            String message;
+            String rawData;
             try (InputStreamReader reader = new InputStreamReader(client.getInputStream(), Charsets.UTF_8)) {
-              message = CharStreams.toString(reader);
-              if (!message.startsWith(MESSAGE_START)) {
+              rawData = CharStreams.toString(reader);
+              if (!rawData.startsWith(MESSAGE_START)) {
                 // Message not following the correct format so is likely an error
                 continue;
               }
               // Strip off the message start/end tags to leave a raw Bitcoin URI
-              message = message.replace(MESSAGE_START, "").replace(MESSAGE_END, "");
+              rawData = rawData.replace(MESSAGE_START, "").replace(MESSAGE_END, "");
             }
             client.close();
 
-            log.debug("Received external data: '{}'", message);
+            log.debug("Received external data: '{}'", rawData);
 
-            // Validate the data
-            final BitcoinURI bitcoinURI;
-            try {
-              bitcoinURI = new BitcoinURI(message);
-            } catch (BitcoinURIParseException e) {
-              // Quietly ignore (don't log to avoid flooding logs)
-              continue;
-            }
-
-            // Attempt to create an alert model from the Bitcoin URI
-            Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI);
-
-            // If successful the fire the event
-            if (alertModel.isPresent()) {
-              ControllerEvents.fireAddAlertEvent(alertModel.get());
-            }
+            // Attempt to add to the queues and issue an alert
+            ExternalDataListeningService.addToQueues(rawData, true);
 
           } catch (IOException e) {
             socketClosed = true;
