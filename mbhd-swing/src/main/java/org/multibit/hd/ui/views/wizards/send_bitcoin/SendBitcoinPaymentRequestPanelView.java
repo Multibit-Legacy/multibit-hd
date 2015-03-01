@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -79,7 +78,7 @@ public class SendBitcoinPaymentRequestPanelView extends AbstractWizardPanelView<
       getWizardModel().handlePaymentSessionSummary();
 
       Recipient recipient = getWizardModel().getRecipient();
-      Coin amount = getWizardModel().getCoinAmount();
+//      Coin amount = getWizardModel().getCoinAmount();
 
       displayPaymentRequestMaV.getModel().setValue(recipient);
 
@@ -137,18 +136,19 @@ public class SendBitcoinPaymentRequestPanelView extends AbstractWizardPanelView<
    */
   private boolean isNextEnabled() {
 
-    boolean bitcoinAmountOK = true;
 //    boolean bitcoinAmountOK = !getPanelModel().get()
 //      .getEnterAmountModel()
 //      .getCoinAmount()
 //      .equals(Coin.ZERO);
+//
+//    boolean recipientOK = getPanelModel().get()
+//      .getDisplayPaymentRequestModel()
+//      .getRecipient()
+//      .isPresent();
+//
+//    return bitcoinAmountOK && recipientOK;
 
-    boolean recipientOK = getPanelModel().get()
-      .getDisplayPaymentRequestModel()
-      .getRecipient()
-      .isPresent();
-
-    return bitcoinAmountOK && recipientOK;
+    return true;
   }
 }
 

@@ -400,7 +400,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       return;
     }
 
-    PaymentSessionSummary uri = paymentSessionSummary.get();
+//    PaymentSessionSummary uri = paymentSessionSummary.get();
 
 //    paymentRequestPanelModel
 //      .getDisplayPaymentRequestModel()
