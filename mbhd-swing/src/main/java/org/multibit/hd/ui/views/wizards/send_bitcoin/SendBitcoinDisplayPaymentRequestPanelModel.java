@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
-import org.multibit.hd.ui.views.components.display_payment_request.DisplayPaymentRequestModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 
 /**
@@ -13,25 +12,11 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
  */
 public class SendBitcoinDisplayPaymentRequestPanelModel extends AbstractWizardPanelModel {
 
-  private final DisplayPaymentRequestModel displayPaymentRequestModel;
-
   /**
    * @param panelName                  The panel name
-   * @param displayPaymentRequestModel The "display payment request" component model
    */
-  public SendBitcoinDisplayPaymentRequestPanelModel(
-    String panelName,
-    DisplayPaymentRequestModel displayPaymentRequestModel
-  ) {
+  public SendBitcoinDisplayPaymentRequestPanelModel(  String panelName ) {
     super(panelName);
-    this.displayPaymentRequestModel = displayPaymentRequestModel;
-  }
-
-  /**
-   * @return The display payment request model
-   */
-  public DisplayPaymentRequestModel getDisplayPaymentRequestModel() {
-    return displayPaymentRequestModel;
   }
 
 }

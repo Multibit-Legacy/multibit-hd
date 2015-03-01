@@ -308,7 +308,10 @@ public enum MessageKey {
   DECIMAL_POINT("decimal_point"),
   DECIMAL_SPACE("decimal_space"),
 
-  // Payment Protocol alerts
+  // Payment Protocol messages
+  PAYMENT_PROTOCOL_TRUSTED_NOTE("payment_protocol_trusted_note"),
+  PAYMENT_PROTOCOL_UNTRUSTED_NOTE("payment_protocol_untrusted_note"),
+  PAYMENT_PROTOCOL_ERROR_NOTE("payment_protocol_error_note"),
   PAYMENT_PROTOCOL_TRUSTED_ALERT("payment_protocol_trusted_alert"),
   PAYMENT_PROTOCOL_UNTRUSTED_ALERT("payment_protocol_untrusted_alert"),
   PAYMENT_PROTOCOL_ERROR_ALERT("payment_protocol_error_alert"),
@@ -811,6 +814,7 @@ public enum MessageKey {
   TYPE("type"),
   FIAT_AMOUNT("fiat_amount"),
   FIAT_CURRENCY("fiat_currency"),
+  EXPIRES("expires"),
 
   DESCRIPTION("description"),
   DESCRIPTION_READ_ONLY("description_read_only"),

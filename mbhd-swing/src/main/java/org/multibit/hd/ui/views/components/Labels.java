@@ -1133,10 +1133,38 @@ public class Labels {
   }
 
   /**
-   * @return a new Cloud backup location label
+   * @return a new "cloud backup location" label
    */
   public static JLabel newCloudBackupLocation() {
     return newLabel(MessageKey.CLOUD_BACKUP_LOCATION);
+  }
+
+  /**
+   * @return a new "memo" label (notes)
+   */
+  public static JLabel newMemoLabel() {
+    return newLabel(MessageKey.NOTES);
+  }
+
+  /**
+   * @return a new "date" label
+   */
+  public static JLabel newDateLabel() {
+    return newLabel(MessageKey.DATE);
+  }
+
+  /**
+   * @return a new "expires" label
+   */
+  public static JLabel newExpiresLabel() {
+    return newLabel(MessageKey.EXPIRES);
+  }
+
+  /**
+   * @return a new "display name" label (name)
+   */
+  public static JLabel newDisplayNameLabel() {
+    return newLabel(MessageKey.NAME);
   }
 
   /**

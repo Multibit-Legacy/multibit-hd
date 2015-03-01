@@ -17,8 +17,7 @@ import org.multibit.hd.core.events.ShutdownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.security.*;
@@ -173,6 +172,10 @@ public class PaymentProtocolService extends AbstractService {
           return PaymentSessionSummary.newPaymentSessionAlmostOK(paymentSession, e);
         }
       }
+
+      // Handy code to copy a payment request to local file system
+//      OutputStream os = new FileOutputStream(new File("example.bitcoinpaymentrequest"));
+//      paymentSession.getPaymentRequest().writeTo(os);
 
       // Must be OK to be here
       return PaymentSessionSummary.newPaymentSessionOK(paymentSession);

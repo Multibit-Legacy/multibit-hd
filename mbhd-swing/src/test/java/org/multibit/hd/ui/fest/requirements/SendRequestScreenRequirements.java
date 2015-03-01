@@ -68,9 +68,11 @@ public class SendRequestScreenRequirements {
 
   private static void verifySend_PaymentProtocol(FrameFixture window, Map<String, Object> parameters) {
 
-    new SendDisplayPaymentRequestUseCase(window).execute(parameters);
+    new SendDisplayUntrustedPaymentRequestUseCase(window).execute(parameters);
 
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
+    new SendDisplayTrustedPaymentRequestUseCase(window).execute(parameters);
 
   }
 

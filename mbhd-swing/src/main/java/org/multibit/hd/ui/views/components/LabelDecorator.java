@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.PaymentSessionStatus;
 import org.multibit.hd.core.dto.PaymentStatus;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.MultiBitUI;
@@ -162,6 +163,36 @@ public class LabelDecorator {
       default:
         // Unknown status
         throw new IllegalStateException("Unknown status " + paymentStatus.getStatus());
+    }
+
+  }
+
+  /**
+   * Apply the payment status icon to a label
+   *
+   * @param paymentSessionStatus The payment session status to derive the status icon and color from
+   * @param label                The label to apply the icon and color to
+   * @param messageKey           The message key for the text
+   * @param iconSize             THe size of the icon to use, typically MultiBitUI.SMALL_ICON_SIZE
+   */
+  public static void applyPaymentSessionStatusIcon(PaymentSessionStatus paymentSessionStatus, JLabel label, MessageKey messageKey, int iconSize) {
+
+    label.setText(Languages.safeText(messageKey));
+
+    switch (paymentSessionStatus) {
+      case TRUSTED:
+        AwesomeDecorator.bindIcon(AwesomeIcon.CHECK, label, true, iconSize);
+        break;
+      case UNTRUSTED:
+        AwesomeDecorator.bindIcon(AwesomeIcon.WARNING, label, true, iconSize);
+        break;
+      case DOWN:
+      case ERROR:
+        AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, label, true, iconSize);
+        break;
+      default:
+        // Unknown status
+        throw new IllegalStateException("Unknown status " + paymentSessionStatus);
     }
 
   }
