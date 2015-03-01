@@ -11,7 +11,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
  *
  * @since 0.0.8
  */
-public class SendBitcoinPaymentRequestPanelModel extends AbstractWizardPanelModel {
+public class SendBitcoinDisplayPaymentRequestPanelModel extends AbstractWizardPanelModel {
 
   private final DisplayPaymentRequestModel displayPaymentRequestModel;
 
@@ -19,7 +19,7 @@ public class SendBitcoinPaymentRequestPanelModel extends AbstractWizardPanelMode
    * @param panelName                  The panel name
    * @param displayPaymentRequestModel The "display payment request" component model
    */
-  public SendBitcoinPaymentRequestPanelModel(
+  public SendBitcoinDisplayPaymentRequestPanelModel(
     String panelName,
     DisplayPaymentRequestModel displayPaymentRequestModel
   ) {

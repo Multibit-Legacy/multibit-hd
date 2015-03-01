@@ -5,8 +5,8 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
-import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
+import org.multibit.hd.ui.events.view.AlertRemovedEvent;
 import org.multibit.hd.ui.events.view.BalanceChangedEvent;
 import org.multibit.hd.ui.events.view.ViewChangedEvent;
 import org.multibit.hd.ui.languages.Languages;
@@ -183,7 +183,7 @@ public class HeaderView extends AbstractView {
    * @param event The remove alert event
    */
   @Subscribe
-  public void onAlertRemovedEvent(RemoveAlertEvent event) {
+  public void onAlertRemovedEvent(final AlertRemovedEvent event) {
     // Hide the alert panel and clear the label
     alertPanel.setVisible(false);
     alertMessageLabel.setText("");

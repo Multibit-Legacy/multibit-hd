@@ -28,6 +28,9 @@ public class SendBitcoinWizard extends AbstractHardwareWalletWizard<SendBitcoinW
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
     wizardViewMap.put(
+      SendBitcoinState.SEND_DISPLAY_PAYMENT_REQUEST.name(),
+      new SendBitcoinDisplayPaymentRequestPanelView(this, SendBitcoinState.SEND_DISPLAY_PAYMENT_REQUEST.name()));
+    wizardViewMap.put(
       SendBitcoinState.SEND_ENTER_AMOUNT.name(),
       new SendBitcoinEnterAmountPanelView(this, SendBitcoinState.SEND_ENTER_AMOUNT.name()));
     wizardViewMap.put(

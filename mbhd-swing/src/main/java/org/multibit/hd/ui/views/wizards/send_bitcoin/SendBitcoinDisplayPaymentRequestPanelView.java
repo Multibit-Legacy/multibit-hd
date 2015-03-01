@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
@@ -28,7 +27,7 @@ import javax.swing.*;
  *
  */
 
-public class SendBitcoinPaymentRequestPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, SendBitcoinPaymentRequestPanelModel> {
+public class SendBitcoinDisplayPaymentRequestPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, SendBitcoinDisplayPaymentRequestPanelModel> {
 
   // Panel specific components
   private ModelAndView<DisplayPaymentRequestModel, DisplayPaymentRequestView> displayPaymentRequestMaV;
@@ -37,9 +36,9 @@ public class SendBitcoinPaymentRequestPanelView extends AbstractWizardPanelView<
    * @param wizard    The wizard managing the states
    * @param panelName The panel name
    */
-  public SendBitcoinPaymentRequestPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
+  public SendBitcoinDisplayPaymentRequestPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SEND_BITCOIN_TITLE, AwesomeIcon.CLOUD_UPLOAD);
+    super(wizard, panelName, MessageKey.DISPLAY_PAYMENT_REQUEST_TITLE, AwesomeIcon.MONEY);
 
   }
 
@@ -49,7 +48,7 @@ public class SendBitcoinPaymentRequestPanelView extends AbstractWizardPanelView<
     displayPaymentRequestMaV = Components.newDisplayPaymentRequestMaV(getPanelName());
 
     // Configure the panel model
-    final SendBitcoinPaymentRequestPanelModel panelModel = new SendBitcoinPaymentRequestPanelModel(
+    final SendBitcoinDisplayPaymentRequestPanelModel panelModel = new SendBitcoinDisplayPaymentRequestPanelModel(
       getPanelName(),
       displayPaymentRequestMaV.getModel()
     );
@@ -77,10 +76,10 @@ public class SendBitcoinPaymentRequestPanelView extends AbstractWizardPanelView<
 
       getWizardModel().handlePaymentSessionSummary();
 
-      Recipient recipient = getWizardModel().getRecipient();
+//      Recipient recipient = getWizardModel().getRecipient();
 //      Coin amount = getWizardModel().getCoinAmount();
 
-      displayPaymentRequestMaV.getModel().setValue(recipient);
+//      displayPaymentRequestMaV.getModel().setValue(recipient);
 
     }
 

@@ -45,6 +45,19 @@ public class SendDisplayPaymentRequestUseCase extends AbstractFestUseCase {
       .button(MessageKey.YES.getKey())
       .click();
 
+    // Wait for the "send bitcoin" wizard to appear
+    pauseForComponentReset();
+
+    // Verify the wizard appears
+    assertLabelText(MessageKey.DISPLAY_PAYMENT_REQUEST_TITLE);
+
+    // Verify buttons
+    window
+      .button(MessageKey.NEXT.getKey())
+      .requireVisible()
+      .requireDisabled();
+
+
   }
 
 }

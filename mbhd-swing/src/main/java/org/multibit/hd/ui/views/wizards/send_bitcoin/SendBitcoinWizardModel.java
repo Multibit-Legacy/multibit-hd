@@ -72,7 +72,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    */
   private SendRequestSummary sendRequestSummary;
   private SendBitcoinConfirmTrezorPanelView sendBitcoinConfirmTrezorPanelView;
-  private SendBitcoinPaymentRequestPanelModel paymentRequestPanelModel;
+  private SendBitcoinDisplayPaymentRequestPanelModel paymentRequestPanelModel;
 
   /**
    * @param state     The state object
@@ -90,6 +90,20 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   public void showNext() {
 
     switch (state) {
+      case SEND_DISPLAY_PAYMENT_REQUEST:
+
+        // The user has entered the send details so the tx can be prepared
+        // If the transaction was prepared OK this returns true, otherwise false
+        // If there is insufficient money in the wallet a TransactionCreationEvent
+        // with the details will be thrown
+
+        if (prepareTransaction()) {
+          state = SEND_CONFIRM_AMOUNT;
+        } else {
+          // Transaction did not prepare correctly
+          state = SEND_REPORT;
+        }
+        break;
       case SEND_ENTER_AMOUNT:
 
         // The user has entered the send details so the tx can be prepared
@@ -206,7 +220,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    *
    * @param paymentRequestPanelModel The "payment request" panel model
    */
-  void setPaymentRequestPanelModel(SendBitcoinPaymentRequestPanelModel paymentRequestPanelModel) {
+  void setPaymentRequestPanelModel(SendBitcoinDisplayPaymentRequestPanelModel paymentRequestPanelModel) {
     this.paymentRequestPanelModel = paymentRequestPanelModel;
   }
 

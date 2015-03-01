@@ -349,6 +349,7 @@ public enum MessageKey {
   REQUEST_BITCOIN_TITLE("request_bitcoin_title"),
 
   SEND_BITCOIN_TITLE("send_bitcoin_title"),
+  DISPLAY_PAYMENT_REQUEST_TITLE("display_payment_request_title"),
   CONFIRM_SEND_TITLE("confirm_send_title"),
   SEND_PROGRESS_TITLE("send_progress_title"),
 
