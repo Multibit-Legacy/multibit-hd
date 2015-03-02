@@ -130,7 +130,7 @@ public class Labels {
     AccessibilityDecorator.apply(label, key);
 
     // Font
-    TitleFontDecorator.apply(label, MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
+    TitleFontDecorator.apply(label, MultiBitUI.WIZARD_TITLE_FONT_SIZE);
 
     // Theme
     label.setForeground(Themes.currentTheme.text());
