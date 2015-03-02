@@ -619,8 +619,8 @@ public class TextBoxes {
     DefaultStyledDocument doc = new DefaultStyledDocument();
     doc.setDocumentFilter(new DocumentMaxLengthFilter(MultiBitUI.SEED_PHRASE_LENGTH));
 
-    // Keep this in line with the PASSWORD_AREA constant
-    JTextArea textArea = new JTextArea(doc, "", 6, MultiBitUI.PASSWORD_LENGTH);
+    // Wider than password to prevent push down on 24 word hidden text
+    JTextArea textArea = new JTextArea(doc, "", 6, MultiBitUI.SEED_PHRASE_WIDTH);
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(textArea, MessageKey.SEED_PHRASE, MessageKey.SEED_PHRASE_TOOLTIP);

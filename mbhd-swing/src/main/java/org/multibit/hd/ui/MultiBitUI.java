@@ -210,6 +210,11 @@ public interface MultiBitUI {
   int PASSWORD_LENGTH = 40;
 
   /**
+   * The width of the seed phrase window
+   */
+  int SEED_PHRASE_WIDTH = 50;
+
+  /**
    * The maximum length of the seed phrase
    */
   int SEED_PHRASE_LENGTH = 240;
