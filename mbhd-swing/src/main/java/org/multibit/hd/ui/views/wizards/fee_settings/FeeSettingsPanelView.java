@@ -78,7 +78,7 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     contentPanel.setLayout(new MigLayout(
             Panels.migXYLayout(),
             "[]20[]", // Column constraints
-            "[]2[]8[]2[]6[]6[]2[]" // Row constraints
+            "[]1[]6[]18[]4[]4[]1[]" // Row constraints
     ));
 
     WalletConfiguration walletConfiguration = Configurations.currentConfiguration.getWallet().deepCopy();
