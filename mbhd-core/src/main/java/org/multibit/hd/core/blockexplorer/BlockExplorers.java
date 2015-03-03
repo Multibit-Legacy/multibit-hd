@@ -24,6 +24,7 @@ public class BlockExplorers {
   static {
     // Add all block explorers in alphabetic order
     allBlockExplorers.add(new BitEasyComBlockExplorer());
+    allBlockExplorers.add(new BitPayComBlockExplorer());
     allBlockExplorers.add(new BlockChainInfoBlockExplorer());
     allBlockExplorers.add(new BlockrIoBlockExplorer());
     allBlockExplorers.add(new BlockTrailComBlockExplorer());

@@ -130,7 +130,7 @@ public class Labels {
     AccessibilityDecorator.apply(label, key);
 
     // Font
-    TitleFontDecorator.apply(label, MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
+    TitleFontDecorator.apply(label, MultiBitUI.WIZARD_TITLE_FONT_SIZE);
 
     // Theme
     label.setForeground(Themes.currentTheme.text());
@@ -1190,6 +1190,26 @@ public class Labels {
       MessageKey.ABOUT_NOTE_3
     }, new Object[][]{});
   }
+
+  /**
+    * @return A new "default" note for use on the Fee slider
+    */
+   public static JLabel newDefaultNote() {
+     // Wrap in HTML to ensure LTR/RTL and line breaks are respected
+     String[] lines = new String[2];
+     lines[0] = "\u25B2"; // 25B2 =up black triangle
+     lines[1] = Languages.toCapitalCase(Languages.safeText(MessageKey.DEFAULT));
+     JLabel label = new JLabel(HtmlUtils.localiseCenteredWithLineBreaks(lines));
+     label.setHorizontalAlignment(SwingConstants.CENTER);
+
+     // Ensure it is accessible
+     AccessibilityDecorator.apply(label, MessageKey.DEFAULT);
+
+     // Theme
+     label.setForeground(Themes.currentTheme.text());
+
+     return label;
+   }
 
   /**
    * @return A new "wallet credentials" note
