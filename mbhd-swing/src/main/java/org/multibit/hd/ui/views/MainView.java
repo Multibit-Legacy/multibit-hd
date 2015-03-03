@@ -279,6 +279,11 @@ public class MainView extends JFrame {
       // No wizards so this reset is a wallet unlock or settings change
       // The AbstractWizard.handleHide credentials unlock thread will close the wizard later
       // to get the effect of everything happening behind the wizard
+
+      // Clear out all the cached screens
+      if (detailView != null) {
+        detailView.clearScreenCache();
+      }
     }
 
     log.debug("Pack and show UI");

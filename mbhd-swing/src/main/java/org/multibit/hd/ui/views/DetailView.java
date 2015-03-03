@@ -92,4 +92,11 @@ public class DetailView extends AbstractView {
 
     view.afterShow();
   }
+
+  /**
+   * Clear the screen cache so that they are recreated on demand
+   */
+  public void clearScreenCache() {
+    screenViewMap.clear();
+  }
 }
