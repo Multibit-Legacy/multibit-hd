@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
+import org.multibit.hd.core.dto.CoreMessageKey;
 
 import java.util.Arrays;
 
@@ -33,7 +34,7 @@ public class BitcoinSentEvent implements CoreEvent {
 
   private final boolean sendWasSuccessful;
 
-  private final String sendFailureReasonKey;
+  private final CoreMessageKey sendFailureReason;
 
   /**
    * TODO Consider a List<String> instead
@@ -49,7 +50,7 @@ public class BitcoinSentEvent implements CoreEvent {
     Optional<Coin> miningFeePaid,
     Optional<Coin> clientFeePaid,
     boolean sendWasSuccessful,
-    String sendFailureReasonKey,
+    CoreMessageKey sendFailureReason,
     String[] sendFailureReasonData
   ) {
 
@@ -59,7 +60,7 @@ public class BitcoinSentEvent implements CoreEvent {
     this.destinationAddress = destinationAddress;
     this.changeAddress = changeAddress;
     this.sendWasSuccessful = sendWasSuccessful;
-    this.sendFailureReasonKey = sendFailureReasonKey;
+    this.sendFailureReason = sendFailureReason;
     this.sendFailureReasonData = sendFailureReasonData;
 
   }
@@ -84,8 +85,8 @@ public class BitcoinSentEvent implements CoreEvent {
     return sendWasSuccessful;
   }
 
-  public String getSendFailureReasonKey() {
-    return sendFailureReasonKey;
+  public CoreMessageKey getSendFailureReason() {
+    return sendFailureReason;
   }
 
   // The fix for this is more complex than leaving it in place
@@ -103,7 +104,7 @@ public class BitcoinSentEvent implements CoreEvent {
       ", destinationAddress='" + destinationAddress + '\'' +
       ", changeAddress='" + changeAddress + '\'' +
       ", sendWasSuccessful=" + sendWasSuccessful +
-      ", sendFailureReasonKey='" + sendFailureReasonKey + '\'' +
+      ", sendFailureReasonKey='" + sendFailureReason + '\'' +
       ", sendFailureReasonData=" + Arrays.toString(sendFailureReasonData) +
       '}';
   }

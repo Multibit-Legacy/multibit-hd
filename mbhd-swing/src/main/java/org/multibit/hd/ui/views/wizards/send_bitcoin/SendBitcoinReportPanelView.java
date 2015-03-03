@@ -271,7 +271,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
             LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
           } else {
             String summaryMessage = Languages.safeText(CoreMessageKey.BITCOIN_SEND_FAILED);
-            String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReasonKey(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
+            String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReason(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
             LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, summaryMessage);
             LabelDecorator.applyWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
             LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));

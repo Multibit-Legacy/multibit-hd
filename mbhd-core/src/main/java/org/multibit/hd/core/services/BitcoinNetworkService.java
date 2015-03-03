@@ -1084,7 +1084,7 @@ public class BitcoinNetworkService extends AbstractService {
             Optional.<Coin>absent(),
             Optional.<Coin>absent(),
             false,
-            CoreMessageKey.COULD_NOT_CONNECT_TO_BITCOIN_NETWORK.getKey(),
+            CoreMessageKey.COULD_NOT_CONNECT_TO_BITCOIN_NETWORK,
             new String[]{"Could not reach any Bitcoin nodes"}
           ));
 
@@ -1124,7 +1124,7 @@ public class BitcoinNetworkService extends AbstractService {
                           Optional.of(sendRequest.fee),
                           sendRequestSummary.getClientFeeAdded(),
                           true,
-                          CoreMessageKey.BITCOIN_SENT_OK.getKey(),
+                          CoreMessageKey.BITCOIN_SENT_OK,
                           null
                   ));
         }
@@ -1135,6 +1135,7 @@ public class BitcoinNetworkService extends AbstractService {
           log.error("Future says transaction has NOT broadcast successfully. Error: '{}'", throwable);
 
           // Declare the send a failure
+          // TODO Add i18n support for "No message" if required
           CoreEvents.fireBitcoinSentEvent(
                   new BitcoinSentEvent(
                           sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
@@ -1142,7 +1143,7 @@ public class BitcoinNetworkService extends AbstractService {
                           Optional.<Coin>absent(),
                           Optional.<Coin>absent(),
                           false,
-                          CoreMessageKey.THE_ERROR_WAS.getKey(),
+                          CoreMessageKey.THE_ERROR_WAS,
                           new String[]{throwable == null ? "No message" : throwable.getMessage()}
                   ));
 
@@ -1163,7 +1164,7 @@ public class BitcoinNetworkService extends AbstractService {
           Optional.<Coin>absent(),
           Optional.<Coin>absent(),
           false,
-          CoreMessageKey.THE_ERROR_WAS.getKey(),
+          CoreMessageKey.THE_ERROR_WAS,
           new String[]{e.getMessage()}
         ));
 
