@@ -1152,7 +1152,7 @@ public class BitcoinNetworkService extends AbstractService {
 
       log.debug("Initiated broadcast of transaction: '{}'", Utils.HEX.encode(sendRequest.tx.bitcoinSerialize()));
 
-    } catch (VerificationException e) {
+    } catch (RuntimeException e) {
 
       log.error(e.getMessage(), e);
 
