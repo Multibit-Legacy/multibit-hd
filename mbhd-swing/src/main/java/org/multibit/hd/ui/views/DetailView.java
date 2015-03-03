@@ -9,8 +9,6 @@ import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.screens.Screens;
 import org.multibit.hd.ui.views.themes.Themes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,9 +23,6 @@ import java.util.Map;
  * @since 0.0.1
  */
 public class DetailView extends AbstractView {
-
-  private static final Logger log = LoggerFactory.getLogger(DetailView.class);
-
   private final JPanel contentPanel;
 
   private CardLayout cardLayout = new CardLayout();
@@ -36,7 +31,6 @@ public class DetailView extends AbstractView {
   private Map<Screen, AbstractScreenView> screenViewMap = Maps.newHashMap();
 
   public DetailView() {
-
     super();
 
     contentPanel = Panels.newPanel();
@@ -49,7 +43,6 @@ public class DetailView extends AbstractView {
 
     // Add the screen holder to the overall content panel
     contentPanel.add(screenPanel, "grow");
-
   }
 
   @Override
@@ -69,73 +62,34 @@ public class DetailView extends AbstractView {
     return contentPanel;
   }
 
-  /**
-   * Handles the screen initialisation operations that take place after the
-   * wallet has been opened
-   */
-  public void afterWalletOpened() {
-
-    // Should be called from within the EDT by design
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
-
-    if (screenViewMap.isEmpty()) {
-
-      // Populate based on the current locale
-      populateScreenViewMap();
-
-      // Once all the views are created allow events to occur
-      for (Map.Entry<Screen, AbstractScreenView> entry : screenViewMap.entrySet()) {
-
-        // Ensure the screen is in the correct starting state
-        entry.getValue().fireInitialStateViewEvents();
-
-      }
-    }
-
-  }
-
   @Subscribe
   public void onShowDetailScreen(final ShowScreenEvent event) {
-
     Preconditions.checkNotNull(event, "'event' must be present");
-
-    Preconditions.checkState(!screenViewMap.isEmpty(), "'screenViewMap' has not been initialised. DetailView is not ready.");
 
     Screen screen = event.getScreen();
 
-    Preconditions.checkState(screenViewMap.containsKey(screen), "Screen '" + screen.name() + "' has not been added to screenViewMap.");
+    Preconditions.checkNotNull(screen, "'screen' must be present in ShowScreenEvent");
+
+    // Initialise screen if it does not exist already
+    if (!screenViewMap.containsKey(screen)) {
+      AbstractScreenView view = Screens.newScreen(screen);
+
+      // Ensure the screen is in the correct starting state
+      view.fireInitialStateViewEvents();
+
+      // Keep track of the view instances
+      screenViewMap.put(screen, view);
+    }
 
     AbstractScreenView view = screenViewMap.get(screen);
 
     if (!view.isInitialised()) {
-
       // Initialise the panel and add it to the card layout parent
       screenPanel.add(view.getScreenViewPanel(), screen.name());
-
     }
 
     cardLayout.show(screenPanel, event.getScreen().name());
 
     view.afterShow();
-
   }
-
-  /**
-   * Populate all the available screens but do not initialise them
-   */
-  private void populateScreenViewMap() {
-
-    log.debug("Populating the screens");
-
-    for (Screen screen : Screen.values()) {
-
-      AbstractScreenView view = Screens.newScreen(screen);
-
-      // Keep track of the view instances but don't initialise them
-      screenViewMap.put(screen, view);
-
-    }
-
-  }
-
 }
