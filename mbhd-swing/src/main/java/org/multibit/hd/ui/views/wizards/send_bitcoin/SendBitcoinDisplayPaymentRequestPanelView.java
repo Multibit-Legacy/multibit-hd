@@ -11,6 +11,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -22,6 +23,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 
@@ -155,6 +157,7 @@ public class SendBitcoinDisplayPaymentRequestPanelView extends AbstractWizardPan
                 trustStatusLabel,
                 MessageKey.PAYMENT_PROTOCOL_UNTRUSTED_NOTE,
                 MultiBitUI.NORMAL_ICON_SIZE);
+              // TODO Consider adding to cacerts and how subsequent Repair Wallet will be managed
               break;
             case DOWN:
             case ERROR:
@@ -207,6 +210,10 @@ public class SendBitcoinDisplayPaymentRequestPanelView extends AbstractWizardPan
           } else {
             displayName.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
           }
+          getWizardModel().setPkiVerificationData(identity);
+
+          // Ensure the next button is enabled
+          ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
 
         }
       });
