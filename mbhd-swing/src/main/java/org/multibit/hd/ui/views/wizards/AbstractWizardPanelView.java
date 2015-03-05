@@ -471,7 +471,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    */
   public void deregisterDefaultButton() {
 
-    //   Panels.frame.getRootPane().setDefaultButton(null);
+    Panels.getApplicationFrame().getRootPane().setDefaultButton(null);
 
   }
 
