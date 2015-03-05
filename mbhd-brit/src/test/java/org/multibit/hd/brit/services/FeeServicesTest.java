@@ -227,7 +227,7 @@ public class FeeServicesTest {
     // Send some pending coins to the wallet.
     Transaction t1 = sendMoneyToWallet(wallet, v1, toAddress);
     Threading.waitForUserCode();
-    final ListenableFuture<Transaction> depthFuture = t1.getConfidence().getDepthFuture(1);
+    final ListenableFuture<TransactionConfidence> depthFuture = t1.getConfidence().getDepthFuture(1);
     assertThat(depthFuture.isDone()).isFalse();
     assertThat(v1).isEqualTo(wallet.getBalance(Wallet.BalanceType.ESTIMATED));
 

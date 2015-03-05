@@ -104,8 +104,10 @@ public enum WalletManager implements WalletEventListener {
     @Override
     public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
       // Emit an event so that GUI elements can update as required
-      Coin value = tx.getValue(wallet);
-      CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx, value));
+      if (tx != null) {
+        Coin value = tx.getValue(wallet);
+        CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx, value));
+      }
     }
 
     @Override
@@ -717,15 +719,12 @@ public enum WalletManager implements WalletEventListener {
           }
           log.debug("The blockStore is at height {}", blockStoreBlockHeight);
 
-          long earliestKeyCreationTimeInSeconds = walletBeingReturned.getEarliestKeyCreationTime();
-          if (walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) {
-            if (walletLastSeenBlockTime == null ||
-              earliestKeyCreationTimeInSeconds == -1 ||
-              (walletLastSeenBlockTime.getTime() / 1000 > earliestKeyCreationTimeInSeconds - DRIFT_TIME)) {
-              // Regular sync is ok - no need to use checkpoints
-              log.debug("Will perform a regular sync");
-              performRegularSync = true;
-            }
+          // If wallet and block store match or wallet is brand new use regular sync
+          if ((walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) ||
+                  walletLastSeenBlockTime == null) {
+            // Regular sync is ok - no need to use checkpoints
+            log.debug("Will perform a regular sync");
+            performRegularSync = true;
           }
         } catch (BlockStoreException bse) {
           // Carry on - it's just logging

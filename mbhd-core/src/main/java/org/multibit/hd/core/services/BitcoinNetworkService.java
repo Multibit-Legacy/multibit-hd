@@ -1109,8 +1109,28 @@ public class BitcoinNetworkService extends AbstractService {
           throw new RuntimeException(e);   // Cannot fail to verify a tx we created ourselves.
         }
       }
+
+      // Work out some final values to keep them out of the broadcast loop
+      final boolean fireTransactionSeen = WalletManager.INSTANCE.getCurrentWalletSummary().isPresent();
+      final Optional<Coin> valueOptional;
+      if (fireTransactionSeen) {
+        valueOptional =  Optional.of(sendRequestSummary.getSendRequest().get().tx.getValue(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet()));
+      } else {
+        valueOptional = Optional.absent();
+      }
+
       // Broadcast to network
-      ListenableFuture<Transaction> broadcastFuture = peerGroup.broadcastTransaction(sendRequest.tx);
+      final TransactionBroadcast transactionBroadcast = peerGroup.broadcastTransaction(sendRequest.tx);
+      transactionBroadcast.setProgressCallback(new TransactionBroadcast.ProgressCallback() {
+        @Override
+        public void onBroadcastProgress(double progress) {
+          log.debug("Tx {}, progress is now {}", sendRequestSummary.getSendRequest().get().tx.getHashAsString(), progress);
+          if (fireTransactionSeen) {
+            CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(sendRequestSummary.getSendRequest().get().tx, valueOptional.get()));
+          }
+        }
+      });
+      ListenableFuture<Transaction> broadcastFuture = transactionBroadcast.future();
       Futures.addCallback(broadcastFuture, new FutureCallback<Transaction>() {
         @Override
         public void onSuccess(Transaction transaction) {

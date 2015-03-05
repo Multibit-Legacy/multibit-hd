@@ -33,8 +33,12 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   }
 
   @Override
-  public void onBlocksDownloaded(Peer peer, Block block, int blocksLeft) {
-    log.trace("Number of blocks left = {}", blocksLeft);
+  public void onBlocksDownloaded(Peer peer, Block block, FilteredBlock filteredBlock, int blocksLeft) {
+    if (blocksLeft > originalBlocksLeft) {
+      originalBlocksLeft = blocksLeft;
+    }
+
+    //log.debug("Number of blocks left: {}, originalBlocksLeft: {}", blocksLeft, originalBlocksLeft);
 
     if (blocksLeft < 0 || originalBlocksLeft <= 0) {
       return;
@@ -58,7 +62,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   @Override
   public void onChainDownloadStarted(Peer peer, int blocksLeft) {
-    log.trace("Chain download started with number of blocks left = {}", blocksLeft);
+    log.debug("Chain download started with number of blocks left = {}", blocksLeft);
 
     startDownload(blocksLeft);
     // Only mark this the first time, because this method can be called more than once during a chain download
@@ -106,7 +110,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   @Override
   public void onTransaction(Peer peer, Transaction transaction) {
-
     // See if the transaction is relevant and adding them as pending if so.
     if (transaction != null) {
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
@@ -180,7 +183,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   protected void progress(double pct, int blocksSoFar, Date date) {
 
     // Logging this information in production is not necessary
-    log.trace(
+    log.debug(
             String.format(
                     "Chain download %d%% done with %d blocks to go, block date %s",
                     (int) pct,
@@ -204,11 +207,11 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    * Called when we are done downloading the block chain.
    */
   protected void doneDownload() {
-
     log.debug("Download of block chain complete");
 
     // Fire that we have completed the sync
     lastPercent = 100;
+    originalBlocksLeft = -1; // Clear for next sync
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadProgress(100, 0));
 
     // Used to indicate sync has finished
