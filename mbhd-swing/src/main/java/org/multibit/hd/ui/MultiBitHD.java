@@ -193,15 +193,11 @@ public class MultiBitHD {
               InstallationManager.CA_CERTS_NAME,
               false // Do not force loading if they are already present
             );
-
           }
         });
-
-
     } catch (SecurityException se) {
-      log.error(se.getClass().getName() + " " + se.getMessage());
+      log.error("Security exception: {} {}", se.getClass().getName(), se.getMessage());
     }
-
   }
 
   /**
@@ -245,7 +241,6 @@ public class MultiBitHD {
 
     // Must be OK to be here
     return true;
-
   }
 
   /**
@@ -309,26 +304,22 @@ public class MultiBitHD {
    * respond to the wizard close event which will trigger ongoing initialisation.</p>
    */
   public MainView initialiseUIViews() {
-
     log.debug("Initialising UI...");
 
     Preconditions.checkNotNull(mainController, "'mainController' must be present. FEST will cause this if another instance is running.");
 
-    log.debug("Switching theme...");
+    final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    long hardwareInitialisationTime = System.currentTimeMillis();
+    // Give MultiBit Hardware a chance to process any attached hardware wallet
+    // and for MainController to subsequently process the events
+    // The delay observed in reality and FEST tests ranges from 1400-2200ms and is
+    // not included results in wiped hardware wallets being missed on startup
+    log.debug("Starting the clock for hardware wallet initialisation");
 
+    log.debug("Switching theme...");
     // Ensure that we are using the configured theme
     ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme());
     Themes.switchTheme(themeKey.theme());
-
-    final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-    if (hardwareWalletService.isPresent()) {
-      // Give MultiBit Hardware a chance to process any attached hardware wallet
-      // and for MainController to subsequently process the events
-      // The delay observed in reality and FEST tests ranges from 1400-2200ms and if
-      // not included results in wiped hardware wallets being missed on startup
-      log.debug("Allowing time for hardware wallet state transition");
-      Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
-    }
 
     log.debug("Building MainView...");
 
@@ -349,9 +340,11 @@ public class MultiBitHD {
       log.debug("Wallet directory is empty or no licence accepted");
     }
 
+    // HardwareWalletService needs HARDWARE_INITIALISATION_TIME milliseconds to initialise so sleep the rest
+    conditionallySleep(hardwareInitialisationTime);
+
     // Check for fresh hardware wallet
     if (hardwareWalletService.isPresent()) {
-
       if (hardwareWalletService.get().isDeviceReady() && !hardwareWalletService.get().isWalletPresent()) {
 
         log.debug("Wiped hardware wallet detected");
@@ -360,23 +353,17 @@ public class MultiBitHD {
         // regardless of wallet or licence situation
         // MainController should have handled the events
         showWelcomeWizard = true;
-
       }
-
     }
 
     if (showWelcomeWizard) {
-
       log.debug("Showing the welcome wizard");
       mainView.setShowExitingWelcomeWizard(true);
       mainView.setShowExitingCredentialsWizard(false);
-
     } else {
-
       log.debug("Showing the credentials wizard");
       mainView.setShowExitingCredentialsWizard(true);
       mainView.setShowExitingWelcomeWizard(false);
-
     }
 
     // Provide a backdrop to the user and trigger the showing of the wizard
@@ -387,6 +374,24 @@ public class MultiBitHD {
     // See the MainController wizard hide event for the next stage
 
     return mainView;
+  }
 
+  /**
+   * Allow a delay of HARDWARE_INITIALISATION_TIME from the startTime
+   * @param startTime The reference time from which to measure the amount of sleep from
+   */
+  private void conditionallySleep(long startTime) {
+    final long HARDWARE_INITIALISATION_TIME = 2000;  // milliseconds
+    long currentTime = System.currentTimeMillis();
+    long timeSpent = currentTime - startTime;
+
+    if (timeSpent < HARDWARE_INITIALISATION_TIME) {
+      long sleepFor = HARDWARE_INITIALISATION_TIME - timeSpent;
+      log.debug("Sleep for an extra {} milliseconds to allow hardwareWalletService to initialise", sleepFor);
+      Uninterruptibles.sleepUninterruptibly(sleepFor, TimeUnit.MILLISECONDS);
+      log.debug("Finished sleep");
+    } else {
+      log.debug("No need for extra sleep time to allow hardwareWalletService to initialise");
+    }
   }
 }
