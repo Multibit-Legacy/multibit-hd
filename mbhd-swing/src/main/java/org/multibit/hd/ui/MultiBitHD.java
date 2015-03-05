@@ -48,6 +48,7 @@ public class MultiBitHD {
 
   private final ListeningExecutorService cacertsExecutorService = SafeExecutors.newSingleThreadExecutor("install-cacerts");
 
+  private static long HARDWARE_INITIALISATION_TIME = 2000; // milliseconds
   /**
    * <p>Main entry point to the application</p>
    *
@@ -193,15 +194,11 @@ public class MultiBitHD {
               InstallationManager.CA_CERTS_NAME,
               false // Do not force loading if they are already present
             );
-
           }
         });
-
-
     } catch (SecurityException se) {
-      log.error(se.getClass().getName() + " " + se.getMessage());
+      log.error("Security exception: {} {}", se.getClass().getName(), se.getMessage());
     }
-
   }
 
   /**
@@ -245,7 +242,6 @@ public class MultiBitHD {
 
     // Must be OK to be here
     return true;
-
   }
 
   /**
@@ -314,21 +310,18 @@ public class MultiBitHD {
 
     Preconditions.checkNotNull(mainController, "'mainController' must be present. FEST will cause this if another instance is running.");
 
-    log.debug("Switching theme...");
+    final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    long hardwareInitialisationTime = System.currentTimeMillis();
+    // Give MultiBit Hardware a chance to process any attached hardware wallet
+    // and for MainController to subsequently process the events
+    // The delay observed in reality and FEST tests ranges from 1400-2200ms and is
+    // not included results in wiped hardware wallets being missed on startup
+    log.debug("Allowing time for hardware wallet state transition - starting at time {}", hardwareInitialisationTime);
 
+    log.debug("Switching theme...");
     // Ensure that we are using the configured theme
     ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme());
     Themes.switchTheme(themeKey.theme());
-
-    final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-    if (hardwareWalletService.isPresent()) {
-      // Give MultiBit Hardware a chance to process any attached hardware wallet
-      // and for MainController to subsequently process the events
-      // The delay observed in reality and FEST tests ranges from 1400-2200ms and if
-      // not included results in wiped hardware wallets being missed on startup
-      log.debug("Allowing time for hardware wallet state transition");
-      Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
-    }
 
     log.debug("Building MainView...");
 
@@ -349,9 +342,19 @@ public class MultiBitHD {
       log.debug("Wallet directory is empty or no licence accepted");
     }
 
+    // HardwareWalletService needs HARDWARE_INITIALISATION_TIME milliseconds to initialise so sleep the rest
+    long currentTime = System.currentTimeMillis();
+    long timeSpent = currentTime - hardwareInitialisationTime;
+    if (timeSpent < HARDWARE_INITIALISATION_TIME) {
+      long sleepFor = 2000 - timeSpent;
+      log.debug("Sleep for an extra {} milliseconds to allow hardwareWalletService to initialise");
+      Uninterruptibles.sleepUninterruptibly(sleepFor, TimeUnit.MILLISECONDS);
+    } else {
+      log.debug("No need for extra sleep time to allow hardwareWalletService to initialise");
+    }
+
     // Check for fresh hardware wallet
     if (hardwareWalletService.isPresent()) {
-
       if (hardwareWalletService.get().isDeviceReady() && !hardwareWalletService.get().isWalletPresent()) {
 
         log.debug("Wiped hardware wallet detected");
@@ -360,23 +363,17 @@ public class MultiBitHD {
         // regardless of wallet or licence situation
         // MainController should have handled the events
         showWelcomeWizard = true;
-
       }
-
     }
 
     if (showWelcomeWizard) {
-
       log.debug("Showing the welcome wizard");
       mainView.setShowExitingWelcomeWizard(true);
       mainView.setShowExitingCredentialsWizard(false);
-
     } else {
-
       log.debug("Showing the credentials wizard");
       mainView.setShowExitingCredentialsWizard(true);
       mainView.setShowExitingWelcomeWizard(false);
-
     }
 
     // Provide a backdrop to the user and trigger the showing of the wizard
