@@ -286,13 +286,9 @@ public class MainView extends JFrame {
       }
     }
 
-    log.debug("Pack and show UI");
-
-    // Tidy up and show
-    pack();
+    log.debug("Show UI");
 
     if (isCentered) {
-
       GraphicsDevice defaultScreen = getGraphicsDevices().get(0);
 
       GraphicsConfiguration defaultConfiguration = defaultScreen.getDefaultConfiguration();
@@ -304,13 +300,11 @@ public class MainView extends JFrame {
         getWidth(),
         getHeight()
       );
-
     }
 
     setVisible(true);
 
     log.debug("Refresh complete");
-
   }
 
 
