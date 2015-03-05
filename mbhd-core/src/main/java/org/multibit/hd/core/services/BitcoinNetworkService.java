@@ -180,7 +180,7 @@ public class BitcoinNetworkService extends AbstractService {
           blockStoreToReturn.getChainHead() == null ? "Unknown" : blockStoreToReturn.getChainHead().getHeight());
       }
     } catch (IOException | BlockStoreException e) {
-      log.error(e.getMessage(), e);
+      log.error("Block store could not be opened", e);
 
       CoreEvents.fireBitcoinNetworkChangedEvent(
         BitcoinNetworkSummary.newNetworkStartupFailed(
@@ -421,7 +421,7 @@ public class BitcoinNetworkService extends AbstractService {
 
     } catch (IllegalStateException | KeyCrypterException e) {
 
-      log.error(e.getMessage(), e);
+      log.error("Could not convert password to AES key", e);
 
       // Declare the transaction creation a failure
       CoreEvents.fireTransactionCreationEvent(
@@ -626,7 +626,7 @@ public class BitcoinNetworkService extends AbstractService {
 
     } catch (IllegalStateException e) {
 
-      log.error(e.getMessage(), e);
+      log.error("Could not process the SendRequest", e);
 
       // Declare the transaction creation a failure
       CoreEvents.fireTransactionCreationEvent(
@@ -805,7 +805,7 @@ public class BitcoinNetworkService extends AbstractService {
       log.debug("Total transaction bitcoin amount = " + totalAmountIncludingTransactionAndClientFee.toString() + ", calculated fiat amount = " + localAmount.toString());
       return true;
     } catch (ScriptException e) {
-      log.error(e.getMessage(), e);
+      log.error("Could not process the fiat amount", e);
       return false;
     }
   }
@@ -832,7 +832,7 @@ public class BitcoinNetworkService extends AbstractService {
 
     } catch (Exception e) {
 
-      log.error(e.getMessage(), e);
+      log.error("Could not complete the transaction without signing", e);
 
       String transactionId = sendRequest.tx != null ? sendRequest.tx.getHashAsString() : "?";
 
@@ -953,7 +953,7 @@ public class BitcoinNetworkService extends AbstractService {
       }
     } catch (Exception e) {
 
-      log.error(e.getMessage(), e);
+      log.error("Could not sign the transaction", e);
 
       String transactionId = sendRequest.tx != null ? sendRequest.tx.getHashAsString() : "?";
 
@@ -1030,7 +1030,7 @@ public class BitcoinNetworkService extends AbstractService {
 
     {
 
-      log.error(e.getMessage(), e);
+      log.error("Could not commit the transaction", e);
 
       String transactionId = sendRequest.tx != null ? sendRequest.tx.getHashAsString() : "?";
 
@@ -1174,7 +1174,7 @@ public class BitcoinNetworkService extends AbstractService {
 
     } catch (RuntimeException e) {
 
-      log.error(e.getMessage(), e);
+      log.error("Could not broadcast the transaction", e);
 
       // Declare the send a failure
       CoreEvents.fireBitcoinSentEvent(
