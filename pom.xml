@@ -273,10 +273,11 @@
     <dependencies>
 
       <!-- MultiBit Hardware for Trezor integration -->
+      <!-- This also brings in the corresponding bitcoinj-alice artifact transitively -->
       <dependency>
         <groupId>org.multibit.hd.hardware</groupId>
         <artifactId>trezor</artifactId>
-        <version>0.3.0</version>
+        <version>develop-SNAPSHOT</version>
       </dependency>
 
       <!-- Logging is through SLF4J and Logback -->
@@ -309,13 +310,6 @@
         <groupId>com.google.code.findbugs</groupId>
         <artifactId>annotations</artifactId>
         <version>2.0.1</version>
-      </dependency>
-
-      <!-- Bitcoinj for Bitcoin operations -->
-      <dependency>
-        <groupId>org.bitcoinj</groupId>
-        <artifactId>bitcoinj-core</artifactId>
-        <version>0.13-alice-SNAPSHOT</version>
       </dependency>
 
       <!-- Crypto -->
@@ -379,6 +373,7 @@
   <dependencies>
 
     <!-- MultiBit Hardware for Trezor integration -->
+    <!-- This also brings in the corresponding bitcoinj-alice artifact transitively -->
     <dependency>
       <groupId>org.multibit.hd.hardware</groupId>
       <artifactId>trezor</artifactId>
@@ -406,12 +401,6 @@
       <artifactId>annotations</artifactId>
     </dependency>
 
-    <!-- Bitcoinj for Bitcoin operations -->
-    <dependency>
-      <groupId>org.bitcoinj</groupId>
-      <artifactId>bitcoinj-core</artifactId>
-    </dependency>
-
     <!-- Joda time for timestamps -->
     <dependency>
       <groupId>joda-time</groupId>
@@ -437,7 +426,5 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
     </dependency>
-
   </dependencies>
-
 </project>

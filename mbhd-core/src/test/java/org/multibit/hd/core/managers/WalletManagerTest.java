@@ -437,6 +437,8 @@ public class WalletManagerTest {
     passwordList.add(LONGER_PASSWORD);
     passwordList.add(LONGEST_PASSWORD);
 
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+
     for (String passwordToCheck : passwordList) {
 
       log.info("Testing password: {}", passwordToCheck);
@@ -446,7 +448,6 @@ public class WalletManagerTest {
 
       WalletManager walletManager = WalletManager.INSTANCE;
 
-      SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
       byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
       long nowInSeconds = Dates.nowInSeconds();
 

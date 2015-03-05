@@ -296,13 +296,16 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     if (canChange) {
       final boolean finalNewEnabled = newEnabled;
 
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          sendBitcoin.setEnabled(finalNewEnabled);
-          requestBitcoin.setEnabled(finalNewEnabled);
-        }
-      });
+      // If button is not enabled and the newEnabled is false don't do anything
+      if (requestBitcoin.isEnabled() || newEnabled) {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            sendBitcoin.setEnabled(finalNewEnabled);
+            requestBitcoin.setEnabled(finalNewEnabled);
+          }
+        });
+      }
     }
   }
 }

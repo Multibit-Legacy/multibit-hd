@@ -25,7 +25,7 @@ public interface MultiBitUI {
   /**
    * The minimum width for a wizard panel (600 is about right) allowing for popovers
    */
-  int WIZARD_MIN_WIDTH = 630;
+  int WIZARD_MIN_WIDTH = 640;
   /**
    * The minimum height for a standard wizard panel (450 is tight) allowing for popovers
    */
@@ -208,6 +208,11 @@ public interface MultiBitUI {
    * The maximum length of the credentials
    */
   int PASSWORD_LENGTH = 40;
+
+  /**
+   * The width of the seed phrase window
+   */
+  int SEED_PHRASE_WIDTH = 50;
 
   /**
    * The maximum length of the seed phrase
