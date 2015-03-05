@@ -48,7 +48,6 @@ public class MultiBitHD {
 
   private final ListeningExecutorService cacertsExecutorService = SafeExecutors.newSingleThreadExecutor("install-cacerts");
 
-  private static long HARDWARE_INITIALISATION_TIME = 2000; // milliseconds
   /**
    * <p>Main entry point to the application</p>
    *
@@ -305,7 +304,6 @@ public class MultiBitHD {
    * respond to the wizard close event which will trigger ongoing initialisation.</p>
    */
   public MainView initialiseUIViews() {
-
     log.debug("Initialising UI...");
 
     Preconditions.checkNotNull(mainController, "'mainController' must be present. FEST will cause this if another instance is running.");
@@ -316,7 +314,7 @@ public class MultiBitHD {
     // and for MainController to subsequently process the events
     // The delay observed in reality and FEST tests ranges from 1400-2200ms and is
     // not included results in wiped hardware wallets being missed on startup
-    log.debug("Allowing time for hardware wallet state transition - starting at time {}", hardwareInitialisationTime);
+    log.debug("Starting the clock for hardware wallet initialisation");
 
     log.debug("Switching theme...");
     // Ensure that we are using the configured theme
@@ -343,15 +341,7 @@ public class MultiBitHD {
     }
 
     // HardwareWalletService needs HARDWARE_INITIALISATION_TIME milliseconds to initialise so sleep the rest
-    long currentTime = System.currentTimeMillis();
-    long timeSpent = currentTime - hardwareInitialisationTime;
-    if (timeSpent < HARDWARE_INITIALISATION_TIME) {
-      long sleepFor = 2000 - timeSpent;
-      log.debug("Sleep for an extra {} milliseconds to allow hardwareWalletService to initialise");
-      Uninterruptibles.sleepUninterruptibly(sleepFor, TimeUnit.MILLISECONDS);
-    } else {
-      log.debug("No need for extra sleep time to allow hardwareWalletService to initialise");
-    }
+    conditionallySleep(hardwareInitialisationTime);
 
     // Check for fresh hardware wallet
     if (hardwareWalletService.isPresent()) {
@@ -384,6 +374,24 @@ public class MultiBitHD {
     // See the MainController wizard hide event for the next stage
 
     return mainView;
+  }
 
+  /**
+   * Allow a delay of HARDWARE_INITIALISATION_TIME from the startTime
+   * @param startTime The reference time from which to measure the amount of sleep from
+   */
+  private void conditionallySleep(long startTime) {
+    final long HARDWARE_INITIALISATION_TIME = 2000;  // milliseconds
+    long currentTime = System.currentTimeMillis();
+    long timeSpent = currentTime - startTime;
+
+    if (timeSpent < HARDWARE_INITIALISATION_TIME) {
+      long sleepFor = HARDWARE_INITIALISATION_TIME - timeSpent;
+      log.debug("Sleep for an extra {} milliseconds to allow hardwareWalletService to initialise", sleepFor);
+      Uninterruptibles.sleepUninterruptibly(sleepFor, TimeUnit.MILLISECONDS);
+      log.debug("Finished sleep");
+    } else {
+      log.debug("No need for extra sleep time to allow hardwareWalletService to initialise");
+    }
   }
 }
