@@ -283,7 +283,9 @@ public class MultiBitHD {
     log.debug("Initialising Core...");
 
     // Start the core services
+    long before = System.currentTimeMillis();
     CoreServices.main(args);
+    log.debug("Initialising CoreServices took {} milliseconds", System.currentTimeMillis() - before);
 
     // Pre-loadContacts sound library
     Sounds.initialise();

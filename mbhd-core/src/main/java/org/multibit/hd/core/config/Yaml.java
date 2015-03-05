@@ -24,6 +24,8 @@ public class Yaml {
 
   private static final Logger log = LoggerFactory.getLogger(Yaml.class);
 
+  private static ObjectMapper mapper = null;
+
   /**
    * Utilities have private constructors
    */
@@ -39,13 +41,14 @@ public class Yaml {
    * @return The configuration data (<code>Configuration</code>, <code>Wallet Summary</code> etc) if present
    */
   public static synchronized <T> Optional<T> readYaml(InputStream is, Class<T> clazz) {
-
     log.debug("Reading YAML data...");
 
     Optional<T> value;
 
     // Read the external configuration
-    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    if (mapper == null) {
+      mapper = new ObjectMapper(new YAMLFactory());
+    }
 
     try {
       value = Optional.fromNullable(mapper.readValue(is, clazz));
@@ -58,7 +61,6 @@ public class Yaml {
     }
 
     return value;
-
   }
 
   /**
@@ -68,15 +70,16 @@ public class Yaml {
    * @param configuration The configuration to write as YAML
    */
   public static synchronized <T> void writeYaml(OutputStream os, T configuration) {
-
     log.debug("Writing YAML data...");
 
-    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    if (mapper == null) {
+      mapper = new ObjectMapper(new YAMLFactory());
+    }
+
     try {
       mapper.writeValue(os, configuration);
     } catch (IOException e) {
       ExceptionHandler.handleThrowable(e);
     }
-
   }
 }
