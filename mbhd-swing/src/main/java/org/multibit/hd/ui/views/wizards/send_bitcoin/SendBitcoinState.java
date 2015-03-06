@@ -11,6 +11,7 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
  */
 public enum SendBitcoinState {
 
+  SEND_DISPLAY_PAYMENT_REQUEST,
   SEND_ENTER_AMOUNT,
   SEND_CONFIRM_AMOUNT,
   SEND_CONFIRM_TREZOR,

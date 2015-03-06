@@ -5,7 +5,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.*;
 import org.bitcoinj.uri.BitcoinURI;
-import org.bitcoinj.uri.BitcoinURIParseException;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
@@ -39,7 +38,7 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.platform.listener.*;
-import org.multibit.hd.ui.services.BitcoinURIListeningService;
+import org.multibit.hd.ui.services.ExternalDataListeningService;
 import org.multibit.hd.ui.views.MainView;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -69,6 +68,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.Locale;
+import java.util.Queue;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -92,7 +92,7 @@ public class MainController extends AbstractController implements
 
   private Optional<HardwareWalletService> hardwareWalletService = Optional.absent();
 
-  private final BitcoinURIListeningService bitcoinURIListeningService;
+  private final ExternalDataListeningService externalDataListeningService;
 
   private final ListeningExecutorService handoverExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-handover");
 
@@ -127,11 +127,11 @@ public class MainController extends AbstractController implements
   private DateTime lastWipedTrezorDateTime = Dates.nowUtc().minusDays(1);
 
   /**
-   * @param bitcoinURIListeningService The Bitcoin URI listening service (must be present to permit a UI)
-   * @param headerController           The header controller
+   * @param ExternalDataListeningService The Bitcoin URI listening service (must be present to permit a UI)
+   * @param headerController             The header controller
    */
   public MainController(
-    BitcoinURIListeningService bitcoinURIListeningService,
+    ExternalDataListeningService ExternalDataListeningService,
     HeaderController headerController
   ) {
 
@@ -140,10 +140,10 @@ public class MainController extends AbstractController implements
     // MainController must also subscribe to ViewEvents
     ViewEvents.subscribe(this);
 
-    Preconditions.checkNotNull(bitcoinURIListeningService, "'bitcoinURIListeningService' must be present");
+    Preconditions.checkNotNull(ExternalDataListeningService, "'bitcoinURIListeningService' must be present");
     Preconditions.checkNotNull(headerController, "'headerController' must be present");
 
-    this.bitcoinURIListeningService = bitcoinURIListeningService;
+    this.externalDataListeningService = ExternalDataListeningService;
     this.headerController = headerController;
 
   }
@@ -755,13 +755,13 @@ public class MainController extends AbstractController implements
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       SwingUtilities.invokeLater(
-              new Runnable() {
-                @Override
-                public void run() {
-                  // Show the Tools screen
-                  ViewEvents.fireShowDetailScreenEvent(Screen.TOOLS);
-                }
-              });
+        new Runnable() {
+          @Override
+          public void run() {
+            // Show the Tools screen
+            ViewEvents.fireShowDetailScreenEvent(Screen.TOOLS);
+          }
+        });
 
       // Show the About screen
       Panels.showLightBox(Wizards.newAboutWizard().getWizardScreenHolder());
@@ -772,23 +772,7 @@ public class MainController extends AbstractController implements
   @Override
   public void onOpenURIEvent(GenericOpenURIEvent event) {
 
-    // Validate the data
-    final BitcoinURI bitcoinURI;
-    try {
-      bitcoinURI = new BitcoinURI(event.getURI().toString());
-    } catch (BitcoinURIParseException e) {
-      // Quietly ignore
-      return;
-    }
-
-    Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI);
-
-    // If there is sufficient information in the Bitcoin URI display it to the user as an alert
-    if (alertModel.isPresent()) {
-
-      // Add the alert
-      ControllerEvents.fireAddAlertEvent(alertModel.get());
-    }
+    ExternalDataListeningService.addToQueues(event.getURI().toString(), false);
 
   }
 
@@ -882,7 +866,7 @@ public class MainController extends AbstractController implements
         // Clear any UNSUPPORTED_FIRMWARE_ATTACHED events as the user has detached the causative device
         Optional<SecurityEvent> lastSecurityEventOptional = CoreServices.getApplicationEventService().getLatestSecurityEvent();
         if (lastSecurityEventOptional.isPresent()
-                && lastSecurityEventOptional.get().is(SecuritySummary.AlertType.UNSUPPORTED_FIRMWARE_ATTACHED)) {
+          && lastSecurityEventOptional.get().is(SecuritySummary.AlertType.UNSUPPORTED_FIRMWARE_ATTACHED)) {
           CoreServices.getApplicationEventService().onSecurityEvent(null);
         }
 
@@ -1128,17 +1112,20 @@ public class MainController extends AbstractController implements
   }
 
   /**
-   * <p>Show any command line Bitcoin URI alerts (UI)</p>
+   * <p>Show any command line payment alerts as part of startup sequence.</p>
+   * <p>See the ExternalDataListeningService for runtime handling</p>
    */
-  private void handleBitcoinURIAlert() {
+  private void handlePaymentAlert() {
 
     // Check for Bitcoin URI on the command line
-    Optional<BitcoinURI> bitcoinURI = bitcoinURIListeningService.getBitcoinURI();
+    Queue<BitcoinURI> bitcoinURIQueue = externalDataListeningService.getBitcoinURIQueue();
+    Queue<PaymentSessionSummary> paymentSessionSummaryQueue = externalDataListeningService.getPaymentSessionSummaryQueue();
 
-    if (bitcoinURI.isPresent()) {
+    // Check for BIP21 Bitcoin URI
+    if (bitcoinURIQueue.peek() != null) {
 
       // Attempt to create an alert model from the Bitcoin URI
-      Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI.get());
+      Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURIQueue.poll());
 
       // If successful the fire the event
       if (alertModel.isPresent()) {
@@ -1146,6 +1133,20 @@ public class MainController extends AbstractController implements
       }
 
     }
+
+    // Check for Payment Protocol session
+    if (paymentSessionSummaryQueue.peek() != null) {
+
+      // Attempt to create an alert model
+      Optional<AlertModel> alertModel = Models.newPaymentRequestAlertModel(paymentSessionSummaryQueue.poll());
+
+      // If successful the fire the event
+      if (alertModel.isPresent()) {
+        ControllerEvents.fireAddAlertEvent(alertModel.get());
+      }
+
+    }
+
   }
 
   /**
@@ -1454,7 +1455,7 @@ public class MainController extends AbstractController implements
 
             // Check for Bitcoin URIs
             log.debug("Check for Bitcoin URIs...");
-            handleBitcoinURIAlert();
+            handlePaymentAlert();
 
           } catch (Exception e) {
             // TODO localise and put on UI via an alert

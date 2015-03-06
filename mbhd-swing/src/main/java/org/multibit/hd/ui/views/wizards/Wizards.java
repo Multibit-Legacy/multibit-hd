@@ -163,7 +163,12 @@ public class Wizards {
 
     log.debug("New 'Send bitcoin wizard'");
 
-    return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_ENTER_AMOUNT, parameter));
+    // Determine the starting state
+    if (parameter.getPaymentSessionSummary().isPresent()) {
+      return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_DISPLAY_PAYMENT_REQUEST, parameter));
+    } else {
+      return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_ENTER_AMOUNT, parameter));
+    }
 
   }
 

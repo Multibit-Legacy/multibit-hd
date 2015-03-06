@@ -82,6 +82,12 @@ public class CoreServices {
   private static ConfigurationService configurationService;
 
   /**
+   * Allow lightweight processing of external data as part of Payment Protocol support
+   * Not an optional service
+   */
+  private static PaymentProtocolService paymentProtocolService;
+
+  /**
    * Keep track of the Bitcoin network for the current wallet
    * Optional service until wallet is unlocked
    */
@@ -171,6 +177,10 @@ public class CoreServices {
 
     // Start application event service
     applicationEventService.start();
+
+    // Create Payment Protocol service (once configuration identifies the network parameters)
+    paymentProtocolService = new PaymentProtocolService(BitcoinNetwork.current().get());
+    paymentProtocolService.start();
 
     // Configure Bitcoinj
     Threading.UserThread.WARNING_THRESHOLD = Integer.MAX_VALUE;
@@ -273,9 +283,11 @@ public class CoreServices {
     if (securityCheckingService != null) {
       securityCheckingService.shutdownNow(shutdownType);
     }
-
     if (applicationEventService != null) {
       applicationEventService.shutdownNow(shutdownType);
+    }
+    if (paymentProtocolService != null) {
+      paymentProtocolService.shutdownNow(shutdownType);
     }
 
     // Be judicious when clearing references since it leads to complex behaviour during shutdown
@@ -420,6 +432,15 @@ public class CoreServices {
   }
 
   /**
+   * @return The started payment protocol service
+   */
+  public static PaymentProtocolService getPaymentProtocolService() {
+    log.debug("Get or create payment protocol service");
+    return paymentProtocolService;
+
+  }
+
+  /**
    * @return The Bitcoin network service - note that this is NOT started
    */
   public static synchronized BitcoinNetworkService getOrCreateBitcoinNetworkService() {
@@ -489,9 +510,9 @@ public class CoreServices {
 
   }
 
-  /**
-   * @return The contact service for the current wallet
-   */
+    /**
+     * @return The contact service for the current wallet
+     */
   public static ContactService getCurrentContactService() {
 
     log.debug("Get current contact service");
@@ -504,7 +525,6 @@ public class CoreServices {
 
     return getOrCreateContactService(walletId);
   }
-
 
   /**
    * @return The history service for the current wallet

@@ -22,7 +22,7 @@ import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.platform.GenericApplicationFactory;
 import org.multibit.hd.ui.platform.GenericApplicationSpecification;
-import org.multibit.hd.ui.services.BitcoinURIListeningService;
+import org.multibit.hd.ui.services.ExternalDataListeningService;
 import org.multibit.hd.ui.views.MainView;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -180,7 +180,7 @@ public class MultiBitHD {
             SSLManager.INSTANCE.installCACertificates(
               InstallationManager.getOrCreateApplicationDataDirectory(),
               InstallationManager.CA_CERTS_NAME,
-              false // Do not force loading if they are already present
+              null, false // Do not force loading if they are already present
             );
           }
         });
@@ -202,10 +202,14 @@ public class MultiBitHD {
    */
   public boolean initialiseUIControllers(String[] args) {
     // Determine if another instance is running and shutdown if this is the case
-    BitcoinURIListeningService bitcoinURIListeningService = new BitcoinURIListeningService(args);
-    if (!bitcoinURIListeningService.start()) {
+    ExternalDataListeningService ExternalDataListeningService = new ExternalDataListeningService(args);
+    if (!ExternalDataListeningService.start()) {
       return false;
     }
+
+    // TODO Place splash screen with progress bar here
+    // See http://stackoverflow.com/questions/11399971/make-splash-screen-with-progress-bar-like-eclipse
+    // for starting code
 
     if (OSUtils.isWindowsXPOrEarlier()) {
       log.error("Windows XP or earlier detected. Forcing shutdown.");
@@ -217,7 +221,7 @@ public class MultiBitHD {
 
     // Including the other controllers avoids dangling references during a soft shutdown
     mainController = new MainController(
-      bitcoinURIListeningService,
+      ExternalDataListeningService,
       new HeaderController()
     );
 

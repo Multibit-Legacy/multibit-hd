@@ -109,20 +109,36 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
       SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".client_fee"
     );
     runningTotalClientFeeDisplayAmountMaV = Components.newDisplayAmountMaV(
-       DisplayAmountStyle.PLAIN,
-       true,
-       SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".running_total_client_fee"
-     );
+      DisplayAmountStyle.PLAIN,
+      true,
+      SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".running_total_client_fee"
+    );
     // Ensure visibility
     transactionDisplayAmountMaV.getView().setVisible(true);
     transactionFeeDisplayAmountMaV.getView().setVisible(true);
     clientFeeDisplayAmountMaV.getView().setVisible(true);
     runningTotalClientFeeDisplayAmountMaV.getView().setVisible(true);
 
-    recipientSummaryLabel = Labels.newRecipientSummary(getWizardModel().getRecipient());
-
     // User entered text
     notesTextArea = TextBoxes.newEnterPrivateNotes(getWizardModel());
+
+    // Apply any Payment Request parameters
+    if (getWizardModel().getPaymentSessionSummary().isPresent()) {
+      // User has received a Payment Request which may provide identify information
+      if (getWizardModel().getPkiVerificationData().isPresent()) {
+        // Use the display name as the recipient
+        recipientSummaryLabel = Labels.newValueLabel(getWizardModel().getPkiVerificationData().get().displayName);
+      } else {
+        // Unknown recipient
+        recipientSummaryLabel = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));
+      }
+
+      // Fill in the memo
+      notesTextArea.setText(getWizardModel().getPaymentSessionSummary().get().getPaymentSession().get().getMemo());
+
+    } else {
+      recipientSummaryLabel = Labels.newRecipientSummary(getWizardModel().getRecipient());
+    }
 
     // Apply any Bitcoin URI parameters
     if (getWizardModel().getBitcoinURI().isPresent()) {
@@ -205,7 +221,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
   private boolean isTrezorWallet() {
     return WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() &&
-                WalletType.TREZOR_HARD_WALLET.equals(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType());
+      WalletType.TREZOR_HARD_WALLET.equals(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType());
   }
 
   @Override
@@ -213,8 +229,35 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
     Configuration configuration = Configurations.currentConfiguration;
 
+    final Coin amount;
+    if (getWizardModel().getPaymentSessionSummary().isPresent()) {
+
+      // User has received a Payment Request which may provide identify information
+      if (getWizardModel().getPkiVerificationData().isPresent()) {
+        // Use the display name as the recipient
+        recipientSummaryLabel.setText(getWizardModel().getPkiVerificationData().get().displayName);
+      } else {
+        // Unknown recipient
+        recipientSummaryLabel.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+      }
+
+      amount = getWizardModel().getPaymentSessionSummary().get().getPaymentSession().get().getValue();
+
+    } else {
+
+      amount = getWizardModel().getCoinAmount();
+
+      // Update the model and view for the recipient
+      recipientSummaryLabel.setText(
+        getWizardModel()
+          .getRecipient()
+          .getSummary()
+      );
+
+    }
+
     // Update the model and view for the amount
-    transactionDisplayAmountMaV.getModel().setCoinAmount(getWizardModel().getCoinAmount());
+    transactionDisplayAmountMaV.getModel().setCoinAmount(amount);
     if (getWizardModel().getLocalAmount().isPresent()) {
       transactionDisplayAmountMaV.getModel().setLocalAmount(getWizardModel().getLocalAmount().get());
     } else {
@@ -274,13 +317,6 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     }
 
     clientFeeInfoLabel.setText(feeText);
-
-    // Update the model and view for the recipient
-    recipientSummaryLabel.setText(
-      getWizardModel()
-        .getRecipient()
-        .getSummary()
-    );
 
     return true;
   }

@@ -5,6 +5,8 @@ import com.google.common.base.Preconditions;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.protocols.payments.PaymentProtocol;
+import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.services.FeeService;
@@ -65,12 +67,14 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   private int txOutputIndex = -1;
 
   private final Optional<BitcoinURI> bitcoinURI;
+  private final Optional<PaymentSessionSummary> paymentSessionSummary;
 
   /**
    * The SendRequestSummary that initially contains all the tx details, and then is signed prior to sending
    */
   private SendRequestSummary sendRequestSummary;
   private SendBitcoinConfirmTrezorPanelView sendBitcoinConfirmTrezorPanelView;
+  private Optional<PaymentProtocol.PkiVerificationData> pkiVerificationData;
 
   /**
    * @param state     The state object
@@ -80,6 +84,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     super(state);
 
     this.bitcoinURI = parameter.getBitcoinURI();
+    this.paymentSessionSummary = parameter.getPaymentSessionSummary();
 
   }
 
@@ -87,6 +92,20 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   public void showNext() {
 
     switch (state) {
+      case SEND_DISPLAY_PAYMENT_REQUEST:
+
+        // The user has confirmed the payment request so the tx can be prepared
+        // If the transaction was prepared OK this returns true, otherwise false
+        // If there is insufficient money in the wallet a TransactionCreationEvent
+        // with the details will be thrown
+
+        if (prepareTransaction()) {
+          state = SEND_CONFIRM_AMOUNT;
+        } else {
+          // Transaction did not prepare correctly
+          state = SEND_REPORT;
+        }
+        break;
       case SEND_ENTER_AMOUNT:
 
         // The user has entered the send details so the tx can be prepared
@@ -162,8 +181,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    */
   public Recipient getRecipient() {
     return enterAmountPanelModel
-            .getEnterRecipientModel()
-            .getRecipient().get();
+      .getEnterRecipientModel()
+      .getRecipient().get();
   }
 
   /**
@@ -171,8 +190,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    */
   public Coin getCoinAmount() {
     return enterAmountPanelModel
-            .getEnterAmountModel()
-            .getCoinAmount();
+      .getEnterAmountModel()
+      .getCoinAmount();
   }
 
   /**
@@ -180,8 +199,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    */
   public Optional<BigDecimal> getLocalAmount() {
     return enterAmountPanelModel
-            .getEnterAmountModel()
-            .getLocalAmount();
+      .getEnterAmountModel()
+      .getLocalAmount();
   }
 
   /**
@@ -233,10 +252,28 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   }
 
   /**
+   * @return Any payment session summary used to initiate this wizard
+   */
+  public Optional<PaymentSessionSummary> getPaymentSessionSummary() {
+    return paymentSessionSummary;
+  }
+
+  /**
    * @return the SendRequestSummary that includes all the tx details
    */
   public SendRequestSummary getSendRequestSummary() {
     return sendRequestSummary;
+  }
+
+  /**
+   * @return The PKI verification data containing identify information for the endpoint
+   */
+  public Optional<PaymentProtocol.PkiVerificationData> getPkiVerificationData() {
+    return pkiVerificationData;
+  }
+
+  public void setPkiVerificationData(PaymentProtocol.PkiVerificationData pkiVerificationData) {
+    this.pkiVerificationData = Optional.fromNullable(pkiVerificationData);
   }
 
   /**
@@ -253,42 +290,81 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
-    Address changeAddress = bitcoinNetworkService.getNextChangeAddress();
+    // Determine if this came from a payment request
+    if (paymentSessionSummary.isPresent()) {
 
-    Coin coin = enterAmountPanelModel.getEnterAmountModel().getCoinAmount();
-    Address bitcoinAddress = enterAmountPanelModel
-            .getEnterRecipientModel()
-            .getRecipient()
-            .get()
-            .getBitcoinAddress();
+      // We should not be here if these conditions are not true
+      PaymentSession paymentSession = paymentSessionSummary.get().getPaymentSession().get();
 
-    Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState(true);
+      // Build the send request summary from the payment request
+      Wallet.SendRequest sendRequest = paymentSession.getSendRequest();
 
-    // Create the fiat payment - note that the fiat amount is not populated, only the exchange rate data.
-    // This is because the client and transaction fee is only worked out at point of sending, and the fiat equivalent is computed from that
-    Optional<FiatPayment> fiatPayment;
-    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-    if (exchangeRateChangedEvent.isPresent()) {
-      fiatPayment = Optional.of(new FiatPayment());
-      fiatPayment.get().setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-      // A send is denoted with a negative fiat amount
-      fiatPayment.get().setAmount(Optional.<BigDecimal>absent());
-      fiatPayment.get().setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
-      fiatPayment.get().setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
+      Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState(true);
+
+      // Create the fiat payment - note that the fiat amount is not populated, only the exchange rate data.
+      // This is because the client and transaction fee is only worked out at point of sending, and the fiat equivalent is computed from that
+      Optional<FiatPayment> fiatPayment;
+      Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+      if (exchangeRateChangedEvent.isPresent()) {
+        fiatPayment = Optional.of(new FiatPayment());
+        fiatPayment.get().setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
+        // A send is denoted with a negative fiat amount
+        fiatPayment.get().setAmount(Optional.<BigDecimal>absent());
+        fiatPayment.get().setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
+        fiatPayment.get().setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
+      } else {
+        fiatPayment = Optional.absent();
+      }
+
+      // Prepare the transaction i.e work out the fee sizes (not empty wallet)
+      sendRequestSummary = new SendRequestSummary(
+        sendRequest,
+        fiatPayment,
+        FeeService.normaliseRawFeePerKB(Configurations.currentConfiguration.getWallet().getFeePerKB()),
+        null,
+        feeState
+      );
+
     } else {
-      fiatPayment = Optional.absent();
-    }
 
-    // Prepare the transaction i.e work out the fee sizes (not empty wallet)
-    sendRequestSummary = new SendRequestSummary(
-            bitcoinAddress,
-            coin,
-            fiatPayment,
-            changeAddress,
-            FeeService.normaliseRawFeePerKB(Configurations.currentConfiguration.getWallet().getFeePerKB()),
-            null,
-            feeState,
-            false);
+      // Build the send request summary from the user data
+      Address changeAddress = bitcoinNetworkService.getNextChangeAddress();
+
+      Coin coin = enterAmountPanelModel.getEnterAmountModel().getCoinAmount();
+      Address bitcoinAddress = enterAmountPanelModel
+        .getEnterRecipientModel()
+        .getRecipient()
+        .get()
+        .getBitcoinAddress();
+
+      Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState(true);
+
+      // Create the fiat payment - note that the fiat amount is not populated, only the exchange rate data.
+      // This is because the client and transaction fee is only worked out at point of sending, and the fiat equivalent is computed from that
+      Optional<FiatPayment> fiatPayment;
+      Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+      if (exchangeRateChangedEvent.isPresent()) {
+        fiatPayment = Optional.of(new FiatPayment());
+        fiatPayment.get().setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
+        // A send is denoted with a negative fiat amount
+        fiatPayment.get().setAmount(Optional.<BigDecimal>absent());
+        fiatPayment.get().setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
+        fiatPayment.get().setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
+      } else {
+        fiatPayment = Optional.absent();
+      }
+
+      // Prepare the transaction i.e work out the fee sizes (not empty wallet)
+      sendRequestSummary = new SendRequestSummary(
+        bitcoinAddress,
+        coin,
+        fiatPayment,
+        changeAddress,
+        FeeService.normaliseRawFeePerKB(Configurations.currentConfiguration.getWallet().getFeePerKB()),
+        null,
+        feeState,
+        false);
+    }
 
     log.debug("Just about to prepare transaction for sendRequestSummary: {}", sendRequestSummary);
     return bitcoinNetworkService.prepareTransaction(sendRequestSummary);
@@ -342,8 +418,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
         // Attempt to locate a contact with the address in the Bitcoin URI to reassure user
         List<Contact> contacts = CoreServices
-                .getOrCreateContactService(currentWalletSummary.get().getWalletId())
-                .filterContactsByBitcoinAddress(address.get());
+          .getOrCreateContactService(currentWalletSummary.get().getWalletId())
+          .filterContactsByBitcoinAddress(address.get());
 
         if (!contacts.isEmpty()) {
           // Offer the first contact with the matching address (already null checked)
@@ -362,13 +438,72 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
       // Must have a valid address and therefore recipient to be here
       enterAmountPanelModel
-              .getEnterRecipientModel()
-              .setValue(recipient.get());
+        .getEnterRecipientModel()
+        .setValue(recipient.get());
 
       // Add in any amount or treat as zero
       enterAmountPanelModel
-              .getEnterAmountModel()
-              .setCoinAmount(amount.or(Coin.ZERO));
+        .getEnterAmountModel()
+        .setCoinAmount(amount.or(Coin.ZERO));
+    }
+  }
+
+  /**
+   * Populate the panel model with the payment session summary details
+   */
+  void handlePaymentSessionSummary() {
+
+    if (!paymentSessionSummary.isPresent()) {
+      return;
+    }
+
+//    PaymentSessionSummary uri = paymentSessionSummary.get();
+
+//    paymentRequestPanelModel
+//      .getDisplayPaymentRequestModel()
+//      .setValue();
+
+    Optional<Address> address = Optional.fromNullable(null);
+    Optional<Coin> amount = Optional.fromNullable(null);
+
+    if (address.isPresent()) {
+
+      final Optional<Recipient> recipient;
+
+      // Get the current wallet
+      Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+      if (currentWalletSummary.isPresent()) {
+
+        // Attempt to locate a contact with the address in the Bitcoin URI to reassure user
+        List<Contact> contacts = CoreServices
+          .getOrCreateContactService(currentWalletSummary.get().getWalletId())
+          .filterContactsByBitcoinAddress(address.get());
+
+        if (!contacts.isEmpty()) {
+          // Offer the first contact with the matching address (already null checked)
+          Address bitcoinAddress = contacts.get(0).getBitcoinAddress().get();
+          recipient = Optional.of(new Recipient(bitcoinAddress));
+          recipient.get().setContact(contacts.get(0));
+        } else {
+          // No matching contact so make an anonymous Recipient
+          recipient = Optional.of(new Recipient(address.get()));
+        }
+
+      } else {
+        // No current wallet so make an anonymous Recipient
+        recipient = Optional.of(new Recipient(address.get()));
+      }
+
+      // Must have a valid address and therefore recipient to be here
+      enterAmountPanelModel
+        .getEnterRecipientModel()
+        .setValue(recipient.get());
+
+      // Add in any amount or treat as zero
+      enterAmountPanelModel
+        .getEnterAmountModel()
+        .setCoinAmount(amount.or(Coin.ZERO));
     }
   }
 
@@ -432,8 +567,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
               Address transactionOutputAddress = output.getAddressFromP2PKHScript(MainNetParams.get());
               key = MessageKey.TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY;
               values = new String[]{
-                      transactionOutputAmount[0] + transactionOutputAmount[1] + " " + bitcoinSymbolText,
-                      transactionOutputAddress == null ? "" : transactionOutputAddress.toString()
+                transactionOutputAmount[0] + transactionOutputAmount[1] + " " + bitcoinSymbolText,
+                transactionOutputAddress == null ? "" : transactionOutputAddress.toString()
               };
 
             } else {
@@ -451,8 +586,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
             key = MessageKey.TREZOR_SIGN_CONFIRM_DISPLAY;
             values = new String[]{
-                    transactionAmountFormatted[0] + transactionAmountFormatted[1] + " " + bitcoinSymbolText,
-                    feeAmount[0] + feeAmount[1] + " " + bitcoinSymbolText
+              transactionAmountFormatted[0] + transactionAmountFormatted[1] + " " + bitcoinSymbolText,
+              feeAmount[0] + feeAmount[1] + " " + bitcoinSymbolText
             };
             break;
           default:
@@ -469,83 +604,84 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   public void showOperationSucceeded(HardwareWalletEvent event) {
 
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
-                // Enable next button
-                ViewEvents.fireWizardButtonEnabledEvent(
-                        getPanelName(),
-                        WizardButton.NEXT,
-                        true
-                );
+      new Runnable() {
+        @Override
+        public void run() {
+          // Enable next button
+          ViewEvents.fireWizardButtonEnabledEvent(
+            getPanelName(),
+            WizardButton.NEXT,
+            true
+          );
 
-                // The tx is now complete so commit and broadcast it
-                // Trezor will provide a signed serialized transaction
-                byte[] deviceTxPayload = CoreServices.getOrCreateHardwareWalletService().get().getContext().getSerializedTx().toByteArray();
+          // The tx is now complete so commit and broadcast it
+          // Trezor will provide a signed serialized transaction
+          byte[] deviceTxPayload = CoreServices.getOrCreateHardwareWalletService().get().getContext().getSerializedTx().toByteArray();
 
-                log.info("DeviceTx payload:\n{}", Utils.HEX.encode(deviceTxPayload));
+          log.info("DeviceTx payload:\n{}", Utils.HEX.encode(deviceTxPayload));
 
-                // Load deviceTx
-                Transaction deviceTx = new Transaction(MainNetParams.get(), deviceTxPayload);
+          // Load deviceTx
+          Transaction deviceTx = new Transaction(MainNetParams.get(), deviceTxPayload);
 
-                log.info("deviceTx:\n{}", deviceTx.toString());
+          log.info("deviceTx:\n{}", deviceTx.toString());
 
-                // Check the signatures are canonical
-                for (TransactionInput txInput : deviceTx.getInputs()) {
-                  byte[] signature = txInput.getScriptSig().getChunks().get(0).data;
-                  if (signature != null) {
-                    log.debug(
-                            "Is signature canonical test result '{}' for txInput '{}', signature '{}'",
-                            TransactionSignature.isEncodingCanonical(signature),
-                            txInput.toString(),
-                            Utils.HEX.encode(signature));
-                  } else {
-                    log.warn("No signature data");
-                  }
-                }
+          // Check the signatures are canonical
+          for (TransactionInput txInput : deviceTx.getInputs()) {
+            byte[] signature = txInput.getScriptSig().getChunks().get(0).data;
+            if (signature != null) {
+              log.debug(
+                "Is signature canonical test result '{}' for txInput '{}', signature '{}'",
+                TransactionSignature.isEncodingCanonical(signature),
+                txInput.toString(),
+                Utils.HEX.encode(signature));
+            } else {
+              log.warn("No signature data");
+            }
+          }
 
-                log.debug("Committing and broadcasting the last tx");
+          log.debug("Committing and broadcasting the last tx");
 
-                BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
+          BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
 
-                if (bitcoinNetworkService.getLastSendRequestSummaryOptional().isPresent()
-                  && bitcoinNetworkService.getLastWalletOptional().isPresent()) {
+          if (bitcoinNetworkService.getLastSendRequestSummaryOptional().isPresent()
+            && bitcoinNetworkService.getLastWalletOptional().isPresent()) {
 
-                  SendRequestSummary sendRequestSummary = bitcoinNetworkService.getLastSendRequestSummaryOptional().get();
+            SendRequestSummary sendRequestSummary = bitcoinNetworkService.getLastSendRequestSummaryOptional().get();
 
-                  // Check the unsigned and signed tx are essentially the same as a check against malware attacks on the Trezor
-                  if (TransactionUtils.checkEssentiallyEqual(sendRequestSummary.getSendRequest().get().tx, deviceTx)) {
-                    // Substitute the signed tx from the trezor
-                    log.debug("Substituting the Trezor signed tx '{}' for the unsigned version {}",
-                      deviceTx.toString(),
-                      sendRequestSummary.getSendRequest().get().tx.toString()
-                    );
-                    sendRequestSummary.getSendRequest().get().tx = deviceTx;
-                    log.debug("The transaction fee was {}", sendRequestSummary.getSendRequest().get().fee);
+            // Check the unsigned and signed tx are essentially the same as a check against malware attacks on the Trezor
+            if (TransactionUtils.checkEssentiallyEqual(sendRequestSummary.getSendRequest().get().tx, deviceTx)) {
+              // Substitute the signed tx from the trezor
+              log.debug(
+                "Substituting the Trezor signed tx '{}' for the unsigned version {}",
+                deviceTx.toString(),
+                sendRequestSummary.getSendRequest().get().tx.toString()
+              );
+              sendRequestSummary.getSendRequest().get().tx = deviceTx;
+              log.debug("The transaction fee was {}", sendRequestSummary.getSendRequest().get().fee);
 
-                    sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_TRANSACTION_CREATED_OPERATION);
-                    sendBitcoinConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
-                    sendBitcoinConfirmTrezorPanelView.setDisplayVisible(false);
+              sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_TRANSACTION_CREATED_OPERATION);
+              sendBitcoinConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
+              sendBitcoinConfirmTrezorPanelView.setDisplayVisible(false);
 
-                    // Get the last wallet
-                    Wallet wallet = bitcoinNetworkService.getLastWalletOptional().get();
+              // Get the last wallet
+              Wallet wallet = bitcoinNetworkService.getLastWalletOptional().get();
 
-                    // Commit and broadcast
-                    bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet);
-                  } else {
-                    // The signed transaction is essentially different from what was sent to it - abort send
-                    sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
-                    sendBitcoinConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
-                    sendBitcoinConfirmTrezorPanelView.setDisplayVisible(false);
-                  }
-                } else {
-                  log.debug("Cannot commit and broadcast the last send as it is not present in bitcoinNetworkService");
-                }
-                // Clear the previous remembered tx
-                bitcoinNetworkService.setLastSendRequestSummaryOptional(Optional.<SendRequestSummary>absent());
-                bitcoinNetworkService.setLastWalletOptional(Optional.<Wallet>absent());
-              }
-            });
+              // Commit and broadcast
+              bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet);
+            } else {
+              // The signed transaction is essentially different from what was sent to it - abort send
+              sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
+              sendBitcoinConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
+              sendBitcoinConfirmTrezorPanelView.setDisplayVisible(false);
+            }
+          } else {
+            log.debug("Cannot commit and broadcast the last send as it is not present in bitcoinNetworkService");
+          }
+          // Clear the previous remembered tx
+          bitcoinNetworkService.setLastSendRequestSummaryOptional(Optional.<SendRequestSummary>absent());
+          bitcoinNetworkService.setLastWalletOptional(Optional.<Wallet>absent());
+        }
+      });
 
   }
 
@@ -564,5 +700,4 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     }
 
   }
-
 }

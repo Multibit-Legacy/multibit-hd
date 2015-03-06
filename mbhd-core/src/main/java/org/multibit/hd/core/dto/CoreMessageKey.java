@@ -80,6 +80,23 @@ public enum CoreMessageKey {
   EXCHANGE_ERROR("core_exchange_error"),
   EXCHANGE_DOWN("core_exchange_down"),
 
+  // Payment protocol messages
+  PAYMENT_SESSION_OK("core_payment_session_ok"),
+  PAYMENT_SESSION_ERROR("core_payment_session_error"),
+  PAYMENT_SESSION_DOWN("core_payment_session_down"),
+  PAYMENT_SESSION_EXPIRED("core_payment_session_expired"),
+  PAYMENT_SESSION_INVALID_NETWORK("core_payment_session_invalid_network"),
+  PAYMENT_SESSION_INVALID_OUTPUTS("core_payment_session_invalid_outputs"),
+  PAYMENT_SESSION_INVALID_URL("core_payment_session_invalid_url"),
+  PAYMENT_SESSION_INVALID_REQUEST_URL("core_payment_session_invalid_request_url"),
+  PAYMENT_SESSION_INVALID_PAYMENT_URL("core_payment_session_invalid_payment_url"),
+  PAYMENT_SESSION_INVALID_VERSION("core_payment_session_invalid_version"),
+
+  PAYMENT_SESSION_PKI_INVALID("core_payment_session_pki_invalid"),
+  PAYMENT_SESSION_PKI_INVALID_TYPE("core_payment_session_pki_invalid_type"),
+  PAYMENT_SESSION_PKI_MISSING("core_payment_session_pki_missing"),
+  PAYMENT_SESSION_PKI_UNTRUSTED_CA("core_payment_session_pki_untrusted_ca"),
+
   // Not used
   @Deprecated
   CHANGE_PASSWORD_REPORT_TITLE("core_change_password_report_title"),

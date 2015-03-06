@@ -66,10 +66,11 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     configuration = Configurations.currentConfiguration.deepCopy();
 
     // Configure the panel model
-    setPanelModel(new FeeSettingsPanelModel(
-      getPanelName(),
-      configuration
-    ));
+    setPanelModel(
+      new FeeSettingsPanelModel(
+        getPanelName(),
+        configuration
+      ));
   }
 
   @Override
@@ -85,9 +86,9 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     feePerKBSlider = Sliders.newAdjustTransactionFeeSlider(this, walletConfiguration.getFeePerKB());
 
     transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(
-                DisplayAmountStyle.PLAIN,
-                false,
-                "transaction.fee.amount");
+      DisplayAmountStyle.PLAIN,
+      false,
+      "transaction.fee.amount");
     JPanel transactionFeeAmountViewPanel = transactionFeeDisplayAmountMaV.getView().newComponentPanel();
     transactionFeeDisplayAmountMaV.getView().setVisible(true);
 
@@ -114,23 +115,26 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
    */
   private Action createDonateNowAction() {
     return new AbstractAction() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            try {
-              setChosenFee();
-              // Set the new feePerKB
-              Configurations.currentConfiguration.getWallet().setFeePerKB(configuration.getWallet().getFeePerKB());
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          setChosenFee();
+          // Set the new feePerKB
+          Configurations.currentConfiguration.getWallet().setFeePerKB(configuration.getWallet().getFeePerKB());
 
-              Panels.hideLightBoxIfPresent();
+          Panels.hideLightBoxIfPresent();
 
-              SendBitcoinParameter donateParameter = new SendBitcoinParameter(Optional.of(new BitcoinURI("bitcoin:" + FeeService.DONATION_ADDRESS + "?amount=" + FeeService.DEFAULT_DONATION_AMOUNT)));
-              Panels.showLightBox(Wizards.newSendBitcoinWizard(donateParameter).getWizardScreenHolder());
-            } catch (BitcoinURIParseException pe) {
-              // Should not happen
-              log.error(pe.getMessage());
-            }
-          }
-        };
+          SendBitcoinParameter donateParameter = new SendBitcoinParameter(
+            new BitcoinURI("bitcoin:" + FeeService.DONATION_ADDRESS + "?amount=" + FeeService.DEFAULT_DONATION_AMOUNT),
+            null
+          );
+          Panels.showLightBox(Wizards.newSendBitcoinWizard(donateParameter).getWizardScreenHolder());
+        } catch (BitcoinURIParseException pe) {
+          // Should not happen
+          log.error(pe.getMessage());
+        }
+      }
+    };
   }
 
   @Override
@@ -146,12 +150,13 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
 
   @Override
   public void afterShow() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        feePerKBSlider.requestFocusInWindow();
-      }
-    });
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          feePerKBSlider.requestFocusInWindow();
+        }
+      });
   }
 
   @Override

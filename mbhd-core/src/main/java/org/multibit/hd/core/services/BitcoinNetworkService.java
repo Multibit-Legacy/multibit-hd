@@ -534,19 +534,31 @@ public class BitcoinNetworkService extends AbstractService {
     log.debug("Appending send request based on: {}", sendRequestSummary);
 
     try {
-      final Wallet.SendRequest sendRequest = Wallet.SendRequest.to(
-        sendRequestSummary.getDestinationAddress(),
-        sendRequestSummary.getAmount()
-      );
-      if (sendRequestSummary.getKeyParameter().isPresent()) {
-        sendRequest.aesKey = sendRequestSummary.getKeyParameter().get();
-      }
-      sendRequest.fee = Coin.ZERO;
-      sendRequest.feePerKb = sendRequestSummary.getFeePerKB();
-      sendRequest.changeAddress = sendRequestSummary.getChangeAddress();
 
-      // Require empty wallet to ensure that all funds are included
-      sendRequest.emptyWallet = sendRequestSummary.isEmptyWallet();
+      // Determine if a SendRequest is present
+      final Wallet.SendRequest sendRequest;
+      if (sendRequestSummary.getSendRequest().isPresent()) {
+        // Use the existing SendRequest
+        sendRequest = sendRequestSummary.getSendRequest().get();
+        sendRequest.fee = Coin.ZERO;
+        sendRequest.feePerKb = sendRequestSummary.getFeePerKB();
+      } else {
+        // No SendRequest so build one from the information in the summary
+        sendRequest = Wallet.SendRequest.to(
+          sendRequestSummary.getDestinationAddress(),
+          sendRequestSummary.getAmount()
+        );
+        if (sendRequestSummary.getKeyParameter().isPresent()) {
+          sendRequest.aesKey = sendRequestSummary.getKeyParameter().get();
+        }
+        sendRequest.fee = Coin.ZERO;
+        sendRequest.feePerKb = sendRequestSummary.getFeePerKB();
+        sendRequest.changeAddress = sendRequestSummary.getChangeAddress();
+
+        // Require empty wallet to ensure that all funds are included
+        sendRequest.emptyWallet = sendRequestSummary.isEmptyWallet();
+
+      }
 
       // Only include the fee output if not emptying since it interferes
       // with the coin selector
@@ -657,9 +669,9 @@ public class BitcoinNetworkService extends AbstractService {
 
   /**
    * @param sendRequestSummary The information required to prepare a transaction for sending (this is everything except the credentials)
-   *                           This prepares the transaction but does not sign it.
+   *                           This prepares the transaction but does not sign it
    *
-   * @return whether the prepareTransaction was successful or not
+   * @return True if the operation was successful
    */
   public boolean prepareTransaction(SendRequestSummary sendRequestSummary) {
     log.debug("Starting the prepare transaction process");

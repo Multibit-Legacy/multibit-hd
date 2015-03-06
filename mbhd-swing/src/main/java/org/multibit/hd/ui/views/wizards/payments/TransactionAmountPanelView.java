@@ -164,7 +164,7 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
       if (paymentData instanceof TransactionData) {
         TransactionData transactionData = (TransactionData) paymentData;
 
-        // Get the transaction info again directly from the WalletService to make sure the minging fee is up to date
+        // Get the transaction info again directly from the WalletService to make sure the mining fee is up to date
         // Otherwise use sentBySelf on corresponding transactionInfo
         Optional<Coin> miningFee = Optional.absent();
 
