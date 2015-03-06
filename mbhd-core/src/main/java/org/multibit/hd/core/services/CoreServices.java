@@ -184,7 +184,6 @@ public class CoreServices {
 
     // Configure Bitcoinj
     Threading.UserThread.WARNING_THRESHOLD = Integer.MAX_VALUE;
-
   }
 
   /**
@@ -197,6 +196,7 @@ public class CoreServices {
   public static synchronized void shutdownNow(final ShutdownEvent.ShutdownType shutdownType) {
 
     switch (shutdownType) {
+      default:
       case HARD:
         log.info("Applying hard shutdown.");
 
