@@ -147,17 +147,6 @@ public class MultiBitHD {
 
     // Although we guarantee the JVM through the packager it is possible that
     // a power user will use their own
-    try {
-      // We guarantee the JVM through the packager so we should try it first
-      UIManager.setLookAndFeel(new NimbusLookAndFeel());
-    } catch (UnsupportedLookAndFeelException e) {
-      try {
-        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {
-        log.error("No look and feel available. MultiBit HD requires Java 7 or higher.", e1);
-        System.exit(-1);
-      }
-    }
 
     // Set any bespoke system properties
     try {
@@ -212,7 +201,6 @@ public class MultiBitHD {
    * </ul>
    */
   public boolean initialiseUIControllers(String[] args) {
-
     // Determine if another instance is running and shutdown if this is the case
     BitcoinURIListeningService bitcoinURIListeningService = new BitcoinURIListeningService(args);
     if (!bitcoinURIListeningService.start()) {
@@ -283,9 +271,7 @@ public class MultiBitHD {
     log.debug("Initialising Core...");
 
     // Start the core services
-    long before = System.currentTimeMillis();
     CoreServices.main(args);
-    log.debug("Initialising CoreServices took {} milliseconds", System.currentTimeMillis() - before);
 
     // Pre-loadContacts sound library
     Sounds.initialise();
@@ -317,6 +303,18 @@ public class MultiBitHD {
     // The delay observed in reality and FEST tests ranges from 1400-2200ms and is
     // not included results in wiped hardware wallets being missed on startup
     log.debug("Starting the clock for hardware wallet initialisation");
+
+    try {
+      // Set look and feel
+      UIManager.setLookAndFeel(new NimbusLookAndFeel());
+    } catch (UnsupportedLookAndFeelException e) {
+      try {
+        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {
+        log.error("No look and feel available. MultiBit HD requires Java 7 or higher.", e1);
+        System.exit(-1);
+      }
+    }
 
     log.debug("Switching theme...");
     // Ensure that we are using the configured theme
