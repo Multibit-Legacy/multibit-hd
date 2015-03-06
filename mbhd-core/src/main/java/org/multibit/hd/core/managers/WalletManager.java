@@ -361,6 +361,106 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
+    * <p>Create a MBHD soft wallet from a seed.</p>
+    * <p>This is stored in the specified directory.</p>
+    * <p>The name of the wallet directory is derived from the seed.</p>
+    * <p>If the wallet file already exists it is loaded and returned</p>
+    * <p>Auto-save is hooked up so that the wallet is saved on modification</p>
+    * <p>Synchronization is begun if required</p>
+    *
+    * @param applicationDataDirectory The application data directory containing the wallet
+    * @param entropy                  The entropy equivalent to the mnenomic seed phrase
+    * @param creationTimeInSeconds    The creation time of the wallet, in seconds since epoch
+    * @param password                 The credentials to use to encrypt the wallet - if null then the wallet is not loaded
+    * @param name                     The wallet name
+    * @param notes                    Public notes associated with the wallet
+    * @param performSynch             True if the wallet should immediately begin synchronization
+    *
+    * @return Wallet summary containing the wallet object and the walletId (used in storage etc)
+    *
+    * @throws IllegalStateException  if applicationDataDirectory is incorrect
+    * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
+    * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
+    */
+   public WalletSummary getOrCreateMBHDSoftWalletSummaryFromEntropy(
+     File applicationDataDirectory,
+     byte[] entropy,
+     long creationTimeInSeconds,
+     String password,
+     String name,
+     String notes,
+     boolean performSynch) throws WalletLoadException, WalletVersionException, IOException {
+     log.debug("getOrCreateMBHDSoftWalletSummaryFromSeed called");
+     final WalletSummary walletSummary;
+
+     // Create a wallet id from the entropy to work out the wallet root directory
+     final WalletId walletId = new WalletId(entropy);
+     String walletRoot = createWalletRoot(walletId);
+
+     final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
+     log.debug("Wallet directory:\n'{}'", walletDirectory.getAbsolutePath());
+
+     final File walletFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME);
+     final File walletFileWithAES = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_WALLET_NAME + MBHD_AES_SUFFIX);
+
+     boolean saveWalletYaml = false;
+     boolean createdNew = false;
+     if (walletFileWithAES.exists()) {
+       log.debug("Discovered AES encrypted wallet file. Loading...");
+
+       // There is already a wallet created with this root - if so load it and return that
+       walletSummary = loadFromWalletDirectory(walletDirectory, password);
+
+       setCurrentWalletSummary(walletSummary);
+     } else {
+       // Wallet file does not exist so create it below the known good wallet directory
+       log.debug("Creating new wallet file...");
+
+       // Create a wallet using the entropy
+       DeterministicSeed deterministicSeed = new DeterministicSeed(entropy, "", creationTimeInSeconds);
+       Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
+       walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
+       walletToReturn.encrypt(password);
+       walletToReturn.setVersion(MBHD_WALLET_VERSION);
+
+       // Save it now to ensure it is on the disk
+       walletToReturn.saveToFile(walletFile);
+       EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletFile, password);
+
+       // Create a new wallet summary
+       walletSummary = new WalletSummary(walletId, walletToReturn);
+       walletSummary.setName(name);
+       walletSummary.setNotes(notes);
+       walletSummary.setWalletPassword(new WalletPassword(password, walletId));
+       walletSummary.setWalletFile(walletFile);
+       walletSummary.setWalletType(WalletType.MBHD_SOFT_WALLET);
+       setCurrentWalletSummary(walletSummary);
+
+       // Save the wallet YAML
+       saveWalletYaml = true;
+       createdNew = true;
+
+       try {
+         WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, entropy, password);
+       } catch (NoSuchAlgorithmException e) {
+         throw new WalletLoadException("Could not store encrypted credentials and backup AES key", e);
+       }
+     }
+
+     // Set wallet type
+     walletSummary.getWallet().addOrUpdateExtension(new WalletTypeExtension(WalletType.MBHD_SOFT_WALLET));
+
+     if (createdNew) {
+       CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), true, CoreMessageKey.WALLET_LOADED_OK, null, Optional.<File>absent()));
+     }
+
+     // Wallet is now created - finish off other configuration and check if wallet needs syncing
+     updateConfigurationAndCheckSync(walletRoot, walletDirectory, walletSummary, saveWalletYaml, performSynch);
+
+     return walletSummary;
+   }
+
+  /**
    * Create a Trezor hard wallet from an HD root node.
    * <p/>
    * This is stored in the specified application directory.
@@ -1231,9 +1331,8 @@ public enum WalletManager implements WalletEventListener {
       if (includeOneExtraFee) {
         feeState.setFeeOwed(feeState.getFeeOwed().add(FeeService.FEE_PER_SEND));
       }
-      Optional<FeeState> feeStateOptional = Optional.of(feeState);
 
-      return feeStateOptional;
+      return Optional.of(feeState);
     } else {
       return Optional.absent();
     }
@@ -1395,7 +1494,7 @@ public enum WalletManager implements WalletEventListener {
     Preconditions.checkNotNull(entropy, "'entropy' must be present");
     Preconditions.checkNotNull(password, "'password' must be present");
 
-    // Save the wallet credentials, AES encrypted with a key derived from the wallet seed/ entropy
+    // Save the wallet credentials, AES encrypted with a key derived from the wallet entropy
     KeyParameter entropyDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(entropy, SCRYPT_SALT);
     byte[] passwordBytes = password.getBytes(Charsets.UTF_8);
 
