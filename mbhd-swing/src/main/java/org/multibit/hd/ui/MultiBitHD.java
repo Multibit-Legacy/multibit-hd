@@ -295,6 +295,7 @@ public class MultiBitHD {
    * <p>Once the UI renders, control passes to the <code>MainController</code> to
    * respond to the wizard close event which will trigger ongoing initialisation.</p>
    */
+  @SuppressFBWarnings({"DM_EXIT"})
   public MainView initialiseUIViews() {
     log.debug("Initialising UI...");
 
