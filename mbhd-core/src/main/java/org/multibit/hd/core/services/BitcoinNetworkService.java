@@ -63,14 +63,14 @@ public class BitcoinNetworkService extends AbstractService {
 
   private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
 
-  public static final int MAXIMUM_NUMBER_OF_PEERS = 6;
+  public static final int MAXIMUM_NUMBER_OF_PEERS = 7;
 
   private static final int SIZE_OF_SIGNATURE = 72; // bytes
 
   /**
    * The boundary for when more mining fee is due
    */
-  private static final int MINING_FEE_BOUNDARY = 1000;
+  private static final int MINING_FEE_BOUNDARY = 1000;  // bytes
 
   private BlockStore blockStore;
   private PeerGroup peerGroup;  // May need to add listener as in MultiBitPeerGroup
