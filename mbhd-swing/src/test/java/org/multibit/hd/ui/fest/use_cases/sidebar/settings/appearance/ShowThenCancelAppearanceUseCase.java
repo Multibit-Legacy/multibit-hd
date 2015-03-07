@@ -31,7 +31,7 @@ public class ShowThenCancelAppearanceUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the "appearance" wizard appears
-    assertLabelText(MessageKey.APPEARANCE_SETTINGS_TITLE);
+    assertLabelText(MessageKey.SHOW_APPEARANCE_WIZARD);
 
     // Verify cancel is present
     window

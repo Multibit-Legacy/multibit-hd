@@ -487,9 +487,16 @@ public enum MessageKey {
 
   LANGUAGE_SETTINGS_TITLE("language_settings_title"),
   EXCHANGE_SETTINGS_TITLE("exchange_settings_title"),
+
+  @Deprecated
   UNITS_SETTINGS_TITLE("units_settings_title"),
+
+  @Deprecated
   APPEARANCE_SETTINGS_TITLE("appearance_settings_title"),
+
+  @Deprecated
   SOUNDS_SETTINGS_TITLE("sounds_settings_title"),
+
   FEES_SETTINGS_TITLE("fees_settings_title"),
   LABS_SETTINGS_TITLE("labs_settings_title"),
 

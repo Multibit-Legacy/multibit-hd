@@ -40,7 +40,7 @@ public class VerifyAppearanceThemeUseCase extends AbstractFestUseCase {
     pauseForComponentReset();
 
     // Verify the "appearance" wizard appears
-    assertLabelText(MessageKey.APPEARANCE_SETTINGS_TITLE);
+    assertLabelText(MessageKey.SHOW_APPEARANCE_WIZARD);
 
     // Verify Apply is present
     window
