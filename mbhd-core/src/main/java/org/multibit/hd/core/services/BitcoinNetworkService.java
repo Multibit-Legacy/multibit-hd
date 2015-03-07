@@ -63,7 +63,7 @@ public class BitcoinNetworkService extends AbstractService {
 
   private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
 
-  public static final int MAXIMUM_NUMBER_OF_PEERS = 7;
+  public static final int MAXIMUM_NUMBER_OF_PEERS = 8;
 
   private static final int SIZE_OF_SIGNATURE = 72; // bytes
 
