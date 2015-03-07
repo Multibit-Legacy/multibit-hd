@@ -1126,7 +1126,7 @@ public class BitcoinNetworkService extends AbstractService {
       final boolean fireTransactionSeen = WalletManager.INSTANCE.getCurrentWalletSummary().isPresent();
       final Optional<Coin> valueOptional;
       if (fireTransactionSeen) {
-        valueOptional =  Optional.of(sendRequestSummary.getSendRequest().get().tx.getValue(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet()));
+        valueOptional =  Optional.of(sendRequest.tx.getValue(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet()));
       } else {
         valueOptional = Optional.absent();
       }
@@ -1136,8 +1136,9 @@ public class BitcoinNetworkService extends AbstractService {
       transactionBroadcast.setProgressCallback(new TransactionBroadcast.ProgressCallback() {
         @Override
         public void onBroadcastProgress(double progress) {
-          log.debug("Tx {}, progress is now {}", sendRequestSummary.getSendRequest().get().tx.getHashAsString(), progress);
+          log.debug("Tx {}, progress is now {}", sendRequest.tx.getHashAsString(), progress);
           if (fireTransactionSeen) {
+            CoreEvents.fireBitcoinSendProgressEvent(new BitcoinSendProgressEvent(sendRequest.tx, progress));
             CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(sendRequestSummary.getSendRequest().get().tx, valueOptional.get()));
           }
         }

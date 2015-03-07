@@ -268,6 +268,20 @@ public class CoreEvents {
         }
       });
   }
+  /**
+   * <p>Broadcast BitcoinSendProgressEvent</p>
+   *
+   * @param bitcoinSendProgressEvent containing transaction broadcast progress information
+   */
+  public static void fireBitcoinSendProgressEvent(final BitcoinSendProgressEvent bitcoinSendProgressEvent) {
+    eventExecutor.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          coreEventBus.post(bitcoinSendProgressEvent);
+        }
+      });
+  }
 
   /**
    * Consolidate many transactionSeenEvents into a single call per (slow) time interval

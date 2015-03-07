@@ -4,16 +4,14 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.events.BitcoinSendProgressEvent;
 import org.multibit.hd.core.events.BitcoinSendingEvent;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.AccessibilityDecorator;
-import org.multibit.hd.ui.views.components.LabelDecorator;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -47,6 +45,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   private TransactionCreationEvent lastTransactionCreationEvent;
   private BitcoinSendingEvent lastBitcoinSendingEvent;
+  private BitcoinSendProgressEvent lastBitcoinSendProgressEvent;
   private BitcoinSentEvent lastBitcoinSentEvent;
 
   private boolean initialised = false;
@@ -55,22 +54,19 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
    * @param wizard The wizard managing the states
    */
   public SendBitcoinReportPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
-
     super(wizard, panelName, MessageKey.SEND_PROGRESS_TITLE, AwesomeIcon.CLOUD_UPLOAD);
-
   }
 
   @Override
   public void newPanelModel() {
-
     lastTransactionCreationEvent = null;
     lastBitcoinSendingEvent = null;
+    lastBitcoinSendProgressEvent = null;
     lastBitcoinSentEvent = null;
   }
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
-
     contentPanel.setLayout(
       new MigLayout(
         Panels.migXYLayout(),
@@ -158,6 +154,11 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
               lastBitcoinSendingEvent = null;
             }
 
+            if (lastBitcoinSendProgressEvent != null) {
+              onBitcoinSendProgressEvent(lastBitcoinSendProgressEvent);
+              lastBitcoinSendProgressEvent = null;
+            }
+
             if (lastBitcoinSentEvent != null) {
               onBitcoinSentEvent(lastBitcoinSentEvent);
               lastBitcoinSentEvent = null;
@@ -225,6 +226,45 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
           AwesomeDecorator.bindIcon(AwesomeIcon.BULLHORN, transactionBroadcastStatusSummary, true, MultiBitUI.NORMAL_ICON_SIZE);
         }
       });
+  }
+
+  @Subscribe
+  public void onBitcoinSendProgressEvent(final BitcoinSendProgressEvent bitcoinSendProgressEvent) {
+    log.debug("Received the BitcoinSendProgressEvent: " + bitcoinSendProgressEvent);
+
+    lastBitcoinSendProgressEvent = bitcoinSendProgressEvent;
+
+    // The event may be fired before the UI has initialised
+    if (!initialised) {
+      return;
+    }
+
+    SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+                double progress = bitcoinSendProgressEvent.getProgress();
+
+                if (0 < progress && progress < 0.4) {
+                  // bullhorn-quarter
+                  Icon icon = Images.newBullhornQuarterIcon();
+                  transactionBroadcastStatusSummary.setIcon(icon);
+                } else {
+                  if (0.4 <= progress && progress < 0.6) {
+                    // bullhorn-half
+                    Icon icon = Images.newBullhornHalfIcon();
+                    transactionBroadcastStatusSummary.setIcon(icon);
+                  } else {
+                    if (0.6 <= progress && progress < 1.0) {
+                      // bullhorn-three-quarters
+                      Icon icon = Images.newBullhornThreeQuartersIcon();
+                      transactionBroadcastStatusSummary.setIcon(icon);
+                   }
+                  }
+                }
+              }
+
+            });
   }
 
   @Subscribe

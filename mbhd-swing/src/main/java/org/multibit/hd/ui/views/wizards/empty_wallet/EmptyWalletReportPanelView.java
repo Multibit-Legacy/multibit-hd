@@ -5,18 +5,12 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentStatus;
-import org.multibit.hd.core.events.BitcoinSendingEvent;
-import org.multibit.hd.core.events.BitcoinSentEvent;
-import org.multibit.hd.core.events.TransactionCreationEvent;
-import org.multibit.hd.core.events.TransactionSeenEvent;
+import org.multibit.hd.core.events.*;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.AccessibilityDecorator;
-import org.multibit.hd.ui.views.components.LabelDecorator;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -55,6 +49,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
   private TransactionCreationEvent lastTransactionCreationEvent;
   private BitcoinSendingEvent lastBitcoinSendingEvent;
   private BitcoinSentEvent lastBitcoinSentEvent;
+  private BitcoinSendProgressEvent lastBitcoinSendProgressEvent;
   private TransactionSeenEvent lastTransactionSeenEvent;
 
   private boolean initialised = false;
@@ -76,6 +71,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
     lastTransactionCreationEvent = null;
     lastBitcoinSendingEvent = null;
+    lastBitcoinSendProgressEvent = null;
     lastBitcoinSentEvent = null;
     lastTransactionSeenEvent = null;
 
@@ -173,6 +169,10 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
               onBitcoinSendingEvent(lastBitcoinSendingEvent);
               lastBitcoinSendingEvent = null;
             }
+            if (lastBitcoinSendProgressEvent != null) {
+              onBitcoinSendProgressEvent(lastBitcoinSendProgressEvent);
+              lastBitcoinSendProgressEvent = null;
+            }
 
             if (lastBitcoinSentEvent != null) {
               onBitcoinSentEvent(lastBitcoinSentEvent);
@@ -244,6 +244,45 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
       });
   }
 
+
+  @Subscribe
+  public void onBitcoinSendProgressEvent(final BitcoinSendProgressEvent bitcoinSendProgressEvent) {
+    log.debug("Received the BitcoinSendProgressEvent: " + bitcoinSendProgressEvent);
+
+    lastBitcoinSendProgressEvent = bitcoinSendProgressEvent;
+
+    // The event may be fired before the UI has initialised
+    if (!initialised) {
+      return;
+    }
+
+    SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+                double progress = bitcoinSendProgressEvent.getProgress();
+
+                if (0 < progress && progress < 0.4) {
+                  // bullhorn-quarter
+                  Icon icon = Images.newBullhornQuarterIcon();
+                  transactionBroadcastStatusSummary.setIcon(icon);
+                } else {
+                  if (0.4 <= progress && progress < 0.6) {
+                    // bullhorn-half
+                    Icon icon = Images.newBullhornHalfIcon();
+                    transactionBroadcastStatusSummary.setIcon(icon);
+                  } else {
+                    if (0.6 <= progress && progress < 1.0) {
+                      // bullhorn-three-quarters
+                      Icon icon = Images.newBullhornThreeQuartersIcon();
+                      transactionBroadcastStatusSummary.setIcon(icon);
+                   }
+                  }
+                }
+              }
+
+            });
+  }
 
   @Subscribe
   public void onBitcoinSentEvent(final BitcoinSentEvent bitcoinSentEvent) {
