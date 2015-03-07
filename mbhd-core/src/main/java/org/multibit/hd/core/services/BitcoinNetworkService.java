@@ -750,7 +750,8 @@ public class BitcoinNetworkService extends AbstractService {
         return false;
       }
 
-      // Attempt to completeWithoutSigning it
+      // Attempt to completeWithoutSigning it - we need to remove the inputs first as the complete will put all possible inputs back on the tx
+      sendRequestSummary.getSendRequest().get().tx.clearInputs();
       if (!completeWithoutSigning(sendRequestSummary, wallet)) {
         return false;
       }
@@ -1118,7 +1119,8 @@ public class BitcoinNetworkService extends AbstractService {
         try {
           WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().receivePending(sendRequest.tx, null);
         } catch (VerificationException e) {
-          throw new RuntimeException(e);   // Cannot fail to verify a tx we created ourselves.
+          log.error("Verification exception for tx:\n{}\n", sendRequest.tx);
+          throw new RuntimeException(e);
         }
       }
 
