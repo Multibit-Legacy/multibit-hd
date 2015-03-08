@@ -32,7 +32,6 @@ public class WalletConfiguration {
    */
   private long feePerKB = FeeService.DEFAULT_FEE_PER_KB.longValue();
 
-
   /**
    * @return The last/current soft wallet root (e.g. "mbhd-11111111-22222222-33333333-44444444-55555555")
    * (This is only updated for soft wallets so it will not give you the a plugged in Trezor's wallet root)

@@ -53,6 +53,11 @@ public class Configuration {
    */
   private boolean trezor = true;
 
+  /**
+   * True if the option to restore Beta 7 wallets is shown in the restore wizard
+   */
+  private boolean showRestoreBeta7Wallets = false;
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -218,6 +223,14 @@ public class Configuration {
     this.trezor = trezor;
   }
 
+  public boolean isShowRestoreBeta7Wallets() {
+    return showRestoreBeta7Wallets;
+  }
+
+  public void setShowRestoreBeta7Wallets(boolean showRestoreBeta7Wallets) {
+    this.showRestoreBeta7Wallets = showRestoreBeta7Wallets;
+  }
+
   /**
    * @return A deep copy of this configuration
    */
@@ -247,8 +260,8 @@ public class Configuration {
     // Labs properties
     configuration.setTor(isTor());
     configuration.setTrezor(isTrezor());
+    configuration.setShowRestoreBeta7Wallets(isShowRestoreBeta7Wallets());
 
     return configuration;
   }
-
 }

@@ -276,7 +276,10 @@ public enum MessageKey {
   SELECT_TREZOR("select_trezor"),
   SELECT_TREZOR_TOOLTIP("select_trezor_tooltip"),
 
-  // Sidebar
+  SELECT_SHOW_RESTORE_BETA7_WALLETS("select_show_restore_beta7_wallets"),
+  SELECT_SHOW_RESTORE_BETA7_WALLETSTOOLTIP("select_show_restore_beta7_wallets_tooltip"),
+
+   // Sidebar
 
   SIDEBAR_TREE("sidebar_tree"),
   WALLET("wallet"),
