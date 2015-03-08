@@ -109,9 +109,6 @@ public class ExternalDataListeningService extends AbstractService {
 
       // Successfully owned the server port
 
-      // Earliest opportunity to initialise the event services
-      CoreEvents.initialise();
-
       // Handle ongoing messages as master
       ListenableFuture future = getExecutorService().submit(getInstanceServerRunnable(serverSocket.get()));
       Futures.addCallback(
