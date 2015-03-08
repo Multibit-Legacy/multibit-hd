@@ -102,14 +102,14 @@ public class WalletFixtures {
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    return walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
-      new File(applicationDirectoryName),
-      seed,
-      nowInSeconds,
-      STANDARD_PASSWORD,
-      "Example MBHD soft wallet",
-      "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.",
-      false); // No need to sync
+    return walletManager.badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+            new File(applicationDirectoryName),
+            seed,
+            nowInSeconds,
+            STANDARD_PASSWORD,
+            "Example MBHD soft wallet",
+            "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.",
+            false); // No need to sync
   }
 
   /**

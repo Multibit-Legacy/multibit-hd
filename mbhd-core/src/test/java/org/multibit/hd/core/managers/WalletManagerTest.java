@@ -141,14 +141,14 @@ public class WalletManagerTest {
     long nowInSeconds = Dates.nowInSeconds();
 
     WalletSummary walletSummary1 = walletManager
-      .getOrCreateMBHDSoftWalletSummaryFromSeed(
-        applicationDirectory,
-        seed,
-        nowInSeconds,
-        "credentials",
-        "Example",
-        "Example",
-        false); // No need to sync
+      .badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+              applicationDirectory,
+              seed,
+              nowInSeconds,
+              "credentials",
+              "Example",
+              "Example",
+              false); // No need to sync
 
     // Uncomment this next line if you want a wallet created in your MultiBitHD user data directory.
     //walletManager.createWallet( seed, "credentials");
@@ -160,14 +160,14 @@ public class WalletManagerTest {
     BackupManager.INSTANCE.initialise(applicationDirectory2, Optional.<File>absent());
 
     WalletSummary walletSummary2 = walletManager
-      .getOrCreateMBHDSoftWalletSummaryFromSeed(
-        applicationDirectory2,
-        seed,
-        nowInSeconds,
-        "credentials",
-        "Example",
-        "Example",
-        false); // No need to sync
+      .badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+              applicationDirectory2,
+              seed,
+              nowInSeconds,
+              "credentials",
+              "Example",
+              "Example",
+              false); // No need to sync
 
     assertThat(walletSummary2).isNotNull();
 
@@ -304,7 +304,7 @@ public class WalletManagerTest {
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(SKIN_SEED_PHRASE));
     long nowInSeconds = Dates.nowInSeconds();
 
-    WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
+    WalletSummary walletSummary = walletManager.badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
             applicationDirectory,
             seed,
             nowInSeconds,
@@ -522,14 +522,14 @@ public class WalletManagerTest {
     long nowInSeconds = Dates.nowInSeconds();
 
     log.debug("");
-    WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
-      applicationDirectory,
-      seed,
-      nowInSeconds,
-      SIGNING_PASSWORD,
-      "Signing Example",
-      "Signing Example",
-      false); // No need to sync
+    WalletSummary walletSummary = walletManager.badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+            applicationDirectory,
+            seed,
+            nowInSeconds,
+            SIGNING_PASSWORD,
+            "Signing Example",
+            "Signing Example",
+            false); // No need to sync
 
     // Address not in wallet
     ECKey ecKey = new ECKey();
@@ -620,14 +620,14 @@ public class WalletManagerTest {
       long nowInSeconds = Dates.nowInSeconds();
 
       WalletSummary walletSummary = walletManager
-        .getOrCreateMBHDSoftWalletSummaryFromSeed(
-          applicationDirectory,
-          seed,
-          nowInSeconds,
-          passwordToCheck,
-          "Password/seed encryption Example",
-          "Password/seed encryption Example",
-          false); // No need to sync
+        .badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+                applicationDirectory,
+                seed,
+                nowInSeconds,
+                passwordToCheck,
+                "Password/seed encryption Example",
+                "Password/seed encryption Example",
+                false); // No need to sync
 
       // Check the encrypted wallet credentials and seed are correct
       byte[] foundEncryptedBackupKey = walletSummary.getEncryptedBackupKey();

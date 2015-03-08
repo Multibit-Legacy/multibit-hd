@@ -75,14 +75,14 @@ public class WalletServiceTest {
     long nowInSeconds = Dates.nowInSeconds();
     walletSummary = WalletManager
             .INSTANCE
-            .getOrCreateMBHDSoftWalletSummaryFromSeed(
+            .badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
                     temporaryDirectory,
                     seed1,
                     nowInSeconds,
                     PASSWORD,
                     "Example",
                     "Example",
-              false); // No need to sync
+                    false); // No need to sync
 
     WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
 

@@ -59,14 +59,14 @@ public class CoreServicesTest {
     long nowInSeconds = Dates.nowInSeconds();
     WalletSummary walletSummary = WalletManager
       .INSTANCE
-      .getOrCreateMBHDSoftWalletSummaryFromSeed(
+      .badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
               temporaryDirectory,
               seed,
               nowInSeconds,
               PASSWORD,
               "Example",
               "Example",
-        false); // No need to sync
+              false); // No need to sync
 
     Wallet wallet  = walletSummary.getWallet();
 

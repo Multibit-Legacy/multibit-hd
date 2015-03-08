@@ -45,14 +45,14 @@ public class PersistentHistoryServiceTest {
     long nowInSeconds = Dates.nowInSeconds();
     walletSummary = WalletManager
       .INSTANCE
-      .getOrCreateMBHDSoftWalletSummaryFromSeed(
+      .badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
               applicationDirectory,
               seed1,
               nowInSeconds,
               WalletServiceTest.PASSWORD,
               "Example",
               "Example",
-        false); // No need to sync
+              false); // No need to sync
 
     File contactDbFile = new File(applicationDirectory.getAbsolutePath() + File.separator + HistoryService.HISTORY_DATABASE_NAME);
 

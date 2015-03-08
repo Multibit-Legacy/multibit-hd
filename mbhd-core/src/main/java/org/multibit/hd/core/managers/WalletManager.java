@@ -261,11 +261,12 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * THIS METHOD DOES NOT PRODUCE BIP32 COMPLIANT WALLETS - DO NOT USE IT !
-   * THIS METHOD DOES NOT PRODUCE BIP32 COMPLIANT WALLETS - DO NOT USE IT !
-   * THIS METHOD DOES NOT PRODUCE BIP32 COMPLIANT WALLETS - DO NOT USE IT !
+   * THIS METHOD DOES NOT PRODUCE BIP32 COMPLIANT WALLETS !
+   * THIS METHOD DOES NOT PRODUCE BIP32 COMPLIANT WALLETS !
+   * THIS METHOD DOES NOT PRODUCE BIP32 COMPLIANT WALLETS !
    *
    * See: https://github.com/bitcoin-solutions/multibit-hd/issues/445
+   *
    * <p>Create a MBHD soft wallet from a seed.</p>
    * <p>This is stored in the specified directory.</p>
    * <p>The name of the wallet directory is derived from the seed.</p>
@@ -274,7 +275,7 @@ public enum WalletManager implements WalletEventListener {
    * <p>Synchronization is begun if required</p>
    *
    * @param applicationDataDirectory The application data directory containing the wallet
-   * @param seed                     The seed phrase to initialise the wallet
+   * @param seed                     The byte array corresponding to the seed phrase to initialise the wallet
    * @param creationTimeInSeconds    The creation time of the wallet, in seconds since epoch
    * @param password                 The credentials to use to encrypt the wallet - if null then the wallet is not loaded
    * @param name                     The wallet name
@@ -288,15 +289,15 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
    */
   @Deprecated
-  public WalletSummary getOrCreateMBHDSoftWalletSummaryFromSeed(
-    File applicationDataDirectory,
-    byte[] seed,
-    long creationTimeInSeconds,
-    String password,
-    String name,
-    String notes,
-    boolean performSynch) throws WalletLoadException, WalletVersionException, IOException {
-    log.debug("getOrCreateMBHDSoftWalletSummaryFromSeed called");
+  public WalletSummary badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+          File applicationDataDirectory,
+          byte[] seed,
+          long creationTimeInSeconds,
+          String password,
+          String name,
+          String notes,
+          boolean performSynch) throws WalletLoadException, WalletVersionException, IOException {
+    log.debug("badlyGetOrCreateMBHDSoftWalletSummaryFromSeed called");
     final WalletSummary walletSummary;
 
     // Create a wallet id from the seed to work out the wallet root directory
@@ -398,7 +399,7 @@ public enum WalletManager implements WalletEventListener {
      String name,
      String notes,
      boolean performSynch) throws WalletLoadException, WalletVersionException, IOException {
-     log.debug("getOrCreateMBHDSoftWalletSummaryFromSeed called");
+     log.debug("badlyGetOrCreateMBHDSoftWalletSummaryFromSeed called");
      final WalletSummary walletSummary;
 
      // Create a wallet id from the entropy to work out the wallet root directory

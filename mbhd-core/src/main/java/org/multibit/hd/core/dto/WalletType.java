@@ -12,11 +12,27 @@ package org.multibit.hd.core.dto;
 public enum WalletType {
 
   /**
-   * MultiBit HD soft wallet
-   * Wallet has BIP32 account 0 keys only
+     * MultiBit HD soft wallet (BIP 32 compliant)
+     * Wallet is BIP 32 compliant
+     * m/0' (Account 1 only)
+     * m/0'/0/0 is first receiving key
+     */
+    MBHD_SOFT_WALLET_BIP32(CoreMessageKey.WALLET_CAPABILITY_MBHD_SOFT_BIP32),
+
+
+  /**
+   * MultiBit HD soft wallet (Beta 7 wallet)
+   * This was the first attempt at a BIP32 wallet and was NOT compliant
+   * (see https://github.com/bitcoin-solutions/multibit-hd/issues/445)
+   *
+   * Wallet is NOT BIP 32 compliant
+   * m/0'
    * m/0'/0/0 is first receiving key
+   *
+   * DO NOT RENAME THIS ENUM VALUE AS IT IS STORED IN THE WALLET AS AN EXTENSION
    */
-  MBHD_SOFT_WALLET(CoreMessageKey.WALLET_CAPABILITY_MBHD_SOFT),
+  @Deprecated
+  MBHD_SOFT_WALLET(CoreMessageKey.WALLET_CAPABILITY_MBHD_SOFT_BETA7),
 
   /**
    * Trezor wallet with no keys

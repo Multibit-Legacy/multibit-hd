@@ -211,14 +211,14 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
         // Provide a precise local creation time
         Dates.formatTransactionDateLocal(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
       );
-      walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
-        applicationDataDirectory,
-        seed,
-        Dates.nowInSeconds(),
-        password,
-        name,
-        notes,
-        true);
+      walletSummary = walletManager.badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+              applicationDataDirectory,
+              seed,
+              Dates.nowInSeconds(),
+              password,
+              name,
+              notes,
+              true);
 
       Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
 

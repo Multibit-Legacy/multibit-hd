@@ -88,14 +88,14 @@ public class BackupManagerTest {
     // Create a wallet summary (requires a backup manager to be in place)
     WalletSummary walletSummary = WalletManager
       .INSTANCE
-      .getOrCreateMBHDSoftWalletSummaryFromSeed(
+      .badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
               applicationDirectory,
               seed,
               nowInSeconds,
               password,
               "Example",
               "Example",
-        true);
+              true);
 
     // Wallet manager does not initiate the backup
     BackupManager.INSTANCE.createRollingBackup(walletSummary, password);

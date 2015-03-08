@@ -261,14 +261,14 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
+    WalletSummary walletSummary = walletManager.badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
             walletDirectory,
             seed,
             nowInSeconds,
             WALLET_PASSWORD,
             name,
             notes,
-      true); // Perform sync
+            true); // Perform sync
 
     assertThat(walletSummary).isNotNull();
     assertThat(walletSummary.getWallet()).isNotNull();
