@@ -30,6 +30,8 @@ public class SecureFiles {
 
   private static SecureRandom secureRandom = new SecureRandom();
 
+  private static boolean initialised = false;
+
    // Nonsense bytes to fill up deleted files - these have no meaning.
   static final byte[] NONSENSE_BYTES = new byte[]{(byte) 0xF0, (byte) 0xA6, (byte) 0x55, (byte) 0xAA, (byte) 0x33,
     (byte) 0x77, (byte) 0x33, (byte) 0x37, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0xC2, (byte) 0xB3,
@@ -42,7 +44,7 @@ public class SecureFiles {
   static final int BULKING_UP_FACTOR = 16;
   static final byte[] SECURE_DELETE_FILL_BYTES = new byte[NONSENSE_BYTES.length * BULKING_UP_FACTOR];
 
-  static {
+  private static void initialise() {
     // Make some SECURE_DELETE_FILL_BYTES bytes = x BULKING_UP_FACTOR the
     // NONSENSE just to save write time.
     for (int i = 0; i < BULKING_UP_FACTOR; i++) {
@@ -51,6 +53,7 @@ public class SecureFiles {
         SECURE_DELETE_FILL_BYTES, NONSENSE_BYTES.length * i,
         NONSENSE_BYTES.length);
     }
+    initialised = true;
   }
 
   /**
@@ -69,6 +72,9 @@ public class SecureFiles {
    * @throws java.io.IOException if the operation fails for any reason
    */
   public static synchronized void secureDelete(File file) throws IOException {
+    if (!initialised) {
+      initialise();
+    }
 
     long start = System.currentTimeMillis();
     log.trace("Start of secureDelete");

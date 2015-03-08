@@ -25,14 +25,16 @@ public class CurrencyUtils {
   /**
    * A map of all available currencies for available locales
    */
-  private final static SortedMap<Locale, Currency> localeCurrencyMap;
+  private static SortedMap<Locale, Currency> localeCurrencyMap;
 
   /**
    * A map of all common currency names and their appropriate ISO candidates
    */
-  private final static Map<String, List<String>> isoCandidateMap;
+  private static Map<String, List<String>> isoCandidateMap;
 
-  static {
+  private static boolean initialised = false;
+
+  private static void initialise() {
     localeCurrencyMap = Maps.newTreeMap(new Comparator<Locale>() {
 
       @Override
@@ -45,6 +47,8 @@ public class CurrencyUtils {
     isoCandidateMap = Maps.newLinkedHashMap();
 
     populateIsoCandidateMap();
+
+    initialised = true;
   }
 
   /**
@@ -102,6 +106,9 @@ public class CurrencyUtils {
    * @return The currency symbol appropriate for the given currency code in the current locale
    */
   public static String symbolFor(String isoCode) {
+    if (!initialised) {
+      initialise();
+    }
 
     for (Map.Entry<Locale, Currency> entry : localeCurrencyMap.entrySet()) {
       if (entry.getValue().getCurrencyCode().equalsIgnoreCase(isoCode)) {
@@ -358,6 +365,9 @@ public class CurrencyUtils {
    * @return The ISO code (or recognised candidate)
    */
   public static String isoCandidateFor(String currency) {
+    if (!initialised) {
+      initialise();
+    }
 
     Preconditions.checkNotNull(currency, "'currency' must be present");
 
@@ -381,14 +391,10 @@ public class CurrencyUtils {
           // Found a match so return the ISO code
           return entry.getKey();
         }
-
       }
-
     }
 
     // Must have failed to find a match here
     return currency;
-
   }
-
 }

@@ -72,7 +72,7 @@ public class HeaderView extends AbstractView {
 
     // Create the balance display not displaying it initially
     balanceDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER, true, "header.balance");
-    log.debug("header is now visible");
+    log.trace("header is now visible");
     balanceDisplayMaV.getView().setVisible(false);
 
     // Provide a fixed height to avoid an annoying "slide down" during unlock

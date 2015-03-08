@@ -68,6 +68,7 @@ public class PaymentProtocolServiceTest {
 
   static {
 
+    // TODO move this out of static
     InstallationManager.unrestricted = true;
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
