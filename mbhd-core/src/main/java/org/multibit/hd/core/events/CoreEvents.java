@@ -38,10 +38,10 @@ public class CoreEvents {
   private static final Object lockObject = new Object();
 
   // Provide a CoreEvent thread pool to ensure non-UI events are isolated from the EDT
-  private static ListeningExecutorService eventExecutor = SafeExecutors.newFixedThreadPool(10, "core-events");
+  private static ListeningExecutorService eventExecutor;
 
   // Provide a slower transaction seen thread that is isolated from the EDT
-  private static ListeningScheduledExecutorService txSeenExecutor = SafeExecutors.newSingleThreadScheduledExecutor("tx-seen");
+  private static ListeningScheduledExecutorService txSeenExecutor;
 
   /**
    * Use Guava to handle subscribers to events
@@ -57,6 +57,16 @@ public class CoreEvents {
    * Utilities have a private constructor
    */
   private CoreEvents() {
+  }
+
+  /**
+   * Initialise the executor services as late as possible (requires 800ms)
+   */
+  public static void initialise() {
+
+    eventExecutor = SafeExecutors.newFixedThreadPool(10, "core-events");
+    txSeenExecutor = SafeExecutors.newSingleThreadScheduledExecutor("tx-seen");
+
   }
 
   /**

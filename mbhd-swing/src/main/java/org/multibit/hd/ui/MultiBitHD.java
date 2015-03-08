@@ -2,7 +2,6 @@ package org.multibit.hd.ui;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.Uninterruptibles;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -44,8 +43,6 @@ import java.util.concurrent.TimeUnit;
 public class MultiBitHD {
 
   private static final Logger log = LoggerFactory.getLogger(MultiBitHD.class);
-
-  private final ListeningExecutorService cacertsExecutorService = SafeExecutors.newSingleThreadExecutor("install-cacerts");
 
   private MainController mainController;
 
@@ -94,6 +91,47 @@ public class MultiBitHD {
 
   }
 
+  /**
+   * <p>Start this instance of MultiBit HD</p>
+   *
+   * @param args The command line arguments
+   *
+   * @return True if the application started successfully, false if a shutdown is required
+   *
+   * @throws Exception If something goes wrong
+   */
+  public boolean start(String[] args) throws Exception {
+
+    // Check for another instance as soon as possible
+    Optional<ExternalDataListeningService> externalDataListeningService = initialiseListeningService(args);
+    if (!externalDataListeningService.isPresent()) {
+      return false;
+    }
+
+    log.info("This is the primary instance so showing splash screen.");
+    splashScreen = new SplashScreen();
+
+    // Prepare the JVM (Nimbus, system properties etc)
+    initialiseJVM();
+
+    // Start core services (logging, security alerts, configuration, Bitcoin URI handling etc)
+    initialiseCore(args);
+
+    // Create controllers so that the generic app can access listeners
+    if (!initialiseUIControllers(externalDataListeningService.get())) {
+
+      // Required to shut down
+      return false;
+
+    }
+
+    // Prepare platform-specific integration (protocol handlers, quit events etc)
+    initialiseGenericApp();
+
+    // Must be OK to be here
+    return true;
+  }
+
   public void stop() {
 
     log.debug("Stopping MultiBit HD");
@@ -108,35 +146,22 @@ public class MultiBitHD {
   }
 
   /**
-   * <p>Start this instance of MultiBit HD</p>
-   *
    * @param args The command line arguments
    *
-   * @return True if the application started successfully, false if a shutdown is required
-   *
-   * @throws Exception If something goes wrong
+   * @return The external data listening service if it could be started successfully, absent implies another instance
    */
-  public boolean start(String[] args) throws Exception {
+  private Optional<ExternalDataListeningService> initialiseListeningService(String[] args) {
 
-    // Prepare the JVM (Nimbus, system properties etc)
-    initialiseJVM();
+    // Determine if another instance is running and shutdown if this is the case
+    ExternalDataListeningService externalDataListeningService = new ExternalDataListeningService(args);
 
-    // Start core services (logging, security alerts, configuration, Bitcoin URI handling etc)
-    initialiseCore(args);
-
-    // Create controllers so that the generic app can access listeners
-    if (!initialiseUIControllers(args)) {
-
-      // Required to shut down
-      return false;
-
+    if (externalDataListeningService.start()) {
+      return Optional.of(externalDataListeningService);
     }
 
-    // Prepare platform-specific integration (protocol handlers, quit events etc)
-    initialiseGenericApp();
+    // Must have failed to be here
+    return Optional.absent();
 
-    // Must be OK to be here
-    return true;
   }
 
   /**
@@ -176,7 +201,7 @@ public class MultiBitHD {
 
       // Execute the CA certificates download on a separate thread to avoid slowing
       // the startup time
-      cacertsExecutorService.submit(
+      SafeExecutors.newSingleThreadExecutor("install-cacerts").submit(
         new Runnable() {
           @Override
           public void run() {
@@ -202,13 +227,10 @@ public class MultiBitHD {
    * <li>Backup service</li>
    * <li>Bitcoin network service</li>
    * </ul>
+   *
+   * @param externalDataListeningService The external data listening service
    */
-  public boolean initialiseUIControllers(String[] args) {
-    // Determine if another instance is running and shutdown if this is the case
-    ExternalDataListeningService ExternalDataListeningService = new ExternalDataListeningService(args);
-    if (!ExternalDataListeningService.start()) {
-      return false;
-    }
+  public boolean initialiseUIControllers(ExternalDataListeningService externalDataListeningService) {
 
     if (OSUtils.isWindowsXPOrEarlier()) {
       log.error("Windows XP or earlier detected. Forcing shutdown.");
@@ -218,12 +240,9 @@ public class MultiBitHD {
       return false;
     }
 
-    // This instance should run to a full UI from this point on so trigger a splash screen
-    splashScreen = new SplashScreen();
-
     // Including the other controllers avoids dangling references during a soft shutdown
     mainController = new MainController(
-      ExternalDataListeningService,
+      externalDataListeningService,
       new HeaderController()
     );
 
