@@ -6,6 +6,7 @@ import org.bitcoinj.core.NetworkParameters;
 import org.multibit.hd.core.blockexplorer.BlockExplorer;
 import org.multibit.hd.core.blockexplorer.BlockExplorers;
 import org.multibit.hd.core.config.BitcoinConfiguration;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.Recipient;
@@ -834,10 +835,21 @@ public class ComboBoxes {
    */
   public static JComboBox<String> newRestoreWalletTypeComboBox(ActionListener listener) {
 
-    JComboBox<String> comboBox = newReadOnlyComboBox(new String[]{
-        Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP32),
-        Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP44)
-      });
+    // There is an extra wallet type according to the configuration
+    String[] walletTypes;
+    if (Configurations.currentConfiguration != null && Configurations.currentConfiguration.isShowRestoreBeta7Wallets()) {
+      walletTypes = new String[]{
+              Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP32),
+              Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BETA7),
+              Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP44)
+            };
+    } else {
+      walletTypes = new String[]{
+              Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP32),
+              Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP44)
+            };
+    }
+    JComboBox<String> comboBox = newReadOnlyComboBox(walletTypes);
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_WALLET_TYPE, MessageKey.SELECT_WALLET_TYPE_TOOLTIP);

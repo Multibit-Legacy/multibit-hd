@@ -579,6 +579,7 @@ public enum MessageKey {
   SELECT_WALLET_TYPE("select_wallet_type"),
   SELECT_WALLET_TYPE_TOOLTIP("select_wallet_type_tooltip"),
   SELECT_WALLET_TYPE_BIP32("select_wallet_type_bip32"),
+  SELECT_WALLET_TYPE_BETA7("select_wallet_type_beta7"),
   SELECT_WALLET_TYPE_BIP44("select_wallet_type_bip44"),
 
   SEED_SIZE("seed_size"),
