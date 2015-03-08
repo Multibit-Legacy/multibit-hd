@@ -1084,6 +1084,13 @@ public class Labels {
   }
 
   /**
+   * @return a new "select Trezor" for lab settings
+   */
+  public static JLabel newSelectShowRestoreBeta7Wallets() {
+    return newLabel(MessageKey.SELECT_SHOW_RESTORE_BETA7_WALLETS);
+  }
+
+  /**
    * @return a new "peer count" for verifying network
    */
   public static JLabel newPeerCount() {

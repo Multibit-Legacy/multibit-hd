@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components.enter_seed_phrase;
 import com.google.common.base.*;
 import com.google.common.collect.Lists;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
@@ -36,9 +37,9 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
   private final String panelName;
 
   /**
-   * Use the seed to restore a Trezor soft wallet
+   * The wallet type that has to be restored
    */
-  private boolean restoreAsTrezor = false;
+  private WalletType restoreWalletType = WalletType.MBHD_SOFT_WALLET_BIP32;
 
   /**
    * @param panelName The panel name to identify the "verification status" and "next" buttons
@@ -155,11 +156,15 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
   }
 
   public boolean isRestoreAsTrezor() {
-    return restoreAsTrezor;
+    return WalletType.TREZOR_HARD_WALLET == restoreWalletType;
   }
 
-  public void setRestoreAsTrezor(boolean restoreAsTrezor) {
-    this.restoreAsTrezor = restoreAsTrezor;
+  public void setRestoreWalletType(WalletType restoreWalletType) {
+    this.restoreWalletType = restoreWalletType;
+  }
+
+  public WalletType getRestoreWalletType(){
+    return restoreWalletType;
   }
 
   @Override

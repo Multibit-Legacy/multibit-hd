@@ -2,6 +2,8 @@ package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.VerificationStatusChangedEvent;
 import org.multibit.hd.ui.languages.Languages;
@@ -32,7 +34,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
   // View components
   private JTextArea seedPhraseTextArea;
   private JTextField seedTimestampText;
-  private JComboBox<String> restoreAsTrezor;
+  private JComboBox<String> restoreWalletType;
 
   private JLabel verificationStatusLabel;
 
@@ -61,7 +63,7 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     }
 
     // Initialise to BIP32
-    getModel().get().setRestoreAsTrezor(false);
+    getModel().get().setRestoreWalletType(WalletType.MBHD_SOFT_WALLET_BIP32);
 
   }
 
@@ -145,10 +147,10 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
     }
 
     // Wallet type selector
-    restoreAsTrezor = ComboBoxes.newRestoreWalletTypeComboBox(getSelectWalletTypeAction());
+    restoreWalletType = ComboBoxes.newRestoreWalletTypeComboBox(getSelectWalletTypeAction());
     if (!showTimestamp && showSeedPhrase) {
       panel.add(Labels.newValueLabel(Languages.safeText(MessageKey.SELECT_WALLET_TYPE)), "wmax 150");
-      panel.add(restoreAsTrezor, "span 2,wrap");
+      panel.add(restoreWalletType, "span 2,wrap");
     }
 
     panel.add(verificationStatusLabel, "span 3,push,wrap");
@@ -263,10 +265,38 @@ public class EnterSeedPhraseView extends AbstractComponentView<EnterSeedPhraseMo
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        getModel().get().setRestoreAsTrezor(((JComboBox) e.getSource()).getSelectedIndex() == 1);
+        WalletType selectedWalletType;
+        int selectedIndex = ((JComboBox) e.getSource()).getSelectedIndex();
+
+        if (Configurations.currentConfiguration != null && Configurations.currentConfiguration.isShowRestoreBeta7Wallets()) {
+          switch (selectedIndex) {
+            case 0:
+              selectedWalletType = WalletType.MBHD_SOFT_WALLET_BIP32;
+              break;
+            case 1:
+              selectedWalletType = WalletType.MBHD_SOFT_WALLET;
+              break;
+            case 2:
+              selectedWalletType = WalletType.TREZOR_SOFT_WALLET;
+              break;
+            default:
+              selectedWalletType = WalletType.MBHD_SOFT_WALLET_BIP32;
+          }
+        } else {
+          switch (selectedIndex) {
+                    case 0:
+                      selectedWalletType = WalletType.MBHD_SOFT_WALLET_BIP32;
+                      break;
+                    case 1:
+                      selectedWalletType = WalletType.TREZOR_SOFT_WALLET;
+                      break;
+                    default:
+                      selectedWalletType = WalletType.MBHD_SOFT_WALLET_BIP32;
+                  }
+        }
+        log.debug("Selected to restore a wallet of type {}", selectedWalletType);
+        getModel().get().setRestoreWalletType(selectedWalletType);
       }
     };
-
   }
-
 }

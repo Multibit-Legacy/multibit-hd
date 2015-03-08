@@ -276,7 +276,10 @@ public enum MessageKey {
   SELECT_TREZOR("select_trezor"),
   SELECT_TREZOR_TOOLTIP("select_trezor_tooltip"),
 
-  // Sidebar
+  SELECT_SHOW_RESTORE_BETA7_WALLETS("select_show_restore_beta7_wallets"),
+  SELECT_SHOW_RESTORE_BETA7_WALLETSTOOLTIP("select_show_restore_beta7_wallets_tooltip"),
+
+   // Sidebar
 
   SIDEBAR_TREE("sidebar_tree"),
   WALLET("wallet"),
@@ -576,6 +579,7 @@ public enum MessageKey {
   SELECT_WALLET_TYPE("select_wallet_type"),
   SELECT_WALLET_TYPE_TOOLTIP("select_wallet_type_tooltip"),
   SELECT_WALLET_TYPE_BIP32("select_wallet_type_bip32"),
+  SELECT_WALLET_TYPE_BETA7("select_wallet_type_beta7"),
   SELECT_WALLET_TYPE_BIP44("select_wallet_type_bip44"),
 
   SEED_SIZE("seed_size"),

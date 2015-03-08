@@ -6,6 +6,7 @@ import org.bitcoinj.core.NetworkParameters;
 import org.multibit.hd.core.blockexplorer.BlockExplorer;
 import org.multibit.hd.core.blockexplorer.BlockExplorers;
 import org.multibit.hd.core.config.BitcoinConfiguration;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.Recipient;
@@ -115,6 +116,10 @@ public class ComboBoxes {
    */
   public static final String TREZOR_COMMAND = "trezor";
 
+  /**
+   * The "Show restore Beta 7 wallets"action command
+   */
+  public static final String SHOW_RESTORE_BETA7_WALLETS_COMMAND = "show-restore-beta7-wallets";
   /**
    * Utilities have no public constructor
    */
@@ -329,6 +334,24 @@ public class ComboBoxes {
 
     return comboBox;
   }
+  /**
+    * @param listener The action listener to alert when the selection is made
+    * @param showRestoreBeta7Wallets   True if the "yes" option should be pre-selected
+    *
+    * @return A new "yes/no" combo box
+    */
+   public static JComboBox<String> newShowRestoreBeta7WalletsYesNoComboBox(ActionListener listener, boolean showRestoreBeta7Wallets) {
+
+     JComboBox<String> comboBox = newYesNoComboBox(listener, showRestoreBeta7Wallets);
+
+     // Ensure it is accessible
+     AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_TREZOR, MessageKey.SELECT_TREZOR_TOOLTIP);
+
+     comboBox.setActionCommand(SHOW_RESTORE_BETA7_WALLETS_COMMAND);
+
+     return comboBox;
+   }
+
 
   /**
    * @param listener    The action listener to alert when the selection is made
@@ -812,10 +835,21 @@ public class ComboBoxes {
    */
   public static JComboBox<String> newRestoreWalletTypeComboBox(ActionListener listener) {
 
-    JComboBox<String> comboBox = newReadOnlyComboBox(new String[]{
-        Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP32),
-        Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP44)
-      });
+    // There is an extra wallet type according to the configuration
+    String[] walletTypes;
+    if (Configurations.currentConfiguration != null && Configurations.currentConfiguration.isShowRestoreBeta7Wallets()) {
+      walletTypes = new String[]{
+              Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP32),
+              Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BETA7),
+              Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP44)
+            };
+    } else {
+      walletTypes = new String[]{
+              Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP32),
+              Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP44)
+            };
+    }
+    JComboBox<String> comboBox = newReadOnlyComboBox(walletTypes);
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_WALLET_TYPE, MessageKey.SELECT_WALLET_TYPE_TOOLTIP);
