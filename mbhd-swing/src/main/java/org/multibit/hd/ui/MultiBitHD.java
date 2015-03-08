@@ -24,6 +24,7 @@ import org.multibit.hd.ui.platform.GenericApplicationFactory;
 import org.multibit.hd.ui.platform.GenericApplicationSpecification;
 import org.multibit.hd.ui.services.ExternalDataListeningService;
 import org.multibit.hd.ui.views.MainView;
+import org.multibit.hd.ui.views.SplashScreen;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.slf4j.Logger;
@@ -44,9 +45,11 @@ public class MultiBitHD {
 
   private static final Logger log = LoggerFactory.getLogger(MultiBitHD.class);
 
+  private final ListeningExecutorService cacertsExecutorService = SafeExecutors.newSingleThreadExecutor("install-cacerts");
+
   private MainController mainController;
 
-  private final ListeningExecutorService cacertsExecutorService = SafeExecutors.newSingleThreadExecutor("install-cacerts");
+  private SplashScreen splashScreen;
 
   /**
    * <p>Main entry point to the application</p>
@@ -207,10 +210,6 @@ public class MultiBitHD {
       return false;
     }
 
-    // TODO Place splash screen with progress bar here
-    // See http://stackoverflow.com/questions/11399971/make-splash-screen-with-progress-bar-like-eclipse
-    // for starting code
-
     if (OSUtils.isWindowsXPOrEarlier()) {
       log.error("Windows XP or earlier detected. Forcing shutdown.");
       JOptionPane.showMessageDialog(
@@ -218,6 +217,9 @@ public class MultiBitHD {
         JOptionPane.ERROR_MESSAGE);
       return false;
     }
+
+    // This instance should run to a full UI from this point on so trigger a splash screen
+    splashScreen = new SplashScreen();
 
     // Including the other controllers avoids dangling references during a soft shutdown
     mainController = new MainController(
@@ -374,7 +376,10 @@ public class MultiBitHD {
     // Provide a backdrop to the user and trigger the showing of the wizard
     mainView.refresh();
 
-    log.debug("Initialising UI: Refresh complete");
+    log.debug("MainView is ready - hide the splash screen");
+    if (splashScreen != null) {
+      splashScreen.dispose();
+    }
 
     // See the MainController wizard hide event for the next stage
 
@@ -383,6 +388,7 @@ public class MultiBitHD {
 
   /**
    * Allow a delay of HARDWARE_INITIALISATION_TIME from the startTime
+   *
    * @param startTime The reference time from which to measure the amount of sleep from
    */
   private void conditionallySleep(long startTime) {

@@ -116,6 +116,22 @@ public class Images {
   }
 
   /**
+   * @return A new "splash screen" image icon
+   */
+  public static BufferedImage newSplashScreenIconImage() {
+
+    try (InputStream is = Images.class.getResourceAsStream("/assets/images/splash-screen.png")) {
+
+      // Transform the mask color into the current themed text
+      return ImageIO.read(is);
+
+    } catch (IOException e) {
+      throw new IllegalStateException("The splash screen image is missing");
+    }
+
+  }
+
+  /**
    * @param code The 2-letter language code (e.g. "EN") - will be uppercase
    *
    * @return A new "language" image icon suitable for use in combo boxes etc
