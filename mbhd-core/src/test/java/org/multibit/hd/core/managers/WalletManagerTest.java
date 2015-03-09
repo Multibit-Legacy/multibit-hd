@@ -19,6 +19,7 @@ package org.multibit.hd.core.managers;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
@@ -36,6 +37,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.extensions.WalletTypeExtension;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
@@ -44,6 +46,9 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -447,6 +452,37 @@ public class WalletManagerTest {
    }
 
   @Test
+  public void testBackwardsCompatibility_MBHD_SOFT_WALLET_BIP32() throws Exception {
+    backwardsCompatibilityCheck("/wallets/MBHD_SOFT_WALLET_BIP32.wallet.aes", "abc123", WalletType.MBHD_SOFT_WALLET_BIP32);
+  }
+
+  @Test
+  public void testBackwardsCompatibility_MBHD_SOFT_WALLET() throws Exception {
+    backwardsCompatibilityCheck("/wallets/MBHD_SOFT_WALLET.wallet.aes", "abc123", WalletType.MBHD_SOFT_WALLET);
+  }
+
+  private void backwardsCompatibilityCheck(String walletLocation, String password, WalletType expectedWalletType) throws Exception {
+        // Get the application directory
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+    // Copy the extant test wallet to the application directory
+    copyTestWallet(walletLocation, applicationDirectory);
+
+    File walletFile = new File (applicationDirectory.getAbsolutePath() + "/mbhd.wallet.aes");
+
+    WalletManager walletManager = WalletManager.INSTANCE;
+    BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
+
+    Wallet wallet = walletManager.loadWalletFromFile(walletFile, password);
+
+    assertThat(wallet).isNotNull();
+
+    WalletTypeExtension probeWalletTypeExtension = new WalletTypeExtension();
+    WalletTypeExtension existingWalletTypeExtension = (WalletTypeExtension)wallet.addOrGetExistingExtension(probeWalletTypeExtension);
+    assertThat(expectedWalletType.equals(existingWalletTypeExtension.getWalletType()));
+  }
+
+  @Test
   public void testFindWalletDirectories() throws Exception {
 
     // Create a random temporary directory
@@ -674,6 +710,38 @@ public class WalletManagerTest {
       tearDown();
       setUp();
     }
+  }
+
+  /**
+   * Copy the named test wallet to the (temporary) installation directory
+   * @param testWalletPath
+   * @throws IOException
+   */
+  private void copyTestWallet(String testWalletPath, File installationDirectory) throws IOException {
+    log.debug("Copying test wallet {} to '{}'", testWalletPath, installationDirectory.getAbsolutePath());
+
+    // Prepare an input stream to the checkpoints
+    final InputStream sourceCheckpointsStream = InstallationManager.class.getResourceAsStream(testWalletPath);
+
+
+    // Create the output stream
+    long bytes;
+    try (FileOutputStream sinkCheckpointsStream = new FileOutputStream(installationDirectory.getAbsolutePath() + "/mbhd.wallet.aes")) {
+
+      // Copy the wallet
+      bytes = ByteStreams.copy(sourceCheckpointsStream, sinkCheckpointsStream);
+
+      // Clean up
+      sourceCheckpointsStream.close();
+      sinkCheckpointsStream.flush();
+      sinkCheckpointsStream.close();
+    } finally {
+      if (sourceCheckpointsStream != null) {
+        sourceCheckpointsStream.close();
+      }
+    }
+
+    log.debug("Wallet {} bytes in length.", bytes);
   }
 }
 
