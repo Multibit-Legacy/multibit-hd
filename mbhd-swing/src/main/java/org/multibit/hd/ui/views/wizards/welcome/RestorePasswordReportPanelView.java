@@ -134,7 +134,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
 
-    // Trezor soft wallets use a diferent salt in creating wallet ids
+    // Trezor soft wallets use a different salt in creating wallet ids
     boolean restoreAsTrezor = model.getRestorePasswordEnterSeedPhraseModel().isRestoreAsTrezor();
     WalletId walletId;
     if (restoreAsTrezor) {

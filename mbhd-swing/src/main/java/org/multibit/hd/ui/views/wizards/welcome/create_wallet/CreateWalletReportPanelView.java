@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.crypto.MnemonicCode;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -38,8 +39,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -189,6 +188,8 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
       // Attempt to create the wallet (the manager will track the ID etc)
       WalletManager walletManager = WalletManager.INSTANCE;
+      byte[] entropy = MnemonicCode.INSTANCE.toEntropy(seedPhrase);
+
       seed = seedPhraseGenerator.convertToSeed(seedPhrase);
 
       // Seed phrase always OK
@@ -211,8 +212,9 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
         // Provide a precise local creation time
         Dates.formatTransactionDateLocal(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
       );
-      walletSummary = walletManager.badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+      walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromEntropy(
               applicationDataDirectory,
+              entropy,
               seed,
               Dates.nowInSeconds(),
               password,
@@ -344,7 +346,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
           }
         });
 
-    } catch (RuntimeException | IOException | NoSuchAlgorithmException e) {
+    } catch (Exception e) {
       // Handing over to the exception handler means a hard shutdown
       ExceptionHandler.handleThrowable(e);
     }

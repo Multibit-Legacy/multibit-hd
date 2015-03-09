@@ -66,6 +66,8 @@ public class WalletServiceTest {
 
     // Create a wallet from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] entropy1 = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     walletId = new WalletId(seed1);
 
@@ -75,8 +77,9 @@ public class WalletServiceTest {
     long nowInSeconds = Dates.nowInSeconds();
     walletSummary = WalletManager
             .INSTANCE
-            .badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+            .getOrCreateMBHDSoftWalletSummaryFromEntropy(
                     temporaryDirectory,
+                    entropy1,
                     seed1,
                     nowInSeconds,
                     PASSWORD,

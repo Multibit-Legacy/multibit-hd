@@ -8,16 +8,14 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.crypto.MnemonicCode;
 import org.joda.time.DateTime;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.AESUtils;
-import org.multibit.hd.core.dto.BitcoinNetworkStatus;
-import org.multibit.hd.core.dto.BitcoinNetworkSummary;
-import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -416,11 +414,12 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         EnterSeedPhraseModel restoreEnterTimestampModel = model.getRestoreWalletEnterTimestampModel();
         ConfirmPasswordModel confirmPasswordModel = model.getRestoreWalletConfirmPasswordModel();
         log.debug("Timestamp: {}", restoreEnterTimestampModel.getSeedTimestamp());
+        log.debug("Wallet type: {}", restoreEnterSeedPhraseModel.getRestoreWalletType());
 
         // Create the wallet
         return createWalletFromSeedPhraseAndTimestamp(
           restoreEnterSeedPhraseModel.getSeedPhrase(),
-          restoreEnterSeedPhraseModel.isRestoreAsTrezor(),
+          restoreEnterSeedPhraseModel.getRestoreWalletType(),
           restoreEnterTimestampModel.getSeedTimestamp(),
           confirmPasswordModel.getValue()
         );
@@ -489,17 +488,23 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
 
   /**
    * Create a wallet from a seed phrase, timestamp and credentials
+   * @param seedPhrase the seed phrase to use in the restore
+   * @param walletTypeToRestore the type of wallet to restore (one of the WalletType enum values)
+   * @param timestamp the string format of the timestamp to use in the restore. May be blank.
+   * @param password the password to use to secure the newly created wallet
    */
-  private boolean createWalletFromSeedPhraseAndTimestamp(List<String> seedPhrase, boolean isRestoreTrezor, String timestamp, String password) {
+  private boolean createWalletFromSeedPhraseAndTimestamp(List<String> seedPhrase, WalletType walletTypeToRestore, String timestamp, String password) {
 
     if (!verifySeedPhrase(seedPhrase)) {
       return false;
     }
 
-    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedGenerator.convertToSeed(seedPhrase);
-
     try {
+      byte[] entropy = MnemonicCode.INSTANCE.toEntropy(seedPhrase);
+
+      SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+      byte[] seed = seedGenerator.convertToSeed(seedPhrase);
+
       // Locate the user data directory
       File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -514,7 +519,8 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         Dates.formatDeliveryDateLocal(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
       );
 
-      if (isRestoreTrezor) {
+      switch (walletTypeToRestore) {
+        case TREZOR_SOFT_WALLET: {
         // Create Trezor soft wallet
         WalletManager.INSTANCE.getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
           applicationDataDirectory,
@@ -524,21 +530,27 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
           name,
           notes,
           true);
-      } else {
-        // Create MBHD soft wallet
-        WalletManager.INSTANCE.badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(applicationDataDirectory, seed, Dates.thenInSeconds(replayDate), password, name, notes, true);
+          return true;
+        }
+        case MBHD_SOFT_WALLET_BIP32: {
+          // BIP32 compliant soft wallet
+          WalletManager.INSTANCE.getOrCreateMBHDSoftWalletSummaryFromEntropy(applicationDataDirectory, entropy, seed, Dates.thenInSeconds(replayDate), password, name, notes, true);
+
+          return true;
+        }
+        case MBHD_SOFT_WALLET: {
+          // Beta 7 MBHD wallet - not BIP32 compliant
+          WalletManager.INSTANCE.badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(applicationDataDirectory, seed, Dates.thenInSeconds(replayDate), password, name, notes, true);
+          return true;
+        }
+        default: {
+          throw new IllegalArgumentException("Cannot restore the wallet with unknown type " + walletTypeToRestore);
+        }
       }
-
-      // Must have succeeded to get here
-      return true;
-
     } catch (Exception e) {
       log.error("Failed to restore wallet.", e);
+      return false;
     }
-
-    // Must have failed to be here
-    return false;
-
   }
 
   /**

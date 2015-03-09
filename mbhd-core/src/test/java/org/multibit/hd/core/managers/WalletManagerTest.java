@@ -136,13 +136,15 @@ public class WalletManagerTest {
     WalletManager walletManager = WalletManager.INSTANCE;
     BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
+    byte[] entropy = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     long nowInSeconds = Dates.nowInSeconds();
 
     WalletSummary walletSummary1 = walletManager
-      .badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+      .getOrCreateMBHDSoftWalletSummaryFromEntropy(
               applicationDirectory,
+              entropy,
               seed,
               nowInSeconds,
               "credentials",
@@ -160,8 +162,9 @@ public class WalletManagerTest {
     BackupManager.INSTANCE.initialise(applicationDirectory2, Optional.<File>absent());
 
     WalletSummary walletSummary2 = walletManager
-      .badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+      .getOrCreateMBHDSoftWalletSummaryFromEntropy(
               applicationDirectory2,
+              entropy,
               seed,
               nowInSeconds,
               "credentials",
@@ -187,8 +190,8 @@ public class WalletManagerTest {
     );
 
     assertThat(expectedFile.exists()).isTrue();
-    assertThat(WalletType.MBHD_SOFT_WALLET.equals(walletSummary1.getWalletType()));
-    assertThat(WalletType.MBHD_SOFT_WALLET.equals(walletSummary2.getWalletType()));
+    assertThat(WalletType.MBHD_SOFT_WALLET_BIP32.equals(walletSummary1.getWalletType()));
+    assertThat(WalletType.MBHD_SOFT_WALLET_BIP32.equals(walletSummary2.getWalletType()));
   }
 
   @Test
@@ -302,6 +305,7 @@ public class WalletManagerTest {
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(SKIN_SEED_PHRASE));
+
     long nowInSeconds = Dates.nowInSeconds();
 
     WalletSummary walletSummary = walletManager.badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
@@ -359,18 +363,22 @@ public class WalletManagerTest {
      BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
      byte[] entropy = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(SKIN_SEED_PHRASE));
+     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(SKIN_SEED_PHRASE));
+
      long nowInSeconds = Dates.nowInSeconds();
 
      WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromEntropy(
              applicationDirectory,
              entropy,
+             seed,
              nowInSeconds,
              "aPassword",
              "Skin",
              "Skin", true);
 
      assertThat(walletSummary).isNotNull();
-     assertThat(WalletType.MBHD_SOFT_WALLET.equals(walletSummary.getWalletType()));
+     assertThat(WalletType.MBHD_SOFT_WALLET_BIP32.equals(walletSummary.getWalletType()));
 
      // Check that the generated addresses match the expected
 
@@ -517,13 +525,16 @@ public class WalletManagerTest {
     WalletManager walletManager = WalletManager.INSTANCE;
     BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
+    byte[] entropy = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+
     long nowInSeconds = Dates.nowInSeconds();
 
     log.debug("");
-    WalletSummary walletSummary = walletManager.badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+    WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromEntropy(
             applicationDirectory,
+            entropy,
             seed,
             nowInSeconds,
             SIGNING_PASSWORD,
@@ -597,7 +608,6 @@ public class WalletManagerTest {
 
   @Test
   public void testWriteOfEncryptedPasswordAndSeed() throws Exception {
-
     List<String> passwordList = Lists.newArrayList();
     passwordList.add(SHORT_PASSWORD);
     passwordList.add(MEDIUM_PASSWORD);
@@ -606,6 +616,8 @@ public class WalletManagerTest {
     passwordList.add(LONGEST_PASSWORD);
 
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] entropy = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
     for (String passwordToCheck : passwordList) {
 
@@ -616,12 +628,13 @@ public class WalletManagerTest {
 
       WalletManager walletManager = WalletManager.INSTANCE;
 
-      byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+
       long nowInSeconds = Dates.nowInSeconds();
 
       WalletSummary walletSummary = walletManager
-        .badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+        .getOrCreateMBHDSoftWalletSummaryFromEntropy(
                 applicationDirectory,
+                entropy,
                 seed,
                 nowInSeconds,
                 passwordToCheck,

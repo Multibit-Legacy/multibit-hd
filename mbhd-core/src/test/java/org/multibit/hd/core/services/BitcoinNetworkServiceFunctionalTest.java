@@ -5,6 +5,7 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.bitcoinj.core.*;
+import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.store.BlockStoreException;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -107,8 +108,10 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     // Create a wallet from the WALLET_SEED_1_PROPERTY_NAME
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] entropy = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
+
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
-    WalletSummary walletSummary = createWallet(temporaryDirectory, seed, "Example", "Example");
+    WalletSummary walletSummary = createWallet(temporaryDirectory, entropy, seed, "Example", "Example");
 
     DateTime timestamp1 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_1_PROPERTY_NAME));
 
@@ -144,14 +147,16 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     // Create two wallets from the two seeds
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] entropy1 = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
-    WalletSummary walletSummary1 = createWallet(temporaryDirectory, seed1, "Example", "Example");
+    WalletSummary walletSummary1 = createWallet(temporaryDirectory, entropy1, seed1, "Example", "Example");
     String walletRoot1 = WalletManager.createWalletRoot(walletSummary1.getWalletId());
 
     DateTime timestamp1 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_1_PROPERTY_NAME));
 
+    byte[] entropy2 = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_2_PROPERTY_NAME)));
     byte[] seed2 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_2_PROPERTY_NAME)));
-    WalletSummary walletSummary2 = createWallet(temporaryDirectory, seed2, "Example", "Example");
+    WalletSummary walletSummary2 = createWallet(temporaryDirectory, entropy2, seed2, "Example", "Example");
     String walletRoot2 = WalletManager.createWalletRoot(walletSummary2.getWalletId());
 
     DateTime timestamp2 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_2_PROPERTY_NAME));
@@ -257,12 +262,13 @@ public class BitcoinNetworkServiceFunctionalTest {
     }
   }
 
-  private WalletSummary createWallet(File walletDirectory, byte[] seed, String name, String notes) throws IOException {
+  private WalletSummary createWallet(File walletDirectory, byte[] entropy, byte[] seed, String name, String notes) throws IOException {
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    WalletSummary walletSummary = walletManager.badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+    WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromEntropy(
             walletDirectory,
+            entropy,
             seed,
             nowInSeconds,
             WALLET_PASSWORD,

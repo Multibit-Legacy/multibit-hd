@@ -83,5 +83,4 @@ public class Bip39SeedPhraseGenerator implements SeedPhraseGenerator {
     return false;
 
   }
-
 }

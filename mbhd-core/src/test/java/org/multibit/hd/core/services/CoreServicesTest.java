@@ -2,6 +2,7 @@ package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
 import org.bitcoinj.core.Wallet;
+import org.bitcoinj.crypto.MnemonicCode;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.multibit.hd.brit.dto.FeeState;
@@ -52,6 +53,7 @@ public class CoreServicesTest {
 
     // Create a wallet from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] entropy = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
     BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
@@ -59,8 +61,9 @@ public class CoreServicesTest {
     long nowInSeconds = Dates.nowInSeconds();
     WalletSummary walletSummary = WalletManager
       .INSTANCE
-      .badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+      .getOrCreateMBHDSoftWalletSummaryFromEntropy(
               temporaryDirectory,
+              entropy,
               seed,
               nowInSeconds,
               PASSWORD,

@@ -65,7 +65,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import static org.multibit.hd.core.dto.WalletId.*;
-import static org.multibit.hd.core.utils.Collators.*;
 
 /**
  * <p>Manager to provide the following to core users:</p>
@@ -324,6 +323,8 @@ public enum WalletManager implements WalletEventListener {
       log.debug("Creating new wallet file...");
 
       // Create a wallet using the seed (no salt passphrase)
+      // THIS METHOD CALL PRODUCES NON BIP32 COMPLIANT WALLETS !
+      // The entropy should be passed in - not the seed bytes
       DeterministicSeed deterministicSeed = new DeterministicSeed(seed, "", creationTimeInSeconds);
       Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
       walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
@@ -376,9 +377,10 @@ public enum WalletManager implements WalletEventListener {
     * <p>Synchronization is begun if required</p>
     *
     * @param applicationDataDirectory The application data directory containing the wallet
-    * @param entropy                  The entropy equivalent to the mnenomic seed phrase
-   *                                  This is the byte array equivalent to the random number you are using
-   *                                  This is NOT the seed bytes, which have undergone Scrypt processing
+    * @param entropy                  The entropy equivalent to the wallet words (seed phrase)
+    *                                 This is the byte array equivalent to the random number you are using
+    *                                 This is NOT the seed bytes, which have undergone Scrypt processing
+    * @param seed                     The seed byte array (the seed phrase after Scrypt processing)
     * @param creationTimeInSeconds    The creation time of the wallet, in seconds since epoch
     * @param password                 The credentials to use to encrypt the wallet - if null then the wallet is not loaded
     * @param name                     The wallet name
@@ -394,18 +396,18 @@ public enum WalletManager implements WalletEventListener {
    public WalletSummary getOrCreateMBHDSoftWalletSummaryFromEntropy(
      File applicationDataDirectory,
      byte[] entropy,
+     byte[] seed,
      long creationTimeInSeconds,
      String password,
      String name,
      String notes,
      boolean performSynch) throws WalletLoadException, WalletVersionException, IOException {
-     log.debug("badlyGetOrCreateMBHDSoftWalletSummaryFromSeed called");
+     log.debug("getOrCreateMBHDSoftWalletSummaryFromEntropy called");
      final WalletSummary walletSummary;
 
-     // Create a wallet id from the entropy to work out the wallet root directory
-     // TODO should the WalletId be created from the entropy or the seed ?
-     // TODO other walletIds are created from the seed bytes
-     final WalletId walletId = new WalletId(entropy);
+     // Create a wallet id from the seed to work out the wallet root directory
+     // The seed bytes are used for backwards compatibility
+     final WalletId walletId = new WalletId(seed);
      String walletRoot = createWalletRoot(walletId);
 
      final File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
@@ -428,6 +430,7 @@ public enum WalletManager implements WalletEventListener {
        log.debug("Creating new wallet file...");
 
        // Create a wallet using the entropy
+       // DeterministicSeed constructor expects ENTROPY here
        DeterministicSeed deterministicSeed = new DeterministicSeed(entropy, "", creationTimeInSeconds);
        Wallet walletToReturn = Wallet.fromSeed(networkParameters, deterministicSeed);
        walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
@@ -444,7 +447,7 @@ public enum WalletManager implements WalletEventListener {
        walletSummary.setNotes(notes);
        walletSummary.setWalletPassword(new WalletPassword(password, walletId));
        walletSummary.setWalletFile(walletFile);
-       walletSummary.setWalletType(WalletType.MBHD_SOFT_WALLET);
+       walletSummary.setWalletType(WalletType.MBHD_SOFT_WALLET_BIP32);
        setCurrentWalletSummary(walletSummary);
 
        // Save the wallet YAML
@@ -452,14 +455,15 @@ public enum WalletManager implements WalletEventListener {
        createdNew = true;
 
        try {
-         WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, entropy, password);
+         // The seed bytes are used as the secret to encrypt the password (mainly for backwards compatibility)
+         WalletManager.writeEncryptedPasswordAndBackupKey(walletSummary, seed, password);
        } catch (NoSuchAlgorithmException e) {
          throw new WalletLoadException("Could not store encrypted credentials and backup AES key", e);
        }
      }
 
      // Set wallet type
-     walletSummary.getWallet().addOrUpdateExtension(new WalletTypeExtension(WalletType.MBHD_SOFT_WALLET));
+     walletSummary.getWallet().addOrUpdateExtension(new WalletTypeExtension(WalletType.MBHD_SOFT_WALLET_BIP32));
 
      if (createdNew) {
        CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), true, CoreMessageKey.WALLET_LOADED_OK, null, Optional.<File>absent()));
@@ -1200,7 +1204,7 @@ public enum WalletManager implements WalletEventListener {
   /**
    *
    * <p>This list contains MBHD soft wallets and Trezor soft wallets</p>
-   * @param Locale the locale to sort results by
+   * @param localeOptional the locale to sort results by
    * @return A list of soft wallet summaries based on the current application directory contents (never null), ordered by wallet name
    *
    */
@@ -1498,24 +1502,27 @@ public enum WalletManager implements WalletEventListener {
   /**
    * Write the encrypted wallet credentials and backup AES key to the wallet configuration.
    * You probably want to save it afterwards with an updateSummary
+   * @param walletSummary The wallet summary to write the encrypted details for
+   * @param secret The secret used to derive the AES encryption key. This is typically created deterministically from the wallet words
+   * @param password The password you want to store encrypted
    */
-  public static void writeEncryptedPasswordAndBackupKey(WalletSummary walletSummary, byte[] entropy, String password) throws NoSuchAlgorithmException {
+  public static void writeEncryptedPasswordAndBackupKey(WalletSummary walletSummary, byte[] secret, String password) throws NoSuchAlgorithmException {
 
     Preconditions.checkNotNull(walletSummary, "'walletSummary' must be present");
-    Preconditions.checkNotNull(entropy, "'entropy' must be present");
+    Preconditions.checkNotNull(secret, "'secret' must be present");
     Preconditions.checkNotNull(password, "'password' must be present");
 
-    // Save the wallet credentials, AES encrypted with a key derived from the wallet entropy
-    KeyParameter entropyDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(entropy, SCRYPT_SALT);
+    // Save the wallet credentials, AES encrypted with a key derived from the wallet secret
+    KeyParameter secretDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(secret, SCRYPT_SALT);
     byte[] passwordBytes = password.getBytes(Charsets.UTF_8);
 
     byte[] paddedPasswordBytes = padPasswordBytes(passwordBytes);
-    byte[] encryptedPaddedPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(paddedPasswordBytes, entropyDerivedAESKey, AES_INITIALISATION_VECTOR);
+    byte[] encryptedPaddedPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(paddedPasswordBytes, secretDerivedAESKey, AES_INITIALISATION_VECTOR);
     walletSummary.setEncryptedPassword(encryptedPaddedPassword);
 
     // Save the backupAESKey, AES encrypted with a key generated from the wallet password
     KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(passwordBytes, SCRYPT_SALT);
-    byte[] encryptedBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(entropyDerivedAESKey.getKey(), walletPasswordDerivedAESKey, AES_INITIALISATION_VECTOR);
+    byte[] encryptedBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(secretDerivedAESKey.getKey(), walletPasswordDerivedAESKey, AES_INITIALISATION_VECTOR);
     walletSummary.setEncryptedBackupKey(encryptedBackupAESKey);
   }
 

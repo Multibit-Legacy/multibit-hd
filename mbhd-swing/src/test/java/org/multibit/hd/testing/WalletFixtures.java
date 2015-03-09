@@ -3,6 +3,7 @@ package org.multibit.hd.testing;
 import com.google.common.io.ByteStreams;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
+import org.bitcoinj.crypto.MnemonicCode;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.dto.WalletSummary;
@@ -87,7 +88,7 @@ public class WalletFixtures {
    *
    * @return The wallet summary if successful
    */
-  public static WalletSummary createEmptyMBHDSoftWalletFixture() throws IOException {
+  public static WalletSummary createEmptyMBHDSoftWalletFixture() throws Exception {
 
     String applicationDirectoryName = InstallationManager
       .getOrCreateApplicationDataDirectory()
@@ -98,12 +99,14 @@ public class WalletFixtures {
     List<String> seedPhrase = Bip39SeedPhraseGenerator.split(EMPTY_WALLET_SEED_PHRASE);
 
     WalletManager walletManager = WalletManager.INSTANCE;
+    byte[] entropy = MnemonicCode.INSTANCE.toEntropy(seedPhrase);
     byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    return walletManager.badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+    return walletManager.getOrCreateMBHDSoftWalletSummaryFromEntropy(
             new File(applicationDirectoryName),
+            entropy,
             seed,
             nowInSeconds,
             STANDARD_PASSWORD,

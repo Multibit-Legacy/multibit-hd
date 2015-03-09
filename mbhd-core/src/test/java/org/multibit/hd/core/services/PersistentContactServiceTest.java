@@ -2,6 +2,7 @@ package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.bitcoinj.crypto.MnemonicCode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +39,7 @@ public class PersistentContactServiceTest {
 
     // Create a wallet from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] entropy1 = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
     BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
@@ -45,8 +47,9 @@ public class PersistentContactServiceTest {
     long nowInSeconds = Dates.nowInSeconds();
     WalletManager
       .INSTANCE
-      .badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+      .getOrCreateMBHDSoftWalletSummaryFromEntropy(
               applicationDirectory,
+              entropy1,
               seed1,
               nowInSeconds,
               WalletServiceTest.PASSWORD,
