@@ -107,7 +107,9 @@ public class ExternalDataListeningService extends AbstractService {
           InetAddress.getLoopbackAddress()
         ));
 
-      // Successfully owned the server port so handle ongoing messages as master
+      // Successfully owned the server port
+
+      // Handle ongoing messages as master
       ListenableFuture future = getExecutorService().submit(getInstanceServerRunnable(serverSocket.get()));
       Futures.addCallback(
         future, new FutureCallback() {
