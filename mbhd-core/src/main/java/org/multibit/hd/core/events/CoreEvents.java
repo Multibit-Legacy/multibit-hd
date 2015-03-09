@@ -41,7 +41,8 @@ public class CoreEvents {
   private static ListeningExecutorService eventExecutor = SafeExecutors.newFixedThreadPool(10, "core-events");
 
   // Provide a slower transaction seen thread that is isolated from the EDT
-  private static ListeningScheduledExecutorService txSeenExecutor = SafeExecutors.newSingleThreadScheduledExecutor("tx-seen");
+  private static ListeningScheduledExecutorService txSeenExecutor = null;
+  private static boolean creatingTxSeenExecutor = false;
 
   /**
    * Use Guava to handle subscribers to events
@@ -257,17 +258,28 @@ public class CoreEvents {
    * @param transactionSeenEvent containing transaction information
    */
   public static void fireTransactionSeenEvent(final TransactionSeenEvent transactionSeenEvent) {
+    if (txSeenExecutor == null) {
+      if (!creatingTxSeenExecutor) {
+        creatingTxSeenExecutor = true;
+        // Create
+        SafeExecutors.newSingleThreadScheduledExecutor("tx-seen");
+        creatingTxSeenExecutor = false;
+      }
+    }
 
     // Use the tx-seen pool
-    txSeenExecutor.submit(
-      new Runnable() {
-        @Override
-        public void run() {
-          coreEventBus.post(transactionSeenEvent);
-          consolidateTransactionSeenEvents();
-        }
-      });
+    if (txSeenExecutor != null) {
+      txSeenExecutor.submit(
+              new Runnable() {
+                @Override
+                public void run() {
+                  coreEventBus.post(transactionSeenEvent);
+                  consolidateTransactionSeenEvents();
+                }
+              });
+    }
   }
+
   /**
    * <p>Broadcast BitcoinSendProgressEvent</p>
    *
