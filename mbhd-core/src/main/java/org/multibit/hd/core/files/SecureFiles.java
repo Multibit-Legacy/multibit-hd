@@ -76,7 +76,6 @@ public class SecureFiles {
       initialise();
     }
 
-    long start = System.currentTimeMillis();
     log.trace("Start of secureDelete");
 
     if (Utils.isWindows()) {
@@ -86,8 +85,6 @@ public class SecureFiles {
       fastSecureDelete(file);
     }
     log.trace("End of secureDelete");
-    log.debug("Secure delete took {} milliseconds", System.currentTimeMillis() - start);
-
   }
 
   /**
