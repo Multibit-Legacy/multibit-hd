@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
@@ -41,8 +42,10 @@ public class CoreEvents {
   private static ListeningExecutorService eventExecutor = SafeExecutors.newFixedThreadPool(10, "core-events");
 
   // Provide a slower transaction seen thread that is isolated from the EDT
-  private static ListeningScheduledExecutorService txSeenExecutor = null;
+  // See http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html, section "Fixing Double-Checked Locking using Volatile"
+  private static volatile Optional<ListeningScheduledExecutorService> txSeenExecutorOptional = Optional.absent();
   private static boolean creatingTxSeenExecutor = false;
+  private static final Object txSeenExecutorLock = new Object();
 
   /**
    * Use Guava to handle subscribers to events
@@ -257,19 +260,25 @@ public class CoreEvents {
    *
    * @param transactionSeenEvent containing transaction information
    */
+  @SuppressFBWarnings({"DC_DOUBLECHECK"})
   public static void fireTransactionSeenEvent(final TransactionSeenEvent transactionSeenEvent) {
-    if (txSeenExecutor == null) {
-      if (!creatingTxSeenExecutor) {
-        creatingTxSeenExecutor = true;
-        // Create
-        SafeExecutors.newSingleThreadScheduledExecutor("tx-seen");
-        creatingTxSeenExecutor = false;
+    // If no txSeenExecutor construct it
+    if (!txSeenExecutorOptional.isPresent() && !creatingTxSeenExecutor) {
+      // Create inside a synchronized
+      synchronized (txSeenExecutorLock) {
+        // Double check creation condition inside synchronize
+        if (!txSeenExecutorOptional.isPresent() && !creatingTxSeenExecutor) {
+          // Mark that creation has started - this takes about 600 ms
+          creatingTxSeenExecutor = true;
+          txSeenExecutorOptional = Optional.of(SafeExecutors.newSingleThreadScheduledExecutor("tx-seen"));
+          creatingTxSeenExecutor = false;
+        }
       }
     }
 
     // Use the tx-seen pool
-    if (txSeenExecutor != null) {
-      txSeenExecutor.submit(
+    if (txSeenExecutorOptional.isPresent()) {
+      txSeenExecutorOptional.get().submit(
               new Runnable() {
                 @Override
                 public void run() {
@@ -304,17 +313,17 @@ public class CoreEvents {
       if (!waitingToFireSlowTransactionSeenEvent) {
         // Fire in the future
         waitingToFireSlowTransactionSeenEvent = true;
-        txSeenExecutor.schedule(
-          new Callable() {
-            @Override
-            public Object call() throws Exception {
-              coreEventBus.post(new SlowTransactionSeenEvent());
-              synchronized (lockObject) {
-                waitingToFireSlowTransactionSeenEvent = false;
-              }
-              return null;
-            }
-          }, 1, TimeUnit.SECONDS);
+        txSeenExecutorOptional.get().schedule(
+                new Callable() {
+                  @Override
+                  public Object call() throws Exception {
+                    coreEventBus.post(new SlowTransactionSeenEvent());
+                    synchronized (lockObject) {
+                      waitingToFireSlowTransactionSeenEvent = false;
+                    }
+                    return null;
+                  }
+                }, 1, TimeUnit.SECONDS);
       }
     }
 
