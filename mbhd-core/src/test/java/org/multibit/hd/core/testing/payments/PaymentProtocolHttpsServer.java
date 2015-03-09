@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.hardware.core.concurrent.SafeExecutors;
 import org.slf4j.Logger;
@@ -43,8 +44,8 @@ public class PaymentProtocolHttpsServer {
    */
   public boolean start() {
 
+    InputStream is = null;
     try {
-
       log.debug("Initialise the trust store containing the trusted certificates (including localhost:8443)");
       URL trustStoreUrl = PaymentProtocolHttpsServer.class.getResource("/mbhd-cacerts");
       System.setProperty("javax.net.ssl.trustStore", trustStoreUrl.getFile());
@@ -54,7 +55,7 @@ public class PaymentProtocolHttpsServer {
 
       log.debug("Initialise the key store containing the private server keys (CN=localhost is required)");
       KeyStore ks = KeyStore.getInstance("JKS");
-      InputStream is = PaymentProtocolHttpsServer.class.getResourceAsStream("/localhost.jks");
+      is = PaymentProtocolHttpsServer.class.getResourceAsStream("/localhost.jks");
       ks.load(is, SSLManager.PASSPHRASE.toCharArray());
 
       log.debug("Initialise the key manager factory");
@@ -82,7 +83,14 @@ public class PaymentProtocolHttpsServer {
 
     } catch (Exception e) {
       log.error("Failed to create HTTPS server", e);
-
+    } finally {
+      if (is != null) {
+        try {
+          is.close();
+        } catch (IOException ioe) {
+          log.error("Failed to close key store", ioe);
+        }
+      }
     }
 
     // Must have failed to be here
@@ -118,6 +126,7 @@ public class PaymentProtocolHttpsServer {
   /**
    * Remove all entries from the fixture queue and reset the executor service
    */
+  @SuppressFBWarnings({"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"})
   public void reset() {
 
     executorService.shutdownNow();
