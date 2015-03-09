@@ -757,6 +757,7 @@ public enum WalletManager implements WalletEventListener {
 
     // Remember the current soft wallet root
     if (WalletType.MBHD_SOFT_WALLET == walletSummary.getWalletType() ||
+            WalletType.MBHD_SOFT_WALLET_BIP32 == walletSummary.getWalletType() ||
       WalletType.TREZOR_SOFT_WALLET == walletSummary.getWalletType()) {
       if (Configurations.currentConfiguration != null) {
         Configurations.currentConfiguration.getWallet().setLastSoftWalletRoot(walletRoot);
@@ -956,7 +957,7 @@ public enum WalletManager implements WalletEventListener {
             if (firstLeafKeyPath != null && firstLeafKeyPath.size() > 0) {
               // MBHD soft wallets start at m/0h
               if (ChildNumber.ZERO_HARDENED.equals(firstLeafKeyPath.get(0))) {
-                inferredWalletType = WalletType.MBHD_SOFT_WALLET;
+                inferredWalletType = WalletType.MBHD_SOFT_WALLET_BIP32;
               } else if ((new ChildNumber(44 | ChildNumber.HARDENED_BIT)).equals(firstLeafKeyPath.get(0))) {
                 // Trezor wallet
                 if (firstLeafKey.isEncrypted()) {
@@ -1217,6 +1218,7 @@ public enum WalletManager implements WalletEventListener {
 
     for (WalletSummary walletSummary : allWalletSummaries) {
       if (WalletType.MBHD_SOFT_WALLET == walletSummary.getWalletType()
+              || WalletType.MBHD_SOFT_WALLET_BIP32 == walletSummary.getWalletType()
         || WalletType.TREZOR_SOFT_WALLET == walletSummary.getWalletType()) {
         softWalletSummaries.add(walletSummary);
       }

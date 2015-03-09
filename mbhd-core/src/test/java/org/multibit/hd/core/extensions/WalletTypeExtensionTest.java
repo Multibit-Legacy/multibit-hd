@@ -30,7 +30,8 @@ public class WalletTypeExtensionTest {
   private static final Logger log = LoggerFactory.getLogger(WalletTypeExtension.class);
 
   public static final String EXPECTED_MBHD_SOFT_WALLET_TYPE = "MBHD_SOFT_WALLET";
-  public static final String EXPECTED_TREZOR_SOFT_WALLET_TYPE = "TREZOR_SOFT_WALLET";
+  public static final String EXPECTED_MBHD_SOFT_WALLET_BIP32_TYPE = "MBHD_SOFT_WALLET_BIP32";
+   public static final String EXPECTED_TREZOR_SOFT_WALLET_TYPE = "TREZOR_SOFT_WALLET";
   public static final String EXPECTED_TREZOR_HARD_WALLET_TYPE = "TREZOR_HARD_WALLET";
   public static final String EXPECTED_UNKNOWN_WALLET_TYPE = "UNKNOWN";
 
@@ -39,11 +40,16 @@ public class WalletTypeExtensionTest {
   }
 
   @Test
-  public void testMBHDSoftWalletType() throws Exception {
-    testWalletType(WalletType.MBHD_SOFT_WALLET, EXPECTED_MBHD_SOFT_WALLET_TYPE);
+  public void testMBHDSoftBIP32WalletType() throws Exception {
+    testWalletType(WalletType.MBHD_SOFT_WALLET_BIP32, EXPECTED_MBHD_SOFT_WALLET_BIP32_TYPE);
   }
 
   @Test
+   public void testMBHDSoftWalletType() throws Exception {
+     testWalletType(WalletType.MBHD_SOFT_WALLET, EXPECTED_MBHD_SOFT_WALLET_TYPE);
+   }
+
+   @Test
   public void testTrezorSoftWalletType() throws Exception {
     testWalletType(WalletType.TREZOR_SOFT_WALLET, EXPECTED_TREZOR_SOFT_WALLET_TYPE);
   }

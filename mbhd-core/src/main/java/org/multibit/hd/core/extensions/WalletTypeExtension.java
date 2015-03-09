@@ -59,7 +59,9 @@ public class WalletTypeExtension implements WalletExtension {
     if (WalletType.MBHD_SOFT_WALLET.name().equals(serialisedString)) {
       walletType = WalletType.MBHD_SOFT_WALLET;
     } else if (WalletType.TREZOR_SOFT_WALLET.name().equals(serialisedString)) {
-      walletType = WalletType.TREZOR_SOFT_WALLET;
+          walletType = WalletType.TREZOR_SOFT_WALLET;
+    } else if (WalletType.MBHD_SOFT_WALLET_BIP32.name().equals(serialisedString)) {
+              walletType = WalletType.MBHD_SOFT_WALLET_BIP32;
     } else if (WalletType.TREZOR_HARD_WALLET.name().equals(serialisedString)) {
       walletType = WalletType.TREZOR_HARD_WALLET;
     } else if (WalletType.UNKNOWN.name().equals(serialisedString)) {
