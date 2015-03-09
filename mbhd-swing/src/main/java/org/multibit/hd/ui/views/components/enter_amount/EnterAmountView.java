@@ -4,7 +4,9 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.bitcoinj.core.Coin;
+import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.CoreServices;
@@ -12,6 +14,7 @@ import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.Coins;
 import org.multibit.hd.core.utils.Numbers;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -79,11 +82,21 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     bitcoinAmountText = TextBoxes.newBitcoinAmount(BitcoinSymbol.maxSymbolicAmount().doubleValue());
     localAmountText = TextBoxes.newLocalAmount(999_999_999_999_999.9999);
 
+    Coin coinAmount = getModel().get().getCoinAmount();
+
     // Set initial Bitcoin amount from the model (if non-zero)
-    if (!Coin.ZERO.equals(getModel().get().getCoinAmount())) {
-      BitcoinSymbol bitcoinSymbol = BitcoinSymbol.current();
-      BigDecimal symbolicAmount = Coins.toSymbolicAmount(getModel().get().getCoinAmount(), bitcoinSymbol);
-      bitcoinAmountText.setText(symbolicAmount.toPlainString());
+    if (!Coin.ZERO.equals(coinAmount)) {
+
+      LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
+      BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
+
+      String symbolicAmount = Formats.formatCoinAmount(
+        coinAmount,
+        languageConfiguration,
+        bitcoinConfiguration
+      );
+
+      bitcoinAmountText.setText(symbolicAmount);
       updateLocalAmount();
     }
 

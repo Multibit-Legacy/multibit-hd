@@ -9,6 +9,8 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 
+import java.util.Locale;
+
 import static org.fest.assertions.Assertions.assertThat;
 
 public class FormatsTest {
@@ -223,6 +225,45 @@ public class FormatsTest {
   }
 
   @Test
+  public void testFormatCoinAmount_uBTC() throws Exception {
+
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.UBTC.name());
+
+    String balance = Formats.formatCoinAmount(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
+
+    assertThat(balance).isEqualTo("20,999,999,123,456.78");
+
+    balance = Formats.formatCoinAmount(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
+
+    assertThat(balance).isEqualTo("1,000,000.00");
+
+    balance = Formats.formatCoinAmount(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
+
+    assertThat(balance).isEqualTo("0.01");
+  }
+
+  @Test
+  public void testFormatCoinAmount_uBTC_de_DE() throws Exception {
+
+    languageConfiguration.setLocale(Locale.GERMANY);
+    bitcoinConfiguration.setDecimalSeparator(",");
+    bitcoinConfiguration.setGroupingSeparator(".");
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.UBTC.name());
+
+    String balance = Formats.formatCoinAmount(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
+
+    assertThat(balance).isEqualTo("20.999.999.123.456,78");
+
+    balance = Formats.formatCoinAmount(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
+
+    assertThat(balance).isEqualTo("1.000.000,00");
+
+    balance = Formats.formatCoinAmount(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
+
+    assertThat(balance).isEqualTo("0,01");
+  }
+
+  @Test
   public void testFormatAlertMessage_MultiBit_B() throws Exception {
 
     bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.ICON.name());
@@ -260,6 +301,19 @@ public class FormatsTest {
     final BitcoinURI bitcoinURI = new BitcoinURI("bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org");
 
     assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment \"Please donate to multibit.org\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"\u00b5XBT 10,000.00\". Continue ?");
+  }
+
+  @Test
+  public void testFormatAlertMessage_MultiBit_uXBT_de_DE() throws Exception {
+
+    bitcoinConfiguration.setDecimalSeparator(",");
+    bitcoinConfiguration.setGroupingSeparator(".");
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.UXBT.name());
+
+    final BitcoinURI bitcoinURI = new BitcoinURI("bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org");
+
+    assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment \"Please donate to multibit.org\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"\u00b5XBT 10.000" +
+        ",00\". Continue ?");
   }
 
   @Test

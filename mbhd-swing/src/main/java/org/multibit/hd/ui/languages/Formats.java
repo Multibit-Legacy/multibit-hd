@@ -149,6 +149,25 @@ public class Formats {
 
   }
 
+  /**
+   * <p>Provide a simple representation for a coin amount respecting decimal and grouping separators.</p>
+   * <p>For example, 123456789 becomes "1,234,567.89" or "1.234.567,89" depending on configuration</p>
+   * <p>The amount will be adjusted by the symbolic multiplier from the current configuration</p>
+   *
+   * @param coin                  The amount in coins
+   * @param languageConfiguration The  language configuration to use as the basis for presentation
+   * @param bitcoinConfiguration  The Bitcoin configuration to use as the basis for the symbol
+   *
+   * @return The string suitable for presentation as a balance without symbol in a UTF-8 string
+   */
+  public static String formatCoinAmount(Coin coin, LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration) {
+
+    String[] formattedAmount = formatCoinAsSymbolic(coin, languageConfiguration, bitcoinConfiguration);
+
+    // Convert to single text line
+    return formattedAmount[0] + formattedAmount[1];
+
+  }
 
   /**
    * <p>Provide a simple representation for a local currency amount.</p>

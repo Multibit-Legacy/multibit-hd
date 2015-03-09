@@ -68,7 +68,7 @@ public class FeeService {
   public static final Coin MAXIMUM_FEE_PER_KB = Coin.valueOf(10000); // 0.1 mBTC per KB - a long used fee structure
 
   public static final String DONATION_ADDRESS = "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty";
-  public static final String DEFAULT_DONATION_AMOUNT= "0.01"; // in BTC
+  public static final String DEFAULT_DONATION_AMOUNT= "0.01"; // in BTC as per BIP21
 
   /**
    * Always work with MainNet in BRIT (no access to wallet configuration)
