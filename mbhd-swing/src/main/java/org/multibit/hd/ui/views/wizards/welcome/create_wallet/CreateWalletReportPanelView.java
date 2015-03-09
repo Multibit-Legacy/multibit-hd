@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
 import org.bitcoinj.crypto.MnemonicCode;
+import org.bitcoinj.crypto.MnemonicException;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -39,6 +40,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -346,7 +349,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
           }
         });
 
-    } catch (Exception e) {
+    } catch (MnemonicException | IOException | NoSuchAlgorithmException e) {
       // Handing over to the exception handler means a hard shutdown
       ExceptionHandler.handleThrowable(e);
     }
