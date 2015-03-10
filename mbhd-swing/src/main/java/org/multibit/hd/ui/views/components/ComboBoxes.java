@@ -345,7 +345,7 @@ public class ComboBoxes {
      JComboBox<String> comboBox = newYesNoComboBox(listener, showRestoreBeta7Wallets);
 
      // Ensure it is accessible
-     AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_TREZOR, MessageKey.SELECT_TREZOR_TOOLTIP);
+     AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_SHOW_RESTORE_BETA7_WALLETS, MessageKey.SELECT_SHOW_RESTORE_BETA7_WALLETSTOOLTIP);
 
      comboBox.setActionCommand(SHOW_RESTORE_BETA7_WALLETS_COMMAND);
 

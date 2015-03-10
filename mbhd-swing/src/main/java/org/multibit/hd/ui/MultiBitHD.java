@@ -109,7 +109,12 @@ public class MultiBitHD {
     }
 
     log.info("This is the primary instance so showing splash screen.");
-    splashScreen = new SplashScreen();
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        splashScreen = new SplashScreen();
+      }
+    });
 
     // Prepare the JVM (Nimbus, system properties etc)
     initialiseJVM();

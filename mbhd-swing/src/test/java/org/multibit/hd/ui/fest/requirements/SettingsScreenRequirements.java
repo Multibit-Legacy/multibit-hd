@@ -13,6 +13,7 @@ import org.multibit.hd.ui.fest.use_cases.sidebar.settings.fees.ShowThenCancelFee
 import org.multibit.hd.ui.fest.use_cases.sidebar.settings.fees.VerifyFeesDonateNowUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.settings.fees.VerifyFeesSliderUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.settings.labs.ShowThenCancelLabsUseCase;
+import org.multibit.hd.ui.fest.use_cases.sidebar.settings.labs.VerifyLabsToggleEnableBeta7UseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.settings.labs.VerifyLabsToggleTrezorUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.settings.language.ShowThenCancelLanguageUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.settings.sounds.ShowThenCancelSoundsUseCase;
@@ -66,6 +67,6 @@ public class SettingsScreenRequirements {
 
     // Labs
     new VerifyLabsToggleTrezorUseCase(window).execute(parameters);
-
+    new VerifyLabsToggleEnableBeta7UseCase(window).execute(parameters);
   }
 }

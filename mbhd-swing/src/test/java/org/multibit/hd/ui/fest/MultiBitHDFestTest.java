@@ -158,6 +158,29 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   }
 
   /**
+    * <p>Verify the following:</p>
+    * <ul>
+    * <li>Start with fresh application directory</li>
+    * <li>Restore a wallet using the seed phrase and timestamp</li>
+    * </ul>
+    */
+   @Test
+   public void verifyRestoreBeta7Wallet_en_US_ColdStart() throws Exception {
+
+     // Start with a completely empty random application directory
+     arrangeFresh(Optional.<HardwareWalletFixture>absent());
+
+     // Set the configuration option to show 'Enable restore Beta7 wallets'
+     Configurations.currentConfiguration.setShowRestoreBeta7Wallets(true);
+
+     // Restore a wallet through the welcome wizard
+     WelcomeWizardRestoreBeta7Wallet_en_US_Requirements.verifyUsing(window);
+
+     // Unlock the wallet
+     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
+
+   }
+  /**
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with standard application directory</li>

@@ -14,15 +14,15 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the welcome wizard "restore wallet enter seed phrase" panel view</li>
+ * <li>Verify the welcome wizard "restore wallet enter seed phrase" panel view with a Beta7 wallet</li>
  * </ul>
  *
  * @since 0.0.1
  *
  */
-public class RestoreWalletEnterSeedPhraseUseCase extends AbstractFestUseCase {
+public class RestoreBeta7WalletEnterSeedPhraseUseCase extends AbstractFestUseCase {
 
-  public RestoreWalletEnterSeedPhraseUseCase(FrameFixture window) {
+  public RestoreBeta7WalletEnterSeedPhraseUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -172,7 +172,7 @@ public class RestoreWalletEnterSeedPhraseUseCase extends AbstractFestUseCase {
         ))
       .requireVisible();
 
-    // Verify "MultiBit HD BIP32" wallet type is selected (0) then select "Trezor" (should be 1 as no MultiBit HD Beta 7 option)
+    // Verify "MultiBit HD BIP32" wallet type is selected (0) then select "Trezor" (should be 2 as MultiBit HD Beta 7 option is present)
     window
       .comboBox(MessageKey.SELECT_WALLET_TYPE.getKey())
       .requireSelection(0)
@@ -180,7 +180,15 @@ public class RestoreWalletEnterSeedPhraseUseCase extends AbstractFestUseCase {
 
     pauseForViewReset();
 
-    // Verify "Trezor" wallet type is selected (1) then select "MultiBit HD BIP32"
+    // Verify "Trezor" wallet type is selected (2) then select "MultiBit HD Beta 7"
+    window
+      .comboBox(MessageKey.SELECT_WALLET_TYPE.getKey())
+      .requireSelection(2)
+      .selectItem(Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BETA7));
+
+    pauseForViewReset();
+
+    // Verify "Beta 7" wallet type is selected (1) then select "MultiBit HD BIP32"
     window
       .comboBox(MessageKey.SELECT_WALLET_TYPE.getKey())
       .requireSelection(1)
