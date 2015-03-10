@@ -31,7 +31,6 @@ public enum WalletType {
    *
    * DO NOT RENAME THIS ENUM VALUE AS IT IS STORED IN THE WALLET AS AN EXTENSION
    */
-  @Deprecated
   MBHD_SOFT_WALLET(CoreMessageKey.WALLET_CAPABILITY_MBHD_SOFT_BETA7),
 
   /**
