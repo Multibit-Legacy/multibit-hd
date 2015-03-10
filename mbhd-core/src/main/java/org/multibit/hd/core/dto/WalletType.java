@@ -12,13 +12,12 @@ package org.multibit.hd.core.dto;
 public enum WalletType {
 
   /**
-     * MultiBit HD soft wallet (BIP 32 compliant)
-     * Wallet is BIP 32 compliant
-     * m/0' (Account 1 only)
-     * m/0'/0/0 is first receiving key
-     */
-    MBHD_SOFT_WALLET_BIP32(CoreMessageKey.WALLET_CAPABILITY_MBHD_SOFT_BIP32),
-
+   * MultiBit HD soft wallet (BIP 32 compliant)
+   * Wallet is BIP 32 compliant
+   * m/0' (Account 1 only)
+   * m/0'/0/0 is first receiving key
+   */
+  MBHD_SOFT_WALLET_BIP32(CoreMessageKey.WALLET_CAPABILITY_MBHD_SOFT_BIP32),
 
   /**
    * MultiBit HD soft wallet (Beta 7 wallet)
@@ -58,7 +57,7 @@ public enum WalletType {
   private final CoreMessageKey key;
 
   /**
-   * @param key    The core message key describing the wallet type in user friendly localised terms
+   * @param key The core message key describing the wallet type in user friendly localised terms
    */
   WalletType(CoreMessageKey key) {
     this.key = key;
