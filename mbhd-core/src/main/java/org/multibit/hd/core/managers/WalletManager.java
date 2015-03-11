@@ -132,7 +132,12 @@ public enum WalletManager implements WalletEventListener {
 
   private static final Logger log = LoggerFactory.getLogger(WalletManager.class);
 
-  public static final String EARLIEST_HD_WALLET_DATE = "2014-10-01"; // TODO refine this
+  /**
+   * The earliest possible HD wallet.
+   * This is taken as the date of the last edit of the BIP39 word list: Oct 16 2014:
+   * https://github.com/bitcoin/bips/commits/master/bip-0039/bip-0039-wordlists.md
+   */
+  public static final String EARLIEST_HD_WALLET_DATE = "2014-10-16";
 
   /**
    * How much a block time might drift
