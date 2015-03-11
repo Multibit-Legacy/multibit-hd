@@ -93,6 +93,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
     switch (state) {
       case SEND_DISPLAY_PAYMENT_REQUEST:
+        // The user has indicated that the payment request is of interest so persist it
+        // TODO
 
         // The user has confirmed the payment request so the tx can be prepared
         // If the transaction was prepared OK this returns true, otherwise false
