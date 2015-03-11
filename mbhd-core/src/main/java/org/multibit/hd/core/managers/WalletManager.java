@@ -134,10 +134,10 @@ public enum WalletManager implements WalletEventListener {
 
   /**
    * The earliest possible HD wallet.
-   * This is taken as the date of the last edit of the BIP39 word list: Oct 16 2014:
-   * https://github.com/bitcoin/bips/commits/master/bip-0039/bip-0039-wordlists.md
+   * Set after discussions on the bitcoinj mailing list:
+   * https://groups.google.com/forum/#!topic/bitcoinj/288mCHhLMrA
    */
-  public static final String EARLIEST_HD_WALLET_DATE = "2014-10-16";
+  public static final String EARLIEST_HD_WALLET_DATE = "2014-05-01";
 
   /**
    * How much a block time might drift
