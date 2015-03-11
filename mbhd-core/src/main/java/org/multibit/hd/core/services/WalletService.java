@@ -89,7 +89,7 @@ public class WalletService extends AbstractService {
   /**
    * The additional transaction information, in the form of a map, index by the transaction hash
    */
-  private final ConcurrentHashMap<String, TransactionInfo> transactionInfoMap = new ConcurrentHashMap();
+  private final ConcurrentHashMap<String, TransactionInfo> transactionInfoMap = new ConcurrentHashMap<>();
 
   /**
    * The wallet id that this WalletService is using
