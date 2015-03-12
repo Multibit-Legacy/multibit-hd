@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.params.MainNetParams;
@@ -19,6 +20,7 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
@@ -94,7 +96,19 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     switch (state) {
       case SEND_DISPLAY_PAYMENT_REQUEST:
         // The user has indicated that the payment request is of interest so persist it
-        // TODO
+        Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent());
+        Preconditions.checkState(paymentSessionSummary.isPresent());
+        Preconditions.checkState(paymentSessionSummary.get().getPaymentSession().isPresent());
+
+        WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+        Protos.PaymentRequest paymentRequest = paymentSessionSummary.get().getPaymentSession().get().getPaymentRequest();
+        // Add the payment request to the in-memory store without a transaction hash (not sent yet)
+        PaymentRequestData paymentRequestData = new PaymentRequestData(paymentRequest, Optional.<Sha256Hash>absent());
+        // TODO remember the UUID so that the payment request data can have it's transaction hash set on send
+        walletService.addPaymentRequestData(paymentRequestData);
+
+        // TODO perhaps only write after send
+        walletService.writePayments();
 
         // The user has confirmed the payment request so the tx can be prepared
         // If the transaction was prepared OK this returns true, otherwise false

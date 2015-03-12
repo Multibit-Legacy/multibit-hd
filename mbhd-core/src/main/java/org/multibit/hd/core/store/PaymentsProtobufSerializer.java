@@ -25,7 +25,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.FiatPayment;
-import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.protobuf.MBHDPaymentsProtos;
 import org.multibit.hd.core.utils.Addresses;
@@ -86,10 +86,10 @@ public class PaymentsProtobufSerializer {
 
     Preconditions.checkNotNull(payments, "Payments must be specified");
 
-    Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDatas();
-    if (paymentRequestDatas != null) {
-      for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
-        MBHDPaymentsProtos.PaymentRequest paymentRequestProto = makePaymentRequestProto(paymentRequestData);
+    Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas = payments.getMBHDPaymentRequestDatas();
+    if (MBHDPaymentRequestDatas != null) {
+      for (MBHDPaymentRequestData MBHDPaymentRequestData : MBHDPaymentRequestDatas) {
+        MBHDPaymentsProtos.MBHDPaymentRequest paymentRequestProto = makePaymentRequestProto(MBHDPaymentRequestData);
         paymentsBuilder.addPaymentRequest(paymentRequestProto);
       }
     }
@@ -134,39 +134,39 @@ public class PaymentsProtobufSerializer {
    * @throws org.multibit.hd.core.exceptions.PaymentsLoadException thrown in various error conditions (see description).
    */
   private void readPayments(MBHDPaymentsProtos.Payments paymentsProto, Payments payments) throws PaymentsLoadException {
-    Collection<PaymentRequestData> paymentRequestDatas = Lists.newArrayList();
+    Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas = Lists.newArrayList();
     Collection<TransactionInfo> transactionInfos = Lists.newArrayList();
 
-    List<MBHDPaymentsProtos.PaymentRequest> paymentRequestProtos = paymentsProto.getPaymentRequestList();
+    List<MBHDPaymentsProtos.MBHDPaymentRequest> paymentRequestProtos = paymentsProto.getPaymentRequestList();
     if (paymentRequestProtos != null) {
-      for (MBHDPaymentsProtos.PaymentRequest paymentRequestProto : paymentRequestProtos) {
+      for (MBHDPaymentsProtos.MBHDPaymentRequest paymentRequestProto : paymentRequestProtos) {
 
-        PaymentRequestData paymentRequestData = new PaymentRequestData();
+        MBHDPaymentRequestData MBHDPaymentRequestData = new MBHDPaymentRequestData();
         Optional<Address> address = Addresses.parse(paymentRequestProto.getAddress());
         if (address.isPresent()) {
-          paymentRequestData.setAddress(address.get());
+          MBHDPaymentRequestData.setAddress(address.get());
         } else {
           log.warn("Failed to parse address: '{}'", paymentRequestProto.getAddress());
         }
 
         if (paymentRequestProto.hasLabel()) {
-          paymentRequestData.setLabel(paymentRequestProto.getLabel());
+          MBHDPaymentRequestData.setLabel(paymentRequestProto.getLabel());
         }
         if (paymentRequestProto.hasNote()) {
-          paymentRequestData.setNote(paymentRequestProto.getNote());
+          MBHDPaymentRequestData.setNote(paymentRequestProto.getNote());
         }
         if (paymentRequestProto.hasDate()) {
-          paymentRequestData.setDate(new DateTime(paymentRequestProto.getDate()));
+          MBHDPaymentRequestData.setDate(new DateTime(paymentRequestProto.getDate()));
         }
         if (paymentRequestProto.hasAmountBTC()) {
-          paymentRequestData.setAmountCoin(Coin.valueOf(paymentRequestProto.getAmountBTC()));
+          MBHDPaymentRequestData.setAmountCoin(Coin.valueOf(paymentRequestProto.getAmountBTC()));
         }
 
         if (paymentRequestProto.hasAmountFiat()) {
 
           FiatPayment fiatPayment = new FiatPayment();
 
-          paymentRequestData.setAmountFiat(fiatPayment);
+          MBHDPaymentRequestData.setAmountFiat(fiatPayment);
           MBHDPaymentsProtos.FiatPayment fiatPaymentProto = paymentRequestProto.getAmountFiat();
 
           if (fiatPaymentProto.hasCurrency()) {
@@ -206,7 +206,7 @@ public class PaymentsProtobufSerializer {
           }
         }
 
-        paymentRequestDatas.add(paymentRequestData);
+        MBHDPaymentRequestDatas.add(MBHDPaymentRequestData);
       }
     }
 
@@ -292,7 +292,7 @@ public class PaymentsProtobufSerializer {
       }
     }
 
-    payments.setPaymentRequestDatas(paymentRequestDatas);
+    payments.setMBHDPaymentRequestDatas(MBHDPaymentRequestDatas);
     payments.setTransactionInfos(transactionInfos);
   }
 
@@ -304,21 +304,21 @@ public class PaymentsProtobufSerializer {
     return MBHDPaymentsProtos.Payments.parseFrom(input);
   }
 
-  private static MBHDPaymentsProtos.PaymentRequest makePaymentRequestProto(PaymentRequestData paymentRequestData) {
-    MBHDPaymentsProtos.PaymentRequest.Builder paymentRequestBuilder = MBHDPaymentsProtos.PaymentRequest.newBuilder();
+  private static MBHDPaymentsProtos.MBHDPaymentRequest makePaymentRequestProto(MBHDPaymentRequestData MBHDPaymentRequestData) {
+    MBHDPaymentsProtos.MBHDPaymentRequest.Builder paymentRequestBuilder = MBHDPaymentsProtos.MBHDPaymentRequest.newBuilder();
 
-    if (paymentRequestData != null) {
+    if (MBHDPaymentRequestData != null) {
 
-      paymentRequestBuilder.setAddress(paymentRequestData.getAddress() == null ? "" : paymentRequestData.getAddress().toString());
-      paymentRequestBuilder.setNote(paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote());
-      paymentRequestBuilder.setAmountBTC(paymentRequestData.getAmountCoin() == null ? 0 : paymentRequestData.getAmountCoin().longValue());
+      paymentRequestBuilder.setAddress(MBHDPaymentRequestData.getAddress() == null ? "" : MBHDPaymentRequestData.getAddress().toString());
+      paymentRequestBuilder.setNote(MBHDPaymentRequestData.getNote() == null ? "" : MBHDPaymentRequestData.getNote());
+      paymentRequestBuilder.setAmountBTC(MBHDPaymentRequestData.getAmountCoin() == null ? 0 : MBHDPaymentRequestData.getAmountCoin().longValue());
 
-      if (paymentRequestData.getDate() != null) {
-        paymentRequestBuilder.setDate(paymentRequestData.getDate().getMillis());
+      if (MBHDPaymentRequestData.getDate() != null) {
+        paymentRequestBuilder.setDate(MBHDPaymentRequestData.getDate().getMillis());
       }
-      paymentRequestBuilder.setLabel(paymentRequestData.getLabel() == null ? "" : paymentRequestData.getLabel());
+      paymentRequestBuilder.setLabel(MBHDPaymentRequestData.getLabel() == null ? "" : MBHDPaymentRequestData.getLabel());
 
-      FiatPayment fiatPayment = paymentRequestData.getAmountFiat();
+      FiatPayment fiatPayment = MBHDPaymentRequestData.getAmountFiat();
       if (fiatPayment != null) {
 
         MBHDPaymentsProtos.FiatPayment.Builder fiatPaymentBuilder = MBHDPaymentsProtos.FiatPayment.newBuilder();

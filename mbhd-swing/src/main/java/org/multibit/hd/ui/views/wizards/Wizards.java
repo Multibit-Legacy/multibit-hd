@@ -467,9 +467,9 @@ public class Wizards {
     Preconditions.checkNotNull(paymentData, "'paymentData' must be present");
 
     PaymentsWizardModel paymentsWizardModel;
-    if (paymentData instanceof PaymentRequestData) {
+    if (paymentData instanceof MBHDPaymentRequestData) {
       paymentsWizardModel = new PaymentsWizardModel(PaymentsState.PAYMENT_REQUEST_DETAILS, paymentData);
-      paymentsWizardModel.setPaymentRequestData((PaymentRequestData) paymentData);
+      paymentsWizardModel.setMBHDPaymentRequestData((MBHDPaymentRequestData) paymentData);
       paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(false);
     } else {
       paymentsWizardModel = new PaymentsWizardModel(PaymentsState.TRANSACTION_OVERVIEW, paymentData);

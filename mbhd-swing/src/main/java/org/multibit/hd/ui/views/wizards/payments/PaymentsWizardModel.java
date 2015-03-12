@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.common.collect.Lists;
 import org.multibit.hd.core.dto.PaymentData;
-import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +32,12 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
    * The matching payment requests for a transactionData
    * (may be empty
    */
-  List<PaymentRequestData> matchingPaymentRequestList = Lists.newArrayList();
+  List<MBHDPaymentRequestData> matchingPaymentRequestList = Lists.newArrayList();
 
   /**
    * The payment request to show in the payment request details screen
    */
-  PaymentRequestData paymentRequestData;
+  MBHDPaymentRequestData MBHDPaymentRequestData;
 
   /**
    * Whether to show the prev button on the payment request detail screen
@@ -107,20 +107,20 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
     return paymentData;
   }
 
-  public List<PaymentRequestData> getMatchingPaymentRequestList() {
+  public List<MBHDPaymentRequestData> getMatchingPaymentRequestList() {
     return matchingPaymentRequestList;
   }
 
-  public void setMatchingPaymentRequestList(List<PaymentRequestData> matchingPaymentRequestList) {
+  public void setMatchingPaymentRequestList(List<MBHDPaymentRequestData> matchingPaymentRequestList) {
     this.matchingPaymentRequestList = matchingPaymentRequestList;
   }
 
-  public PaymentRequestData getPaymentRequestData() {
-    return paymentRequestData;
+  public MBHDPaymentRequestData getMBHDPaymentRequestData() {
+    return MBHDPaymentRequestData;
   }
 
-  public void setPaymentRequestData(PaymentRequestData paymentRequestData) {
-    this.paymentRequestData = paymentRequestData;
+  public void setMBHDPaymentRequestData(MBHDPaymentRequestData MBHDPaymentRequestData) {
+    this.MBHDPaymentRequestData = MBHDPaymentRequestData;
   }
 
   public boolean isShowPrevOnPaymentRequestDetailScreen() {

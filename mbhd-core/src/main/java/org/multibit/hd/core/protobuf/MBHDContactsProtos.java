@@ -51,6 +51,7 @@ public final class MBHDContactsProtos {
    * A single tag
    * </pre>
    */
+  @SuppressFBWarnings({"SE_BAD_FIELD"})
   public static final class Tag extends
       com.google.protobuf.GeneratedMessage
       implements TagOrBuilder {
@@ -121,6 +122,7 @@ public final class MBHDContactsProtos {
       return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Tag_descriptor;
     }
 
+    @SuppressFBWarnings({"MS_SHOULD_BE_FINAL"})
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Tag_fieldAccessorTable
@@ -340,11 +342,13 @@ public final class MBHDContactsProtos {
         maybeForceBuilderInitialization();
       }
 
+      @SuppressFBWarnings({"UCF_USELESS_CONTROL_FLOW"})
       private Builder(
           com.google.protobuf.GeneratedMessage.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
+      @SuppressFBWarnings({"UCF_USELESS_CONTROL_FLOW"})
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
         }
@@ -795,6 +799,7 @@ public final class MBHDContactsProtos {
    * A single contact 
    * </pre>
    */
+  @SuppressFBWarnings({"SE_BAD_FIELD"})
   public static final class Contact extends
       com.google.protobuf.GeneratedMessage
       implements ContactOrBuilder {
@@ -906,6 +911,7 @@ public final class MBHDContactsProtos {
       return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Contact_descriptor;
     }
 
+    @SuppressFBWarnings({"MS_SHOULD_BE_FINAL"})
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Contact_fieldAccessorTable
@@ -2861,6 +2867,7 @@ public final class MBHDContactsProtos {
    * A collection of contacts
    * </pre>
    */
+  @SuppressFBWarnings({"SE_BAD_FIELD"})
   public static final class Contacts extends
       com.google.protobuf.GeneratedMessage
       implements ContactsOrBuilder {
@@ -2937,6 +2944,7 @@ public final class MBHDContactsProtos {
       return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Contacts_descriptor;
     }
 
+    @SuppressFBWarnings({"MS_SHOULD_BE_FINAL"})
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.multibit.hd.core.protobuf.MBHDContactsProtos.internal_static_Contacts_fieldAccessorTable

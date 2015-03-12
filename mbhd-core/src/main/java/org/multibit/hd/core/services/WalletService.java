@@ -82,14 +82,19 @@ public class WalletService extends AbstractService {
   private PaymentsProtobufSerializer protobufSerializer;
 
   /**
-   * The payment requests in a map, indexed by the bitcoin address
+   * The MBHD payment requests in a map, indexed by the bitcoin address
    */
-  private final Map<Address, PaymentRequestData> paymentRequestMap = Collections.synchronizedMap(new HashMap<Address, PaymentRequestData>());
+  private final Map<Address, MBHDPaymentRequestData> MBHDPaymentRequestMap = Collections.synchronizedMap(new HashMap<Address, MBHDPaymentRequestData>());
 
   /**
    * The additional transaction information, in the form of a map, index by the transaction hash
    */
   private final ConcurrentHashMap<String, TransactionInfo> transactionInfoMap = new ConcurrentHashMap<>();
+
+  /**
+   * The payment protocol (BIP70)payment requests
+   */
+  private final List<PaymentRequestData> paymentRequestDataList = Lists.newArrayList();
 
   /**
    * The wallet id that this WalletService is using
@@ -99,7 +104,7 @@ public class WalletService extends AbstractService {
   /**
    * The undo stack for undeleting payment requests
    */
-  private final Stack<PaymentRequestData> undoDeletePaymentRequestStack = new Stack<>();
+  private final Stack<MBHDPaymentRequestData> undoDeletePaymentRequestStack = new Stack<>();
 
   /**
    * The last seen payments data
@@ -211,10 +216,10 @@ public class WalletService extends AbstractService {
     }
 
     // Determine which paymentRequests have not been fully funded (these will appear as independent entities in the UI)
-    Set<PaymentRequestData> paymentRequestsNotFullyFunded = Sets.newHashSet();
-    for (PaymentRequestData basePaymentRequestData : paymentRequestMap.values()) {
-      if (basePaymentRequestData.getPaidAmountCoin().compareTo(basePaymentRequestData.getAmountCoin()) < 0) {
-        paymentRequestsNotFullyFunded.add(basePaymentRequestData);
+    Set<MBHDPaymentRequestData> paymentRequestsNotFullyFunded = Sets.newHashSet();
+    for (MBHDPaymentRequestData baseMBHDPaymentRequestData : MBHDPaymentRequestMap.values()) {
+      if (baseMBHDPaymentRequestData.getPaidAmountCoin().compareTo(baseMBHDPaymentRequestData.getAmountCoin()) < 0) {
+        paymentRequestsNotFullyFunded.add(baseMBHDPaymentRequestData);
       }
     }
     // Union the transactionData set and paymentData set
@@ -287,13 +292,13 @@ public class WalletService extends AbstractService {
       boolean isOutputAddressMatched = false;
       boolean isRawTransactionMatched = false;
 
-      if (paymentData instanceof PaymentRequestData) {
+      if (paymentData instanceof MBHDPaymentRequestData) {
 
-        PaymentRequestData paymentRequestData = (PaymentRequestData) paymentData;
-        isQrCodeLabelMatched = paymentRequestData.getLabel().toLowerCase().contains(lowerQuery);
+        MBHDPaymentRequestData MBHDPaymentRequestData = (MBHDPaymentRequestData) paymentData;
+        isQrCodeLabelMatched = MBHDPaymentRequestData.getLabel().toLowerCase().contains(lowerQuery);
 
         // Exact match only
-        isPaymentAddressMatched = paymentRequestData.getAddress().toString().equals(query);
+        isPaymentAddressMatched = MBHDPaymentRequestData.getAddress().toString().equals(query);
 
       } else if (paymentData instanceof TransactionData) {
 
@@ -511,25 +516,25 @@ public class WalletService extends AbstractService {
             addresses = addresses + " " + receivingAddress;
 
             // Check if this output funds any payment requests;
-            PaymentRequestData paymentRequestData = paymentRequestMap.get(receivingAddress);
-            if (paymentRequestData != null) {
+            MBHDPaymentRequestData MBHDPaymentRequestData = MBHDPaymentRequestMap.get(receivingAddress);
+            if (MBHDPaymentRequestData != null) {
               // Yes - this output funds a payment address
-              if (!paymentRequestData.getPayingTransactionHashes().contains(transactionHashAsString)) {
+              if (!MBHDPaymentRequestData.getPayingTransactionHashes().contains(transactionHashAsString)) {
                 // We have not yet added this tx to the total paid amount
-                paymentRequestData.getPayingTransactionHashes().add(transactionHashAsString);
-                paymentRequestData.setPaidAmountCoin(paymentRequestData.getPaidAmountCoin().add(amountBTC));
+                MBHDPaymentRequestData.getPayingTransactionHashes().add(transactionHashAsString);
+                MBHDPaymentRequestData.setPaidAmountCoin(MBHDPaymentRequestData.getPaidAmountCoin().add(amountBTC));
               }
 
-              if (paymentRequestData.getLabel() != null && paymentRequestData.getLabel().length() > 0) {
+              if (MBHDPaymentRequestData.getLabel() != null && MBHDPaymentRequestData.getLabel().length() > 0) {
                 descriptiveTextIsAvailable = true;
                 description
-                  .append(paymentRequestData.getLabel())
+                  .append(MBHDPaymentRequestData.getLabel())
                   .append(" ");
               }
-              if (paymentRequestData.getNote() != null && paymentRequestData.getNote().length() > 0) {
+              if (MBHDPaymentRequestData.getNote() != null && MBHDPaymentRequestData.getNote().length() > 0) {
                 descriptiveTextIsAvailable = true;
                 description
-                  .append(paymentRequestData.getNote())
+                  .append(MBHDPaymentRequestData.getNote())
                   .append(" ");
               }
             }
@@ -692,11 +697,11 @@ public class WalletService extends AbstractService {
       Payments payments = protobufSerializer.readPayments(decryptedInputStream);
 
       // For quick access payment requests and transaction infos are stored in maps
-      Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDatas();
-      if (paymentRequestDatas != null) {
-        paymentRequestMap.clear();
-        for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
-          paymentRequestMap.put(paymentRequestData.getAddress(), paymentRequestData);
+      Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas = payments.getMBHDPaymentRequestDatas();
+      if (MBHDPaymentRequestDatas != null) {
+        MBHDPaymentRequestMap.clear();
+        for (MBHDPaymentRequestData MBHDPaymentRequestData : MBHDPaymentRequestDatas) {
+          MBHDPaymentRequestMap.put(MBHDPaymentRequestData.getAddress(), MBHDPaymentRequestData);
         }
       }
 
@@ -730,7 +735,7 @@ public class WalletService extends AbstractService {
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
       Payments payments = new Payments();
       payments.setTransactionInfos(transactionInfoMap.values());
-      payments.setPaymentRequestDatas(paymentRequestMap.values());
+      payments.setMBHDPaymentRequestDatas(MBHDPaymentRequestMap.values());
       protobufSerializer.writePayments(payments, byteArrayOutputStream);
       EncryptedFileReaderWriter.encryptAndWrite(
         byteArrayOutputStream.toByteArray(),
@@ -750,10 +755,16 @@ public class WalletService extends AbstractService {
     return walletId;
   }
 
-  public void addPaymentRequest(PaymentRequestData paymentRequestData) {
+  public void addMBHDPaymentRequestData(MBHDPaymentRequestData MBHDPaymentRequestData) {
+    MBHDPaymentRequestMap.put(MBHDPaymentRequestData.getAddress(), MBHDPaymentRequestData);
+  }
 
-    paymentRequestMap.put(paymentRequestData.getAddress(), paymentRequestData);
-
+  /**
+   * Add a PaymentRequestData to the memory store
+   * @param paymentRequestData Payment request data to add
+   */
+  public void addPaymentRequestData(PaymentRequestData paymentRequestData) {
+     paymentRequestDataList.add(paymentRequestData);
   }
 
   public void addTransactionInfo(TransactionInfo transactionInfo) {
@@ -765,8 +776,12 @@ public class WalletService extends AbstractService {
   }
 
 
-  List<PaymentRequestData> getPaymentRequests() {
-    return Lists.newArrayList(paymentRequestMap.values());
+  public List<MBHDPaymentRequestData> getMBHDPaymentRequestDatas() {
+    return Lists.newArrayList(MBHDPaymentRequestMap.values());
+  }
+
+  public List<PaymentRequestData> getPaymentRequestDatas() {
+    return paymentRequestDataList;
   }
 
   /**
@@ -806,30 +821,30 @@ public class WalletService extends AbstractService {
    *
    * @return The list of payment requests that the transaction data funds
    */
-  public List<PaymentRequestData> findPaymentRequestsThisTransactionFunds(TransactionData transactionData) {
+  public List<MBHDPaymentRequestData> findPaymentRequestsThisTransactionFunds(TransactionData transactionData) {
 
-    List<PaymentRequestData> paymentRequestDataList = Lists.newArrayList();
+    List<MBHDPaymentRequestData> MBHDPaymentRequestDataList = Lists.newArrayList();
 
     if (transactionData != null && transactionData.getOutputAddresses() != null) {
       for (Address address : transactionData.getOutputAddresses()) {
-        PaymentRequestData paymentRequestData = paymentRequestMap.get(address);
-        if (paymentRequestData != null) {
+        MBHDPaymentRequestData MBHDPaymentRequestData = MBHDPaymentRequestMap.get(address);
+        if (MBHDPaymentRequestData != null) {
           // This transaction funds this payment address
-          paymentRequestDataList.add(paymentRequestData);
+          MBHDPaymentRequestDataList.add(MBHDPaymentRequestData);
         }
       }
     }
 
-    return paymentRequestDataList;
+    return MBHDPaymentRequestDataList;
   }
 
   /**
    * Delete a payment request
    */
-  public void deletePaymentRequest(PaymentRequestData paymentRequestData) {
+  public void deletePaymentRequest(MBHDPaymentRequestData MBHDPaymentRequestData) {
 
-    undoDeletePaymentRequestStack.push(paymentRequestData);
-    paymentRequestMap.remove(paymentRequestData.getAddress());
+    undoDeletePaymentRequestStack.push(MBHDPaymentRequestData);
+    MBHDPaymentRequestMap.remove(MBHDPaymentRequestData.getAddress());
     writePayments();
   }
 
@@ -839,8 +854,8 @@ public class WalletService extends AbstractService {
   public void undoDeletePaymentRequest() {
 
     if (!undoDeletePaymentRequestStack.isEmpty()) {
-      PaymentRequestData deletedPaymentRequestData = undoDeletePaymentRequestStack.pop();
-      addPaymentRequest(deletedPaymentRequestData);
+      MBHDPaymentRequestData deletedMBHDPaymentRequestData = undoDeletePaymentRequestStack.pop();
+      addMBHDPaymentRequestData(deletedMBHDPaymentRequestData);
       writePayments();
     }
   }
@@ -857,8 +872,8 @@ public class WalletService extends AbstractService {
     File exportDirectory,
     String transactionFileStem,
     String paymentRequestFileStem,
-    CSVEntryConverter<PaymentRequestData> paymentRequestHeaderConverter,
-    CSVEntryConverter<PaymentRequestData> paymentRequestConverter,
+    CSVEntryConverter<MBHDPaymentRequestData> paymentRequestHeaderConverter,
+    CSVEntryConverter<MBHDPaymentRequestData> paymentRequestConverter,
     CSVEntryConverter<TransactionData> transactionHeaderConverter,
     CSVEntryConverter<TransactionData> transactionConverter
   ) {
@@ -866,7 +881,7 @@ public class WalletService extends AbstractService {
     List<PaymentData> paymentDataList = getPaymentDataList();
     ExportManager.export(
       paymentDataList,
-      getPaymentRequests(),
+      getMBHDPaymentRequestDatas(),
       exportDirectory,
       transactionFileStem,
       paymentRequestFileStem,

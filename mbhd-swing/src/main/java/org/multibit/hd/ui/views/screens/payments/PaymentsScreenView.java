@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.screens.payments;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.PaymentData;
-import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
@@ -306,9 +306,9 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
         PaymentData paymentData = ((PaymentTableModel) paymentsTable.getModel()).getPaymentData().get(selectedModelRow);
 
-        if (paymentData instanceof PaymentRequestData) {
+        if (paymentData instanceof MBHDPaymentRequestData) {
           // We can delete this
-          CoreServices.getCurrentWalletService().get().deletePaymentRequest((PaymentRequestData) paymentData);
+          CoreServices.getCurrentWalletService().get().deletePaymentRequest((MBHDPaymentRequestData) paymentData);
           fireWalletDetailsChanged();
         }
       }
