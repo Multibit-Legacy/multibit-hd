@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -132,7 +131,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     walletService.initialise(temporaryDirectory, new WalletId(seed));
 
     // Get the current wallets payments - there should be some
-    List<PaymentData> transactions = walletService.getPaymentDataList();
+    Set<PaymentData> transactions = walletService.getPaymentDataSet();
 
     log.debug("The payments in the wallet are:\n{}", transactions);
     assertThat(transactions.size() > 0).isTrue();

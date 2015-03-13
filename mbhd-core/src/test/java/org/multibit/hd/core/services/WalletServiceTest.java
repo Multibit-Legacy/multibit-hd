@@ -183,10 +183,10 @@ public class WalletServiceTest {
 
     walletService.addPaymentRequestData(paymentRequestData);
 
-    // TODO Write the payment requests to the backing store
+    // Write the payment requests to the backing store
     //walletService.writePayments();
 
-    // TODO Read the payment requests
+    // Read the payment requests
     //walletService.readPayments();
 
     // Check the new payment request is present

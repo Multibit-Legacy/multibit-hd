@@ -471,10 +471,15 @@ public class Wizards {
       paymentsWizardModel = new PaymentsWizardModel(PaymentsState.PAYMENT_REQUEST_DETAILS, paymentData);
       paymentsWizardModel.setMBHDPaymentRequestData((MBHDPaymentRequestData) paymentData);
       paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(false);
+    } else if (paymentData instanceof PaymentRequestData) {
+      paymentsWizardModel = new PaymentsWizardModel(PaymentsState.BIP70_PAYMENT_REQUEST_DETAILS, paymentData);
+      paymentsWizardModel.setPaymentRequestData((PaymentRequestData) paymentData);
+      paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(false);
     } else {
       paymentsWizardModel = new PaymentsWizardModel(PaymentsState.TRANSACTION_OVERVIEW, paymentData);
       paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(true);
     }
+
 
     return new PaymentsWizard(paymentsWizardModel, false);
   }

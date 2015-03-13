@@ -70,7 +70,7 @@ public class WalletDetailModel implements Model<WalletDetail> {
       ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
-      walletDetail.setNumberOfPayments(walletService.getPaymentDataList().size());
+      walletDetail.setNumberOfPayments(walletService.getPaymentDataSet().size());
     }
   }
 

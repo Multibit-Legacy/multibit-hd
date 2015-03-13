@@ -28,6 +28,7 @@ import org.multibit.hd.hardware.core.utils.TransactionUtils;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
@@ -72,6 +73,11 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   private final Optional<PaymentSessionSummary> paymentSessionSummary;
 
   /**
+   * The UUID of the paymentRequestData for this send (used by by WalletService to store the PaymentRequestData)
+   */
+  private Optional<PaymentRequestData> paymentRequestDataOptional = Optional.absent();
+
+  /**
    * The SendRequestSummary that initially contains all the tx details, and then is signed prior to sending
    */
   private SendRequestSummary sendRequestSummary;
@@ -102,13 +108,15 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
         WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
         Protos.PaymentRequest paymentRequest = paymentSessionSummary.get().getPaymentSession().get().getPaymentRequest();
-        // Add the payment request to the in-memory store without a transaction hash (not sent yet)
+        // Add the payment request to the in-memory store without a transaction hash (the send has not been sent yet and the user can cancel)
         PaymentRequestData paymentRequestData = new PaymentRequestData(paymentRequest, Optional.<Sha256Hash>absent());
-        // TODO remember the UUID so that the payment request data can have it's transaction hash set on send
-        walletService.addPaymentRequestData(paymentRequestData);
 
-        // TODO perhaps only write after send
-        walletService.writePayments();
+        walletService.addPaymentRequestData(paymentRequestData);
+        paymentRequestDataOptional = Optional.of(paymentRequestData);
+
+        // The wallet has changed so UI will need updating
+        ViewEvents.fireWalletDetailChangedEvent(new WalletDetail());
+
 
         // The user has confirmed the payment request so the tx can be prepared
         // If the transaction was prepared OK this returns true, otherwise false
@@ -407,6 +415,16 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     log.debug("Just about to send bitcoin: {}", sendRequestSummary);
     bitcoinNetworkService.send(sendRequestSummary);
 
+    // Link the transaction to the payment request by UUID
+    if (paymentRequestDataOptional.isPresent() && sendRequestSummary.getSendRequest().isPresent()) {
+      WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+
+      // Set the Transaction hash and re-add to WalletService (replacing any pre-existing paymentRequestData with the same UUID)
+      PaymentRequestData paymentRequestData = paymentRequestDataOptional.get();
+      paymentRequestData.setTransactionHashOptional(Optional.of(sendRequestSummary.getSendRequest().get().tx.getHash()));
+      walletService.addPaymentRequestData(paymentRequestData);
+    }
+
     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
   }
 
@@ -698,7 +716,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
           bitcoinNetworkService.setLastWalletOptional(Optional.<Wallet>absent());
         }
       });
-
   }
 
   @Override

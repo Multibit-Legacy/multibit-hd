@@ -2,8 +2,8 @@ package org.multibit.hd.ui.views.screens.payments;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.MBHDPaymentRequestData;
+import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
@@ -41,6 +41,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -97,9 +98,9 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     JButton exportButton = Buttons.newExportButton(getExportAction());
 
     WalletService walletService = CoreServices.getCurrentWalletService().get();
-    List<PaymentData> paymentList = walletService.getPaymentDataList();
+    Set<PaymentData> paymentSet = walletService.getPaymentDataSet();
 
-    paymentsTable = Tables.newPaymentsTable(paymentList, detailsButton);
+    paymentsTable = Tables.newPaymentsTable(paymentSet, detailsButton);
 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(paymentsTable);
@@ -202,7 +203,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
             // Refresh the wallet payment list if asked
             if (refreshData) {
-              walletService.getPaymentDataList();
+              walletService.getPaymentDataSet();
             }
             // Check the search MaV model for a query and apply it
             List<PaymentData> filteredPaymentDataList = walletService.filterPaymentsByContent(enterSearchMaV.getModel().getValue());
@@ -348,7 +349,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
-      walletDetail.setNumberOfPayments(CoreServices.getCurrentWalletService().get().getPaymentDataList().size());
+      walletDetail.setNumberOfPayments(CoreServices.getCurrentWalletService().get().getPaymentDataSet().size());
 
       SwingUtilities.invokeLater(new Runnable() {
         @Override

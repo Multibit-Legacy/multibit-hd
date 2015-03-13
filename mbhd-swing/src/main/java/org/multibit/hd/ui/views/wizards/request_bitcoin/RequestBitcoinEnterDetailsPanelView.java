@@ -244,7 +244,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     walletDetail.setApplicationDirectory(applicationDataDirectory.getAbsolutePath());
     walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
     walletDetail.setNumberOfContacts(contactService.allContacts().size());
-    walletDetail.setNumberOfPayments(walletService.getPaymentDataList().size());
+    walletDetail.setNumberOfPayments(walletService.getPaymentDataSet().size());
 
     log.debug("A new receiving address has been issued. The number of external keys is now {}", walletSummary.getWallet().getActiveKeychain().getIssuedExternalKeys());
 

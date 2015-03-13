@@ -165,13 +165,11 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
-
     if (getWizardModel().isShowPrevOnPaymentRequestDetailScreen()) {
       PanelDecorator.addCancelPreviousFinish(this, wizard);
     } else {
       PanelDecorator.addCancelFinish(this, wizard);
     }
-
   }
 
   @Override

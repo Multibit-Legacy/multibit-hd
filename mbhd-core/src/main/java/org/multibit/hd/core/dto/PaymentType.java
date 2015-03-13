@@ -10,10 +10,14 @@ package org.multibit.hd.core.dto;
  */
 public enum PaymentType {
   /**
-   * The payment has been requested, using the 'Request bitcoin' screen but no transaction to that address
-   * has been received.
+   * A BIP70 payment request has been received but it is not paid yet
    */
-  REQUESTED(CoreMessageKey.PAYMENT_REQUESTED),
+   BIP70_REQUESTED(CoreMessageKey.PAYMENT_REQUESTED),
+  /**
+    * The payment has been requested, using the 'Request bitcoin' screen but no transaction to that address
+    * has been received.
+    */
+   REQUESTED(CoreMessageKey.PAYMENT_REQUESTED),
 
   /**
    * The payment has been partly paid - some bitcoin has been received but less than the amount requested

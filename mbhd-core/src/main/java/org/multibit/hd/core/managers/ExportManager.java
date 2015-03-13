@@ -8,8 +8,8 @@ import com.googlecode.jcsv.writer.CSVWriter;
 import com.googlecode.jcsv.writer.internal.CSVWriterBuilder;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.CoreMessageKey;
-import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.MBHDPaymentRequestData;
+import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ExportPerformedEvent;
@@ -18,10 +18,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -46,7 +43,7 @@ public class ExportManager {
 
   }
 
-  public static void export(final List<PaymentData> paymentDataList, final List<MBHDPaymentRequestData> MBHDPaymentRequestDataList, final File exportDirectory, final String transactionFileStem, final String paymentRequestFileStem,
+  public static void export(final Set<PaymentData> paymentDataSet, final List<MBHDPaymentRequestData> MBHDPaymentRequestDataList, final File exportDirectory, final String transactionFileStem, final String paymentRequestFileStem,
                             final CSVEntryConverter<MBHDPaymentRequestData> paymentRequestHeaderConverter, final CSVEntryConverter<MBHDPaymentRequestData> paymentRequestConverter,
                             final CSVEntryConverter<TransactionData> transactionHeaderConverter, final CSVEntryConverter<TransactionData> transactionConverter) {
     ExecutorService executorService = SafeExecutors.newSingleThreadExecutor("export");
@@ -54,7 +51,7 @@ public class ExportManager {
       @Override
       public void run() {
         ExportManager.exportInternal(
-          paymentDataList,
+          paymentDataSet,
                 MBHDPaymentRequestDataList,
           exportDirectory,
           transactionFileStem,
@@ -67,7 +64,7 @@ public class ExportManager {
 
   }
 
-  public static void exportInternal(final List<PaymentData> paymentDataList, final List<MBHDPaymentRequestData> MBHDPaymentRequestDataList, final File exportDirectory, final String transactionFileStem, final String paymentRequestFileStem,
+  public static void exportInternal(final Set<PaymentData> paymentDataSet, final List<MBHDPaymentRequestData> MBHDPaymentRequestDataList, final File exportDirectory, final String transactionFileStem, final String paymentRequestFileStem,
                                     final CSVEntryConverter<MBHDPaymentRequestData> paymentRequestHeaderConverter, final CSVEntryConverter<MBHDPaymentRequestData> paymentRequestConverter,
                                     final CSVEntryConverter<TransactionData> transactionHeaderConverter, final CSVEntryConverter<TransactionData> transactionConverter) {
     // Perform the export.
@@ -122,6 +119,7 @@ public class ExportManager {
       }
     };
 
+    List<PaymentData> paymentDataList = Lists.newArrayList(paymentDataSet);
     Collections.sort(paymentDataList, Collections.reverseOrder(comparator));
     Collections.sort(MBHDPaymentRequestDataList, Collections.reverseOrder(comparator));
 
