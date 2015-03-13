@@ -69,12 +69,11 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
    * @param wizard The wizard managing the states
    */
   public PaymentRequestDetailPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
-    super(wizard, panelName, MessageKey.PAYMENT_REQUEST, AwesomeIcon.FILE_TEXT_O);
+    super(wizard, panelName, MessageKey.DISPLAY_PAYMENT_REQUEST_TITLE, AwesomeIcon.FILE_TEXT_O);
   }
 
   @Override
   public void newPanelModel() {
-
     // Configure the panel model
     PaymentRequestDetailPanelModel panelModel = new PaymentRequestDetailPanelModel(
             getPanelName()
@@ -84,7 +83,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
-
     contentPanel.setLayout(new MigLayout(
             Panels.migXYLayout(),
             "[]20[][]", // Column constraints
@@ -159,7 +157,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
       // Register components
       registerComponents(displayBitcoinAddressMaV, displayQRCodePopoverMaV);
-
     }
   }
 
@@ -174,7 +171,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   @Override
   public void afterShow() {
-
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -182,7 +178,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
         getFinishButton().setEnabled(true);
       }
     });
-
   }
 
   @Override
@@ -194,7 +189,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
    * @return True if the payment request data was populated
    */
   private boolean readPaymentRequestData() {
-
     // Work out the payment request to show
     MBHDPaymentRequestData MBHDPaymentRequestData = getWizardModel().getMBHDPaymentRequestData();
 
@@ -251,7 +245,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       if (Strings.isNullOrEmpty(MBHDPaymentRequestData.getAmountFiat().getRate().or("")) || Strings.isNullOrEmpty(MBHDPaymentRequestData.getAmountFiat().getExchangeName().or(""))) {
         exchangeRateText = Languages.safeText(MessageKey.NOT_AVAILABLE);
       } else {
-        // Convert the exchange rate (which is always stored as fiat currency per bitcoin)to match the unit of bitcoin being used
+        // Convert the exchange rate (which is always stored as fiat currency per bitcoin) to match the unit of bitcoin being used
         String convertedExchangeRateText = Formats.formatExchangeRate(MBHDPaymentRequestData.getAmountFiat().getRate(), languageConfiguration, bitcoinConfiguration);
         exchangeRateText = convertedExchangeRateText + " (" + MBHDPaymentRequestData.getAmountFiat().getExchangeName().or("") + ")";
       }
@@ -260,7 +254,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
     // Must be OK to be here
     return true;
-
   }
 
   /**
@@ -297,5 +290,4 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
     };
   }
-
 }

@@ -263,7 +263,7 @@ public class WalletService extends AbstractService {
 
         } else if (paymentType == PaymentType.RECEIVING) {
 
-          if (paymentData.getType() == PaymentType.REQUESTED
+          if (paymentData.getType() == PaymentType.YOU_REQUESTED
                   || paymentData.getType() == PaymentType.RECEIVING
                   || paymentData.getType() == PaymentType.PART_PAID) {
 

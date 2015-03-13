@@ -54,7 +54,8 @@ public enum CoreMessageKey {
   WALLET_IS_READY_TO_USE("core_wallet_is_ready_to_use"),
 
   // Transaction/Payment adaption
-  PAYMENT_REQUESTED("core_payment_requested"),
+  PAYMENT_REQUESTED_BY_THEM("core_payment_requested_by_them"),
+  PAYMENT_REQUESTED_BY_YOU("core_payment_requested_by_you"),
   PAYMENT_RECEIVED("core_payment_received"),
   PAYMENT_RECEIVING("core_payment_receiving"),
   PAYMENT_SENT("core_payment_sent"),

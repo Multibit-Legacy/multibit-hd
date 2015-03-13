@@ -69,7 +69,6 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
 
   @Override
   public void newPanelModel() {
-
     // Configure the panel model
     final BIP70PaymentRequestDetailPanelModel panelModel = new BIP70PaymentRequestDetailPanelModel(getPanelName());
     setPanelModel(panelModel);
@@ -77,7 +76,6 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
-
     contentPanel.setLayout(
             new MigLayout(
                     Panels.migXYLayout(),
@@ -132,7 +130,6 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
 
     // Register components
     registerComponents(paymentRequestAmountMaV);
-
   }
 
   @Override
@@ -146,7 +143,6 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
 
   @Override
   public void afterShow() {
-
     SwingUtilities.invokeLater(
             new Runnable() {
               @Override
@@ -242,8 +238,6 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
 
                     // Ensure the next button is enabled
                     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
-
-
                   } catch (PaymentProtocolException ppe) {
                     log.error("Cannot parse PaymentRequest to PaymentSession", ppe);
                   }

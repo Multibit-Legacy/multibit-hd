@@ -120,13 +120,13 @@ public class PaymentRequestData implements PaymentData {
   @Override
   public PaymentType getType() {
     // TODO refine - can be part paid or paid
-    return PaymentType.BIP70_REQUESTED;
+    return PaymentType.THEY_REQUESTED;
   }
 
   @Override
   public PaymentStatus getStatus() {
     // TODO refine - can be part paid or paid
-    return new PaymentStatus(RAGStatus.PINK, CoreMessageKey.PAYMENT_REQUESTED);
+    return new PaymentStatus(RAGStatus.PINK, CoreMessageKey.PAYMENT_REQUESTED_BY_THEM);
   }
 
   @Override

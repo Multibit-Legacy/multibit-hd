@@ -12,12 +12,13 @@ public enum PaymentType {
   /**
    * A BIP70 payment request has been received but it is not paid yet
    */
-   BIP70_REQUESTED(CoreMessageKey.PAYMENT_REQUESTED),
+  THEY_REQUESTED(CoreMessageKey.PAYMENT_REQUESTED_BY_THEM),
+
   /**
     * The payment has been requested, using the 'Request bitcoin' screen but no transaction to that address
     * has been received.
     */
-   REQUESTED(CoreMessageKey.PAYMENT_REQUESTED),
+  YOU_REQUESTED(CoreMessageKey.PAYMENT_REQUESTED_BY_YOU),
 
   /**
    * The payment has been partly paid - some bitcoin has been received but less than the amount requested

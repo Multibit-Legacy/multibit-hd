@@ -148,7 +148,7 @@ public class MBHDPaymentRequestData implements PaymentData {
 
   @Override
   public PaymentType getType() {
-    PaymentType type = PaymentType.REQUESTED;
+    PaymentType type = PaymentType.YOU_REQUESTED;
     // Work out if it is requested, partly paid or fully paid
     if (paidAmountCoin != null && amountCoin != null) {
       if (paidAmountCoin.compareTo(Coin.ZERO) > 0) {
@@ -185,7 +185,7 @@ public class MBHDPaymentRequestData implements PaymentData {
     }
 
     // Must be payment requested to be here
-    paymentStatus = new PaymentStatus(RAGStatus.PINK, CoreMessageKey.PAYMENT_REQUESTED);
+    paymentStatus = new PaymentStatus(RAGStatus.PINK, CoreMessageKey.PAYMENT_REQUESTED_BY_YOU);
 
     return paymentStatus;
   }

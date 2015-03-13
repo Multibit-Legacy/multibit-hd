@@ -22,8 +22,6 @@ import java.util.List;
  */
 public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
 
-  private static final Logger log = LoggerFactory.getLogger(PaymentsWizardModel.class);
-
   /**
    * The payment being shown by the payment wizard
    */
