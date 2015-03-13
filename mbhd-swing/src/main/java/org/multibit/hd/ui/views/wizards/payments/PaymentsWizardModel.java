@@ -76,9 +76,9 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
         state = PaymentsState.PAYMENT_REQUEST_DETAILS;
         break;
       case PAYMENT_REQUEST_DETAILS:
-        case BIP70_PAYMENT_REQUEST_DETAILS:
+      case BIP70_PAYMENT_REQUEST_DETAILS:
+      default:
         // Finished
-
         break;
     }
   }
@@ -102,6 +102,7 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
       case PAYMENT_REQUEST_DETAILS:
         state = PaymentsState.CHOOSE_PAYMENT_REQUEST;
         break;
+      default:
     }
   }
 
