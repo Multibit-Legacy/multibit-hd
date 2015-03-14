@@ -1145,9 +1145,7 @@ public class MainController extends AbstractController implements
       if (alertModel.isPresent()) {
         ControllerEvents.fireAddAlertEvent(alertModel.get());
       }
-
     }
-
   }
 
   /**

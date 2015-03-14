@@ -25,6 +25,11 @@ public class PaymentSessionSummary {
   private final PaymentSessionStatus status;
   private final Optional<PaymentSession> paymentSession;
 
+  /**
+   * Payment data including the tx that was used to pay it and a UUID used for persistence
+   */
+  private Optional<PaymentRequestData> paymentRequestDataOptional = Optional.absent();
+
   private final RAGStatus severity;
 
   private final Optional<CoreMessageKey> messageKey;
@@ -307,6 +312,14 @@ public class PaymentSessionSummary {
     return messageKey;
   }
 
+  public Optional<PaymentRequestData> getPaymentRequestDataOptional() {
+    return paymentRequestDataOptional;
+  }
+
+  public void setPaymentRequestDataOptional(Optional<PaymentRequestData> paymentRequestDataOptional) {
+    this.paymentRequestDataOptional = paymentRequestDataOptional;
+  }
+
   @Override
   public String toString() {
     return "PaymentSessionSummary{" +
@@ -315,6 +328,7 @@ public class PaymentSessionSummary {
       ", paymentSession=" + paymentSession +
       ", severity=" + severity +
       ", messageKey=" + messageKey +
+            ", paymentRequestDataOptional=" + paymentRequestDataOptional +
       '}';
   }
 }

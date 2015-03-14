@@ -1,10 +1,17 @@
 package org.multibit.hd.ui.models;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import org.bitcoin.protocols.payments.Protos;
+import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.uri.BitcoinURI;
+import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.TransactionSeenEvent;
+import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
@@ -14,6 +21,7 @@ import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
@@ -143,6 +151,22 @@ public class Models {
       public void actionPerformed(ActionEvent e) {
 
         ControllerEvents.fireRemoveAlertEvent();
+
+        // The user has indicated that the payment request is of interest so persist it
+        Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent());
+        Preconditions.checkNotNull(paymentSessionSummary);
+
+        WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+        Protos.PaymentRequest paymentRequest = paymentSessionSummary.getPaymentSession().get().getPaymentRequest();
+        // Add the payment request to the in-memory store without a transaction hash (the send has not been sent yet)
+        PaymentRequestData paymentRequestData = new PaymentRequestData(paymentRequest, Optional.<Sha256Hash>absent());
+
+        // Store it (in memory)in the wallet service and in the paymentSessionSummary
+        walletService.addPaymentRequestData(paymentRequestData);
+        paymentSessionSummary.setPaymentRequestDataOptional(Optional.of(paymentRequestData));
+
+        // The wallet has changed so UI will need updating
+        ViewEvents.fireWalletDetailChangedEvent(new WalletDetail());
 
         SendBitcoinParameter parameter = new SendBitcoinParameter(null, paymentSessionSummary);
 

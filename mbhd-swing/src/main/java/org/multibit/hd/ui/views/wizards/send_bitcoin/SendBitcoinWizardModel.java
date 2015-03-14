@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.params.MainNetParams;
@@ -28,7 +27,6 @@ import org.multibit.hd.hardware.core.utils.TransactionUtils;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
@@ -101,22 +99,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
     switch (state) {
       case SEND_DISPLAY_PAYMENT_REQUEST:
-        // The user has indicated that the payment request is of interest so persist it
-        Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent());
-        Preconditions.checkState(paymentSessionSummary.isPresent());
-        Preconditions.checkState(paymentSessionSummary.get().getPaymentSession().isPresent());
-
-        WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
-        Protos.PaymentRequest paymentRequest = paymentSessionSummary.get().getPaymentSession().get().getPaymentRequest();
-        // Add the payment request to the in-memory store without a transaction hash (the send has not been sent yet and the user can cancel)
-        PaymentRequestData paymentRequestData = new PaymentRequestData(paymentRequest, Optional.<Sha256Hash>absent());
-
-        walletService.addPaymentRequestData(paymentRequestData);
-        paymentRequestDataOptional = Optional.of(paymentRequestData);
-
-        // The wallet has changed so UI will need updating
-        ViewEvents.fireWalletDetailChangedEvent(new WalletDetail());
-
 
         // The user has confirmed the payment request so the tx can be prepared
         // If the transaction was prepared OK this returns true, otherwise false
