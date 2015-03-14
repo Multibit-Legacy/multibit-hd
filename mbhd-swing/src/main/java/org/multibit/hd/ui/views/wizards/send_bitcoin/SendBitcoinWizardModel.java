@@ -68,10 +68,9 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   private int txOutputIndex = -1;
 
   private final Optional<BitcoinURI> bitcoinURI;
-  private final Optional<PaymentSessionSummary> paymentSessionSummary;
 
   /**
-   * The UUID of the paymentRequestData for this send (used by by WalletService to store the PaymentRequestData)
+   * The payment request data containing information about the payment request (including BIP 70 info)
    */
   private Optional<PaymentRequestData> paymentRequestDataOptional = Optional.absent();
 
@@ -90,8 +89,19 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     super(state);
 
     this.bitcoinURI = parameter.getBitcoinURI();
-    this.paymentSessionSummary = parameter.getPaymentSessionSummary();
+    this.paymentRequestDataOptional = parameter.getPaymentRequestDataOptional();
 
+    // if constructed using a paymentRequestData (BIP70) then prepare the tx immediately
+    if (paymentRequestDataOptional.isPresent()) {
+      if (prepareTransaction()) {
+        log.debug("BIP70 prepareTransaction was successful, moving to SEND_CONFIRM_AMOUNT");
+        this.state = SEND_CONFIRM_AMOUNT;
+      } else {
+        // Transaction did not prepare correctly
+        log.debug("BIP70 prepareTransaction was NOT successful, moving to SEND_REPORT");
+        this.state = SEND_REPORT;
+      }
+    }
   }
 
   @Override
@@ -260,8 +270,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   /**
    * @return Any payment session summary used to initiate this wizard
    */
-  public Optional<PaymentSessionSummary> getPaymentSessionSummary() {
-    return paymentSessionSummary;
+  public Optional<PaymentRequestData> getPaymentRequestDataOptional() {
+    return paymentRequestDataOptional;
   }
 
   /**
@@ -288,19 +298,15 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    * @return True if the transaction was prepared OK
    */
   private boolean prepareTransaction() {
-
-    Preconditions.checkNotNull(enterAmountPanelModel);
-    Preconditions.checkNotNull(confirmPanelModel);
-
     // Ensure Bitcoin network service is started
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
     // Determine if this came from a payment request
-    if (paymentSessionSummary.isPresent()) {
+    if (paymentRequestDataOptional.isPresent() && paymentRequestDataOptional.get().getPaymentSessionSummaryOptional().isPresent()) {
 
       // We should not be here if these conditions are not true
-      PaymentSession paymentSession = paymentSessionSummary.get().getPaymentSession().get();
+      PaymentSession paymentSession = paymentRequestDataOptional.get().getPaymentSessionSummaryOptional().get().getPaymentSession().get();
 
       // Build the send request summary from the payment request
       Wallet.SendRequest sendRequest = paymentSession.getSendRequest();
@@ -332,6 +338,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       );
 
     } else {
+      Preconditions.checkNotNull(enterAmountPanelModel);
+      Preconditions.checkNotNull(confirmPanelModel);
 
       // Build the send request summary from the user data
       Address changeAddress = bitcoinNetworkService.getNextChangeAddress();
@@ -469,7 +477,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    */
   void handlePaymentSessionSummary() {
 
-    if (!paymentSessionSummary.isPresent()) {
+    if (!paymentRequestDataOptional.isPresent()) {
       return;
     }
 

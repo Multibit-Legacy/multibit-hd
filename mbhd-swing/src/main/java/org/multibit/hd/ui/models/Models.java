@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.Sha256Hash;
+import org.bitcoinj.protocols.payments.PaymentProtocol;
 import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
@@ -164,6 +165,12 @@ public class Models {
         // Store it (in memory)in the wallet service and in the paymentRequestData so that it is available in the Wizard
         walletService.addPaymentRequestData(paymentRequestData);
         paymentRequestData.setPaymentSessionSummaryOptional(Optional.of(paymentSessionSummary));
+
+        // Work out if an identity is available
+        if (paymentSessionSummary.getPaymentSession().isPresent()) {
+          PaymentProtocol.PkiVerificationData identity = paymentSessionSummary.getPaymentSession().get().verifyPki();
+          paymentRequestData.setPkiVerificationDataOptional(Optional.fromNullable(identity));
+        }
 
         // The wallet has changed so UI will need updating
         ViewEvents.fireWalletDetailChangedEvent(new WalletDetail());

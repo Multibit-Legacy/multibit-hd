@@ -3,12 +3,8 @@ package org.multibit.hd.ui.views.wizards.payments;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
-import org.bitcoinj.protocols.payments.PaymentProtocol;
 import org.bitcoinj.protocols.payments.PaymentSession;
-import org.bitcoinj.uri.BitcoinURI;
-import org.bitcoinj.uri.BitcoinURIParseException;
 import org.joda.time.DateTime;
-import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentRequestData;
@@ -130,7 +126,7 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
     contentPanel.add(paymentRequestAmountMaV.getView().newComponentPanel(), "wrap");
 
     contentPanel.add(Labels.newBlankLabel(), "");
-    contentPanel.add(Buttons.newPayThisPaymentRequestButton(createPayThisPaymentRequestAction()), "wrap");
+    contentPanel.add(Buttons.newPayThisPaymentRequestButton(createPayThisPaymentRequestAction(getWizardModel().getPaymentRequestData())), "wrap");
 
     // Register components
     registerComponents(paymentRequestAmountMaV);
@@ -228,14 +224,6 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
                     }
                     paymentRequestAmountMaV.getView().updateView(configuration);
 
-                    PaymentProtocol.PkiVerificationData identity = paymentSession.verifyPki();
-                    if (identity != null && identity.displayName != null) {
-                      displayName.setText(identity.displayName);
-                    } else {
-                      displayName.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
-                    }
-                    //getWizardModel().setPkiVerificationData(identity);
-
                     // Ensure the next button is enabled
                     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
                   }
@@ -252,22 +240,14 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
   /**
    * @return Action to process the 'Pay this payment request' button
    */
-  private Action createPayThisPaymentRequestAction() {
+  private Action createPayThisPaymentRequestAction(final PaymentRequestData paymentRequestData) {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        try {
-          Panels.hideLightBoxIfPresent();
+        Panels.hideLightBoxIfPresent();
 
-          SendBitcoinParameter donateParameter = new SendBitcoinParameter(
-                  new BitcoinURI("bitcoin:" + FeeService.DONATION_ADDRESS + "?amount=" + FeeService.DEFAULT_DONATION_AMOUNT),
-                  null
-          );
-          Panels.showLightBox(Wizards.newSendBitcoinWizard(donateParameter).getWizardScreenHolder());
-        } catch (BitcoinURIParseException pe) {
-          // Should not happen
-          log.error(pe.getMessage());
-        }
+        SendBitcoinParameter sendBitcoinParameter = new SendBitcoinParameter(null, Optional.fromNullable(paymentRequestData));
+        Panels.showLightBox(Wizards.newSendBitcoinWizard(sendBitcoinParameter).getWizardScreenHolder());
       }
     };
   }

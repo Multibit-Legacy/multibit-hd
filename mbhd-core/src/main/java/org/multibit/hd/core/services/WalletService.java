@@ -585,7 +585,7 @@ public class WalletService extends AbstractService {
 
   private FiatPayment calculateFiatPaymentEquivalent(Coin amountBTC) {
     FiatPayment amountFiat = new FiatPayment();
-    
+
      // Work it out from the current settings
      amountFiat.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
 
