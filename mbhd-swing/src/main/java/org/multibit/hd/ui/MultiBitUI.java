@@ -16,7 +16,7 @@ public interface MultiBitUI {
    * The minimum width for the application UI (900 is the minimum for tables)
    * See #94 for screenshot of minimum resolution on Intel Atom at 1024x600
    */
-  int UI_MIN_WIDTH = 920;
+  int UI_MIN_WIDTH = 900;
   /**
    * The minimum height for the application UI (550 is the minimum)
    */

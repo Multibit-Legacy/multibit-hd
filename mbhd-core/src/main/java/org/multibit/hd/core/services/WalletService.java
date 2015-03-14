@@ -9,7 +9,6 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
 import org.bitcoinj.core.*;
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -242,32 +241,32 @@ public class WalletService extends AbstractService {
    * Subset the supplied payments and sort by date, descending
    * (Sorting by amount coin is also done to make the order unique, within same date. This is to stop the order 'flicking' on sync)
    *
-   * @param paymentType if PaymentType.SENDING return all sending payments for today
-   *                    if PaymentType.RECEIVING return all requesting and receiving payments for today
+   * @param subsettingPaymentType if PaymentType.SENDING return all sending payments for the last 24 hours
+   *                    if PaymentType.RECEIVING return all requesting and receiving payments for the last 24 hours
    */
-  public List<PaymentData> subsetPaymentsAndSort(Set<PaymentData> paymentDataSet, PaymentType paymentType) {
+  public List<PaymentData> subsetPaymentsAndSort(Set<PaymentData> paymentDataSet, PaymentType subsettingPaymentType) {
 
     // Subset to the required type of payment
     List<PaymentData> subsetPaymentDataList = Lists.newArrayList();
 
-    if (paymentType != null) {
-      DateMidnight now = DateTime.now().toDateMidnight();
+    if (subsettingPaymentType != null) {
+      DateTime aDayAgo = DateTime.now().minusHours(24);
 
       for (PaymentData paymentData : paymentDataSet) {
 
-        if (paymentType == PaymentType.SENDING
-                && paymentData.getType() == PaymentType.SENDING
-                && paymentData.getDate().toDateMidnight().equals(now)) {
+        if (subsettingPaymentType == PaymentType.SENDING
+                && (paymentData.getType() == PaymentType.THEY_REQUESTED || paymentData.getType() == PaymentType.SENDING)
+                 && paymentData.getDate().isAfter(aDayAgo) ) {
 
           subsetPaymentDataList.add(paymentData);
 
-        } else if (paymentType == PaymentType.RECEIVING) {
+        } else if (subsettingPaymentType == PaymentType.RECEIVING) {
 
           if (paymentData.getType() == PaymentType.YOU_REQUESTED
                   || paymentData.getType() == PaymentType.RECEIVING
                   || paymentData.getType() == PaymentType.PART_PAID) {
 
-            if (paymentData.getDate().toDateMidnight().equals(now)) {
+            if (paymentData.getDate().isAfter(aDayAgo)) {
               subsetPaymentDataList.add(paymentData);
             }
           }
