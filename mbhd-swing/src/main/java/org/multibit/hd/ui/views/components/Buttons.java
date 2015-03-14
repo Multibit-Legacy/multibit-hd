@@ -648,6 +648,20 @@ public class Buttons {
   }
 
   /**
+    * @param action The click action
+    *
+    * @return A new "Pay this payment request" button with icon
+    */
+   public static JButton newPayThisPaymentRequestButton(Action action) {
+
+     JButton button = newButton(action, MessageKey.PAY_THIS_PAYMENT_REQUEST, MessageKey.PAY_THIS_PAYMENT_REQUEST_TOOLTIP);
+
+     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+     return button;
+   }
+
+  /**
    * @param action The click action
    *
    * @return A new "search" button with icon

@@ -319,6 +319,9 @@ public enum MessageKey {
   PAYMENT_PROTOCOL_UNTRUSTED_ALERT("payment_protocol_untrusted_alert"),
   PAYMENT_PROTOCOL_ERROR_ALERT("payment_protocol_error_alert"),
 
+  PAY_THIS_PAYMENT_REQUEST("pay_this_payment_request"),
+  PAY_THIS_PAYMENT_REQUEST_TOOLTIP("pay_this_payment_request_tooltip"),
+
   BITCOIN_URI_ALERT("bitcoin_uri_label"),
   PAYMENT_RECEIVED_ALERT("payment_received_label"),
   PAYMENT_SENT_ALERT("payment_sent_label"),

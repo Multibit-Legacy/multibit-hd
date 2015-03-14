@@ -585,16 +585,21 @@ public class WalletService extends AbstractService {
 
   private FiatPayment calculateFiatPaymentEquivalent(Coin amountBTC) {
     FiatPayment amountFiat = new FiatPayment();
-
+    
      // Work it out from the current settings
      amountFiat.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
 
      Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
      if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
        amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-       BigDecimal localAmount = Coins.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
-       if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
-         amountFiat.setAmount(Optional.of(localAmount));
+
+       if (amountBTC != null) {
+         BigDecimal localAmount = Coins.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
+         if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
+           amountFiat.setAmount(Optional.of(localAmount));
+         } else {
+           amountFiat.setAmount(Optional.<BigDecimal>absent());
+         }
        } else {
          amountFiat.setAmount(Optional.<BigDecimal>absent());
        }

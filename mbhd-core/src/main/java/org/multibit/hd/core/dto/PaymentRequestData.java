@@ -5,12 +5,7 @@ import com.google.common.base.Preconditions;
 import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Sha256Hash;
-import org.bitcoinj.protocols.payments.PaymentProtocol;
-import org.bitcoinj.protocols.payments.PaymentProtocolException;
-import org.bitcoinj.protocols.payments.PaymentSession;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
@@ -45,13 +40,9 @@ public class PaymentRequestData implements PaymentData {
   private final Protos.PaymentRequest paymentRequest;
 
   /**
-   * The parsed PaymentSession (parsed from the PaymentRequest)
+   * The PaymentSessionSummary
    */
-  private Optional<PaymentSession> paymentSessionOptional;
-
-
-  private static final Logger log = LoggerFactory.getLogger(PaymentRequestData.class);
-
+  private Optional<PaymentSessionSummary> paymentSessionSummaryOptional = Optional.absent();
 
   public PaymentRequestData(Protos.PaymentRequest paymentRequest, Optional<Sha256Hash> transactionHashOptional) {
     Preconditions.checkNotNull(paymentRequest);
@@ -61,13 +52,6 @@ public class PaymentRequestData implements PaymentData {
     this.transactionHashOptional = transactionHashOptional;
     this.uuid = UUID.randomUUID();
     this.fiatPaymentOptional = Optional.absent();
-
-    try {
-      this.paymentSessionOptional = Optional.of(PaymentProtocol.parsePaymentRequest(paymentRequest));
-    } catch (PaymentProtocolException ppe) {
-      log.error("Cannot parse PaymentRequest into a PaymentSession", ppe);
-      this.paymentSessionOptional = Optional.absent();
-    }
   }
 
   public UUID getUuid() {
@@ -84,6 +68,14 @@ public class PaymentRequestData implements PaymentData {
 
   public Protos.PaymentRequest getPaymentRequest() {
     return paymentRequest;
+  }
+
+  public Optional<PaymentSessionSummary> getPaymentSessionSummaryOptional() {
+    return paymentSessionSummaryOptional;
+  }
+
+  public void setPaymentSessionSummaryOptional(Optional<PaymentSessionSummary> paymentSessionSummaryOptional) {
+    this.paymentSessionSummaryOptional = paymentSessionSummaryOptional;
   }
 
   @Override
@@ -131,8 +123,8 @@ public class PaymentRequestData implements PaymentData {
 
   @Override
   public DateTime getDate() {
-    if (paymentSessionOptional.isPresent()) {
-      return new DateTime(paymentSessionOptional.get().getDate());
+    if (paymentSessionSummaryOptional.isPresent() && paymentSessionSummaryOptional.get().getPaymentSession().isPresent()) {
+      return new DateTime(paymentSessionSummaryOptional.get().getPaymentSession().get().getDate());
     } else {
       return null;
     }
@@ -140,8 +132,8 @@ public class PaymentRequestData implements PaymentData {
 
   @Override
   public Coin getAmountCoin() {
-    if (paymentSessionOptional.isPresent()) {
-      return paymentSessionOptional.get().getValue();
+    if (paymentSessionSummaryOptional.isPresent() && paymentSessionSummaryOptional.get().getPaymentSession().isPresent()) {
+      return paymentSessionSummaryOptional.get().getPaymentSession().get().getValue();
     } else {
       return null;
     }
@@ -167,8 +159,8 @@ public class PaymentRequestData implements PaymentData {
 
   @Override
   public String getDescription() {
-    if (paymentSessionOptional.isPresent()) {
-      return paymentSessionOptional.get().getMemo();
+    if (paymentSessionSummaryOptional.isPresent() && paymentSessionSummaryOptional.get().getPaymentSession().isPresent()) {
+      return paymentSessionSummaryOptional.get().getPaymentSession().get().getMemo();
     } else {
       return "";
     }

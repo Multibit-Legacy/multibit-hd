@@ -161,16 +161,14 @@ public class Models {
         // Add the payment request to the in-memory store without a transaction hash (the send has not been sent yet)
         PaymentRequestData paymentRequestData = new PaymentRequestData(paymentRequest, Optional.<Sha256Hash>absent());
 
-        // Store it (in memory)in the wallet service and in the paymentSessionSummary
+        // Store it (in memory)in the wallet service and in the paymentRequestData so that it is available in the Wizard
         walletService.addPaymentRequestData(paymentRequestData);
-        paymentSessionSummary.setPaymentRequestDataOptional(Optional.of(paymentRequestData));
+        paymentRequestData.setPaymentSessionSummaryOptional(Optional.of(paymentSessionSummary));
 
         // The wallet has changed so UI will need updating
         ViewEvents.fireWalletDetailChangedEvent(new WalletDetail());
 
-        SendBitcoinParameter parameter = new SendBitcoinParameter(null, paymentSessionSummary);
-
-        Panels.showLightBox(Wizards.newSendBitcoinWizard(parameter).getWizardScreenHolder());
+        Panels.showLightBox(Wizards.newPaymentsWizard(paymentRequestData).getWizardScreenHolder());
 
       }
     };

@@ -1,11 +1,14 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.bitcoinj.protocols.payments.PaymentProtocol;
-import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
+import org.bitcoinj.uri.BitcoinURI;
+import org.bitcoinj.uri.BitcoinURIParseException;
 import org.joda.time.DateTime;
+import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentRequestData;
@@ -25,11 +28,14 @@ import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -50,11 +56,6 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
   private JLabel displayName;
   private JLabel date;
   private JLabel expires;
-
-  /**
-   * The payment protocol session - condtructed from the PaymentRequestData
-   */
-  private Optional<PaymentSession> paymentSessionOptional = Optional.absent();
 
   private static final Logger log = LoggerFactory.getLogger(BIP70PaymentRequestDetailPanelView.class);
 
@@ -126,7 +127,10 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
     contentPanel.add(expires, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     contentPanel.add(Labels.newAmount(), "baseline");
-    contentPanel.add(paymentRequestAmountMaV.getView().newComponentPanel(), "span 4,wrap");
+    contentPanel.add(paymentRequestAmountMaV.getView().newComponentPanel(), "wrap");
+
+    contentPanel.add(Labels.newBlankLabel(), "");
+    contentPanel.add(Buttons.newPayThisPaymentRequestButton(createPayThisPaymentRequestAction()), "wrap");
 
     // Register components
     registerComponents(paymentRequestAmountMaV);
@@ -147,56 +151,52 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
             new Runnable() {
               @Override
               public void run() {
+                PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
+                Preconditions.checkNotNull(paymentRequestData);
 
-                if (!paymentSessionOptional.isPresent()) {
-                  // Try to create it
-                  PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
-                  if (paymentRequestData == null) {
-                    return;
+                Optional<PaymentSessionSummary> paymentSessionSummaryOptional = paymentRequestData.getPaymentSessionSummaryOptional();
+
+                if (paymentSessionSummaryOptional.isPresent()) {
+                  PaymentSessionSummary paymentSessionSummary = paymentSessionSummaryOptional.get();
+                  Optional<PaymentSession> paymentSessionOptional = paymentSessionSummary.getPaymentSession();
+
+                  switch (paymentSessionSummary.getStatus()) {
+                    case TRUSTED:
+                      LabelDecorator.applyPaymentSessionStatusIcon(
+                              paymentSessionSummary.getStatus(),
+                              trustStatusLabel,
+                              MessageKey.PAYMENT_PROTOCOL_TRUSTED_NOTE,
+                              MultiBitUI.NORMAL_ICON_SIZE);
+                      break;
+                    case UNTRUSTED:
+                      LabelDecorator.applyPaymentSessionStatusIcon(
+                              paymentSessionSummary.getStatus(),
+                              trustStatusLabel,
+                              MessageKey.PAYMENT_PROTOCOL_UNTRUSTED_NOTE,
+                              MultiBitUI.NORMAL_ICON_SIZE);
+                      // TODO Consider adding to cacerts and how subsequent Repair Wallet will be managed
+                      break;
+                    case DOWN:
+                    case ERROR:
+                      // Provide more details on the failure
+                      LabelDecorator.applyPaymentSessionStatusIcon(
+                              paymentSessionSummary.getStatus(),
+                              trustStatusLabel,
+                              MessageKey.PAYMENT_PROTOCOL_ERROR_NOTE,
+                              MultiBitUI.NORMAL_ICON_SIZE);
+                      memo.setText(Languages.safeText(paymentSessionSummary.getMessageKey().get(), paymentSessionSummary.getMessageData().get()));
+                      displayName.setVisible(false);
+                      date.setVisible(false);
+                      expires.setVisible(false);
+                      paymentRequestAmountMaV.getView().setVisible(false);
+                      return;
+                    default:
+                      throw new IllegalStateException("Unknown payment session summary status: " + paymentSessionSummary.getStatus());
                   }
 
-                  try {
-                    PaymentSession paymentSession = PaymentProtocol.parsePaymentRequest(paymentRequestData.getPaymentRequest());
-                    paymentSessionOptional = Optional.of(paymentSession);
-
-                    // TODO update for whether paymentSession is trusted/ paid etc
-                    PaymentSessionSummary paymentSessionSummary = PaymentSessionSummary.newPaymentSessionOK(paymentSessionOptional.get());
-
-                    switch (paymentSessionSummary.getStatus()) {
-                      case TRUSTED:
-                        LabelDecorator.applyPaymentSessionStatusIcon(
-                                paymentSessionSummary.getStatus(),
-                                trustStatusLabel,
-                                MessageKey.PAYMENT_PROTOCOL_TRUSTED_NOTE,
-                                MultiBitUI.NORMAL_ICON_SIZE);
-                        break;
-                      case UNTRUSTED:
-                        LabelDecorator.applyPaymentSessionStatusIcon(
-                                paymentSessionSummary.getStatus(),
-                                trustStatusLabel,
-                                MessageKey.PAYMENT_PROTOCOL_UNTRUSTED_NOTE,
-                                MultiBitUI.NORMAL_ICON_SIZE);
-                        // TODO Consider adding to cacerts and how subsequent Repair Wallet will be managed
-                        break;
-                      case DOWN:
-                      case ERROR:
-                        // Provide more details on the failure
-                        LabelDecorator.applyPaymentSessionStatusIcon(
-                                paymentSessionSummary.getStatus(),
-                                trustStatusLabel,
-                                MessageKey.PAYMENT_PROTOCOL_ERROR_NOTE,
-                                MultiBitUI.NORMAL_ICON_SIZE);
-                        memo.setText(Languages.safeText(paymentSessionSummary.getMessageKey().get(), paymentSessionSummary.getMessageData().get()));
-                        displayName.setVisible(false);
-                        date.setVisible(false);
-                        expires.setVisible(false);
-                        paymentRequestAmountMaV.getView().setVisible(false);
-                        return;
-                      default:
-                        throw new IllegalStateException("Unknown payment session summary status: " + paymentSessionSummary.getStatus());
-                    }
-
+                  if (paymentSessionOptional.isPresent()) {
                     // Must have a valid payment session to be here
+                    PaymentSession paymentSession = paymentSessionOptional.get();
 
                     memo.setText(paymentSession.getMemo());
 
@@ -238,8 +238,6 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
 
                     // Ensure the next button is enabled
                     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
-                  } catch (PaymentProtocolException ppe) {
-                    log.error("Cannot parse PaymentRequest to PaymentSession", ppe);
                   }
                 }
               }
@@ -249,6 +247,29 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
   @Override
   public void updateFromComponentModels(Optional componentModel) {
     // Do nothing - panel model is updated via an action and wizard model is not applicable
+  }
+
+  /**
+   * @return Action to process the 'Pay this payment request' button
+   */
+  private Action createPayThisPaymentRequestAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        try {
+          Panels.hideLightBoxIfPresent();
+
+          SendBitcoinParameter donateParameter = new SendBitcoinParameter(
+                  new BitcoinURI("bitcoin:" + FeeService.DONATION_ADDRESS + "?amount=" + FeeService.DEFAULT_DONATION_AMOUNT),
+                  null
+          );
+          Panels.showLightBox(Wizards.newSendBitcoinWizard(donateParameter).getWizardScreenHolder());
+        } catch (BitcoinURIParseException pe) {
+          // Should not happen
+          log.error(pe.getMessage());
+        }
+      }
+    };
   }
 }
 
