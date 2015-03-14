@@ -589,25 +589,27 @@ public class WalletService extends AbstractService {
      // Work it out from the current settings
      amountFiat.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
 
-     Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-     if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
-       amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
+     if (CoreServices.getApplicationEventService() != null) {
+       Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+       if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
+         amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
 
-       if (amountBTC != null) {
-         BigDecimal localAmount = Coins.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
-         if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
-           amountFiat.setAmount(Optional.of(localAmount));
+         if (amountBTC != null) {
+           BigDecimal localAmount = Coins.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
+           if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
+             amountFiat.setAmount(Optional.of(localAmount));
+           } else {
+             amountFiat.setAmount(Optional.<BigDecimal>absent());
+           }
          } else {
            amountFiat.setAmount(Optional.<BigDecimal>absent());
          }
+         amountFiat.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
        } else {
+         amountFiat.setRate(Optional.<String>absent());
          amountFiat.setAmount(Optional.<BigDecimal>absent());
+         amountFiat.setCurrency(Optional.<Currency>absent());
        }
-       amountFiat.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
-     } else {
-       amountFiat.setRate(Optional.<String>absent());
-       amountFiat.setAmount(Optional.<BigDecimal>absent());
-       amountFiat.setCurrency(Optional.<Currency>absent());
      }
 
      return amountFiat;
