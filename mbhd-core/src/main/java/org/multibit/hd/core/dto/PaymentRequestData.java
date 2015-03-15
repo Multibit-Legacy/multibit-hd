@@ -126,15 +126,21 @@ public class PaymentRequestData implements PaymentData {
 
   @Override
   public PaymentType getType() {
-    // TODO refine - can be part paid or paid
-    return PaymentType.THEY_REQUESTED;
+    if (transactionHashOptional.isPresent()) {
+      return PaymentType.PAID;
+    } else {
+      return PaymentType.THEY_REQUESTED;
+    }
   }
 
   @Override
   public PaymentStatus getStatus() {
-    // TODO refine - can be part paid or paid
-    return new PaymentStatus(RAGStatus.PINK, CoreMessageKey.PAYMENT_REQUESTED_BY_THEM);
-  }
+    if (transactionHashOptional.isPresent()) {
+      return new PaymentStatus(RAGStatus.GREEN, CoreMessageKey.PAYMENT_PAID);
+    } else {
+      return new PaymentStatus(RAGStatus.PINK, CoreMessageKey.PAYMENT_REQUESTED_BY_THEM);
+    }
+   }
 
   @Override
   public DateTime getDate() {
@@ -180,7 +186,6 @@ public class PaymentRequestData implements PaymentData {
       return "";
     }
   }
-
 
   @Override
   public boolean isCoinBase() {

@@ -7,6 +7,7 @@ import org.bitcoinj.protocols.payments.PaymentSession;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.utils.Dates;
@@ -48,11 +49,16 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
   // Panel specific components
   private ModelAndView<DisplayAmountModel, DisplayAmountView> paymentRequestAmountMaV;
 
+
+  private JLabel statusValue;
+
   private JLabel trustStatusLabel;
   private JLabel memo;
   private JLabel displayName;
   private JLabel date;
   private JLabel expires;
+
+  private JButton payThisPaymentRequestButton;
 
   private static final Logger log = LoggerFactory.getLogger(BIP70PaymentRequestDetailPanelView.class);
 
@@ -78,11 +84,14 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
             new MigLayout(
                     Panels.migXYLayout(),
                     "[][]", // Column constraints
-                    "[][][][][][]" // Row constraints
+                    "[][][][][][][30]" // Row constraints
             ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
+
+    JLabel statusLabel = Labels.newValueLabel(Languages.safeText(MessageKey.STATUS));
+    statusValue = Labels.newBlankLabel();
 
     // Payment request amount
     paymentRequestAmountMaV = Components.newDisplayAmountMaV(
@@ -111,6 +120,9 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
     trustStatusLabel.setName("trust_status");
     contentPanel.add(trustStatusLabel, "span 2,aligny top,wrap");
 
+    contentPanel.add(statusLabel);
+    contentPanel.add(statusValue,  "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+
     contentPanel.add(Labels.newMemoLabel(), "shrink");
     contentPanel.add(memo, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
@@ -127,7 +139,10 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
     contentPanel.add(paymentRequestAmountMaV.getView().newComponentPanel(), "wrap");
 
     contentPanel.add(Labels.newBlankLabel(), "");
-    contentPanel.add(Buttons.newPayThisPaymentRequestButton(createPayThisPaymentRequestAction(getWizardModel().getPaymentRequestData())), "wrap");
+    payThisPaymentRequestButton = Buttons.newPayThisPaymentRequestButton(createPayThisPaymentRequestAction(getWizardModel().getPaymentRequestData()));
+    // Initially inivisible
+    payThisPaymentRequestButton.setVisible(false);
+    contentPanel.add(payThisPaymentRequestButton, "wrap");
 
     // Register components
     registerComponents(paymentRequestAmountMaV);
@@ -143,6 +158,17 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
   }
 
   @Override
+  public boolean beforeShow() {
+    PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
+    Preconditions.checkNotNull(paymentRequestData);
+
+    // Show the 'pay this payment' button only if it is not already paid
+    payThisPaymentRequestButton.setVisible(paymentRequestData.getStatus().getStatusKey() != CoreMessageKey.PAYMENT_PAID);
+
+    return true;
+  }
+
+  @Override
   public void afterShow() {
     SwingUtilities.invokeLater(
             new Runnable() {
@@ -150,6 +176,9 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
               public void run() {
                 PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
                 Preconditions.checkNotNull(paymentRequestData);
+
+                statusValue.setText(Languages.safeText(paymentRequestData.getStatus().getStatusKey(), paymentRequestData.getStatus().getStatusData()));
+                LabelDecorator.applyPaymentStatusIconAndColor(paymentRequestData.getStatus(), statusValue, false, MultiBitUI.SMALL_ICON_SIZE);
 
                 Optional<PaymentSessionSummary> paymentSessionSummaryOptional = paymentRequestData.getPaymentSessionSummaryOptional();
 
@@ -252,7 +281,6 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
         sendBitcoinWizard.getWizardModel().prepareWhenBIP70();
         sendBitcoinWizard.show(sendBitcoinWizard.getWizardModel().getPanelName());
         Panels.showLightBox(sendBitcoinWizard.getWizardScreenHolder());
-
       }
     };
   }
