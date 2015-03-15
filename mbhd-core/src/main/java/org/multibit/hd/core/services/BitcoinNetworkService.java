@@ -294,15 +294,23 @@ public class BitcoinNetworkService extends AbstractService {
   /**
    * <p>Send bitcoin</p>
    * <p/>
-   * <p>In the future will also need:</p>
-   * <ul>
-   * <li>a CoinSelector - when HD subnodes are supported</li>
-   * </ul>
    * <p>The result of the operation is sent to the CoreEventBus as a TransactionCreationEvent and, if the tx is sent ok, a BitcoinSentEvent</p>
    *
    * @param sendRequestSummary The information required to send bitcoin
    */
   public void send(final SendRequestSummary sendRequestSummary) {
+    send(sendRequestSummary, Optional.<PaymentRequestData>absent());
+  }
+
+  /**
+   * <p>Send bitcoin</p>
+   * <p/>
+   * <p>The result of the operation is sent to the CoreEventBus as a TransactionCreationEvent and, if the tx is sent ok, a BitcoinSentEvent</p>
+   *
+   * @param sendRequestSummary The information required to send bitcoin
+   * @param paymentRequestDataOptional Optional BIP70 payment request data
+   */
+  public void send(final SendRequestSummary sendRequestSummary, final Optional<PaymentRequestData> paymentRequestDataOptional) {
     lastSendRequestSummaryOptional = Optional.absent();
     lastWalletOptional = Optional.absent();
 
@@ -311,7 +319,7 @@ public class BitcoinNetworkService extends AbstractService {
         @Override
         public void run() {
 
-          performSend(sendRequestSummary);
+          performSend(sendRequestSummary, paymentRequestDataOptional);
         }
 
       });
@@ -322,7 +330,7 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @return The send request
    */
-  private boolean performSend(SendRequestSummary sendRequestSummary) {
+  private boolean performSend(SendRequestSummary sendRequestSummary, Optional<PaymentRequestData> paymentRequestDataOptional) {
     log.debug("Starting the send process");
 
     // Verify the wallet summary
@@ -358,30 +366,42 @@ public class BitcoinNetworkService extends AbstractService {
         return false;
       }
 
-      performCommitAndBroadcast(sendRequestSummary, wallet);
+      performCommitAndBroadcast(sendRequestSummary, wallet, paymentRequestDataOptional);
     }
 
     return true;
 
   }
 
-  public void commitAndBroadcast(final SendRequestSummary sendRequestSummary, final Wallet wallet) {
+  public void commitAndBroadcast(final SendRequestSummary sendRequestSummary, final Wallet wallet, final Optional<PaymentRequestData> paymentRequestDataOptional) {
     getExecutorService().submit(
       new Runnable() {
         @Override
         public void run() {
 
-          performCommitAndBroadcast(sendRequestSummary, wallet);
+          performCommitAndBroadcast(sendRequestSummary, wallet, paymentRequestDataOptional);
         }
 
       });
   }
 
-  private boolean performCommitAndBroadcast(SendRequestSummary sendRequestSummary, Wallet wallet) {
+  private boolean performCommitAndBroadcast(SendRequestSummary sendRequestSummary, Wallet wallet, Optional<PaymentRequestData> paymentRequestDataOptional) {
 
     // Attempt to commit the signed transaction to the wallet
     if (!commit(sendRequestSummary, wallet)) {
       return false;
+    }
+
+    // Link the transaction to the payment request by UUID
+    if (paymentRequestDataOptional.isPresent() && sendRequestSummary.getSendRequest().isPresent()) {
+      WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+
+      // Set the Transaction hash and re-add to WalletService (replacing any pre-existing paymentRequestData with the same UUID)
+      PaymentRequestData paymentRequestData = paymentRequestDataOptional.get();
+      Sha256Hash txHash = sendRequestSummary.getSendRequest().get().tx.getHash();
+      paymentRequestData.setTransactionHashOptional(Optional.of(txHash));
+      walletService.addPaymentRequestData(paymentRequestData);
+      log.debug("Linking the payment request with UUID {} to the transaction with hash {}", paymentRequestData.getUuid(), txHash);
     }
 
     // Attempt to broadcast it

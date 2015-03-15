@@ -19,7 +19,6 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
@@ -90,7 +89,9 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
     this.bitcoinURI = parameter.getBitcoinURI();
     this.paymentRequestDataOptional = parameter.getPaymentRequestDataOptional();
+  }
 
+  public void prepareWhenBIP70() {
     // if constructed using a paymentRequestData (BIP70) then prepare the tx immediately
     if (paymentRequestDataOptional.isPresent()) {
       if (prepareTransaction()) {
@@ -403,17 +404,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
     log.debug("Just about to send bitcoin: {}", sendRequestSummary);
-    bitcoinNetworkService.send(sendRequestSummary);
-
-    // Link the transaction to the payment request by UUID
-    if (paymentRequestDataOptional.isPresent() && sendRequestSummary.getSendRequest().isPresent()) {
-      WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
-
-      // Set the Transaction hash and re-add to WalletService (replacing any pre-existing paymentRequestData with the same UUID)
-      PaymentRequestData paymentRequestData = paymentRequestDataOptional.get();
-      paymentRequestData.setTransactionHashOptional(Optional.of(sendRequestSummary.getSendRequest().get().tx.getHash()));
-      walletService.addPaymentRequestData(paymentRequestData);
-    }
+    bitcoinNetworkService.send(sendRequestSummary, paymentRequestDataOptional);
 
     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
   }
@@ -691,7 +682,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
               Wallet wallet = bitcoinNetworkService.getLastWalletOptional().get();
 
               // Commit and broadcast
-              bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet);
+              bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet, paymentRequestDataOptional);
             } else {
               // The signed transaction is essentially different from what was sent to it - abort send
               sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);

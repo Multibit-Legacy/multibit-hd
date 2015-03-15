@@ -1,12 +1,15 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -48,7 +51,6 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
    */
   boolean showPrevOnPaymentRequestDetailScreen = false;
 
-
   /**
    * @param state The state object
    */
@@ -68,12 +70,23 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
         state = PaymentsState.TRANSACTION_DETAIL;
         break;
       case TRANSACTION_DETAIL:
+        // If there is a BIP70 payment request data then show that
+        if (paymentData instanceof TransactionData) {
+          WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+          Optional<PaymentRequestData> paymentRequestDataOptional = walletService.getPaymentRequestDataByHash(((TransactionData) paymentData).getTransactionId());
+          if (paymentRequestDataOptional.isPresent()) {
+            setPaymentRequestData(paymentRequestDataOptional.get());
+            state = PaymentsState.BIP70_PAYMENT_REQUEST_DETAILS;
+            break;
+          }
+        }
         state = PaymentsState.CHOOSE_PAYMENT_REQUEST;
         break;
       case CHOOSE_PAYMENT_REQUEST:
         state = PaymentsState.PAYMENT_REQUEST_DETAILS;
         break;
       case PAYMENT_REQUEST_DETAILS:
+
       case BIP70_PAYMENT_REQUEST_DETAILS:
       default:
         // Finished
@@ -98,8 +111,11 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
         state = PaymentsState.TRANSACTION_DETAIL;
         break;
       case PAYMENT_REQUEST_DETAILS:
-        state = PaymentsState.CHOOSE_PAYMENT_REQUEST;
-        break;
+            state = PaymentsState.CHOOSE_PAYMENT_REQUEST;
+            break;
+      case BIP70_PAYMENT_REQUEST_DETAILS:
+            state = PaymentsState.TRANSACTION_DETAIL;
+            break;
       default:
     }
   }
@@ -133,6 +149,10 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
     return paymentRequestData;
   }
 
+  /**
+   * Set the BIP70 payment data request
+   * @param paymentRequestData
+   */
   public void setPaymentRequestData(PaymentRequestData paymentRequestData) {
     this.paymentRequestData = paymentRequestData;
   }

@@ -27,6 +27,7 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState;
+import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinWizard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -247,7 +248,11 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
         Panels.hideLightBoxIfPresent();
 
         SendBitcoinParameter sendBitcoinParameter = new SendBitcoinParameter(null, Optional.fromNullable(paymentRequestData));
-        Panels.showLightBox(Wizards.newSendBitcoinWizard(sendBitcoinParameter).getWizardScreenHolder());
+        SendBitcoinWizard sendBitcoinWizard = Wizards.newSendBitcoinWizard(sendBitcoinParameter);
+        sendBitcoinWizard.getWizardModel().prepareWhenBIP70();
+        sendBitcoinWizard.show(sendBitcoinWizard.getWizardModel().getPanelName());
+        Panels.showLightBox(sendBitcoinWizard.getWizardScreenHolder());
+
       }
     };
   }

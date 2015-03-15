@@ -349,7 +349,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
-      walletDetail.setNumberOfPayments(CoreServices.getCurrentWalletService().get().getPaymentDataSet().size());
+      walletDetail.setNumberOfPayments(CoreServices.getCurrentWalletService().get().getPaymentDataSetSize());
 
       SwingUtilities.invokeLater(new Runnable() {
         @Override

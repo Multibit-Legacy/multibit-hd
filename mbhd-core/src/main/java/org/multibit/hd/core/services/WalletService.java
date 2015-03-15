@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
+import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.*;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -225,16 +226,25 @@ public class WalletService extends AbstractService {
     // Union the transactionData set and paymentData set
     lastSeenPaymentDataSet = Sets.union(transactionDataSet, paymentRequestsNotFullyFunded);
 
-    // TODO Reconcile the paid BIP70 Payment Requests and do not return those
     Set<PaymentData> bip70PaymentData =Sets.newHashSet();
     for (PaymentData paymentData : paymentRequestDataMap.values()) {
-      bip70PaymentData.add(paymentData);
+      // If there is a tx hash then the bip70 payment is not a 'top level' object - not shown in payments table
+      if (!((PaymentRequestData)paymentData).getTransactionHashOptional().isPresent()) {
+        bip70PaymentData.add(paymentData);
+      }
     }
     log.debug("Adding in {} BIP70 payment data rows", bip70PaymentData.size());
     lastSeenPaymentDataSet = Sets.union(lastSeenPaymentDataSet, bip70PaymentData);
 
     //log.debug("lastSeenPaymentDataSet:\n" + lastSeenPaymentDataSet.toString());
     return lastSeenPaymentDataSet;
+  }
+
+  public int getPaymentDataSetSize() {
+    if (lastSeenPaymentDataSet == null) {
+      getPaymentDataSet();
+    }
+    return lastSeenPaymentDataSet.size();
   }
 
   /**
@@ -799,6 +809,15 @@ public class WalletService extends AbstractService {
 
   public TransactionInfo getTransactionInfoByHash(String transactionHashAsString) {
     return transactionInfoMap.get(transactionHashAsString);
+  }
+
+  public Optional<PaymentRequestData> getPaymentRequestDataByHash(String transactionHashAsString) {
+    for (PaymentRequestData paymentRequestData : paymentRequestDataMap.values()) {
+      if (paymentRequestData.getTransactionHashOptional().isPresent() && paymentRequestData.getTransactionHashOptional().get().toString().equals(transactionHashAsString)) {
+        return Optional.of(paymentRequestData);
+      }
+    }
+    return Optional.absent();
   }
 
 

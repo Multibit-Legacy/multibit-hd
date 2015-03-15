@@ -162,7 +162,7 @@ public class Models {
         // Add the payment request to the in-memory store without a transaction hash (the send has not been sent yet)
         PaymentRequestData paymentRequestData = new PaymentRequestData(paymentRequest, Optional.<Sha256Hash>absent());
 
-        // Store it (in memory)in the wallet service and in the paymentRequestData so that it is available in the Wizard
+        // Store it (in memory) in the wallet service and in the paymentRequestData so that it is available in the Wizard
         walletService.addPaymentRequestData(paymentRequestData);
         paymentRequestData.setPaymentSessionSummaryOptional(Optional.of(paymentSessionSummary));
 
