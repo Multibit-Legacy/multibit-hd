@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.wallet_detail;
 
+import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
@@ -117,12 +118,14 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
 
     WalletDetail walletDetail = walletDetailChangedEvent.getWalletDetail();
 
-    applicationDirectoryTextField.setText(walletDetail.getApplicationDirectory());
-    walletDirectoryTextField.setText(walletDetail.getWalletDirectory());
+    // Fill out the wallet detail info as long as there is something to say
+    if (!Strings.isNullOrEmpty(walletDetail.getApplicationDirectory())) {
+      applicationDirectoryTextField.setText(walletDetail.getApplicationDirectory());
+      walletDirectoryTextField.setText(walletDetail.getWalletDirectory());
 
-    numberOfContactsLabel.setText(String.valueOf(walletDetail.getNumberOfContacts()));
-    numberOfTransactionsLabel.setText(String.valueOf(walletDetail.getNumberOfPayments()));
-
+      numberOfContactsLabel.setText(String.valueOf(walletDetail.getNumberOfContacts()));
+      numberOfTransactionsLabel.setText(String.valueOf(walletDetail.getNumberOfPayments()));
+    }
   }
 }
 

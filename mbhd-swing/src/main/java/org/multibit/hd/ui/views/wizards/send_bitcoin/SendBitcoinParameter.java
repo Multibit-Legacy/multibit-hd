@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
 import org.bitcoinj.uri.BitcoinURI;
-import org.multibit.hd.core.dto.PaymentSessionSummary;
+import org.multibit.hd.core.dto.PaymentRequestData;
 
 /**
  * <p>Parameter object to provide the following to "send bitcoin" wizard:</p>
@@ -15,15 +15,15 @@ import org.multibit.hd.core.dto.PaymentSessionSummary;
 public class SendBitcoinParameter {
 
   private final Optional<BitcoinURI> bitcoinURI;
-  private final Optional<PaymentSessionSummary> paymentSessionSummary;
+  private final Optional<PaymentRequestData> paymentRequestDataOptional;
 
   /**
    * @param bitcoinURI The Bitcoin URI
-   * @param paymentSessionSummary The Payment Protocol session summary providing meta data about the payment
+   * @param paymentRequestDataOptional The payment request data containing information about this payment
    */
-  public SendBitcoinParameter(BitcoinURI bitcoinURI, PaymentSessionSummary paymentSessionSummary) {
+  public SendBitcoinParameter(BitcoinURI bitcoinURI, Optional<PaymentRequestData> paymentRequestDataOptional) {
     this.bitcoinURI = Optional.fromNullable(bitcoinURI);
-    this.paymentSessionSummary = Optional.fromNullable(paymentSessionSummary);
+    this.paymentRequestDataOptional = paymentRequestDataOptional == null ? Optional.<PaymentRequestData>absent() : paymentRequestDataOptional;
   }
 
   /**
@@ -33,10 +33,7 @@ public class SendBitcoinParameter {
     return bitcoinURI;
   }
 
-  /**
-   * @return A Payment Protocol session summary providing meta data about the payment
-   */
-  public Optional<PaymentSessionSummary> getPaymentSessionSummary() {
-    return paymentSessionSummary;
+  public Optional<PaymentRequestData> getPaymentRequestDataOptional() {
+    return paymentRequestDataOptional;
   }
 }

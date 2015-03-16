@@ -8,8 +8,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
+import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.*;
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -82,14 +82,19 @@ public class WalletService extends AbstractService {
   private PaymentsProtobufSerializer protobufSerializer;
 
   /**
-   * The payment requests in a map, indexed by the bitcoin address
+   * The MBHD payment requests in a map, indexed by the bitcoin address
    */
-  private final Map<Address, PaymentRequestData> paymentRequestMap = Collections.synchronizedMap(new HashMap<Address, PaymentRequestData>());
+  private final Map<Address, MBHDPaymentRequestData> MBHDPaymentRequestMap = Collections.synchronizedMap(new HashMap<Address, MBHDPaymentRequestData>());
 
   /**
    * The additional transaction information, in the form of a map, index by the transaction hash
    */
-  private final ConcurrentHashMap<String, TransactionInfo> transactionInfoMap = new ConcurrentHashMap();
+  private final ConcurrentHashMap<String, TransactionInfo> transactionInfoMap = new ConcurrentHashMap<>();
+
+  /**
+   * The payment protocol (BIP70)payment requests
+   */
+  private final Map<UUID, PaymentRequestData> paymentRequestDataMap = Collections.synchronizedMap(new HashMap<UUID, PaymentRequestData>());
 
   /**
    * The wallet id that this WalletService is using
@@ -99,12 +104,12 @@ public class WalletService extends AbstractService {
   /**
    * The undo stack for undeleting payment requests
    */
-  private final Stack<PaymentRequestData> undoDeletePaymentRequestStack = new Stack<>();
+  private final Stack<MBHDPaymentRequestData> undoDeletePaymentRequestStack = new Stack<>();
 
   /**
    * The last seen payments data
    */
-  private List<PaymentData> lastSeenPaymentDataList = Lists.newArrayList();
+  private Set<PaymentData> lastSeenPaymentDataSet = Sets.newHashSet();
 
   /**
    * Handles wallet operations
@@ -124,7 +129,7 @@ public class WalletService extends AbstractService {
   @Override
   protected boolean startInternal() {
 
-    Preconditions.checkNotNull(walletId,"No walletId - have you called initialise() first?");
+    Preconditions.checkNotNull(walletId, "No walletId - have you called initialise() first?");
 
     return true;
   }
@@ -177,9 +182,9 @@ public class WalletService extends AbstractService {
 
   /**
    * <p>Get all the payments (payments and payment requests) in the current wallet.</p>
-   * <h3>WARNING: This is moderately expensive so don't call it indiscriminately</h3>
+   * <h3>NOTE: This is moderately expensive so don't call it indiscriminately</h3>
    */
-  public List<PaymentData> getPaymentDataList() {
+  public Set<PaymentData> getPaymentDataSet() {
 
     // See if there is a current wallet
     WalletManager walletManager = WalletManager.INSTANCE;
@@ -187,7 +192,7 @@ public class WalletService extends AbstractService {
     Optional<WalletSummary> currentWalletSummary = walletManager.getCurrentWalletSummary();
     if (!currentWalletSummary.isPresent()) {
       // No wallet is present
-      return Lists.newArrayList();
+      return Sets.newHashSet();
     }
 
     // Wallet is present
@@ -205,55 +210,73 @@ public class WalletService extends AbstractService {
 
     if (transactions != null) {
       for (Transaction transaction : transactions) {
+        // Adapt the transaction - adding on matching MBHDPaymentRequests and BIP70 PaymentRequests
         TransactionData transactionData = adaptTransaction(wallet, transaction);
         transactionDataSet.add(transactionData);
       }
     }
 
-    // Determine which paymentRequests have not been fully funded (these will appear as independent entities in the UI)
-    Set<PaymentRequestData> paymentRequestsNotFullyFunded = Sets.newHashSet();
-    for (PaymentRequestData basePaymentRequestData : paymentRequestMap.values()) {
-      if (basePaymentRequestData.getPaidAmountCoin().compareTo(basePaymentRequestData.getAmountCoin()) < 0) {
-        paymentRequestsNotFullyFunded.add(basePaymentRequestData);
+    // Determine which MBHDPaymentRequests have not been fully funded (these will appear as independent entities in the UI)
+    Set<MBHDPaymentRequestData> paymentRequestsNotFullyFunded = Sets.newHashSet();
+    for (MBHDPaymentRequestData baseMBHDPaymentRequestData : MBHDPaymentRequestMap.values()) {
+      if (baseMBHDPaymentRequestData.getPaidAmountCoin().compareTo(baseMBHDPaymentRequestData.getAmountCoin()) < 0) {
+        paymentRequestsNotFullyFunded.add(baseMBHDPaymentRequestData);
       }
     }
     // Union the transactionData set and paymentData set
-    lastSeenPaymentDataList = Lists.newArrayList(Sets.union(transactionDataSet, paymentRequestsNotFullyFunded));
+    lastSeenPaymentDataSet = Sets.union(transactionDataSet, paymentRequestsNotFullyFunded);
 
-    //log.debug("lastSeenPaymentDataList:\n" + lastSeenPaymentDataList.toString());
-    return lastSeenPaymentDataList;
+    Set<PaymentData> bip70PaymentData =Sets.newHashSet();
+    for (PaymentData paymentData : paymentRequestDataMap.values()) {
+      // If there is a tx hash then the bip70 payment is not a 'top level' object - not shown in payments table
+      if (!((PaymentRequestData)paymentData).getTransactionHashOptional().isPresent()) {
+        bip70PaymentData.add(paymentData);
+      }
+    }
+    log.debug("Adding in {} BIP70 payment data rows", bip70PaymentData.size());
+    lastSeenPaymentDataSet = Sets.union(lastSeenPaymentDataSet, bip70PaymentData);
+
+    //log.debug("lastSeenPaymentDataSet:\n" + lastSeenPaymentDataSet.toString());
+    return lastSeenPaymentDataSet;
+  }
+
+  public int getPaymentDataSetSize() {
+    if (lastSeenPaymentDataSet == null) {
+      getPaymentDataSet();
+    }
+    return lastSeenPaymentDataSet.size();
   }
 
   /**
    * Subset the supplied payments and sort by date, descending
    * (Sorting by amount coin is also done to make the order unique, within same date. This is to stop the order 'flicking' on sync)
    *
-   * @param paymentType if PaymentType.SENDING return all sending payments for today
-   *                    if PaymentType.RECEIVING return all requesting and receiving payments for today
+   * @param subsettingPaymentType if PaymentType.SENDING return all sending payments for the last 24 hours
+   *                    if PaymentType.RECEIVING return all requesting and receiving payments for the last 24 hours
    */
-  public List<PaymentData> subsetPaymentsAndSort(List<PaymentData> paymentDataList, PaymentType paymentType) {
+  public List<PaymentData> subsetPaymentsAndSort(Set<PaymentData> paymentDataSet, PaymentType subsettingPaymentType) {
 
     // Subset to the required type of payment
     List<PaymentData> subsetPaymentDataList = Lists.newArrayList();
 
-    if (paymentType != null) {
-      DateMidnight now = DateTime.now().toDateMidnight();
+    if (subsettingPaymentType != null) {
+      DateTime aDayAgo = DateTime.now().minusHours(24);
 
-      for (PaymentData paymentData : paymentDataList) {
+      for (PaymentData paymentData : paymentDataSet) {
 
-        if (paymentType == PaymentType.SENDING
-          && paymentData.getType() == PaymentType.SENDING
-          && paymentData.getDate().toDateMidnight().equals(now)) {
+        if (subsettingPaymentType == PaymentType.SENDING
+                && (paymentData.getType() == PaymentType.THEY_REQUESTED || paymentData.getType() == PaymentType.SENDING)
+                 && paymentData.getDate().isAfter(aDayAgo) ) {
 
           subsetPaymentDataList.add(paymentData);
 
-        } else if (paymentType == PaymentType.RECEIVING) {
+        } else if (subsettingPaymentType == PaymentType.RECEIVING) {
 
-          if (paymentData.getType() == PaymentType.REQUESTED
-            || paymentData.getType() == PaymentType.RECEIVING
-            || paymentData.getType() == PaymentType.PART_PAID) {
+          if (paymentData.getType() == PaymentType.YOU_REQUESTED
+                  || paymentData.getType() == PaymentType.RECEIVING
+                  || paymentData.getType() == PaymentType.PART_PAID) {
 
-            if (paymentData.getDate().toDateMidnight().equals(now)) {
+            if (paymentData.getDate().isAfter(aDayAgo)) {
               subsetPaymentDataList.add(paymentData);
             }
           }
@@ -268,7 +291,6 @@ public class WalletService extends AbstractService {
 
   /**
    * @param query The text fragment to match (case-insensitive, anywhere in the name)
-   *
    * @return A filtered set of Payments for the given query
    */
   public List<PaymentData> filterPaymentsByContent(String query) {
@@ -277,7 +299,7 @@ public class WalletService extends AbstractService {
 
     List<PaymentData> filteredPayments = Lists.newArrayList();
 
-    for (PaymentData paymentData : lastSeenPaymentDataList) {
+    for (PaymentData paymentData : lastSeenPaymentDataSet) {
 
       boolean isDescriptionMatched = paymentData.getDescription().toLowerCase().contains(lowerQuery);
       boolean isNoteMatched = paymentData.getNote().toLowerCase().contains(lowerQuery);
@@ -287,13 +309,13 @@ public class WalletService extends AbstractService {
       boolean isOutputAddressMatched = false;
       boolean isRawTransactionMatched = false;
 
-      if (paymentData instanceof PaymentRequestData) {
+      if (paymentData instanceof MBHDPaymentRequestData) {
 
-        PaymentRequestData paymentRequestData = (PaymentRequestData) paymentData;
-        isQrCodeLabelMatched = paymentRequestData.getLabel().toLowerCase().contains(lowerQuery);
+        MBHDPaymentRequestData MBHDPaymentRequestData = (MBHDPaymentRequestData) paymentData;
+        isQrCodeLabelMatched = MBHDPaymentRequestData.getLabel().toLowerCase().contains(lowerQuery);
 
         // Exact match only
-        isPaymentAddressMatched = paymentRequestData.getAddress().toString().equals(query);
+        isPaymentAddressMatched = MBHDPaymentRequestData.getAddress().toString().equals(query);
 
       } else if (paymentData instanceof TransactionData) {
 
@@ -303,12 +325,12 @@ public class WalletService extends AbstractService {
 
       }
       if (isDescriptionMatched
-        || isNoteMatched
-        || isQrCodeLabelMatched
-        || isPaymentAddressMatched
-        || isOutputAddressMatched
-        || isRawTransactionMatched
-        ) {
+              || isNoteMatched
+              || isQrCodeLabelMatched
+              || isPaymentAddressMatched
+              || isOutputAddressMatched
+              || isRawTransactionMatched
+              ) {
         filteredPayments.add(paymentData);
       }
     }
@@ -325,7 +347,6 @@ public class WalletService extends AbstractService {
    *
    * @param wallet      the current wallet
    * @param transaction the transaction to adapt
-   *
    * @return TransactionData the transaction data
    */
   public TransactionData adaptTransaction(Wallet wallet, Transaction transaction) {
@@ -340,7 +361,7 @@ public class WalletService extends AbstractService {
     Coin amountBTC = transaction.getValue(wallet);
 
     // Fiat amount
-    FiatPayment amountFiat = calculateFiatPayment(amountBTC, transactionHashAsString);
+    FiatPayment amountFiat = calculateFiatPaymentAndAddTransactionInfo(amountBTC, transactionHashAsString);
 
     TransactionConfidence transactionConfidence = transaction.getConfidence();
 
@@ -390,21 +411,21 @@ public class WalletService extends AbstractService {
 
     // Create the DTO from the raw transaction info
     TransactionData transactionData = new TransactionData(
-      transactionHashAsString,
-      new DateTime(updateTime),
-      paymentStatus,
-      amountBTC,
-      amountFiat,
-      miningFee,
-      clientFee,
-      confidenceType,
-      paymentType,
-      description,
-      transaction.isCoinBase(),
-      outputAddresses,
-      rawTransaction,
-      size,
-      false
+            transactionHashAsString,
+            new DateTime(updateTime),
+            paymentStatus,
+            amountBTC,
+            amountFiat,
+            miningFee,
+            clientFee,
+            confidenceType,
+            paymentType,
+            description,
+            transaction.isCoinBase(),
+            outputAddresses,
+            rawTransaction,
+            size,
+            false
     );
 
     // Note - from the transactionInfo (if present)
@@ -424,7 +445,6 @@ public class WalletService extends AbstractService {
    *
    * @param confidenceType the Bitcoinj ConfidenceType  to use to work out the status
    * @param depth          depth in blocks of the transaction (1 is most recent)
-   *
    * @return status of the transaction
    */
   public static PaymentStatus calculateStatus(TransactionConfidence.ConfidenceType confidenceType, int depth, int numberOfPeers) {
@@ -492,11 +512,11 @@ public class WalletService extends AbstractService {
   }
 
   private String calculateDescriptionAndUpdatePaymentRequests(
-    Wallet wallet,
-    Transaction transaction,
-    String transactionHashAsString,
-    PaymentType paymentType,
-    Coin amountBTC
+          Wallet wallet,
+          Transaction transaction,
+          String transactionHashAsString,
+          PaymentType paymentType,
+          Coin amountBTC
   ) {
 
     StringBuilder description = new StringBuilder();
@@ -511,26 +531,26 @@ public class WalletService extends AbstractService {
             addresses = addresses + " " + receivingAddress;
 
             // Check if this output funds any payment requests;
-            PaymentRequestData paymentRequestData = paymentRequestMap.get(receivingAddress);
-            if (paymentRequestData != null) {
+            MBHDPaymentRequestData MBHDPaymentRequestData = MBHDPaymentRequestMap.get(receivingAddress);
+            if (MBHDPaymentRequestData != null) {
               // Yes - this output funds a payment address
-              if (!paymentRequestData.getPayingTransactionHashes().contains(transactionHashAsString)) {
+              if (!MBHDPaymentRequestData.getPayingTransactionHashes().contains(transactionHashAsString)) {
                 // We have not yet added this tx to the total paid amount
-                paymentRequestData.getPayingTransactionHashes().add(transactionHashAsString);
-                paymentRequestData.setPaidAmountCoin(paymentRequestData.getPaidAmountCoin().add(amountBTC));
+                MBHDPaymentRequestData.getPayingTransactionHashes().add(transactionHashAsString);
+                MBHDPaymentRequestData.setPaidAmountCoin(MBHDPaymentRequestData.getPaidAmountCoin().add(amountBTC));
               }
 
-              if (paymentRequestData.getLabel() != null && paymentRequestData.getLabel().length() > 0) {
+              if (MBHDPaymentRequestData.getLabel() != null && MBHDPaymentRequestData.getLabel().length() > 0) {
                 descriptiveTextIsAvailable = true;
                 description
-                  .append(paymentRequestData.getLabel())
-                  .append(" ");
+                        .append(MBHDPaymentRequestData.getLabel())
+                        .append(" ");
               }
-              if (paymentRequestData.getNote() != null && paymentRequestData.getNote().length() > 0) {
+              if (MBHDPaymentRequestData.getNote() != null && MBHDPaymentRequestData.getNote().length() > 0) {
                 descriptiveTextIsAvailable = true;
                 description
-                  .append(paymentRequestData.getNote())
-                  .append(" ");
+                        .append(MBHDPaymentRequestData.getNote())
+                        .append(" ");
               }
             }
           }
@@ -540,21 +560,21 @@ public class WalletService extends AbstractService {
       if (!descriptiveTextIsAvailable) {
         // TODO localise
         description
-          .append("By")
-          .append(PREFIX_SEPARATOR)
-          .append(addresses.trim());
+                .append("By")
+                .append(PREFIX_SEPARATOR)
+                .append(addresses.trim());
       }
     } else {
       // Sent
       // TODO localise
       description
-        .append("To")
-        .append(PREFIX_SEPARATOR);
+              .append("To")
+              .append(PREFIX_SEPARATOR);
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           description
-            .append(" ")
-            .append(transactionOutput.getScriptPubKey().getToAddress(networkParameters));
+                  .append(" ")
+                  .append(transactionOutput.getScriptPubKey().getToAddress(networkParameters));
         }
       }
     }
@@ -573,34 +593,47 @@ public class WalletService extends AbstractService {
     return outputAddresses;
   }
 
-  private FiatPayment calculateFiatPayment(Coin amountBTC, String transactionHashAsString) {
+  private FiatPayment calculateFiatPaymentEquivalent(Coin amountBTC) {
     FiatPayment amountFiat = new FiatPayment();
 
+     // Work it out from the current settings
+     amountFiat.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
+
+     if (CoreServices.getApplicationEventService() != null) {
+       Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+       if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
+         amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
+
+         if (amountBTC != null) {
+           BigDecimal localAmount = Coins.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
+           if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
+             amountFiat.setAmount(Optional.of(localAmount));
+           } else {
+             amountFiat.setAmount(Optional.<BigDecimal>absent());
+           }
+         } else {
+           amountFiat.setAmount(Optional.<BigDecimal>absent());
+         }
+         amountFiat.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
+       } else {
+         amountFiat.setRate(Optional.<String>absent());
+         amountFiat.setAmount(Optional.<BigDecimal>absent());
+         amountFiat.setCurrency(Optional.<Currency>absent());
+       }
+     }
+
+     return amountFiat;
+  }
+
+  private FiatPayment calculateFiatPaymentAndAddTransactionInfo(Coin amountBTC, String transactionHashAsString) {
     // Get the transactionInfo that contains the fiat exchange info, if it is available from the backing store
     // This will use the fiat rate at time of send/ receive
     TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
     if (transactionInfo != null) {
-       return transactionInfo.getAmountFiat();
+      return transactionInfo.getAmountFiat();
     }
 
-    // Else work it out from the current settings
-    amountFiat.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
-
-    Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-    if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
-      amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-      BigDecimal localAmount = Coins.toLocalAmount(amountBTC, exchangeRateChangedEvent.get().getRate());
-      if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
-        amountFiat.setAmount(Optional.of(localAmount));
-      } else {
-        amountFiat.setAmount(Optional.<BigDecimal>absent());
-      }
-      amountFiat.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
-    } else {
-      amountFiat.setRate(Optional.<String>absent());
-      amountFiat.setAmount(Optional.<BigDecimal>absent());
-      amountFiat.setCurrency(Optional.<Currency>absent());
-    }
+    FiatPayment amountFiat = calculateFiatPaymentEquivalent(amountBTC);
 
     // Remember the fiat information just worked out
     TransactionInfo newTransactionInfo = new TransactionInfo();
@@ -685,18 +718,18 @@ public class WalletService extends AbstractService {
       log.debug("Reading payments from\n'{}'", backingStoreFile.getAbsolutePath());
 
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
-        backingStoreFile,
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
-        WalletManager.scryptSalt(),
-        WalletManager.aesInitialisationVector());
+              backingStoreFile,
+              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
+              WalletManager.scryptSalt(),
+              WalletManager.aesInitialisationVector());
       Payments payments = protobufSerializer.readPayments(decryptedInputStream);
 
       // For quick access payment requests and transaction infos are stored in maps
-      Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDatas();
-      if (paymentRequestDatas != null) {
-        paymentRequestMap.clear();
-        for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
-          paymentRequestMap.put(paymentRequestData.getAddress(), paymentRequestData);
+      Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas = payments.getMBHDPaymentRequestDatas();
+      if (MBHDPaymentRequestDatas != null) {
+        MBHDPaymentRequestMap.clear();
+        for (MBHDPaymentRequestData MBHDPaymentRequestData : MBHDPaymentRequestDatas) {
+          MBHDPaymentRequestMap.put(MBHDPaymentRequestData.getAddress(), MBHDPaymentRequestData);
         }
       }
 
@@ -730,12 +763,12 @@ public class WalletService extends AbstractService {
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
       Payments payments = new Payments();
       payments.setTransactionInfos(transactionInfoMap.values());
-      payments.setPaymentRequestDatas(paymentRequestMap.values());
+      payments.setMBHDPaymentRequestDatas(MBHDPaymentRequestMap.values());
       protobufSerializer.writePayments(payments, byteArrayOutputStream);
       EncryptedFileReaderWriter.encryptAndWrite(
-        byteArrayOutputStream.toByteArray(),
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
-        backingStoreFile
+              byteArrayOutputStream.toByteArray(),
+              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
+              backingStoreFile
       );
 
       log.debug("Writing payments completed");
@@ -750,10 +783,24 @@ public class WalletService extends AbstractService {
     return walletId;
   }
 
-  public void addPaymentRequest(PaymentRequestData paymentRequestData) {
+  public void addMBHDPaymentRequestData(MBHDPaymentRequestData MBHDPaymentRequestData) {
+    MBHDPaymentRequestMap.put(MBHDPaymentRequestData.getAddress(), MBHDPaymentRequestData);
+  }
 
-    paymentRequestMap.put(paymentRequestData.getAddress(), paymentRequestData);
+  /**
+   * Add a PaymentRequestData to the memory store, keyed by UUID.
+   * If it has no fiat information - add it in
+   *
+   * @param paymentRequestData Payment request data to add (or replace if the UUID already exists)
+   */
+  public void addPaymentRequestData(PaymentRequestData paymentRequestData) {
+    if (!paymentRequestData.getAmountFiat().hasData()) {
+        paymentRequestData.setAmountFiat(calculateFiatPaymentEquivalent(paymentRequestData.getAmountCoin()));
+    }
 
+    paymentRequestDataMap.put(paymentRequestData.getUuid(), paymentRequestData);
+
+    log.debug("PaymentRequestDataMap:\n{}\n", paymentRequestDataMap);
   }
 
   public void addTransactionInfo(TransactionInfo transactionInfo) {
@@ -764,9 +811,22 @@ public class WalletService extends AbstractService {
     return transactionInfoMap.get(transactionHashAsString);
   }
 
+  public Optional<PaymentRequestData> getPaymentRequestDataByHash(String transactionHashAsString) {
+    for (PaymentRequestData paymentRequestData : paymentRequestDataMap.values()) {
+      if (paymentRequestData.getTransactionHashOptional().isPresent() && paymentRequestData.getTransactionHashOptional().get().toString().equals(transactionHashAsString)) {
+        return Optional.of(paymentRequestData);
+      }
+    }
+    return Optional.absent();
+  }
 
-  List<PaymentRequestData> getPaymentRequests() {
-    return Lists.newArrayList(paymentRequestMap.values());
+
+  public List<MBHDPaymentRequestData> getMBHDPaymentRequestDatas() {
+    return Lists.newArrayList(MBHDPaymentRequestMap.values());
+  }
+
+  public List<PaymentRequestData> getPaymentRequestDatas() {
+    return Lists.newArrayList(paymentRequestDataMap.values());
   }
 
   /**
@@ -775,7 +835,6 @@ public class WalletService extends AbstractService {
    * worked out deterministically and uses the lastIndexUsed on the Payments so that each address is unique
    *
    * @param walletPasswordOptional Either: Optional.absent() = just recycle the first address in the wallet or:  credentials of the wallet to which the new private key is added
-   *
    * @return Address the next generated address, as a String. The corresponding private key will be added to the wallet
    */
   public String generateNextReceivingAddress(Optional<CharSequence> walletPasswordOptional) {
@@ -803,33 +862,32 @@ public class WalletService extends AbstractService {
    * Find the payment requests that are either partially or fully funded by the transaction specified
    *
    * @param transactionData The transaction data
-   *
    * @return The list of payment requests that the transaction data funds
    */
-  public List<PaymentRequestData> findPaymentRequestsThisTransactionFunds(TransactionData transactionData) {
+  public List<MBHDPaymentRequestData> findPaymentRequestsThisTransactionFunds(TransactionData transactionData) {
 
-    List<PaymentRequestData> paymentRequestDataList = Lists.newArrayList();
+    List<MBHDPaymentRequestData> MBHDPaymentRequestDataList = Lists.newArrayList();
 
     if (transactionData != null && transactionData.getOutputAddresses() != null) {
       for (Address address : transactionData.getOutputAddresses()) {
-        PaymentRequestData paymentRequestData = paymentRequestMap.get(address);
-        if (paymentRequestData != null) {
+        MBHDPaymentRequestData MBHDPaymentRequestData = MBHDPaymentRequestMap.get(address);
+        if (MBHDPaymentRequestData != null) {
           // This transaction funds this payment address
-          paymentRequestDataList.add(paymentRequestData);
+          MBHDPaymentRequestDataList.add(MBHDPaymentRequestData);
         }
       }
     }
 
-    return paymentRequestDataList;
+    return MBHDPaymentRequestDataList;
   }
 
   /**
    * Delete a payment request
    */
-  public void deletePaymentRequest(PaymentRequestData paymentRequestData) {
+  public void deletePaymentRequest(MBHDPaymentRequestData MBHDPaymentRequestData) {
 
-    undoDeletePaymentRequestStack.push(paymentRequestData);
-    paymentRequestMap.remove(paymentRequestData.getAddress());
+    undoDeletePaymentRequestStack.push(MBHDPaymentRequestData);
+    MBHDPaymentRequestMap.remove(MBHDPaymentRequestData.getAddress());
     writePayments();
   }
 
@@ -839,8 +897,8 @@ public class WalletService extends AbstractService {
   public void undoDeletePaymentRequest() {
 
     if (!undoDeletePaymentRequestStack.isEmpty()) {
-      PaymentRequestData deletedPaymentRequestData = undoDeletePaymentRequestStack.pop();
-      addPaymentRequest(deletedPaymentRequestData);
+      MBHDPaymentRequestData deletedMBHDPaymentRequestData = undoDeletePaymentRequestStack.pop();
+      addMBHDPaymentRequestData(deletedMBHDPaymentRequestData);
       writePayments();
     }
   }
@@ -854,26 +912,26 @@ public class WalletService extends AbstractService {
    * @param paymentRequestFileStem The stem of the export file for the payment requests (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
    */
   public void exportPayments(
-    File exportDirectory,
-    String transactionFileStem,
-    String paymentRequestFileStem,
-    CSVEntryConverter<PaymentRequestData> paymentRequestHeaderConverter,
-    CSVEntryConverter<PaymentRequestData> paymentRequestConverter,
-    CSVEntryConverter<TransactionData> transactionHeaderConverter,
-    CSVEntryConverter<TransactionData> transactionConverter
+          File exportDirectory,
+          String transactionFileStem,
+          String paymentRequestFileStem,
+          CSVEntryConverter<MBHDPaymentRequestData> paymentRequestHeaderConverter,
+          CSVEntryConverter<MBHDPaymentRequestData> paymentRequestConverter,
+          CSVEntryConverter<TransactionData> transactionHeaderConverter,
+          CSVEntryConverter<TransactionData> transactionConverter
   ) {
     // Refresh all payments
-    List<PaymentData> paymentDataList = getPaymentDataList();
+    Set<PaymentData> paymentDataSet = getPaymentDataSet();
     ExportManager.export(
-      paymentDataList,
-      getPaymentRequests(),
-      exportDirectory,
-      transactionFileStem,
-      paymentRequestFileStem,
-      paymentRequestHeaderConverter,
-      paymentRequestConverter,
-      transactionHeaderConverter,
-      transactionConverter
+            paymentDataSet,
+            getMBHDPaymentRequestDatas(),
+            exportDirectory,
+            transactionFileStem,
+            paymentRequestFileStem,
+            paymentRequestHeaderConverter,
+            paymentRequestConverter,
+            transactionHeaderConverter,
+            transactionConverter
     );
   }
 
@@ -888,12 +946,12 @@ public class WalletService extends AbstractService {
   public static void changeWalletPassword(final WalletSummary walletSummary, final String oldPassword, final String newPassword) {
 
     executorService.submit(
-      new Runnable() {
-        @Override
-        public void run() {
-          WalletService.changeWalletPasswordInternal(walletSummary, oldPassword, newPassword);
-        }
-      });
+            new Runnable() {
+              @Override
+              public void run() {
+                WalletService.changeWalletPasswordInternal(walletSummary, oldPassword, newPassword);
+              }
+            });
   }
 
   static void changeWalletPasswordInternal(final WalletSummary walletSummary, final String oldPassword, final String newPassword) {
@@ -915,21 +973,21 @@ public class WalletService extends AbstractService {
 
         KeyParameter oldWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(oldPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
         byte[] decryptedOldBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(
-          encryptedOldBackupAESKey,
-          oldWalletPasswordDerivedAESKey,
-          WalletManager.aesInitialisationVector());
+                encryptedOldBackupAESKey,
+                oldWalletPasswordDerivedAESKey,
+                WalletManager.aesInitialisationVector());
 
         KeyParameter newWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(newPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
         byte[] encryptedNewBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(
-          decryptedOldBackupAESKey,
-          newWalletPasswordDerivedAESKey,
-          WalletManager.aesInitialisationVector());
+                decryptedOldBackupAESKey,
+                newWalletPasswordDerivedAESKey,
+                WalletManager.aesInitialisationVector());
 
         // Check the encryption is reversible
         byte[] decryptedRebornBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(
-          encryptedNewBackupAESKey,
-          newWalletPasswordDerivedAESKey,
-          WalletManager.aesInitialisationVector());
+                encryptedNewBackupAESKey,
+                newWalletPasswordDerivedAESKey,
+                WalletManager.aesInitialisationVector());
 
         if (!Arrays.equals(decryptedOldBackupAESKey, decryptedRebornBackupAESKey)) {
           throw new IllegalStateException("The encryption of the backup AES key was not reversible. Aborting change of wallet credentials");
@@ -940,15 +998,15 @@ public class WalletService extends AbstractService {
         byte[] newPasswordBytes = newPassword.getBytes(Charsets.UTF_8);
         byte[] paddedNewPassword = WalletManager.padPasswordBytes(newPasswordBytes);
         byte[] encryptedPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(
-          paddedNewPassword,
-          new KeyParameter(decryptedOldBackupAESKey),
-          WalletManager.aesInitialisationVector());
+                paddedNewPassword,
+                new KeyParameter(decryptedOldBackupAESKey),
+                WalletManager.aesInitialisationVector());
 
         // Check the encryption is reversible
         byte[] decryptedRebornPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.decrypt(
-          encryptedPaddedNewPassword,
-          new KeyParameter(decryptedOldBackupAESKey),
-          WalletManager.aesInitialisationVector());
+                encryptedPaddedNewPassword,
+                new KeyParameter(decryptedOldBackupAESKey),
+                WalletManager.aesInitialisationVector());
 
         if (!Arrays.equals(newPasswordBytes, WalletManager.unpadPasswordBytes(decryptedRebornPaddedNewPassword))) {
           throw new IllegalStateException("The encryption of the new credentials was not reversible. Aborting change of wallet credentials");
@@ -1009,36 +1067,38 @@ public class WalletService extends AbstractService {
       FiatPayment amountFiat = new FiatPayment();
       amountFiat.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
 
-      Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-      if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
+      if (CoreServices.getApplicationEventService() != null) {
+        Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
+        if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
 
-        amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-        BigDecimal localAmount = Coins.toLocalAmount(
-          transactionSeenEvent.getAmount(),
-          exchangeRateChangedEvent.get().getRate()
-        );
+          amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
+          BigDecimal localAmount = Coins.toLocalAmount(
+                  transactionSeenEvent.getAmount(),
+                  exchangeRateChangedEvent.get().getRate()
+          );
 
-        if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
-          amountFiat.setAmount(Optional.of(localAmount));
+          if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
+            amountFiat.setAmount(Optional.of(localAmount));
+          } else {
+            amountFiat.setAmount(Optional.<BigDecimal>absent());
+          }
+
+          amountFiat.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
+
         } else {
+          amountFiat.setRate(Optional.<String>absent());
           amountFiat.setAmount(Optional.<BigDecimal>absent());
+          amountFiat.setCurrency(Optional.<Currency>absent());
         }
 
-        amountFiat.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
+        transactionInfo.setAmountFiat(amountFiat);
 
-      } else {
-        amountFiat.setRate(Optional.<String>absent());
-        amountFiat.setAmount(Optional.<BigDecimal>absent());
-        amountFiat.setCurrency(Optional.<Currency>absent());
-      }
-
-      transactionInfo.setAmountFiat(amountFiat);
-
-      // Use the atomic putIfAbsent to ensure we don't overwrite
-      if (transactionInfoMap.putIfAbsent(transactionSeenEvent.getTransactionId(), transactionInfo) == null) {
-        log.debug("Created TransactionInfo: {}", transactionInfo);
-      } else {
-        log.debug("Not adding transactionInfo - another process has already added transactionInfo: {}", transactionInfo);
+        // Use the atomic putIfAbsent to ensure we don't overwrite
+        if (transactionInfoMap.putIfAbsent(transactionSeenEvent.getTransactionId(), transactionInfo) == null) {
+          log.debug("Created TransactionInfo: {}", transactionInfo);
+        } else {
+          log.debug("Not adding transactionInfo - another process has already added transactionInfo: {}", transactionInfo);
+        }
       }
     }
   }

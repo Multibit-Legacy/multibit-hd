@@ -492,14 +492,14 @@ public class CoreServices {
    */
   public static WalletService getOrCreateWalletService(WalletId walletId) {
 
-    log.debug("Get or create wallet service");
+    log.trace("Get or create wallet service");
 
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
     // Check if the wallet service has been created for this wallet ID
-    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-
     if (!walletService.isPresent()) {
+      File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
       walletService = Optional.of(new WalletService(BitcoinNetwork.current().get()));
       walletService.get().initialise(applicationDirectory, walletId);
       walletService.get().start();

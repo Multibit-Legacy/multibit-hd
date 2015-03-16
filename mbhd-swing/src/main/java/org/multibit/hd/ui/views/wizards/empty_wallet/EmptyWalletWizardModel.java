@@ -439,7 +439,7 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
             emptyWalletConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
             emptyWalletConfirmTrezorPanelView.setDisplayVisible(false);
 
-            bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet);
+            bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet, Optional.<PaymentRequestData>absent());
 
           } else {
             log.debug("Cannot commit and broadcast the last send as it is not present in bitcoinNetworkService");

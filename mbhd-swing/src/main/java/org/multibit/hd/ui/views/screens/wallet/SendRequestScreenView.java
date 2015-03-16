@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -240,7 +241,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
       @Override
       public void run() {
 
-        List<PaymentData> allPayments = walletService.getPaymentDataList();
+        Set<PaymentData> allPayments = walletService.getPaymentDataSet();
 
         // Find the 'Sending' transactions for today
         List<PaymentData> todaysSendingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.SENDING);

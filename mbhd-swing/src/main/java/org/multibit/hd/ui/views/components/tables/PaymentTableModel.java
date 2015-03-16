@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.tables;
 
+import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.FiatPayment;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>TableModel to provide the following to contact JTable:</p>
@@ -46,17 +48,25 @@ public class PaymentTableModel extends AbstractTableModel {
 
   private List<PaymentData> paymentData;
 
-  public PaymentTableModel(List<PaymentData> paymentData) {
+  public PaymentTableModel(Set<PaymentData> paymentData) {
     setPaymentData(paymentData, false);
   }
 
   /**
    * Set the payment data into the table
    *
-   * @param paymentData The paymentData to show in the table
+   * @param paymentData The paymentData to show in the table as a Set
+   */
+  public void setPaymentData(Set<PaymentData> paymentData, boolean fireTableDataChanged) {
+    this.setPaymentData(Lists.newArrayList(paymentData), fireTableDataChanged);
+  }
+
+  /**
+   * Set the payment data into the table
+   *
+   * @param paymentData The paymentData to show in the table as a List
    */
   public void setPaymentData(List<PaymentData> paymentData, boolean fireTableDataChanged) {
-
     this.paymentData = paymentData;
 
     data = new Object[paymentData.size()][];

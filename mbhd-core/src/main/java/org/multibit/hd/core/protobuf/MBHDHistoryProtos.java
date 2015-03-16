@@ -2,12 +2,12 @@
 // source: main/protobuf/history.proto
 
 package org.multibit.hd.core.protobuf;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 // This class is auto-generated so is exempt from warnings and Findbugs
 @SuppressWarnings(value="")
 @SuppressFBWarnings
+
 public final class MBHDHistoryProtos {
   private MBHDHistoryProtos() {}
   public static void registerAllExtensions(
@@ -123,6 +123,7 @@ public final class MBHDHistoryProtos {
    * A single contact 
    * </pre>
    */
+  @SuppressFBWarnings({"SE_BAD_FIELD"})
   public static final class HistoryEntry extends
       com.google.protobuf.GeneratedMessage
       implements HistoryEntryOrBuilder {
@@ -215,6 +216,7 @@ public final class MBHDHistoryProtos {
               org.multibit.hd.core.protobuf.MBHDHistoryProtos.HistoryEntry.class, org.multibit.hd.core.protobuf.MBHDHistoryProtos.HistoryEntry.Builder.class);
     }
 
+    @SuppressFBWarnings({"MS_SHOULD_BE_FINAL"})
     public static com.google.protobuf.Parser<HistoryEntry> PARSER =
         new com.google.protobuf.AbstractParser<HistoryEntry>() {
       public HistoryEntry parsePartialFrom(
@@ -598,6 +600,7 @@ public final class MBHDHistoryProtos {
         super(parent);
         maybeForceBuilderInitialization();
       }
+      @SuppressFBWarnings({"UCF_USELESS_CONTROL_FLOW"})
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
         }
@@ -1143,6 +1146,7 @@ public final class MBHDHistoryProtos {
    * A collection of history entries
    * </pre>
    */
+  @SuppressFBWarnings({"SE_BAD_FIELD"})
   public static final class History extends
       com.google.protobuf.GeneratedMessage
       implements HistoryOrBuilder {
@@ -1226,6 +1230,7 @@ public final class MBHDHistoryProtos {
               org.multibit.hd.core.protobuf.MBHDHistoryProtos.History.class, org.multibit.hd.core.protobuf.MBHDHistoryProtos.History.Builder.class);
     }
 
+    @SuppressFBWarnings({"MS_SHOULD_BE_FINAL"})
     public static com.google.protobuf.Parser<History> PARSER =
         new com.google.protobuf.AbstractParser<History>() {
       public History parsePartialFrom(

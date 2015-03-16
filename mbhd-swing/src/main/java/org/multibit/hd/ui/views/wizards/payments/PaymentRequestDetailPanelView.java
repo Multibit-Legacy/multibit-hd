@@ -12,7 +12,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.FiatPayment;
-import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.Languages;
@@ -69,12 +69,11 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
    * @param wizard The wizard managing the states
    */
   public PaymentRequestDetailPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
-    super(wizard, panelName, MessageKey.PAYMENT_REQUEST, AwesomeIcon.FILE_TEXT_O);
+    super(wizard, panelName, MessageKey.DISPLAY_PAYMENT_REQUEST_TITLE, AwesomeIcon.FILE_TEXT_O);
   }
 
   @Override
   public void newPanelModel() {
-
     // Configure the panel model
     PaymentRequestDetailPanelModel panelModel = new PaymentRequestDetailPanelModel(
             getPanelName()
@@ -84,7 +83,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
-
     contentPanel.setLayout(new MigLayout(
             Panels.migXYLayout(),
             "[]20[][]", // Column constraints
@@ -159,24 +157,20 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
       // Register components
       registerComponents(displayBitcoinAddressMaV, displayQRCodePopoverMaV);
-
     }
   }
 
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
-
     if (getWizardModel().isShowPrevOnPaymentRequestDetailScreen()) {
       PanelDecorator.addCancelPreviousFinish(this, wizard);
     } else {
       PanelDecorator.addCancelFinish(this, wizard);
     }
-
   }
 
   @Override
   public void afterShow() {
-
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -184,7 +178,6 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
         getFinishButton().setEnabled(true);
       }
     });
-
   }
 
   @Override
@@ -196,37 +189,36 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
    * @return True if the payment request data was populated
    */
   private boolean readPaymentRequestData() {
-
     // Work out the payment request to show
-    PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
+    MBHDPaymentRequestData MBHDPaymentRequestData = getWizardModel().getMBHDPaymentRequestData();
 
-    if (paymentRequestData == null) {
+    if (MBHDPaymentRequestData == null) {
       // Shouldn't happen but put a message on the UI all the same
       statusValue.setText(Languages.safeText(CoreMessageKey.NO_PAYMENT_REQUEST));
       return false;
     } else {
 
-      DateTime date = paymentRequestData.getDate();
+      DateTime date = MBHDPaymentRequestData.getDate();
       // Display in the system timezone
       dateValue.setText(LocalisedDateUtils.formatFriendlyDateLocal(date));
 
-      displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(paymentRequestData.getAddress().toString());
+      displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(MBHDPaymentRequestData.getAddress().toString());
 
-      qrCodeLabelValue.setText(paymentRequestData.getLabel());
+      qrCodeLabelValue.setText(MBHDPaymentRequestData.getLabel());
 
-      statusValue.setText(Languages.safeText(paymentRequestData.getStatus().getStatusKey(), paymentRequestData.getStatus().getStatusData()));
-      LabelDecorator.applyPaymentStatusIconAndColor(paymentRequestData.getStatus(), statusValue, false, MultiBitUI.SMALL_ICON_SIZE);
+      statusValue.setText(Languages.safeText(MBHDPaymentRequestData.getStatus().getStatusKey(), MBHDPaymentRequestData.getStatus().getStatusData()));
+      LabelDecorator.applyPaymentStatusIconAndColor(MBHDPaymentRequestData.getStatus(), statusValue, false, MultiBitUI.SMALL_ICON_SIZE);
 
-      noteValue.setText(paymentRequestData.getNote());
+      noteValue.setText(MBHDPaymentRequestData.getNote());
 
-      Coin amountBTC = paymentRequestData.getAmountCoin();
+      Coin amountBTC = MBHDPaymentRequestData.getAmountCoin();
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
       String[] balanceArray = Formats.formatCoinAsSymbolic(amountBTC, languageConfiguration, bitcoinConfiguration, true);
       amountBTCValue.setText(balanceArray[0] + balanceArray[1]);
 
-      FiatPayment amountFiat = paymentRequestData.getAmountFiat();
+      FiatPayment amountFiat = MBHDPaymentRequestData.getAmountFiat();
       if (amountFiat.getAmount().isPresent()) {
         amountFiatValue.setText((Formats.formatLocalAmount(amountFiat.getAmount().get(), languageConfiguration.getLocale(), bitcoinConfiguration, true)));
       } else {
@@ -250,19 +242,18 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       }
 
       String exchangeRateText;
-      if (Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getRate().or("")) || Strings.isNullOrEmpty(paymentRequestData.getAmountFiat().getExchangeName().or(""))) {
+      if (Strings.isNullOrEmpty(MBHDPaymentRequestData.getAmountFiat().getRate().or("")) || Strings.isNullOrEmpty(MBHDPaymentRequestData.getAmountFiat().getExchangeName().or(""))) {
         exchangeRateText = Languages.safeText(MessageKey.NOT_AVAILABLE);
       } else {
-        // Convert the exchange rate (which is always stored as fiat currency per bitcoin)to match the unit of bitcoin being used
-        String convertedExchangeRateText = Formats.formatExchangeRate(paymentRequestData.getAmountFiat().getRate(), languageConfiguration, bitcoinConfiguration);
-        exchangeRateText = convertedExchangeRateText + " (" + paymentRequestData.getAmountFiat().getExchangeName().or("") + ")";
+        // Convert the exchange rate (which is always stored as fiat currency per bitcoin) to match the unit of bitcoin being used
+        String convertedExchangeRateText = Formats.formatExchangeRate(MBHDPaymentRequestData.getAmountFiat().getRate(), languageConfiguration, bitcoinConfiguration);
+        exchangeRateText = convertedExchangeRateText + " (" + MBHDPaymentRequestData.getAmountFiat().getExchangeName().or("") + ")";
       }
       exchangeRateValue.setText(exchangeRateText);
     }
 
     // Must be OK to be here
     return true;
-
   }
 
   /**
@@ -276,11 +267,11 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
+        MBHDPaymentRequestData MBHDPaymentRequestData = getWizardModel().getMBHDPaymentRequestData();
 
-        Address bitcoinAddress = paymentRequestData.getAddress();
-        Coin coin = paymentRequestData.getAmountCoin();
-        String label = paymentRequestData.getLabel();
+        Address bitcoinAddress = MBHDPaymentRequestData.getAddress();
+        Coin coin = MBHDPaymentRequestData.getAmountCoin();
+        String label = MBHDPaymentRequestData.getLabel();
 
         // Form a Bitcoin URI from the contents
         String bitcoinUri = BitcoinURI.convertToBitcoinURI(
@@ -299,5 +290,4 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
     };
   }
-
 }

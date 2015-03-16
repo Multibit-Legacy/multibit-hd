@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components;
 
-import org.bitcoinj.core.Coin;
 import com.google.common.collect.Lists;
+import org.bitcoinj.core.Coin;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -18,6 +18,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import static org.multibit.hd.ui.MultiBitUI.*;
 
@@ -97,7 +98,7 @@ public class Tables {
    *
    * @return A new "payments" striped table
    */
-  public static StripedTable newPaymentsTable(List<PaymentData> paymentData, JButton enterButton) {
+  public static StripedTable newPaymentsTable(Set<PaymentData> paymentData, JButton enterButton) {
 
     PaymentTableModel model = new PaymentTableModel(paymentData);
 
@@ -121,7 +122,7 @@ public class Tables {
     // Type column
     TableColumn typeTableColumn = table.getColumnModel().getColumn(PaymentTableModel.TYPE_COLUMN_INDEX);
     typeTableColumn.setCellRenderer(Renderers.newPaymentTypeRenderer());
-    resizeColumn(table, PaymentTableModel.TYPE_COLUMN_INDEX, 100, 120);
+    resizeColumn(table, PaymentTableModel.TYPE_COLUMN_INDEX, 120, 150);
 
     // Amount BTC column
     TableColumn column = table.getColumnModel().getColumn(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX);

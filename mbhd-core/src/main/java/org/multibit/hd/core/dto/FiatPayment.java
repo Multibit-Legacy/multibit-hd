@@ -109,4 +109,8 @@ public class FiatPayment {
             ", rate=" + rate +
             '}';
   }
+
+  public boolean hasData() {
+    return amount.isPresent() || currency.isPresent() || exchangeName.isPresent() || rate.isPresent();
+  }
 }

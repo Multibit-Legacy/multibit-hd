@@ -48,7 +48,7 @@ public class ShowDetailPaymentsUseCase extends AbstractFestUseCase {
               .contents();
 
       // See if it is a payment request or a transaction
-      boolean isPaymentRequest = Languages.safeText(CoreMessageKey.PAYMENT_REQUESTED).equals(WhitespaceTrimmer.trim(payments[i][PaymentTableModel.TYPE_COLUMN_INDEX]));
+      boolean isPaymentRequest = Languages.safeText(CoreMessageKey.PAYMENT_REQUESTED_BY_YOU).equals(WhitespaceTrimmer.trim(payments[i][PaymentTableModel.TYPE_COLUMN_INDEX]));
 
       window
               .table(MessageKey.PAYMENTS.getKey())

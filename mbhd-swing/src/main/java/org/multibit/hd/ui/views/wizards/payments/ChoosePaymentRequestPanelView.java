@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<PaymentsWizardModel, ChoosePaymentRequestPanelModel> implements ActionListener {
 
-  private JComboBox<PaymentRequestData> paymentRequestDataJComboBox;
+  private JComboBox<MBHDPaymentRequestData> paymentRequestDataJComboBox;
   private JLabel paymentRequestInfoLabel;
   private JLabel paymentRequestSelectLabel;
 
@@ -67,12 +67,12 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    List<PaymentRequestData> matchingPaymentRequestDataList = getWizardModel().getMatchingPaymentRequestList();
-    paymentRequestDataJComboBox = ComboBoxes.newPaymentRequestsComboBox(this, matchingPaymentRequestDataList);
+    List<MBHDPaymentRequestData> matchingMBHDPaymentRequestDataList = getWizardModel().getMatchingPaymentRequestList();
+    paymentRequestDataJComboBox = ComboBoxes.newPaymentRequestsComboBox(this, matchingMBHDPaymentRequestDataList);
     paymentRequestDataJComboBox.setRenderer(new PaymentRequestDataListCellRenderer());
     // initialise model to first payment request in case the user uses the initial setting
-    if (matchingPaymentRequestDataList.size() > 0) {
-      getWizardModel().setPaymentRequestData(matchingPaymentRequestDataList.get(0));
+    if (matchingMBHDPaymentRequestDataList.size() > 0) {
+      getWizardModel().setMBHDPaymentRequestData(matchingMBHDPaymentRequestDataList.get(0));
     }
 
     paymentRequestInfoLabel = Labels.newBlankLabel();
@@ -131,10 +131,10 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
   @SuppressWarnings("unchecked")
   @Override
   public void actionPerformed(ActionEvent e) {
-    JComboBox<PaymentRequestData> source = (JComboBox<PaymentRequestData>) e.getSource();
-    PaymentRequestData paymentRequestData = (PaymentRequestData) source.getSelectedItem();
+    JComboBox<MBHDPaymentRequestData> source = (JComboBox<MBHDPaymentRequestData>) e.getSource();
+    MBHDPaymentRequestData MBHDPaymentRequestData = (MBHDPaymentRequestData) source.getSelectedItem();
 
     // Update the model
-    getWizardModel().setPaymentRequestData(paymentRequestData);
+    getWizardModel().setMBHDPaymentRequestData(MBHDPaymentRequestData);
   }
 }

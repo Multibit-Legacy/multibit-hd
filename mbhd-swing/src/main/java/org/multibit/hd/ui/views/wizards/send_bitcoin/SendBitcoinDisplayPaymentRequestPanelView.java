@@ -139,9 +139,9 @@ public class SendBitcoinDisplayPaymentRequestPanelView extends AbstractWizardPan
         public void run() {
 
           // Fail fast
-          Preconditions.checkState(getWizardModel().getPaymentSessionSummary().isPresent(), "'paymentSessionSummary' must be present");
+          Preconditions.checkState(getWizardModel().getPaymentRequestDataOptional().get().getPaymentSessionSummaryOptional().isPresent(), "'paymentSessionSummary' must be present");
 
-          PaymentSessionSummary paymentSessionSummary = getWizardModel().getPaymentSessionSummary().get();
+          PaymentSessionSummary paymentSessionSummary = getWizardModel().getPaymentRequestDataOptional().get().getPaymentSessionSummaryOptional().get();
 
           switch (paymentSessionSummary.getStatus()) {
             case TRUSTED:
@@ -179,7 +179,7 @@ public class SendBitcoinDisplayPaymentRequestPanelView extends AbstractWizardPan
 
           // Must have a valid payment session to be here
 
-          PaymentSession paymentSession = getWizardModel().getPaymentSessionSummary().get().getPaymentSession().get();
+          PaymentSession paymentSession = getWizardModel().getPaymentRequestDataOptional().get().getPaymentSessionSummaryOptional().get().getPaymentSession().get();
           memo.setText(paymentSession.getMemo());
 
           DateTime paymentRequestDate = new DateTime(paymentSession.getDate());

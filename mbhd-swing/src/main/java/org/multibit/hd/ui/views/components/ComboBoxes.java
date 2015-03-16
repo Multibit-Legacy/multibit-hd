@@ -8,7 +8,7 @@ import org.multibit.hd.core.blockexplorer.BlockExplorers;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BackupSummary;
-import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.comparators.BackupSummaryDescendingComparator;
@@ -466,20 +466,20 @@ public class ComboBoxes {
 
   /**
    * @param listener               The action listener to alert when the selection is made
-   * @param paymentRequestDataList The list of paymentRequestData to put in the combo box
+   * @param MBHDPaymentRequestDataList The list of paymentRequestData to put in the combo box
    *
    * @return A new "payment requests" combo box containing all supported languages and variants
    */
-  public static JComboBox<PaymentRequestData> newPaymentRequestsComboBox(ActionListener listener, List<PaymentRequestData> paymentRequestDataList) {
+  public static JComboBox<MBHDPaymentRequestData> newPaymentRequestsComboBox(ActionListener listener, List<MBHDPaymentRequestData> MBHDPaymentRequestDataList) {
 
     // Populate the combo box and declare a suitable renderer
-    JComboBox<PaymentRequestData> comboBox = newReadOnlyComboBox(paymentRequestDataList.toArray(new PaymentRequestData[paymentRequestDataList.size()]));
+    JComboBox<MBHDPaymentRequestData> comboBox = newReadOnlyComboBox(MBHDPaymentRequestDataList.toArray(new MBHDPaymentRequestData[MBHDPaymentRequestDataList.size()]));
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(comboBox, MessageKey.CHOOSE_PAYMENT_REQUEST, MessageKey.CHOOSE_PAYMENT_REQUEST_TOOLTIP);
 
     // Can use the ordinal due to the declaration ordering
-    if (paymentRequestDataList.size() > 0) {
+    if (MBHDPaymentRequestDataList.size() > 0) {
       comboBox.setSelectedIndex(0);
     }
 

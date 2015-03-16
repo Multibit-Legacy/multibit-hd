@@ -44,7 +44,7 @@ option java_outer_classname = "MBHDPaymentsProtos";
 /** 
  * A single payment request (as created on the Request bitcoin screen)
  */
-message PaymentRequest {
+message MBHDPaymentRequest {
   required string address = 1;           // The payment request bitcoin address (as per the bitcoin URI spec)
                                          // Each new request has a distinct address so it can be used as a key for Requests
   
@@ -75,7 +75,7 @@ message TransactionInfo {
  * The top level message
  */
 message Payments {
-  repeated PaymentRequest payment_request = 1;        // Collection of requests
+  repeated MBHDPaymentRequest payment_request = 1;        // Collection of requests
   repeated TransactionInfo transaction_info = 2;      // Collection of transactions
 
   // id=3 was used by last_used_used - removed

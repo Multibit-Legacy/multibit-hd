@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.export;
 
 import com.googlecode.jcsv.writer.CSVEntryConverter;
-import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -9,9 +9,9 @@ import org.multibit.hd.ui.languages.MessageKey;
 /**
  * Create a CSVEntryConverter for the header values in the CSV
  */
-public class PaymentRequestHeaderConverter implements CSVEntryConverter<PaymentRequestData> {
+public class PaymentRequestHeaderConverter implements CSVEntryConverter<MBHDPaymentRequestData> {
   @Override
-  public String[] convertEntry(PaymentRequestData paymentRequestData) {
+  public String[] convertEntry(MBHDPaymentRequestData MBHDPaymentRequestData) {
     String[] columns = new String[13];
 
    // Date

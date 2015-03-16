@@ -70,6 +70,7 @@ import java.io.File;
 import java.util.Locale;
 import java.util.Queue;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -1144,9 +1145,7 @@ public class MainController extends AbstractController implements
       if (alertModel.isPresent()) {
         ControllerEvents.fireAddAlertEvent(alertModel.get());
       }
-
     }
-
   }
 
   /**
@@ -1486,9 +1485,9 @@ public class MainController extends AbstractController implements
           // In this case the user will not have access to the tx change and notify them with a warning alert
           WalletService currentWalletService = CoreServices.getCurrentWalletService().get();
           if (currentWalletService != null) {
-            java.util.List<PaymentData> paymentDataList = currentWalletService.getPaymentDataList();
-            if (paymentDataList != null) {
-              for (PaymentData paymentData : paymentDataList) {
+            Set<PaymentData> paymentDataSet = currentWalletService.getPaymentDataSet();
+            if (paymentDataSet != null) {
+              for (PaymentData paymentData : paymentDataSet) {
                 PaymentStatus status = paymentData.getStatus();
                 if (status.getStatus().equals(RAGStatus.RED)) {
                   JButton button = Buttons.newAlertPanelButton(getShowHelpAction(), MessageKey.DETAILS, MessageKey.DETAILS_TOOLTIP, AwesomeIcon.QUESTION);

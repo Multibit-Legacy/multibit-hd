@@ -163,13 +163,7 @@ public class Wizards {
 
     log.debug("New 'Send bitcoin wizard'");
 
-    // Determine the starting state
-    if (parameter.getPaymentSessionSummary().isPresent()) {
-      return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_DISPLAY_PAYMENT_REQUEST, parameter));
-    } else {
-      return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_ENTER_AMOUNT, parameter));
-    }
-
+    return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_ENTER_AMOUNT, parameter));
   }
 
   /**
@@ -467,14 +461,19 @@ public class Wizards {
     Preconditions.checkNotNull(paymentData, "'paymentData' must be present");
 
     PaymentsWizardModel paymentsWizardModel;
-    if (paymentData instanceof PaymentRequestData) {
+    if (paymentData instanceof MBHDPaymentRequestData) {
       paymentsWizardModel = new PaymentsWizardModel(PaymentsState.PAYMENT_REQUEST_DETAILS, paymentData);
+      paymentsWizardModel.setMBHDPaymentRequestData((MBHDPaymentRequestData) paymentData);
+      paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(false);
+    } else if (paymentData instanceof PaymentRequestData) {
+      paymentsWizardModel = new PaymentsWizardModel(PaymentsState.BIP70_PAYMENT_REQUEST_DETAILS, paymentData);
       paymentsWizardModel.setPaymentRequestData((PaymentRequestData) paymentData);
       paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(false);
     } else {
       paymentsWizardModel = new PaymentsWizardModel(PaymentsState.TRANSACTION_OVERVIEW, paymentData);
       paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(true);
     }
+
 
     return new PaymentsWizard(paymentsWizardModel, false);
   }

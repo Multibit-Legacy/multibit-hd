@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.dto.FiatPayment;
-import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.Addresses;
@@ -42,67 +42,67 @@ public class PaymentsProtobufSerializerTest {
   @Test
   public void testRequests() throws Exception {
     // Test you can add some payment requests and read them back
-    Collection<PaymentRequestData> paymentRequestDatas = Lists.newArrayList();
+    Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas = Lists.newArrayList();
 
-    PaymentRequestData paymentRequestData1 = new PaymentRequestData();
+    MBHDPaymentRequestData MBHDPaymentRequestData1 = new MBHDPaymentRequestData();
 
-    paymentRequestData1.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
-    paymentRequestData1.setAmountCoin(Coin.valueOf(245));
+    MBHDPaymentRequestData1.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
+    MBHDPaymentRequestData1.setAmountCoin(Coin.valueOf(245));
     DateTime date1 = new DateTime();
-    paymentRequestData1.setDate(date1);
-    paymentRequestData1.setLabel("label1");
-    paymentRequestData1.setNote("note1");
+    MBHDPaymentRequestData1.setDate(date1);
+    MBHDPaymentRequestData1.setLabel("label1");
+    MBHDPaymentRequestData1.setNote("note1");
 
     FiatPayment fiatPayment1 = new FiatPayment();
-    paymentRequestData1.setAmountFiat(fiatPayment1);
+    MBHDPaymentRequestData1.setAmountFiat(fiatPayment1);
     fiatPayment1.setAmount(Optional.of(new BigDecimal("12345.6")));
     fiatPayment1.setCurrency(Optional.of(Currency.getInstance("USD")));
     fiatPayment1.setRate(Optional.of("10.0"));
     fiatPayment1.setExchangeName(Optional.of("Bitstamp"));
 
-    PaymentRequestData paymentRequestData2 = new PaymentRequestData();
-    paymentRequestData2.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
-    paymentRequestData2.setAmountCoin(Coin.valueOf(789));
+    MBHDPaymentRequestData MBHDPaymentRequestData2 = new MBHDPaymentRequestData();
+    MBHDPaymentRequestData2.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
+    MBHDPaymentRequestData2.setAmountCoin(Coin.valueOf(789));
     DateTime date2 = date1.plusDays(7);
-    paymentRequestData2.setDate(date2);
-    paymentRequestData2.setLabel("label2");
-    paymentRequestData2.setNote("note2");
+    MBHDPaymentRequestData2.setDate(date2);
+    MBHDPaymentRequestData2.setLabel("label2");
+    MBHDPaymentRequestData2.setNote("note2");
 
     FiatPayment fiatPayment2 = new FiatPayment();
-    paymentRequestData2.setAmountFiat(fiatPayment2);
+    MBHDPaymentRequestData2.setAmountFiat(fiatPayment2);
     fiatPayment2.setAmount(Optional.of(new BigDecimal("12345.678")));
     fiatPayment2.setCurrency(Optional.of(Currency.getInstance("GBP")));
     fiatPayment2.setRate(Optional.of("20.0"));
     fiatPayment2.setExchangeName(Optional.of("OER"));
 
-    paymentRequestDatas.add(paymentRequestData1);
-    paymentRequestDatas.add(paymentRequestData2);
+    MBHDPaymentRequestDatas.add(MBHDPaymentRequestData1);
+    MBHDPaymentRequestDatas.add(MBHDPaymentRequestData2);
 
     Payments payments = new Payments();
-    payments.setPaymentRequestDatas(paymentRequestDatas);
+    payments.setMBHDPaymentRequestDatas(MBHDPaymentRequestDatas);
 
     Payments newPayments = roundTrip(payments);
 
-    Collection<PaymentRequestData> newPaymentRequestDatas = newPayments.getPaymentRequestDatas();
-    assertThat(newPaymentRequestDatas.size()).isEqualTo(2);
+    Collection<MBHDPaymentRequestData> newMBHDPaymentRequestDatas = newPayments.getMBHDPaymentRequestDatas();
+    assertThat(newMBHDPaymentRequestDatas.size()).isEqualTo(2);
 
-    Iterator<PaymentRequestData> iterator = newPaymentRequestDatas.iterator();
-    PaymentRequestData newPaymentRequestData1 = iterator.next();
-    PaymentRequestData newPaymentRequestData2 = iterator.next();
+    Iterator<MBHDPaymentRequestData> iterator = newMBHDPaymentRequestDatas.iterator();
+    MBHDPaymentRequestData newMBHDPaymentRequestData1 = iterator.next();
+    MBHDPaymentRequestData newMBHDPaymentRequestData2 = iterator.next();
 
-    checkPaymentRequest(paymentRequestData1, newPaymentRequestData1);
-    checkPaymentRequest(paymentRequestData2, newPaymentRequestData2);
+    checkPaymentRequest(MBHDPaymentRequestData1, newMBHDPaymentRequestData1);
+    checkPaymentRequest(MBHDPaymentRequestData2, newMBHDPaymentRequestData2);
   }
 
-  private void checkPaymentRequest(PaymentRequestData paymentRequestData, PaymentRequestData other) {
-    assertThat(other.getAddress()).isEqualTo(paymentRequestData.getAddress());
-    assertThat(other.getLabel()).isEqualTo(paymentRequestData.getLabel());
-    assertThat(other.getNote()).isEqualTo(paymentRequestData.getNote());
-    assertThat(other.getAmountCoin()).isEqualTo(paymentRequestData.getAmountCoin());
-    assertThat(other.getDate()).isEqualTo(paymentRequestData.getDate());
+  private void checkPaymentRequest(MBHDPaymentRequestData MBHDPaymentRequestData, MBHDPaymentRequestData other) {
+    assertThat(other.getAddress()).isEqualTo(MBHDPaymentRequestData.getAddress());
+    assertThat(other.getLabel()).isEqualTo(MBHDPaymentRequestData.getLabel());
+    assertThat(other.getNote()).isEqualTo(MBHDPaymentRequestData.getNote());
+    assertThat(other.getAmountCoin()).isEqualTo(MBHDPaymentRequestData.getAmountCoin());
+    assertThat(other.getDate()).isEqualTo(MBHDPaymentRequestData.getDate());
 
     FiatPayment fiatPayment = other.getAmountFiat();
-    FiatPayment otherFiatPayment = paymentRequestData.getAmountFiat();
+    FiatPayment otherFiatPayment = MBHDPaymentRequestData.getAmountFiat();
     assertThat(fiatPayment.getAmount()).isEqualTo(otherFiatPayment.getAmount());
     assertThat(fiatPayment.getRate()).isEqualTo(otherFiatPayment.getRate());
     assertThat(fiatPayment.getExchangeName()).isEqualTo(otherFiatPayment.getExchangeName());

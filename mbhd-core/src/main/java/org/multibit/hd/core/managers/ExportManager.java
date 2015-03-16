@@ -8,8 +8,8 @@ import com.googlecode.jcsv.writer.CSVWriter;
 import com.googlecode.jcsv.writer.internal.CSVWriterBuilder;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.core.dto.PaymentData;
-import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ExportPerformedEvent;
@@ -18,10 +18,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -46,16 +43,16 @@ public class ExportManager {
 
   }
 
-  public static void export(final List<PaymentData> paymentDataList, final List<PaymentRequestData> paymentRequestDataList, final File exportDirectory, final String transactionFileStem, final String paymentRequestFileStem,
-                            final CSVEntryConverter<PaymentRequestData> paymentRequestHeaderConverter, final CSVEntryConverter<PaymentRequestData> paymentRequestConverter,
+  public static void export(final Set<PaymentData> paymentDataSet, final List<MBHDPaymentRequestData> MBHDPaymentRequestDataList, final File exportDirectory, final String transactionFileStem, final String paymentRequestFileStem,
+                            final CSVEntryConverter<MBHDPaymentRequestData> paymentRequestHeaderConverter, final CSVEntryConverter<MBHDPaymentRequestData> paymentRequestConverter,
                             final CSVEntryConverter<TransactionData> transactionHeaderConverter, final CSVEntryConverter<TransactionData> transactionConverter) {
     ExecutorService executorService = SafeExecutors.newSingleThreadExecutor("export");
     executorService.submit(new Runnable() {
       @Override
       public void run() {
         ExportManager.exportInternal(
-          paymentDataList,
-          paymentRequestDataList,
+          paymentDataSet,
+                MBHDPaymentRequestDataList,
           exportDirectory,
           transactionFileStem,
           paymentRequestFileStem,
@@ -67,8 +64,8 @@ public class ExportManager {
 
   }
 
-  public static void exportInternal(final List<PaymentData> paymentDataList, final List<PaymentRequestData> paymentRequestDataList, final File exportDirectory, final String transactionFileStem, final String paymentRequestFileStem,
-                                    final CSVEntryConverter<PaymentRequestData> paymentRequestHeaderConverter, final CSVEntryConverter<PaymentRequestData> paymentRequestConverter,
+  public static void exportInternal(final Set<PaymentData> paymentDataSet, final List<MBHDPaymentRequestData> MBHDPaymentRequestDataList, final File exportDirectory, final String transactionFileStem, final String paymentRequestFileStem,
+                                    final CSVEntryConverter<MBHDPaymentRequestData> paymentRequestHeaderConverter, final CSVEntryConverter<MBHDPaymentRequestData> paymentRequestConverter,
                                     final CSVEntryConverter<TransactionData> transactionHeaderConverter, final CSVEntryConverter<TransactionData> transactionConverter) {
     // Perform the export.
     // On completion this fires an ExportPerformedEvent that you subscribe to to find out what happened
@@ -122,8 +119,9 @@ public class ExportManager {
       }
     };
 
+    List<PaymentData> paymentDataList = Lists.newArrayList(paymentDataSet);
     Collections.sort(paymentDataList, Collections.reverseOrder(comparator));
-    Collections.sort(paymentRequestDataList, Collections.reverseOrder(comparator));
+    Collections.sort(MBHDPaymentRequestDataList, Collections.reverseOrder(comparator));
 
     List<TransactionData> transactionDataList = Lists.newArrayList();
     for (PaymentData paymentData : paymentDataList) {
@@ -158,16 +156,16 @@ public class ExportManager {
     // Output payment requests
     try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(paymentRequestsExportFilename, true), Charsets.UTF_8)) {
       // Write the header row.
-      CSVWriter<PaymentRequestData> csvHeaderWriter = new CSVWriterBuilder<PaymentRequestData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
+      CSVWriter<MBHDPaymentRequestData> csvHeaderWriter = new CSVWriterBuilder<MBHDPaymentRequestData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
         .entryConverter(paymentRequestHeaderConverter).build();
 
-      csvHeaderWriter.write(new PaymentRequestData());
+      csvHeaderWriter.write(new MBHDPaymentRequestData());
 
       // Write the body of the CSV file.
-      CSVWriter<PaymentRequestData> csvWriter = new CSVWriterBuilder<PaymentRequestData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
+      CSVWriter<MBHDPaymentRequestData> csvWriter = new CSVWriterBuilder<MBHDPaymentRequestData>(outputStreamWriter).strategy(CSVStrategy.UK_DEFAULT)
         .entryConverter(paymentRequestConverter).build();
 
-      csvWriter.writeAll(paymentRequestDataList);
+      csvWriter.writeAll(MBHDPaymentRequestDataList);
 
       // Success
     } catch (RuntimeException | IOException e ) {
