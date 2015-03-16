@@ -67,6 +67,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.net.URI;
 import java.util.Locale;
 import java.util.Queue;
 import java.util.ResourceBundle;
@@ -83,6 +84,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MainController extends AbstractController implements
   GenericOpenURIEventListener,
+  GenericOpenFilesEventListener,
   GenericPreferencesEventListener,
   GenericAboutEventListener,
   GenericQuitEventListener {
@@ -774,6 +776,16 @@ public class MainController extends AbstractController implements
   public void onOpenURIEvent(GenericOpenURIEvent event) {
 
     ExternalDataListeningService.addToQueues(event.getURI().toString(), false);
+
+  }
+
+  @Override
+  public void onOpenFilesEvent(GenericOpenFilesEvent event) {
+
+    for (File file: event.getFiles()) {
+      URI uri=file.toURI();
+      ExternalDataListeningService.addToQueues(uri.toString(), false);
+    }
 
   }
 

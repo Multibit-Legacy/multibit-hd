@@ -291,6 +291,7 @@ public class MultiBitHD {
 
     GenericApplicationSpecification specification = new GenericApplicationSpecification();
     specification.getOpenURIEventListeners().add(mainController);
+    specification.getOpenFilesEventListeners().add(mainController);
     specification.getPreferencesEventListeners().add(mainController);
     specification.getAboutEventListeners().add(mainController);
     specification.getQuitEventListeners().add(mainController);

@@ -19,10 +19,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.ui.platform.GenericApplication;
 import org.multibit.hd.ui.platform.GenericApplicationSpecification;
 import org.multibit.hd.ui.platform.builder.generic.DefaultApplicationBuilder;
-import org.multibit.hd.ui.platform.handler.DefaultAboutHandler;
-import org.multibit.hd.ui.platform.handler.DefaultOpenURIHandler;
-import org.multibit.hd.ui.platform.handler.DefaultPreferencesHandler;
-import org.multibit.hd.ui.platform.handler.DefaultQuitHandler;
+import org.multibit.hd.ui.platform.handler.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,6 +85,7 @@ public class MacApplicationBuilder {
 
     Object nativeApplication;
     Class nativeOpenURIHandlerClass;
+    Class nativeOpenFilesHandlerClass;
     Class nativePreferencesHandlerClass;
     Class nativeAboutHandlerClass;
     Class nativeQuitHandlerClass;
@@ -118,6 +116,7 @@ public class MacApplicationBuilder {
 
       // Create native instances of the various handlers
       nativeOpenURIHandlerClass = Class.forName("com.apple.eawt.OpenURIHandler");
+      nativeOpenFilesHandlerClass = Class.forName("com.apple.eawt.OpenFilesHandler");
       nativePreferencesHandlerClass = Class.forName("com.apple.eawt.PreferencesHandler");
       nativeAboutHandlerClass = Class.forName("com.apple.eawt.AboutHandler");
       nativeQuitHandlerClass = Class.forName("com.apple.eawt.QuitHandler");
@@ -149,6 +148,17 @@ public class MacApplicationBuilder {
       DefaultOpenURIHandler openURIHandler = new DefaultOpenURIHandler();
       openURIHandler.addListeners(specification.getOpenURIEventListeners());
       macApplication.addOpenURIHandler(openURIHandler);
+    }
+
+    // Open Files handler
+    if (!specification.getOpenFilesEventListeners().isEmpty()) {
+      log.debug("Adding the DefaultOpenFilesHandler");
+      // Native handler
+      macApplication.setOpenFilesHandlerClass(nativeOpenFilesHandlerClass);
+      // Listeners
+      DefaultOpenFilesHandler openFileHandler = new DefaultOpenFilesHandler();
+      openFileHandler.addListeners(specification.getOpenFilesEventListeners());
+      macApplication.addOpenFilesHandler(openFileHandler);
     }
 
     // Preferences handler
