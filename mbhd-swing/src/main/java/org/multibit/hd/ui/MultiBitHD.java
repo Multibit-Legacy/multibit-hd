@@ -8,6 +8,7 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -55,16 +56,6 @@ public class MultiBitHD {
    */
   public static void main(String[] args) throws Exception {
 
-    if (args != null) {
-      // Show the command line arguments
-      for (int i = 0; i < args.length; i++) {
-        log.debug("MultiBit launched with args[{}]: '{}'", i, args[i]);
-      }
-    } else {
-      // Provide empty arguments to avoid potential NPEs
-      args = new String[]{};
-    }
-
     // Hand over to an instance to simplify FEST tests
     final MultiBitHD multiBitHD = new MultiBitHD();
     if (!multiBitHD.start(args)) {
@@ -101,6 +92,23 @@ public class MultiBitHD {
    * @throws Exception If something goes wrong
    */
   public boolean start(String[] args) throws Exception {
+
+    // Start the logging factory (see later for instance) to get console logging up fast
+    LoggingFactory.bootstrap();
+
+    log.info("Starting");
+
+    // Analyse the command line
+    if (args != null && args.length > 0) {
+      // Show the command line arguments
+      for (int i = 0; i < args.length; i++) {
+        log.info("MultiBit launched with args[{}]: '{}'", i, args[i]);
+      }
+    } else {
+      // Provide empty arguments to avoid potential NPEs
+      log.info("No command line arguments");
+      args = new String[]{};
+    }
 
     // Check for another instance as soon as possible
     Optional<ExternalDataListeningService> externalDataListeningService = initialiseListeningService(args);
