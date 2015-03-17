@@ -61,7 +61,7 @@ public class ShowDetailPaymentsUseCase extends AbstractFestUseCase {
 
       if (isPaymentRequest) {
         // Verify the payment details wizard appears, showing a payment request
-        assertLabelText(MessageKey.PAYMENT_REQUEST);
+        assertLabelText(MessageKey.DISPLAY_PAYMENT_REQUEST_TITLE);
 
         window
                 .button(MessageKey.CANCEL.getKey())
