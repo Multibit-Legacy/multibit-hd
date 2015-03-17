@@ -50,6 +50,7 @@ import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.utils.Collators;
+import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -211,6 +212,11 @@ public enum WalletManager implements WalletEventListener {
     return Arrays.copyOf(SCRYPT_SALT, SCRYPT_SALT.length);
   }
 
+
+  /**
+   * A new wallet up to this amount of seconds old will have a regular sync performed on it and not be checkpointed.
+   */
+  private static final int ALLOWABLE_TIME_DELTA = 10;
   /**
    * Open the given wallet and hook it up to the blockchain and peergroup so that it receives notifications
    *
@@ -407,7 +413,7 @@ public enum WalletManager implements WalletEventListener {
      String name,
      String notes,
      boolean performSynch) throws WalletLoadException, WalletVersionException, IOException {
-     log.debug("getOrCreateMBHDSoftWalletSummaryFromEntropy called");
+     log.debug("getOrCreateMBHDSoftWalletSummaryFromEntropy called, creation time: {}", new Date(creationTimeInSeconds * 1000));
      final WalletSummary walletSummary;
 
      // Create a wallet id from the seed to work out the wallet root directory
@@ -823,7 +829,7 @@ public enum WalletManager implements WalletEventListener {
             "Wallet lastBlockSeenHeight: {}, lastSeenBlockTime: {}, earliestKeyCreationTime: {}",
             walletBlockHeight,
             walletLastSeenBlockTime,
-            walletBeingReturned.getEarliestKeyCreationTime());
+            new Date(walletBeingReturned.getEarliestKeyCreationTime() * 1000));
 
           // See if the bitcoinNetworkService already has an open blockstore
           blockStore = bitcoinNetworkService.getBlockStore();
@@ -842,9 +848,16 @@ public enum WalletManager implements WalletEventListener {
           }
           log.debug("The blockStore is at height {}", blockStoreBlockHeight);
 
+          boolean keyCreationTimeIsInThePast = false;
+          if (walletBeingReturned.getEarliestKeyCreationTime() != -1) {
+            if (walletBeingReturned.getEarliestKeyCreationTime() < Dates.nowInSeconds() - ALLOWABLE_TIME_DELTA) {
+              keyCreationTimeIsInThePast = true;
+            }
+          }
+
           // If wallet and block store match or wallet is brand new use regular sync
-          if ((walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) ||
-                  walletLastSeenBlockTime == null) {
+          if (((walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) ||
+                  walletLastSeenBlockTime == null) && !keyCreationTimeIsInThePast) {
             // Regular sync is ok - no need to use checkpoints
             log.debug("Will perform a regular sync");
             performRegularSync = true;
