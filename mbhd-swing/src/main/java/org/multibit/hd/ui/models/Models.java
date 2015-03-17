@@ -169,7 +169,9 @@ public class Models {
         // Work out if an identity is available
         if (paymentSessionSummary.getPaymentSession().isPresent()) {
           PaymentProtocol.PkiVerificationData identity = paymentSessionSummary.getPaymentSession().get().verifyPki();
-          paymentRequestData.setPkiVerificationDataOptional(Optional.fromNullable(identity));
+          if (identity != null) {
+            paymentRequestData.setIdentityDisplayName(identity.displayName);
+          }
         }
 
         // The wallet has changed so UI will need updating

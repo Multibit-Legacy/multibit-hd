@@ -5,7 +5,6 @@ import com.google.common.base.Preconditions;
 import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Sha256Hash;
-import org.bitcoinj.protocols.payments.PaymentProtocol;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.joda.time.DateTime;
 
@@ -45,11 +44,6 @@ public class PaymentRequestData implements PaymentData {
    * The PaymentSessionSummary
    */
   private Optional<PaymentSessionSummary> paymentSessionSummaryOptional = Optional.absent();
-
-  /**
-   * BIP 70 PKI identity information
-   */
-  private Optional<PaymentProtocol.PkiVerificationData> PkiVerificationDataOptional = Optional.absent();
 
   /**
    * The date of the payment request
@@ -123,17 +117,6 @@ public class PaymentRequestData implements PaymentData {
       date = new DateTime(paymentSession.getDate());
       amountBTC = paymentSession.getValue();
       note = paymentSession.getMemo();
-    }
-  }
-
-  public Optional<PaymentProtocol.PkiVerificationData> getPkiVerificationDataOptional() {
-    return PkiVerificationDataOptional;
-  }
-
-  public void setPkiVerificationDataOptional(Optional<PaymentProtocol.PkiVerificationData> pkiVerificationDataOptional) {
-    PkiVerificationDataOptional = pkiVerificationDataOptional;
-    if (pkiVerificationDataOptional.isPresent()) {
-      identityDisplayName = pkiVerificationDataOptional.get().displayName;
     }
   }
 
