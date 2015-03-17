@@ -777,7 +777,6 @@ public class MainController extends AbstractController implements
 
     boolean fireAddAlertEvent = WalletManager.INSTANCE.getCurrentWalletSummary().isPresent();
 
-    // Do not fire event since we may in the process of starting up
     ExternalDataListeningService.addToQueues(event.getURI().toString(), fireAddAlertEvent);
 
   }
@@ -789,7 +788,6 @@ public class MainController extends AbstractController implements
 
     for (File file: event.getFiles()) {
       URI uri=file.toURI();
-      // Do not fire event since we may in the process of starting up
       ExternalDataListeningService.addToQueues(uri.toString(), fireAddAlertEvent);
     }
 
