@@ -413,7 +413,7 @@ public enum WalletManager implements WalletEventListener {
      String name,
      String notes,
      boolean performSynch) throws WalletLoadException, WalletVersionException, IOException {
-     log.debug("getOrCreateMBHDSoftWalletSummaryFromEntropy called, creation time: {}", new Date(creationTimeInSeconds * 1000));
+     log.debug("getOrCreateMBHDSoftWalletSummaryFromEntropy called, creation time: {}", new DateTime(creationTimeInSeconds * 1000));
      final WalletSummary walletSummary;
 
      // Create a wallet id from the seed to work out the wallet root directory
@@ -829,7 +829,7 @@ public enum WalletManager implements WalletEventListener {
             "Wallet lastBlockSeenHeight: {}, lastSeenBlockTime: {}, earliestKeyCreationTime: {}",
             walletBlockHeight,
             walletLastSeenBlockTime,
-            new Date(walletBeingReturned.getEarliestKeyCreationTime() * 1000));
+            new DateTime(walletBeingReturned.getEarliestKeyCreationTime() * 1000));
 
           // See if the bitcoinNetworkService already has an open blockstore
           blockStore = bitcoinNetworkService.getBlockStore();
