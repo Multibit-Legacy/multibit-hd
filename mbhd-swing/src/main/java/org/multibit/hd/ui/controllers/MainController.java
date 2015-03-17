@@ -775,18 +775,22 @@ public class MainController extends AbstractController implements
   @Override
   public void onOpenURIEvent(GenericOpenURIEvent event) {
 
+    boolean fireAddAlertEvent = WalletManager.INSTANCE.getCurrentWalletSummary().isPresent();
+
     // Do not fire event since we may in the process of starting up
-    ExternalDataListeningService.addToQueues(event.getURI().toString(), false);
+    ExternalDataListeningService.addToQueues(event.getURI().toString(), fireAddAlertEvent);
 
   }
 
   @Override
   public void onOpenFilesEvent(GenericOpenFilesEvent event) {
 
+    boolean fireAddAlertEvent = WalletManager.INSTANCE.getCurrentWalletSummary().isPresent();
+
     for (File file: event.getFiles()) {
       URI uri=file.toURI();
       // Do not fire event since we may in the process of starting up
-      ExternalDataListeningService.addToQueues(uri.toString(), false);
+      ExternalDataListeningService.addToQueues(uri.toString(), fireAddAlertEvent);
     }
 
   }
