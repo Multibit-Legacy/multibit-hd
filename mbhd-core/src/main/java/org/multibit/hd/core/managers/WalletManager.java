@@ -856,8 +856,8 @@ public enum WalletManager implements WalletEventListener {
           }
 
           // If wallet and block store match or wallet is brand new use regular sync
-          if (((walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) ||
-                  walletLastSeenBlockTime == null) && !keyCreationTimeIsInThePast) {
+          if ((walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) ||
+                  (walletLastSeenBlockTime == null && !keyCreationTimeIsInThePast)) {
             // Regular sync is ok - no need to use checkpoints
             log.debug("Will perform a regular sync");
             performRegularSync = true;
