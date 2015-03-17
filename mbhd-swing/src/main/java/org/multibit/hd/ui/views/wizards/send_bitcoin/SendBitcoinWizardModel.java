@@ -6,6 +6,7 @@ import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.protocols.payments.PaymentProtocol;
+import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.hd.brit.dto.FeeState;
@@ -102,6 +103,9 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
         log.debug("BIP70 prepareTransaction was NOT successful, moving to SEND_REPORT");
         this.state = SEND_REPORT;
       }
+    } else {
+      log.debug("No payment request available, moving to SEND_REPORT");
+      this.state = SEND_REPORT;
     }
   }
 
@@ -304,10 +308,16 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
     // Determine if this came from a payment request
-    if (paymentRequestDataOptional.isPresent() && paymentRequestDataOptional.get().getPaymentSessionSummaryOptional().isPresent()) {
-
+    if (paymentRequestDataOptional.isPresent()) {
       // We should not be here if these conditions are not true
-      PaymentSession paymentSession = paymentRequestDataOptional.get().getPaymentSessionSummaryOptional().get().getPaymentSession().get();
+      PaymentSession paymentSession;
+      try {
+        // TODO verify PKI
+        paymentSession = new PaymentSession(paymentRequestDataOptional.get().getPaymentRequest(), false);
+      } catch (PaymentProtocolException e) {
+        log.error("Could not create PaymentSession from payment request {}, error was {}", paymentRequestDataOptional.get().getPaymentRequest(), e);
+        return false;
+      }
 
       // Build the send request summary from the payment request
       Wallet.SendRequest sendRequest = paymentSession.getSendRequest();

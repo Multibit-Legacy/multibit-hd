@@ -240,7 +240,6 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-
         Set<PaymentData> allPayments = walletService.getPaymentDataSet();
 
         // Find the 'Sending' transactions for today
@@ -256,10 +255,8 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
         displayRequestedPaymentsMaV.getView().createView();
         displayRequestedPaymentsMaV.getView().updateView();
-
       }
     });
-
   }
 
   private void updateSendRequestButtons(BitcoinNetworkChangedEvent event) {

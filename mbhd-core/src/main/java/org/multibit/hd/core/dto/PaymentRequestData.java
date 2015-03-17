@@ -6,6 +6,7 @@ import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.protocols.payments.PaymentProtocol;
+import org.bitcoinj.protocols.payments.PaymentSession;
 import org.joda.time.DateTime;
 
 import java.util.UUID;
@@ -21,24 +22,24 @@ public class PaymentRequestData implements PaymentData {
   /**
    * A UUID used in persisting the BIP70 payment request and as a foreign key to find data from the transaction hash
    */
-  private final UUID uuid;
+  private UUID uuid;
 
   /**
    * The transaction hash of the transaction that paid this payment request.
    * May be absent if the payment request has not been paid yet.
    */
-  private Optional<Sha256Hash> transactionHashOptional;
+  private Optional<Sha256Hash> transactionHashOptional = Optional.absent();
 
 
   /**
-   * The fiat payment equivalent of the payment Coin (bitcoin
+   * The fiat payment equivalent of the payment Coin
    */
-  private Optional<FiatPayment> fiatPaymentOptional;
+  private Optional<FiatPayment> fiatPaymentOptional = Optional.absent();
 
   /**
-   * The BIP70 PaymentRequest
+   * The BIP70 PaymentRequest - stored as a file on the file system
    */
-  private final Protos.PaymentRequest paymentRequest;
+  private Protos.PaymentRequest paymentRequest;
 
   /**
    * The PaymentSessionSummary
@@ -50,6 +51,31 @@ public class PaymentRequestData implements PaymentData {
    */
   private Optional<PaymentProtocol.PkiVerificationData> PkiVerificationDataOptional = Optional.absent();
 
+  /**
+   * The date of the payment request
+   */
+  private DateTime date;
+
+  /**
+   * The amount in bitcoin of the payment request
+   */
+  private Coin amountBTC;
+
+  /**
+   * The description of the payment request
+   */
+  private String note = "";
+
+  /**
+   * The display name of the PKI identity
+   */
+  private String identityDisplayName = "";
+
+  /**
+   * For protobuf - you probably do not want to use this
+   */
+  public PaymentRequestData() {
+  }
 
   public PaymentRequestData(Protos.PaymentRequest paymentRequest, Optional<Sha256Hash> transactionHashOptional) {
     Preconditions.checkNotNull(paymentRequest);
@@ -58,11 +84,14 @@ public class PaymentRequestData implements PaymentData {
     this.paymentRequest = paymentRequest;
     this.transactionHashOptional = transactionHashOptional;
     this.uuid = UUID.randomUUID();
-    this.fiatPaymentOptional = Optional.absent();
   }
 
   public UUID getUuid() {
     return uuid;
+  }
+
+  public void setUuid(UUID uuid) {
+    this.uuid = uuid;
   }
 
   public Optional<Sha256Hash> getTransactionHashOptional() {
@@ -77,12 +106,24 @@ public class PaymentRequestData implements PaymentData {
     return paymentRequest;
   }
 
+  public void setPaymentRequest(Protos.PaymentRequest paymentRequest) {
+    this.paymentRequest = paymentRequest;
+  }
+
   public Optional<PaymentSessionSummary> getPaymentSessionSummaryOptional() {
     return paymentSessionSummaryOptional;
   }
 
   public void setPaymentSessionSummaryOptional(Optional<PaymentSessionSummary> paymentSessionSummaryOptional) {
     this.paymentSessionSummaryOptional = paymentSessionSummaryOptional;
+
+    // Work out dates, identity etc and save them
+    if (paymentSessionSummaryOptional.isPresent() && paymentSessionSummaryOptional.get().getPaymentSession().isPresent()) {
+      PaymentSession paymentSession = paymentSessionSummaryOptional.get().getPaymentSession().get();
+      date = new DateTime(paymentSession.getDate());
+      amountBTC = paymentSession.getValue();
+      note = paymentSession.getMemo();
+    }
   }
 
   public Optional<PaymentProtocol.PkiVerificationData> getPkiVerificationDataOptional() {
@@ -91,6 +132,9 @@ public class PaymentRequestData implements PaymentData {
 
   public void setPkiVerificationDataOptional(Optional<PaymentProtocol.PkiVerificationData> pkiVerificationDataOptional) {
     PkiVerificationDataOptional = pkiVerificationDataOptional;
+    if (pkiVerificationDataOptional.isPresent()) {
+      identityDisplayName = pkiVerificationDataOptional.get().displayName;
+    }
   }
 
   @Override
@@ -120,7 +164,12 @@ public class PaymentRequestData implements PaymentData {
     return "PaymentRequestData{" +
             "uuid=" + uuid +
             ", transactionHashOptional=" + transactionHashOptional +
+            ", fiatPaymentOptional=" + fiatPaymentOptional +
             ", paymentRequest=" + paymentRequest +
+            ", date=" + date +
+            ", amountBTC=" + amountBTC +
+            ", note=" + note +
+            ", identityDisplayName=" + identityDisplayName +
             '}';
   }
 
@@ -144,20 +193,20 @@ public class PaymentRequestData implements PaymentData {
 
   @Override
   public DateTime getDate() {
-    if (paymentSessionSummaryOptional.isPresent() && paymentSessionSummaryOptional.get().getPaymentSession().isPresent()) {
-      return new DateTime(paymentSessionSummaryOptional.get().getPaymentSession().get().getDate());
-    } else {
-      return null;
-    }
+    return date;
+  }
+
+  public void setDate(DateTime date) {
+    this.date = date;
   }
 
   @Override
   public Coin getAmountCoin() {
-    if (paymentSessionSummaryOptional.isPresent() && paymentSessionSummaryOptional.get().getPaymentSession().isPresent()) {
-      return paymentSessionSummaryOptional.get().getPaymentSession().get().getValue();
-    } else {
-      return null;
-    }
+    return amountBTC;
+  }
+
+  public void setAmountCoin(Coin amountBTC) {
+    this.amountBTC = amountBTC;
   }
 
   public void setAmountFiat(FiatPayment fiatPayment) {
@@ -175,20 +224,28 @@ public class PaymentRequestData implements PaymentData {
 
   @Override
   public String getNote() {
-    return "";
+    return note;
   }
 
   @Override
   public String getDescription() {
-    if (paymentSessionSummaryOptional.isPresent() && paymentSessionSummaryOptional.get().getPaymentSession().isPresent()) {
-      return paymentSessionSummaryOptional.get().getPaymentSession().get().getMemo();
-    } else {
-      return "";
-    }
+    return getNote();
+  }
+
+  public void setNote(String note) {
+    this.note = note;
   }
 
   @Override
   public boolean isCoinBase() {
     return false;
+  }
+
+  public String getIdentityDisplayName() {
+    return identityDisplayName;
+  }
+
+  public void setIdentityDisplayName(String identityDisplayName) {
+    this.identityDisplayName = identityDisplayName;
   }
 }

@@ -7,9 +7,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
 import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.*;
+import org.bitcoinj.protocols.payments.PaymentProtocolException;
+import org.bitcoinj.protocols.payments.PaymentSession;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -65,6 +68,16 @@ public class WalletService extends AbstractService {
    * The text separator used in localising To: and By: prefices
    */
   public static final String PREFIX_SEPARATOR = ": ";
+
+  /**
+   * The subdirectory in the PAYMENTS_DIRECTORY_NAME directory that contains the raw BIP70 payment requests
+   */
+  public static final String BIP70_PAYMENT_REQUEST_DIRECTORY = "bip70";
+
+  /**
+   * The suffix for the serialised BIP70 payment request
+   */
+  public static final String BIP70_PAYMENT_REQUEST_SUFFIX = ".aes";
 
   /**
    * The Bitcoin network parameters
@@ -138,7 +151,6 @@ public class WalletService extends AbstractService {
   protected boolean shutdownNowInternal(ShutdownEvent.ShutdownType shutdownType) {
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-
       try {
         writePayments();
       } catch (PaymentsSaveException pse) {
@@ -157,7 +169,6 @@ public class WalletService extends AbstractService {
    * @param walletId the walletId to use for this WalletService
    */
   public void initialise(File applicationDataDirectory, WalletId walletId) {
-
     Preconditions.checkNotNull(applicationDataDirectory, "'applicationDataDirectory' must be present");
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
@@ -226,7 +237,7 @@ public class WalletService extends AbstractService {
     // Union the transactionData set and paymentData set
     lastSeenPaymentDataSet = Sets.union(transactionDataSet, paymentRequestsNotFullyFunded);
 
-    Set<PaymentData> bip70PaymentData =Sets.newHashSet();
+    Set<PaymentData> bip70PaymentData = Sets.newHashSet();
     for (PaymentData paymentData : paymentRequestDataMap.values()) {
       // If there is a tx hash then the bip70 payment is not a 'top level' object - not shown in payments table
       if (!((PaymentRequestData)paymentData).getTransactionHashOptional().isPresent()) {
@@ -714,7 +725,6 @@ public class WalletService extends AbstractService {
     Preconditions.checkNotNull(backingStoreFile, "There is no backingStoreFile. Please initialise WalletService.");
 
     try {
-
       log.debug("Reading payments from\n'{}'", backingStoreFile.getAbsolutePath());
 
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
@@ -726,20 +736,33 @@ public class WalletService extends AbstractService {
 
       // For quick access payment requests and transaction infos are stored in maps
       Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas = payments.getMBHDPaymentRequestDatas();
+      MBHDPaymentRequestMap.clear();
       if (MBHDPaymentRequestDatas != null) {
-        MBHDPaymentRequestMap.clear();
         for (MBHDPaymentRequestData MBHDPaymentRequestData : MBHDPaymentRequestDatas) {
           MBHDPaymentRequestMap.put(MBHDPaymentRequestData.getAddress(), MBHDPaymentRequestData);
         }
       }
 
       Collection<TransactionInfo> transactionInfos = payments.getTransactionInfos();
+      transactionInfoMap.clear();
       if (transactionInfos != null) {
-        transactionInfoMap.clear();
         for (TransactionInfo transactionInfo : transactionInfos) {
           transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
         }
       }
+
+      Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDatas();
+      paymentRequestDataMap.clear();
+      if (paymentRequestDatas != null) {
+        for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
+          paymentRequestDataMap.put(paymentRequestData.getUuid(), paymentRequestData);
+        }
+      }
+
+      readPaymentRequestsFromFiles(paymentRequestDataMap.values(), backingStoreFile);
+
+      log.debug("Reading payments completed\nTransaction infos: {}\nMBHD payment requests: {}\nBIP70 payment requests: {}",
+              transactionInfoMap.values().size(), MBHDPaymentRequestMap.values().size(), paymentRequestDataMap.values().size() );
 
     } catch (EncryptedFileReaderWriterException e) {
       ExceptionHandler.handleThrowable(new PaymentsLoadException("Could not load payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'."));
@@ -747,16 +770,13 @@ public class WalletService extends AbstractService {
   }
 
   /**
-   * 16qsu9SkSzaNi8ytH1tUECZpkhAGRmbj5n
    * <p>Save the payments data to the backing store</p>
    */
   public void writePayments() throws PaymentsSaveException {
-
     Preconditions.checkNotNull(backingStoreFile, "'backingStoreFile' must be present. Initialise WalletService.");
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent(), "Current wallet summary must be present");
 
     try {
-
       log.debug("Writing payments to\n'{}'", backingStoreFile.getAbsolutePath());
       log.trace("Writing TransactionInfoMap: {}", transactionInfoMap);
 
@@ -764,6 +784,7 @@ public class WalletService extends AbstractService {
       Payments payments = new Payments();
       payments.setTransactionInfos(transactionInfoMap.values());
       payments.setMBHDPaymentRequestDatas(MBHDPaymentRequestMap.values());
+      payments.setPaymentRequestDatas(paymentRequestDataMap.values());
       protobufSerializer.writePayments(payments, byteArrayOutputStream);
       EncryptedFileReaderWriter.encryptAndWrite(
               byteArrayOutputStream.toByteArray(),
@@ -771,13 +792,94 @@ public class WalletService extends AbstractService {
               backingStoreFile
       );
 
-      log.debug("Writing payments completed");
+      writePaymentRequestsToFiles(paymentRequestDataMap.values(), backingStoreFile);
 
+      log.debug("Writing payments completed\nTransaction infos: {}\nMBHD payment requests: {}\nBIP70 payment requests: {}",
+              transactionInfoMap.values().size(), MBHDPaymentRequestMap.values().size(), paymentRequestDataMap.values().size() );
     } catch (Exception e) {
       log.error("Could not write to payments db\n'{}'", backingStoreFile.getAbsolutePath(), e);
       throw new PaymentsSaveException("Could not write payments db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.", e);
     }
   }
+
+  private void writePaymentRequestsToFiles(Collection<PaymentRequestData> paymentRequestDatas, File backingStoreFile) {
+    Preconditions.checkNotNull(paymentRequestDatas);
+    Preconditions.checkNotNull(backingStoreFile);
+
+    // Work out the directory the raw BIP70 payment requests get written to.
+    File bip70PaymentRequestDirectory = new File(backingStoreFile.getParent() + File.separator + BIP70_PAYMENT_REQUEST_DIRECTORY);
+    if (!bip70PaymentRequestDirectory.exists()) {
+      if (!bip70PaymentRequestDirectory.mkdir()) {
+        log.error("Could not make directory to store BIP70 payment requests");
+        return;
+      }
+    }
+
+    // Write all the payment requests to disk, encrypted with the wallet password
+    // Existing files are not overwritten
+    for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
+      File outputFile = new File(bip70PaymentRequestDirectory.getAbsolutePath() + File.separator + paymentRequestData.getUuid().toString() + BIP70_PAYMENT_REQUEST_SUFFIX);
+      if (!outputFile.exists()) {
+        if (paymentRequestData.getPaymentRequest() != null) {
+          byte[] serialisedBytes = paymentRequestData.getPaymentRequest().toByteArray();
+          try {
+            EncryptedFileReaderWriter.encryptAndWrite(serialisedBytes,
+                    WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), outputFile);
+            log.debug("Written serialised bytes of unencrypted length {} to output file {}", serialisedBytes.length, outputFile.getAbsolutePath());
+          } catch (EncryptedFileReaderWriterException e) {
+            log.error("Failed to write BIP70 payment request file with UUID {}, error was {}", paymentRequestData.getUuid(), e);
+          }
+        }
+      }
+    }
+  }
+
+  private void readPaymentRequestsFromFiles(Collection<PaymentRequestData> paymentRequestDatas, File backingStoreFile) {
+     Preconditions.checkNotNull(paymentRequestDatas);
+     Preconditions.checkNotNull(backingStoreFile);
+
+     // Work out the directory the raw BIP70 payment requests get written to.
+     File bip70PaymentRequestDirectory = new File(backingStoreFile.getParent() + File.separator + BIP70_PAYMENT_REQUEST_DIRECTORY);
+     if (!bip70PaymentRequestDirectory.exists()) {
+       // Nothing to do
+       return;
+     }
+
+     // Read all the payment requests from disk.
+     for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
+       File inputFile = new File(bip70PaymentRequestDirectory.getAbsolutePath() + File.separator + paymentRequestData.getUuid().toString() + BIP70_PAYMENT_REQUEST_SUFFIX);
+       if (inputFile.exists()) {
+         byte[] serialisedBytes= EncryptedFileReaderWriter.readAndDecryptToByteArray(inputFile,
+                 WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
+                 WalletManager.scryptSalt(),
+                 WalletManager.aesInitialisationVector());
+         log.debug("Read serialised bytes of unencrypted length {} from input file {}", serialisedBytes.length, inputFile.getAbsolutePath());
+
+         try {
+           Protos.PaymentRequest paymentRequest = Protos.PaymentRequest.parseFrom(serialisedBytes);
+           paymentRequestData.setPaymentRequest(paymentRequest);
+
+           try {
+             PaymentSession paymentSession = new PaymentSession(paymentRequest);
+             // Payment request is ok
+
+             PaymentSessionSummary paymentSessionSummary = PaymentSessionSummary.newPaymentSessionOK(paymentSession);
+             paymentRequestData.setPaymentSessionSummaryOptional(Optional.of(paymentSessionSummary));
+             log.debug("Successfuly created paymentSessionSummary from paymentRequest");
+           } catch (PaymentProtocolException ppe) {
+             // Something wrong with the payment session
+             // TODO get host name from somewhere
+             String hostName = "unknown";
+             PaymentSessionSummary paymentSessionSummary = PaymentSessionSummary.newPaymentSessionFromException(ppe, paymentRequest, hostName);
+                          paymentRequestData.setPaymentSessionSummaryOptional(Optional.of(paymentSessionSummary));
+             paymentRequestData.setPaymentSessionSummaryOptional(Optional.of(paymentSessionSummary));           }
+             log.debug("Partial success in creating paymentSessionSummary from paymentRequest");
+         } catch (InvalidProtocolBufferException e) {
+           log.error("Failed to read BIP70 payment request file {}, error was {}", inputFile.getAbsolutePath(), e);
+         }
+       }
+     }
+   }
 
   public WalletId getWalletId() {
     return walletId;
@@ -1106,6 +1208,8 @@ public class WalletService extends AbstractService {
   static class PaymentComparator implements Comparator<PaymentData>, Serializable {
     @Override
     public int compare(PaymentData o1, PaymentData o2) {
+      if (o1.getDate() == null ) return -1;
+      if (o2.getDate() == null ) return 1;
       int dateSort = o2.getDate().compareTo(o1.getDate()); // note inverse sort
       if (dateSort != 0) {
         return dateSort;

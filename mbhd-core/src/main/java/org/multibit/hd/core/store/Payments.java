@@ -2,6 +2,7 @@ package org.multibit.hd.core.store;
 
 import com.google.common.collect.Lists;
 import org.multibit.hd.core.dto.MBHDPaymentRequestData;
+import org.multibit.hd.core.dto.PaymentRequestData;
 
 import java.util.Collection;
 
@@ -19,6 +20,8 @@ public class Payments {
 
   private Collection<TransactionInfo> transactionInfos;
 
+  private Collection<PaymentRequestData> paymentRequestDatas;
+
   public Payments() {
     this.MBHDPaymentRequestDatas = Lists.newArrayList();
     this.transactionInfos = Lists.newArrayList();
@@ -31,6 +34,13 @@ public class Payments {
   public void setMBHDPaymentRequestDatas(Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas) {
     this.MBHDPaymentRequestDatas = MBHDPaymentRequestDatas;
   }
+  public Collection<PaymentRequestData> getPaymentRequestDatas() {
+     return paymentRequestDatas;
+   }
+
+   public void setPaymentRequestDatas(Collection<PaymentRequestData> paymentRequestDatas) {
+     this.paymentRequestDatas = paymentRequestDatas;
+   }
 
   public Collection<TransactionInfo> getTransactionInfos() {
     return transactionInfos;

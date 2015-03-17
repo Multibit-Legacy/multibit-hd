@@ -42,24 +42,29 @@ public class EncryptedFileReaderWriter {
    * Decrypt an AES encrypted file and return it as an inputStream
    */
   public static ByteArrayInputStream readAndDecrypt(File encryptedProtobufFile, CharSequence password, byte[] salt, byte[] initialisationVector) throws EncryptedFileReaderWriterException {
-    Preconditions.checkNotNull(encryptedProtobufFile);
-    Preconditions.checkNotNull(password);
-    try {
-      // Read the encrypted file in and decrypt it.
-      byte[] encryptedWalletBytes = Files.toByteArray(encryptedProtobufFile);
-      //log.debug("Encrypted wallet bytes after load:\n" + Utils.HEX.encode(encryptedWalletBytes));
-
-      KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(salt));
-      KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
-
-      // Decrypt the wallet bytes
-      byte[] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, initialisationVector);
-
-      return new ByteArrayInputStream(decryptedBytes);
-    } catch (Exception e) {
-      throw new EncryptedFileReaderWriterException("Cannot read and decrypt the file '" + encryptedProtobufFile.getAbsolutePath() + "'", e);
-    }
+    return new ByteArrayInputStream(readAndDecryptToByteArray(encryptedProtobufFile, password, salt, initialisationVector));
   }
+
+  /**
+    * Decrypt an AES encrypted file and return it as a byte array
+    */
+   public static byte[] readAndDecryptToByteArray(File encryptedProtobufFile, CharSequence password, byte[] salt, byte[] initialisationVector) throws EncryptedFileReaderWriterException {
+     Preconditions.checkNotNull(encryptedProtobufFile);
+     Preconditions.checkNotNull(password);
+     try {
+       // Read the encrypted file in and decrypt it.
+       byte[] encryptedWalletBytes = Files.toByteArray(encryptedProtobufFile);
+       //log.debug("Encrypted wallet bytes after load:\n" + Utils.HEX.encode(encryptedWalletBytes));
+
+       KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(salt));
+       KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
+
+       // Decrypt the wallet bytes
+       return AESUtils.decrypt(encryptedWalletBytes, keyParameter, initialisationVector);
+     } catch (Exception e) {
+       throw new EncryptedFileReaderWriterException("Cannot read and decrypt the file '" + encryptedProtobufFile.getAbsolutePath() + "'", e);
+     }
+   }
 
   /**
    * Encrypt a byte array and output to a file, using an intermediate temporary file

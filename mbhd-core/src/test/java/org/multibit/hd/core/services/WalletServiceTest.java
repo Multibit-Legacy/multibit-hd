@@ -161,7 +161,7 @@ public class WalletServiceTest {
 
     SignedPaymentRequestSummary signedPaymentRequestSummary = new SignedPaymentRequestSummary(
             new Address(networkParameters, "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"),
-            Coin.CENT,
+            Coin.MILLICOIN,
             "Please donate to MultiBit",
             new URL("https://localhost:8443/payment"),
             "Donation 0001".getBytes(Charsets.UTF_8),
@@ -184,10 +184,10 @@ public class WalletServiceTest {
     walletService.addPaymentRequestData(paymentRequestData);
 
     // Write the payment requests to the backing store
-    //walletService.writePayments();
+    walletService.writePayments();
 
     // Read the payment requests
-    //walletService.readPayments();
+    walletService.readPayments();
 
     // Check the new payment request is present
     Collection<PaymentRequestData> newPaymentRequestDatas = walletService.getPaymentRequestDatas();
@@ -199,7 +199,13 @@ public class WalletServiceTest {
   private void checkPaymentRequestData(PaymentRequestData first, PaymentRequestData other) {
     assertThat(other.getUuid().equals(first.getUuid()));
     assertThat(other.getTransactionHashOptional().equals(first.getTransactionHashOptional()));
-    assertThat(other.getPaymentRequest().equals(first.getPaymentRequest()));
+    if (first.getPaymentRequest() == null) {
+      assertThat(other.getPaymentRequest()).isNull();
+    } else {
+      assertThat(other.getPaymentRequest()).isNotNull();
+      assertThat(other.getPaymentRequest().equals(first.getPaymentRequest()));
+    }
+    assertThat(!other.getPaymentSessionSummaryOptional().isPresent() && !first.getPaymentSessionSummaryOptional().isPresent()).isTrue();
   }
 
   @Test

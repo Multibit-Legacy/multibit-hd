@@ -121,7 +121,7 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
     contentPanel.add(trustStatusLabel, "span 2,aligny top,wrap");
 
     contentPanel.add(statusLabel);
-    contentPanel.add(statusValue,  "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(statusValue, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     contentPanel.add(Labels.newMemoLabel(), "shrink");
     contentPanel.add(memo, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
@@ -180,6 +180,24 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
                 statusValue.setText(Languages.safeText(paymentRequestData.getStatus().getStatusKey(), paymentRequestData.getStatus().getStatusData()));
                 LabelDecorator.applyPaymentStatusIconAndColor(paymentRequestData.getStatus(), statusValue, false, MultiBitUI.SMALL_ICON_SIZE);
 
+                memo.setText(paymentRequestData.getNote());
+                DateTime paymentRequestDate = new DateTime(paymentRequestData.getDate());
+                date.setText(Dates.formatTransactionDateLocal(paymentRequestDate));
+
+                // Update the model and view for the amount
+                Configuration configuration = Configurations.currentConfiguration;
+                paymentRequestAmountMaV.getModel().setCoinAmount(paymentRequestData.getAmountCoin());
+                if (paymentRequestData.getAmountFiat().getAmount().isPresent()) {
+                  paymentRequestAmountMaV.getModel().setLocalAmount(paymentRequestData.getAmountFiat().getAmount().get());
+                  paymentRequestAmountMaV.getModel().setLocalAmountVisible(true);
+                } else {
+                  paymentRequestAmountMaV.getModel().setLocalAmount(null);
+                  paymentRequestAmountMaV.getModel().setLocalAmountVisible(false);
+                }
+                paymentRequestAmountMaV.getView().updateView(configuration);
+
+                displayName.setText(paymentRequestData.getIdentityDisplayName());
+
                 Optional<PaymentSessionSummary> paymentSessionSummaryOptional = paymentRequestData.getPaymentSessionSummaryOptional();
 
                 if (paymentSessionSummaryOptional.isPresent()) {
@@ -211,23 +229,15 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
                               MessageKey.PAYMENT_PROTOCOL_ERROR_NOTE,
                               MultiBitUI.NORMAL_ICON_SIZE);
                       memo.setText(Languages.safeText(paymentSessionSummary.getMessageKey().get(), paymentSessionSummary.getMessageData().get()));
-                      displayName.setVisible(false);
-                      date.setVisible(false);
-                      expires.setVisible(false);
-                      paymentRequestAmountMaV.getView().setVisible(false);
                       return;
                     default:
                       throw new IllegalStateException("Unknown payment session summary status: " + paymentSessionSummary.getStatus());
                   }
 
+
                   if (paymentSessionOptional.isPresent()) {
                     // Must have a valid payment session to be here
                     PaymentSession paymentSession = paymentSessionOptional.get();
-
-                    memo.setText(paymentSession.getMemo());
-
-                    DateTime paymentRequestDate = new DateTime(paymentSession.getDate());
-                    date.setText(Dates.formatTransactionDateLocal(paymentRequestDate));
 
                     if (paymentSession.getExpires() == null) {
                       expires.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
@@ -240,19 +250,6 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
                       //            } else {
                       //            }
                     }
-
-                    // Update the model and view for the amount
-                    // (no local in case of different exchange rates causing confusion)
-                    Configuration configuration = Configurations.currentConfiguration;
-                    paymentRequestAmountMaV.getModel().setCoinAmount(paymentSession.getValue());
-                    if (paymentRequestData.getAmountFiat().getAmount().isPresent()) {
-                      paymentRequestAmountMaV.getModel().setLocalAmount(paymentRequestData.getAmountFiat().getAmount().get());
-                      paymentRequestAmountMaV.getModel().setLocalAmountVisible(true);
-                    } else {
-                      paymentRequestAmountMaV.getModel().setLocalAmount(null);
-                      paymentRequestAmountMaV.getModel().setLocalAmountVisible(false);
-                    }
-                    paymentRequestAmountMaV.getView().updateView(configuration);
 
                     // Ensure the next button is enabled
                     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);

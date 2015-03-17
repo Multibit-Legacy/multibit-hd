@@ -1,12 +1,11 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Wallet;
-import org.bitcoinj.protocols.payments.PaymentProtocol;
-import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.services.FeeService;
@@ -29,6 +28,8 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -41,6 +42,8 @@ import javax.swing.*;
  * @since 0.0.1
  */
 public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, SendBitcoinConfirmPanelModel> {
+
+  private static final Logger log = LoggerFactory.getLogger(SendBitcoinConfirmPanelView.class);
 
   // View components
   private JTextArea notesTextArea;
@@ -122,24 +125,18 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     notesTextArea = TextBoxes.newEnterPrivateNotes(getWizardModel());
 
     // Apply any Payment Request parameters
-    if (getWizardModel().getPaymentRequestDataOptional().isPresent() && getWizardModel().getPaymentRequestDataOptional().get().getPaymentSessionSummaryOptional().isPresent()) {
+    if (getWizardModel().getPaymentRequestDataOptional().isPresent()) {
+      PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestDataOptional().get();
 
-      PaymentSession paymentSession = getWizardModel().getPaymentRequestDataOptional().get().getPaymentSessionSummaryOptional().get().getPaymentSession().get();
-      // User has received a Payment Request which may provide identify information
-      Optional<PaymentProtocol.PkiVerificationData> identityOptional = getWizardModel().getPaymentRequestDataOptional().get().getPkiVerificationDataOptional();
-      if (identityOptional.isPresent() && identityOptional.get().displayName != null) {
-        // Use the display name as the recipient
-        recipientSummaryLabel = Labels.newValueLabel(identityOptional.get().displayName);
-
-      } else {
+      if (paymentRequestData.getIdentityDisplayName().isEmpty()) {
         // Unknown recipient
         recipientSummaryLabel = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));
-
+      } else {
+        recipientSummaryLabel = Labels.newValueLabel(paymentRequestData.getIdentityDisplayName());
       }
 
       // Fill in the memo
-      notesTextArea.setText(getWizardModel().getPaymentRequestDataOptional().get().getPaymentSessionSummaryOptional().get().getPaymentSession().get().getMemo());
-
+      notesTextArea.setText(paymentRequestData.getNote());
     } else {
       recipientSummaryLabel = Labels.newRecipientSummary(getWizardModel().getRecipient());
     }
@@ -225,23 +222,32 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
   @Override
   public boolean beforeShow() {
-
     Configuration configuration = Configurations.currentConfiguration;
 
     final Coin amount;
-    if (getWizardModel().getPaymentRequestDataOptional().isPresent() && getWizardModel().getPaymentRequestDataOptional().get().getPaymentSessionSummaryOptional().isPresent()) {
-
-      // User has received a Payment Request which may provide identify information
+    if (getWizardModel().getPaymentRequestDataOptional().isPresent()) {
+      // User has received a BIP70 Payment Request
       PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestDataOptional().get();
-      if (paymentRequestData.getPkiVerificationDataOptional().isPresent()) {
-        // Use the display name as the recipient
-        recipientSummaryLabel.setText(paymentRequestData.getPkiVerificationDataOptional().get().displayName);
-      } else {
+      if (paymentRequestData.getIdentityDisplayName().isEmpty()) {
         // Unknown recipient
-        recipientSummaryLabel.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+        recipientSummaryLabel = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));
+      } else {
+        recipientSummaryLabel = Labels.newValueLabel(paymentRequestData.getIdentityDisplayName());
       }
-      amount = getWizardModel().getPaymentRequestDataOptional().get().getPaymentSessionSummaryOptional().get().getPaymentSession().get().getValue();
+      amount = paymentRequestData.getAmountCoin();
+
+
+      // TODO check PKI
+//      try {
+//        PaymentSession paymentSession = new PaymentSession(paymentRequestData.getPaymentRequest(), false);
+//        Wallet.SendRequest sendRequest = paymentSession.getSendRequest();
+//
+//        transactionFeeDisplayAmountMaV.getModel().setCoinAmount(sendRequest.fee);
+//      } catch (PaymentProtocolException e) {
+//        e.printStackTrace();
+//      }
     } else {
+      // Regular send with data entered by the user
       amount = getWizardModel().getCoinAmount();
 
       // Update the model and view for the recipient
@@ -252,20 +258,26 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
       );
     }
 
-    // Update the model and view for the amount
-    transactionDisplayAmountMaV.getModel().setCoinAmount(amount);
+    // Update the model and view for the transaction fee - by this point the prepareTransaction will have been called by either:
+    // (for regular sends) the SendBitcoinWizardModel#showNext
+    // (for BIP70 payment requests)or the SendBitcoinWizardModel#prepareWhenBIP70
+    Optional<Wallet.SendRequest> sendRequest = getWizardModel().getSendRequestSummary().getSendRequest();
+    if (sendRequest.isPresent()) {
+      transactionFeeDisplayAmountMaV.getModel().setCoinAmount(sendRequest.get().fee);
+    } else {
+      log.error("No send request - hence cannot set a tx fee");
+    }
     if (getWizardModel().getLocalAmount().isPresent()) {
       transactionDisplayAmountMaV.getModel().setLocalAmount(getWizardModel().getLocalAmount().get());
     } else {
       transactionDisplayAmountMaV.getModel().setLocalAmount(null);
     }
+
+    // Update the model and view for the amount
+    Preconditions.checkNotNull(amount);
+    transactionDisplayAmountMaV.getModel().setCoinAmount(amount);
     transactionDisplayAmountMaV.getView().updateView(configuration);
 
-    // Update the model and view for the transaction fee - by this point the prepareTransaction will have been called by the SendBitcoinWizardModel#showNext
-    Optional<Wallet.SendRequest> sendRequest = getWizardModel().getSendRequestSummary().getSendRequest();
-    if (sendRequest.isPresent()) {
-      transactionFeeDisplayAmountMaV.getModel().setCoinAmount(sendRequest.get().fee);
-    }
     transactionFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
 

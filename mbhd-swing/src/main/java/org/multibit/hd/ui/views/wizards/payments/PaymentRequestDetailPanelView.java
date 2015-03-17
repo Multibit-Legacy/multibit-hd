@@ -124,7 +124,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
     exchangeRateValue = Labels.newBlankLabel();
 
-    boolean paymentOK = readPaymentRequestData();
+    boolean paymentOK = readMBHDPaymentRequestData();
 
     contentPanel.add(statusLabel);
     contentPanel.add(statusValue, "wrap");
@@ -188,7 +188,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   /**
    * @return True if the payment request data was populated
    */
-  private boolean readPaymentRequestData() {
+  private boolean readMBHDPaymentRequestData() {
     // Work out the payment request to show
     MBHDPaymentRequestData MBHDPaymentRequestData = getWizardModel().getMBHDPaymentRequestData();
 
