@@ -751,10 +751,25 @@ public class WalletService extends AbstractService {
         }
       }
 
+      Optional<WalletSummary>  walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
+
       Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDatas();
       paymentRequestDataMap.clear();
       if (paymentRequestDatas != null) {
         for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
+
+          // Clear any tx hash if the tx is not in the wallet
+          // (See issue https://github.com/bitcoin-solutions/multibit-hd/issues/463)
+          // This will get persisted at MBHD close or when payments is next written
+          Optional<Sha256Hash> transactionHashOptional = paymentRequestData.getTransactionHashOptional();
+          if (transactionHashOptional.isPresent() && walletSummaryOptional.isPresent()) {
+            Wallet wallet = walletSummaryOptional.get().getWallet();
+            if (wallet != null && wallet.getTransaction(transactionHashOptional.get()) == null) {
+              // Transaction is not in the wallet - clear it from the paymentRequesData
+              paymentRequestData.setTransactionHashOptional(Optional.<Sha256Hash>absent());
+            }
+          }
+
           paymentRequestDataMap.put(paymentRequestData.getUuid(), paymentRequestData);
         }
       }
