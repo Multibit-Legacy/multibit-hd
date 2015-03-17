@@ -765,7 +765,7 @@ public class WalletService extends AbstractService {
           if (transactionHashOptional.isPresent() && walletSummaryOptional.isPresent()) {
             Wallet wallet = walletSummaryOptional.get().getWallet();
             if (wallet != null && wallet.getTransaction(transactionHashOptional.get()) == null) {
-              // Transaction is not in the wallet - clear it from the paymentRequesData
+              // Transaction is not in the wallet - clear it from the paymentRequestData
               paymentRequestData.setTransactionHashOptional(Optional.<Sha256Hash>absent());
             }
           }
