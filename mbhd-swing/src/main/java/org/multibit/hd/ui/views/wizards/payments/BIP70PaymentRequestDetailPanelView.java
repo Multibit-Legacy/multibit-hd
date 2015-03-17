@@ -12,7 +12,6 @@ import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -24,7 +23,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
-import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState;
@@ -250,11 +248,12 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
                       //            } else {
                       //            }
                     }
-
-                    // Ensure the next button is enabled
-                    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
                   }
                 }
+
+                // Set finish button to be the default
+                getFinishButton().requestFocusInWindow();
+                getFinishButton().setEnabled(true);
               }
             });
   }
