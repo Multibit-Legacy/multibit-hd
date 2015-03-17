@@ -67,6 +67,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.net.URI;
 import java.util.Locale;
 import java.util.Queue;
 import java.util.ResourceBundle;
@@ -83,6 +84,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MainController extends AbstractController implements
   GenericOpenURIEventListener,
+  GenericOpenFilesEventListener,
   GenericPreferencesEventListener,
   GenericAboutEventListener,
   GenericQuitEventListener {
@@ -773,7 +775,19 @@ public class MainController extends AbstractController implements
   @Override
   public void onOpenURIEvent(GenericOpenURIEvent event) {
 
+    // Do not fire event since we may in the process of starting up
     ExternalDataListeningService.addToQueues(event.getURI().toString(), false);
+
+  }
+
+  @Override
+  public void onOpenFilesEvent(GenericOpenFilesEvent event) {
+
+    for (File file: event.getFiles()) {
+      URI uri=file.toURI();
+      // Do not fire event since we may in the process of starting up
+      ExternalDataListeningService.addToQueues(uri.toString(), false);
+    }
 
   }
 
@@ -1122,8 +1136,8 @@ public class MainController extends AbstractController implements
     Queue<BitcoinURI> bitcoinURIQueue = externalDataListeningService.getBitcoinURIQueue();
     Queue<PaymentSessionSummary> paymentSessionSummaryQueue = externalDataListeningService.getPaymentSessionSummaryQueue();
 
-    // Check for BIP21 Bitcoin URI
-    if (bitcoinURIQueue.peek() != null) {
+    // Check for BIP21 Bitcoin URIs
+    while (!bitcoinURIQueue.isEmpty()) {
 
       // Attempt to create an alert model from the Bitcoin URI
       Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURIQueue.poll());
@@ -1135,8 +1149,8 @@ public class MainController extends AbstractController implements
 
     }
 
-    // Check for Payment Protocol session
-    if (paymentSessionSummaryQueue.peek() != null) {
+    // Check for Payment Protocol sessions
+    while (!paymentSessionSummaryQueue.isEmpty()) {
 
       // Attempt to create an alert model
       Optional<AlertModel> alertModel = Models.newPaymentRequestAlertModel(paymentSessionSummaryQueue.poll());

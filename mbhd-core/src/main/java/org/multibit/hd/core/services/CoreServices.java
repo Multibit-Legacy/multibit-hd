@@ -146,9 +146,6 @@ public class CoreServices {
     securityCheckingService = new SecurityCheckingService();
     configurationService = new ConfigurationService();
 
-    // Start the logging factory (see later for instance)
-    LoggingFactory.bootstrap();
-
     // Start the configuration service to ensure shutdown events are trapped
     configurationService.start();
 

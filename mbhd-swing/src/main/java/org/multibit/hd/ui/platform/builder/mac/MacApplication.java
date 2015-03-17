@@ -16,10 +16,7 @@
 package org.multibit.hd.ui.platform.builder.mac;
 
 import org.multibit.hd.ui.platform.GenericApplication;
-import org.multibit.hd.ui.platform.handler.GenericAboutHandler;
-import org.multibit.hd.ui.platform.handler.GenericOpenURIHandler;
-import org.multibit.hd.ui.platform.handler.GenericPreferencesHandler;
-import org.multibit.hd.ui.platform.handler.GenericQuitHandler;
+import org.multibit.hd.ui.platform.handler.*;
 import org.multibit.hd.ui.platform.listener.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +50,10 @@ public class MacApplication implements GenericApplication {
    */
   private Class nativeOpenURIHandlerClass;
   /**
+   * Handles the Open Files use case
+   */
+  private Class nativeOpenFilesHandlerClass;
+  /**
    * Handles the Preferences use case
    */
   private Class nativePreferencesHandlerClass;
@@ -60,6 +61,10 @@ public class MacApplication implements GenericApplication {
    * Handles the About use case
    */
   private Class nativeAboutHandlerClass;
+  /**
+   * Handles the Quit use case
+   */
+  private Class nativeQuitHandlerClass;
 
   public void addOpenURIHandler(GenericOpenURIHandler openURIHandler) {
 
@@ -85,10 +90,30 @@ public class MacApplication implements GenericApplication {
 
   }
 
-  /**
-   * Handles the Quit use case
-   */
-  private Class nativeQuitHandlerClass;
+  public void addOpenFilesHandler(GenericOpenFilesHandler openFilesHandler) {
+
+    log.debug("Adding GenericOpenFilesHandler");
+    // Ensure the implementing class is public
+    // This avoids anonymous interface issues
+    if (!Modifier.isPublic(openFilesHandler.getClass().getModifiers())) {
+      throw new IllegalArgumentException("GenericOpenFilesHandler must be a public class");
+    }
+
+    // Load up an instance of the native OpenFilesHandler
+    // Provide an invocation handler to link the native openURI(AppEvent.OpenFilesEvent event)
+    // back to the generic handler
+    Object nativeOpenFilesHandler = Proxy.newProxyInstance(getClass().getClassLoader(),
+      new Class[]{nativeOpenFilesHandlerClass},
+      new OpenFilesHandlerInvocationHandler(openFilesHandler, GenericOpenFilesEvent.class));
+
+    // Reflective call as application.setOpenFileHandler(nativeOpenFilesHandler)
+    // (note inconsistent singular)
+    // nativeOpenFilesHandler is a proxy that actually uses the generic handler
+    callNativeMethod(nativeApplication, "setOpenFileHandler", new Class[]{nativeOpenFilesHandlerClass}, new Object[]{nativeOpenFilesHandler});
+
+    log.debug("GenericOpenFilesHandler configured");
+
+  }
 
   public void addPreferencesHandler(GenericPreferencesHandler preferencesHandler) {
 
@@ -211,6 +236,10 @@ public class MacApplication implements GenericApplication {
 
   public void setOpenURIHandlerClass(Class openURIHandlerClass) {
     this.nativeOpenURIHandlerClass = openURIHandlerClass;
+  }
+
+  public void setOpenFilesHandlerClass(Class openFilesHandlerClass) {
+    this.nativeOpenFilesHandlerClass = openFilesHandlerClass;
   }
 
   public void setPreferencesHandlerClass(Class preferencesHandlerClass) {
