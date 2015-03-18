@@ -160,7 +160,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
   @Override
    public boolean beforeShow() {
-     // Ensure the empty wallet button is kept up to date
+     // Ensure the send / request buttons are kept up to date
      Optional<BitcoinNetworkChangedEvent> changedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
      if (changedEvent.isPresent()) {
        updateSendRequestButtons(changedEvent.get());
@@ -191,8 +191,6 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     BitcoinNetworkSummary summary = event.getSummary();
 
     Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
-    Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
-    Preconditions.checkNotNull(summary.getMessageData(), "'errorData' must be present");
 
     // Keep the UI response to a minimum due to the volume of these events
     updateSendRequestButtons(event);

@@ -2,14 +2,19 @@ package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
+import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
+import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
@@ -163,6 +168,11 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
     // Show the 'pay this payment' button only if it is not already paid
     payThisPaymentRequestButton.setVisible(paymentRequestData.getStatus().getStatusKey() != CoreMessageKey.PAYMENT_PAID);
 
+    // Ensure the pay request button is kept up to date
+    Optional<BitcoinNetworkChangedEvent> changedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
+    if (changedEvent.isPresent()) {
+      updatePayRequestButton(changedEvent.get());
+    }
     return true;
   }
 
@@ -279,6 +289,74 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
         Panels.showLightBox(sendBitcoinWizard.getWizardScreenHolder());
       }
     };
+  }
+
+  /**
+   * @param event The "Bitcoin network changed" event - one per block downloaded during synchronization
+   */
+  @Subscribe
+  public void onBitcoinNetworkChangeEvent(final BitcoinNetworkChangedEvent event) {
+
+    if (!isInitialised()) {
+      return;
+    }
+
+    log.trace("Received 'Bitcoin network changed' event: {}", event.getSummary());
+
+    Preconditions.checkNotNull(event, "'event' must be present");
+    Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");
+
+    BitcoinNetworkSummary summary = event.getSummary();
+
+    Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
+
+    // Keep the UI response to a minimum due to the volume of these events
+    updatePayRequestButton(event);
+
+  }
+
+  private void updatePayRequestButton(BitcoinNetworkChangedEvent event) {
+    boolean newEnabled;
+    boolean canChange = true;
+
+    // Cannot pay a request until synced as you don't know how much is in the wallet
+    switch (event.getSummary().getSeverity()) {
+      case RED:
+        // Enable on RED only if unrestricted (allows FEST tests without a network)
+        newEnabled = InstallationManager.unrestricted;
+        break;
+      case AMBER:
+        // Enable on AMBER only if unrestricted
+        newEnabled = InstallationManager.unrestricted;
+        break;
+      case GREEN:
+        // Enable on GREEN
+        newEnabled = true;
+        break;
+      case PINK:
+      case EMPTY:
+        // Maintain the status quo
+        newEnabled = payThisPaymentRequestButton.isEnabled();
+        canChange = false;
+        break;
+      default:
+        // Unknown status
+        throw new IllegalStateException("Unknown event severity " + event.getSummary().getSeverity());
+    }
+
+    if (canChange) {
+      final boolean finalNewEnabled = newEnabled;
+
+      // If button is not enabled and the newEnabled is false don't do anything
+      if (payThisPaymentRequestButton.isEnabled() || newEnabled) {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            payThisPaymentRequestButton.setEnabled(finalNewEnabled);
+          }
+        });
+      }
+    }
   }
 }
 

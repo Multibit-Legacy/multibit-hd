@@ -132,8 +132,6 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
     BitcoinNetworkSummary summary = event.getSummary();
 
     Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
-    Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
-    Preconditions.checkNotNull(summary.getMessageData(), "'errorData' must be present");
 
     // Keep the UI response to a minimum due to the volume of these events
     updateEmptyButton(event);
