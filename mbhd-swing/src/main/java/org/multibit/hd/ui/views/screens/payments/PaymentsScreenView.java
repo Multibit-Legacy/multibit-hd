@@ -2,10 +2,7 @@ package org.multibit.hd.ui.views.screens.payments;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.MBHDPaymentRequestData;
-import org.multibit.hd.core.dto.PaymentData;
-import org.multibit.hd.core.dto.TransactionData;
-import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
@@ -50,7 +47,6 @@ import java.util.Set;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> {
 
@@ -74,16 +70,14 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
   @Override
   public void newScreenModel() {
-
   }
 
   @Override
   public JPanel initialiseScreenViewPanel() {
-
     MigLayout layout = new MigLayout(
-      Panels.migXYDetailLayout(),
-      "[][][][][]push[]", // Column constraints
-      "[shrink][shrink][grow]" // Row constraints
+            Panels.migXYDetailLayout(),
+            "[][][][][]push[]", // Column constraints
+            "[shrink][shrink][grow]" // Row constraints
     );
 
     // Create view components
@@ -130,7 +124,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
    */
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
-
     log.trace("Received a TransactionSeenEvent: {}", transactionSeenEvent);
 
     if (transactionSeenEvent.isFirstAppearanceInWallet()) {
@@ -163,32 +156,29 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   }
 
   /**
-    * Update the payments when a transactionCreationEvent occurs
-    */
-   @Subscribe
-   public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
-     log.trace("Received a TransactionCreationEvent.");
+   * Update the payments when a transactionCreationEvent occurs
+   */
+  @Subscribe
+  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+    log.trace("Received a TransactionCreationEvent.");
 
-     update(true);
-   }
+    update(true);
+  }
 
-   /**
+  /**
    * <p>Called when the search box is updated</p>
    *
    * @param event The "component changed" event
    */
   @Subscribe
   public void onComponentChangedEvent(ComponentChangedEvent event) {
-
     // Check if this event applies to us
     if (event.getPanelName().equals(getScreen().name())) {
       update(false);
     }
-
   }
 
   private void update(final boolean refreshData) {
-
     if (paymentsTable != null) {
 
       SwingUtilities.invokeLater(new Runnable() {
@@ -220,7 +210,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
         }
       });
     }
-
   }
 
   /**
@@ -248,11 +237,11 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
         // If the payment is a transaction, then fetch the matching payment request data and put them in the model
         if (paymentData instanceof TransactionData) {
           wizard
-            .getWizardModel()
-            .setMatchingPaymentRequestList(
-              walletService
-                .findPaymentRequestsThisTransactionFunds((TransactionData) paymentData)
-            );
+                  .getWizardModel()
+                  .setMatchingPaymentRequestList(
+                          walletService
+                                  .findPaymentRequestsThisTransactionFunds((TransactionData) paymentData)
+                  );
         }
         Panels.showLightBox(wizard.getWizardScreenHolder());
       }
@@ -263,7 +252,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
    * @return The export transaction details action
    */
   private Action getExportAction() {
-
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -277,12 +265,10 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
    * @return The undo details action
    */
   private Action getUndoAction() {
-
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-
-        CoreServices.getCurrentWalletService().get().undoDeletePaymentRequest();
+        CoreServices.getCurrentWalletService().get().undoDeletePaymentData();
         fireWalletDetailsChanged();
 
       }
@@ -293,7 +279,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
    * @return The delete payment request  action
    */
   private Action getDeletePaymentRequestAction() {
-
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -309,7 +294,11 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
         if (paymentData instanceof MBHDPaymentRequestData) {
           // We can delete this
-          CoreServices.getCurrentWalletService().get().deletePaymentRequest((MBHDPaymentRequestData) paymentData);
+          CoreServices.getCurrentWalletService().get().deleteMBHDPaymentRequest((MBHDPaymentRequestData) paymentData);
+          fireWalletDetailsChanged();
+        } else if (paymentData instanceof PaymentRequestData) {
+          // We can delete this
+          CoreServices.getCurrentWalletService().get().deletePaymentRequest((PaymentRequestData) paymentData);
           fireWalletDetailsChanged();
         }
       }
@@ -317,25 +306,23 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   }
 
   /**
-    * @return The table mouse listener
-    */
-   private MouseAdapter getTableMouseListener() {
+   * @return The table mouse listener
+   */
+  private MouseAdapter getTableMouseListener() {
+    return new MouseAdapter() {
 
-     return new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
 
-       public void mousePressed(MouseEvent e) {
+        if (e.getClickCount() == 2) {
 
-         if (e.getClickCount() == 2) {
+          detailsButton.doClick();
+        }
+      }
 
-           detailsButton.doClick();
-         }
-       }
-
-     };
-   }
+    };
+  }
 
   private void fireWalletDetailsChanged() {
-
     // Ensure the views that display payments update
     final WalletDetail walletDetail = new WalletDetail();
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
@@ -357,7 +344,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
           ViewEvents.fireWalletDetailChangedEvent(walletDetail);
         }
       });
-
     }
   }
 }

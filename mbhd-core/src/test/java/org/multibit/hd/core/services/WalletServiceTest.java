@@ -104,23 +104,23 @@ public class WalletServiceTest {
     assertThat(walletService.getMBHDPaymentRequestDatas().size()).isEqualTo(0);
 
     // Create a new payment request
-    MBHDPaymentRequestData MBHDPaymentRequestData1 = new MBHDPaymentRequestData();
+    MBHDPaymentRequestData mbhdPaymentRequestData = new MBHDPaymentRequestData();
 
-    MBHDPaymentRequestData1.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
-    MBHDPaymentRequestData1.setAmountCoin(Coin.valueOf(245));
+    mbhdPaymentRequestData.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
+    mbhdPaymentRequestData.setAmountCoin(Coin.valueOf(245));
     DateTime date1 = new DateTime();
-    MBHDPaymentRequestData1.setDate(date1);
-    MBHDPaymentRequestData1.setLabel("label1");
-    MBHDPaymentRequestData1.setNote("note1");
+    mbhdPaymentRequestData.setDate(date1);
+    mbhdPaymentRequestData.setLabel("label1");
+    mbhdPaymentRequestData.setNote("note1");
 
     FiatPayment fiatPayment1 = new FiatPayment();
-    MBHDPaymentRequestData1.setAmountFiat(fiatPayment1);
+    mbhdPaymentRequestData.setAmountFiat(fiatPayment1);
     fiatPayment1.setAmount(Optional.of(new BigDecimal("12345.6")));
     fiatPayment1.setCurrency(Optional.of(Currency.getInstance("USD")));
     fiatPayment1.setRate(Optional.of("10.0"));
     fiatPayment1.setExchangeName(Optional.of("Bitstamp"));
 
-    walletService.addMBHDPaymentRequestData(MBHDPaymentRequestData1);
+    walletService.addMBHDPaymentRequestData(mbhdPaymentRequestData);
 
     // Write the payment requests to the backing store
     walletService.writePayments();
@@ -132,7 +132,21 @@ public class WalletServiceTest {
     Collection<MBHDPaymentRequestData> newMBHDPaymentRequestDatas = walletService.getMBHDPaymentRequestDatas();
     assertThat(newMBHDPaymentRequestDatas.size()).isEqualTo(1);
 
-    checkMBHDPaymentRequestData(MBHDPaymentRequestData1, newMBHDPaymentRequestDatas.iterator().next());
+    checkMBHDPaymentRequestData(mbhdPaymentRequestData, newMBHDPaymentRequestDatas.iterator().next());
+
+    // Delete the payment request
+    walletService.deleteMBHDPaymentRequest(mbhdPaymentRequestData);
+
+    // Check the new payment request is deleted
+    Collection<MBHDPaymentRequestData> deletedMBHDPaymentRequestDatas = walletService.getMBHDPaymentRequestDatas();
+    assertThat(deletedMBHDPaymentRequestDatas.size()).isEqualTo(0);
+
+    // Undo the delete
+    walletService.undoDeletePaymentData();
+
+    // Check it is back
+    Collection<MBHDPaymentRequestData> rebornMBHDPaymentRequestDatas = walletService.getMBHDPaymentRequestDatas();
+    assertThat(rebornMBHDPaymentRequestDatas.size()).isEqualTo(1);
   }
 
   private void checkMBHDPaymentRequestData(MBHDPaymentRequestData MBHDPaymentRequestData, MBHDPaymentRequestData other) {
@@ -150,7 +164,7 @@ public class WalletServiceTest {
   }
 
   @Test
-  public void testCreatePaymentRequest() throws Exception {
+  public void testCreateBIP70PaymentRequest() throws Exception {
     PaymentProtocolService paymentProtocolService = new PaymentProtocolService(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
     assertThat(paymentProtocolService).isNotNull();
 
@@ -186,7 +200,14 @@ public class WalletServiceTest {
     // Write the payment requests to the backing store
     walletService.writePayments();
 
-    // Read the payment requests
+    // Check the payment request file is stored - it is stored in a subdirectoy 'bip70' with the name "uuid".aes
+    File expectedFile = new File (WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletFile().getParentFile()
+            + File.separator + "payments" + File.separator + "bip70"
+            + File.separator + paymentRequestData.getUuid().toString() + ".aes");
+    log.debug("Expected payment request file is {}", expectedFile.getAbsoluteFile());
+    assertThat(expectedFile.exists()).isTrue();
+
+    // Read the payment requests from disk
     walletService.readPayments();
 
     // Check the new payment request is present
@@ -194,6 +215,26 @@ public class WalletServiceTest {
     assertThat(newPaymentRequestDatas.size()).isEqualTo(1);
 
     checkPaymentRequestData(paymentRequestData, newPaymentRequestDatas.iterator().next());
+
+    // Delete the BIP70 payment request
+    walletService.deletePaymentRequest(paymentRequestData);
+
+    // Check the new payment request is deleted
+    Collection<PaymentRequestData> deletedPaymentRequestDatas = walletService.getPaymentRequestDatas();
+    assertThat(deletedPaymentRequestDatas.size()).isEqualTo(0);
+
+    // Check the payment request file is deleted
+    assertThat(expectedFile.exists()).isFalse();
+
+    // Undo the delete
+    walletService.undoDeletePaymentData();
+
+    // Check it is back
+    Collection<PaymentRequestData> rebornPaymentRequestDatas = walletService.getPaymentRequestDatas();
+    assertThat(rebornPaymentRequestDatas.size()).isEqualTo(1);
+
+    // Check the payment request file is deleted
+    assertThat(expectedFile.exists()).isTrue();
   }
 
   private void checkPaymentRequestData(PaymentRequestData first, PaymentRequestData other) {
