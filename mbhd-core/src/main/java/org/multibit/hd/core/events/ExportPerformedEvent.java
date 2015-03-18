@@ -16,6 +16,8 @@ public class ExportPerformedEvent implements CoreEvent {
 
   private final String transactionsExportFilename;
 
+  private final String mbhdPaymentRequestsExportFilename;
+
   private final String paymentRequestsExportFilename;
 
   private final boolean exportWasSuccessful;
@@ -31,12 +33,14 @@ public class ExportPerformedEvent implements CoreEvent {
   @SuppressFBWarnings({"EI_EXPOSE_REP2"})
   public ExportPerformedEvent(
     String transactionsExportFilename,
+    String mbhdPaymentRequestsExportFilename,
     String paymentRequestsExportFilename,
     boolean exportWasSuccessful,
     CoreMessageKey exportFailureReasonKey,
     String[] exportFailureReasonData) {
 
     this.transactionsExportFilename = transactionsExportFilename;
+    this.mbhdPaymentRequestsExportFilename = mbhdPaymentRequestsExportFilename;
     this.paymentRequestsExportFilename = paymentRequestsExportFilename;
     this.exportWasSuccessful = exportWasSuccessful;
     this.exportFailureReasonKey = exportFailureReasonKey;
@@ -60,6 +64,10 @@ public class ExportPerformedEvent implements CoreEvent {
 
   public String getTransactionsExportFilename() {
     return transactionsExportFilename;
+  }
+
+  public String getMBHDPaymentRequestsExportFilename() {
+    return mbhdPaymentRequestsExportFilename;
   }
 
   public String getPaymentRequestsExportFilename() {

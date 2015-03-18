@@ -1063,34 +1063,43 @@ public class WalletService extends AbstractService {
   }
 
   /**
-   * Export the payments to two CSV files - one for transactions, one for payment requests.
+   * Export the payments to three CSV files - one for transactions, one for MBHD payment requests and one for BIP70 payment requests.
    * Sends a ExportPerformedEvent with the results.
    *
-   * @param exportDirectory        The directory to export to
-   * @param transactionFileStem    The stem of the export file for the transactions (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
-   * @param paymentRequestFileStem The stem of the export file for the payment requests (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
+   * @param exportDirectory            The directory to export to
+   * @param transactionFileStem        The stem of the export file for the transactions (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
+   * @param mbhdPaymentRequestFileStem The stem of the export file for the MBHD payment requests (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
+   * @param paymentRequestFileStem     The stem of the export file for the BIP70 payment requests (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
    */
   public void exportPayments(
           File exportDirectory,
           String transactionFileStem,
+          String mbhdPaymentRequestFileStem,
           String paymentRequestFileStem,
-          CSVEntryConverter<MBHDPaymentRequestData> paymentRequestHeaderConverter,
-          CSVEntryConverter<MBHDPaymentRequestData> paymentRequestConverter,
           CSVEntryConverter<TransactionData> transactionHeaderConverter,
-          CSVEntryConverter<TransactionData> transactionConverter
+          CSVEntryConverter<TransactionData> transactionConverter,
+          CSVEntryConverter<MBHDPaymentRequestData> mbhdPaymentRequestHeaderConverter,
+          CSVEntryConverter<MBHDPaymentRequestData> mbhdPaymentRequestConverter,
+          CSVEntryConverter<PaymentRequestData> paymentRequestHeaderConverter,
+          CSVEntryConverter<PaymentRequestData> paymentRequestConverter
+
   ) {
     // Refresh all payments
     Set<PaymentData> paymentDataSet = getPaymentDataSet();
     ExportManager.export(
             paymentDataSet,
             getMBHDPaymentRequestDatas(),
+            getPaymentRequestDatas(),
             exportDirectory,
             transactionFileStem,
+            mbhdPaymentRequestFileStem,
             paymentRequestFileStem,
-            paymentRequestHeaderConverter,
-            paymentRequestConverter,
             transactionHeaderConverter,
-            transactionConverter
+            transactionConverter,
+            mbhdPaymentRequestHeaderConverter,
+            mbhdPaymentRequestConverter,
+            paymentRequestHeaderConverter,
+            paymentRequestConverter
     );
   }
 

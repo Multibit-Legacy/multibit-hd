@@ -13,10 +13,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.export.PaymentRequestConverter;
-import org.multibit.hd.ui.export.PaymentRequestHeaderConverter;
-import org.multibit.hd.ui.export.TransactionConverter;
-import org.multibit.hd.ui.export.TransactionHeaderConverter;
+import org.multibit.hd.ui.export.*;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
@@ -39,7 +36,6 @@ import java.io.File;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<ExportPaymentsWizardModel, String> {
 
@@ -48,6 +44,9 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
 
   private JLabel transactionsExportFileLabel;
   private JLabel transactionsExportFileValue;
+
+  private JLabel mbhdPaymentRequestsExportFileLabel;
+  private JLabel mbhdPaymentRequestsExportFileValue;
 
   private JLabel paymentRequestsExportFileLabel;
   private JLabel paymentRequestsExportFileValue;
@@ -78,18 +77,22 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
   public void initialiseContent(JPanel contentPanel) {
 
     contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[]10[]", // Column constraints
-      "[]20[]0[]20[]0[]" // Row constraints
+            Panels.migXYLayout(),
+            "[]10[]", // Column constraints
+            "[]10[]0[]10[]0[]10[]0[]" // Row constraints
     ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Initialise to failure
-    exportCompletedLabel = Labels.newSeedPhraseCreatedStatus(false);
+    exportCompletedLabel = Labels.newBlankLabel();
+    exportCompletedLabel.setText(Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
+    
     transactionsExportFileLabel = Labels.newBlankLabel();
     transactionsExportFileValue = Labels.newBlankLabel();
+    mbhdPaymentRequestsExportFileLabel = Labels.newBlankLabel();
+    mbhdPaymentRequestsExportFileValue = Labels.newBlankLabel();
     paymentRequestsExportFileLabel = Labels.newBlankLabel();
     paymentRequestsExportFileValue = Labels.newBlankLabel();
 
@@ -102,11 +105,17 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
     contentPanel.add(transactionsExportFileValue, "wrap");
 
     contentPanel.add(Labels.newBlankLabel());
-    contentPanel.add(paymentRequestsExportFileLabel, "wrap");
+    contentPanel.add(mbhdPaymentRequestsExportFileLabel, "wrap");
 
     contentPanel.add(Labels.newBlankLabel());
-    contentPanel.add(paymentRequestsExportFileValue, "wrap");
-  }
+    contentPanel.add(mbhdPaymentRequestsExportFileValue, "wrap");
+
+    contentPanel.add(Labels.newBlankLabel());
+     contentPanel.add(paymentRequestsExportFileLabel, "wrap");
+
+     contentPanel.add(Labels.newBlankLabel());
+     contentPanel.add(paymentRequestsExportFileValue, "wrap");
+   }
 
   @Override
   protected void initialiseButtons(AbstractWizard<ExportPaymentsWizardModel> wizard) {
@@ -153,24 +162,29 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
       String[] stems = createStems();
 
       // Perform the export
-      PaymentRequestHeaderConverter paymentRequestHeaderConverter = new PaymentRequestHeaderConverter();
-      PaymentRequestConverter paymentRequestConverter = new PaymentRequestConverter();
       TransactionHeaderConverter transactionHeaderConverter = new TransactionHeaderConverter();
       TransactionConverter transactionConverter = new TransactionConverter();
+      MBHDPaymentRequestHeaderConverter mbhdPaymentRequestHeaderConverter = new MBHDPaymentRequestHeaderConverter();
+      MBHDPaymentRequestConverter mbhdPaymentRequestConverter = new MBHDPaymentRequestConverter();
+      PaymentRequestHeaderConverter paymentRequestHeaderConverter = new PaymentRequestHeaderConverter();
+      PaymentRequestConverter paymentRequestConverter = new PaymentRequestConverter();
 
       CoreServices.getCurrentWalletService().get().exportPayments(
-        exportPaymentsLocationFile,
-        stems[0],
-        stems[1],
-        paymentRequestHeaderConverter,
-        paymentRequestConverter,
-        transactionHeaderConverter,
-        transactionConverter
+              exportPaymentsLocationFile,
+              stems[0],
+              stems[1],
+              stems[2],
+              transactionHeaderConverter,
+              transactionConverter,
+              mbhdPaymentRequestHeaderConverter,
+              mbhdPaymentRequestConverter,
+              paymentRequestHeaderConverter,
+              paymentRequestConverter
       );
       // Results of export are sent by an event
     } else {
-      CoreEvents.fireExportPerformedEvent(new ExportPerformedEvent(null, null, false, CoreMessageKey.THE_ERROR_WAS,
-        new String[]{Languages.safeText(MessageKey.COULD_NOT_WRITE_TO_THE_DIRECTORY, exportPaymentsLocation)}));
+      CoreEvents.fireExportPerformedEvent(new ExportPerformedEvent(null, null, null, false, CoreMessageKey.THE_ERROR_WAS,
+              new String[]{Languages.safeText(MessageKey.COULD_NOT_WRITE_TO_THE_DIRECTORY, exportPaymentsLocation)}));
     }
 
     // Enable the finish button on the report page
@@ -192,9 +206,10 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
     String nowAsString = Dates.formatCompactDateWithHyphensLocal(now);
 
     String stem0 = Languages.safeText(MessageKey.EXPORT_TRANSACTIONS_STEM) + SEPARATOR + nowAsString;
-    String stem1 = Languages.safeText(MessageKey.EXPORT_PAYMENT_REQUESTS_STEM) + SEPARATOR + nowAsString;
+    String stem1 = Languages.safeText(MessageKey.EXPORT_PAYMENT_REQUESTS_STEM) + "1" + SEPARATOR + nowAsString;
+    String stem2 = Languages.safeText(MessageKey.EXPORT_PAYMENT_REQUESTS_STEM) + "2" + SEPARATOR + nowAsString;
 
-    return new String[]{stem0, stem1};
+    return new String[]{stem0, stem1, stem2};
   }
 
   /**
@@ -212,19 +227,23 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
             transactionsExportFileLabel.setText(Languages.safeText(MessageKey.TRANSACTIONS_WERE_EXPORTED_TO_THE_FILE));
             transactionsExportFileValue.setText(exportPerformedEvent.getTransactionsExportFilename());
           }
-          if (!Strings.isNullOrEmpty(exportPerformedEvent.getPaymentRequestsExportFilename())) {
-            paymentRequestsExportFileLabel.setText(Languages.safeText(MessageKey.PAYMENT_REQUESTS_WERE_EXPORTED_TO_THE_FILE));
-            paymentRequestsExportFileValue.setText(exportPerformedEvent.getPaymentRequestsExportFilename());
+          if (!Strings.isNullOrEmpty(exportPerformedEvent.getMBHDPaymentRequestsExportFilename())) {
+            mbhdPaymentRequestsExportFileLabel.setText(Languages.safeText(MessageKey.YOUR_PAYMENT_REQUESTS_WERE_EXPORTED_TO_THE_FILE));
+            mbhdPaymentRequestsExportFileValue.setText(exportPerformedEvent.getMBHDPaymentRequestsExportFilename());
           }
+          if (!Strings.isNullOrEmpty(exportPerformedEvent.getPaymentRequestsExportFilename())) {
+                     paymentRequestsExportFileLabel.setText(Languages.safeText(MessageKey.THEIR_PAYMENT_REQUESTS_WERE_EXPORTED_TO_THE_FILE));
+                     paymentRequestsExportFileValue.setText(exportPerformedEvent.getPaymentRequestsExportFilename());
+                   }
         } else {
           AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, exportCompletedLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
           // TODO (JB) Verify that the wrapping of Object[] for the failure reason data is valid
           // Original was giving compiler warning for varargs
           exportCompletedLabel.setText(
-            Languages.safeText(
-              exportPerformedEvent.getExportFailureReasonKey(),
-              new Object[] {exportPerformedEvent.getExportFailureReasonData()}
-            )
+                  Languages.safeText(
+                          exportPerformedEvent.getExportFailureReasonKey(),
+                          new Object[]{exportPerformedEvent.getExportFailureReasonData()}
+                  )
           );
         }
       }

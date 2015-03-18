@@ -1,80 +1,79 @@
 package org.multibit.hd.ui.export;
 
-import com.google.common.base.Joiner;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.MBHDPaymentRequestData;
+import org.multibit.hd.core.dto.PaymentRequestData;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 
 /**
- * Convert WalletTableData into single fields for use in a CSV file.
+ * Convert PaymentRequestData into single fields for use in a CSV file.
  */
-public class PaymentRequestConverter implements CSVEntryConverter<MBHDPaymentRequestData> {
+public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequestData> {
 
   DateFormat dateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm", Configurations.currentConfiguration.getLocale());
 
 
   @Override
-  public String[] convertEntry(MBHDPaymentRequestData MBHDPaymentRequestData) {
+  public String[] convertEntry(PaymentRequestData paymentRequestData) {
     String[] columns = new String[12];
 
     // Date
-    columns[0] = MBHDPaymentRequestData.getDate() == null ? "" : dateFormatter.format(MBHDPaymentRequestData.getDate().toDate());
+    columns[0] = paymentRequestData.getDate() == null ? "" : dateFormatter.format(paymentRequestData.getDate().toDate());
 
     // Type
-    columns[1] = MBHDPaymentRequestData.getType() == null ? "" : MBHDPaymentRequestData.getType().toString();
+    columns[1] = paymentRequestData.getType() == null ? "" : paymentRequestData.getType().toString();
 
-    // Bitcoin address
-    columns[2] = MBHDPaymentRequestData.getAddress() == null ? "" : MBHDPaymentRequestData.getAddress().toString();
+    // UUID
+    columns[2] = paymentRequestData.getUuid() == null ? "" : paymentRequestData.getUuid().toString();
 
     // Description (cannot be null)
-    columns[3] = MBHDPaymentRequestData.getDescription();
-
-    // QR code label
-    columns[4] = MBHDPaymentRequestData.getLabel() == null ? "" : MBHDPaymentRequestData.getLabel();
+    columns[3] = paymentRequestData.getDescription();
 
     // Note
-    columns[5] = MBHDPaymentRequestData.getNote() == null ? "" : MBHDPaymentRequestData.getNote();
+    columns[4] = paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote();
 
     // Amount in satoshi
-    columns[6] = MBHDPaymentRequestData.getAmountCoin() == null ? "" : MBHDPaymentRequestData.getAmountCoin().toString();
+    columns[5] = paymentRequestData.getAmountCoin() == null ? "" : paymentRequestData.getAmountCoin().toString();
 
     // Fiat currency
-    columns[7] = "";
+    columns[6] = "";
 
     // Fiat amount
-    columns[8] = "";
-    if (MBHDPaymentRequestData.getAmountFiat() != null) {
-      if (MBHDPaymentRequestData.getAmountFiat().getCurrency().isPresent()) {
-        columns[7] = MBHDPaymentRequestData.getAmountFiat().getCurrency().get().getCurrencyCode();
+    columns[7] = "";
+    if (paymentRequestData.getAmountFiat() != null) {
+      if (paymentRequestData.getAmountFiat().getCurrency().isPresent()) {
+        columns[6] = paymentRequestData.getAmountFiat().getCurrency().get().getCurrencyCode();
       }
-      if (MBHDPaymentRequestData.getAmountFiat().getAmount() != null
-        && MBHDPaymentRequestData.getAmountFiat().getAmount().isPresent()){
+      if (paymentRequestData.getAmountFiat().getAmount() != null
+        && paymentRequestData.getAmountFiat().getAmount().isPresent()){
           // Ensure we use plain string to avoid "E-05"
-          columns[8] = MBHDPaymentRequestData.getAmountFiat().getAmount().get().stripTrailingZeros().toPlainString();
+          columns[7] = paymentRequestData.getAmountFiat().getAmount().get().stripTrailingZeros().toPlainString();
       }
     }
 
     // Exchange rate
     columns[8] = "";
-    if (MBHDPaymentRequestData.getAmountFiat() != null && MBHDPaymentRequestData.getAmountFiat().getRate() != null) {
-      columns[8] = MBHDPaymentRequestData.getAmountFiat().getRate().or("");
+    if (paymentRequestData.getAmountFiat() != null && paymentRequestData.getAmountFiat().getRate() != null) {
+      columns[8] = paymentRequestData.getAmountFiat().getRate().or("");
     }
 
     // Exchange rate provider
     columns[9] = "";
-    if (MBHDPaymentRequestData.getAmountFiat() != null && MBHDPaymentRequestData.getAmountFiat().getExchangeName() != null) {
-      columns[9] = MBHDPaymentRequestData.getAmountFiat().getExchangeName().or("");
+    if (paymentRequestData.getAmountFiat() != null && paymentRequestData.getAmountFiat().getExchangeName() != null) {
+      columns[9] = paymentRequestData.getAmountFiat().getExchangeName().or("");
     }
 
-    // Paid amount in satoshi
-    columns[10] = MBHDPaymentRequestData.getPaidAmountCoin() == null ? "" : MBHDPaymentRequestData.getPaidAmountCoin().toString();
+    // Matching transaction hash
+    columns[10] = "";
+    if (paymentRequestData.getTransactionHashOptional().isPresent()) {
+      columns[10] = paymentRequestData.getTransactionHashOptional().get().toString();
+    }
 
-    // Funding transactions
-    columns[11] = MBHDPaymentRequestData.getPayingTransactionHashes() == null ? "" : Joiner.on(" ").join(MBHDPaymentRequestData.getPayingTransactionHashes());
+    // Identity
+    columns[11] = paymentRequestData.getIdentityDisplayName();
 
     return columns;
   }

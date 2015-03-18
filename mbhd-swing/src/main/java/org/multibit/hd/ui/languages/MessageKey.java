@@ -544,6 +544,9 @@ public enum MessageKey {
   EXCHANGE_RATE_PROVIDER("exchange_rate_provider"),
   EXCHANGE_RATE_PROVIDER_TOOLTIP("exchange_rate_provider_tooltip"),
 
+  UUID("uuid"),
+  IDENTITY("identity"),
+
   BROADCAST_STATUS("broadcast_status"),
   RELAY_STATUS("relay_status"),
   CONFIRMATION_STATUS("confirmation_status"),
@@ -866,7 +869,8 @@ public enum MessageKey {
   EXPORT_PAYMENT_REQUESTS_STEM("export_payment_requests_stem"),
   EXPORT_WAS_SUCCESSFUL("export_was_successful"),
   TRANSACTIONS_WERE_EXPORTED_TO_THE_FILE("transactions_were_exported_to_the_file"),
-  PAYMENT_REQUESTS_WERE_EXPORTED_TO_THE_FILE("payment_requests_were_exported_to_the_file"),
+  YOUR_PAYMENT_REQUESTS_WERE_EXPORTED_TO_THE_FILE("your_payment_requests_were_exported_to_the_file"),
+  THEIR_PAYMENT_REQUESTS_WERE_EXPORTED_TO_THE_FILE("their_payment_requests_were_exported_to_the_file"),
   COULD_NOT_WRITE_TO_THE_DIRECTORY("could_not_write_to_the_directory"),
 
   // Repair wallet
