@@ -27,17 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.UnknownHostException;
+import java.io.*;
+import java.net.*;
 import java.nio.file.Paths;
 import java.util.Queue;
 
@@ -125,18 +116,18 @@ public class ExternalDataListeningService extends AbstractService {
       ListenableFuture future = getExecutorService().submit(getInstanceServerRunnable(serverSocket.get()));
       Futures.addCallback(
         future, new FutureCallback() {
-        @Override
-        public void onSuccess(Object result) {
-          log.debug("Stopping BitcoinURIListeningService executor (success)");
-          getExecutorService().shutdownNow();
-        }
+          @Override
+          public void onSuccess(Object result) {
+            log.debug("Stopping BitcoinURIListeningService executor (success)");
+            getExecutorService().shutdownNow();
+          }
 
-        @Override
-        public void onFailure(Throwable t) {
-          log.debug("Stopping BitcoinURIListeningService executor (failure)", t);
-          getExecutorService().shutdownNow();
-        }
-      });
+          @Override
+          public void onFailure(Throwable t) {
+            log.debug("Stopping BitcoinURIListeningService executor (failure)", t);
+            getExecutorService().shutdownNow();
+          }
+        });
 
       log.info("Listening for MultiBit HD instances on socket: '{}'", MULTIBIT_HD_NETWORK_SOCKET);
 
@@ -156,11 +147,9 @@ public class ExternalDataListeningService extends AbstractService {
       // Failed to own the server port so notify the other instance
       log.info("Port is already taken. Notifying first instance.");
 
-      if (!bitcoinURIQueue.isEmpty() || !paymentSessionSummaryQueue.isEmpty()) {
-        // Must have successfully parsed the data into something meaningful so resend the args
-        for (String arg : args.get()) {
-          writeToSocket(arg);
-        }
+      // Hand over whatever was given to ensure other instance can report on success/failure
+      for (String arg : args.get()) {
+        writeToSocket(arg);
       }
 
       // Indicate that a shutdown should be performed
@@ -381,6 +370,7 @@ public class ExternalDataListeningService extends AbstractService {
    * and should be OK for <a href="https://github.com/bitcoin/bips/blob/master/bip-0072.mediawiki">BIP72</a> use cases.</p>
    *
    * @param rawData The raw data straight from an assumed untrusted external source
+   *
    * @return The PaymentSessionSummary or absent if there was a problem
    */
   private static Optional<PaymentSessionSummary> parsePaymentSessionSummary(String rawData) {
@@ -426,7 +416,7 @@ public class ExternalDataListeningService extends AbstractService {
    *
    * @return A Payment Request URI or absent if there was a problem
    */
-  /* package */ static Optional<URI> parseRawDataAsUri(String rawData) {
+  static Optional<URI> parseRawDataAsUri(String rawData) {
 
     // Check for URI form
     if (rawData.contains("://")) {
@@ -441,7 +431,7 @@ public class ExternalDataListeningService extends AbstractService {
 
     if (!OSUtils.isWindows()) {
       // Convert from Windows to Java format under principle of least surprise
-      rawData=rawData.replace("\\","/");
+      rawData = rawData.replace("\\", "/");
     }
 
     // Treat as a file path
