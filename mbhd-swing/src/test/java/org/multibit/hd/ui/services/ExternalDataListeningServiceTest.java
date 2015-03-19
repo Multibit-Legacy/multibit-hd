@@ -8,10 +8,12 @@ import org.bitcoinj.uri.BitcoinURI;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.multibit.hd.core.dto.PaymentSessionStatus;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.BindException;
 import java.net.InetAddress;
@@ -33,15 +35,20 @@ public class ExternalDataListeningServiceTest {
   /**
    * Bitcoin URI containing BIP72 Payment Protocol URI extensions
    */
-  private static final String PAYMENT_REQUEST_BIP72_MULTIPLE = "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?" +
+  private static final String PAYMENT_REQUEST_BIP72_URL_MULTIPLE = "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?" +
     "r=https://localhost:8443/abc123&" +
     "r1=https://localhost:8443/def456&" +
     "r2=https://localhost:8443/ghi789&" +
     "amount=1";
 
-  private static final String PAYMENT_REQUEST_BIP72_SINGLE = "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?" +
+  private static final String PAYMENT_REQUEST_BIP72_URL_SINGLE = "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?" +
     "r=https://localhost:8443/abc123&" +
     "amount=1";
+
+  /**
+   * Windows relative file path (based on mbhd-swing for Maven - IDE's will need adjustment)
+   */
+  private static final String PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE = "src\\test\\resources\\fixtures\\payments\\localhost-signed.bitcoinpaymentrequest";
 
   private ServerSocket serverSocket = null;
 
@@ -119,12 +126,49 @@ public class ExternalDataListeningServiceTest {
   }
 
   @Test
+  public void testParse_BIP72_File() throws Exception {
+
+    // Arrange
+    // Check for Maven or IDE execution environment
+    File single = new File(PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE);
+    final String[] args;
+    if (single.exists()) {
+      // Using Maven build
+      args = new String[]{
+        PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE
+      };
+    } else {
+      // Using IDE build
+      args = new String[]{
+        "mbhd-swing\\"+PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE
+      };
+    }
+
+    // Act
+    testObject = new ExternalDataListeningService(args);
+
+    // Assert
+    assertThat(testObject.getPaymentSessionSummaryQueue().isEmpty()).isFalse();
+    PaymentSessionStatus status = testObject.getPaymentSessionSummaryQueue().poll().getStatus();
+    if (status == null) {
+      fail();
+    }
+    assertThat(status).isEqualTo(PaymentSessionStatus.UNTRUSTED);
+
+    // Don't crash the JVM
+    CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
+
+    assertThat(testObject.getServerSocket().isPresent()).isFalse();
+
+  }
+
+  @Test
   public void testParse_BIP72_Single() throws Exception {
 
     // Act
     BitcoinURI bitcoinURI = new BitcoinURI(
       MainNetParams.get(),
-      PAYMENT_REQUEST_BIP72_SINGLE
+      PAYMENT_REQUEST_BIP72_URL_SINGLE
     );
 
     // Assert
@@ -143,7 +187,7 @@ public class ExternalDataListeningServiceTest {
     // Act
     BitcoinURI bitcoinURI = new BitcoinURI(
       MainNetParams.get(),
-      PAYMENT_REQUEST_BIP72_MULTIPLE
+      PAYMENT_REQUEST_BIP72_URL_MULTIPLE
     );
 
     // Assert
@@ -163,7 +207,7 @@ public class ExternalDataListeningServiceTest {
   @Test
   public void testNotify_BIP21() throws Exception {
 
-    // Arrange
+    // Arrange to grab the server socket first
     serverSocket = new ServerSocket(
       ExternalDataListeningService.MULTIBIT_HD_NETWORK_SOCKET,
       10,
@@ -200,7 +244,7 @@ public class ExternalDataListeningServiceTest {
   @Test
   public void testNotify_BIP21_Minimum() throws Exception {
 
-    // Arrange
+    // Arrange to grab the server socket first
     try {
       serverSocket = new ServerSocket(
         ExternalDataListeningService.MULTIBIT_HD_NETWORK_SOCKET,
@@ -242,7 +286,7 @@ public class ExternalDataListeningServiceTest {
   @Test
   public void testNotify_BIP72_Single() throws Exception {
 
-    // Arrange
+    // Arrange to grab the server socket first
     serverSocket = new ServerSocket(
       ExternalDataListeningService.MULTIBIT_HD_NETWORK_SOCKET,
       10,
@@ -250,7 +294,7 @@ public class ExternalDataListeningServiceTest {
     );
 
     String[] args = new String[]{
-      PAYMENT_REQUEST_BIP72_SINGLE
+      PAYMENT_REQUEST_BIP72_URL_SINGLE
     };
 
     testObject = new ExternalDataListeningService(args);
@@ -265,7 +309,7 @@ public class ExternalDataListeningServiceTest {
     client.close();
 
     // Act
-    String expectedMessage = ExternalDataListeningService.MESSAGE_START + PAYMENT_REQUEST_BIP72_SINGLE + ExternalDataListeningService.MESSAGE_END;
+    String expectedMessage = ExternalDataListeningService.MESSAGE_START + PAYMENT_REQUEST_BIP72_URL_SINGLE + ExternalDataListeningService.MESSAGE_END;
 
     // Assert
     assertThat(text).isEqualTo(expectedMessage);
@@ -279,7 +323,7 @@ public class ExternalDataListeningServiceTest {
   @Test
   public void testNotify_BIP72_Multiple() throws Exception {
 
-    // Arrange
+    // Arrange to grab the server socket first
     serverSocket = new ServerSocket(
       ExternalDataListeningService.MULTIBIT_HD_NETWORK_SOCKET,
       10,
@@ -287,7 +331,7 @@ public class ExternalDataListeningServiceTest {
     );
 
     String[] args = new String[]{
-      PAYMENT_REQUEST_BIP72_MULTIPLE
+      PAYMENT_REQUEST_BIP72_URL_MULTIPLE
     };
 
     testObject = new ExternalDataListeningService(args);
@@ -302,7 +346,7 @@ public class ExternalDataListeningServiceTest {
     client.close();
 
     // Act
-    String expectedMessage = ExternalDataListeningService.MESSAGE_START + PAYMENT_REQUEST_BIP72_MULTIPLE + ExternalDataListeningService.MESSAGE_END;
+    String expectedMessage = ExternalDataListeningService.MESSAGE_START + PAYMENT_REQUEST_BIP72_URL_MULTIPLE + ExternalDataListeningService.MESSAGE_END;
 
     // Assert
     assertThat(text).isEqualTo(expectedMessage);

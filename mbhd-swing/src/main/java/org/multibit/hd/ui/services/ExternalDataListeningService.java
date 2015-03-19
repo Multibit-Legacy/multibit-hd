@@ -26,11 +26,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.util.Queue;
 
 /**
@@ -113,18 +119,18 @@ public class ExternalDataListeningService extends AbstractService {
       ListenableFuture future = getExecutorService().submit(getInstanceServerRunnable(serverSocket.get()));
       Futures.addCallback(
         future, new FutureCallback() {
-          @Override
-          public void onSuccess(Object result) {
-            log.debug("Stopping BitcoinURIListeningService executor (success)");
-            getExecutorService().shutdownNow();
-          }
+        @Override
+        public void onSuccess(Object result) {
+          log.debug("Stopping BitcoinURIListeningService executor (success)");
+          getExecutorService().shutdownNow();
+        }
 
-          @Override
-          public void onFailure(Throwable t) {
-            log.debug("Stopping BitcoinURIListeningService executor (failure)", t);
-            getExecutorService().shutdownNow();
-          }
-        });
+        @Override
+        public void onFailure(Throwable t) {
+          log.debug("Stopping BitcoinURIListeningService executor (failure)", t);
+          getExecutorService().shutdownNow();
+        }
+      });
 
       log.info("Listening for MultiBit HD instances on socket: '{}'", MULTIBIT_HD_NETWORK_SOCKET);
 
@@ -232,13 +238,28 @@ public class ExternalDataListeningService extends AbstractService {
    */
   public static void addToQueues(String rawData, boolean fireAddAlertEvent) {
 
+    log.debug("Parsing raw data: '{}'", rawData);
+
     // Quick check for BIP21 Bitcoin URI
     if (rawData.startsWith("bitcoin") && !rawData.contains("r=")) {
       // Treat as BIP21 Bitcoin URI
-      parseBitcoinURI(rawData);
+      Optional<BitcoinURI> bitcoinURI = parseBitcoinURI(rawData);
+      if (bitcoinURI.isPresent()) {
+        bitcoinURIQueue.add(bitcoinURI.get());
+      }
+
     } else {
-      // Treat as a Payment Protocol URI (could be direct via "http", "https", "file", "classpath" or use BIP72 variant of "bitcoin")
-      parsePaymentSessionSummary(rawData);
+      // Treat as a Payment Protocol URI referencing PaymentRequest data
+      // Supports:
+      // URL forms starting with "http", "https", "file", "classpath"
+      // Native file path (e.g. "C:\somewhere.bitcoinpaymentrequest")
+      // BIP72 variant of "bitcoin"
+      //
+      Optional<PaymentSessionSummary> paymentSessionSummary = parsePaymentSessionSummary(rawData);
+      if (paymentSessionSummary.isPresent()) {
+        paymentSessionSummaryQueue.add(paymentSessionSummary.get());
+      }
+
     }
 
     if (fireAddAlertEvent) {
@@ -246,7 +267,7 @@ public class ExternalDataListeningService extends AbstractService {
       log.debug("Checking for alert requirement");
 
       // Check for BIP21 Bitcoin URI
-      if (bitcoinURIQueue.peek() != null) {
+      if (!bitcoinURIQueue.isEmpty()) {
 
         SwingUtilities.invokeLater(
           new Runnable() {
@@ -264,7 +285,7 @@ public class ExternalDataListeningService extends AbstractService {
       }
 
       // Check for Payment Protocol session
-      if (paymentSessionSummaryQueue.peek() != null) {
+      if (!paymentSessionSummaryQueue.isEmpty()) {
 
         SwingUtilities.invokeLater(
           new Runnable() {
@@ -307,12 +328,12 @@ public class ExternalDataListeningService extends AbstractService {
    *
    * @param rawData The raw data straight from an assumed untrusted external source
    */
-  private static void parseBitcoinURI(String rawData) {
+  private static Optional<BitcoinURI> parseBitcoinURI(String rawData) {
 
     log.debug("Decoding BIP21 Bitcoin URI from '{}'", rawData);
 
     if (Strings.isNullOrEmpty(rawData)) {
-      return;
+      return Optional.absent();
     }
 
     try {
@@ -327,14 +348,16 @@ public class ExternalDataListeningService extends AbstractService {
         rawData = rawData.replaceAll("%26", "&");
       }
 
-      log.debug("Using '{}' to create BIP21 Bitcoin URI", rawData);
-      bitcoinURIQueue.add(new BitcoinURI(rawData));
+      return Optional.fromNullable(new BitcoinURI(rawData));
 
     } catch (UnsupportedEncodingException e) {
       log.error("UTF-8 is not supported on this platform");
     } catch (BitcoinURIParseException e) {
       log.error("BIP21 Bitcoin URI not valid. Error ", e);
     }
+
+    // Must have failed to be here
+    return Optional.absent();
 
   }
 
@@ -350,6 +373,7 @@ public class ExternalDataListeningService extends AbstractService {
    * and should be OK for <a href="https://github.com/bitcoin/bips/blob/master/bip-0072.mediawiki">BIP72</a> use cases.</p>
    *
    * @param rawData The raw data straight from an assumed untrusted external source
+   * @return The PaymentSessionSummary or absent if there was a problem
    */
   private static Optional<PaymentSessionSummary> parsePaymentSessionSummary(String rawData) {
 
@@ -373,14 +397,45 @@ public class ExternalDataListeningService extends AbstractService {
 
       log.debug("Using '{}' to create payment protocol session summary", rawData);
       PaymentProtocolService paymentProtocolService = new PaymentProtocolService(MainNetParams.get());
-      // TODO Switch this back to "true" for production
-      final PaymentSessionSummary paymentSessionSummary = paymentProtocolService.probeForPaymentSession(URI.create(rawData), false, null);
-      if (paymentSessionSummary != null) {
-        paymentSessionSummaryQueue.add(paymentSessionSummary);
+      Optional<URI> uri = parseRawDataAsUri(rawData);
+      if (uri.isPresent()) {
+        // We always verify the signature against our default trust store (see SSLManager for more details)
+        return Optional.fromNullable(paymentProtocolService.probeForPaymentSession(uri.get(), true, null));
       }
 
     } catch (UnsupportedEncodingException e) {
       log.error("UTF-8 is not supported on this platform");
+    }
+
+    return Optional.absent();
+
+  }
+
+  /**
+   * Attempt to convert raw data from the user into a Payment Request URI
+   *
+   * @param rawData The raw data straight from an assumed untrusted external source
+   *
+   * @return A Payment Request URI or absent if there was a problem
+   */
+  private static Optional<URI> parseRawDataAsUri(String rawData) {
+
+    // Check for URI form
+    if (rawData.contains("://")) {
+      // Very likely to be a URI
+      try {
+        // Attempt to create the URI
+        return Optional.of(URI.create(rawData));
+      } catch (RuntimeException e) {
+        return Optional.absent();
+      }
+    }
+
+    // Treat as a file path
+    File file = new File(rawData);
+    if (file.exists() && file.canRead()) {
+      // File has valid access permissions so can continue
+      return Optional.of(file.toURI());
     }
 
     return Optional.absent();
