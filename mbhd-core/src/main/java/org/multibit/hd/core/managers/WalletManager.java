@@ -783,8 +783,6 @@ public enum WalletManager implements WalletEventListener {
     backupService.rememberWalletIdAndPasswordForLocalZipBackup(walletSummary.getWalletId(), walletSummary.getWalletPassword().getPassword());
     backupService.rememberWalletIdAndPasswordForCloudZipBackup(walletSummary.getWalletId(), walletSummary.getWalletPassword().getPassword());
 
-    log.debug("Wallet:\n{}\n", walletSummary.getWallet());
-
     // Check if the wallet needs to synch (not required during FEST tests)
     if (performSync) {
       log.info("Wallet configured - performing synchronization");
