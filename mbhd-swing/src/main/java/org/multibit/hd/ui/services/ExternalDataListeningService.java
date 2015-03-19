@@ -76,7 +76,7 @@ public class ExternalDataListeningService extends AbstractService {
 
   private Optional<ServerSocket> serverSocket = Optional.absent();
 
-  private String rawData;
+  private String[] args;
 
   /**
    * @param args The command line arguments
@@ -90,10 +90,12 @@ public class ExternalDataListeningService extends AbstractService {
     }
 
     // Must have some command line arguments to be here
-    addToQueues(args[0], false);
+    for (String arg : args) {
+      addToQueues(arg, false);
+    }
 
     // May need to hand over
-    rawData = args[0];
+    this.args = args;
 
   }
 
@@ -151,8 +153,10 @@ public class ExternalDataListeningService extends AbstractService {
       log.info("Port is already taken. Notifying first instance.");
 
       if (!bitcoinURIQueue.isEmpty() || !paymentSessionSummaryQueue.isEmpty()) {
-        // Must have successfully parsed the data into something meaningful so resend
-        writeToSocket(rawData);
+        // Must have successfully parsed the data into something meaningful so resend the args
+        for (String arg : args) {
+          writeToSocket(arg);
+        }
       }
 
       // Indicate that a shutdown should be performed
