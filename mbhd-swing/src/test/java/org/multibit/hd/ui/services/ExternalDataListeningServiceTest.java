@@ -55,6 +55,11 @@ public class ExternalDataListeningServiceTest {
    */
   private static final String PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE = "src\\test\\resources\\fixtures\\payments\\localhost-signed.bitcoinpaymentrequest";
 
+  /**
+   * Java format relative file path (based on mbhd-swing for Maven - IDE's will need adjustment)
+   */
+  private static final String PAYMENT_REQUEST_BIP72_FILE_JAVA_SINGLE = "src/test/resources/fixtures/payments/localhost-signed.bitcoinpaymentrequest";
+
   private ServerSocket serverSocket = null;
 
   private ExternalDataListeningService testObject;
@@ -131,23 +136,25 @@ public class ExternalDataListeningServiceTest {
   }
 
   @Test
-  public void testParse_BIP72_File() throws Exception {
+  public void testParse_BIP72_File_Windows_Single() throws Exception {
 
     // Arrange
     // Check for Maven or IDE execution environment
-    File single = Paths.get(PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE).toFile();
+    File single = Paths.get(PAYMENT_REQUEST_BIP72_FILE_JAVA_SINGLE).toFile();
     final String[] args;
     if (single.exists()) {
-      log.info("Resolved Windows fixture as: '{}'. Verified Maven build.", single.getAbsolutePath());
+      log.info("Resolved test fixture as: '{}'. Verified Maven build.", single.getAbsolutePath());
       args = new String[]{
+        // Provide the Windows fixture to test handling
         PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE
       };
     } else {
       log.info("Resolved Windows fixture as: '{}' but does not exist. Assuming an IDE build.", single.getAbsolutePath());
-      single = Paths.get("mbhd-swing\\" + PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE).toFile();
+      single = Paths.get("mbhd-swing/" + PAYMENT_REQUEST_BIP72_FILE_JAVA_SINGLE).toFile();
       if (single.exists()) {
         log.info("Resolved Windows fixture as: '{}'. Verified IDE build.", single.getAbsolutePath());
         args = new String[]{
+          // Provide adjusted Windows fixture to test handling
           "mbhd-swing\\" + PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE
         };
       } else {
