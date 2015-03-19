@@ -19,6 +19,7 @@ import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.AbstractService;
 import org.multibit.hd.core.services.PaymentProtocolService;
+import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.models.Models;
@@ -37,6 +38,7 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.nio.file.Paths;
 import java.util.Queue;
 
 /**
@@ -424,7 +426,7 @@ public class ExternalDataListeningService extends AbstractService {
    *
    * @return A Payment Request URI or absent if there was a problem
    */
-  private static Optional<URI> parseRawDataAsUri(String rawData) {
+  /* package */ static Optional<URI> parseRawDataAsUri(String rawData) {
 
     // Check for URI form
     if (rawData.contains("://")) {
@@ -437,8 +439,13 @@ public class ExternalDataListeningService extends AbstractService {
       }
     }
 
+    if (!OSUtils.isWindows()) {
+      // Convert from Windows to Java format under principle of least surprise
+      rawData=rawData.replace("\\","/");
+    }
+
     // Treat as a file path
-    File file = new File(rawData);
+    File file = Paths.get(rawData).toFile();
     if (file.exists() && file.canRead()) {
       // File has valid access permissions so can continue
       return Optional.of(file.toURI());
