@@ -17,6 +17,7 @@ import org.bitcoinj.uri.BitcoinURIParseException;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.AbstractService;
 import org.multibit.hd.core.services.PaymentProtocolService;
 import org.multibit.hd.core.utils.OSUtils;
@@ -508,7 +509,10 @@ public class ExternalDataListeningService extends AbstractService {
             log.debug("Received external data: '{}'", rawData);
 
             // Attempt to add to the queues and issue an alert
-            ExternalDataListeningService.addToQueues(rawData, true);
+            ExternalDataListeningService.addToQueues(
+              rawData,
+              WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()
+            );
 
           } catch (IOException e) {
             socketClosed = true;
