@@ -71,7 +71,6 @@ import java.net.URI;
 import java.util.Locale;
 import java.util.Queue;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -83,11 +82,11 @@ import java.util.concurrent.TimeUnit;
  * <p>To allow complete separation between Model, View and Controller all interactions are handled using application events</p>
  */
 public class MainController extends AbstractController implements
-  GenericOpenURIEventListener,
-  GenericOpenFilesEventListener,
-  GenericPreferencesEventListener,
-  GenericAboutEventListener,
-  GenericQuitEventListener {
+        GenericOpenURIEventListener,
+        GenericOpenFilesEventListener,
+        GenericPreferencesEventListener,
+        GenericAboutEventListener,
+        GenericQuitEventListener {
 
   private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
@@ -134,8 +133,8 @@ public class MainController extends AbstractController implements
    * @param headerController             The header controller
    */
   public MainController(
-    ExternalDataListeningService ExternalDataListeningService,
-    HeaderController headerController
+          ExternalDataListeningService ExternalDataListeningService,
+          HeaderController headerController
   ) {
 
     super();
@@ -197,11 +196,11 @@ public class MainController extends AbstractController implements
       // Successful wizard interaction
 
       if (WelcomeWizardState.CREATE_WALLET_REPORT.name().equals(event.getPanelName())
-        || WelcomeWizardState.TREZOR_CREATE_WALLET_REPORT.name().equals(event.getPanelName())
-        || WelcomeWizardState.RESTORE_WALLET_REPORT.name().equals(event.getPanelName())
-        || WelcomeWizardState.RESTORE_PASSWORD_REPORT.name().equals(event.getPanelName())
-        || WelcomeWizardState.WELCOME_SELECT_WALLET.name().equals(event.getPanelName())
-        ) {
+              || WelcomeWizardState.TREZOR_CREATE_WALLET_REPORT.name().equals(event.getPanelName())
+              || WelcomeWizardState.RESTORE_WALLET_REPORT.name().equals(event.getPanelName())
+              || WelcomeWizardState.RESTORE_PASSWORD_REPORT.name().equals(event.getPanelName())
+              || WelcomeWizardState.WELCOME_SELECT_WALLET.name().equals(event.getPanelName())
+              ) {
 
         // We have just finished the welcome wizard and want the credentials screen
 
@@ -209,8 +208,8 @@ public class MainController extends AbstractController implements
       }
 
       if (CredentialsState.CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK.name().equals(event.getPanelName())
-        || CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT.name().equals(event.getPanelName())
-        ) {
+              || CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT.name().equals(event.getPanelName())
+              ) {
 
         // We have just finished the credentials wizard and want the wallet details screen
 
@@ -225,7 +224,7 @@ public class MainController extends AbstractController implements
       }
 
       if (CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY.name().equals(event.getPanelName()) ||
-        CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY.name().equals(event.getPanelName())) {
+              CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY.name().equals(event.getPanelName())) {
 
         // We are exiting the credentials wizard as the Trezor is uninitialised and want the welcome wizard
 
@@ -317,12 +316,12 @@ public class MainController extends AbstractController implements
       final boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
       log.debug("Firing event to header viewable to:  {}", viewHeader);
       SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
-          }
-        });
+              new Runnable() {
+                @Override
+                public void run() {
+                  ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
+                }
+              });
     }
 
     final String localisedMessage;
@@ -338,15 +337,15 @@ public class MainController extends AbstractController implements
     }
 
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
+            new Runnable() {
+              @Override
+              public void run() {
+                ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
 
-          // Ensure everyone is aware of the update
-          ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
-        }
-      });
+                // Ensure everyone is aware of the update
+                ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
+              }
+            });
   }
 
   @Subscribe
@@ -393,9 +392,9 @@ public class MainController extends AbstractController implements
 
       // Provide the alert
       ControllerEvents.fireAddAlertEvent(
-        Models.newAlertModel(
-          localisedMessage,
-          summary.getSeverity(), button)
+              Models.newAlertModel(
+                      localisedMessage,
+                      summary.getSeverity(), button)
       );
     }
 
@@ -432,17 +431,17 @@ public class MainController extends AbstractController implements
       case BACKUP_FAILED:
         // Append general security advice allowing for LTR/RTL
         ControllerEvents.fireAddAlertEvent(
-          Models.newAlertModel(
-            localisedMessage + " " + Languages.safeText(CoreMessageKey.SECURITY_ADVICE),
-            summary.getSeverity())
+                Models.newAlertModel(
+                        localisedMessage + " " + Languages.safeText(CoreMessageKey.SECURITY_ADVICE),
+                        summary.getSeverity())
         );
         break;
       case SYSTEM_TIME_DRIFT:
         // Present the localised message
         ControllerEvents.fireAddAlertEvent(
-          Models.newAlertModel(
-            localisedMessage,
-            summary.getSeverity())
+                Models.newAlertModel(
+                        localisedMessage,
+                        summary.getSeverity())
         );
         break;
       case CERTIFICATE_FAILED:
@@ -451,10 +450,10 @@ public class MainController extends AbstractController implements
 
         // Append general security advice allowing for LTR/RTL
         ControllerEvents.fireAddAlertEvent(
-          Models.newAlertModel(
-            localisedMessage + "\n" + Languages.safeText(CoreMessageKey.SECURITY_ADVICE),
-            summary.getSeverity(),
-            button)
+                Models.newAlertModel(
+                        localisedMessage + "\n" + Languages.safeText(CoreMessageKey.SECURITY_ADVICE),
+                        summary.getSeverity(),
+                        button)
         );
         break;
       case UNSUPPORTED_FIRMWARE_ATTACHED:
@@ -463,9 +462,9 @@ public class MainController extends AbstractController implements
         if (walletSummary.isPresent() && !Panels.isLightBoxShowing()) {
           // Present the localised message as an alert bar since a popover won't appear any time soon
           ControllerEvents.fireAddAlertEvent(
-            Models.newAlertModel(
-              localisedMessage,
-              summary.getSeverity())
+                  Models.newAlertModel(
+                          localisedMessage,
+                          summary.getSeverity())
           );
 
         }
@@ -502,7 +501,7 @@ public class MainController extends AbstractController implements
    * <p>Complete tear down and rebuild of the detail screens comprising the main view</p>
    * <p>All services are restarted</p>
    * <p>The main view references remain intact</p>
-   *
+   * <p/>
    * <p>This is not done through a simple SWITCH shutdown event being fire since the order
    * of shutdown is important and cannot be guaranteed otherwise.</p>
    */
@@ -511,114 +510,114 @@ public class MainController extends AbstractController implements
     // Run this in a separate thread to ensure the original event returns promptly
     // and that the switch panel view is able to close before the MainView resets
     final ListenableFuture<Boolean> future = handoverExecutorService.submit(
-      new Callable<Boolean>() {
+            new Callable<Boolean>() {
 
-        @Override
-        public Boolean call() {
-
-          log.trace("Using switch wallet view refresh");
-
-          // Sleep for a short time to reduce UI jolt
-          Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
-
-          // Hide the application frame to prevent user interacting with the detail
-          // panels after the exit panel view has hidden
-          // It is very tricky to get the timing right so hiding the UI is the safest
-          // course of action here
-          SwingUtilities.invokeLater(
-            new Runnable() {
               @Override
-              public void run() {
-                // Dim the application using the glass pane
-                Panels.getApplicationFrame().getRootPane().getGlassPane().setVisible(true);
+              public Boolean call() {
+
+                log.trace("Using switch wallet view refresh");
+
+                // Sleep for a short time to reduce UI jolt
+                Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+
+                // Hide the application frame to prevent user interacting with the detail
+                // panels after the exit panel view has hidden
+                // It is very tricky to get the timing right so hiding the UI is the safest
+                // course of action here
+                SwingUtilities.invokeLater(
+                        new Runnable() {
+                          @Override
+                          public void run() {
+                            // Dim the application using the glass pane
+                            Panels.getApplicationFrame().getRootPane().getGlassPane().setVisible(true);
+                          }
+                        });
+
+                // Sleep for a short time to allow UI events to occur
+                Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+                try {
+                  // Close the supporting services
+                  // This can take some time
+                  shutdownCurrentWallet(ShutdownEvent.ShutdownType.SWITCH);
+                } catch (Exception e) {
+                  log.error("Failed to shutdown current wallet", e);
+                }
+
+                // Avoiding repeating latest events which will leave traces of the earlier wallet
+                // on the MainView during unlock
+                mainView.setRepeatLatestEvents(false);
+
+                log.debug("Find existing wallet directories");
+
+                // Check for any pre-existing wallets in the application directory
+                File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+                java.util.List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
+
+                if (walletDirectories.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted()) {
+
+                  log.debug("No wallets in the directory or licence not accepted - showing the welcome wizard");
+                  mainView.setShowExitingWelcomeWizard(true);
+                  mainView.setShowExitingCredentialsWizard(false);
+
+                } else {
+
+                  log.debug("Wallets are present - showing the credentials wizard");
+                  mainView.setShowExitingCredentialsWizard(true);
+                  mainView.setShowExitingWelcomeWizard(false);
+
+                }
+
+                log.debug("Perform MainView refresh");
+
+                SwingUtilities.invokeLater(
+                        new Runnable() {
+                          @Override
+                          public void run() {
+                            // Switch off the background dimming and trigger the showing of the wizard
+                            Panels.getApplicationFrame().getRootPane().getGlassPane().setVisible(false);
+                            mainView.refresh();
+                            mainView.setRepeatLatestEvents(true);
+                          }
+                        });
+
+                // Sleep for a short time to allow UI events to occur
+                Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+                return true;
               }
             });
-
-          // Sleep for a short time to allow UI events to occur
-          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
-
-          try {
-            // Close the supporting services
-            // This can take some time
-            shutdownCurrentWallet(ShutdownEvent.ShutdownType.SWITCH);
-          } catch (Exception e) {
-            log.error("Failed to shutdown current wallet", e);
-          }
-
-          // Avoiding repeating latest events which will leave traces of the earlier wallet
-          // on the MainView during unlock
-          mainView.setRepeatLatestEvents(false);
-
-          log.debug("Find existing wallet directories");
-
-          // Check for any pre-existing wallets in the application directory
-          File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-          java.util.List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
-
-          if (walletDirectories.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted()) {
-
-            log.debug("No wallets in the directory or licence not accepted - showing the welcome wizard");
-            mainView.setShowExitingWelcomeWizard(true);
-            mainView.setShowExitingCredentialsWizard(false);
-
-          } else {
-
-            log.debug("Wallets are present - showing the credentials wizard");
-            mainView.setShowExitingCredentialsWizard(true);
-            mainView.setShowExitingWelcomeWizard(false);
-
-          }
-
-          log.debug("Perform MainView refresh");
-
-          SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
-                // Switch off the background dimming and trigger the showing of the wizard
-                Panels.getApplicationFrame().getRootPane().getGlassPane().setVisible(false);
-                mainView.refresh();
-                mainView.setRepeatLatestEvents(true);
-              }
-            });
-
-          // Sleep for a short time to allow UI events to occur
-          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
-
-          return true;
-        }
-      });
 
     Futures.addCallback(
-      future, new FutureCallback<Boolean>() {
-        @Override
-        public void onSuccess(@Nullable Boolean result) {
-
-          // We successfully switched the wallet
-
-        }
-
-        @Override
-        public void onFailure(Throwable t) {
-
-          // Show the application frame to provide some assistance to user
-          SwingUtilities.invokeLater(
-            new Runnable() {
+            future, new FutureCallback<Boolean>() {
               @Override
-              public void run() {
-                Panels.getApplicationFrame().setVisible(false);
+              public void onSuccess(@Nullable Boolean result) {
+
+                // We successfully switched the wallet
+
               }
-            });
 
-          // Sleep for a short time to allow UI events to occur
-          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+              @Override
+              public void onFailure(Throwable t) {
 
-          // Use the generic handler since we're all over the place at this point
-          ExceptionHandler.handleThrowable(t);
+                // Show the application frame to provide some assistance to user
+                SwingUtilities.invokeLater(
+                        new Runnable() {
+                          @Override
+                          public void run() {
+                            Panels.getApplicationFrame().setVisible(false);
+                          }
+                        });
 
-        }
+                // Sleep for a short time to allow UI events to occur
+                Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
-      }
+                // Use the generic handler since we're all over the place at this point
+                ExceptionHandler.handleThrowable(t);
+
+              }
+
+            }
 
     );
 
@@ -660,13 +659,13 @@ public class MainController extends AbstractController implements
     // Dispose of the main view and all its attendant references
     log.debug("Disposing of MainView");
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          Panels.hideLightBoxIfPresent();
-          Panels.getApplicationFrame().dispose();
-        }
-      });
+            new Runnable() {
+              @Override
+              public void run() {
+                Panels.hideLightBoxIfPresent();
+                Panels.getApplicationFrame().dispose();
+              }
+            });
 
     // Remove the reference
     mainView = null;
@@ -691,30 +690,30 @@ public class MainController extends AbstractController implements
 
     // Ensure the Swing thread can perform a complete refresh
     SwingUtilities.invokeLater(
-      new Runnable() {
-        public void run() {
+            new Runnable() {
+              public void run() {
 
-          // Switch the theme before any other UI building takes place
-          handleTheme();
+                // Switch the theme before any other UI building takes place
+                handleTheme();
 
-          // Rebuild MainView contents
-          handleLocale();
+                // Rebuild MainView contents
+                handleLocale();
 
-          // Force a frame redraw
-          Panels.getApplicationFrame().invalidate();
+                // Force a frame redraw
+                Panels.getApplicationFrame().invalidate();
 
-          // Rebuild the detail views and alert panels
-          mainView.refresh();
+                // Rebuild the detail views and alert panels
+                mainView.refresh();
 
-          // Show the current detail screen
-          Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
-          ViewEvents.fireShowDetailScreenEvent(screen);
+                // Show the current detail screen
+                Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
+                ViewEvents.fireShowDetailScreenEvent(screen);
 
-          // Trigger the alert panels to refresh
-          headerController.refresh();
+                // Trigger the alert panels to refresh
+                headerController.refresh();
 
-        }
-      });
+              }
+            });
 
     // Restart the hardware wallet service (devices may have changed)
     handleHardwareWallets();
@@ -734,23 +733,23 @@ public class MainController extends AbstractController implements
 
     // Ensure the Swing thread can perform a complete refresh
     SwingUtilities.invokeLater(
-      new Runnable() {
-        public void run() {
+            new Runnable() {
+              public void run() {
 
-          // Switch the theme before any other UI building takes place
-          handleTheme();
+                // Switch the theme before any other UI building takes place
+                handleTheme();
 
-          // Rebuild MainView contents
-          handleLocale();
+                // Rebuild MainView contents
+                handleLocale();
 
-          // Force a frame redraw
-          Panels.getApplicationFrame().invalidate();
+                // Force a frame redraw
+                Panels.getApplicationFrame().invalidate();
 
-          // Rebuild the detail views and alert panels
-          mainView.refresh();
+                // Rebuild the detail views and alert panels
+                mainView.refresh();
 
-        }
-      });
+              }
+            });
   }
 
   @Override
@@ -758,13 +757,13 @@ public class MainController extends AbstractController implements
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            // Show the Tools screen
-            ViewEvents.fireShowDetailScreenEvent(Screen.TOOLS);
-          }
-        });
+              new Runnable() {
+                @Override
+                public void run() {
+                  // Show the Tools screen
+                  ViewEvents.fireShowDetailScreenEvent(Screen.TOOLS);
+                }
+              });
 
       // Show the About screen
       Panels.showLightBox(Wizards.newAboutWizard().getWizardScreenHolder());
@@ -786,8 +785,8 @@ public class MainController extends AbstractController implements
 
     boolean fireAddAlertEvent = WalletManager.INSTANCE.getCurrentWalletSummary().isPresent();
 
-    for (File file: event.getFiles()) {
-      URI uri=file.toURI();
+    for (File file : event.getFiles()) {
+      URI uri = file.toURI();
       ExternalDataListeningService.addToQueues(uri.toString(), fireAddAlertEvent);
     }
 
@@ -798,13 +797,13 @@ public class MainController extends AbstractController implements
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            // Show the Preferences screen
-            ViewEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
-          }
-        });
+              new Runnable() {
+                @Override
+                public void run() {
+                  // Show the Preferences screen
+                  ViewEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
+                }
+              });
     }
 
   }
@@ -883,7 +882,7 @@ public class MainController extends AbstractController implements
         // Clear any UNSUPPORTED_FIRMWARE_ATTACHED events as the user has detached the causative device
         Optional<SecurityEvent> lastSecurityEventOptional = CoreServices.getApplicationEventService().getLatestSecurityEvent();
         if (lastSecurityEventOptional.isPresent()
-          && lastSecurityEventOptional.get().is(SecuritySummary.AlertType.UNSUPPORTED_FIRMWARE_ATTACHED)) {
+                && lastSecurityEventOptional.get().is(SecuritySummary.AlertType.UNSUPPORTED_FIRMWARE_ATTACHED)) {
           CoreServices.getApplicationEventService().onSecurityEvent(null);
         }
 
@@ -931,14 +930,14 @@ public class MainController extends AbstractController implements
       // Use the alert bar mechanism
 
       SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            // Attempt to create a suitable alert model in addition to view event
-            AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
-            ControllerEvents.fireAddAlertEvent(alertModel);
-          }
-        });
+              new Runnable() {
+                @Override
+                public void run() {
+                  // Attempt to create a suitable alert model in addition to view event
+                  AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+                  ControllerEvents.fireAddAlertEvent(alertModel);
+                }
+              });
 
     }
 
@@ -981,8 +980,8 @@ public class MainController extends AbstractController implements
       }
       if (hardwareWalletService.isPresent()) {
         if (lastWipedTrezorDateTime
-          .plusSeconds(TREZOR_WIPE_TIME_THRESHOLD)
-          .isAfter(Dates.nowUtc())) {
+                .plusSeconds(TREZOR_WIPE_TIME_THRESHOLD)
+                .isAfter(Dates.nowUtc())) {
           log.debug("Suppressing the alert due to recent confirmed Trezor wipe operation");
           showAlert = false;
         }
@@ -995,14 +994,14 @@ public class MainController extends AbstractController implements
         log.debug("Trezor attached during an unlocked soft wallet session - showing alert");
 
         SwingUtilities.invokeLater(
-          new Runnable() {
-            @Override
-            public void run() {
-              // Attempt to create a suitable alert model in addition to view event
-              AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
-              ControllerEvents.fireAddAlertEvent(alertModel);
-            }
-          });
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    // Attempt to create a suitable alert model in addition to view event
+                    AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+                    ControllerEvents.fireAddAlertEvent(alertModel);
+                  }
+                });
       }
     }
 
@@ -1223,28 +1222,28 @@ public class MainController extends AbstractController implements
     // in either direction
     final ListenableFuture<Integer> driftFuture = Dates.calculateDriftInMillis("pool.ntp.org");
     Futures.addCallback(
-      driftFuture, new FutureCallback<Integer>() {
-        @Override
-        public void onSuccess(@Nullable Integer result) {
+            driftFuture, new FutureCallback<Integer>() {
+              @Override
+              public void onSuccess(@Nullable Integer result) {
 
-          if (result != null && Math.abs(result) > 3_600_000) {
-            log.warn("System time is adrift by: {} min(s)", result / 60_000);
-            // Issue the alert
-            CoreEvents.fireSecurityEvent(SecuritySummary.newSystemTimeDrift());
-          } else {
-            log.debug("System time drift is within limits");
-          }
+                if (result != null && Math.abs(result) > 3_600_000) {
+                  log.warn("System time is adrift by: {} min(s)", result / 60_000);
+                  // Issue the alert
+                  CoreEvents.fireSecurityEvent(SecuritySummary.newSystemTimeDrift());
+                } else {
+                  log.debug("System time drift is within limits");
+                }
 
-        }
+              }
 
-        @Override
-        public void onFailure(Throwable t) {
+              @Override
+              public void onFailure(Throwable t) {
 
-          // Problem encountered - user won't be able to fix it
-          log.warn("System drift check timed out: '{}'", t.getMessage());
+                // Problem encountered - user won't be able to fix it
+                log.warn("System drift check timed out: '{}'", t.getMessage());
 
-        }
-      });
+              }
+            });
 
   }
 
@@ -1252,7 +1251,7 @@ public class MainController extends AbstractController implements
 
     // The exit dialog state is determined by the radio button selection
     if (ExitState.CONFIRM_EXIT.name().equals(panelName)
-      || ExitState.SWITCH_WALLET.name().equals(panelName)) {
+            || ExitState.SWITCH_WALLET.name().equals(panelName)) {
       mainView.sidebarRequestFocus();
     }
 
@@ -1282,33 +1281,33 @@ public class MainController extends AbstractController implements
     // Use a new thread to handle the new wizard so that the handover can complete
     // hiding the existing wizard before drawing the replacement
     handoverExecutorService.execute(
-      new Runnable() {
-        @Override
-        public void run() {
-
-          // Allow time for the other wizard to finish hiding (200ms is the minimum)
-          Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
-
-          // Must execute on the EDT
-          SwingUtilities.invokeLater(
             new Runnable() {
               @Override
               public void run() {
 
-                // Start building the wizard on the EDT to ensure darkened background remains
-                final CredentialsWizard credentialsWizard = Wizards.newExitingCredentialsWizard(deferredCredentialsRequestType);
+                // Allow time for the other wizard to finish hiding (200ms is the minimum)
+                Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
-                log.debug("Forcing hide of existing light box");
-                Panels.hideLightBoxIfPresent();
+                // Must execute on the EDT
+                SwingUtilities.invokeLater(
+                        new Runnable() {
+                          @Override
+                          public void run() {
 
-                log.debug("Showing exiting credentials wizard after handover");
-                Panels.showLightBox(credentialsWizard.getWizardScreenHolder());
+                            // Start building the wizard on the EDT to ensure darkened background remains
+                            final CredentialsWizard credentialsWizard = Wizards.newExitingCredentialsWizard(deferredCredentialsRequestType);
+
+                            log.debug("Forcing hide of existing light box");
+                            Panels.hideLightBoxIfPresent();
+
+                            log.debug("Showing exiting credentials wizard after handover");
+                            Panels.showLightBox(credentialsWizard.getWizardScreenHolder());
+
+                          }
+                        });
 
               }
             });
-
-        }
-      });
 
   }
 
@@ -1331,34 +1330,34 @@ public class MainController extends AbstractController implements
     final WelcomeWizardState initialState = WelcomeWizardMode.STANDARD.equals(mode) ? WelcomeWizardState.WELCOME_SELECT_WALLET : WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP;
     // Start building the wizard on the EDT to prevent UI updates
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
-      initialState, mode
+            initialState, mode
     );
 
     // Use a new thread to handle the new wizard so that the handover can complete
     handoverExecutorService.execute(
-      new Runnable() {
-        @Override
-        public void run() {
-
-          // Allow time for the other wizard to finish hiding (200ms is the minimum)
-          Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
-
-          // Must execute on the EDT
-          SwingUtilities.invokeLater(
             new Runnable() {
               @Override
               public void run() {
 
-                Panels.hideLightBoxIfPresent();
+                // Allow time for the other wizard to finish hiding (200ms is the minimum)
+                Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
-                log.debug("Showing exiting welcome wizard after handover");
-                Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
+                // Must execute on the EDT
+                SwingUtilities.invokeLater(
+                        new Runnable() {
+                          @Override
+                          public void run() {
+
+                            Panels.hideLightBoxIfPresent();
+
+                            log.debug("Showing exiting welcome wizard after handover");
+                            Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
+
+                          }
+                        });
 
               }
             });
-
-        }
-      });
 
   }
 
@@ -1375,34 +1374,34 @@ public class MainController extends AbstractController implements
 
     // Start building the wizard on the EDT to prevent UI updates
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
-      WelcomeWizardState.TREZOR_CREATE_WALLET_PREPARATION, WelcomeWizardMode.TREZOR
+            WelcomeWizardState.TREZOR_CREATE_WALLET_PREPARATION, WelcomeWizardMode.TREZOR
     );
 
     // Use a new thread to handle the new wizard so that the handover can complete
     handoverExecutorService.execute(
-      new Runnable() {
-        @Override
-        public void run() {
-
-          // Allow time for the other wizard to finish hiding (200ms is the minimum)
-          Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
-
-          // Must execute on the EDT
-          SwingUtilities.invokeLater(
             new Runnable() {
               @Override
               public void run() {
 
-                Panels.hideLightBoxIfPresent();
+                // Allow time for the other wizard to finish hiding (200ms is the minimum)
+                Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
-                log.debug("Showing exiting welcome wizard after handover");
-                Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
+                // Must execute on the EDT
+                SwingUtilities.invokeLater(
+                        new Runnable() {
+                          @Override
+                          public void run() {
+
+                            Panels.hideLightBoxIfPresent();
+
+                            log.debug("Showing exiting welcome wizard after handover");
+                            Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
+
+                          }
+                        });
 
               }
             });
-
-        }
-      });
 
   }
 
@@ -1423,11 +1422,11 @@ public class MainController extends AbstractController implements
     mainView.refresh();
 
     if (lastHardwareWalletEvent.isPresent()
-      && lastHardwareWalletEvent.get().getEventType() == HardwareWalletEventType.SHOW_DEVICE_READY) {
+            && lastHardwareWalletEvent.get().getEventType() == HardwareWalletEventType.SHOW_DEVICE_READY) {
       // Make sure the 'DEVICE_READY' event is not lost
       HardwareWalletEvents.fireHardwareWalletEvent(
-        lastHardwareWalletEvent.get().getEventType(),
-        lastHardwareWalletEvent.get().getMessage().get()
+              lastHardwareWalletEvent.get().getEventType(),
+              lastHardwareWalletEvent.get().getMessage().get()
       );
     }
 
@@ -1455,29 +1454,29 @@ public class MainController extends AbstractController implements
 
     // Don't hold up the UI thread with these background operations
     walletExecutorService.submit(
-      new Runnable() {
-        @Override
-        public void run() {
-          try {
+            new Runnable() {
+              @Override
+              public void run() {
+                try {
 
-            // Get a ticker going
-            log.debug("Starting exchange...");
-            handleExchange();
+                  // Get a ticker going
+                  log.debug("Starting exchange...");
+                  handleExchange();
 
-            // Check for system time drift (runs in the background)
-            log.debug("Check for system time drift...");
-            handleSystemTimeDrift();
+                  // Check for system time drift (runs in the background)
+                  log.debug("Check for system time drift...");
+                  handleSystemTimeDrift();
 
-            // Check for Bitcoin URIs
-            log.debug("Check for Bitcoin URIs...");
-            handlePaymentAlert();
+                  // Check for Bitcoin URIs
+                  log.debug("Check for Bitcoin URIs...");
+                  handlePaymentAlert();
 
-          } catch (Exception e) {
-            // TODO localise and put on UI via an alert
-            log.error("Services did not start ok. Error was {}", e.getClass().getCanonicalName() + " " + e.getMessage(), e);
-          }
-        }
-      });
+                } catch (Exception e) {
+                  // TODO localise and put on UI via an alert
+                  log.error("Services did not start ok. Error was {}", e.getClass().getCanonicalName() + " " + e.getMessage(), e);
+                }
+              }
+            });
   }
 
   /**
@@ -1488,41 +1487,39 @@ public class MainController extends AbstractController implements
   private void initiateDelayedTransactionStatusCheck(final TransactionCreationEvent transactionCreationEvent) {
 
     transactionCheckingExecutorService.submit(
-      new Runnable() {
+            new Runnable() {
 
-        @Override
-        public void run() {
-          log.debug("Performing delayed status check on transaction '" + transactionCreationEvent.getTransactionId() + "'");
-          // Wait for a while to let the Bitcoin network respond to the tx being sent
-          Uninterruptibles.sleepUninterruptibly(NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING, TimeUnit.SECONDS);
+              @Override
+              public void run() {
+                log.debug("Performing delayed status check on transaction '" + transactionCreationEvent.getTransactionId() + "'");
+                // Wait for a while to let the Bitcoin network respond to the tx being sent
+                Uninterruptibles.sleepUninterruptibly(NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING, TimeUnit.SECONDS);
 
-          // See if the transaction has a RAGStatus if red.
-          // This could be the tx has not been transmitted ok or is only seen by zero or one peers.
-          // In this case the user will not have access to the tx change and notify them with a warning alert
-          WalletService currentWalletService = CoreServices.getCurrentWalletService().get();
-          if (currentWalletService != null) {
-            Set<PaymentData> paymentDataSet = currentWalletService.getPaymentDataSet();
-            if (paymentDataSet != null) {
-              for (PaymentData paymentData : paymentDataSet) {
-                PaymentStatus status = paymentData.getStatus();
-                if (status.getStatus().equals(RAGStatus.RED)) {
-                  JButton button = Buttons.newAlertPanelButton(getShowHelpAction(), MessageKey.DETAILS, MessageKey.DETAILS_TOOLTIP, AwesomeIcon.QUESTION);
+                // See if the transaction has a RAGStatus if red.
+                // This could be the tx has not been transmitted ok or is only seen by zero or one peers.
+                // In this case the user will not have access to the tx change and notify them with a warning alert
+                WalletService currentWalletService = CoreServices.getCurrentWalletService().get();
+                if (currentWalletService != null) {
+                  TransactionData transactionData = currentWalletService.getTransactionDataByHash(transactionCreationEvent.getTransactionId());
+                  if (transactionData != null) {
+                    PaymentStatus status = transactionData.getStatus();
+                    if (status.getStatus().equals(RAGStatus.RED)) {
+                      JButton button = Buttons.newAlertPanelButton(getShowHelpAction(), MessageKey.DETAILS, MessageKey.DETAILS_TOOLTIP, AwesomeIcon.QUESTION);
 
-                  // The transaction has not been sent correctly, or change is not spendable, throw a warning alert
-                  final AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER), RAGStatus.AMBER, button);
-                  SwingUtilities.invokeLater(
-                    new Runnable() {
-                      @Override
-                      public void run() {
-                        ViewEvents.fireAlertAddedEvent(alertModel);
-                      }
-                    });
+                      // The transaction has not been sent correctly, or change is not spendable, throw a warning alert
+                      final AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER), RAGStatus.AMBER, button);
+                      SwingUtilities.invokeLater(
+                              new Runnable() {
+                                @Override
+                                public void run() {
+                                  ViewEvents.fireAlertAddedEvent(alertModel);
+                                }
+                              });
+                    }
+                  }
                 }
               }
-            }
-          }
-        }
-      });
+            });
 
   }
 

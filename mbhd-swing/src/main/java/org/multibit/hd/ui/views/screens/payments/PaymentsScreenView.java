@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.screens.payments;
 
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
@@ -39,6 +40,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -55,6 +57,11 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   private JTable paymentsTable;
 
   private JButton detailsButton;
+
+  /**
+   * Handles update operations
+   */
+  private static final ExecutorService executorService = SafeExecutors.newSingleThreadExecutor("payment-update-service");
 
   // View components
   private ModelAndView<EnterSearchModel, EnterSearchView> enterSearchMaV;
@@ -124,8 +131,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
    */
   @Subscribe
   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
-    log.trace("Received a TransactionSeenEvent: {}", transactionSeenEvent);
-
     if (transactionSeenEvent.isFirstAppearanceInWallet()) {
       log.debug("Firing an alert for a new transaction");
       transactionSeenEvent.setFirstAppearanceInWallet(false);
@@ -151,7 +156,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   @Subscribe
   public void onWalletDetailChangedEvent(WalletDetailChangedEvent walletDetailChangedEvent) {
     log.trace("Received a WalletDetailsChangedEvent.");
-
     update(true);
   }
 
@@ -161,7 +165,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   @Subscribe
   public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
     log.trace("Received a TransactionCreationEvent.");
-
     update(true);
   }
 
@@ -179,36 +182,49 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   }
 
   private void update(final boolean refreshData) {
+    executorService.submit(new Runnable() {
+      @Override
+      public void run() {
+        updateInternal(refreshData);
+      }
+    });
+  }
+
+  private void updateInternal(final boolean refreshData) {
     if (paymentsTable != null) {
+      try {
+        // Remember the selected row
+        int selectedTableRow = paymentsTable.getSelectedRow();
 
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
+        WalletService walletService = CoreServices.getCurrentWalletService().get();
 
-          try {
-            // Remember the selected row
-            int selectedTableRow = paymentsTable.getSelectedRow();
+        // Refresh the wallet payment list if asked
+        if (refreshData) {
+          log.debug("Updating the payment data set - expensive");
+          walletService.getPaymentDataSet();
+        }
+        // Check the search MaV model for a query and apply it
+        List<PaymentData> filteredPaymentDataList = walletService.filterPaymentsByContent(enterSearchMaV.getModel().getValue());
 
-            WalletService walletService = CoreServices.getCurrentWalletService().get();
+        ((PaymentTableModel) paymentsTable.getModel()).setPaymentData(filteredPaymentDataList, true);
 
-            // Refresh the wallet payment list if asked
-            if (refreshData) {
-              walletService.getPaymentDataSet();
-            }
-            // Check the search MaV model for a query and apply it
-            List<PaymentData> filteredPaymentDataList = walletService.filterPaymentsByContent(enterSearchMaV.getModel().getValue());
+        final int finalSelectedTableRow = selectedTableRow;
 
-            ((PaymentTableModel) paymentsTable.getModel()).setPaymentData(filteredPaymentDataList, true);
+        // Update UI
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            ((PaymentTableModel) paymentsTable.getModel()).fireTableDataChanged();
 
             // Reselect the selected row if possible
-            if (selectedTableRow != -1 && selectedTableRow < paymentsTable.getModel().getRowCount()) {
-              paymentsTable.changeSelection(selectedTableRow, 0, false, false);
+            if (finalSelectedTableRow != -1 && finalSelectedTableRow < paymentsTable.getModel().getRowCount()) {
+              paymentsTable.changeSelection(finalSelectedTableRow, 0, false, false);
             }
-          } catch (IllegalStateException ise) {
-            // No wallet is open - nothing to do
           }
-        }
-      });
+        });
+      } catch (IllegalStateException ise) {
+        // No wallet is open - nothing to do
+      }
     }
   }
 

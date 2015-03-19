@@ -88,7 +88,7 @@ public class ExportPaymentsReportPanelView extends AbstractWizardPanelView<Expor
     // Initialise to failure
     exportCompletedLabel = Labels.newBlankLabel();
     exportCompletedLabel.setText(Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
-    
+
     transactionsExportFileLabel = Labels.newBlankLabel();
     transactionsExportFileValue = Labels.newBlankLabel();
     mbhdPaymentRequestsExportFileLabel = Labels.newBlankLabel();

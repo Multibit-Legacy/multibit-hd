@@ -126,7 +126,7 @@ public enum WalletManager implements WalletEventListener {
     }
   };
 
-  private static final int AUTO_SAVE_DELAY = 30000; // milliseconds
+  private static final int AUTO_SAVE_DELAY = 60000; // milliseconds
 
   // TODO (GR) Refactor this to be injected
   private static final NetworkParameters networkParameters = BitcoinNetwork.current().get();
@@ -139,11 +139,6 @@ public enum WalletManager implements WalletEventListener {
    * https://groups.google.com/forum/#!topic/bitcoinj/288mCHhLMrA
    */
   public static final String EARLIEST_HD_WALLET_DATE = "2014-05-01";
-
-  /**
-   * How much a block time might drift
-   */
-  public static final int DRIFT_TIME = 3600; // seconds
 
   public static final String WALLET_DIRECTORY_PREFIX = "mbhd";
   // The format of the wallet directories is WALLET_DIRECTORY_PREFIX + a wallet id.

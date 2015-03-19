@@ -52,6 +52,10 @@ public class ViewEvents {
    */
   private static final Set<Object> viewEventBusSubscribers = Sets.newHashSet();
 
+  /**
+   * A time period used to slow down UI response
+   */
+  public static final int SLOWDOWN_UPDATE_TIME = 4000; // milliseconds
 
   /**
    * Utilities have a private constructor
@@ -456,7 +460,6 @@ public class ViewEvents {
         }
       });
     }
-
   }
 
   /**
@@ -465,7 +468,6 @@ public class ViewEvents {
    * @param detailScreen The screen to show
    */
   public static void fireShowDetailScreenEvent(final Screen detailScreen) {
-
     log.trace("Firing 'show detail screen' event");
     if (SwingUtilities.isEventDispatchThread()) {
       viewEventBus.post(new ShowScreenEvent(detailScreen));
@@ -479,5 +481,4 @@ public class ViewEvents {
       });
     }
   }
-
 }

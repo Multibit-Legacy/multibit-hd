@@ -158,27 +158,28 @@ public class Models {
         Preconditions.checkNotNull(paymentSessionSummary);
 
         WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
-        Protos.PaymentRequest paymentRequest = paymentSessionSummary.getPaymentSession().get().getPaymentRequest();
-        // Add the payment request to the in-memory store without a transaction hash (the send has not been sent yet)
-        PaymentRequestData paymentRequestData = new PaymentRequestData(paymentRequest, Optional.<Sha256Hash>absent());
+        if ( paymentSessionSummary.getPaymentSession().isPresent()) {
+          Protos.PaymentRequest paymentRequest = paymentSessionSummary.getPaymentSession().get().getPaymentRequest();
+          // Add the payment request to the in-memory store without a transaction hash (the send has not been sent yet)
+          PaymentRequestData paymentRequestData = new PaymentRequestData(paymentRequest, Optional.<Sha256Hash>absent());
 
-        // Store it (in memory) in the wallet service and in the paymentRequestData so that it is available in the Wizard
-        walletService.addPaymentRequestData(paymentRequestData);
-        paymentRequestData.setPaymentSessionSummaryOptional(Optional.of(paymentSessionSummary));
+          // Store it (in memory) in the wallet service and in the paymentRequestData so that it is available in the Wizard
+          walletService.addPaymentRequestData(paymentRequestData);
+          paymentRequestData.setPaymentSessionSummaryOptional(Optional.of(paymentSessionSummary));
 
-        // Work out if an identity is available
-        if (paymentSessionSummary.getPaymentSession().isPresent()) {
-          PaymentProtocol.PkiVerificationData identity = paymentSessionSummary.getPaymentSession().get().verifyPki();
-          if (identity != null) {
-            paymentRequestData.setIdentityDisplayName(identity.displayName);
+          // Work out if an identity is available
+          if (paymentSessionSummary.getPaymentSession().isPresent()) {
+            PaymentProtocol.PkiVerificationData identity = paymentSessionSummary.getPaymentSession().get().verifyPki();
+            if (identity != null) {
+              paymentRequestData.setIdentityDisplayName(identity.displayName);
+            }
           }
+
+          // The wallet has changed so UI will need updating
+          ViewEvents.fireWalletDetailChangedEvent(new WalletDetail());
+
+          Panels.showLightBox(Wizards.newPaymentsWizard(paymentRequestData).getWizardScreenHolder());
         }
-
-        // The wallet has changed so UI will need updating
-        ViewEvents.fireWalletDetailChangedEvent(new WalletDetail());
-
-        Panels.showLightBox(Wizards.newPaymentsWizard(paymentRequestData).getWizardScreenHolder());
-
       }
     };
     JButton button = Buttons.newAlertPanelButton(action, MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);

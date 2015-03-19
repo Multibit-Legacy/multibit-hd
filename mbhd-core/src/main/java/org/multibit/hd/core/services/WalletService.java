@@ -482,8 +482,13 @@ public class WalletService extends AbstractService {
           paymentStatus.setStatusData(new Object[]{numberOfPeers});
           return paymentStatus;
         } else {
-          // Not definitely out in the network (seen by one peer is probably the peer first broadcast to, which will INV it back
-          return new PaymentStatus(RAGStatus.AMBER, CoreMessageKey.NOT_BROADCAST);
+          if (numberOfPeers == 1) {
+            // Not definitely out in the network (seen by one peer is probably the peer first broadcast to, which will INV it back
+            return new PaymentStatus(RAGStatus.AMBER, CoreMessageKey.NOT_BROADCAST);
+          } else {
+            // seen by zero peers
+            return new PaymentStatus(RAGStatus.RED, CoreMessageKey.NOT_BROADCAST);
+          }
         }
       } else if (TransactionConfidence.ConfidenceType.DEAD.equals(confidenceType)) {
         // Dead
@@ -952,6 +957,22 @@ public class WalletService extends AbstractService {
       }
     }
     return Optional.absent();
+  }
+
+  /**
+   * Get a freshly adapted transaction from the current wallet by hash
+   * @param transactionHashAsString transaction hash as a string
+   * @return transactionData freshly adapted TransactionData or null if no match
+   */
+  public TransactionData getTransactionDataByHash(String transactionHashAsString) {
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() && WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet() != null) {
+      Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+      Transaction transaction = wallet.getTransaction(new Sha256Hash(transactionHashAsString));
+      return adaptTransaction(wallet, transaction);
+    } else {
+      // No transaction with that hash in current wallet
+      return null;
+    }
   }
 
 

@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentType;
@@ -33,6 +34,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -41,7 +43,6 @@ import java.util.Set;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenModel> {
 
@@ -55,6 +56,11 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
   private ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> displayRequestedPaymentsMaV;
 
   private WalletService walletService;
+
+  /**
+   * Handles update operations
+   */
+  private static final ExecutorService executorService = SafeExecutors.newSingleThreadExecutor("send-request-update-service");
 
   /**
    * @param panelModel The model backing this panel view
@@ -76,9 +82,9 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     walletService = CoreServices.getCurrentWalletService().get();
 
     MigLayout layout = new MigLayout(
-      Panels.migXYDetailLayout(),
-      "10[]10[]", // Column constraints
-      "1[]20[]10[]" // Row constraints
+            Panels.migXYDetailLayout(),
+            "10[]10[]", // Column constraints
+            "1[]20[]10[]" // Row constraints
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
@@ -121,7 +127,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
 
     JScrollPane sendingPaymentsScrollPane = new JScrollPane(displaySendingPaymentsMaV.getView().newComponentPanel(),
-      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     sendingPaymentsScrollPane.setBackground(Themes.currentTheme.detailPanelBackground());
     sendingPaymentsScrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
     sendingPaymentsScrollPane.setOpaque(true);
@@ -136,7 +142,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     displayRequestedPaymentsMaV.getModel().setValue(todaysRequestedPayments);
 
     JScrollPane requestingPaymentsScrollPane = new JScrollPane(displayRequestedPaymentsMaV.getView().newComponentPanel(),
-      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     requestingPaymentsScrollPane.getViewport().setBackground(Themes.currentTheme.detailPanelBackground());
     requestingPaymentsScrollPane.setOpaque(true);
     requestingPaymentsScrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -159,12 +165,12 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
   }
 
   @Override
-   public boolean beforeShow() {
-     // Ensure the send / request buttons are kept up to date
-     Optional<BitcoinNetworkChangedEvent> changedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
-     if (changedEvent.isPresent()) {
-       updateSendRequestButtons(changedEvent.get());
-     }
+  public boolean beforeShow() {
+    // Ensure the send / request buttons are kept up to date
+    Optional<BitcoinNetworkChangedEvent> changedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
+    if (changedEvent.isPresent()) {
+      updateSendRequestButtons(changedEvent.get());
+    }
     return true;
   }
 
@@ -217,14 +223,21 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
    */
   @Subscribe
   public void onWalletDetailChangedEvent(WalletDetailChangedEvent walletDetailChangedEvent) {
-
-    log.debug("Wallet detail has changed");
-
+    log.trace("Wallet detail has changed");
     update();
   }
 
   private void update() {
+    executorService.submit(new Runnable() {
+      @Override
+      public void run() {
+        updateInternal();
+      }
+    });
+  }
 
+
+  private void updateInternal() {
     if (!isInitialised()) {
       return;
     }
@@ -235,22 +248,23 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
       updateSendRequestButtons(changedEvent.get());
     }
 
+    log.debug("Updating the payment data set - expensive");
+    final Set<PaymentData> allPayments = walletService.getPaymentDataSet();
+
+    // Find the 'Sending' transactions for today
+    final List<PaymentData> todaysSendingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
+
+    // Find the 'Requested' events for today
+    final List<PaymentData> todaysRequestedPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        Set<PaymentData> allPayments = walletService.getPaymentDataSet();
-
-        // Find the 'Sending' transactions for today
-        List<PaymentData> todaysSendingPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.SENDING);
         displaySendingPaymentsMaV.getModel().setValue(todaysSendingPayments);
-
         displaySendingPaymentsMaV.getView().createView();
         displaySendingPaymentsMaV.getView().updateView();
 
-        // Find the 'Requested' events for today
-        List<PaymentData> todaysRequestedPayments = walletService.subsetPaymentsAndSort(allPayments, PaymentType.RECEIVING);
         displayRequestedPaymentsMaV.getModel().setValue(todaysRequestedPayments);
-
         displayRequestedPaymentsMaV.getView().createView();
         displayRequestedPaymentsMaV.getView().updateView();
       }
