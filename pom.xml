@@ -68,49 +68,20 @@
   </issueManagement>
 
   <repositories>
-    <!-- Define the MultiBit staging repository for snapshots
-     GitHub requires mixture of raw text and blob for POMs and JARs -->
+    <!-- Define the MultiBit staging repository for releases and snapshots -->
+    <!-- Use https://rawgithub.com to provide a consistent result -->
     <repository>
-      <id>mbhd-maven-release-raw-text</id>
-      <url>https://raw.githubusercontent.com/bitcoin-solutions/mbhd-maven/master/releases</url>
+      <id>mbhd-maven-release</id>
+      <url>https://rawgithub.com/bitcoin-solutions/mbhd-maven/master/releases</url>
       <releases/>
     </repository>
     <repository>
-      <id>mbhd-maven-release-raw-blob</id>
-      <url>https://github.com/bitcoin-solutions/mbhd-maven/raw/master/releases</url>
-      <releases/>
-    </repository>
-    <repository>
-      <id>mbhd-maven-snapshot-raw-text</id>
-      <url>https://raw.githubusercontent.com/bitcoin-solutions/mbhd-maven/master/snapshots</url>
+      <id>mbhd-maven-snapshot</id>
+      <url>https://rawgithub.com/bitcoin-solutions/mbhd-maven/master/snapshots</url>
       <!-- These artifacts change frequently during development iterations -->
       <snapshots>
         <updatePolicy>always</updatePolicy>
       </snapshots>
-    </repository>
-    <repository>
-      <id>mbhd-maven-snapshot-raw-blob</id>
-      <url>https://github.com/bitcoin-solutions/mbhd-maven/raw/master/snapshots</url>
-      <!-- These artifacts change frequently during development iterations -->
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-    </repository>
-
-    <!-- Bitcoinj releases -->
-    <repository>
-      <id>bitcoinj-releases</id>
-      <name>Bitcoinj Releases</name>
-      <url>http://distribution.bitcoinj.googlecode.com/git/releases</url>
-      <releases/>
-    </repository>
-
-    <!-- ZXing releases -->
-    <repository>
-      <id>mvn-adamgent</id>
-      <name>Adam Gent Maven Repository</name>
-      <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
-      <releases/>
     </repository>
 
   </repositories>
