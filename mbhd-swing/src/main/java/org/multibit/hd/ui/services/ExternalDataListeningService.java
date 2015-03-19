@@ -76,7 +76,7 @@ public class ExternalDataListeningService extends AbstractService {
 
   private Optional<ServerSocket> serverSocket = Optional.absent();
 
-  private String[] args;
+  private final Optional<String[]> args;
 
   /**
    * @param args The command line arguments
@@ -86,6 +86,8 @@ public class ExternalDataListeningService extends AbstractService {
     super();
 
     if (args == null || args.length == 0) {
+      log.debug("No command line arguments to parse");
+      this.args = Optional.absent();
       return;
     }
 
@@ -95,7 +97,7 @@ public class ExternalDataListeningService extends AbstractService {
     }
 
     // May need to hand over
-    this.args = args;
+    this.args = Optional.of(args);
 
   }
 
@@ -154,7 +156,7 @@ public class ExternalDataListeningService extends AbstractService {
 
       if (!bitcoinURIQueue.isEmpty() || !paymentSessionSummaryQueue.isEmpty()) {
         // Must have successfully parsed the data into something meaningful so resend the args
-        for (String arg : args) {
+        for (String arg : args.get()) {
           writeToSocket(arg);
         }
       }
