@@ -12,6 +12,8 @@ import org.multibit.hd.core.dto.PaymentSessionStatus;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStreamReader;
@@ -19,12 +21,15 @@ import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static junit.framework.TestCase.fail;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class ExternalDataListeningServiceTest {
+
+  private static final Logger log = LoggerFactory.getLogger(ExternalDataListeningServiceTest.class);
 
   private static final String PAYMENT_REQUEST_BIP21_MINIMUM = "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty";
 
@@ -46,7 +51,7 @@ public class ExternalDataListeningServiceTest {
     "amount=1";
 
   /**
-   * Windows relative file path (based on mbhd-swing for Maven - IDE's will need adjustment)
+   * Windows format relative file path (based on mbhd-swing for Maven - IDE's will need adjustment)
    */
   private static final String PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE = "src\\test\\resources\\fixtures\\payments\\localhost-signed.bitcoinpaymentrequest";
 
@@ -130,18 +135,25 @@ public class ExternalDataListeningServiceTest {
 
     // Arrange
     // Check for Maven or IDE execution environment
-    File single = new File(PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE);
+    File single = Paths.get(PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE).toFile();
     final String[] args;
     if (single.exists()) {
-      // Using Maven build
+      log.info("Resolved Windows fixture as: '{}'. Verified Maven build.", single.getAbsolutePath());
       args = new String[]{
         PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE
       };
     } else {
-      // Using IDE build
-      args = new String[]{
-        "mbhd-swing\\"+PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE
-      };
+      log.info("Resolved Windows fixture as: '{}' but does not exist. Assuming an IDE build.", single.getAbsolutePath());
+      single = Paths.get("mbhd-swing\\" + PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE).toFile();
+      if (single.exists()) {
+        log.info("Resolved Windows fixture as: '{}'. Verified IDE build.", single.getAbsolutePath());
+        args = new String[]{
+          "mbhd-swing\\" + PAYMENT_REQUEST_BIP72_FILE_WINDOWS_SINGLE
+        };
+      } else {
+        fail();
+        return;
+      }
     }
 
     // Act
