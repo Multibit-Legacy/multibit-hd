@@ -28,8 +28,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.UnknownHostException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.Queue;
 
@@ -117,18 +127,18 @@ public class ExternalDataListeningService extends AbstractService {
       ListenableFuture future = getExecutorService().submit(getInstanceServerRunnable(serverSocket.get()));
       Futures.addCallback(
         future, new FutureCallback() {
-          @Override
-          public void onSuccess(Object result) {
-            log.debug("Stopping BitcoinURIListeningService executor (success)");
-            getExecutorService().shutdownNow();
-          }
+        @Override
+        public void onSuccess(Object result) {
+          log.debug("Stopping BitcoinURIListeningService executor (success)");
+          getExecutorService().shutdownNow();
+        }
 
-          @Override
-          public void onFailure(Throwable t) {
-            log.debug("Stopping BitcoinURIListeningService executor (failure)", t);
-            getExecutorService().shutdownNow();
-          }
-        });
+        @Override
+        public void onFailure(Throwable t) {
+          log.debug("Stopping BitcoinURIListeningService executor (failure)", t);
+          getExecutorService().shutdownNow();
+        }
+      });
 
       log.info("Listening for MultiBit HD instances on socket: '{}'", MULTIBIT_HD_NETWORK_SOCKET);
 
@@ -435,14 +445,21 @@ public class ExternalDataListeningService extends AbstractService {
       rawData = rawData.replace("\\", "/");
     }
 
-    // Treat as a file path
-    File file = Paths.get(rawData).toFile();
-    if (file.exists() && file.canRead()) {
-      // File has valid access permissions so can continue
-      return Optional.of(file.toURI());
+    try {
+      // Try to build a file path from the raw data
+      File file = Paths.get(rawData).toFile();
+      if (file.exists() && file.canRead()) {
+        // File has valid access permissions so can continue
+        return Optional.of(file.toURI());
+      } else {
+        // Must have failed to be here
+        log.warn("No permissions to access the file");
+        return Optional.absent();
+      }
+    } catch (InvalidPathException e) {
+      log.warn("Invalid path: '{}'", rawData);
+      return Optional.absent();
     }
-
-    return Optional.absent();
 
   }
 
