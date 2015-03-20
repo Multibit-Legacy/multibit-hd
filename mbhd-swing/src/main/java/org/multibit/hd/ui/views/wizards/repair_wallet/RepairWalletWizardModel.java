@@ -129,7 +129,8 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       Wallet currentWallet = currentWalletSummary.getWallet();
 
       // Work out the replay date
-      final DateTime replayDate = new DateTime(currentWallet.getEarliestKeyCreationTime() * 1000);
+      long earliestKeyCreationTime = currentWallet.getEarliestKeyCreationTime();
+      final DateTime replayDate = new DateTime(earliestKeyCreationTime * 1000);
 
       // Hide the header view
       SwingUtilities.invokeLater(new Runnable() {
