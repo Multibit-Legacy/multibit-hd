@@ -114,8 +114,8 @@ public class PaymentProtocolService extends AbstractService {
             Optional.of(paymentSession),
             PaymentSessionStatus.UNTRUSTED,
             RAGStatus.PINK,
-            Optional.of(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID),
-            Optional.<Object[]>fromNullable(new String[]{paymentSession.getMemo()})
+            CoreMessageKey.PAYMENT_SESSION_PKI_INVALID,
+            new String[]{paymentSession.getMemo()}
           );
         } else if (bitcoinUri.getPaymentRequestUrls().size() == 1) {
           // Single attempt only
@@ -205,7 +205,7 @@ public class PaymentProtocolService extends AbstractService {
    *
    * @return A new signed BIP70 PaymentRequest or absent
    */
-  public Optional<Protos.PaymentRequest> newSignedPaymentRequest(SignedPaymentRequestSummary signedPaymentRequestSummary) {
+  public Optional<Protos.PaymentRequest> newSignedPaymentRequest(SignedPaymentRequestSummary signedPaymentRequestSummary) throws NoSuchAlgorithmException {
 
     KeyStore keyStore = signedPaymentRequestSummary.getKeyStore();
     String keyAlias = signedPaymentRequestSummary.getKeyAlias();
@@ -246,12 +246,8 @@ public class PaymentProtocolService extends AbstractService {
 
       return Optional.of(paymentRequest.build());
 
-    } catch (KeyStoreException e) {
-      e.printStackTrace();
-    } catch (UnrecoverableKeyException e) {
-      e.printStackTrace();
-    } catch (NoSuchAlgorithmException e) {
-      e.printStackTrace();
+    } catch (KeyStoreException | UnrecoverableKeyException e) {
+      log.error("Unexpected error in payment request", e);
     }
 
     // Must have failed to be here

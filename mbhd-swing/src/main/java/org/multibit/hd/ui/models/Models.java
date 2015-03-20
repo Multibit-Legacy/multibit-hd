@@ -49,30 +49,6 @@ public class Models {
   }
 
   /**
-   * @param value The value to set
-   *
-   * @return A model wrapping the value
-   */
-  public static <M> Model<M> newModel(M value) {
-
-    return new Model<M>() {
-
-      private M value;
-
-      @Override
-      public M getValue() {
-        return value;
-      }
-
-      @Override
-      public void setValue(M value) {
-        this.value = value;
-      }
-    };
-
-  }
-
-  /**
    * <p>A new alert model with no button</p>
    *
    * @param message The message
@@ -166,11 +142,7 @@ public class Models {
 
           // Trust status
           paymentRequestData.setTrustStatus(paymentSessionSummary.getStatus());
-          if (paymentSessionSummary.getMessageKey().isPresent()) {
-            paymentRequestData.setTrustErrorMessage(Languages.safeText(paymentSessionSummary.getMessageKey().get(), paymentSessionSummary.getMessageData()));
-          } else {
-            paymentRequestData.setTrustErrorMessage("");
-          }
+          paymentRequestData.setTrustErrorMessage(Languages.safeText(paymentSessionSummary.getMessageKey(), paymentSessionSummary.getMessageData()));
 
           // Expiration date
           paymentRequestData.setExpirationDate(new DateTime(paymentSessionSummary.getPaymentSession().get().getExpires()));
@@ -295,5 +267,4 @@ public class Models {
     };
 
   }
-
 }

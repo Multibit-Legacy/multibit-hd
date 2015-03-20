@@ -96,6 +96,9 @@ public class MultiBitHD {
     // Start the logging factory (see later for instance) to get console logging up fast
     LoggingFactory.bootstrap();
 
+    // Get the configuration fast
+    CoreServices.bootstrap();
+
     log.info("Starting");
 
     // Analyse the command line

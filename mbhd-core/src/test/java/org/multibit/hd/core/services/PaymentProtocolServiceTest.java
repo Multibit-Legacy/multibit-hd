@@ -130,7 +130,7 @@ public class PaymentProtocolServiceTest {
     // Assert
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.ERROR);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isFalse();
-    assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_ERROR);
+    assertThat(paymentSessionSummary.getMessageKey()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_ERROR);
 
   }
 
@@ -144,7 +144,7 @@ public class PaymentProtocolServiceTest {
     // Assert
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.UNTRUSTED);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isFalse();
-    assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_INVALID_REQUEST_URL);
+    assertThat(paymentSessionSummary.getMessageKey()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_INVALID_REQUEST_URL);
 
   }
 
@@ -158,7 +158,7 @@ public class PaymentProtocolServiceTest {
     // Assert
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.UNTRUSTED);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isFalse();
-    assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
+    assertThat(paymentSessionSummary.getMessageKey()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
 
   }
 
@@ -172,7 +172,7 @@ public class PaymentProtocolServiceTest {
     // Assert
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.UNTRUSTED);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isTrue();
-    assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
+    assertThat(paymentSessionSummary.getMessageKey()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
 
   }
 
@@ -190,7 +190,7 @@ public class PaymentProtocolServiceTest {
     // Assert
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.ERROR);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isFalse();
-    assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_ERROR);
+    assertThat(paymentSessionSummary.getMessageKey()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_ERROR);
 
   }
 
@@ -208,7 +208,7 @@ public class PaymentProtocolServiceTest {
     // Assert
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.UNTRUSTED);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isTrue();
-    assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
+    assertThat(paymentSessionSummary.getMessageKey()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
 
   }
 
@@ -228,7 +228,7 @@ public class PaymentProtocolServiceTest {
     // Assert
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.UNTRUSTED);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isTrue();
-    assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
+    assertThat(paymentSessionSummary.getMessageKey()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID);
 
   }
 
@@ -246,9 +246,9 @@ public class PaymentProtocolServiceTest {
     // Assert the summary
     assertThat(paymentSessionSummary.getStatus()).isEqualTo(PaymentSessionStatus.TRUSTED);
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isTrue();
-    assertThat(paymentSessionSummary.getMessageKey().get()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_OK);
+    assertThat(paymentSessionSummary.getMessageKey()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_OK);
     assertThat(paymentSessionSummary.getSeverity()).isEqualTo(RAGStatus.GREEN);
-    assertThat(paymentSessionSummary.getMessageData().isPresent()).isFalse();
+    assertThat(paymentSessionSummary.getMessageData()).isNullOrEmpty();
 
     // Assert the PaymentDetails
     Protos.PaymentDetails paymentDetails = paymentSessionSummary.getPaymentSession().get().getPaymentDetails();

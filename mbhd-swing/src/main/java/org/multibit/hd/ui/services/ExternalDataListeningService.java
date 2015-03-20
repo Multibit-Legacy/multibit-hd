@@ -14,7 +14,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
+import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
+import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.WalletManager;
@@ -22,23 +24,16 @@ import org.multibit.hd.core.services.AbstractService;
 import org.multibit.hd.core.services.PaymentProtocolService;
 import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.models.Models;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.UnknownHostException;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.net.*;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.Queue;
@@ -70,13 +65,9 @@ public class ExternalDataListeningService extends AbstractService {
   public static final String MESSAGE_END = "$$MBHD-End$$";
 
   /**
-   * Track the incoming Bitcoin URIs (BIP21)
+   * Allow up to 50 entries in the queue to represent a batch of work
    */
-  private static final Queue<BitcoinURI> bitcoinURIQueue = Queues.newArrayBlockingQueue(10);
-  /**
-   * Track the incoming Payment Protocol sessions
-   */
-  private static final Queue<PaymentSessionSummary> paymentSessionSummaryQueue = Queues.newArrayBlockingQueue(10);
+  private static final Queue<AlertModel> alertModelQueue = Queues.newArrayBlockingQueue(50);
 
   private Optional<ServerSocket> serverSocket = Optional.absent();
 
@@ -97,7 +88,7 @@ public class ExternalDataListeningService extends AbstractService {
 
     // Must have some command line arguments to be here
     for (String arg : args) {
-      addToQueues(arg, false);
+      parseRawData(arg);
     }
 
     // May need to hand over
@@ -127,18 +118,18 @@ public class ExternalDataListeningService extends AbstractService {
       ListenableFuture future = getExecutorService().submit(getInstanceServerRunnable(serverSocket.get()));
       Futures.addCallback(
         future, new FutureCallback() {
-        @Override
-        public void onSuccess(Object result) {
-          log.debug("Stopping BitcoinURIListeningService executor (success)");
-          getExecutorService().shutdownNow();
-        }
+          @Override
+          public void onSuccess(Object result) {
+            log.debug("Stopping BitcoinURIListeningService executor (success)");
+            getExecutorService().shutdownNow();
+          }
 
-        @Override
-        public void onFailure(Throwable t) {
-          log.debug("Stopping BitcoinURIListeningService executor (failure)", t);
-          getExecutorService().shutdownNow();
-        }
-      });
+          @Override
+          public void onFailure(Throwable t) {
+            log.debug("Stopping BitcoinURIListeningService executor (failure)", t);
+            getExecutorService().shutdownNow();
+          }
+        });
 
       log.info("Listening for MultiBit HD instances on socket: '{}'", MULTIBIT_HD_NETWORK_SOCKET);
 
@@ -211,21 +202,12 @@ public class ExternalDataListeningService extends AbstractService {
   }
 
   /**
-   * <p>The queue of Bitcoin URIs provided externally (command line arguments or via the socket)</p>
+   * <p>The queue of alert models based on data provided externally (command line arguments or via the socket)</p>
    *
-   * @return The Bitcoin URI queue (may be empty)
+   * @return The alert model queue (may be empty)
    */
-  public Queue<BitcoinURI> getBitcoinURIQueue() {
-    return bitcoinURIQueue;
-  }
-
-  /**
-   * <p>The queue of PaymentSession summaries provided externally (command line arguments or via the socket)</p>
-   *
-   * @return The payment session summary queue (may be empty)
-   */
-  public Queue<PaymentSessionSummary> getPaymentSessionSummaryQueue() {
-    return paymentSessionSummaryQueue;
+  public Queue<AlertModel> getAlertModelQueue() {
+    return alertModelQueue;
   }
 
   /**
@@ -239,76 +221,109 @@ public class ExternalDataListeningService extends AbstractService {
   }
 
   /**
-   * <p>Parse the raw data into a Bitcoin URI or a PaymentSessionSummary as required</p>
+   * <p>Parse the raw data into an alert containing one of the following:</p>
+   * <ul>
+   * <li>Bitcoin URI (BIP21)</li>
+   * <li>Payment Request Summary (BIP70)</li>
+   * <li>Error message</li>
+   * </ul>
    *
-   * @param rawData           The raw data from the external source
-   * @param fireAddAlertEvent True if the act of adding to the queues should trigger the add alert event (requires an unlocked wallet)
+   * @param rawData The raw data from the external source
    */
-  public static void addToQueues(String rawData, boolean fireAddAlertEvent) {
+  public static void parseRawData(String rawData) {
 
     log.debug("Parsing raw data: '{}'", rawData);
+
+    // This is final fallback failure message for unparsable raw data
+    final String failureMessage = Languages.safeText(CoreMessageKey.PAYMENT_SESSION_ERROR, rawData);
 
     // Quick check for BIP21 Bitcoin URI
     if (rawData.startsWith("bitcoin") && !rawData.contains("r=")) {
       // Treat as BIP21 Bitcoin URI
-      Optional<BitcoinURI> bitcoinURI = parseBitcoinURI(rawData);
-      if (bitcoinURI.isPresent()) {
-        bitcoinURIQueue.add(bitcoinURI.get());
+      final Optional<BitcoinURI> bitcoinURI = parseBitcoinURI(rawData);
+
+      try {
+        // Must be on the EDT and run synchronously
+        SwingUtilities.invokeAndWait(
+          new Runnable() {
+            @Override
+            public void run() {
+              if (bitcoinURI.isPresent()) {
+
+                // Attempt to create an alert model from the Bitcoin URI
+                Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI.get());
+                if (alertModel.isPresent()) {
+                  alertModelQueue.add(alertModel.get());
+                  return;
+                }
+              }
+
+              // Must have failed to be here
+              alertModelQueue.add(Models.newAlertModel(failureMessage, RAGStatus.RED));
+            }
+          });
+      } catch (InterruptedException | InvocationTargetException e) {
+        log.error("Unexpected UI exception", e);
       }
 
+      // Fall through to end processing
+
     } else {
+
       // Treat as a Payment Protocol URI referencing PaymentRequest data
+
       // Supports:
       // URL forms starting with "http", "https", "file", "classpath"
       // Native file path (e.g. "C:\somewhere.bitcoinpaymentrequest")
       // BIP72 variant of "bitcoin"
       //
-      Optional<PaymentSessionSummary> paymentSessionSummary = parsePaymentSessionSummary(rawData);
-      if (paymentSessionSummary.isPresent()) {
-        paymentSessionSummaryQueue.add(paymentSessionSummary.get());
-      }
+      final Optional<PaymentSessionSummary> paymentSessionSummary = parsePaymentSessionSummary(rawData);
 
+      try {
+        // Must be on the EDT and run synchronously
+        SwingUtilities.invokeAndWait(
+          new Runnable() {
+            @Override
+            public void run() {
+              if (paymentSessionSummary.isPresent()) {
+
+                // Attempt to create an alert model from the Bitcoin URI
+                Optional<AlertModel> alertModel = Models.newPaymentRequestAlertModel(paymentSessionSummary.get());
+                if (alertModel.isPresent()) {
+                  alertModelQueue.add(alertModel.get());
+                  return;
+                }
+              }
+
+              // Must have failed to be here
+              alertModelQueue.add(Models.newAlertModel(failureMessage, RAGStatus.RED));
+            }
+          });
+      } catch (InterruptedException | InvocationTargetException e) {
+        log.error("Unexpected UI exception", e);
+      }
     }
 
-    if (fireAddAlertEvent) {
+    // We've done all our processing
 
-      log.debug("Checking for alert requirement");
+  }
 
-      // Check for BIP21 Bitcoin URI
-      if (!bitcoinURIQueue.isEmpty()) {
+  /**
+   * Purge the alert model queue if the UI state allows it
+   */
+  public static synchronized void purgeAlertModelQueue() {
 
-        SwingUtilities.invokeLater(
-          new Runnable() {
-            @Override
-            public void run() {
-              // Attempt to create an alert model from the Bitcoin URI
-              Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURIQueue.poll());
+    boolean canPurge = WalletManager.INSTANCE.getCurrentWalletSummary().isPresent();
 
-              // If successful the fire the event
-              if (alertModel.isPresent()) {
-                ControllerEvents.fireAddAlertEvent(alertModel.get());
-              }
-            }
-          });
+    if (canPurge) {
+
+      log.debug("Wallet is unlocked so firing alert events (if present)");
+
+      while (!alertModelQueue.isEmpty()) {
+        AlertModel alertModel = alertModelQueue.poll();
+        ControllerEvents.fireAddAlertEvent(alertModel);
       }
 
-      // Check for Payment Protocol session
-      if (!paymentSessionSummaryQueue.isEmpty()) {
-
-        SwingUtilities.invokeLater(
-          new Runnable() {
-            @Override
-            public void run() {
-              // Attempt to create an alert model
-              Optional<AlertModel> alertModel = Models.newPaymentRequestAlertModel(paymentSessionSummaryQueue.poll());
-
-              // If successful the fire the event
-              if (alertModel.isPresent()) {
-                ControllerEvents.fireAddAlertEvent(alertModel.get());
-              }
-            }
-          });
-      }
     }
 
   }
@@ -526,10 +541,10 @@ public class ExternalDataListeningService extends AbstractService {
             log.debug("Received external data: '{}'", rawData);
 
             // Attempt to add to the queues and issue an alert
-            ExternalDataListeningService.addToQueues(
-              rawData,
-              WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()
-            );
+            ExternalDataListeningService.parseRawData(rawData);
+
+            // Now would be a good time to alert the user
+            ExternalDataListeningService.purgeAlertModelQueue();
 
           } catch (IOException e) {
             socketClosed = true;

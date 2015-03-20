@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.KeyStoreException;
+import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -27,8 +28,8 @@ public class PaymentSessionSummary {
 
   private final RAGStatus severity;
 
-  private final Optional<CoreMessageKey> messageKey;
-  private final Optional<Object[]> messageData;
+  private final CoreMessageKey messageKey;
+  private final Object[] messageData;
 
   /**
    * <p>The server has returned a well-formed payment request</p>
@@ -42,8 +43,8 @@ public class PaymentSessionSummary {
       Optional.fromNullable(paymentSession),
       PaymentSessionStatus.TRUSTED,
       RAGStatus.GREEN,
-      Optional.of(CoreMessageKey.PAYMENT_SESSION_OK),
-      Optional.<Object[]>fromNullable(null)
+      CoreMessageKey.PAYMENT_SESSION_OK,
+      new String[]{paymentSession.getMemo()}
     );
   }
 
@@ -63,8 +64,8 @@ public class PaymentSessionSummary {
         Optional.of(paymentSession),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID),
-        Optional.<Object[]>fromNullable(new String[]{paymentSession.getMemo(), e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_PKI_INVALID,
+        new String[]{paymentSession.getMemo(), e.getMessage()}
       );
     }
     if (e instanceof PaymentProtocolException.InvalidPkiType) {
@@ -72,8 +73,8 @@ public class PaymentSessionSummary {
         Optional.of(paymentSession),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID_TYPE),
-        Optional.<Object[]>fromNullable(new String[]{paymentSession.getMemo(), e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_PKI_INVALID_TYPE,
+        new String[]{paymentSession.getMemo(), e.getMessage()}
       );
     }
     if (e instanceof PaymentProtocolException.PkiVerificationException) {
@@ -81,8 +82,8 @@ public class PaymentSessionSummary {
         Optional.of(paymentSession),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_PKI_MISSING),
-        Optional.<Object[]>fromNullable(new String[]{paymentSession.getMemo(), e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_PKI_MISSING,
+        new String[]{paymentSession.getMemo(), e.getMessage()}
       );
     }
 
@@ -91,8 +92,8 @@ public class PaymentSessionSummary {
         Optional.of(paymentSession),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_PKI_UNTRUSTED_CA),
-        Optional.<Object[]>fromNullable(new String[]{paymentSession.getMemo(), e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_PKI_UNTRUSTED_CA,
+        new String[]{paymentSession.getMemo(), e.getMessage()}
       );
     }
 
@@ -117,8 +118,8 @@ public class PaymentSessionSummary {
         Optional.<PaymentSession>absent(),
         PaymentSessionStatus.DOWN,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_DOWN),
-        Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_DOWN,
+        new String[]{hostName, e.getMessage()}
       );
     }
     if (e instanceof TimeoutException) {
@@ -126,8 +127,8 @@ public class PaymentSessionSummary {
         Optional.<PaymentSession>absent(),
         PaymentSessionStatus.DOWN,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_DOWN),
-        Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_DOWN,
+        new String[]{hostName, e.getMessage()}
       );
     }
 
@@ -136,8 +137,8 @@ public class PaymentSessionSummary {
       Optional.<PaymentSession>absent(),
       PaymentSessionStatus.ERROR,
       RAGStatus.AMBER,
-      Optional.of(CoreMessageKey.PAYMENT_SESSION_ERROR),
-      Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
+      CoreMessageKey.PAYMENT_SESSION_ERROR,
+      new String[]{hostName, e.getMessage()}
     );
 
   }
@@ -159,8 +160,8 @@ public class PaymentSessionSummary {
         Optional.<PaymentSession>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_EXPIRED),
-        Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_EXPIRED,
+        new String[]{hostName, e.getMessage()}
       );
     }
     if (e instanceof PaymentProtocolException.InvalidNetwork) {
@@ -168,8 +169,8 @@ public class PaymentSessionSummary {
         Optional.<PaymentSession>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_INVALID_NETWORK),
-        Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_INVALID_NETWORK,
+        new String[]{hostName, e.getMessage()}
       );
     }
     if (e instanceof PaymentProtocolException.InvalidOutputs) {
@@ -177,8 +178,8 @@ public class PaymentSessionSummary {
         Optional.<PaymentSession>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_INVALID_OUTPUTS),
-        Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_INVALID_OUTPUTS,
+        new String[]{hostName, e.getMessage()}
       );
     }
     if (e instanceof PaymentProtocolException.InvalidPaymentRequestURL) {
@@ -186,8 +187,8 @@ public class PaymentSessionSummary {
         Optional.<PaymentSession>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_INVALID_REQUEST_URL),
-        Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_INVALID_REQUEST_URL,
+        new String[]{hostName, e.getMessage()}
       );
     }
     if (e instanceof PaymentProtocolException.InvalidPaymentURL) {
@@ -195,8 +196,8 @@ public class PaymentSessionSummary {
         Optional.<PaymentSession>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_INVALID_PAYMENT_URL),
-        Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_INVALID_PAYMENT_URL,
+        new String[]{hostName, e.getMessage()}
       );
     }
     if (e instanceof PaymentProtocolException.InvalidVersion) {
@@ -204,8 +205,8 @@ public class PaymentSessionSummary {
         Optional.<PaymentSession>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_INVALID_VERSION),
-        Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_INVALID_VERSION,
+        new String[]{hostName, e.getMessage()}
       );
     }
     if (e instanceof PaymentProtocolException.InvalidPkiData) {
@@ -213,8 +214,8 @@ public class PaymentSessionSummary {
         Optional.<PaymentSession>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID),
-        Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_PKI_INVALID,
+        new String[]{hostName, e.getMessage()}
       );
     }
     if (e instanceof PaymentProtocolException.InvalidPkiType) {
@@ -222,8 +223,8 @@ public class PaymentSessionSummary {
         Optional.<PaymentSession>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_PKI_INVALID_TYPE),
-        Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_PKI_INVALID_TYPE,
+        new String[]{hostName, e.getMessage()}
       );
     }
     if (e instanceof PaymentProtocolException.PkiVerificationException) {
@@ -232,8 +233,8 @@ public class PaymentSessionSummary {
         Optional.<PaymentSession>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
-        Optional.of(CoreMessageKey.PAYMENT_SESSION_PKI_MISSING),
-        Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
+        CoreMessageKey.PAYMENT_SESSION_PKI_MISSING,
+        new String[]{hostName, e.getMessage()}
       );
     }
 
@@ -242,8 +243,8 @@ public class PaymentSessionSummary {
       Optional.<PaymentSession>absent(),
       PaymentSessionStatus.ERROR,
       RAGStatus.AMBER,
-      Optional.of(CoreMessageKey.PAYMENT_SESSION_ERROR),
-      Optional.<Object[]>fromNullable(new String[]{hostName, e.getMessage()})
+      CoreMessageKey.PAYMENT_SESSION_ERROR,
+      new String[]{hostName, e.getMessage()}
     );
 
   }
@@ -261,8 +262,8 @@ public class PaymentSessionSummary {
     Optional<PaymentSession> paymentSession,
     PaymentSessionStatus status,
     RAGStatus severity,
-    Optional<CoreMessageKey> messageKey,
-    Optional<Object[]> messageData
+    CoreMessageKey messageKey,
+    Object[] messageData
   ) {
 
     this.paymentSession = paymentSession;
@@ -299,18 +300,18 @@ public class PaymentSessionSummary {
   /**
    * @return An optional array of arbitrary objects, often for insertion into a resource bundle string
    */
-  public Optional<Object[]> getMessageData() {
+  public Object[] getMessageData() {
     return messageData;
   }
 
-  public Optional<CoreMessageKey> getMessageKey() {
+  public CoreMessageKey getMessageKey() {
     return messageKey;
   }
 
   @Override
   public String toString() {
     return "PaymentSessionSummary{" +
-      "messageData=" + messageData +
+      "messageData=" + Arrays.toString(messageData) +
       ", status=" + status +
       ", paymentSession=" + paymentSession +
       ", severity=" + severity +

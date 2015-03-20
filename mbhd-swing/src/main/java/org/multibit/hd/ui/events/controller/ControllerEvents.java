@@ -6,9 +6,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.languages.Languages;
-import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,12 +118,23 @@ public class ControllerEvents {
    */
   public static void fireAddAlertEvent(final AlertModel alertModel) {
 
+    // Ignore the alert with a warning (may be in a FEST test)
+    if (!WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+      log.warn("Alerts are only readable in an unlocked wallet - ignoring");
+      return;
+    }
+
+    // Must be in an unlocked wallet to be here so History is available
+
     eventExecutor.submit(
       new Runnable() {
         @Override
         public void run() {
           log.trace("Firing 'add alert' event");
           controllerEventBus.post(new AddAlertEvent(alertModel));
+
+          // Log the contents of the alert
+          CoreServices.logHistory(alertModel.getLocalisedMessage());
         }
       });
 
@@ -141,9 +151,6 @@ public class ControllerEvents {
         public void run() {
           log.trace("Firing 'remove alert' event");
           controllerEventBus.post(new RemoveAlertEvent());
-
-          // Keep track of this
-          CoreServices.logHistory(Languages.safeText(MessageKey.HIDE_ALERT));
         }
       });
 

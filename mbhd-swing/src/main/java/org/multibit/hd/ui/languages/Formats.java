@@ -397,8 +397,8 @@ public class Formats {
       return Optional.of(Languages.safeText(
           MessageKey.PAYMENT_PROTOCOL_ERROR_ALERT,
           Languages.safeText(
-            paymentSessionSummary.getMessageKey().get(),
-            paymentSessionSummary.getMessageData().get())
+            paymentSessionSummary.getMessageKey(),
+            paymentSessionSummary.getMessageData())
         ));
     }
 
@@ -417,7 +417,7 @@ public class Formats {
         // Construct a suitable alert message
         return Optional.of(Languages.safeText(
             MessageKey.PAYMENT_PROTOCOL_ERROR_ALERT,
-            paymentSessionSummary.getMessageData().get()[0]
+            paymentSessionSummary.getMessageData()
           ));
       default:
         log.error("Unknown payment session status: {}", paymentSessionSummary.getStatus());

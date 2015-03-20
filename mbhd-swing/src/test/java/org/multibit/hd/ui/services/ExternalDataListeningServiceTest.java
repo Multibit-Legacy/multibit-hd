@@ -2,13 +2,12 @@ package org.multibit.hd.ui.services;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
-import org.bitcoinj.core.Address;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.uri.BitcoinURI;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.core.dto.PaymentSessionStatus;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -70,6 +69,9 @@ public class ExternalDataListeningServiceTest {
     // Ensure the shutdown event doesn't overwrite existing configuration
     InstallationManager.unrestricted = true;
 
+    // Create the default configuration
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+
   }
 
   @After
@@ -91,16 +93,16 @@ public class ExternalDataListeningServiceTest {
       PAYMENT_REQUEST_BIP21
     };
 
+    // Act
     testObject = new ExternalDataListeningService(args);
 
-    // Act
-    Address address = testObject.getBitcoinURIQueue().poll().getAddress();
-
     // Assert
-    if (address == null) {
+    assertThat(testObject.getAlertModelQueue().isEmpty()).isFalse();
+    String label = testObject.getAlertModelQueue().poll().getLocalisedMessage();
+    if (label == null) {
       fail();
     }
-    assertThat(address.toString()).isEqualTo("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
+    assertThat(label).isEqualTo("Payment \"Please donate to multibit.org\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"mB 10.00000\". Continue ?");
 
     // Don't crash the JVM
     CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
@@ -120,13 +122,15 @@ public class ExternalDataListeningServiceTest {
     testObject = new ExternalDataListeningService(args);
 
     // Act
-    Address address = testObject.getBitcoinURIQueue().poll().getAddress();
+    testObject = new ExternalDataListeningService(args);
 
     // Assert
-    if (address == null) {
+    assertThat(testObject.getAlertModelQueue().isEmpty()).isFalse();
+    String label = testObject.getAlertModelQueue().poll().getLocalisedMessage();
+    if (label == null) {
       fail();
     }
-    assertThat(address.toString()).isEqualTo("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
+    assertThat(label).isEqualTo("Payment \"n/a\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"n/a\". Continue ?");
 
     // Don't crash the JVM
     CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
@@ -167,12 +171,12 @@ public class ExternalDataListeningServiceTest {
     testObject = new ExternalDataListeningService(args);
 
     // Assert
-    assertThat(testObject.getPaymentSessionSummaryQueue().isEmpty()).isFalse();
-    PaymentSessionStatus status = testObject.getPaymentSessionSummaryQueue().poll().getStatus();
-    if (status == null) {
+    assertThat(testObject.getAlertModelQueue().isEmpty()).isFalse();
+    String label = testObject.getAlertModelQueue().poll().getLocalisedMessage();
+    if (label == null) {
       fail();
     }
-    assertThat(status).isEqualTo(PaymentSessionStatus.UNTRUSTED);
+    assertThat(label).isEqualTo("Error in payment request \"Payment request from  is missing a security certificate. Continue?\". View details ?");
 
     // Don't crash the JVM
     CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);

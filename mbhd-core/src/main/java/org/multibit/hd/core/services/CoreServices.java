@@ -135,15 +135,10 @@ public class CoreServices {
   }
 
   /**
-   * <p>Initialises the core services, and can act as an independent starting point for headless operations</p>
-   *
-   * @param args Any command line arguments
+   * Start the bare minimum to allow correct operation
    */
-  public static void main(String[] args) {
+  public static void bootstrap() {
 
-    // Order is important here
-    applicationEventService = new ApplicationEventService();
-    securityCheckingService = new SecurityCheckingService();
     configurationService = new ConfigurationService();
 
     // Start the configuration service to ensure shutdown events are trapped
@@ -164,6 +159,23 @@ public class CoreServices {
     } else {
       log.warn("Using default configuration");
       Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+    }
+
+  }
+
+  /**
+   * <p>Initialises the core services, and can act as an independent starting point for headless operations</p>
+   *
+   * @param args Any command line arguments
+   */
+  public static void main(String[] args) {
+
+    // Order is important here
+    applicationEventService = new ApplicationEventService();
+    securityCheckingService = new SecurityCheckingService();
+
+    if (configurationService == null) {
+      bootstrap();
     }
 
     // Configure logging now that we have a configuration
