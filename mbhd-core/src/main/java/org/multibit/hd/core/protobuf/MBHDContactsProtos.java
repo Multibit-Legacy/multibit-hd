@@ -3,13 +3,7 @@
 
 package org.multibit.hd.core.protobuf;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-// This class is auto-generated so is exempt from warnings and Findbugs
-@SuppressWarnings(value="")
-@SuppressFBWarnings
-
- public final class MBHDContactsProtos {
+public final class MBHDContactsProtos {
   private MBHDContactsProtos() {}
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {

@@ -88,6 +88,9 @@ message PaymentRequest {
   optional string note = 5;              // The memo on the BIP70 payment request
   optional int64 date = 6;               // The creation datetime (millis since epoch)
   optional string identity_display_name = 7; // The identity display name from the PKI data
+  optional string trust_status = 8;      // The trust status of the payment
+  optional string trust_error_message = 9; // The trust error message
+  optional int64 expiration_date = 10;   // The payment request expiration date
 }
 
 /**

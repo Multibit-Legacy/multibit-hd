@@ -3,12 +3,6 @@
 
 package org.multibit.hd.core.protobuf;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
-// This class is auto-generated so is exempt from warnings and Findbugs
-@SuppressWarnings(value="")
-@SuppressFBWarnings
-
 public final class MBHDPaymentsProtos {
   private MBHDPaymentsProtos() {}
   public static void registerAllExtensions(
@@ -4122,6 +4116,78 @@ public final class MBHDPaymentsProtos {
      */
     com.google.protobuf.ByteString
         getIdentityDisplayNameBytes();
+
+    // optional string trust_status = 8;
+    /**
+     * <code>optional string trust_status = 8;</code>
+     *
+     * <pre>
+     * The trust status of the payment
+     * </pre>
+     */
+    boolean hasTrustStatus();
+    /**
+     * <code>optional string trust_status = 8;</code>
+     *
+     * <pre>
+     * The trust status of the payment
+     * </pre>
+     */
+    java.lang.String getTrustStatus();
+    /**
+     * <code>optional string trust_status = 8;</code>
+     *
+     * <pre>
+     * The trust status of the payment
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getTrustStatusBytes();
+
+    // optional string trust_error_message = 9;
+    /**
+     * <code>optional string trust_error_message = 9;</code>
+     *
+     * <pre>
+     * The trust error message
+     * </pre>
+     */
+    boolean hasTrustErrorMessage();
+    /**
+     * <code>optional string trust_error_message = 9;</code>
+     *
+     * <pre>
+     * The trust error message
+     * </pre>
+     */
+    java.lang.String getTrustErrorMessage();
+    /**
+     * <code>optional string trust_error_message = 9;</code>
+     *
+     * <pre>
+     * The trust error message
+     * </pre>
+     */
+    com.google.protobuf.ByteString
+        getTrustErrorMessageBytes();
+
+    // optional int64 expiration_date = 10;
+    /**
+     * <code>optional int64 expiration_date = 10;</code>
+     *
+     * <pre>
+     * The payment request expiration date
+     * </pre>
+     */
+    boolean hasExpirationDate();
+    /**
+     * <code>optional int64 expiration_date = 10;</code>
+     *
+     * <pre>
+     * The payment request expiration date
+     * </pre>
+     */
+    long getExpirationDate();
   }
   /**
    * Protobuf type {@code PaymentRequest}
@@ -4220,6 +4286,21 @@ public final class MBHDPaymentsProtos {
             case 58: {
               bitField0_ |= 0x00000040;
               identityDisplayName_ = input.readBytes();
+              break;
+            }
+            case 66: {
+              bitField0_ |= 0x00000080;
+              trustStatus_ = input.readBytes();
+              break;
+            }
+            case 74: {
+              bitField0_ |= 0x00000100;
+              trustErrorMessage_ = input.readBytes();
+              break;
+            }
+            case 80: {
+              bitField0_ |= 0x00000200;
+              expirationDate_ = input.readInt64();
               break;
             }
           }
@@ -4564,6 +4645,140 @@ public final class MBHDPaymentsProtos {
       }
     }
 
+    // optional string trust_status = 8;
+    public static final int TRUST_STATUS_FIELD_NUMBER = 8;
+    private java.lang.Object trustStatus_;
+    /**
+     * <code>optional string trust_status = 8;</code>
+     *
+     * <pre>
+     * The trust status of the payment
+     * </pre>
+     */
+    public boolean hasTrustStatus() {
+      return ((bitField0_ & 0x00000080) == 0x00000080);
+    }
+    /**
+     * <code>optional string trust_status = 8;</code>
+     *
+     * <pre>
+     * The trust status of the payment
+     * </pre>
+     */
+    public java.lang.String getTrustStatus() {
+      java.lang.Object ref = trustStatus_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          trustStatus_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string trust_status = 8;</code>
+     *
+     * <pre>
+     * The trust status of the payment
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getTrustStatusBytes() {
+      java.lang.Object ref = trustStatus_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        trustStatus_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string trust_error_message = 9;
+    public static final int TRUST_ERROR_MESSAGE_FIELD_NUMBER = 9;
+    private java.lang.Object trustErrorMessage_;
+    /**
+     * <code>optional string trust_error_message = 9;</code>
+     *
+     * <pre>
+     * The trust error message
+     * </pre>
+     */
+    public boolean hasTrustErrorMessage() {
+      return ((bitField0_ & 0x00000100) == 0x00000100);
+    }
+    /**
+     * <code>optional string trust_error_message = 9;</code>
+     *
+     * <pre>
+     * The trust error message
+     * </pre>
+     */
+    public java.lang.String getTrustErrorMessage() {
+      java.lang.Object ref = trustErrorMessage_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          trustErrorMessage_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string trust_error_message = 9;</code>
+     *
+     * <pre>
+     * The trust error message
+     * </pre>
+     */
+    public com.google.protobuf.ByteString
+        getTrustErrorMessageBytes() {
+      java.lang.Object ref = trustErrorMessage_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        trustErrorMessage_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional int64 expiration_date = 10;
+    public static final int EXPIRATION_DATE_FIELD_NUMBER = 10;
+    private long expirationDate_;
+    /**
+     * <code>optional int64 expiration_date = 10;</code>
+     *
+     * <pre>
+     * The payment request expiration date
+     * </pre>
+     */
+    public boolean hasExpirationDate() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    /**
+     * <code>optional int64 expiration_date = 10;</code>
+     *
+     * <pre>
+     * The payment request expiration date
+     * </pre>
+     */
+    public long getExpirationDate() {
+      return expirationDate_;
+    }
+
     private void initFields() {
       uuid_ = "";
       hash_ = "";
@@ -4572,6 +4787,9 @@ public final class MBHDPaymentsProtos {
       note_ = "";
       date_ = 0L;
       identityDisplayName_ = "";
+      trustStatus_ = "";
+      trustErrorMessage_ = "";
+      expirationDate_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -4616,6 +4834,15 @@ public final class MBHDPaymentsProtos {
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeBytes(7, getIdentityDisplayNameBytes());
       }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        output.writeBytes(8, getTrustStatusBytes());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        output.writeBytes(9, getTrustErrorMessageBytes());
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        output.writeInt64(10, expirationDate_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -4652,6 +4879,18 @@ public final class MBHDPaymentsProtos {
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(7, getIdentityDisplayNameBytes());
+      }
+      if (((bitField0_ & 0x00000080) == 0x00000080)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(8, getTrustStatusBytes());
+      }
+      if (((bitField0_ & 0x00000100) == 0x00000100)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(9, getTrustErrorMessageBytes());
+      }
+      if (((bitField0_ & 0x00000200) == 0x00000200)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(10, expirationDate_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4793,6 +5032,12 @@ public final class MBHDPaymentsProtos {
         bitField0_ = (bitField0_ & ~0x00000020);
         identityDisplayName_ = "";
         bitField0_ = (bitField0_ & ~0x00000040);
+        trustStatus_ = "";
+        bitField0_ = (bitField0_ & ~0x00000080);
+        trustErrorMessage_ = "";
+        bitField0_ = (bitField0_ & ~0x00000100);
+        expirationDate_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000200);
         return this;
       }
 
@@ -4853,6 +5098,18 @@ public final class MBHDPaymentsProtos {
           to_bitField0_ |= 0x00000040;
         }
         result.identityDisplayName_ = identityDisplayName_;
+        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+          to_bitField0_ |= 0x00000080;
+        }
+        result.trustStatus_ = trustStatus_;
+        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+          to_bitField0_ |= 0x00000100;
+        }
+        result.trustErrorMessage_ = trustErrorMessage_;
+        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+          to_bitField0_ |= 0x00000200;
+        }
+        result.expirationDate_ = expirationDate_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -4897,6 +5154,19 @@ public final class MBHDPaymentsProtos {
           bitField0_ |= 0x00000040;
           identityDisplayName_ = other.identityDisplayName_;
           onChanged();
+        }
+        if (other.hasTrustStatus()) {
+          bitField0_ |= 0x00000080;
+          trustStatus_ = other.trustStatus_;
+          onChanged();
+        }
+        if (other.hasTrustErrorMessage()) {
+          bitField0_ |= 0x00000100;
+          trustErrorMessage_ = other.trustErrorMessage_;
+          onChanged();
+        }
+        if (other.hasExpirationDate()) {
+          setExpirationDate(other.getExpirationDate());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -5574,6 +5844,251 @@ public final class MBHDPaymentsProtos {
   }
   bitField0_ |= 0x00000040;
         identityDisplayName_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string trust_status = 8;
+      private java.lang.Object trustStatus_ = "";
+      /**
+       * <code>optional string trust_status = 8;</code>
+       *
+       * <pre>
+       * The trust status of the payment
+       * </pre>
+       */
+      public boolean hasTrustStatus() {
+        return ((bitField0_ & 0x00000080) == 0x00000080);
+      }
+      /**
+       * <code>optional string trust_status = 8;</code>
+       *
+       * <pre>
+       * The trust status of the payment
+       * </pre>
+       */
+      public java.lang.String getTrustStatus() {
+        java.lang.Object ref = trustStatus_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          trustStatus_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string trust_status = 8;</code>
+       *
+       * <pre>
+       * The trust status of the payment
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getTrustStatusBytes() {
+        java.lang.Object ref = trustStatus_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          trustStatus_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string trust_status = 8;</code>
+       *
+       * <pre>
+       * The trust status of the payment
+       * </pre>
+       */
+      public Builder setTrustStatus(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
+        trustStatus_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string trust_status = 8;</code>
+       *
+       * <pre>
+       * The trust status of the payment
+       * </pre>
+       */
+      public Builder clearTrustStatus() {
+        bitField0_ = (bitField0_ & ~0x00000080);
+        trustStatus_ = getDefaultInstance().getTrustStatus();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string trust_status = 8;</code>
+       *
+       * <pre>
+       * The trust status of the payment
+       * </pre>
+       */
+      public Builder setTrustStatusBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000080;
+        trustStatus_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string trust_error_message = 9;
+      private java.lang.Object trustErrorMessage_ = "";
+      /**
+       * <code>optional string trust_error_message = 9;</code>
+       *
+       * <pre>
+       * The trust error message
+       * </pre>
+       */
+      public boolean hasTrustErrorMessage() {
+        return ((bitField0_ & 0x00000100) == 0x00000100);
+      }
+      /**
+       * <code>optional string trust_error_message = 9;</code>
+       *
+       * <pre>
+       * The trust error message
+       * </pre>
+       */
+      public java.lang.String getTrustErrorMessage() {
+        java.lang.Object ref = trustErrorMessage_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          trustErrorMessage_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string trust_error_message = 9;</code>
+       *
+       * <pre>
+       * The trust error message
+       * </pre>
+       */
+      public com.google.protobuf.ByteString
+          getTrustErrorMessageBytes() {
+        java.lang.Object ref = trustErrorMessage_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          trustErrorMessage_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string trust_error_message = 9;</code>
+       *
+       * <pre>
+       * The trust error message
+       * </pre>
+       */
+      public Builder setTrustErrorMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000100;
+        trustErrorMessage_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string trust_error_message = 9;</code>
+       *
+       * <pre>
+       * The trust error message
+       * </pre>
+       */
+      public Builder clearTrustErrorMessage() {
+        bitField0_ = (bitField0_ & ~0x00000100);
+        trustErrorMessage_ = getDefaultInstance().getTrustErrorMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string trust_error_message = 9;</code>
+       *
+       * <pre>
+       * The trust error message
+       * </pre>
+       */
+      public Builder setTrustErrorMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000100;
+        trustErrorMessage_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional int64 expiration_date = 10;
+      private long expirationDate_ ;
+      /**
+       * <code>optional int64 expiration_date = 10;</code>
+       *
+       * <pre>
+       * The payment request expiration date
+       * </pre>
+       */
+      public boolean hasExpirationDate() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      /**
+       * <code>optional int64 expiration_date = 10;</code>
+       *
+       * <pre>
+       * The payment request expiration date
+       * </pre>
+       */
+      public long getExpirationDate() {
+        return expirationDate_;
+      }
+      /**
+       * <code>optional int64 expiration_date = 10;</code>
+       *
+       * <pre>
+       * The payment request expiration date
+       * </pre>
+       */
+      public Builder setExpirationDate(long value) {
+        bitField0_ |= 0x00000200;
+        expirationDate_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 expiration_date = 10;</code>
+       *
+       * <pre>
+       * The payment request expiration date
+       * </pre>
+       */
+      public Builder clearExpirationDate() {
+        bitField0_ = (bitField0_ & ~0x00000200);
+        expirationDate_ = 0L;
         onChanged();
         return this;
       }
@@ -7413,16 +7928,17 @@ public final class MBHDPaymentsProtos {
       "(\t\022!\n\013amount_fiat\030\003 \001(\0132\014.FiatPayment\022\014\n" +
       "\004note\030\004 \001(\t\022\021\n\tminer_fee\030\005 \001(\003\022\022\n\nclient" +
       "_fee\030\006 \001(\003\022\033\n\014sent_by_self\030\007 \001(\010:\005false\"",
-      "\235\001\n\016PaymentRequest\022\014\n\004uuid\030\001 \002(\t\022\014\n\004hash" +
+      "\351\001\n\016PaymentRequest\022\014\n\004uuid\030\001 \002(\t\022\014\n\004hash" +
       "\030\002 \001(\t\022!\n\013amount_fiat\030\003 \001(\0132\014.FiatPaymen" +
       "t\022\021\n\tamountBTC\030\004 \001(\003\022\014\n\004note\030\005 \001(\t\022\014\n\004da" +
-      "te\030\006 \001(\003\022\035\n\025identity_display_name\030\007 \001(\t\"" +
-      "\223\001\n\010Payments\0221\n\024mbhd_payment_request\030\001 \003" +
-      "(\0132\023.MBHDPaymentRequest\022*\n\020transaction_i" +
-      "nfo\030\002 \003(\0132\020.TransactionInfo\022(\n\017payment_r" +
-      "equest\030\004 \003(\0132\017.PaymentRequestB3\n\035org.mul" +
-      "tibit.hd.core.protobufB\022MBHDPaymentsProt" +
-      "os"
+      "te\030\006 \001(\003\022\035\n\025identity_display_name\030\007 \001(\t\022" +
+      "\024\n\014trust_status\030\010 \001(\t\022\033\n\023trust_error_mes" +
+      "sage\030\t \001(\t\022\027\n\017expiration_date\030\n \001(\003\"\223\001\n\010" +
+      "Payments\0221\n\024mbhd_payment_request\030\001 \003(\0132\023" +
+      ".MBHDPaymentRequest\022*\n\020transaction_info\030" +
+      "\002 \003(\0132\020.TransactionInfo\022(\n\017payment_reque" +
+      "st\030\004 \003(\0132\017.PaymentRequestB3\n\035org.multibi",
+      "t.hd.core.protobufB\022MBHDPaymentsProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -7452,7 +7968,7 @@ public final class MBHDPaymentsProtos {
           internal_static_PaymentRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_PaymentRequest_descriptor,
-              new java.lang.String[] { "Uuid", "Hash", "AmountFiat", "AmountBTC", "Note", "Date", "IdentityDisplayName", });
+              new java.lang.String[] { "Uuid", "Hash", "AmountFiat", "AmountBTC", "Note", "Date", "IdentityDisplayName", "TrustStatus", "TrustErrorMessage", "ExpirationDate", });
           internal_static_Payments_descriptor =
             getDescriptor().getMessageTypes().get(4);
           internal_static_Payments_fieldAccessorTable = new

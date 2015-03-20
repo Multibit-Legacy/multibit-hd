@@ -4,14 +4,12 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.bitcoinj.protocols.payments.PaymentSession;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.PaymentRequestData;
-import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
@@ -206,59 +204,44 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
 
                 displayName.setText(paymentRequestData.getIdentityDisplayName());
 
-                Optional<PaymentSessionSummary> paymentSessionSummaryOptional = paymentRequestData.getPaymentSessionSummaryOptional();
+                if (paymentRequestData.getExpirationDate() == null) {
+                  expires.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+                } else {
+                  expires.setText(Dates.formatTransactionDateLocal(paymentRequestData.getExpirationDate()));
+                  // TODO Handle display of expiry and button control
+                  //            if (expiresDate.isBeforeNow()) {
+                  //              // This payment request has expired
+                  //            } else {
+                  //            }
+                }
 
-                if (paymentSessionSummaryOptional.isPresent()) {
-                  PaymentSessionSummary paymentSessionSummary = paymentSessionSummaryOptional.get();
-                  Optional<PaymentSession> paymentSessionOptional = paymentSessionSummary.getPaymentSession();
-
-                  switch (paymentSessionSummary.getStatus()) {
-                    case TRUSTED:
-                      LabelDecorator.applyPaymentSessionStatusIcon(
-                              paymentSessionSummary.getStatus(),
-                              trustStatusLabel,
-                              MessageKey.PAYMENT_PROTOCOL_TRUSTED_NOTE,
-                              MultiBitUI.NORMAL_ICON_SIZE);
-                      break;
-                    case UNTRUSTED:
-                      LabelDecorator.applyPaymentSessionStatusIcon(
-                              paymentSessionSummary.getStatus(),
-                              trustStatusLabel,
-                              MessageKey.PAYMENT_PROTOCOL_UNTRUSTED_NOTE,
-                              MultiBitUI.NORMAL_ICON_SIZE);
-                      // TODO Consider adding to cacerts and how subsequent Repair Wallet will be managed
-                      break;
-                    case DOWN:
-                    case ERROR:
-                      // Provide more details on the failure
-                      LabelDecorator.applyPaymentSessionStatusIcon(
-                              paymentSessionSummary.getStatus(),
-                              trustStatusLabel,
-                              MessageKey.PAYMENT_PROTOCOL_ERROR_NOTE,
-                              MultiBitUI.NORMAL_ICON_SIZE);
-                      memo.setText(Languages.safeText(paymentSessionSummary.getMessageKey().get(), paymentSessionSummary.getMessageData().get()));
-                      return;
-                    default:
-                      throw new IllegalStateException("Unknown payment session summary status: " + paymentSessionSummary.getStatus());
-                  }
-
-
-                  if (paymentSessionOptional.isPresent()) {
-                    // Must have a valid payment session to be here
-                    PaymentSession paymentSession = paymentSessionOptional.get();
-
-                    if (paymentSession.getExpires() == null) {
-                      expires.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
-                    } else {
-                      DateTime expiresDate = new DateTime(paymentSession.getExpires());
-                      expires.setText(Dates.formatTransactionDateLocal(expiresDate));
-                      // TODO Handle display of expiry and button control
-                      //            if (expiresDate.isBeforeNow()) {
-                      //              // This payment request has expired
-                      //            } else {
-                      //            }
-                    }
-                  }
+                switch (paymentRequestData.getTrustStatus()) {
+                  case TRUSTED:
+                    LabelDecorator.applyPaymentSessionStatusIcon(
+                            paymentRequestData.getTrustStatus(),
+                            trustStatusLabel,
+                            MessageKey.PAYMENT_PROTOCOL_TRUSTED_NOTE,
+                            MultiBitUI.NORMAL_ICON_SIZE);
+                    break;
+                  case UNTRUSTED:
+                    LabelDecorator.applyPaymentSessionStatusIcon(
+                            paymentRequestData.getTrustStatus(),
+                            trustStatusLabel,
+                            MessageKey.PAYMENT_PROTOCOL_UNTRUSTED_NOTE,
+                            MultiBitUI.NORMAL_ICON_SIZE);
+                    break;
+                  case DOWN:
+                  case ERROR:
+                    // Provide more details on the failure
+                    LabelDecorator.applyPaymentSessionStatusIcon(
+                            paymentRequestData.getTrustStatus(),
+                            trustStatusLabel,
+                            MessageKey.PAYMENT_PROTOCOL_ERROR_NOTE,
+                            MultiBitUI.NORMAL_ICON_SIZE);
+                    memo.setText(paymentRequestData.getTrustErrorMessage());
+                    return;
+                  default:
+                    throw new IllegalStateException("Unknown payment session summary status: " + paymentRequestData.getTrustStatus());
                 }
 
                 // Set finish button to be the default

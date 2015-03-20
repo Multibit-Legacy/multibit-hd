@@ -290,7 +290,7 @@ public class PaymentSessionSummary {
   }
 
   /**
-   * @return The payment session status (e.g. "OK")
+   * @return The payment session status (e.g. "TRUSTED")
    */
   public PaymentSessionStatus getStatus() {
     return status;

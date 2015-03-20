@@ -1,0 +1,1 @@
+pki_test.bitcoinpaymentrequest is copied from bitcoinj

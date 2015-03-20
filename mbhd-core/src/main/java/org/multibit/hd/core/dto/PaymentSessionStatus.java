@@ -35,4 +35,9 @@ public enum PaymentSessionStatus {
    */
   DOWN,
 
+  /**
+   * The payment session status is unknown
+   */
+  UNKNOWN
+
 }

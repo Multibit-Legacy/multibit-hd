@@ -41,11 +41,6 @@ public class PaymentRequestData implements PaymentData {
   private Protos.PaymentRequest paymentRequest;
 
   /**
-   * The PaymentSessionSummary
-   */
-  private Optional<PaymentSessionSummary> paymentSessionSummaryOptional = Optional.absent();
-
-  /**
    * The date of the payment request
    */
   private DateTime date;
@@ -64,6 +59,22 @@ public class PaymentRequestData implements PaymentData {
    * The display name of the PKI identity
    */
   private String identityDisplayName = "";
+
+  /**
+   * The trust status - whether the PKI verify was successful
+   */
+  private PaymentSessionStatus trustStatus;
+
+  /**
+   * If the trust status is ERROR or DOWN, a text string describing the problem
+   */
+  private String trustErrorMessage;
+
+  /**
+   * The expiration date for the payment request
+   */
+  private DateTime expirationDate;
+
 
   /**
    * For protobuf - you probably do not want to use this
@@ -104,14 +115,8 @@ public class PaymentRequestData implements PaymentData {
     this.paymentRequest = paymentRequest;
   }
 
-  public Optional<PaymentSessionSummary> getPaymentSessionSummaryOptional() {
-    return paymentSessionSummaryOptional;
-  }
-
   public void setPaymentSessionSummaryOptional(Optional<PaymentSessionSummary> paymentSessionSummaryOptional) {
-    this.paymentSessionSummaryOptional = paymentSessionSummaryOptional;
-
-    // Work out dates, identity etc and save them
+    // Work out dates and save them
     if (paymentSessionSummaryOptional.isPresent() && paymentSessionSummaryOptional.get().getPaymentSession().isPresent()) {
       PaymentSession paymentSession = paymentSessionSummaryOptional.get().getPaymentSession().get();
       date = new DateTime(paymentSession.getDate());
@@ -120,6 +125,7 @@ public class PaymentRequestData implements PaymentData {
     }
   }
 
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -127,8 +133,22 @@ public class PaymentRequestData implements PaymentData {
 
     PaymentRequestData that = (PaymentRequestData) o;
 
-    if (!paymentRequest.equals(that.paymentRequest)) return false;
-    if (!transactionHashOptional.equals(that.transactionHashOptional)) return false;
+    if (amountBTC != null ? !amountBTC.equals(that.amountBTC) : that.amountBTC != null) return false;
+    if (date != null ? !date.equals(that.date) : that.date != null) return false;
+    if (expirationDate != null ? !expirationDate.equals(that.expirationDate) : that.expirationDate != null)
+      return false;
+    if (fiatPaymentOptional != null ? !fiatPaymentOptional.equals(that.fiatPaymentOptional) : that.fiatPaymentOptional != null)
+      return false;
+    if (identityDisplayName != null ? !identityDisplayName.equals(that.identityDisplayName) : that.identityDisplayName != null)
+      return false;
+    if (note != null ? !note.equals(that.note) : that.note != null) return false;
+    if (paymentRequest != null ? !paymentRequest.equals(that.paymentRequest) : that.paymentRequest != null)
+      return false;
+    if (transactionHashOptional != null ? !transactionHashOptional.equals(that.transactionHashOptional) : that.transactionHashOptional != null)
+      return false;
+    if (trustErrorMessage != null ? !trustErrorMessage.equals(that.trustErrorMessage) : that.trustErrorMessage != null)
+      return false;
+    if (trustStatus != that.trustStatus) return false;
     if (!uuid.equals(that.uuid)) return false;
 
     return true;
@@ -137,8 +157,16 @@ public class PaymentRequestData implements PaymentData {
   @Override
   public int hashCode() {
     int result = uuid.hashCode();
-    result = 31 * result + transactionHashOptional.hashCode();
-    result = 31 * result + paymentRequest.hashCode();
+    result = 31 * result + (transactionHashOptional != null ? transactionHashOptional.hashCode() : 0);
+    result = 31 * result + (fiatPaymentOptional != null ? fiatPaymentOptional.hashCode() : 0);
+    result = 31 * result + (paymentRequest != null ? paymentRequest.hashCode() : 0);
+    result = 31 * result + (date != null ? date.hashCode() : 0);
+    result = 31 * result + (amountBTC != null ? amountBTC.hashCode() : 0);
+    result = 31 * result + (note != null ? note.hashCode() : 0);
+    result = 31 * result + (identityDisplayName != null ? identityDisplayName.hashCode() : 0);
+    result = 31 * result + (trustStatus != null ? trustStatus.hashCode() : 0);
+    result = 31 * result + (trustErrorMessage != null ? trustErrorMessage.hashCode() : 0);
+    result = 31 * result + (expirationDate != null ? expirationDate.hashCode() : 0);
     return result;
   }
 
@@ -148,11 +176,13 @@ public class PaymentRequestData implements PaymentData {
             "uuid=" + uuid +
             ", transactionHashOptional=" + transactionHashOptional +
             ", fiatPaymentOptional=" + fiatPaymentOptional +
-            ", paymentRequest=" + paymentRequest +
             ", date=" + date +
             ", amountBTC=" + amountBTC +
-            ", note=" + note +
-            ", identityDisplayName=" + identityDisplayName +
+            ", note='" + note + '\'' +
+            ", identityDisplayName='" + identityDisplayName + '\'' +
+            ", trustStatus=" + trustStatus +
+            ", trustErrorMessage='" + trustErrorMessage + '\'' +
+            ", expirationDate=" + expirationDate +
             '}';
   }
 
@@ -230,5 +260,29 @@ public class PaymentRequestData implements PaymentData {
 
   public void setIdentityDisplayName(String identityDisplayName) {
     this.identityDisplayName = identityDisplayName;
+  }
+
+  public PaymentSessionStatus getTrustStatus() {
+    return trustStatus;
+  }
+
+  public void setTrustStatus(PaymentSessionStatus trustStatus) {
+    this.trustStatus = trustStatus;
+  }
+
+  public String getTrustErrorMessage() {
+    return trustErrorMessage;
+  }
+
+  public void setTrustErrorMessage(String trustErrorMessage) {
+    this.trustErrorMessage = trustErrorMessage;
+  }
+
+  public DateTime getExpirationDate() {
+    return expirationDate;
+  }
+
+  public void setExpirationDate(DateTime expirationDate) {
+    this.expirationDate = expirationDate;
   }
 }

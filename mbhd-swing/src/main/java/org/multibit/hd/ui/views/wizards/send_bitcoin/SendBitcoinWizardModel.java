@@ -287,17 +287,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   }
 
   /**
-   * @return The PKI verification data containing identify information for the endpoint
-   */
-  public Optional<PaymentProtocol.PkiVerificationData> getPkiVerificationData() {
-    return pkiVerificationData;
-  }
-
-  public void setPkiVerificationData(PaymentProtocol.PkiVerificationData pkiVerificationData) {
-    this.pkiVerificationData = Optional.fromNullable(pkiVerificationData);
-  }
-
-  /**
    * Prepare the Bitcoin transaction that will be sent after user confirmation
    *
    * @return True if the transaction was prepared OK

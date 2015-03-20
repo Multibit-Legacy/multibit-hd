@@ -240,6 +240,25 @@ public class WalletServiceTest {
   private void checkPaymentRequestData(PaymentRequestData first, PaymentRequestData other) {
     assertThat(other.getUuid().equals(first.getUuid()));
     assertThat(other.getTransactionHashOptional().equals(first.getTransactionHashOptional()));
+    assertThat(other.getDescription().equals(first.getDescription()));
+    assertThat(other.getAmountCoin().equals(first.getAmountCoin()));
+    assertThat(other.getAmountFiat().equals(first.getAmountFiat()));
+    if (other.getDate() == null) {
+      assertThat(first.getDate() == null);
+    } else {
+      assertThat(other.getDate().equals(first.getDate()));
+    }
+    if (other.getExpirationDate() == null) {
+      assertThat(first.getExpirationDate() == null);
+    } else {
+      assertThat(other.getExpirationDate().equals(first.getExpirationDate()));
+    }
+    assertThat(other.getTrustStatus().equals(first.getTrustStatus()));
+    assertThat(other.getTrustErrorMessage().equals(first.getTrustErrorMessage()));
+    assertThat(other.getIdentityDisplayName().equals(first.getIdentityDisplayName()));
+    assertThat(other.getNote().equals(first.getNote()));
+    assertThat(other.getType().equals(first.getType()));
+
     if (first.getPaymentRequest() == null) {
       assertThat(other.getPaymentRequest()).isNull();
     } else {

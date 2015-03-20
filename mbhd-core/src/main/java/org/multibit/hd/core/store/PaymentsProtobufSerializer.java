@@ -28,6 +28,7 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.PaymentSessionStatus;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.protobuf.MBHDPaymentsProtos;
 import org.multibit.hd.core.utils.Addresses;
@@ -249,6 +250,28 @@ public class PaymentsProtobufSerializer {
       if (paymentRequestProto.hasIdentityDisplayName()) {
         paymentRequestData.setIdentityDisplayName(paymentRequestProto.getIdentityDisplayName());
       }
+      if (paymentRequestProto.hasExpirationDate()) {
+        paymentRequestData.setExpirationDate(new DateTime(paymentRequestProto.getExpirationDate()));
+      }
+      if (paymentRequestProto.hasTrustStatus()) {
+        String trustStatusText = paymentRequestProto.getTrustStatus();
+        if (PaymentSessionStatus.TRUSTED.name().equals(trustStatusText)) {
+          paymentRequestData.setTrustStatus(PaymentSessionStatus.TRUSTED);
+        } else if (PaymentSessionStatus.UNTRUSTED.name().equals(trustStatusText)) {
+          paymentRequestData.setTrustStatus(PaymentSessionStatus.UNTRUSTED);
+        } else if (PaymentSessionStatus.DOWN.name().equals(trustStatusText)) {
+          paymentRequestData.setTrustStatus(PaymentSessionStatus.DOWN);
+        } else if (PaymentSessionStatus.ERROR.name().equals(trustStatusText)) {
+          paymentRequestData.setTrustStatus(PaymentSessionStatus.ERROR);
+        } else {
+          paymentRequestData.setTrustStatus(PaymentSessionStatus.UNKNOWN);
+        }
+      }
+
+      if (paymentRequestProto.hasTrustErrorMessage()) {
+        paymentRequestData.setTrustErrorMessage(paymentRequestProto.getTrustErrorMessage());
+      }
+
       if (paymentRequestProto.hasAmountFiat()) {
         FiatPayment fiatPayment = new FiatPayment();
 
@@ -387,6 +410,7 @@ public class PaymentsProtobufSerializer {
    * Returns the loaded protocol buffer from the given byte stream. This method is designed for low level work involving the
    * wallet file format itself.
    */
+
   public static MBHDPaymentsProtos.Payments parseToProto(InputStream input) throws IOException {
     return MBHDPaymentsProtos.Payments.parseFrom(input);
   }
@@ -447,10 +471,21 @@ public class PaymentsProtobufSerializer {
       paymentRequestBuilder.setHash(paymentRequestData.getTransactionHashOptional().isPresent() ? paymentRequestData.getTransactionHashOptional().get().toString() : "");
       paymentRequestBuilder.setNote(paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote());
       paymentRequestBuilder.setAmountBTC(paymentRequestData.getAmountCoin() == null ? 0 : paymentRequestData.getAmountCoin().longValue());
-      paymentRequestBuilder.setIdentityDisplayName(paymentRequestData.getIdentityDisplayName());
+      paymentRequestBuilder.setIdentityDisplayName(paymentRequestData.getIdentityDisplayName() == null ? "" : paymentRequestData.getIdentityDisplayName());
+      paymentRequestBuilder.setTrustErrorMessage(paymentRequestData.getTrustErrorMessage() == null ? "" : paymentRequestData.getTrustErrorMessage());
+
+      if (paymentRequestData.getTrustStatus() != null) {
+        paymentRequestBuilder.setTrustStatus(paymentRequestData.getTrustStatus().name());
+      } else {
+        paymentRequestBuilder.setTrustStatus(PaymentSessionStatus.UNKNOWN.name());
+      }
+
 
       if (paymentRequestData.getDate() != null) {
         paymentRequestBuilder.setDate(paymentRequestData.getDate().getMillis());
+      }
+      if (paymentRequestData.getExpirationDate() != null) {
+        paymentRequestBuilder.setExpirationDate(paymentRequestData.getExpirationDate().getMillis());
       }
 
       FiatPayment fiatPayment = paymentRequestData.getAmountFiat();
@@ -515,7 +550,7 @@ public class PaymentsProtobufSerializer {
       } else {
         fiatPaymentBuilder.setAmount(ABSENT_STRING);
       }
-      if (fiatPayment.getAmount() != null  && fiatPayment.getAmount().isPresent() && fiatPayment.getCurrency() != null  && fiatPayment.getCurrency().isPresent()) {
+      if (fiatPayment.getAmount() != null && fiatPayment.getAmount().isPresent() && fiatPayment.getCurrency() != null && fiatPayment.getCurrency().isPresent()) {
         fiatPaymentBuilder.setCurrency(fiatPayment.getCurrency().get().getCurrencyCode());
       } else {
         fiatPaymentBuilder.setCurrency(ABSENT_STRING);

@@ -3,12 +3,9 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
-import org.bitcoinj.protocols.payments.PaymentProtocol;
-import org.bitcoinj.protocols.payments.PaymentSession;
-import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.PaymentSessionSummary;
+import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -139,57 +136,51 @@ public class SendBitcoinDisplayPaymentRequestPanelView extends AbstractWizardPan
         public void run() {
 
           // Fail fast
-          Preconditions.checkState(getWizardModel().getPaymentRequestDataOptional().get().getPaymentSessionSummaryOptional().isPresent(), "'paymentSessionSummary' must be present");
+          Preconditions.checkState(getWizardModel().getPaymentRequestDataOptional().isPresent(), "'paymentRequestData' must be present");
 
-          PaymentSessionSummary paymentSessionSummary = getWizardModel().getPaymentRequestDataOptional().get().getPaymentSessionSummaryOptional().get();
+          PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestDataOptional().get();
 
-          switch (paymentSessionSummary.getStatus()) {
+          switch (paymentRequestData.getTrustStatus()) {
             case TRUSTED:
               LabelDecorator.applyPaymentSessionStatusIcon(
-                paymentSessionSummary.getStatus(),
+                      paymentRequestData.getTrustStatus(),
                 trustStatusLabel,
                 MessageKey.PAYMENT_PROTOCOL_TRUSTED_NOTE,
                 MultiBitUI.NORMAL_ICON_SIZE);
               break;
             case UNTRUSTED:
               LabelDecorator.applyPaymentSessionStatusIcon(
-                paymentSessionSummary.getStatus(),
+                      paymentRequestData.getTrustStatus(),
                 trustStatusLabel,
                 MessageKey.PAYMENT_PROTOCOL_UNTRUSTED_NOTE,
                 MultiBitUI.NORMAL_ICON_SIZE);
-              // TODO Consider adding to cacerts and how subsequent Repair Wallet will be managed
               break;
             case DOWN:
             case ERROR:
               // Provide more details on the failure
               LabelDecorator.applyPaymentSessionStatusIcon(
-                paymentSessionSummary.getStatus(),
+                      paymentRequestData.getTrustStatus(),
                 trustStatusLabel,
                 MessageKey.PAYMENT_PROTOCOL_ERROR_NOTE,
                 MultiBitUI.NORMAL_ICON_SIZE);
-              memo.setText(Languages.safeText(paymentSessionSummary.getMessageKey().get(), paymentSessionSummary.getMessageData().get()));
+              memo.setText(paymentRequestData.getTrustErrorMessage());
               displayName.setVisible(false);
               date.setVisible(false);
               expires.setVisible(false);
               paymentRequestAmountMaV.getView().setVisible(false);
               return;
             default:
-              throw new IllegalStateException("Unknown payment session summary status: " + paymentSessionSummary.getStatus());
+              throw new IllegalStateException("Unknown trust status: " + paymentRequestData.getTrustStatus());
           }
 
-          // Must have a valid payment session to be here
+          memo.setText(paymentRequestData.getNote());
 
-          PaymentSession paymentSession = getWizardModel().getPaymentRequestDataOptional().get().getPaymentSessionSummaryOptional().get().getPaymentSession().get();
-          memo.setText(paymentSession.getMemo());
+          date.setText(Dates.formatTransactionDateLocal(paymentRequestData.getDate()));
 
-          DateTime paymentRequestDate = new DateTime(paymentSession.getDate());
-          date.setText(Dates.formatTransactionDateLocal(paymentRequestDate));
-
-          if (paymentSession.getExpires() == null) {
+          if (paymentRequestData.getExpirationDate() == null) {
             expires.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
           } else {
-            DateTime expiresDate = new DateTime(paymentSession.getExpires());
-            expires.setText(Dates.formatTransactionDateLocal(expiresDate));
+            expires.setText(Dates.formatTransactionDateLocal(paymentRequestData.getExpirationDate()));
             // TODO Handle display of expiry and button control
 //            if (expiresDate.isBeforeNow()) {
 //              // This payment request has expired
@@ -200,17 +191,15 @@ public class SendBitcoinDisplayPaymentRequestPanelView extends AbstractWizardPan
           // Update the model and view for the amount
           // (no local in case of different exchange rates causing confusion)
           Configuration configuration = Configurations.currentConfiguration;
-          paymentRequestAmountMaV.getModel().setCoinAmount(paymentSession.getValue());
+          paymentRequestAmountMaV.getModel().setCoinAmount(paymentRequestData.getAmountCoin());
           paymentRequestAmountMaV.getModel().setLocalAmount(null);
           paymentRequestAmountMaV.getView().updateView(configuration);
 
-          PaymentProtocol.PkiVerificationData identity = paymentSession.verifyPki();
-          if (identity != null && identity.displayName != null) {
-            displayName.setText(identity.displayName);
+          if (paymentRequestData.getIdentityDisplayName() != null) {
+            displayName.setText(paymentRequestData.getIdentityDisplayName());
           } else {
             displayName.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
           }
-          getWizardModel().setPkiVerificationData(identity);
 
           // Ensure the next button is enabled
           ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);

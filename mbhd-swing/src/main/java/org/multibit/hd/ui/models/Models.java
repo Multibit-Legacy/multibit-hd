@@ -6,6 +6,7 @@ import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.protocols.payments.PaymentProtocol;
 import org.bitcoinj.uri.BitcoinURI;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.dto.RAGStatus;
@@ -146,7 +147,7 @@ public class Models {
    */
   public static Optional<AlertModel> newPaymentRequestAlertModel(final PaymentSessionSummary paymentSessionSummary) {
 
-    // Action to show the "send Bitcoin" wizard
+    // Action to show the "payment request details" wizard
     AbstractAction action = new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -162,6 +163,17 @@ public class Models {
           Protos.PaymentRequest paymentRequest = paymentSessionSummary.getPaymentSession().get().getPaymentRequest();
           // Add the payment request to the in-memory store without a transaction hash (the send has not been sent yet)
           PaymentRequestData paymentRequestData = new PaymentRequestData(paymentRequest, Optional.<Sha256Hash>absent());
+
+          // Trust status
+          paymentRequestData.setTrustStatus(paymentSessionSummary.getStatus());
+          if (paymentSessionSummary.getMessageKey().isPresent()) {
+            paymentRequestData.setTrustErrorMessage(Languages.safeText(paymentSessionSummary.getMessageKey().get(), paymentSessionSummary.getMessageData()));
+          } else {
+            paymentRequestData.setTrustErrorMessage("");
+          }
+
+          // Expiration date
+          paymentRequestData.setExpirationDate(new DateTime(paymentSessionSummary.getPaymentSession().get().getExpires()));
 
           // Store it (in memory) in the wallet service and in the paymentRequestData so that it is available in the Wizard
           walletService.addPaymentRequestData(paymentRequestData);
