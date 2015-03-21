@@ -150,8 +150,10 @@ public class ExternalDataListeningService extends AbstractService {
       log.info("Port is already taken. Notifying first instance.");
 
       // Hand over whatever was given to ensure other instance can report on success/failure
-      for (String arg : args.get()) {
-        writeToSocket(arg);
+      if (args.isPresent()) {
+        for (String arg : args.get()) {
+          writeToSocket(arg);
+        }
       }
 
       // Indicate that a shutdown should be performed
