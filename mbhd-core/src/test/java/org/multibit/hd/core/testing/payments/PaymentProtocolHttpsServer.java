@@ -47,7 +47,7 @@ public class PaymentProtocolHttpsServer {
     InputStream is = null;
     try {
       log.debug("Initialise the trust store containing the trusted certificates (including localhost:8443)");
-      URL trustStoreUrl = PaymentProtocolHttpsServer.class.getResource("/mbhd-cacerts");
+      URL trustStoreUrl = PaymentProtocolHttpsServer.class.getResource("/mbhd-cacerts-with-localhost");
       System.setProperty("javax.net.ssl.trustStore", trustStoreUrl.getFile());
       System.setProperty("javax.net.ssl.trustStorePassword", SSLManager.PASSPHRASE);
 

@@ -248,7 +248,7 @@ public class PaymentProtocolServiceTest {
     assertThat(paymentSessionSummary.getPaymentSession().isPresent()).isTrue();
     assertThat(paymentSessionSummary.getMessageKey()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_OK);
     assertThat(paymentSessionSummary.getSeverity()).isEqualTo(RAGStatus.GREEN);
-    assertThat(paymentSessionSummary.getMessageData()).isNullOrEmpty();
+    assertThat(paymentSessionSummary.getMessageData()[0]).isEqualTo("Please donate to MultiBit");
 
     // Assert the PaymentDetails
     Protos.PaymentDetails paymentDetails = paymentSessionSummary.getPaymentSession().get().getPaymentDetails();
@@ -286,7 +286,7 @@ public class PaymentProtocolServiceTest {
 
     // Load the verifying trust store locally
     KeyStore trustStore = KeyStore.getInstance("JKS");
-    InputStream certStream = PaymentProtocolService.class.getResourceAsStream("/mbhd-cacerts");
+    InputStream certStream = PaymentProtocolService.class.getResourceAsStream("/mbhd-cacerts-with-localhost");
     trustStore.load(certStream, SSLManager.PASSPHRASE.toCharArray());
 
     PaymentProtocol.PkiVerificationData pkiVerificationData = PaymentProtocol.verifyPaymentRequestPki(
