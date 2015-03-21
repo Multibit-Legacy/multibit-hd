@@ -11,7 +11,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.uri.BitcoinURI;
 import org.bitcoinj.uri.BitcoinURIParseException;
 import org.multibit.hd.core.dto.CoreMessageKey;
@@ -22,6 +21,7 @@ import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.AbstractService;
 import org.multibit.hd.core.services.PaymentProtocolService;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -242,28 +242,22 @@ public class ExternalDataListeningService extends AbstractService {
       // Treat as BIP21 Bitcoin URI
       final Optional<BitcoinURI> bitcoinURI = parseBitcoinURI(rawData);
 
-      try {
-        // Must be on the EDT and run synchronously to simplify testing
-        SwingUtilities.invokeAndWait(
-          new Runnable() {
-            @Override
-            public void run() {
-              if (bitcoinURI.isPresent()) {
-
-                // Attempt to create an alert model from the Bitcoin URI
-                Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI.get());
-                if (alertModel.isPresent()) {
-                  alertModelQueue.add(alertModel.get());
-                  return;
-                }
+      // Must be on the EDT and run synchronously to simplify testing
+      if (SwingUtilities.isEventDispatchThread()) {
+        addBitcoinURIToQueue(bitcoinURI, failureMessage);
+      } else {
+        try {
+          // Wrap in synchronous EDT operation
+          SwingUtilities.invokeAndWait(
+            new Runnable() {
+              @Override
+              public void run() {
+                addBitcoinURIToQueue(bitcoinURI, failureMessage);
               }
-
-              // Must have failed to be here
-              alertModelQueue.add(Models.newAlertModel(failureMessage, RAGStatus.RED));
-            }
-          });
-      } catch (InterruptedException | InvocationTargetException e) {
-        log.error("Unexpected UI exception", e);
+            });
+        } catch (InterruptedException | InvocationTargetException e) {
+          log.error("Unexpected UI exception", e);
+        }
       }
 
       // Fall through to end processing
@@ -279,28 +273,22 @@ public class ExternalDataListeningService extends AbstractService {
       //
       final Optional<PaymentSessionSummary> paymentSessionSummary = parsePaymentSessionSummary(rawData);
 
-      try {
-        // Must be on the EDT and run synchronously to simplify testing
-        SwingUtilities.invokeAndWait(
-          new Runnable() {
-            @Override
-            public void run() {
-              if (paymentSessionSummary.isPresent()) {
-
-                // Attempt to create an alert model from the Bitcoin URI
-                Optional<AlertModel> alertModel = Models.newPaymentRequestAlertModel(paymentSessionSummary.get());
-                if (alertModel.isPresent()) {
-                  alertModelQueue.add(alertModel.get());
-                  return;
-                }
+      // Must be on the EDT and run synchronously to simplify testing
+      if (SwingUtilities.isEventDispatchThread()) {
+        addPaymentSessionToQueue(paymentSessionSummary, failureMessage);
+      } else {
+        try {
+          // Wrap in synchronous EDT operation
+          SwingUtilities.invokeAndWait(
+            new Runnable() {
+              @Override
+              public void run() {
+                addPaymentSessionToQueue(paymentSessionSummary, failureMessage);
               }
-
-              // Must have failed to be here
-              alertModelQueue.add(Models.newAlertModel(failureMessage, RAGStatus.RED));
-            }
-          });
-      } catch (InterruptedException | InvocationTargetException e) {
-        log.error("Unexpected UI exception", e);
+            });
+        } catch (InterruptedException | InvocationTargetException e) {
+          log.error("Unexpected UI exception", e);
+        }
       }
     }
 
@@ -308,6 +296,48 @@ public class ExternalDataListeningService extends AbstractService {
     // Note: Don't "auto-purge" the queues since it leads to complex test scenarios
     // and violates the principle of least surprise in use
 
+  }
+
+  /**
+   * @param bitcoinURI     The Bitcoin URI to add (if present)
+   * @param failureMessage A failure message to use if not present
+   */
+  private static void addBitcoinURIToQueue(final Optional<BitcoinURI> bitcoinURI, final String failureMessage) {
+
+    log.debug("Building BitcoinURI alert model");
+    if (bitcoinURI.isPresent()) {
+
+      // Attempt to create an alert model from the Bitcoin URI
+      Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI.get());
+      if (alertModel.isPresent()) {
+        alertModelQueue.add(alertModel.get());
+        return;
+      }
+    }
+
+    log.debug("Using failure alert model");
+    alertModelQueue.add(Models.newAlertModel(failureMessage, RAGStatus.RED));
+  }
+
+  /**
+   * @param paymentSessionSummary The PaymentSessionSummary to add (if present)
+   * @param failureMessage        A failure message to use if not present
+   */
+  private static void addPaymentSessionToQueue(Optional<PaymentSessionSummary> paymentSessionSummary, String failureMessage) {
+
+    log.debug("Building payment session alert model");
+    if (paymentSessionSummary.isPresent()) {
+
+      // Attempt to create an alert model from the Bitcoin URI
+      Optional<AlertModel> alertModel = Models.newPaymentRequestAlertModel(paymentSessionSummary.get());
+      if (alertModel.isPresent()) {
+        alertModelQueue.add(alertModel.get());
+        return;
+      }
+    }
+
+    log.debug("Using failure alert model");
+    alertModelQueue.add(Models.newAlertModel(failureMessage, RAGStatus.RED));
   }
 
   /**
@@ -325,6 +355,10 @@ public class ExternalDataListeningService extends AbstractService {
         AlertModel alertModel = alertModelQueue.poll();
         ControllerEvents.fireAddAlertEvent(alertModel);
       }
+
+    } else {
+
+      log.debug("Wallet is locked so deferring purge");
 
     }
 
@@ -422,7 +456,7 @@ public class ExternalDataListeningService extends AbstractService {
       }
 
       log.debug("Using '{}' to create payment protocol session summary", rawData);
-      PaymentProtocolService paymentProtocolService = new PaymentProtocolService(MainNetParams.get());
+      PaymentProtocolService paymentProtocolService = new PaymentProtocolService(BitcoinNetwork.current().get());
       Optional<URI> uri = parseRawDataAsUri(rawData);
       if (uri.isPresent()) {
         // We always verify the signature against our default trust store (see SSLManager for more details)
@@ -446,8 +480,8 @@ public class ExternalDataListeningService extends AbstractService {
    */
   static Optional<URI> parseRawDataAsUri(String rawData) {
 
-    // Check for URI form
-    if (rawData.contains("://")) {
+    // Check for URI form (require ":/" for OS X file URIs)
+    if (rawData.contains(":/")) {
       // Very likely to be a URI
       try {
         // Attempt to create the URI

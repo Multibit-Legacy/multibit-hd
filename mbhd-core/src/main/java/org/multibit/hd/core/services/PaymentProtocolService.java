@@ -103,10 +103,9 @@ public class PaymentProtocolService extends AbstractService {
       PaymentSession paymentSession = null;
 
       if (scheme.startsWith("bitcoin")) {
-        // Remote resource serving payment requests indirectly via BIP72 is supported in Bitcoinj
         final BitcoinURI bitcoinUri = new BitcoinURI(networkParameters, paymentRequestUri.toString());
         if (bitcoinUri.getPaymentRequestUrls().isEmpty()) {
-          // BIP 21 Bitcoin URI
+          log.debug("Treating as BIP21 resource");
           paymentSession = PaymentSession
             .createFromBitcoinUri(bitcoinUri, false, null)
             .get();
@@ -118,12 +117,12 @@ public class PaymentProtocolService extends AbstractService {
             new String[]{paymentSession.getMemo()}
           );
         } else if (bitcoinUri.getPaymentRequestUrls().size() == 1) {
-          // Single attempt only
+          log.debug("Treating as single BIP72 resource");
           paymentSession = PaymentSession
             .createFromBitcoinUri(bitcoinUri, checkPKI, trustStoreLoader)
             .get(PAYMENT_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         } else {
-          // Multiple fallback URLs
+          log.debug("Treating as multiple BIP72 resource");
           for (String r : bitcoinUri.getPaymentRequestUrls()) {
             try {
               paymentSession = PaymentSession
@@ -139,19 +138,19 @@ public class PaymentProtocolService extends AbstractService {
         }
 
       } else if (scheme.startsWith("http")) {
-        // Remote resource serving payment requests directly over HTTP/S is supported in Bitcoinj
+        log.debug("Treating as remote HTTP/S resource");
         paymentSession = PaymentSession
           .createFromUrl(paymentRequestUri.toString(), checkPKI, trustStoreLoader)
           .get(PAYMENT_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
       } else if (scheme.startsWith("file")) {
-        // File based resource
+        log.debug("Treating as file based resource");
         byte[] paymentRequestBytes = Resources.toByteArray(paymentRequestUri.toURL());
         paymentRequest = Protos.PaymentRequest.parseFrom(paymentRequestBytes);
         paymentSession = new PaymentSession(paymentRequest, checkPKI, trustStoreLoader);
 
       } else {
-        // Assume classpath resource
+        log.debug("Treating as classpath based resource");
         InputStream inputStream = PaymentProtocolService.class.getResourceAsStream(paymentRequestUri.toString());
         paymentRequest = Protos.PaymentRequest.parseFrom(inputStream);
         paymentSession = new PaymentSession(paymentRequest, checkPKI, trustStoreLoader);
@@ -160,6 +159,7 @@ public class PaymentProtocolService extends AbstractService {
 
       // Check if payment session was created (all fallback URLs may have failed)
       if (paymentSession == null) {
+        log.warn("Failed to create a payment session");
         throw new PaymentProtocolException.InvalidPaymentRequestURL("All payment request URLs have failed");
       }
 
@@ -185,6 +185,7 @@ public class PaymentProtocolService extends AbstractService {
 //      paymentSession.getPaymentRequest().writeTo(os);
 
       // Must be OK to be here
+      log.debug("Created payment session summary");
       return PaymentSessionSummary.newPaymentSessionOK(paymentSession);
 
     } catch (PaymentProtocolException e) {

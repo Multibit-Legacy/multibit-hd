@@ -8,6 +8,8 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,7 +136,8 @@ public class ControllerEvents {
           controllerEventBus.post(new AddAlertEvent(alertModel));
 
           // Log the contents of the alert
-          CoreServices.logHistory(alertModel.getLocalisedMessage());
+          String message = Languages.safeText(MessageKey.SHOW_ALERT, alertModel.getLocalisedMessage());
+          CoreServices.logHistory(message);
         }
       });
 
