@@ -1,14 +1,18 @@
 package org.multibit.hd.ui.languages;
 
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.uri.BitcoinURI;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
+import org.multibit.hd.core.dto.PaymentSessionSummary;
+import org.multibit.hd.core.services.PaymentProtocolService;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 
+import java.net.URI;
 import java.util.Locale;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -346,6 +350,42 @@ public class FormatsTest {
     final BitcoinURI bitcoinURI = new BitcoinURI("bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
 
     assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment \"n/a\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"n/a\". Continue ?");
+  }
+
+  @Test
+  public void testFormatAlertMessage_PaymentSessionSummary_OK() throws Exception {
+
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.MBTC.name());
+
+    PaymentProtocolService paymentProtocolService = new PaymentProtocolService(MainNetParams.get());
+    final URI uri = URI.create("/fixtures/payments/pki_test.bitcoinpaymentrequest");
+    final PaymentSessionSummary paymentSessionSummary = paymentProtocolService.probeForPaymentSession(uri, false, null);
+
+    assertThat(Formats.formatAlertMessage(paymentSessionSummary).get()).isEqualTo("Trusted payment request \"n/a\" for \"mBTC 1,000.00000\". Continue ?");
+  }
+
+  @Test
+  public void testFormatAlertMessage_PaymentSessionSummary_AlmostOK() throws Exception {
+
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.MBTC.name());
+
+    PaymentProtocolService paymentProtocolService = new PaymentProtocolService(MainNetParams.get());
+    final URI uri = URI.create("/fixtures/payments/localhost-signed.bitcoinpaymentrequest");
+    final PaymentSessionSummary paymentSessionSummary = paymentProtocolService.probeForPaymentSession(uri, false, null);
+
+    assertThat(Formats.formatAlertMessage(paymentSessionSummary).get()).isEqualTo("Untrusted payment request \"Please donate to MultiBit\" for \"mBTC 10.00000\". Continue ?");
+  }
+
+  @Test
+  public void testFormatAlertMessage_PaymentSessionSummary_Error() throws Exception {
+
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.MBTC.name());
+
+    PaymentProtocolService paymentProtocolService = new PaymentProtocolService(MainNetParams.get());
+    final URI uri = URI.create("/fixtures/payments/test-net-faucet-broken.bitcoinpaymentrequest");
+    final PaymentSessionSummary paymentSessionSummary = paymentProtocolService.probeForPaymentSession(uri, false, null);
+
+    assertThat(Formats.formatAlertMessage(paymentSessionSummary).get()).isEqualTo("Error in payment request from \"\" with message \"Protocol message contained an invalid tag (zero).\"");
   }
 
 }

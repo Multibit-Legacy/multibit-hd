@@ -17,7 +17,8 @@ import org.multibit.hd.core.events.ShutdownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.security.*;
@@ -77,7 +78,7 @@ public class PaymentProtocolService extends AbstractService {
    * status message to determine any problems that were encountered and how to respond to them.</p>
    * <p>MultiBit HD policy is that anyone issuing payment requests with PKI should have them signed by some
    * kind of CA or omit them. If the CA is not available then the user must decide how to proceed. Consequently consuming code
-   * will have checkPKI set to true in the first instance and possibly false in the second.</p>
+   * will have checkPKI set to false and the probing process will determine the trust level after the session is created.</p>
    *
    * @param paymentRequestUri The URI referencing the PaymentRequest
    * @param checkPKI          True if the PKI details should be checked (recommended - see policy note)
@@ -163,7 +164,7 @@ public class PaymentProtocolService extends AbstractService {
         throw new PaymentProtocolException.InvalidPaymentRequestURL("All payment request URLs have failed");
       }
 
-        // Determine confidence in the payment request
+      // Determine confidence in the payment request
       if (!checkPKI) {
         final TrustStoreLoader loader = trustStoreLoader != null ? trustStoreLoader : new TrustStoreLoader.DefaultTrustStoreLoader();
         try {
@@ -210,7 +211,6 @@ public class PaymentProtocolService extends AbstractService {
   }
 
   /**
-   *
    * @return A new signed BIP70 PaymentRequest or absent
    */
   public Optional<Protos.PaymentRequest> newSignedPaymentRequest(SignedPaymentRequestSummary signedPaymentRequestSummary) throws NoSuchAlgorithmException {

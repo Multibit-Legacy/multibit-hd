@@ -395,10 +395,8 @@ public class Formats {
     if (!paymentSessionSummary.getPaymentSession().isPresent()) {
             // Construct a suitable alert message
       return Optional.of(Languages.safeText(
-          MessageKey.PAYMENT_PROTOCOL_ERROR_ALERT,
-          Languages.safeText(
-            paymentSessionSummary.getMessageKey(),
-            paymentSessionSummary.getMessageData())
+          paymentSessionSummary.getMessageKey(),
+          paymentSessionSummary.getMessageData()
         ));
     }
 
