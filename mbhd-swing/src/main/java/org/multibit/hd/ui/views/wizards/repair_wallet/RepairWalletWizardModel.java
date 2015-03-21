@@ -6,8 +6,8 @@ import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletSummary;
-import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.HttpsManager;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -78,40 +78,45 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
    */
   void installCACertificates() {
 
-    ListenableFuture cacertsFuture = cacertsExecutorService.submit(new Runnable() {
-      @Override
-      public void run() {
-        HttpsManager.INSTANCE.installCACertificates(
-                InstallationManager.getOrCreateApplicationDataDirectory(),
-                InstallationManager.CA_CERTS_NAME,
-          null, true
-        );
+    ListenableFuture cacertsFuture = cacertsExecutorService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          HttpsManager.INSTANCE.installCACertificates(
+            InstallationManager.getOrCreateApplicationDataDirectory(),
+            InstallationManager.CA_CERTS_NAME,
+            null,
+            true // Force the refresh
+          );
 
-      }
-    });
-    Futures.addCallback(cacertsFuture, new FutureCallback() {
-      @Override
-      public void onSuccess(@Nullable Object result) {
-        cacertsRepaired = Optional.of(Boolean.TRUE);
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
-          }
-        });
-      }
+        }
+      });
+    Futures.addCallback(
+      cacertsFuture, new FutureCallback() {
+        @Override
+        public void onSuccess(@Nullable Object result) {
+          cacertsRepaired = Optional.of(Boolean.TRUE);
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+                ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
+              }
+            });
+        }
 
-      @Override
-      public void onFailure(Throwable t) {
-        cacertsRepaired = Optional.of(Boolean.FALSE);
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
-          }
-        });
-      }
-    });
+        @Override
+        public void onFailure(Throwable t) {
+          cacertsRepaired = Optional.of(Boolean.FALSE);
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+                ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
+              }
+            });
+        }
+      });
 
   }
 
@@ -133,12 +138,13 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       final DateTime replayDate = new DateTime(earliestKeyCreationTime * 1000);
 
       // Hide the header view
-      SwingUtilities.invokeLater(new Runnable() {
-               @Override
-               public void run() {
-                 ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
-               }
-             });
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+          }
+        });
 
       // Allow time the UI to update
       Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
@@ -150,39 +156,42 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       CoreServices.getOrCreateWalletService(currentWalletSummary.getWalletId());
 
       // Start the Bitcoin network synchronization operation
-      ListenableFuture future = walletExecutorService.submit(new Callable<Boolean>() {
+      ListenableFuture future = walletExecutorService.submit(
+        new Callable<Boolean>() {
 
-        @Override
-        public Boolean call() throws Exception {
+          @Override
+          public Boolean call() throws Exception {
 
-          CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()));
-          return true;
+            CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()));
+            return true;
 
-        }
+          }
 
-      });
-      Futures.addCallback(future, new FutureCallback() {
-        @Override
-        public void onSuccess(@Nullable Object result) {
+        });
+      Futures.addCallback(
+        future, new FutureCallback() {
+          @Override
+          public void onSuccess(@Nullable Object result) {
 
-          // Do nothing this just means that the block chain download has begun
+            // Do nothing this just means that the block chain download has begun
 
-        }
+          }
 
-        @Override
-        public void onFailure(Throwable t) {
+          @Override
+          public void onFailure(Throwable t) {
 
-          // Have a failure
-          walletRepaired = Optional.of(Boolean.FALSE);
+            // Have a failure
+            walletRepaired = Optional.of(Boolean.FALSE);
 
-          SwingUtilities.invokeLater(new Runnable() {
-                   @Override
-                   public void run() {
-                     ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
-                   }
-                 });
-        }
-      });
+            SwingUtilities.invokeLater(
+              new Runnable() {
+                @Override
+                public void run() {
+                  ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
+                }
+              });
+          }
+        });
     }
   }
 }

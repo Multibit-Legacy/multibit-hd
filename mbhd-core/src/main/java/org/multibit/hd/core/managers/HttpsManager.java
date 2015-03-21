@@ -110,6 +110,8 @@ public enum HttpsManager {
         return;
       }
 
+      // Either forced refresh or the cacerts does not contain MultiBit.org which is necessary for Help
+
       // Build the saving trust manager so we have a place to put our trusted certificates
       final SavingTrustManager tm = getSavingTrustManager(ks);
 
@@ -210,6 +212,7 @@ public enum HttpsManager {
             HttpsManager.class.getResource("/mbhd-cacerts"),
             fos
           );
+          log.debug("Template CA certs in place.");
         } catch (RuntimeException | IOException e) {
           log.error("Unexpected exception", e);
           return Optional.absent();
