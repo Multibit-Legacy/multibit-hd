@@ -132,6 +132,7 @@ public class PaymentProtocolService extends AbstractService {
               break;
             } catch (Exception e) {
               // In multiple mode any exception is considered a reason to move on to the next
+              // but we must trap the NPE later on
               log.warn("Payment request from '{}' produced an exception: {}", r, e.getMessage());
             }
           }
@@ -157,8 +158,13 @@ public class PaymentProtocolService extends AbstractService {
 
       }
 
-      // Determine confidence in the payment request
-      if (!checkPKI && paymentSession != null) {
+      // Check if payment session was created (all fallback URLs may have failed)
+      if (paymentSession == null) {
+        throw new PaymentProtocolException.InvalidPaymentRequestURL("All payment request URLs have failed");
+      }
+
+        // Determine confidence in the payment request
+      if (!checkPKI) {
         final TrustStoreLoader loader = trustStoreLoader != null ? trustStoreLoader : new TrustStoreLoader.DefaultTrustStoreLoader();
         try {
           PaymentProtocol.verifyPaymentRequestPki(
@@ -174,12 +180,11 @@ public class PaymentProtocolService extends AbstractService {
 
       }
 
-
       // Handy code to copy a payment request to local file system
 //      OutputStream os = new FileOutputStream(new File("example.bitcoinpaymentrequest"));
 //      paymentSession.getPaymentRequest().writeTo(os);
 
-      // Must be OK to be here (can be null)
+      // Must be OK to be here
       return PaymentSessionSummary.newPaymentSessionOK(paymentSession);
 
     } catch (PaymentProtocolException e) {

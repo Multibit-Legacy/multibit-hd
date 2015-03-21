@@ -67,7 +67,7 @@ public class ExternalDataListeningService extends AbstractService {
   /**
    * Allow up to 50 entries in the queue to represent a batch of work
    */
-  private static final Queue<AlertModel> alertModelQueue = Queues.newArrayBlockingQueue(50);
+  /* package */ static final Queue<AlertModel> alertModelQueue = Queues.newArrayBlockingQueue(50);
 
   private Optional<ServerSocket> serverSocket = Optional.absent();
 
@@ -243,7 +243,7 @@ public class ExternalDataListeningService extends AbstractService {
       final Optional<BitcoinURI> bitcoinURI = parseBitcoinURI(rawData);
 
       try {
-        // Must be on the EDT and run synchronously
+        // Must be on the EDT and run synchronously to simplify testing
         SwingUtilities.invokeAndWait(
           new Runnable() {
             @Override
@@ -280,7 +280,7 @@ public class ExternalDataListeningService extends AbstractService {
       final Optional<PaymentSessionSummary> paymentSessionSummary = parsePaymentSessionSummary(rawData);
 
       try {
-        // Must be on the EDT and run synchronously
+        // Must be on the EDT and run synchronously to simplify testing
         SwingUtilities.invokeAndWait(
           new Runnable() {
             @Override
@@ -305,6 +305,8 @@ public class ExternalDataListeningService extends AbstractService {
     }
 
     // We've done all our processing
+    // Note: Don't "auto-purge" the queues since it leads to complex test scenarios
+    // and violates the principle of least surprise in use
 
   }
 

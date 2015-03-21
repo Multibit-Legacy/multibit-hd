@@ -83,6 +83,8 @@ public class ExternalDataListeningServiceTest {
 
     }
 
+    ExternalDataListeningService.alertModelQueue.clear();
+
   }
 
   @Test
@@ -97,7 +99,7 @@ public class ExternalDataListeningServiceTest {
     testObject = new ExternalDataListeningService(args);
 
     // Assert
-    assertThat(testObject.getAlertModelQueue().isEmpty()).isFalse();
+    assertThat(testObject.getAlertModelQueue().size()).isEqualTo(1);
     String label = testObject.getAlertModelQueue().poll().getLocalisedMessage();
     if (label == null) {
       fail();
@@ -119,13 +121,11 @@ public class ExternalDataListeningServiceTest {
       PAYMENT_REQUEST_BIP21_MINIMUM
     };
 
-    testObject = new ExternalDataListeningService(args);
-
     // Act
     testObject = new ExternalDataListeningService(args);
 
     // Assert
-    assertThat(testObject.getAlertModelQueue().isEmpty()).isFalse();
+    assertThat(testObject.getAlertModelQueue().size()).isEqualTo(1);
     String label = testObject.getAlertModelQueue().poll().getLocalisedMessage();
     if (label == null) {
       fail();
@@ -140,7 +140,7 @@ public class ExternalDataListeningServiceTest {
   }
 
   @Test
-  public void testParse_BIP72_File_Windows_Single() throws Exception {
+  public void testParse_BIP72_File_Windows_Single_Untrusted() throws Exception {
 
     // Arrange
     // Check for Maven or IDE execution environment
@@ -171,7 +171,7 @@ public class ExternalDataListeningServiceTest {
     testObject = new ExternalDataListeningService(args);
 
     // Assert
-    assertThat(testObject.getAlertModelQueue().isEmpty()).isFalse();
+    assertThat(testObject.getAlertModelQueue().size()).isEqualTo(1);
     String label = testObject.getAlertModelQueue().poll().getLocalisedMessage();
     if (label == null) {
       fail();

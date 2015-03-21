@@ -1,6 +1,7 @@
 package org.multibit.hd.core.dto;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.slf4j.Logger;
@@ -38,13 +39,17 @@ public class PaymentSessionSummary {
    * @return A new "payment session OK" summary
    */
   public static PaymentSessionSummary newPaymentSessionOK(PaymentSession paymentSession) {
+
+    Preconditions.checkNotNull(paymentSession, "'paymentSession' must be present");
+
     return new PaymentSessionSummary(
-      Optional.fromNullable(paymentSession),
+      Optional.of(paymentSession),
       PaymentSessionStatus.TRUSTED,
       RAGStatus.GREEN,
       CoreMessageKey.PAYMENT_SESSION_OK,
       new String[]{paymentSession.getMemo()}
     );
+
   }
 
   /**
