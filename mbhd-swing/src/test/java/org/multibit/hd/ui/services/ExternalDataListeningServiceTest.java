@@ -176,7 +176,7 @@ public class ExternalDataListeningServiceTest {
     if (label == null) {
       fail();
     }
-    assertThat(label).isEqualTo("Error in payment request \"Payment request from  is missing a security certificate. Continue?\". View details ?");
+    assertThat(label).isEqualTo("Error in payment request \"Payment request from \"\" has a security certificate that is new to you. Trust it?\". View details ?");
 
     // Don't crash the JVM
     CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
