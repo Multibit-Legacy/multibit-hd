@@ -1,39 +1,18 @@
 package org.multibit.hd.core.managers;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
+import com.google.common.io.Resources;
 import org.multibit.hd.core.exchanges.ExchangeKey;
-import org.multibit.hd.core.files.SecureFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import javax.net.ssl.*;
+import java.io.*;
+import java.net.*;
+import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -112,16 +91,20 @@ public enum HttpsManager {
   public void installCACertificates(File applicationDirectory, String localTrustStoreName, String[] hosts, boolean force) {
 
     try {
+      final Optional<File> appCacertsFile = getOrCreateTrustStore(applicationDirectory, localTrustStoreName);
+      if (!appCacertsFile.isPresent()) {
+        // Use the system default trust store since we can't make one
+        return;
+      }
 
-      // Create an empty blank file if required
-      final File appCacertsFile = SecureFiles.verifyOrCreateFile(applicationDirectory, localTrustStoreName);
-      final KeyStore ks = getKeyStore(appCacertsFile);
+
+      final KeyStore ks = getKeyStore(appCacertsFile.get());
 
       // Provide a quick startup option if the aliases are in place and we're not forcing a refresh
       if (!force && ks.containsAlias("multibit.org-1") && ks.containsAlias("multibit.org-2")) {
 
-        // Must have finished to be here so define the cacerts file to be the one used for all SSL
-        System.setProperty("javax.net.ssl.trustStore", appCacertsFile.getAbsolutePath());
+        // Must have finished to be here so define the cacerts file to be the one used for all HTTPS operations
+        System.setProperty("javax.net.ssl.trustStore", appCacertsFile.get().getAbsolutePath());
 
         return;
       }
@@ -177,12 +160,12 @@ public enum HttpsManager {
 
         if (!isTrusted) {
           // Attempt to store the X509 certificate
-          storeX509Certificate(appCacertsFile, ks, tm, host);
+          storeX509Certificate(appCacertsFile.get(), ks, tm, host);
         }
       }
 
-      // Must have finished to be here so define the cacerts file to be the one used for all SSL
-      System.setProperty("javax.net.ssl.trustStore", appCacertsFile.getAbsolutePath());
+      // Must have finished to be here so define the cacerts file to be the one used for all HTTPS operations
+      System.setProperty("javax.net.ssl.trustStore", appCacertsFile.get().getAbsolutePath());
 
     } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException | KeyManagementException e) {
 
@@ -190,6 +173,32 @@ public enum HttpsManager {
 
     }
 
+  }
+
+  /**
+   * @param applicationDirectory The application directory
+   * @param localTrustStoreName  The local trust store name (e.g. "mbhd-cacerts")
+   *
+   * @return The File if present
+   */
+  public Optional<File> getOrCreateTrustStore(File applicationDirectory, String localTrustStoreName) {
+    // Create an empty blank file if required
+    final File appCacertsFile = new File(applicationDirectory, localTrustStoreName);
+
+    if (!appCacertsFile.exists()) {
+      log.info("No CA certs in place. Providing template...");
+      try (FileOutputStream fos = new FileOutputStream(appCacertsFile)) {
+        Resources.copy(
+          HttpsManager.class.getResource("/mbhd-cacerts"),
+          fos
+        );
+      } catch (RuntimeException | IOException e) {
+        log.error("Unexpected exception", e);
+        return Optional.absent();
+      }
+    }
+
+    return Optional.of(appCacertsFile);
   }
 
   /**
