@@ -487,7 +487,7 @@ public class ExternalDataListeningService extends AbstractService {
   static Optional<URI> parseRawDataAsUri(String rawData) {
 
     // Check for URI form (require ":/" for OS X file URIs)
-    if (rawData.contains(":/")) {
+    if (rawData.startsWith("bitcoin:") || rawData.contains(":/")) {
       // Very likely to be a URI
       try {
         // Attempt to create the URI
