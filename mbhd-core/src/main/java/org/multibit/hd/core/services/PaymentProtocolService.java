@@ -94,7 +94,7 @@ public class PaymentProtocolService extends AbstractService {
     String scheme = paymentRequestUri.getScheme() == null ? "" : paymentRequestUri.getScheme();
     String hostName = paymentRequestUri.getHost() == null ? "" : paymentRequestUri.getHost();
 
-    Protos.PaymentRequest paymentRequest = null;
+    Protos.PaymentRequest paymentRequest;
 
     try {
 
@@ -171,18 +171,20 @@ public class PaymentProtocolService extends AbstractService {
         } catch (KeyStoreException e) {
           return PaymentSessionSummary.newPaymentSessionAlmostOK(paymentSession, e);
         }
+
       }
+
 
       // Handy code to copy a payment request to local file system
 //      OutputStream os = new FileOutputStream(new File("example.bitcoinpaymentrequest"));
 //      paymentSession.getPaymentRequest().writeTo(os);
 
-      // Must be OK to be here
+      // Must be OK to be here (can be null)
       return PaymentSessionSummary.newPaymentSessionOK(paymentSession);
 
     } catch (PaymentProtocolException e) {
       // We can be more specific about handling the error
-      return PaymentSessionSummary.newPaymentSessionFromException(e, paymentRequest, hostName);
+      return PaymentSessionSummary.newPaymentSessionFromException(e, hostName);
     } catch (BitcoinURIParseException e) {
       return PaymentSessionSummary.newPaymentSessionFromException(e, hostName);
     } catch (ExecutionException e) {

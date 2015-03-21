@@ -906,7 +906,7 @@ public class WalletService extends AbstractService {
             // Something wrong with the payment session
             // TODO get host name from somewhere
             String hostName = "unknown";
-            PaymentSessionSummary paymentSessionSummary = PaymentSessionSummary.newPaymentSessionFromException(ppe, paymentRequest, hostName);
+            PaymentSessionSummary paymentSessionSummary = PaymentSessionSummary.newPaymentSessionFromException(ppe, hostName);
             paymentRequestData.setPaymentSessionSummaryOptional(Optional.of(paymentSessionSummary));
             paymentRequestData.setPaymentSessionSummaryOptional(Optional.of(paymentSessionSummary));
           }

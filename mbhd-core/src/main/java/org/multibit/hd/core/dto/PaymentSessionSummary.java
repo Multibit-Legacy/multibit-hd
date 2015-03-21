@@ -1,7 +1,6 @@
 package org.multibit.hd.core.dto;
 
 import com.google.common.base.Optional;
-import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.slf4j.Logger;
@@ -144,12 +143,12 @@ public class PaymentSessionSummary {
   }
 
   /**
-   * @param e              The payment protocol exception (specific problem)
-   * @param paymentRequest The payment request providing extra information
-   * @param hostName  The host name
+   * @param e        The payment protocol exception (specific problem)
+   * @param hostName The host name
+   *
    * @return A suitable payment session summary
    */
-  public static PaymentSessionSummary newPaymentSessionFromException(PaymentProtocolException e, Protos.PaymentRequest paymentRequest, String hostName) {
+  public static PaymentSessionSummary newPaymentSessionFromException(PaymentProtocolException e, String hostName) {
 
     log.warn("Failed payment session: Host={} Failure={}", hostName, e.getMessage());
 
@@ -272,7 +271,7 @@ public class PaymentSessionSummary {
     this.severity = severity;
 
     this.messageKey = messageKey;
-    this.messageData = messageData;
+    this.messageData = Arrays.copyOf(messageData, messageData.length);
 
   }
 
@@ -301,7 +300,7 @@ public class PaymentSessionSummary {
    * @return An optional array of arbitrary objects, often for insertion into a resource bundle string
    */
   public Object[] getMessageData() {
-    return messageData;
+    return Arrays.copyOf(messageData, messageData.length);
   }
 
   public CoreMessageKey getMessageKey() {
