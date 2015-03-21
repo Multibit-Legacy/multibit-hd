@@ -1,9 +1,14 @@
 package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
-import org.bitcoinj.core.Coin;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Coin;
+import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
@@ -28,7 +33,6 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 
 public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, SendBitcoinEnterAmountPanelModel> {
@@ -37,27 +41,26 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
   private ModelAndView<EnterRecipientModel, EnterRecipientView> enterRecipientMaV;
   private ModelAndView<EnterAmountModel, EnterAmountView> enterAmountMaV;
 
+  private boolean networkOk = false;
+
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name
    */
   public SendBitcoinEnterAmountPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
-
     super(wizard, panelName, MessageKey.SEND_BITCOIN_TITLE, AwesomeIcon.CLOUD_UPLOAD);
-
   }
 
   @Override
   public void newPanelModel() {
-
     enterRecipientMaV = Components.newEnterRecipientMaV(getPanelName());
     enterAmountMaV = Components.newEnterAmountMaV(getPanelName());
 
     // Configure the panel model
     final SendBitcoinEnterAmountPanelModel panelModel = new SendBitcoinEnterAmountPanelModel(
-      getPanelName(),
-      enterRecipientMaV.getModel(),
-      enterAmountMaV.getModel()
+            getPanelName(),
+            enterRecipientMaV.getModel(),
+            enterAmountMaV.getModel()
     );
     setPanelModel(panelModel);
 
@@ -66,16 +69,14 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
     // Register components
     registerComponents(enterAmountMaV, enterRecipientMaV);
-
   }
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
-
     contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[]", // Column constraints
-      "[]10[]" // Row constraints
+            Panels.migXYLayout(),
+            "[]", // Column constraints
+            "[]10[]" // Row constraints
     ));
 
     // Apply any Bitcoin URI parameters
@@ -98,22 +99,17 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
   @Override
   protected void initialiseButtons(AbstractWizard<SendBitcoinWizardModel> wizard) {
-
     PanelDecorator.addExitCancelNext(this, wizard);
-
   }
 
   @Override
   public void fireInitialStateViewEvents() {
-
     // Next button starts off disabled
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
-
   }
 
   @Override
   public void afterShow() {
-
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -122,39 +118,98 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
       }
     });
-
   }
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
-
     // No need to update the panel model it already has the references
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(
-      getPanelName(),
-      WizardButton.NEXT,
-      isNextEnabled()
+            getPanelName(),
+            WizardButton.NEXT,
+            isNextEnabled()
     );
-
   }
 
   /**
    * @return True if the "next" button should be enabled
    */
   private boolean isNextEnabled() {
-
     boolean bitcoinAmountOK = !getPanelModel().get()
-      .getEnterAmountModel()
-      .getCoinAmount()
-      .equals(Coin.ZERO);
+            .getEnterAmountModel()
+            .getCoinAmount()
+            .equals(Coin.ZERO);
 
     boolean recipientOK = getPanelModel().get()
-      .getEnterRecipientModel()
-      .getRecipient()
-      .isPresent();
+            .getEnterRecipientModel()
+            .getRecipient()
+            .isPresent();
 
-    return bitcoinAmountOK && recipientOK;
+    return bitcoinAmountOK && recipientOK && networkOk;
+  }
+
+  /**
+   * @param event The "Bitcoin network changed" event - one per block downloaded during synchronization
+   */
+  @Subscribe
+  public void onBitcoinNetworkChangeEvent(final BitcoinNetworkChangedEvent event) {
+    if (!isInitialised()) {
+      return;
+    }
+
+    Preconditions.checkNotNull(event, "'event' must be present");
+    Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");
+
+    BitcoinNetworkSummary summary = event.getSummary();
+
+    Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
+
+    // Keep the UI response to a minimum due to the volume of these events
+    updateNextButton(event);
+  }
+
+  private void updateNextButton(BitcoinNetworkChangedEvent event) {
+    boolean newEnabled;
+    boolean canChange = true;
+
+    // Cannot pay a request until synced as you don't know how much is in the wallet
+    switch (event.getSummary().getSeverity()) {
+      case RED:
+      case AMBER:
+        // Enable on RED or AMBER only if unrestricted (allows FEST tests without a network)
+        newEnabled = InstallationManager.unrestricted;
+        break;
+      case GREEN:
+        // Always enable on GREEN
+        newEnabled = true;
+        break;
+      case PINK:
+      case EMPTY:
+        // Maintain the status quo
+        newEnabled = getNextButton().isEnabled();
+        canChange = false;
+        break;
+      default:
+        // Unknown status
+        throw new IllegalStateException("Unknown event severity " + event.getSummary().getSeverity());
+    }
+
+    if (canChange) {
+      final boolean finalNewEnabled = newEnabled;
+      networkOk = finalNewEnabled;
+
+      // If button is not enabled and the newEnabled is false don't do anything
+      // This cuts down the number of events
+      if (getNextButton().isEnabled() || newEnabled) {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            getNextButton().setEnabled(finalNewEnabled);
+          }
+        });
+      }
+    }
   }
 }
 
