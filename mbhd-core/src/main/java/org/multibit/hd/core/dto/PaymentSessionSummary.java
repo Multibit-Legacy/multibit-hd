@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.KeyStoreException;
+import java.security.cert.CertPathValidatorException;
 import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
@@ -233,13 +234,25 @@ public class PaymentSessionSummary {
     }
     if (e instanceof PaymentProtocolException.PkiVerificationException) {
 
-      return new PaymentSessionSummary(
-        Optional.<PaymentSession>absent(),
-        PaymentSessionStatus.UNTRUSTED,
-        RAGStatus.AMBER,
-        CoreMessageKey.PAYMENT_SESSION_PKI_MISSING,
-        new String[]{hostName, e.getMessage()}
-      );
+      // This is a bit lame but the only way to differentiate PKI failures from untrusted
+      if (e.getCause() != null && e.getCause() instanceof CertPathValidatorException) {
+        // Untrusted CA (user might want to add it to the trust store)
+        return new PaymentSessionSummary(
+          Optional.<PaymentSession>absent(),
+          PaymentSessionStatus.UNTRUSTED,
+          RAGStatus.AMBER,
+          CoreMessageKey.PAYMENT_SESSION_PKI_UNTRUSTED_CA,
+          new String[]{hostName, e.getMessage()}
+        );
+      } else {
+        return new PaymentSessionSummary(
+          Optional.<PaymentSession>absent(),
+          PaymentSessionStatus.UNTRUSTED,
+          RAGStatus.AMBER,
+          CoreMessageKey.PAYMENT_SESSION_PKI_MISSING,
+          new String[]{hostName, e.getMessage()}
+        );
+      }
     }
 
     // Unknown

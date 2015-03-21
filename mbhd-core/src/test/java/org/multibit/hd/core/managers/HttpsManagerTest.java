@@ -45,7 +45,8 @@ public class HttpsManagerTest {
     // Act
     Optional<File> cacertsFile = HttpsManager.INSTANCE.getOrCreateTrustStore(
       InstallationManager.getOrCreateApplicationDataDirectory(),
-      InstallationManager.CA_CERTS_NAME
+      InstallationManager.CA_CERTS_NAME,
+      true
     );
 
     // Assert

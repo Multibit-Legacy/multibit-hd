@@ -6,6 +6,7 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Resources;
 import org.multibit.hd.core.exchanges.ExchangeKey;
+import org.multibit.hd.core.files.SecureFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +92,7 @@ public enum HttpsManager {
   public void installCACertificates(File applicationDirectory, String localTrustStoreName, String[] hosts, boolean force) {
 
     try {
-      final Optional<File> appCacertsFile = getOrCreateTrustStore(applicationDirectory, localTrustStoreName);
+      final Optional<File> appCacertsFile = getOrCreateTrustStore(applicationDirectory, localTrustStoreName, force);
       if (!appCacertsFile.isPresent()) {
         // Use the system default trust store since we can't make one
         return;
@@ -178,10 +179,12 @@ public enum HttpsManager {
   /**
    * @param applicationDirectory The application directory
    * @param localTrustStoreName  The local trust store name (e.g. "mbhd-cacerts")
+   * @param force                True if the template should be used as the basis (erases all existing trusted certificates)
    *
    * @return The File if present
    */
-  public Optional<File> getOrCreateTrustStore(File applicationDirectory, String localTrustStoreName) {
+  public Optional<File> getOrCreateTrustStore(File applicationDirectory, String localTrustStoreName, boolean force) {
+
     // Create an empty blank file if required
     final File appCacertsFile = new File(applicationDirectory, localTrustStoreName);
 
@@ -195,6 +198,22 @@ public enum HttpsManager {
       } catch (RuntimeException | IOException e) {
         log.error("Unexpected exception", e);
         return Optional.absent();
+      }
+    } else {
+      // Trust store exists
+      if (force) {
+        log.info("Forced replacement of existing CA certs with template...");
+        try (FileOutputStream fos = new FileOutputStream(appCacertsFile)) {
+          // Remove the existing trust store
+          SecureFiles.secureDelete(appCacertsFile);
+          Resources.copy(
+            HttpsManager.class.getResource("/mbhd-cacerts"),
+            fos
+          );
+        } catch (RuntimeException | IOException e) {
+          log.error("Unexpected exception", e);
+          return Optional.absent();
+        }
       }
     }
 
