@@ -9,6 +9,7 @@ import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
@@ -107,6 +108,16 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
     // Next button starts off disabled
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
   }
+
+  @Override
+   public boolean beforeShow() {
+     // Ensure the pay request button is kept up to date
+     Optional<BitcoinNetworkChangedEvent> changedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
+     if (changedEvent.isPresent()) {
+       updateNextButton(changedEvent.get());
+     }
+     return true;
+   }
 
   @Override
   public void afterShow() {
