@@ -24,7 +24,7 @@ import org.multibit.hd.core.dto.SignedPaymentRequestSummary;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
-import org.multibit.hd.core.managers.SSLManager;
+import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.testing.payments.PaymentProtocolHttpsServer;
 
@@ -265,7 +265,7 @@ public class PaymentProtocolServiceTest {
     // Load the signing key store locally
     KeyStore keyStore = KeyStore.getInstance("JKS");
     InputStream keyStream = PaymentProtocolService.class.getResourceAsStream("/localhost.jks");
-    keyStore.load(keyStream, SSLManager.PASSPHRASE.toCharArray());
+    keyStore.load(keyStream, HttpsManager.PASSPHRASE.toCharArray());
 
     SignedPaymentRequestSummary signedPaymentRequestSummary = new SignedPaymentRequestSummary(
       new Address(networkParameters, "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"),
@@ -275,7 +275,7 @@ public class PaymentProtocolServiceTest {
       "Donation 0001".getBytes(Charsets.UTF_8),
       keyStore,
       "serverkey",
-      SSLManager.PASSPHRASE.toCharArray()
+      HttpsManager.PASSPHRASE.toCharArray()
     );
 
     // Act
@@ -287,7 +287,7 @@ public class PaymentProtocolServiceTest {
     // Load the verifying trust store locally
     KeyStore trustStore = KeyStore.getInstance("JKS");
     InputStream certStream = PaymentProtocolService.class.getResourceAsStream("/mbhd-cacerts-with-localhost");
-    trustStore.load(certStream, SSLManager.PASSPHRASE.toCharArray());
+    trustStore.load(certStream, HttpsManager.PASSPHRASE.toCharArray());
 
     PaymentProtocol.PkiVerificationData pkiVerificationData = PaymentProtocol.verifyPaymentRequestPki(
       paymentRequest.get(),

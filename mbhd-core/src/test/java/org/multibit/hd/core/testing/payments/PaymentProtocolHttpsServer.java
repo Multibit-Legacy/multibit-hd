@@ -6,7 +6,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.multibit.hd.core.managers.SSLManager;
+import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.hardware.core.concurrent.SafeExecutors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,18 +49,18 @@ public class PaymentProtocolHttpsServer {
       log.debug("Initialise the trust store containing the trusted certificates (including localhost:8443)");
       URL trustStoreUrl = PaymentProtocolHttpsServer.class.getResource("/mbhd-cacerts-with-localhost");
       System.setProperty("javax.net.ssl.trustStore", trustStoreUrl.getFile());
-      System.setProperty("javax.net.ssl.trustStorePassword", SSLManager.PASSPHRASE);
+      System.setProperty("javax.net.ssl.trustStorePassword", HttpsManager.PASSPHRASE);
 
       SSLContext sslContext = SSLContext.getInstance("TLS");
 
       log.debug("Initialise the key store containing the private server keys (CN=localhost is required)");
       KeyStore ks = KeyStore.getInstance("JKS");
       is = PaymentProtocolHttpsServer.class.getResourceAsStream("/localhost.jks");
-      ks.load(is, SSLManager.PASSPHRASE.toCharArray());
+      ks.load(is, HttpsManager.PASSPHRASE.toCharArray());
 
       log.debug("Initialise the key manager factory");
       KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(ks, SSLManager.PASSPHRASE.toCharArray());
+      kmf.init(ks, HttpsManager.PASSPHRASE.toCharArray());
 
       log.debug("Initialise the trust manager factory");
       TrustManagerFactory tmf = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());

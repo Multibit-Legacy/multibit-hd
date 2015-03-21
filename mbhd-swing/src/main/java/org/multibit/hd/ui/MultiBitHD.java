@@ -10,7 +10,7 @@ import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
-import org.multibit.hd.core.managers.SSLManager;
+import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.OSUtils;
@@ -221,7 +221,7 @@ public class MultiBitHD {
         new Runnable() {
           @Override
           public void run() {
-            SSLManager.INSTANCE.installCACertificates(
+            HttpsManager.INSTANCE.installCACertificates(
               InstallationManager.getOrCreateApplicationDataDirectory(),
               InstallationManager.CA_CERTS_NAME,
               null, false // Do not force loading if they are already present

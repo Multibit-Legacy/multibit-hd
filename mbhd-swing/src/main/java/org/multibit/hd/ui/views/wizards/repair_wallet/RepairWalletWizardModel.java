@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.InstallationManager;
-import org.multibit.hd.core.managers.SSLManager;
+import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -81,7 +81,7 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
     ListenableFuture cacertsFuture = cacertsExecutorService.submit(new Runnable() {
       @Override
       public void run() {
-        SSLManager.INSTANCE.installCACertificates(
+        HttpsManager.INSTANCE.installCACertificates(
                 InstallationManager.getOrCreateApplicationDataDirectory(),
                 InstallationManager.CA_CERTS_NAME,
           null, true

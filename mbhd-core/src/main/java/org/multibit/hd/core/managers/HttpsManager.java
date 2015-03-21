@@ -41,20 +41,20 @@ import java.security.cert.X509Certificate;
  * <p>Manager to provide the following to other core classes:</p>
  * <ul>
  * <li>Installation of X509 certificates to application trust store</li>
- * <li>Utility methods for making SSL socket connections with the trust store</li>
+ * <li>Utility methods for making TLS socket connections with the trust store</li>
  * </ul>
  * <p>Tried to keep this manager self-contained to allow portability to other applications</p>
  *
  * @since 0.0.1
  */
-public enum SSLManager {
+public enum HttpsManager {
 
   INSTANCE
 
   // End of enum
   ;
 
-  private static final Logger log = LoggerFactory.getLogger(SSLManager.class);
+  private static final Logger log = LoggerFactory.getLogger(HttpsManager.class);
 
   /**
    * The certificates are only used to verify hard-coded hosts which are protected

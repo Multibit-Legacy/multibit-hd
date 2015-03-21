@@ -18,7 +18,7 @@ import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
-import org.multibit.hd.core.managers.SSLManager;
+import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.utils.Addresses;
 import org.multibit.hd.core.utils.BitcoinNetwork;
@@ -171,7 +171,7 @@ public class WalletServiceTest {
     // Load the signing key store locally
     KeyStore keyStore = KeyStore.getInstance("JKS");
     InputStream keyStream = PaymentProtocolService.class.getResourceAsStream("/localhost.jks");
-    keyStore.load(keyStream, SSLManager.PASSPHRASE.toCharArray());
+    keyStore.load(keyStream, HttpsManager.PASSPHRASE.toCharArray());
 
     SignedPaymentRequestSummary signedPaymentRequestSummary = new SignedPaymentRequestSummary(
             new Address(networkParameters, "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"),
@@ -181,7 +181,7 @@ public class WalletServiceTest {
             "Donation 0001".getBytes(Charsets.UTF_8),
             keyStore,
             "serverkey",
-            SSLManager.PASSPHRASE.toCharArray()
+            HttpsManager.PASSPHRASE.toCharArray()
     );
 
     // Act

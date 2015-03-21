@@ -15,7 +15,7 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
-import org.multibit.hd.core.managers.SSLManager;
+import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BackupService;
 import org.multibit.hd.core.services.CoreServices;
@@ -287,7 +287,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
       // Attempt to install the CA certifications for the exchanges and MultiBit.org
       // Configure SSL certificates without forcing
-      SSLManager.INSTANCE.installCACertificates(
+      HttpsManager.INSTANCE.installCACertificates(
         InstallationManager.getOrCreateApplicationDataDirectory(),
         InstallationManager.CA_CERTS_NAME,
         null, false);
