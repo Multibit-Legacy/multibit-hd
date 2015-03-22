@@ -15,15 +15,15 @@ import org.multibit.hd.core.dto.PaymentRequestData;
 public class SendBitcoinParameter {
 
   private final Optional<BitcoinURI> bitcoinURI;
-  private final Optional<PaymentRequestData> paymentRequestDataOptional;
+  private final Optional<PaymentRequestData> paymentRequestData;
 
   /**
-   * @param bitcoinURI The Bitcoin URI
-   * @param paymentRequestDataOptional The payment request data containing information about this payment
+   * @param bitcoinURI         The Bitcoin URI
+   * @param paymentRequestData The payment request data containing information about this payment
    */
-  public SendBitcoinParameter(BitcoinURI bitcoinURI, Optional<PaymentRequestData> paymentRequestDataOptional) {
+  public SendBitcoinParameter(BitcoinURI bitcoinURI, Optional<PaymentRequestData> paymentRequestData) {
     this.bitcoinURI = Optional.fromNullable(bitcoinURI);
-    this.paymentRequestDataOptional = paymentRequestDataOptional == null ? Optional.<PaymentRequestData>absent() : paymentRequestDataOptional;
+    this.paymentRequestData = paymentRequestData == null ? Optional.<PaymentRequestData>absent() : paymentRequestData;
   }
 
   /**
@@ -33,7 +33,10 @@ public class SendBitcoinParameter {
     return bitcoinURI;
   }
 
-  public Optional<PaymentRequestData> getPaymentRequestDataOptional() {
-    return paymentRequestDataOptional;
+  /**
+   * @return A Payment Request Data that represents a persisted BIP70 Payment Request
+   */
+  public Optional<PaymentRequestData> getPaymentRequestData() {
+    return paymentRequestData;
   }
 }

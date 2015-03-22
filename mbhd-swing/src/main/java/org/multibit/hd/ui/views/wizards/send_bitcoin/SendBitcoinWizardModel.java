@@ -89,7 +89,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     super(state);
 
     this.bitcoinURI = parameter.getBitcoinURI();
-    this.paymentRequestDataOptional = parameter.getPaymentRequestDataOptional();
+    this.paymentRequestDataOptional = parameter.getPaymentRequestData();
   }
 
   public void prepareWhenBIP70() {
