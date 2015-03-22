@@ -176,7 +176,7 @@ public class ExternalDataListeningServiceTest {
     if (label == null) {
       fail();
     }
-    assertThat(label).isEqualTo("Error in payment request \"Payment request from \"\" has a security certificate that is new to you. Trust it?\". View details ?");
+    assertThat(label).isEqualTo("Untrusted payment request \"Please donate to MultiBit\" for \"mB 10.00000\". Continue ?");
 
     // Don't crash the JVM
     CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
