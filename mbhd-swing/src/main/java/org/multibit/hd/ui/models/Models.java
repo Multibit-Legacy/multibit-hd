@@ -153,9 +153,11 @@ public class Models {
 
           // Work out if an identity is available
           if (paymentSessionSummary.getPaymentSession().isPresent()) {
-            PaymentProtocol.PkiVerificationData identity = paymentSessionSummary.getPaymentSession().get().verifyPki();
-            if (identity != null) {
-              paymentRequestData.setIdentityDisplayName(identity.displayName);
+            Optional<PaymentProtocol.PkiVerificationData> identity = paymentSessionSummary.getPkiVerificationData();
+            if (identity.isPresent()) {
+              paymentRequestData.setIdentityDisplayName(identity.get().displayName);
+            } else {
+              paymentRequestData.setIdentityDisplayName(Languages.safeText(MessageKey.NOT_AVAILABLE));
             }
           }
 

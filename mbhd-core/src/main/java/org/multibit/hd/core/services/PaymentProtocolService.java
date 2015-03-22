@@ -112,7 +112,7 @@ public class PaymentProtocolService extends AbstractService {
             .get();
           return new PaymentSessionSummary(
             Optional.of(paymentSession),
-            PaymentSessionStatus.UNTRUSTED,
+            null, PaymentSessionStatus.UNTRUSTED,
             RAGStatus.PINK,
             CoreMessageKey.PAYMENT_SESSION_PKI_INVALID,
             new String[]{paymentSession.getMemo()}
@@ -165,10 +165,12 @@ public class PaymentProtocolService extends AbstractService {
       }
 
       // Determine confidence in the payment request
+      PaymentProtocol.PkiVerificationData pkiVerificationData = paymentSession.pkiVerificationData;
       if (!checkPKI) {
         final TrustStoreLoader loader = trustStoreLoader != null ? trustStoreLoader : new TrustStoreLoader.DefaultTrustStoreLoader();
         try {
-          PaymentProtocol.verifyPaymentRequestPki(
+          // Override the earlier PKI verification data (likely to be null since not checked)
+          pkiVerificationData = PaymentProtocol.verifyPaymentRequestPki(
             paymentSession.getPaymentRequest(),
             loader.getKeyStore()
           );
@@ -187,7 +189,7 @@ public class PaymentProtocolService extends AbstractService {
 
       // Must be OK to be here
       log.debug("Created payment session summary");
-      return PaymentSessionSummary.newPaymentSessionOK(paymentSession);
+      return PaymentSessionSummary.newPaymentSessionOK(paymentSession, pkiVerificationData);
 
     } catch (PaymentProtocolException e) {
       // We can be more specific about handling the error

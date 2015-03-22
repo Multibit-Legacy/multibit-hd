@@ -249,6 +249,7 @@ public class PaymentProtocolServiceTest {
     assertThat(paymentSessionSummary.getMessageKey()).isEqualTo(CoreMessageKey.PAYMENT_SESSION_OK);
     assertThat(paymentSessionSummary.getSeverity()).isEqualTo(RAGStatus.GREEN);
     assertThat(paymentSessionSummary.getMessageData()[0]).isEqualTo("Please donate to MultiBit");
+    assertThat(paymentSessionSummary.getPkiVerificationData().get().displayName).isEqualTo("Test, Test, US");
 
     // Assert the PaymentDetails
     Protos.PaymentDetails paymentDetails = paymentSessionSummary.getPaymentSession().get().getPaymentDetails();
