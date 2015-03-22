@@ -125,8 +125,8 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     notesTextArea = TextBoxes.newEnterPrivateNotes(getWizardModel());
 
     // Apply any Payment Request parameters
-    if (getWizardModel().getPaymentRequestDataOptional().isPresent()) {
-      PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestDataOptional().get();
+    if (getWizardModel().getPaymentRequestData().isPresent()) {
+      PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData().get();
 
       if (paymentRequestData.getIdentityDisplayName().isEmpty()) {
         // Unknown recipient
@@ -225,9 +225,9 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     Configuration configuration = Configurations.currentConfiguration;
 
     final Coin amount;
-    if (getWizardModel().getPaymentRequestDataOptional().isPresent()) {
+    if (getWizardModel().getPaymentRequestData().isPresent()) {
       // User has received a BIP70 Payment Request
-      PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestDataOptional().get();
+      PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData().get();
       if (paymentRequestData.getIdentityDisplayName().isEmpty()) {
         // Unknown recipient
         recipientSummaryLabel = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));

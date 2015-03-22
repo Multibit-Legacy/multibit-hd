@@ -892,16 +892,20 @@ public class WalletService extends AbstractService {
         log.debug("Read serialised bytes of unencrypted length {} from input file {}", serialisedBytes.length, inputFile.getAbsolutePath());
 
         try {
+          // Read the serialised Payment Request
           Protos.PaymentRequest paymentRequest = Protos.PaymentRequest.parseFrom(serialisedBytes);
           paymentRequestData.setPaymentRequest(paymentRequest);
+
+          // TODO Introduce a new method on PaymentProtocolService to rebuild from a PaymentRequest and return
+          // a suitable PaymentSessionSummary with PKI verification data
 
           try {
             PaymentSession paymentSession = new PaymentSession(paymentRequest);
             // Payment request is ok
 
-            PaymentSessionSummary paymentSessionSummary = PaymentSessionSummary.newPaymentSessionOK(paymentSession);
+            PaymentSessionSummary paymentSessionSummary = PaymentSessionSummary.newPaymentSessionOK(paymentSession, paymentSession.pkiVerificationData);
             paymentRequestData.setPaymentSessionSummaryOptional(Optional.of(paymentSessionSummary));
-            log.debug("Successfuly created paymentSessionSummary from paymentRequest");
+            log.debug("Successfully created paymentSessionSummary from paymentRequest");
           } catch (PaymentProtocolException ppe) {
             // Something wrong with the payment session
             // TODO get host name from somewhere

@@ -5,7 +5,6 @@ import com.google.common.base.Preconditions;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.params.MainNetParams;
-import org.bitcoinj.protocols.payments.PaymentProtocol;
 import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.uri.BitcoinURI;
@@ -70,16 +69,15 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   private final Optional<BitcoinURI> bitcoinURI;
 
   /**
-   * The payment request data containing information about the payment request (including BIP 70 info)
+   * The protobuf Payment Request Data containing persistent state for the original BIP 70 Payment Request
    */
-  private Optional<PaymentRequestData> paymentRequestDataOptional = Optional.absent();
+  private Optional<PaymentRequestData> paymentRequestData = Optional.absent();
 
   /**
    * The SendRequestSummary that initially contains all the tx details, and then is signed prior to sending
    */
   private SendRequestSummary sendRequestSummary;
   private SendBitcoinConfirmTrezorPanelView sendBitcoinConfirmTrezorPanelView;
-  private Optional<PaymentProtocol.PkiVerificationData> pkiVerificationData;
 
   /**
    * @param state     The state object
@@ -89,12 +87,12 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     super(state);
 
     this.bitcoinURI = parameter.getBitcoinURI();
-    this.paymentRequestDataOptional = parameter.getPaymentRequestDataOptional();
+    this.paymentRequestData = parameter.getPaymentRequestData();
   }
 
   public void prepareWhenBIP70() {
     // if constructed using a paymentRequestData (BIP70) then prepare the tx immediately
-    if (paymentRequestDataOptional.isPresent()) {
+    if (paymentRequestData.isPresent()) {
       if (prepareTransaction()) {
         log.debug("BIP70 prepareTransaction was successful, moving to SEND_CONFIRM_AMOUNT");
         this.state = SEND_CONFIRM_AMOUNT;
@@ -275,8 +273,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   /**
    * @return Any payment session summary used to initiate this wizard
    */
-  public Optional<PaymentRequestData> getPaymentRequestDataOptional() {
-    return paymentRequestDataOptional;
+  public Optional<PaymentRequestData> getPaymentRequestData() {
+    return paymentRequestData;
   }
 
   /**
@@ -297,14 +295,14 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
     // Determine if this came from a payment request
-    if (paymentRequestDataOptional.isPresent()) {
+    if (paymentRequestData.isPresent()) {
       // We should not be here if these conditions are not true
       PaymentSession paymentSession;
       try {
         // TODO verify PKI
-        paymentSession = new PaymentSession(paymentRequestDataOptional.get().getPaymentRequest(), false);
+        paymentSession = new PaymentSession(paymentRequestData.get().getPaymentRequest(), false);
       } catch (PaymentProtocolException e) {
-        log.error("Could not create PaymentSession from payment request {}, error was {}", paymentRequestDataOptional.get().getPaymentRequest(), e);
+        log.error("Could not create PaymentSession from payment request {}, error was {}", paymentRequestData.get().getPaymentRequest(), e);
         return false;
       }
 
@@ -403,7 +401,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
     log.debug("Just about to send bitcoin: {}", sendRequestSummary);
-    bitcoinNetworkService.send(sendRequestSummary, paymentRequestDataOptional);
+    bitcoinNetworkService.send(sendRequestSummary, paymentRequestData);
 
     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
   }
@@ -467,7 +465,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    */
   void handlePaymentSessionSummary() {
 
-    if (!paymentRequestDataOptional.isPresent()) {
+    if (!paymentRequestData.isPresent()) {
       return;
     }
 
@@ -681,7 +679,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
               Wallet wallet = bitcoinNetworkService.getLastWalletOptional().get();
 
               // Commit and broadcast
-              bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet, paymentRequestDataOptional);
+              bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet, paymentRequestData);
             } else {
               // The signed transaction is essentially different from what was sent to it - abort send
               sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);

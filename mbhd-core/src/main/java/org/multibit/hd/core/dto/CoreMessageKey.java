@@ -83,10 +83,10 @@ public enum CoreMessageKey {
 
   // Payment protocol messages (single parameter)
   PAYMENT_SESSION_OK("core_payment_session_ok"),
-  PAYMENT_SESSION_ERROR("core_payment_session_error"),
   PAYMENT_SESSION_DOWN("core_payment_session_down"),
 
   // Detailed payment protocol messages (dual parameter)
+  PAYMENT_SESSION_ERROR("core_payment_session_error"),
   PAYMENT_SESSION_EXPIRED("core_payment_session_expired"),
   PAYMENT_SESSION_INVALID_NETWORK("core_payment_session_invalid_network"),
   PAYMENT_SESSION_INVALID_OUTPUTS("core_payment_session_invalid_outputs"),

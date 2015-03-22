@@ -2,6 +2,7 @@ package org.multibit.hd.core.dto;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import org.bitcoinj.protocols.payments.PaymentProtocol;
 import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ public class PaymentSessionSummary {
 
   private final PaymentSessionStatus status;
   private final Optional<PaymentSession> paymentSession;
+  private final Optional<PaymentProtocol.PkiVerificationData> pkiVerificationData;
 
   private final RAGStatus severity;
 
@@ -35,16 +37,18 @@ public class PaymentSessionSummary {
   /**
    * <p>The server has returned a well-formed payment request</p>
    *
-   * @param paymentSession The payment session containing meta data
+   * @param paymentSession      The payment session containing meta data (cannot be null to be OK)
+   * @param pkiVerificationData The PKI verification data containing identity information (cannot be null to be OK)
    *
    * @return A new "payment session OK" summary
    */
-  public static PaymentSessionSummary newPaymentSessionOK(PaymentSession paymentSession) {
+  public static PaymentSessionSummary newPaymentSessionOK(PaymentSession paymentSession, PaymentProtocol.PkiVerificationData pkiVerificationData) {
 
     Preconditions.checkNotNull(paymentSession, "'paymentSession' must be present");
 
     return new PaymentSessionSummary(
       Optional.of(paymentSession),
+      Optional.fromNullable(pkiVerificationData),
       PaymentSessionStatus.TRUSTED,
       RAGStatus.GREEN,
       CoreMessageKey.PAYMENT_SESSION_OK,
@@ -67,6 +71,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidPkiData) {
       return new PaymentSessionSummary(
         Optional.of(paymentSession),
+        Optional.<PaymentProtocol.PkiVerificationData>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
         CoreMessageKey.PAYMENT_SESSION_PKI_INVALID,
@@ -76,6 +81,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidPkiType) {
       return new PaymentSessionSummary(
         Optional.of(paymentSession),
+        Optional.<PaymentProtocol.PkiVerificationData>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
         CoreMessageKey.PAYMENT_SESSION_PKI_INVALID_TYPE,
@@ -85,6 +91,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.PkiVerificationException) {
       return new PaymentSessionSummary(
         Optional.of(paymentSession),
+        Optional.<PaymentProtocol.PkiVerificationData>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
         CoreMessageKey.PAYMENT_SESSION_PKI_MISSING,
@@ -95,6 +102,7 @@ public class PaymentSessionSummary {
     if (e instanceof KeyStoreException) {
       return new PaymentSessionSummary(
         Optional.of(paymentSession),
+        Optional.<PaymentProtocol.PkiVerificationData>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
         CoreMessageKey.PAYMENT_SESSION_PKI_UNTRUSTED_CA,
@@ -121,7 +129,7 @@ public class PaymentSessionSummary {
     if (e instanceof InterruptedException) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
-        PaymentSessionStatus.DOWN,
+        null, PaymentSessionStatus.DOWN,
         RAGStatus.AMBER,
         CoreMessageKey.PAYMENT_SESSION_DOWN,
         new String[]{hostName, e.getMessage()}
@@ -130,7 +138,7 @@ public class PaymentSessionSummary {
     if (e instanceof TimeoutException) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
-        PaymentSessionStatus.DOWN,
+        null, PaymentSessionStatus.DOWN,
         RAGStatus.AMBER,
         CoreMessageKey.PAYMENT_SESSION_DOWN,
         new String[]{hostName, e.getMessage()}
@@ -140,7 +148,7 @@ public class PaymentSessionSummary {
     // Use default response
     return new PaymentSessionSummary(
       Optional.<PaymentSession>absent(),
-      PaymentSessionStatus.ERROR,
+      null, PaymentSessionStatus.ERROR,
       RAGStatus.AMBER,
       CoreMessageKey.PAYMENT_SESSION_ERROR,
       new String[]{hostName, e.getMessage()}
@@ -163,6 +171,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.Expired) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
+        Optional.<PaymentProtocol.PkiVerificationData>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
         CoreMessageKey.PAYMENT_SESSION_EXPIRED,
@@ -172,6 +181,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidNetwork) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
+        Optional.<PaymentProtocol.PkiVerificationData>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
         CoreMessageKey.PAYMENT_SESSION_INVALID_NETWORK,
@@ -181,6 +191,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidOutputs) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
+        Optional.<PaymentProtocol.PkiVerificationData>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
         CoreMessageKey.PAYMENT_SESSION_INVALID_OUTPUTS,
@@ -190,6 +201,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidPaymentRequestURL) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
+        Optional.<PaymentProtocol.PkiVerificationData>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
         CoreMessageKey.PAYMENT_SESSION_INVALID_REQUEST_URL,
@@ -199,6 +211,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidPaymentURL) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
+        Optional.<PaymentProtocol.PkiVerificationData>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
         CoreMessageKey.PAYMENT_SESSION_INVALID_PAYMENT_URL,
@@ -208,6 +221,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidVersion) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
+        Optional.<PaymentProtocol.PkiVerificationData>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
         CoreMessageKey.PAYMENT_SESSION_INVALID_VERSION,
@@ -217,6 +231,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidPkiData) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
+        Optional.<PaymentProtocol.PkiVerificationData>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
         CoreMessageKey.PAYMENT_SESSION_PKI_INVALID,
@@ -226,6 +241,7 @@ public class PaymentSessionSummary {
     if (e instanceof PaymentProtocolException.InvalidPkiType) {
       return new PaymentSessionSummary(
         Optional.<PaymentSession>absent(),
+        Optional.<PaymentProtocol.PkiVerificationData>absent(),
         PaymentSessionStatus.UNTRUSTED,
         RAGStatus.AMBER,
         CoreMessageKey.PAYMENT_SESSION_PKI_INVALID_TYPE,
@@ -239,6 +255,7 @@ public class PaymentSessionSummary {
         // Untrusted CA (user might want to add it to the trust store)
         return new PaymentSessionSummary(
           Optional.<PaymentSession>absent(),
+          Optional.<PaymentProtocol.PkiVerificationData>absent(),
           PaymentSessionStatus.UNTRUSTED,
           RAGStatus.AMBER,
           CoreMessageKey.PAYMENT_SESSION_PKI_UNTRUSTED_CA,
@@ -247,6 +264,7 @@ public class PaymentSessionSummary {
       } else {
         return new PaymentSessionSummary(
           Optional.<PaymentSession>absent(),
+          Optional.<PaymentProtocol.PkiVerificationData>absent(),
           PaymentSessionStatus.UNTRUSTED,
           RAGStatus.AMBER,
           CoreMessageKey.PAYMENT_SESSION_PKI_MISSING,
@@ -258,6 +276,7 @@ public class PaymentSessionSummary {
     // Unknown
     return new PaymentSessionSummary(
       Optional.<PaymentSession>absent(),
+      Optional.<PaymentProtocol.PkiVerificationData>absent(),
       PaymentSessionStatus.ERROR,
       RAGStatus.AMBER,
       CoreMessageKey.PAYMENT_SESSION_ERROR,
@@ -269,21 +288,23 @@ public class PaymentSessionSummary {
   /**
    * <p>See the utility factory methods for standard situations</p>
    *
-   * @param paymentSession The optional payment session
-   * @param status         The payment session status (e.g. OK)
-   * @param severity       The severity (Red, Amber, Green)
-   * @param messageKey     The error key to allow localisation
-   * @param messageData    The error data for insertion into the error message
+   * @param paymentSession      The optional payment session
+   * @param pkiVerificationData The PKI verification data
+   * @param status              The payment session status (e.g. OK)
+   * @param severity            The severity (Red, Amber, Green)
+   * @param messageKey          The error key to allow localisation
+   * @param messageData         The error data for insertion into the error message
    */
   public PaymentSessionSummary(
     Optional<PaymentSession> paymentSession,
+    Optional<PaymentProtocol.PkiVerificationData> pkiVerificationData,
     PaymentSessionStatus status,
     RAGStatus severity,
     CoreMessageKey messageKey,
-    Object[] messageData
-  ) {
+    Object[] messageData) {
 
     this.paymentSession = paymentSession;
+    this.pkiVerificationData = pkiVerificationData;
 
     this.status = status;
     this.severity = severity;
@@ -294,10 +315,18 @@ public class PaymentSessionSummary {
   }
 
   /**
-   * @return The payment session containing the payment request and other meta data
+   * @return The BIP70 Payment Session containing the Payment Request and other meta data (the PKI information may not be accurate)
+   *
    */
   public Optional<PaymentSession> getPaymentSession() {
     return paymentSession;
+  }
+
+  /**
+   * @return The PKI verification data based on a second pass through the Payment Request (accurate)
+   */
+  public Optional<PaymentProtocol.PkiVerificationData> getPkiVerificationData() {
+    return pkiVerificationData;
   }
 
   /**
@@ -331,6 +360,7 @@ public class PaymentSessionSummary {
       "messageData=" + Arrays.toString(messageData) +
       ", status=" + status +
       ", paymentSession=" + paymentSession +
+      ", pkiVerificationData=" + pkiVerificationData +
       ", severity=" + severity +
       ", messageKey=" + messageKey +
       '}';

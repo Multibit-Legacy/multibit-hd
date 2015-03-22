@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
 import org.multibit.hd.ui.events.view.AlertRemovedEvent;
@@ -50,18 +51,20 @@ public class HeaderView extends AbstractView {
 
     super();
 
-    contentPanel = Panels.newPanel(new MigLayout(
-            Panels.migLayout("fillx,insets 10 10 5 10,hidemode 3"), // Layout insets ensure border is tight to sidebar
-            "[][]", // Columns
-            "[][shrink]" // Rows
-    ));
+    contentPanel = Panels.newPanel(
+      new MigLayout(
+        Panels.migLayout("fillx,insets 10 10 5 10,hidemode 3"), // Layout insets ensure border is tight to sidebar
+        "[][]", // Columns
+        "[][shrink]" // Rows
+      ));
 
     // Create the alert panel
-    alertPanel = Panels.newPanel(new MigLayout(
-            Panels.migXLayout(),
-            "[grow][][][]", // Columns
-            "[]" // Rows
-    ));
+    alertPanel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[][][][]", // Columns
+        "[]" // Rows
+      ));
 
     // Start off in hiding
     alertPanel.setVisible(false);
@@ -232,15 +235,15 @@ public class HeaderView extends AbstractView {
 
     // Determine how to add them back into the panel
     if (Languages.isLeftToRight()) {
-      alertPanel.add(alertMessageLabel, "push");
-      alertPanel.add(alertRemainingLabel, "shrink,right");
-      alertPanel.add(alertButton, "shrink,right");
+      alertPanel.add(alertMessageLabel, "shrink,left,"+MultiBitUI.ALERT_MESSAGE_MAX_WIDTH_MIG);
+      alertPanel.add(alertRemainingLabel, "push,right");
+      alertPanel.add(alertButton, "push,right");
       alertPanel.add(closeButton);
     } else {
       alertPanel.add(closeButton);
       alertPanel.add(alertButton, "shrink,left");
       alertPanel.add(alertRemainingLabel, "shrink,left");
-      alertPanel.add(alertMessageLabel, "push");
+      alertPanel.add(alertMessageLabel, "shrink,right,"+MultiBitUI.ALERT_MESSAGE_MAX_WIDTH_MIG);
     }
 
   }

@@ -3,7 +3,6 @@ package org.multibit.hd.ui.languages;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.protocols.payments.PaymentSession;
@@ -350,15 +349,13 @@ public class Formats {
     // Decode the Bitcoin URI
     Optional<Address> address = Optional.fromNullable(bitcoinURI.getAddress());
     Optional<Coin> amount = Optional.fromNullable(bitcoinURI.getAmount());
-    // Truncate the label field to avoid overrun on the display
-    // (35+ overruns label + address + amount in mB + alert count at min width)
-    // Send Bitcoin confirm wizard will fill in the complete details later
-    Optional<String> label;
-    if (Strings.isNullOrEmpty(bitcoinURI.getLabel())) {
-      label = Optional.absent();
-    } else {
-      label = Optional.of(Languages.truncatedList(Lists.newArrayList(bitcoinURI.getLabel()), 35));
+
+    // Do not truncate the label here leave it to the MiG layout
+    String label = bitcoinURI.getLabel();
+    if (Strings.isNullOrEmpty(label)) {
+      label = Languages.safeText(MessageKey.NOT_AVAILABLE);
     }
+
     // Only proceed if we have an address
     if (address.isPresent()) {
 
@@ -374,11 +371,13 @@ public class Formats {
         messageAmount = Languages.safeText(MessageKey.NOT_AVAILABLE);
       }
 
-      // Ensure we truncate the label if present
-      String truncatedLabel = Languages.truncatedList(Lists.newArrayList(label.or(Languages.safeText(MessageKey.NOT_AVAILABLE))), 35);
-
       // Construct a suitable alert message
-      alertMessage = Optional.of(Languages.safeText(MessageKey.BITCOIN_URI_ALERT, truncatedLabel, address.get().toString(), messageAmount));
+      alertMessage = Optional.of(Languages.safeText(
+          MessageKey.BITCOIN_URI_ALERT,
+          label,
+          address.get().toString(),
+          messageAmount
+        ));
     }
 
     return alertMessage;
@@ -395,10 +394,8 @@ public class Formats {
     if (!paymentSessionSummary.getPaymentSession().isPresent()) {
             // Construct a suitable alert message
       return Optional.of(Languages.safeText(
-          MessageKey.PAYMENT_PROTOCOL_ERROR_ALERT,
-          Languages.safeText(
-            paymentSessionSummary.getMessageKey(),
-            paymentSessionSummary.getMessageData())
+          paymentSessionSummary.getMessageKey(),
+          paymentSessionSummary.getMessageData()
         ));
     }
 
@@ -428,14 +425,11 @@ public class Formats {
     PaymentSession paymentSession = paymentSessionSummary.getPaymentSession().get();
     Optional<Coin> amount = Optional.fromNullable(paymentSession.getValue());
 
-    // Truncate the memo field to avoid overrun on the display
-    // (35+ overruns memo + amount in mB + alert count at min width)
-    // Send Bitcoin confirm wizard will fill in the complete details later
-    Optional<String> label;
-    if (Strings.isNullOrEmpty(paymentSession.getMemo())) {
-      label = Optional.absent();
-    } else {
-      label = Optional.of(Languages.truncatedList(Lists.newArrayList(paymentSession.getMemo()), 35));
+    // We do not truncate here since it is needed for the history
+    // The UI will handle truncation
+    String label = paymentSession.getMemo();
+    if (Strings.isNullOrEmpty(label)) {
+      label = Languages.safeText(MessageKey.NOT_AVAILABLE);
     }
 
     Optional<String> alertMessage = Optional.absent();
@@ -455,15 +449,12 @@ public class Formats {
         messageAmount = Languages.safeText(MessageKey.NOT_AVAILABLE);
       }
 
-      // Ensure we truncate the label if present
-      String truncatedLabel = Languages.truncatedList(Lists.newArrayList(label.or(Languages.safeText(MessageKey.NOT_AVAILABLE))), 35);
-
       // Construct a suitable alert message
       MessageKey messageKey = isTrusted? MessageKey.PAYMENT_PROTOCOL_TRUSTED_ALERT : MessageKey.PAYMENT_PROTOCOL_UNTRUSTED_ALERT;
 
       alertMessage = Optional.of(Languages.safeText(
           messageKey,
-          truncatedLabel,
+          label,
           messageAmount
         ));
     }

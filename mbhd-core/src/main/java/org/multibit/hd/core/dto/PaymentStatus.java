@@ -117,7 +117,7 @@ public class PaymentStatus {
           return 1;
         } else {
           if (other.getStatus() == RAGStatus.GREEN) {
-            return Integer.valueOf(this.getDepth()).compareTo(other.getDepth());
+            return Integer.compare(this.getDepth(), other.getDepth());
           } else {
             return -1;
           }

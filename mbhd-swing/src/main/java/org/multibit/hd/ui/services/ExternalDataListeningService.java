@@ -461,8 +461,12 @@ public class ExternalDataListeningService extends AbstractService {
       PaymentProtocolService paymentProtocolService = new PaymentProtocolService(BitcoinNetwork.current().get());
       Optional<URI> uri = parseRawDataAsUri(rawData);
       if (uri.isPresent()) {
-        // We always verify the signature against our default trust store (see SSLManager for more details)
-        return Optional.fromNullable(paymentProtocolService.probeForPaymentSession(uri.get(), true, null));
+
+        return Optional.fromNullable(paymentProtocolService.probeForPaymentSession(
+            uri.get(),
+            false, // We do not enforce a signature in order to create a PaymentSession but we do check for trust levels
+            null // Use the default trust store (usually "mbhd-cacerts")
+          ));
       }
 
     } catch (UnsupportedEncodingException e) {
@@ -483,7 +487,7 @@ public class ExternalDataListeningService extends AbstractService {
   static Optional<URI> parseRawDataAsUri(String rawData) {
 
     // Check for URI form (require ":/" for OS X file URIs)
-    if (rawData.contains(":/")) {
+    if (rawData.startsWith("bitcoin:") || rawData.contains(":/")) {
       // Very likely to be a URI
       try {
         // Attempt to create the URI

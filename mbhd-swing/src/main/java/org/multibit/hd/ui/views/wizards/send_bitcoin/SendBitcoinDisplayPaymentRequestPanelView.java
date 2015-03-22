@@ -136,9 +136,9 @@ public class SendBitcoinDisplayPaymentRequestPanelView extends AbstractWizardPan
         public void run() {
 
           // Fail fast
-          Preconditions.checkState(getWizardModel().getPaymentRequestDataOptional().isPresent(), "'paymentRequestData' must be present");
+          Preconditions.checkState(getWizardModel().getPaymentRequestData().isPresent(), "'paymentRequestData' must be present");
 
-          PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestDataOptional().get();
+          PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData().get();
 
           switch (paymentRequestData.getTrustStatus()) {
             case TRUSTED:
