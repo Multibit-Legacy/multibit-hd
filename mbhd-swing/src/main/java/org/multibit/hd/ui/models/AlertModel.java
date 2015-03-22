@@ -14,7 +14,6 @@ import javax.swing.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class AlertModel implements Model<String> {
 
@@ -38,14 +37,23 @@ public class AlertModel implements Model<String> {
     this.remaining = remaining;
   }
 
+  /**
+   * @return The RAG severity level
+   */
   public RAGStatus getSeverity() {
     return severity;
   }
 
+  /**
+   * @return The localised alert message seen by the user
+   */
   public String getLocalisedMessage() {
     return localisedMessage;
   }
 
+  /**
+   * @return The localised message indicating how many other alerts there are
+   */
   public String getRemainingText() {
     if (remaining > 0) {
       return Languages.safeText(MessageKey.ALERT_REMAINING, remaining);
