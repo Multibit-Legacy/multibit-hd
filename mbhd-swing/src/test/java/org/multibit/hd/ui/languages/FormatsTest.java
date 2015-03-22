@@ -339,7 +339,8 @@ public class FormatsTest {
       "?amount=0.01" +
       "&label=Please%20donate%20to%20multibit.org.%20We%20appreciate%20your%20generosity.");
 
-    assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment \"Please donate to multibit.org. ...\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"mB 10.00000\". Continue ?");
+    // No truncation in the label to ensure History records it correctly
+    assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment \"Please donate to multibit.org. We appreciate your generosity.\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"mB 10.00000\". Continue ?");
   }
 
   @Test
