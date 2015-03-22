@@ -15,6 +15,10 @@ import org.multibit.hd.core.dto.PaymentRequestData;
 public class SendBitcoinParameter {
 
   private final Optional<BitcoinURI> bitcoinURI;
+  // TODO Reinstate this as a PaymentSessionSummary and rebuild the PaymentRequest etc from PaymentRequestData
+  // using a dedicated process in PaymentProtocolService during deserialization
+  // As it stands this is using the wrong object in the wizard model and subverting/replicating the purpose of the
+  // original PaymentSessionSummary
   private final Optional<PaymentRequestData> paymentRequestData;
 
   /**
