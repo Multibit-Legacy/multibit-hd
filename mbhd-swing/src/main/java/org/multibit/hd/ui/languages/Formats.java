@@ -426,15 +426,9 @@ public class Formats {
     PaymentSession paymentSession = paymentSessionSummary.getPaymentSession().get();
     Optional<Coin> amount = Optional.fromNullable(paymentSession.getValue());
 
-    // Truncate the memo field to avoid overrun on the display
-    // (35+ overruns memo + amount in mB + alert count at min width)
-    // Send Bitcoin confirm wizard will fill in the complete details later
-    Optional<String> label;
-    if (Strings.isNullOrEmpty(paymentSession.getMemo())) {
-      label = Optional.absent();
-    } else {
-      label = Optional.of(Languages.truncatedList(Lists.newArrayList(paymentSession.getMemo()), 35));
-    }
+    // We do not truncate here since it is needed for the history
+    // The UI will handle truncation
+    Optional<String> label = Optional.fromNullable(paymentSession.getMemo());
 
     Optional<String> alertMessage = Optional.absent();
 
@@ -453,17 +447,14 @@ public class Formats {
         messageAmount = Languages.safeText(MessageKey.NOT_AVAILABLE);
       }
 
-      // Ensure we truncate the label if present
-      String truncatedLabel = Languages.truncatedList(Lists.newArrayList(label.or(Languages.safeText(MessageKey.NOT_AVAILABLE))), 35);
-
       // Construct a suitable alert message
       MessageKey messageKey = isTrusted? MessageKey.PAYMENT_PROTOCOL_TRUSTED_ALERT : MessageKey.PAYMENT_PROTOCOL_UNTRUSTED_ALERT;
 
       alertMessage = Optional.of(Languages.safeText(
           messageKey,
-          truncatedLabel,
+          label.or(Languages.safeText(MessageKey.NOT_AVAILABLE)),
           messageAmount
-        ));
+        )+"as;dlfjasdl;fjsal;dkfjlasdjflkasdjf;lsadjf;lksadjflasjdf;lasjd;fljsadl;fkjasd;lfjals;djfl;askdjf;lksdjf;lsadjfl;kasdjfl;ksajdf;lkasjdfl;kjsadl;fjasdl;kfjsadl;kfjlsa");
     }
 
     return alertMessage;

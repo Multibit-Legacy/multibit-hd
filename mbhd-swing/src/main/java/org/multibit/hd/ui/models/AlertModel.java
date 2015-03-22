@@ -45,7 +45,7 @@ public class AlertModel implements Model<String> {
   }
 
   /**
-   * @return The localised alert message seen by the user
+   * @return The localised alert message seen by the history (not truncated)
    */
   public String getLocalisedMessage() {
     return localisedMessage;
