@@ -428,7 +428,10 @@ public class Formats {
 
     // We do not truncate here since it is needed for the history
     // The UI will handle truncation
-    Optional<String> label = Optional.fromNullable(paymentSession.getMemo());
+    String label = paymentSession.getMemo();
+    if (Strings.isNullOrEmpty(label)) {
+      label = Languages.safeText(MessageKey.NOT_AVAILABLE);
+    }
 
     Optional<String> alertMessage = Optional.absent();
 
@@ -452,9 +455,9 @@ public class Formats {
 
       alertMessage = Optional.of(Languages.safeText(
           messageKey,
-          label.or(Languages.safeText(MessageKey.NOT_AVAILABLE)),
+          label,
           messageAmount
-        )+"as;dlfjasdl;fjsal;dkfjlasdjflkasdjf;lsadjf;lksadjflasjdf;lasjd;fljsadl;fkjasd;lfjals;djfl;askdjf;lksdjf;lsadjfl;kasdjfl;ksajdf;lkasjdfl;kjsadl;fjasdl;kfjsadl;kfjlsa");
+        ));
     }
 
     return alertMessage;
