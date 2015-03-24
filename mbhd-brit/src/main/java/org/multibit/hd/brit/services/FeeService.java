@@ -162,7 +162,7 @@ public class FeeService {
       // Do the HTTP(S) post which, if successful, returns an EncryptedMatcherResponse as a byte array
       EncryptedMatcherResponse encryptedMatcherResponse = new EncryptedMatcherResponse(doPost(matcherURL, encryptedPayerRequest.getPayload()));
 
-      log.debug("Matcher response (encrypted):\n{}\n", new String(encryptedMatcherResponse.getPayload(), Charsets.UTF_8));
+      log.debug("Matcher response (encrypted):{} bytes", encryptedMatcherResponse.getPayload().length);
 
       // Decrypt the MatcherResponse - the payer does this as it knows how it was AES encrypted (by construction)
       matcherResponse = payer.decryptMatcherResponse(encryptedMatcherResponse);
