@@ -40,7 +40,7 @@ public class BasicMatcher implements Matcher {
   /**
    * The number of Bitcoin addresses to send back to the Payer per day
    */
-  private static final int NUMBER_OF_ADDRESSES_PER_DAY = 4; // TODO Increase this
+  private static final int NUMBER_OF_ADDRESSES_PER_DAY = 50;
 
   private SecureRandom secureRandom;
 

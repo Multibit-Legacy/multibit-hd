@@ -116,7 +116,7 @@ public class FeeServicesTest {
   }
 
   @Test
-  public void testCalculateFeeState() throws Exception {
+  public void testCalculateFeeStateWithDummyURL() throws Exception {
 
     // Get the FeeService
     FeeService feeService = BRITServices.newFeeService(encryptionKey, new URL(DUMMY_MATCHER_URL));
