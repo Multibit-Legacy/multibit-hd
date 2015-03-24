@@ -1,5 +1,6 @@
 package org.multibit.hd.brit.services;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -151,7 +152,7 @@ public class FeeService {
     // Ask the payer to create an EncryptedPayerRequest containing a BRITWalletId, a session id and a firstTransactionDate
     PayerRequest payerRequest = payer.newPayerRequest(britWalletId, sessionId, firstTransactionDateOptional);
 
-    log.debug("Payer request:\n{}\n", new String(payerRequest.serialise()));
+    log.debug("Payer request:\n{}\n", new String(payerRequest.serialise(), Charsets.UTF_8));
 
     MatcherResponse matcherResponse;
     try {
@@ -161,12 +162,12 @@ public class FeeService {
       // Do the HTTP(S) post which, if successful, returns an EncryptedMatcherResponse as a byte array
       EncryptedMatcherResponse encryptedMatcherResponse = new EncryptedMatcherResponse(doPost(matcherURL, encryptedPayerRequest.getPayload()));
 
-      log.debug("Matcher response (encrypted):\n{}\n", new String(encryptedMatcherResponse.getPayload()));
+      log.debug("Matcher response (encrypted):\n{}\n", new String(encryptedMatcherResponse.getPayload(), Charsets.UTF_8));
 
       // Decrypt the MatcherResponse - the payer does this as it knows how it was AES encrypted (by construction)
       matcherResponse = payer.decryptMatcherResponse(encryptedMatcherResponse);
 
-      log.debug("Matcher response (decrypted):\n{}\n", new String(matcherResponse.serialise()));
+      log.debug("Matcher response (decrypted):\n{}\n", new String(matcherResponse.serialise(), Charsets.UTF_8));
 
     } catch (IOException | PayerRequestException | MatcherResponseException e) {
       // The exchange with the matcher failed
