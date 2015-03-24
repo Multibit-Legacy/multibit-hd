@@ -5,6 +5,7 @@ import org.bitcoinj.core.Wallet;
 import org.bitcoinj.crypto.MnemonicCode;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.multibit.hd.brit.dto.FeeState;
 import org.multibit.hd.brit.dto.MatcherResponse;
 import org.multibit.hd.brit.dto.SendFeeDto;
@@ -25,6 +26,7 @@ import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+@Ignore
 public class BRITExchangeIntegrationTest {
 
   private static final String PASSWORD = "bingAbongADingDong";
@@ -42,7 +44,7 @@ public class BRITExchangeIntegrationTest {
    * @throws Exception
    *
    */
-  @Ignore
+  @Test
   public void testCreateFeeServiceAndPerformBRITExchange() throws Exception {
     FeeService feeService = CoreServices.createFeeService();
     assertThat(feeService).isNotNull();
