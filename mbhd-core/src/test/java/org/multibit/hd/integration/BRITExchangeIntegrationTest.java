@@ -53,10 +53,11 @@ public class BRITExchangeIntegrationTest {
     File temporaryInstallationDirectory = SecureFiles.createTemporaryDirectory();
 
     HttpsManager.INSTANCE.installCACertificates(
-            temporaryInstallationDirectory,
-                  InstallationManager.CA_CERTS_NAME,
-                  null, false // Do not force loading if they are already present
-                );
+      temporaryInstallationDirectory,
+      InstallationManager.CA_CERTS_NAME,
+      null, // Use default host list
+      true // Force loading since they won't be present
+    );
 
     // Create a wallet from a seed
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();

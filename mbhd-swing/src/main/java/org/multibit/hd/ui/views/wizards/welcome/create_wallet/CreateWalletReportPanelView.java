@@ -290,7 +290,9 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       HttpsManager.INSTANCE.installCACertificates(
         InstallationManager.getOrCreateApplicationDataDirectory(),
         InstallationManager.CA_CERTS_NAME,
-        null, false);
+        null, // Use default host list
+        false // Do not force loading if they are already present
+      );
 
       // Update the UI after the BRIT exchange completes
       SwingUtilities.invokeLater(new Runnable() {

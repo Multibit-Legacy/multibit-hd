@@ -85,8 +85,8 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
           HttpsManager.INSTANCE.installCACertificates(
             InstallationManager.getOrCreateApplicationDataDirectory(),
             InstallationManager.CA_CERTS_NAME,
-            null,
-            true // Force the refresh
+            null, // Use default host list
+            true // Force loading
           );
 
         }

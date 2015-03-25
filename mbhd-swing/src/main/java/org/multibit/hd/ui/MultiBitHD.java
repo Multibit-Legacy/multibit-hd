@@ -224,7 +224,8 @@ public class MultiBitHD {
             HttpsManager.INSTANCE.installCACertificates(
               InstallationManager.getOrCreateApplicationDataDirectory(),
               InstallationManager.CA_CERTS_NAME,
-              null, false // Do not force loading if they are already present
+              null, // Use default host list
+              false // Do not force loading if they are already present
             );
           }
         });

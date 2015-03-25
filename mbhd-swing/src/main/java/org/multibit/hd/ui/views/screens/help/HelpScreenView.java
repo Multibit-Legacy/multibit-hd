@@ -11,8 +11,8 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
-import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.HttpsManager;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -365,9 +365,10 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
       public void run() {
         log.debug("Starting refresh of SSL certs...");
         HttpsManager.INSTANCE.installCACertificates(
-                InstallationManager.getOrCreateApplicationDataDirectory(),
-                InstallationManager.CA_CERTS_NAME,
-          null, true
+          InstallationManager.getOrCreateApplicationDataDirectory(),
+          InstallationManager.CA_CERTS_NAME,
+          null, // Use default host list
+          true // Force loading
         );
 
       }

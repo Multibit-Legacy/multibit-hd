@@ -454,8 +454,9 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       HttpsManager.INSTANCE.installCACertificates(
         InstallationManager.getOrCreateApplicationDataDirectory(),
         InstallationManager.CA_CERTS_NAME,
-        null, false);
-
+        null, // Use default host list
+        false // Do not force loading if they are already present
+      );
       return true;
 
     } catch (Exception e) {

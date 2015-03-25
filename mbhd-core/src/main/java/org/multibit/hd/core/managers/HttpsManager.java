@@ -102,7 +102,11 @@ public enum HttpsManager {
       final KeyStore ks = getKeyStore(appCacertsFile.get());
 
       // Provide a quick startup option if the aliases are in place and we're not forcing a refresh
-      if (!force && ks.containsAlias("multibit.org-1") && ks.containsAlias("multibit.org-2")) {
+      if (!force
+        && ks.containsAlias("multibit.org-1")
+        && ks.containsAlias("multibit.org-2")
+        && ks.containsAlias("digicertglobalrootca")
+        ) {
 
         // Must have finished to be here so define the cacerts file to be the one used for all HTTPS operations
         System.setProperty("javax.net.ssl.trustStore", appCacertsFile.get().getAbsolutePath());
@@ -110,7 +114,7 @@ public enum HttpsManager {
         return;
       }
 
-      // Either forced refresh or the cacerts does not contain MultiBit.org which is necessary for Help
+      // Either forced refresh or the cacerts does not contain the required aliases
 
       // Build the saving trust manager so we have a place to put our trusted certificates
       final SavingTrustManager tm = getSavingTrustManager(ks);
