@@ -210,6 +210,8 @@ public class TrezorWalletTest {
 
     DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed);
 
+    privateMasterKey.setCreationTimeSeconds(TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000);
+
     // Trezor uses BIP-44
     // BIP-44 starts from M/44h/0h/0h
     // Create a root node from which all addresses will be generated
@@ -231,6 +233,8 @@ public class TrezorWalletTest {
         true);
 
     assertThat(WalletType.TREZOR_HARD_WALLET.equals(walletSummary.getWalletType()));
+
+    assertThat(walletSummary.getWallet().getEarliestKeyCreationTime() * 1000).isEqualTo(TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis());
 
     Wallet wallet = walletSummary.getWallet();
 
@@ -276,8 +280,8 @@ public class TrezorWalletTest {
     assertThat(address3).isEqualTo(SNIFF_EXPECTED_ADDRESS_3);
     assertThat(address4).isEqualTo(SNIFF_EXPECTED_ADDRESS_4);
 
-    // Load the wallet up again to check it loads ok
-    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+    // Load the wallet up again to check it loads ok - wait 2 seconds to make sure the earliest key creation time is roundtripped
+    Uninterruptibles.sleepUninterruptibly(2000, TimeUnit.MILLISECONDS);
     Optional<WalletSummary> rereadWalletSummary = WalletManager.INSTANCE.openWalletFromWalletId(temporaryDirectory, walletSummary.getWalletId(), PASSWORD);
     assertThat(rereadWalletSummary.isPresent());
 
@@ -287,6 +291,8 @@ public class TrezorWalletTest {
     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key2.getPubKey())).isNotNull();
     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key3.getPubKey())).isNotNull();
     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key4.getPubKey())).isNotNull();
+
+    assertThat(rereadWalletSummary.get().getWallet().getEarliestKeyCreationTime() * 1000).isEqualTo(TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis());
 
     // Remove comment if you want to: Sync the wallet to get the wallet transactions
     // syncWallet();

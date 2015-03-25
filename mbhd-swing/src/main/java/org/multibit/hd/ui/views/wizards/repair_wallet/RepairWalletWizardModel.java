@@ -13,6 +13,8 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -29,6 +31,8 @@ import java.util.concurrent.TimeUnit;
  * @since 0.0.1
  */
 public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletState> {
+
+  private static final Logger log = LoggerFactory.getLogger(RepairWalletWizardModel.class);
 
   /**
    * Repair wallet requires a separate executor
@@ -135,7 +139,12 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
 
       // Work out the replay date
       long earliestKeyCreationTime = currentWallet.getEarliestKeyCreationTime();
+      log.debug("currentWallet.getEarliestKeyCreationTime(): {}", earliestKeyCreationTime);
+
+      // For Trezor wallets always repair from the earliest possible HD wallet date
       final DateTime replayDate = new DateTime(earliestKeyCreationTime * 1000);
+
+      log.debug("Replay of wallet will be from: {}", replayDate);
 
       // Hide the header view
       SwingUtilities.invokeLater(

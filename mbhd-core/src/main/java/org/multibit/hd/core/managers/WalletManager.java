@@ -555,6 +555,8 @@ public enum WalletManager implements WalletEventListener {
       DeterministicKey rootNodePubOnly = rootNode.getPubOnly();
       log.debug("Watching wallet based on: {}", rootNodePubOnly);
 
+      rootNodePubOnly.setCreationTimeSeconds(creationTimeInSeconds);
+
       Wallet walletToReturn = Wallet.fromWatchingKey(networkParameters, rootNodePubOnly, creationTimeInSeconds, rootNodePubOnly.getPath());
       walletToReturn.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
       walletToReturn.setVersion(MBHD_WALLET_VERSION);

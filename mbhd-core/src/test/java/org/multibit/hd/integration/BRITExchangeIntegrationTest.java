@@ -37,7 +37,7 @@ public class BRITExchangeIntegrationTest {
   }
 
   /**
-   * Run an integration  test that exercise the BRIT exchange with a Matcher on multibit.org
+   * Run an integration test that exercise the BRIT exchange with a Matcher on multibit.org
    *
    * If you are NOT running the BRIT server the exchange fails and the feeService should return the
    * hardwired list of addresses (which will then be used for sending fees to).
