@@ -258,7 +258,7 @@ public class BitcoinNetworkService extends AbstractService {
    * Sync the current wallet from the date specified. If Optional.absent() is specified no checkpointing is performed
    * The blockstore is deleted and created anew, checkpointed and then the blockchain is downloaded.
    */
-  public void replayWallet(File applicationDataDirectory, Optional<Date> dateToReplayFromOptional) {
+  public void replayWallet(File applicationDataDirectory, Optional<Date> dateToReplayFromOptional, boolean useFastCatchup) {
 
     Preconditions.checkNotNull(dateToReplayFromOptional);
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent());
@@ -281,7 +281,7 @@ public class BitcoinNetworkService extends AbstractService {
       blockStore = openBlockStore(applicationDataDirectory, dateToReplayFromOptional);
       log.debug("Blockstore is '{}'", blockStore);
 
-      restartNetwork(blockStore);
+      restartNetwork(blockStore, useFastCatchup);
 
       downloadBlockChainInBackground();
 
@@ -1331,8 +1331,9 @@ public class BitcoinNetworkService extends AbstractService {
    * <p>Create a new peer group</p>
    *
    * @param wallet the wallet to add to the peer group after construction
+   * @param useFastCatchup if true then use fast catchup
    */
-  private void createNewPeerGroup(Wallet wallet) throws TimeoutException {
+  private void createNewPeerGroup(Wallet wallet, boolean useFastCatchup) throws TimeoutException {
 
     if (Configurations.currentConfiguration.isTor()) {
       log.info("Creating new TOR peer group for '{}'", networkParameters);
@@ -1349,9 +1350,11 @@ public class BitcoinNetworkService extends AbstractService {
     peerGroup.setUserAgent(
       InstallationManager.MBHD_APP_NAME,
       Configurations.currentConfiguration.getCurrentVersion());
-    peerGroup.setFastCatchupTimeSecs(0); // genesis block
+    if (useFastCatchup) {
+      peerGroup.setFastCatchupTimeSecs(0); // do fastcatchup starting from the genesis block
+    }
     peerGroup.setMaxConnections(MAXIMUM_NUMBER_OF_PEERS);
-    peerGroup.setUseLocalhostPeerWhenPossible(false);
+    peerGroup.setUseLocalhostPeerWhenPossible(true);
 
     peerEventListener = new MultiBitPeerEventListener();
     peerGroup.addEventListener(peerEventListener);
@@ -1485,7 +1488,7 @@ public class BitcoinNetworkService extends AbstractService {
    * @throws IOException                           If the network fails
    * @throws java.util.concurrent.TimeoutException If the TOR connection fails
    */
-  private void restartNetwork(BlockStore blockStore) throws BlockStoreException, IOException, TimeoutException {
+  private void restartNetwork(BlockStore blockStore, boolean useFastCatchup) throws BlockStoreException, IOException, TimeoutException {
 
     Preconditions.checkNotNull(blockStore, "'blockStore' must be present");
 
@@ -1509,8 +1512,8 @@ public class BitcoinNetworkService extends AbstractService {
     blockChain.addWallet(wallet);
     log.debug("Created block chain '{}' with height '{}'", blockChain, blockChain.getBestChainHeight());
 
-    log.debug("Creating peer group ...");
-    createNewPeerGroup(wallet);
+    log.debug("Creating peer group with useFastCatchup: {} ...", useFastCatchup);
+    createNewPeerGroup(wallet, useFastCatchup);
     log.debug("Created peer group '{}'", peerGroup);
 
     log.debug("Starting peer group ...");

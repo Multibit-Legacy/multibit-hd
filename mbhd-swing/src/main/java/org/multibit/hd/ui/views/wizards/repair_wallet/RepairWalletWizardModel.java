@@ -6,6 +6,7 @@ import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -13,6 +14,8 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -29,6 +32,8 @@ import java.util.concurrent.TimeUnit;
  * @since 0.0.1
  */
 public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletState> {
+
+  private static final Logger log = LoggerFactory.getLogger(RepairWalletWizardModel.class);
 
   /**
    * Repair wallet requires a separate executor
@@ -135,7 +140,14 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
 
       // Work out the replay date
       long earliestKeyCreationTime = currentWallet.getEarliestKeyCreationTime();
+      log.debug("currentWallet.getEarliestKeyCreationTime(): {}", earliestKeyCreationTime);
+
       final DateTime replayDate = new DateTime(earliestKeyCreationTime * 1000);
+
+      log.debug("Replay of wallet will be from: {}", replayDate);
+
+      // Trezor hard wallets disable fastCatchup as some early wallets had an incorrect earliestKeyCreation date
+      final boolean enableFastCatchup = currentWalletSummary.getWalletType() != WalletType.TREZOR_HARD_WALLET;
 
       // Hide the header view
       SwingUtilities.invokeLater(
@@ -162,7 +174,7 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
           @Override
           public Boolean call() throws Exception {
 
-            CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()));
+            CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()), enableFastCatchup);
             return true;
 
           }

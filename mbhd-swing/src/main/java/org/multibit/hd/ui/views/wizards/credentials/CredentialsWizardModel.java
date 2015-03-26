@@ -800,6 +800,10 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           final DeterministicKey parentKey = hardwareWalletContext.getDeterministicKey().get();
           log.info("Parent key path: {}", parentKey.getPathAsString());
 
+          // Set the creation date of the parent key to be the earliest possible HD wallet date
+          long earliestHDWalletCreationTime = new DateTime(WalletManager.EARLIEST_HD_WALLET_DATE).getMillis() / 1000;
+          parentKey.setCreationTimeSeconds(earliestHDWalletCreationTime);
+
           // Verify the deterministic hierarchy can derive child keys
           // In this case 0/0 from a parent of M/44'/0'/0'
           DeterministicHierarchy hierarchy = hardwareWalletContext.getDeterministicHierarchy().get();
