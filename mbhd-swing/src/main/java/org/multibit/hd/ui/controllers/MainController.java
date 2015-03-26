@@ -4,6 +4,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.*;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
@@ -67,6 +69,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URI;
+import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
@@ -320,6 +323,24 @@ public class MainController extends AbstractController implements
             ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
           }
         });
+
+      // For Trezor hard wallets, get the date of the earliest transaction and use it to set the
+      // earliestKeyCreationDate. This enables future repair wallets to be quicker
+      if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() &&
+              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType() == WalletType.TREZOR_HARD_WALLET) {
+        // See if the synced wallet has transactions
+        Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+        java.util.List<Transaction> transactions = wallet.getTransactionsByTime();
+        if (!transactions.isEmpty()) {
+          // Last is the oldest
+          Date earliestTransactionDate = transactions.get(transactions.size() - 1).getUpdateTime();
+          if (earliestTransactionDate != null) {
+            // Set the wallet key creation time to be the transaction date (minus one day to cater for blockchain forkiness)
+            wallet.setEarliestKeyCreationTime(earliestTransactionDate.getTime() / 1000 - Dates.NUMBER_OF_SECONDS_IN_A_DAY);
+            log.debug("Setting Trezor hard wallet earliestKeyCreation Date to one day before : {}", earliestTransactionDate);
+          }
+        }
+      }
     }
 
     final String localisedMessage;

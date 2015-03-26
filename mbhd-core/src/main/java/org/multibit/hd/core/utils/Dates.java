@@ -35,6 +35,8 @@ public class Dates {
 
   public static final int CHECKSUM_MODULUS = 97;
 
+  public static final int NUMBER_OF_SECONDS_IN_A_DAY = 60 * 60 * 24;
+
   /**
    * Provides asynchronous NTP lookup
    */

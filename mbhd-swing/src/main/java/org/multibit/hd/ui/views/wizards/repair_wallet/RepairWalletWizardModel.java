@@ -6,6 +6,7 @@ import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -141,10 +142,12 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       long earliestKeyCreationTime = currentWallet.getEarliestKeyCreationTime();
       log.debug("currentWallet.getEarliestKeyCreationTime(): {}", earliestKeyCreationTime);
 
-      // For Trezor wallets always repair from the earliest possible HD wallet date
       final DateTime replayDate = new DateTime(earliestKeyCreationTime * 1000);
 
       log.debug("Replay of wallet will be from: {}", replayDate);
+
+      // Trezor hard wallets disable fastCatchup as some early wallets had an incorrect earliestKeyCreation date
+      final boolean enableFastCatchup = currentWalletSummary.getWalletType() != WalletType.TREZOR_HARD_WALLET;
 
       // Hide the header view
       SwingUtilities.invokeLater(
@@ -171,7 +174,7 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
           @Override
           public Boolean call() throws Exception {
 
-            CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()));
+            CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()), enableFastCatchup);
             return true;
 
           }

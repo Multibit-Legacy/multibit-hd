@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -292,7 +293,7 @@ public class TrezorWalletTest {
     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key3.getPubKey())).isNotNull();
     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key4.getPubKey())).isNotNull();
 
-    assertThat(rereadWalletSummary.get().getWallet().getEarliestKeyCreationTime() * 1000).isEqualTo(TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis());
+    assertThat(new Date(rereadWalletSummary.get().getWallet().getEarliestKeyCreationTime() * 1000)).isEqualTo(TREZOR_SNIFF_WALLET_CREATION_DATE.toDate());
 
     // Remove comment if you want to: Sync the wallet to get the wallet transactions
     // syncWallet();
