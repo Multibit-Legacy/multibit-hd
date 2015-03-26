@@ -293,7 +293,6 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
    */
-  @Deprecated
   public WalletSummary badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
           File applicationDataDirectory,
           byte[] seed,
