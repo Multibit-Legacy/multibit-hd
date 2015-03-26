@@ -68,8 +68,8 @@ public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequest
 
     // Matching transaction hash
     columns[10] = "";
-    if (paymentRequestData.getTransactionHashOptional().isPresent()) {
-      columns[10] = paymentRequestData.getTransactionHashOptional().get().toString();
+    if (paymentRequestData.getTransactionHash().isPresent()) {
+      columns[10] = paymentRequestData.getTransactionHash().get().toString();
     }
 
     // Identity

@@ -27,18 +27,34 @@ public class PaymentRequestData implements PaymentData {
    * The transaction hash of the transaction that paid this payment request.
    * May be absent if the payment request has not been paid yet.
    */
-  private Optional<Sha256Hash> transactionHashOptional = Optional.absent();
-
+  private Optional<Sha256Hash> transactionHash = Optional.absent();
 
   /**
    * The fiat payment equivalent of the payment Coin
    */
-  private Optional<FiatPayment> fiatPaymentOptional = Optional.absent();
+  private Optional<FiatPayment> fiatPayment = Optional.absent();
 
   /**
-   * The BIP70 PaymentRequest - stored as a file on the file system
+   * The BIP70 PaymentRequest - stored as a file on the file system and provided externally
    */
   private Protos.PaymentRequest paymentRequest;
+
+  /**
+   * The BIP70 Payment - stored as a file on the file system when present
+   */
+  private Optional<Protos.Payment> payment = Optional.absent();
+
+  /**
+   * The BIP70 PaymentACK - stored as a file on the file system when present
+   */
+  private Optional<Protos.PaymentACK> paymentACK = Optional.absent();
+
+  /**
+   * The Payment Session Summary wrapping the final state of the BIP70 PaymentSession
+   * This provides additional PKI verification information and ensures that the
+   * PaymentSession isn't persisted
+   */
+  private Optional<PaymentSessionSummary> paymentSessionSummary = Optional.absent();
 
   /**
    * The date of the payment request
@@ -48,7 +64,7 @@ public class PaymentRequestData implements PaymentData {
   /**
    * The amount in bitcoin of the payment request
    */
-  private Coin amountBTC;
+  private Coin amountCoin;
 
   /**
    * The description of the payment request
@@ -66,7 +82,7 @@ public class PaymentRequestData implements PaymentData {
   private PaymentSessionStatus trustStatus;
 
   /**
-   * If the trust status is ERROR or DOWN, a text string describing the problem
+   * If the trust status is ERROR or DOWN, a localised text string describing the problem
    */
   private String trustErrorMessage;
 
@@ -75,19 +91,46 @@ public class PaymentRequestData implements PaymentData {
    */
   private DateTime expirationDate;
 
-
   /**
    * For protobuf - you probably do not want to use this
    */
   public PaymentRequestData() {
   }
 
-  public PaymentRequestData(Protos.PaymentRequest paymentRequest, Optional<Sha256Hash> transactionHashOptional) {
+  /**
+   * Build the PaymentRequestData from a PaymentSessionSummary
+   *
+   * @param paymentSessionSummary The Payment Session Summary with a PaymentSession
+   */
+  public PaymentRequestData(PaymentSessionSummary paymentSessionSummary) {
+
+    this(paymentSessionSummary.getPaymentSession().get().getPaymentRequest(), Optional.<Sha256Hash>absent());
+
+    PaymentSession paymentSession = paymentSessionSummary.getPaymentSession().get();
+
+    setDate(new DateTime(paymentSession.getDate()));
+    setExpirationDate(new DateTime(paymentSession.getExpires()));
+
+    setAmountCoin(paymentSession.getValue());
+    setNote(paymentSession.getMemo());
+
+    if (paymentSessionSummary.getPkiVerificationData().isPresent()) {
+      setIdentityDisplayName(paymentSessionSummary.getPkiVerificationData().get().displayName);
+    }
+
+  }
+
+  /**
+   * See also the
+   * @param paymentRequest  A PaymentRequest
+   * @param transactionHash A transaction hash if a Bitcoin transaction has been successfully broadcast
+   */
+  public PaymentRequestData(Protos.PaymentRequest paymentRequest, Optional<Sha256Hash> transactionHash) {
     Preconditions.checkNotNull(paymentRequest);
-    Preconditions.checkNotNull(transactionHashOptional);
+    Preconditions.checkNotNull(transactionHash);
 
     this.paymentRequest = paymentRequest;
-    this.transactionHashOptional = transactionHashOptional;
+    this.transactionHash = transactionHash;
     this.uuid = UUID.randomUUID();
   }
 
@@ -99,12 +142,12 @@ public class PaymentRequestData implements PaymentData {
     this.uuid = uuid;
   }
 
-  public Optional<Sha256Hash> getTransactionHashOptional() {
-    return transactionHashOptional;
+  public Optional<Sha256Hash> getTransactionHash() {
+    return transactionHash;
   }
 
-  public void setTransactionHashOptional(Optional<Sha256Hash> transactionHashOptional) {
-    this.transactionHashOptional = transactionHashOptional;
+  public void setTransactionHash(Optional<Sha256Hash> transactionHash) {
+    this.transactionHash = transactionHash;
   }
 
   public Protos.PaymentRequest getPaymentRequest() {
@@ -115,80 +158,9 @@ public class PaymentRequestData implements PaymentData {
     this.paymentRequest = paymentRequest;
   }
 
-  public void setPaymentSessionSummaryOptional(Optional<PaymentSessionSummary> paymentSessionSummaryOptional) {
-    // Work out dates and save them
-    if (paymentSessionSummaryOptional.isPresent() && paymentSessionSummaryOptional.get().getPaymentSession().isPresent()) {
-      PaymentSession paymentSession = paymentSessionSummaryOptional.get().getPaymentSession().get();
-      date = new DateTime(paymentSession.getDate());
-      amountBTC = paymentSession.getValue();
-      note = paymentSession.getMemo();
-    }
-  }
-
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-
-    PaymentRequestData that = (PaymentRequestData) o;
-
-    if (amountBTC != null ? !amountBTC.equals(that.amountBTC) : that.amountBTC != null) return false;
-    if (date != null ? !date.equals(that.date) : that.date != null) return false;
-    if (expirationDate != null ? !expirationDate.equals(that.expirationDate) : that.expirationDate != null)
-      return false;
-    if (fiatPaymentOptional != null ? !fiatPaymentOptional.equals(that.fiatPaymentOptional) : that.fiatPaymentOptional != null)
-      return false;
-    if (identityDisplayName != null ? !identityDisplayName.equals(that.identityDisplayName) : that.identityDisplayName != null)
-      return false;
-    if (note != null ? !note.equals(that.note) : that.note != null) return false;
-    if (paymentRequest != null ? !paymentRequest.equals(that.paymentRequest) : that.paymentRequest != null)
-      return false;
-    if (transactionHashOptional != null ? !transactionHashOptional.equals(that.transactionHashOptional) : that.transactionHashOptional != null)
-      return false;
-    if (trustErrorMessage != null ? !trustErrorMessage.equals(that.trustErrorMessage) : that.trustErrorMessage != null)
-      return false;
-    if (trustStatus != that.trustStatus) return false;
-    if (!uuid.equals(that.uuid)) return false;
-
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    int result = uuid.hashCode();
-    result = 31 * result + (transactionHashOptional != null ? transactionHashOptional.hashCode() : 0);
-    result = 31 * result + (fiatPaymentOptional != null ? fiatPaymentOptional.hashCode() : 0);
-    result = 31 * result + (paymentRequest != null ? paymentRequest.hashCode() : 0);
-    result = 31 * result + (date != null ? date.hashCode() : 0);
-    result = 31 * result + (amountBTC != null ? amountBTC.hashCode() : 0);
-    result = 31 * result + (note != null ? note.hashCode() : 0);
-    result = 31 * result + (identityDisplayName != null ? identityDisplayName.hashCode() : 0);
-    result = 31 * result + (trustStatus != null ? trustStatus.hashCode() : 0);
-    result = 31 * result + (trustErrorMessage != null ? trustErrorMessage.hashCode() : 0);
-    result = 31 * result + (expirationDate != null ? expirationDate.hashCode() : 0);
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    return "PaymentRequestData{" +
-            "uuid=" + uuid +
-            ", transactionHashOptional=" + transactionHashOptional +
-            ", fiatPaymentOptional=" + fiatPaymentOptional +
-            ", date=" + date +
-            ", amountBTC=" + amountBTC +
-            ", note='" + note + '\'' +
-            ", identityDisplayName='" + identityDisplayName + '\'' +
-            ", trustStatus=" + trustStatus +
-            ", trustErrorMessage='" + trustErrorMessage + '\'' +
-            ", expirationDate=" + expirationDate +
-            '}';
-  }
-
   @Override
   public PaymentType getType() {
-    if (transactionHashOptional.isPresent()) {
+    if (transactionHash.isPresent()) {
       return PaymentType.PAID;
     } else {
       return PaymentType.THEY_REQUESTED;
@@ -197,12 +169,12 @@ public class PaymentRequestData implements PaymentData {
 
   @Override
   public PaymentStatus getStatus() {
-    if (transactionHashOptional.isPresent()) {
+    if (transactionHash.isPresent()) {
       return new PaymentStatus(RAGStatus.GREEN, CoreMessageKey.PAYMENT_PAID);
     } else {
       return new PaymentStatus(RAGStatus.PINK, CoreMessageKey.PAYMENT_REQUESTED_BY_THEM);
     }
-   }
+  }
 
   @Override
   public DateTime getDate() {
@@ -215,21 +187,21 @@ public class PaymentRequestData implements PaymentData {
 
   @Override
   public Coin getAmountCoin() {
-    return amountBTC;
+    return amountCoin;
   }
 
   public void setAmountCoin(Coin amountBTC) {
-    this.amountBTC = amountBTC;
+    this.amountCoin = amountBTC;
   }
 
   public void setAmountFiat(FiatPayment fiatPayment) {
-    fiatPaymentOptional = Optional.of(fiatPayment);
+    this.fiatPayment = Optional.of(fiatPayment);
   }
 
   @Override
   public FiatPayment getAmountFiat() {
-    if (fiatPaymentOptional.isPresent()) {
-      return fiatPaymentOptional.get();
+    if (fiatPayment.isPresent()) {
+      return fiatPayment.get();
     } else {
       return new FiatPayment();
     }
@@ -284,5 +256,120 @@ public class PaymentRequestData implements PaymentData {
 
   public void setExpirationDate(DateTime expirationDate) {
     this.expirationDate = expirationDate;
+  }
+
+  public Optional<FiatPayment> getFiatPayment() {
+    return fiatPayment;
+  }
+
+  public Optional<PaymentSessionSummary> getPaymentSessionSummary() {
+    return paymentSessionSummary;
+  }
+
+  /**
+   * @return The BIP70 Payment sent to the server once payment was successfully broadcast
+   */
+  public Optional<Protos.Payment> getPayment() {
+    return payment;
+  }
+
+  /**
+   * @return The BIP70 PaymentACK received from the server
+   */
+  public Optional<Protos.PaymentACK> getPaymentACK() {
+    return paymentACK;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    PaymentRequestData that = (PaymentRequestData) o;
+
+    if (!uuid.equals(that.uuid)) {
+      return false;
+    }
+    if (!transactionHash.equals(that.transactionHash)) {
+      return false;
+    }
+    if (!fiatPayment.equals(that.fiatPayment)) {
+      return false;
+    }
+    if (!paymentRequest.equals(that.paymentRequest)) {
+      return false;
+    }
+    if (!payment.equals(that.payment)) {
+      return false;
+    }
+    if (!paymentACK.equals(that.paymentACK)) {
+      return false;
+    }
+    if (!paymentSessionSummary.equals(that.paymentSessionSummary)) {
+      return false;
+    }
+    if (!date.equals(that.date)) {
+      return false;
+    }
+    if (!amountCoin.equals(that.amountCoin)) {
+      return false;
+    }
+    if (!note.equals(that.note)) {
+      return false;
+    }
+    if (!identityDisplayName.equals(that.identityDisplayName)) {
+      return false;
+    }
+    if (trustStatus != that.trustStatus) {
+      return false;
+    }
+    if (!trustErrorMessage.equals(that.trustErrorMessage)) {
+      return false;
+    }
+    return expirationDate.equals(that.expirationDate);
+
+  }
+
+  @Override
+  public int hashCode() {
+    int result = uuid.hashCode();
+    result = 31 * result + transactionHash.hashCode();
+    result = 31 * result + fiatPayment.hashCode();
+    result = 31 * result + paymentRequest.hashCode();
+    result = 31 * result + payment.hashCode();
+    result = 31 * result + paymentACK.hashCode();
+    result = 31 * result + paymentSessionSummary.hashCode();
+    result = 31 * result + date.hashCode();
+    result = 31 * result + amountCoin.hashCode();
+    result = 31 * result + note.hashCode();
+    result = 31 * result + identityDisplayName.hashCode();
+    result = 31 * result + trustStatus.hashCode();
+    result = 31 * result + trustErrorMessage.hashCode();
+    result = 31 * result + expirationDate.hashCode();
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "PaymentRequestData{" +
+      "amountBTC=" + amountCoin +
+      ", uuid=" + uuid +
+      ", transactionHash=" + transactionHash +
+      ", fiatPayment=" + fiatPayment +
+      ", paymentRequest=" + paymentRequest +
+      ", payment=" + payment +
+      ", paymentACK=" + paymentACK +
+      ", paymentSessionSummary=" + paymentSessionSummary +
+      ", date=" + date +
+      ", note='" + note + '\'' +
+      ", identityDisplayName='" + identityDisplayName + '\'' +
+      ", trustStatus=" + trustStatus +
+      ", trustErrorMessage='" + trustErrorMessage + '\'' +
+      ", expirationDate=" + expirationDate +
+      '}';
   }
 }

@@ -2,9 +2,14 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.protocols.payments.PaymentProtocol;
 import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.uri.BitcoinURI;
@@ -14,11 +19,13 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
@@ -32,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -710,5 +718,62 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
         throw new IllegalStateException("Should not reach here from " + state.name());
     }
 
+  }
+
+  /**
+   * Handles the process of sending a BIP70 Payment to the merchant and receiving a PaymentAck
+   *
+   * @param bitcoinSentEvent Indication of broadcast success or failure with transaction details
+   */
+  public void sendPaymentToMerchant(BitcoinSentEvent bitcoinSentEvent) {
+
+    // Check for successful send and a BIP70 Payment requirement
+    if (bitcoinSentEvent.isSendWasSuccessful() && getPaymentRequestData().isPresent()) {
+
+      PaymentSession paymentSession = getPaymentRequestData().get()
+        .getPaymentSessionSummary().get()
+        .getPaymentSession().get();
+
+      // Send the Payment message to the merchant
+      try {
+        final ListenableFuture<PaymentProtocol.Ack> future = paymentSession.sendPayment(
+          Lists.newArrayList(bitcoinSentEvent.getTransaction().get()),
+          bitcoinSentEvent.getChangeAddress(),
+          "" // TODO Ideally we should use getWizardModel().getMemo() and add a new field for "merchant notes" on the confirm screen
+        );
+        if (future != null) {
+          Futures.addCallback(
+            future, new FutureCallback<PaymentProtocol.Ack>() {
+              @Override
+              public void onSuccess(PaymentProtocol.Ack result) {
+
+                // Have successfully received a PaymentAck from the merchant
+                log.info("Received PaymentAck from merchant. Memo: {}", result.getMemo());
+
+                // TODO (JB) Implement the persistence
+                WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+
+                walletService.writePayments();
+
+              }
+
+              @Override
+              public void onFailure(Throwable t) {
+
+                // Failed to communicate with the merchant
+                // TODO Need an alert bar indicating failure here
+                log.error("Unexpected failure", t);
+
+              }
+            });
+        } else {
+          throw new PaymentProtocolException("Failed to create future from Ack");
+        }
+      } catch (IOException | PaymentProtocolException e) {
+        // TODO Need an alert bar indicating failure here
+        log.error("Unexpected failure", e);
+      }
+
+    }
   }
 }

@@ -307,7 +307,7 @@ public class BitcoinNetworkService extends AbstractService {
    * <p/>
    * <p>The result of the operation is sent to the CoreEventBus as a TransactionCreationEvent and, if the tx is sent ok, a BitcoinSentEvent</p>
    *
-   * @param sendRequestSummary The information required to send bitcoin
+   * @param sendRequestSummary         The information required to send bitcoin
    * @param paymentRequestDataOptional Optional BIP70 payment request data
    */
   public void send(final SendRequestSummary sendRequestSummary, final Optional<PaymentRequestData> paymentRequestDataOptional) {
@@ -399,7 +399,7 @@ public class BitcoinNetworkService extends AbstractService {
       // Set the Transaction hash and re-add to WalletService (replacing any pre-existing paymentRequestData with the same UUID)
       PaymentRequestData paymentRequestData = paymentRequestDataOptional.get();
       Sha256Hash txHash = sendRequestSummary.getSendRequest().get().tx.getHash();
-      paymentRequestData.setTransactionHashOptional(Optional.of(txHash));
+      paymentRequestData.setTransactionHash(Optional.of(txHash));
       walletService.addPaymentRequestData(paymentRequestData);
       log.debug("Linking the payment request with UUID {} to the transaction with hash {}", paymentRequestData.getUuid(), txHash);
     }
@@ -1111,6 +1111,7 @@ public class BitcoinNetworkService extends AbstractService {
         // Declare the send a failure
         CoreEvents.fireBitcoinSentEvent(
           new BitcoinSentEvent(
+            Optional.<Transaction>absent(),
             sendRequestSummary.getDestinationAddress(),
             sendRequestSummary.getTotalAmount(),
             sendRequestSummary.getChangeAddress(),
@@ -1127,12 +1128,13 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Declare the send broadcast is in progress
       CoreEvents.fireBitcoinSendingEvent(
-              new BitcoinSendingEvent(
-                      sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
-                      sendRequestSummary.getChangeAddress(),
-                      Optional.of(sendRequest.fee),
-                      sendRequestSummary.getClientFeeAdded()
-              ));
+        new BitcoinSendingEvent(
+          sendRequestSummary.getDestinationAddress(),
+          sendRequestSummary.getTotalAmount(),
+          sendRequestSummary.getChangeAddress(),
+          Optional.of(sendRequest.fee),
+          sendRequestSummary.getClientFeeAdded()
+        ));
 
       // Receive it in the wallet
       if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
@@ -1148,62 +1150,66 @@ public class BitcoinNetworkService extends AbstractService {
       final boolean fireTransactionSeen = WalletManager.INSTANCE.getCurrentWalletSummary().isPresent();
       final Optional<Coin> valueOptional;
       if (fireTransactionSeen) {
-        valueOptional =  Optional.of(sendRequest.tx.getValue(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet()));
+        valueOptional = Optional.of(sendRequest.tx.getValue(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet()));
       } else {
         valueOptional = Optional.absent();
       }
 
       // Broadcast to network
       final TransactionBroadcast transactionBroadcast = peerGroup.broadcastTransaction(sendRequest.tx);
-      transactionBroadcast.setProgressCallback(new TransactionBroadcast.ProgressCallback() {
-        @Override
-        public void onBroadcastProgress(double progress) {
-          log.debug("Tx {}, progress is now {}", sendRequest.tx.getHashAsString(), progress);
-          if (fireTransactionSeen) {
-            CoreEvents.fireBitcoinSendProgressEvent(new BitcoinSendProgressEvent(sendRequest.tx, progress));
-            CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(sendRequestSummary.getSendRequest().get().tx, valueOptional.get()));
+      transactionBroadcast.setProgressCallback(
+        new TransactionBroadcast.ProgressCallback() {
+          @Override
+          public void onBroadcastProgress(double progress) {
+            log.debug("Tx {}, progress is now {}", sendRequest.tx.getHashAsString(), progress);
+            if (fireTransactionSeen) {
+              CoreEvents.fireBitcoinSendProgressEvent(new BitcoinSendProgressEvent(sendRequest.tx, progress));
+              CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(sendRequestSummary.getSendRequest().get().tx, valueOptional.get()));
+            }
           }
-        }
-      });
+        });
       ListenableFuture<Transaction> broadcastFuture = transactionBroadcast.future();
-      Futures.addCallback(broadcastFuture, new FutureCallback<Transaction>() {
-        @Override
-        public void onSuccess(Transaction transaction) {
-          log.debug("Future says transaction '{}' has broadcast successfully", transaction.getHashAsString());
+      Futures.addCallback(
+        broadcastFuture, new FutureCallback<Transaction>() {
+          @Override
+          public void onSuccess(Transaction transaction) {
+            log.info("Future says transaction '{}' has broadcast successfully", transaction.getHashAsString());
 
-          // Declare the send a success
-          CoreEvents.fireBitcoinSentEvent(
-                  new BitcoinSentEvent(
-                          sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
-                          sendRequestSummary.getChangeAddress(),
-                          Optional.of(sendRequest.fee),
-                          sendRequestSummary.getClientFeeAdded(),
-                          true,
-                          CoreMessageKey.BITCOIN_SENT_OK,
-                          null
-                  ));
-        }
+            // Declare the send a success
+            CoreEvents.fireBitcoinSentEvent(
+              new BitcoinSentEvent(
+                Optional.of(transaction),
+                sendRequestSummary.getDestinationAddress(),
+                sendRequestSummary.getTotalAmount(),
+                sendRequestSummary.getChangeAddress(),
+                Optional.of(sendRequest.fee),
+                sendRequestSummary.getClientFeeAdded(),
+                true,
+                CoreMessageKey.BITCOIN_SENT_OK,
+                null
+              ));
+          }
 
-        @Override
-        public void onFailure(Throwable throwable) {
-          // This can't happen with the current code, but just in case one day that changes ...
-          log.error("Future says transaction has NOT broadcast successfully. Error: '{}'", throwable);
+          @Override
+          public void onFailure(Throwable throwable) {
+            // This can't happen with the current code, but just in case one day that changes ...
+            log.error("Future says transaction has NOT broadcast successfully. Error: '{}'", throwable);
 
-          // Declare the send a failure
-          // TODO Add i18n support for "No message" if required
-          CoreEvents.fireBitcoinSentEvent(
-                  new BitcoinSentEvent(
-                          sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
-                          sendRequestSummary.getChangeAddress(),
-                          Optional.<Coin>absent(),
-                          Optional.<Coin>absent(),
-                          false,
-                          CoreMessageKey.THE_ERROR_WAS,
-                          new String[]{throwable == null ? "No message" : throwable.getMessage()}
-                  ));
+            // Declare the send a failure
+            // TODO Add i18n support for "No message" if required
+            CoreEvents.fireBitcoinSentEvent(
+              new BitcoinSentEvent(
+                Optional.<Transaction>absent(), sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
+                sendRequestSummary.getChangeAddress(),
+                Optional.<Coin>absent(),
+                Optional.<Coin>absent(),
+                false,
+                CoreMessageKey.THE_ERROR_WAS,
+                new String[]{throwable == null ? "No message" : throwable.getMessage()}
+              ));
 
-        }
-      });
+          }
+        });
 
       log.debug("Initiated broadcast of transaction: '{}'", Utils.HEX.encode(sendRequest.tx.bitcoinSerialize()));
 
@@ -1214,7 +1220,7 @@ public class BitcoinNetworkService extends AbstractService {
       // Declare the send a failure
       CoreEvents.fireBitcoinSentEvent(
         new BitcoinSentEvent(
-          sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
+          Optional.<Transaction>absent(), sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
           sendRequestSummary.getChangeAddress(),
           Optional.<Coin>absent(),
           Optional.<Coin>absent(),

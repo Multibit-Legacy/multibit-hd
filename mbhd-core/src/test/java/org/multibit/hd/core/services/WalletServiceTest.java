@@ -185,15 +185,15 @@ public class WalletServiceTest {
     );
 
     // Act
-    final Optional<Protos.PaymentRequest> paymentRequestOptional = paymentProtocolService.newSignedPaymentRequest(signedPaymentRequestSummary);
+    final Optional<Protos.PaymentRequest> paymentRequest = paymentProtocolService.newSignedPaymentRequest(signedPaymentRequestSummary);
 
-    assertThat(paymentRequestOptional).isNotNull();
-    assertThat(paymentRequestOptional.isPresent()).isTrue();
+    assertThat(paymentRequest).isNotNull();
+    assertThat(paymentRequest.isPresent()).isTrue();
 
     // Initially there are no BIP70 payment requests
     assertThat(walletService.getPaymentRequestDatas().size()).isEqualTo(0);
 
-    PaymentRequestData paymentRequestData = new PaymentRequestData(paymentRequestOptional.get(), Optional.<Sha256Hash>absent());
+    PaymentRequestData paymentRequestData = new PaymentRequestData(paymentRequest.get(), Optional.<Sha256Hash>absent());
 
     walletService.addPaymentRequestData(paymentRequestData);
 
@@ -239,7 +239,7 @@ public class WalletServiceTest {
 
   private void checkPaymentRequestData(PaymentRequestData first, PaymentRequestData other) {
     assertThat(other.getUuid().equals(first.getUuid()));
-    assertThat(other.getTransactionHashOptional().equals(first.getTransactionHashOptional()));
+    assertThat(other.getTransactionHash().equals(first.getTransactionHash()));
     assertThat(other.getDescription().equals(first.getDescription()));
     assertThat(other.getAmountCoin().equals(first.getAmountCoin()));
     assertThat(other.getAmountFiat().equals(first.getAmountFiat()));

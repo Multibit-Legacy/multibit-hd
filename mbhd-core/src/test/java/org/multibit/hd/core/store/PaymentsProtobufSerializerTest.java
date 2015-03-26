@@ -79,11 +79,11 @@ public class PaymentsProtobufSerializerTest {
     MBHDPaymentRequestDatas.add(MBHDPaymentRequestData2);
 
     Payments payments = new Payments();
-    payments.setMBHDPaymentRequestDatas(MBHDPaymentRequestDatas);
+    payments.setMBHDPaymentRequestDataCollection(MBHDPaymentRequestDatas);
 
     Payments newPayments = roundTrip(payments);
 
-    Collection<MBHDPaymentRequestData> newMBHDPaymentRequestDatas = newPayments.getMBHDPaymentRequestDatas();
+    Collection<MBHDPaymentRequestData> newMBHDPaymentRequestDatas = newPayments.getMBHDPaymentRequestDataCollection();
     assertThat(newMBHDPaymentRequestDatas.size()).isEqualTo(2);
 
     Iterator<MBHDPaymentRequestData> iterator = newMBHDPaymentRequestDatas.iterator();
@@ -157,12 +157,12 @@ public class PaymentsProtobufSerializerTest {
 
 
     Payments payments = new Payments();
-    payments.setTransactionInfos(transactionInfos);
+    payments.setTransactionInfoCollection(transactionInfos);
 
     Payments newPayments = roundTrip(payments);
 
 
-    Collection<TransactionInfo> newTransactionInfos = newPayments.getTransactionInfos();
+    Collection<TransactionInfo> newTransactionInfos = newPayments.getTransactionInfoCollection();
     assertThat(newTransactionInfos.size()).isEqualTo(3);
 
     Iterator<TransactionInfo> iterator = newTransactionInfos.iterator();

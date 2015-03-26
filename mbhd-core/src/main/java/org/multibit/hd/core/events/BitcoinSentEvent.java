@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.Transaction;
 import org.multibit.hd.core.dto.CoreMessageKey;
 
 import java.util.Arrays;
@@ -19,9 +20,8 @@ import java.util.Arrays;
  */
 public class BitcoinSentEvent implements CoreEvent {
 
-  /**
-   * The total amount paid (including the client fee)
-   */
+  private final Optional<Transaction> transaction;
+
   private final Coin amount;
 
   private final Optional<Coin> miningFeePaid;
@@ -44,6 +44,7 @@ public class BitcoinSentEvent implements CoreEvent {
   // The fix for this is more complex than leaving it in place
   @SuppressFBWarnings({"EI_EXPOSE_REP2"})
   public BitcoinSentEvent(
+    Optional<Transaction> transaction,
     Address destinationAddress,
     Coin amount,
     Address changeAddress,
@@ -54,6 +55,7 @@ public class BitcoinSentEvent implements CoreEvent {
     String[] sendFailureReasonData
   ) {
 
+    this.transaction = transaction;
     this.amount = amount;
     this.miningFeePaid = miningFeePaid;
     this.clientFeePaid = clientFeePaid;
@@ -65,26 +67,58 @@ public class BitcoinSentEvent implements CoreEvent {
 
   }
 
+  /**
+   * @return The transaction associated with this event
+   */
+  public Optional<Transaction> getTransaction() {
+    return transaction;
+  }
+
+  /**
+   * @return The payment amount without fees
+   */
   public Coin getAmount() {
     return amount;
   }
 
+  /**
+   * @return The mining fee paid
+   */
   public Optional<Coin> getMiningFeePaid() {
     return miningFeePaid;
   }
 
+  /**
+   * @return The client fee paid
+   */
   public Optional<Coin> getClientFeePaid() {
     return clientFeePaid;
   }
 
+  /**
+   * @return The destination address
+   */
   public Address getDestinationAddress() {
     return destinationAddress;
   }
 
+  /**
+   * @return The change address (can also be used for a refund)
+   */
+  public Address getChangeAddress() {
+    return changeAddress;
+  }
+
+  /**
+   * @return True if the send was successful
+   */
   public boolean isSendWasSuccessful() {
     return sendWasSuccessful;
   }
 
+  /**
+   * @return The reason for the failure
+   */
   public CoreMessageKey getSendFailureReason() {
     return sendFailureReason;
   }
@@ -98,13 +132,14 @@ public class BitcoinSentEvent implements CoreEvent {
   @Override
   public String toString() {
     return "BitcoinSentEvent{" +
-      "amount=" + amount +
+      "transaction=" + transaction +
+      ", amount=" + amount +
+      ", destinationAddress=" + destinationAddress +
+      ", changeAddress=" + changeAddress +
       ", miningFeePaid=" + miningFeePaid +
       ", clientFeePaid=" + clientFeePaid +
-      ", destinationAddress='" + destinationAddress + '\'' +
-      ", changeAddress='" + changeAddress + '\'' +
       ", sendWasSuccessful=" + sendWasSuccessful +
-      ", sendFailureReasonKey='" + sendFailureReason + '\'' +
+      ", sendFailureReason=" + sendFailureReason +
       ", sendFailureReasonData=" + Arrays.toString(sendFailureReasonData) +
       '}';
   }

@@ -2,11 +2,7 @@ package org.multibit.hd.ui.models;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import org.bitcoin.protocols.payments.Protos;
-import org.bitcoinj.core.Sha256Hash;
-import org.bitcoinj.protocols.payments.PaymentProtocol;
 import org.bitcoinj.uri.BitcoinURI;
-import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.dto.RAGStatus;
@@ -136,34 +132,21 @@ public class Models {
 
         WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
         if ( paymentSessionSummary.getPaymentSession().isPresent()) {
-          Protos.PaymentRequest paymentRequest = paymentSessionSummary.getPaymentSession().get().getPaymentRequest();
-          // Add the payment request to the in-memory store without a transaction hash (the send has not been sent yet)
-          PaymentRequestData paymentRequestData = new PaymentRequestData(paymentRequest, Optional.<Sha256Hash>absent());
 
-          // Trust status
+          // Build a PaymentRequestData for persistence
+          PaymentRequestData paymentRequestData = new PaymentRequestData(paymentSessionSummary);
+
+          // Add the localised trust status
           paymentRequestData.setTrustStatus(paymentSessionSummary.getStatus());
           paymentRequestData.setTrustErrorMessage(Languages.safeText(paymentSessionSummary.getMessageKey(), paymentSessionSummary.getMessageData()));
 
-          // Expiration date
-          paymentRequestData.setExpirationDate(new DateTime(paymentSessionSummary.getPaymentSession().get().getExpires()));
-
-          // Store it (in memory) in the wallet service and in the paymentRequestData so that it is available in the Wizard
+          // Store it (in memory) in the wallet service
           walletService.addPaymentRequestData(paymentRequestData);
-          paymentRequestData.setPaymentSessionSummaryOptional(Optional.of(paymentSessionSummary));
-
-          // Work out if an identity is available
-          if (paymentSessionSummary.getPaymentSession().isPresent()) {
-            Optional<PaymentProtocol.PkiVerificationData> identity = paymentSessionSummary.getPkiVerificationData();
-            if (identity.isPresent()) {
-              paymentRequestData.setIdentityDisplayName(identity.get().displayName);
-            } else {
-              paymentRequestData.setIdentityDisplayName(Languages.safeText(MessageKey.NOT_AVAILABLE));
-            }
-          }
 
           // The wallet has changed so UI will need updating
           ViewEvents.fireWalletDetailChangedEvent(new WalletDetail());
 
+          // Show the wizard and provide the PaymentRequestData to the model
           Panels.showLightBox(Wizards.newPaymentsWizard(paymentRequestData).getWizardScreenHolder());
         }
       }

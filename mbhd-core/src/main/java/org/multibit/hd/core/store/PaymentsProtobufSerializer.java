@@ -90,7 +90,7 @@ public class PaymentsProtobufSerializer {
 
     Preconditions.checkNotNull(payments, "Payments must be specified");
 
-    Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas = payments.getMBHDPaymentRequestDatas();
+    Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas = payments.getMBHDPaymentRequestDataCollection();
     if (MBHDPaymentRequestDatas != null) {
       for (MBHDPaymentRequestData MBHDPaymentRequestData : MBHDPaymentRequestDatas) {
         MBHDPaymentsProtos.MBHDPaymentRequest paymentRequestProto = makeMbhdPaymentRequestProto(MBHDPaymentRequestData);
@@ -98,7 +98,7 @@ public class PaymentsProtobufSerializer {
       }
     }
 
-    Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDatas();
+    Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDataCollection();
     if (paymentRequestDatas != null) {
       for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
         MBHDPaymentsProtos.PaymentRequest paymentRequestProto = makePaymentRequestProto(paymentRequestData);
@@ -106,7 +106,7 @@ public class PaymentsProtobufSerializer {
       }
     }
 
-    Collection<TransactionInfo> transactionInfos = payments.getTransactionInfos();
+    Collection<TransactionInfo> transactionInfos = payments.getTransactionInfoCollection();
     if (transactionInfos != null) {
       for (TransactionInfo transactionInfo : transactionInfos) {
         MBHDPaymentsProtos.TransactionInfo transactionInfoProto = makeTransactionInfoProto(transactionInfo);
@@ -233,9 +233,9 @@ public class PaymentsProtobufSerializer {
       }
 
       if (paymentRequestProto.hasHash() && !paymentRequestProto.getHash().isEmpty()) {
-        paymentRequestData.setTransactionHashOptional(Optional.of(new Sha256Hash(paymentRequestProto.getHash())));
+        paymentRequestData.setTransactionHash(Optional.of(new Sha256Hash(paymentRequestProto.getHash())));
       } else {
-        paymentRequestData.setTransactionHashOptional(Optional.<Sha256Hash>absent());
+        paymentRequestData.setTransactionHash(Optional.<Sha256Hash>absent());
       }
 
       if (paymentRequestProto.hasNote()) {
@@ -401,9 +401,9 @@ public class PaymentsProtobufSerializer {
       }
     }
 
-    payments.setMBHDPaymentRequestDatas(MBHDPaymentRequestDatas);
-    payments.setTransactionInfos(transactionInfos);
-    payments.setPaymentRequestDatas(paymentRequestDatas);
+    payments.setMBHDPaymentRequestDataCollection(MBHDPaymentRequestDatas);
+    payments.setTransactionInfoCollection(transactionInfos);
+    payments.setPaymentRequestDataCollection(paymentRequestDatas);
   }
 
   /**
@@ -468,7 +468,7 @@ public class PaymentsProtobufSerializer {
     if (paymentRequestData != null) {
 
       paymentRequestBuilder.setUuid(paymentRequestData.getUuid().toString());
-      paymentRequestBuilder.setHash(paymentRequestData.getTransactionHashOptional().isPresent() ? paymentRequestData.getTransactionHashOptional().get().toString() : "");
+      paymentRequestBuilder.setHash(paymentRequestData.getTransactionHash().isPresent() ? paymentRequestData.getTransactionHash().get().toString() : "");
       paymentRequestBuilder.setNote(paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote());
       paymentRequestBuilder.setAmountBTC(paymentRequestData.getAmountCoin() == null ? 0 : paymentRequestData.getAmountCoin().longValue());
       paymentRequestBuilder.setIdentityDisplayName(paymentRequestData.getIdentityDisplayName() == null ? "" : paymentRequestData.getIdentityDisplayName());
