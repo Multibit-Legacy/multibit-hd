@@ -275,21 +275,48 @@ public class WalletServiceTest {
 
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
 
+    // Save the wallet with the old password
+    WalletManager.INSTANCE.saveWallet();
+
     // Change the credentials once
+    // (use the changeWalletPasswordInternal as that does not use an executor - easier to test)
     WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD1);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD1)).isTrue();
+
+    checkPasswordHasChanged(CHANGED_PASSWORD1);
 
     // Change the credentials again
     WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD1, CHANGED_PASSWORD2);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD2)).isTrue();
 
+    checkPasswordHasChanged(CHANGED_PASSWORD2);
+
     // And change it back to the original value just for good measure
     WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD2, PASSWORD);
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
 
+    checkPasswordHasChanged(PASSWORD);
+
     // Change the credentials again
     WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD3);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD3)).isTrue();
+
+    checkPasswordHasChanged(CHANGED_PASSWORD3);
+  }
+
+  private void checkPasswordHasChanged(String password) throws Exception {
+    // Reload the wallet
+    Wallet wallet = WalletManager.INSTANCE.loadWalletFromFile(new File(walletSummary.getWalletFile().getAbsolutePath() + ".aes"), password);
+    assertThat(wallet).isNotNull();
+
+    // Reload contacts db
+    CoreServices.getCurrentContactService().loadContacts();
+
+    // Reload history db
+    CoreServices.getCurrentHistoryService().loadHistory(password);
+
+    // Reload payment db
+    CoreServices.getCurrentWalletService().get().readPayments();
   }
 
   @Test

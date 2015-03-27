@@ -735,9 +735,7 @@ public class WalletService extends AbstractService {
 
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
         paymentDatabaseFile,
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
-        WalletManager.scryptSalt(),
-        WalletManager.aesInitialisationVector());
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
       Payments payments = protobufSerializer.readPayments(decryptedInputStream);
 
       // For quick access payment requests and transaction infos are stored in maps
@@ -943,9 +941,7 @@ public class WalletService extends AbstractService {
       try {
         byte[] serialisedBytes = EncryptedFileReaderWriter.readAndDecryptToByteArray(
           inputFile,
-          WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
-          WalletManager.scryptSalt(),
-          WalletManager.aesInitialisationVector());
+          WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
         log.debug("Read serialised bytes of unencrypted length {} from input file:\n'{}'", serialisedBytes.length, inputFile.getAbsolutePath());
 
         // Read the serialised Payment Request
@@ -1204,6 +1200,8 @@ public class WalletService extends AbstractService {
         return;
       }
 
+      // TODO Close the Network connection to stop writes to the wallet + payments database
+      // TODO close  Contacts / History / Payments
       try {
         // Decrypt the seedDerivedAESKey using the old credentials and encrypt it with the new one
         byte[] encryptedOldBackupAESKey = walletSummary.getEncryptedBackupKey();
@@ -1257,6 +1255,8 @@ public class WalletService extends AbstractService {
         HistoryService historyService = CoreServices.getOrCreateHistoryService(walletSummary.getWalletPassword());
         WalletService walletService = CoreServices.getOrCreateWalletService(walletId);
 
+        // TODO Change the password on all the non-wallet files, save them to disk but don't "rename existing + rename new + delete old"
+
         // Change the credentials used to encrypt the wallet
         wallet.decrypt(oldPassword);
         walletSummary.setWalletPassword(new WalletPassword(newPassword, walletSummary.getWalletId()));
@@ -1266,12 +1266,16 @@ public class WalletService extends AbstractService {
         // Save the wallet summary file
         WalletManager.updateWalletSummary(WalletManager.INSTANCE.getCurrentWalletSummaryFile(applicationDataDirectory).get(), walletSummary);
 
+        // TODO Commit the changed non-wallet files by "rename existing + rename new + delete old"
+
         // Save all the Contacts, history and payment information using the new wallet credentials
         contactService.writeContacts();
         historyService.writeHistory();
         walletService.writePayments();
 
         wallet.encrypt(newPassword);
+
+        // TODO restart Contacts / History / Payments / Bitcoin network
 
         CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(true, CoreMessageKey.CHANGE_PASSWORD_SUCCESS, null));
       } catch (RuntimeException | NoSuchAlgorithmException e) {

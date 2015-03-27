@@ -171,9 +171,7 @@ public class PersistentHistoryService extends AbstractService implements History
     log.debug("Loading history from\n'{}'", backingStoreFile.getAbsolutePath());
     try {
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
-              password,
-              WalletManager.scryptSalt(),
-              WalletManager.aesInitialisationVector());
+              password);
       Set<HistoryEntry> loadedHistory = protobufSerializer.readHistoryEntries(decryptedInputStream);
       history.clear();
       history.addAll(loadedHistory);

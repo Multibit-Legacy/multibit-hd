@@ -308,7 +308,6 @@ public class SecureFiles {
    * Securely write a file to the file system using temporary file then renaming to the destination
    */
   public static void writeFile(InputStream inputStream, File tempFile, File destFile) throws IOException {
-
     try (OutputStream tempStream = new FileOutputStream(tempFile)) {
       // Copy the original to the temporary location
       ByteStreams.copy(inputStream, tempStream);
@@ -317,20 +316,41 @@ public class SecureFiles {
       tempStream.flush();
     }
 
+    rename(tempFile, destFile);
+  }
+
+  /**
+    * Securely write a file to the file system.
+    * This variant does not use a temporary file
+    */
+   public static void writeFile(InputStream inputStream, File destFile) throws IOException {
+     try (OutputStream destStream = new FileOutputStream(destFile)) {
+       // Copy the original to the destination location
+       ByteStreams.copy(inputStream, destStream);
+       // Attempt to force the bits to hit the disk. In reality the OS or hard disk itself may still decide
+       // to not write through to physical media for at least a few seconds, but this is the best we can do.
+       destStream.flush();
+     }
+   }
+
+  /**
+   * Rename oldFile to newFile
+   * @param oldFile
+   * @param newFile
+   */
+  public static void rename(File oldFile, File newFile) throws IOException{
     // Use JDK7 NIO Files to move the file since it offers the following benefits:
     // * best chance at an atomic operation
     // * relies on native code
     // * ensures destination is deleted
     // * performs a rename where possible to reduce data corruption if power fails
     // * works on Windows
-    Path tempFilePath = tempFile.toPath();
-    Path destFilePath = destFile.toPath();
+    Path oldFilePath = oldFile.toPath();
+    Path newFilePath = newFile.toPath();
     java.nio.file.Files.move(
-            tempFilePath,
-            destFilePath,
+            oldFilePath,
+            newFilePath,
             StandardCopyOption.REPLACE_EXISTING
     );
-
   }
-
 }

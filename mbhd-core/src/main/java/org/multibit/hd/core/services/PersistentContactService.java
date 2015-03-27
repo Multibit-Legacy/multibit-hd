@@ -272,9 +272,7 @@ public class PersistentContactService extends AbstractService implements Contact
 
     try {
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
-        WalletManager.scryptSalt(),
-        WalletManager.aesInitialisationVector());
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
       Set<Contact> loadedContacts = protobufSerializer.readContacts(decryptedInputStream);
       contacts.clear();
       contacts.addAll(loadedContacts);
