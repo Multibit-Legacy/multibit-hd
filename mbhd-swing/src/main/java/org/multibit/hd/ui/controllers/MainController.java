@@ -1453,15 +1453,14 @@ public class MainController extends AbstractController implements
         @Override
         public void run() {
           try {
-
-            // Check for external data (wants to be quick)
-            log.debug("Check for external data...");
-            handleExternalDataAlerts();
-
             // Get a ticker going
             log.debug("Starting exchange...");
             handleExchange();
 
+            // Check for external data (wants to be quick)
+            log.debug("Check for external data...");
+            handleExternalDataAlerts();
+            
             // Check for system time drift (runs in the background)
             log.debug("Check for system time drift...");
             handleSystemTimeDrift();
