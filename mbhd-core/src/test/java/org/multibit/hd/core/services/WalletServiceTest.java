@@ -276,6 +276,7 @@ public class WalletServiceTest {
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
 
     // Save the wallet with the old password
+    CoreServices.getOrCreateWalletService(walletSummary.getWalletId());
     WalletManager.INSTANCE.saveWallet();
 
     // Change the credentials once

@@ -271,12 +271,14 @@ public class PersistentContactService extends AbstractService implements Contact
     log.debug("Loading contacts from\n'{}'", backingStoreFile.getAbsolutePath());
 
     try {
-      ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
-      Set<Contact> loadedContacts = protobufSerializer.readContacts(decryptedInputStream);
       contacts.clear();
-      contacts.addAll(loadedContacts);
+      if (backingStoreFile.exists()) {
+        ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
+                WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
+        Set<Contact> loadedContacts = protobufSerializer.readContacts(decryptedInputStream);
 
+        contacts.addAll(loadedContacts);
+      }
     } catch (EncryptedFileReaderWriterException e) {
       throw new ContactsLoadException("Could not loadContacts contacts db '" + backingStoreFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.");
     }

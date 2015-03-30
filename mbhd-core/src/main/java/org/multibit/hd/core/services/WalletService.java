@@ -730,49 +730,54 @@ public class WalletService extends AbstractService {
 
     try {
       log.debug("Reading payments from\n'{}'", paymentDatabaseFile.getAbsolutePath());
-
-      ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
-              paymentDatabaseFile,
-              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
-      Payments payments = protobufSerializer.readPayments(decryptedInputStream);
-
-      // For quick access payment requests and transaction infos are stored in maps
-      Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas = payments.getMBHDPaymentRequestDataCollection();
       mbhdPaymentRequestDataMap.clear();
-      if (MBHDPaymentRequestDatas != null) {
-        for (MBHDPaymentRequestData MBHDPaymentRequestData : MBHDPaymentRequestDatas) {
-          mbhdPaymentRequestDataMap.put(MBHDPaymentRequestData.getAddress(), MBHDPaymentRequestData);
-        }
-      }
-
-      Collection<TransactionInfo> transactionInfos = payments.getTransactionInfoCollection();
       transactionInfoMap.clear();
-      if (transactionInfos != null) {
-        for (TransactionInfo transactionInfo : transactionInfos) {
-          transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
-        }
-      }
-
-      Optional<WalletSummary> walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
-
-      Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDataCollection();
       paymentRequestDataMap.clear();
-      if (paymentRequestDatas != null) {
-        for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
 
-          // Clear any tx hash if the tx is not in the wallet
-          // (See issue https://github.com/bitcoin-solutions/multibit-hd/issues/463)
-          // This will get persisted at MBHD close or when payments is next written
-          Optional<Sha256Hash> transactionHashOptional = paymentRequestData.getTransactionHash();
-          if (transactionHashOptional.isPresent() && walletSummaryOptional.isPresent()) {
-            Wallet wallet = walletSummaryOptional.get().getWallet();
-            if (wallet != null && wallet.getTransaction(transactionHashOptional.get()) == null) {
-              // Transaction is not in the wallet - clear it from the paymentRequestData
-              paymentRequestData.setTransactionHash(Optional.<Sha256Hash>absent());
-            }
+      if (paymentDatabaseFile.exists()) {
+        ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
+                paymentDatabaseFile,
+                WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
+        Payments payments = protobufSerializer.readPayments(decryptedInputStream);
+
+        // For quick access payment requests and transaction infos are stored in maps
+        Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas = payments.getMBHDPaymentRequestDataCollection();
+
+        if (MBHDPaymentRequestDatas != null) {
+          for (MBHDPaymentRequestData MBHDPaymentRequestData : MBHDPaymentRequestDatas) {
+            mbhdPaymentRequestDataMap.put(MBHDPaymentRequestData.getAddress(), MBHDPaymentRequestData);
           }
+        }
 
-          paymentRequestDataMap.put(paymentRequestData.getUuid(), paymentRequestData);
+        Collection<TransactionInfo> transactionInfos = payments.getTransactionInfoCollection();
+
+        if (transactionInfos != null) {
+          for (TransactionInfo transactionInfo : transactionInfos) {
+            transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
+          }
+        }
+
+        Optional<WalletSummary> walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+        Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDataCollection();
+
+        if (paymentRequestDatas != null) {
+          for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
+
+            // Clear any tx hash if the tx is not in the wallet
+            // (See issue https://github.com/bitcoin-solutions/multibit-hd/issues/463)
+            // This will get persisted at MBHD close or when payments is next written
+            Optional<Sha256Hash> transactionHashOptional = paymentRequestData.getTransactionHash();
+            if (transactionHashOptional.isPresent() && walletSummaryOptional.isPresent()) {
+              Wallet wallet = walletSummaryOptional.get().getWallet();
+              if (wallet != null && wallet.getTransaction(transactionHashOptional.get()) == null) {
+                // Transaction is not in the wallet - clear it from the paymentRequestData
+                paymentRequestData.setTransactionHash(Optional.<Sha256Hash>absent());
+              }
+            }
+
+            paymentRequestDataMap.put(paymentRequestData.getUuid(), paymentRequestData);
+          }
         }
       }
 

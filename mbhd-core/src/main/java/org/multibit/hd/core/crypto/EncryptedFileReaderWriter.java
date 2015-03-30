@@ -173,19 +173,21 @@ public class EncryptedFileReaderWriter {
       KeyParameter newKeyParameter = keyCrypterScrypt.deriveKey(newPassword);
 
       for (File file : files) {
-        // Read in the file bytes that are encrypted with the old password
-        byte[] oldEncryptedBytes = Files.toByteArray(file);
-
-        // Decrypt using the old password
-        byte[] plainBytes = AESUtils.decrypt(oldEncryptedBytes, oldKeyParameter, WalletManager.aesInitialisationVector());
-
-        // Encrypt the bytes
-        byte[] newEncryptedBytes = encrypt(plainBytes, newKeyParameter);
-
-        // Write out the bytes to a file with the suffix ".new"
         File newFile = new File(file.getAbsolutePath() + NEW_FILE_EXTENSION);
         newFiles.add(newFile);
-        SecureFiles.writeFile(new ByteArrayInputStream(newEncryptedBytes), newFile);
+        if (file.exists()) {
+          // Read in the file bytes that are encrypted with the old password
+          byte[] oldEncryptedBytes = Files.toByteArray(file);
+
+          // Decrypt using the old password
+          byte[] plainBytes = AESUtils.decrypt(oldEncryptedBytes, oldKeyParameter, WalletManager.aesInitialisationVector());
+
+          // Encrypt the bytes
+          byte[] newEncryptedBytes = encrypt(plainBytes, newKeyParameter);
+
+          // Write out the bytes to a file with the suffix ".new"
+          SecureFiles.writeFile(new ByteArrayInputStream(newEncryptedBytes), newFile);
+        }
       }
       return newFiles;
     } catch (IOException ioe) {
@@ -215,7 +217,9 @@ public class EncryptedFileReaderWriter {
         // Rename the file, giving it the suffix ".old"
         File oldFile = new File(originalFiles.get(index).getAbsolutePath() + OLD_FILE_EXTENSION);
         oldFiles.add(oldFile);
-        SecureFiles.rename(originalFiles.get(index), oldFile);
+         if (originalFiles.get(index).exists()){
+           SecureFiles.rename(originalFiles.get(index), oldFile);
+         }
        } catch (IOException ioe) {
          throw new EncryptedFileReaderWriterException("Could not rename file " + originalFiles.get(index).getAbsolutePath() + " to " + oldFiles.get(index).getAbsolutePath());
        }
@@ -224,7 +228,9 @@ public class EncryptedFileReaderWriter {
     // Rename all the new files to the original ones passed in
     for (int index = 0; index < originalFiles.size(); index++) {
       try {
-        SecureFiles.rename(newFiles.get(index), originalFiles.get(index));
+        if (newFiles.get(index).exists()) {
+          SecureFiles.rename(newFiles.get(index), originalFiles.get(index));
+        }
       } catch (IOException ioe) {
         throw new EncryptedFileReaderWriterException("Could not rename file " + newFiles.get(index).getAbsolutePath() + " to " + originalFiles.get(index).getAbsolutePath());
       }
@@ -233,7 +239,9 @@ public class EncryptedFileReaderWriter {
     // Secure delete the old files
     for (File fileToDelete : oldFiles) {
       try {
-        SecureFiles.secureDelete(fileToDelete);
+        if (fileToDelete.exists()) {
+          SecureFiles.secureDelete(fileToDelete);
+        }
       } catch (IOException ioe) {
         throw new EncryptedFileReaderWriterException("Could not delete file " + fileToDelete);
       }
