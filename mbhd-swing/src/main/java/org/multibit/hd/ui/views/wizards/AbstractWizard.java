@@ -479,9 +479,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
           // There is no chance of the system showing a light box during this time so this
           // operation is safe
           if (CredentialsState.CREDENTIALS_ENTER_PASSWORD.name().equals(panelName)) {
-
             log.trace("Blocking to allow UI startup to complete");
-            Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+            Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
           }
 
           // Work through the view map ensuring all components are deregistered from UI events
