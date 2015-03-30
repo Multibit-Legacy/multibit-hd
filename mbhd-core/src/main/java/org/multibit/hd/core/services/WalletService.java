@@ -22,6 +22,7 @@ import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.ExportManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -274,16 +275,16 @@ public class WalletService extends AbstractService {
       for (PaymentData paymentData : paymentDataSet) {
 
         if (subsettingPaymentType == PaymentType.SENDING
-          && (paymentData.getType() == PaymentType.THEY_REQUESTED || paymentData.getType() == PaymentType.SENDING)
-          && paymentData.getDate().isAfter(aDayAgo)) {
+                && (paymentData.getType() == PaymentType.THEY_REQUESTED || paymentData.getType() == PaymentType.SENDING)
+                && paymentData.getDate().isAfter(aDayAgo)) {
 
           subsetPaymentDataList.add(paymentData);
 
         } else if (subsettingPaymentType == PaymentType.RECEIVING) {
 
           if (paymentData.getType() == PaymentType.YOU_REQUESTED
-            || paymentData.getType() == PaymentType.RECEIVING
-            || paymentData.getType() == PaymentType.PART_PAID) {
+                  || paymentData.getType() == PaymentType.RECEIVING
+                  || paymentData.getType() == PaymentType.PART_PAID) {
 
             if (paymentData.getDate().isAfter(aDayAgo)) {
               subsetPaymentDataList.add(paymentData);
@@ -300,7 +301,6 @@ public class WalletService extends AbstractService {
 
   /**
    * @param query The text fragment to match (case-insensitive, anywhere in the name)
-   *
    * @return A filtered set of Payments for the given query
    */
   public List<PaymentData> filterPaymentsByContent(String query) {
@@ -335,12 +335,12 @@ public class WalletService extends AbstractService {
 
       }
       if (isDescriptionMatched
-        || isNoteMatched
-        || isQrCodeLabelMatched
-        || isPaymentAddressMatched
-        || isOutputAddressMatched
-        || isRawTransactionMatched
-        ) {
+              || isNoteMatched
+              || isQrCodeLabelMatched
+              || isPaymentAddressMatched
+              || isOutputAddressMatched
+              || isRawTransactionMatched
+              ) {
         filteredPayments.add(paymentData);
       }
     }
@@ -357,7 +357,6 @@ public class WalletService extends AbstractService {
    *
    * @param wallet      the current wallet
    * @param transaction the transaction to adapt
-   *
    * @return TransactionData the transaction data
    */
   public TransactionData adaptTransaction(Wallet wallet, Transaction transaction) {
@@ -422,21 +421,21 @@ public class WalletService extends AbstractService {
 
     // Create the DTO from the raw transaction info
     TransactionData transactionData = new TransactionData(
-      transactionHashAsString,
-      new DateTime(updateTime),
-      paymentStatus,
-      amountBTC,
-      amountFiat,
-      miningFee,
-      clientFee,
-      confidenceType,
-      paymentType,
-      description,
-      transaction.isCoinBase(),
-      outputAddresses,
-      rawTransaction,
-      size,
-      false
+            transactionHashAsString,
+            new DateTime(updateTime),
+            paymentStatus,
+            amountBTC,
+            amountFiat,
+            miningFee,
+            clientFee,
+            confidenceType,
+            paymentType,
+            description,
+            transaction.isCoinBase(),
+            outputAddresses,
+            rawTransaction,
+            size,
+            false
     );
 
     // Note - from the transactionInfo (if present)
@@ -456,7 +455,6 @@ public class WalletService extends AbstractService {
    *
    * @param confidenceType the Bitcoinj ConfidenceType  to use to work out the status
    * @param depth          depth in blocks of the transaction (1 is most recent)
-   *
    * @return status of the transaction
    */
   public static PaymentStatus calculateStatus(TransactionConfidence.ConfidenceType confidenceType, int depth, int numberOfPeers) {
@@ -529,11 +527,11 @@ public class WalletService extends AbstractService {
   }
 
   private String calculateDescriptionAndUpdatePaymentRequests(
-    Wallet wallet,
-    Transaction transaction,
-    String transactionHashAsString,
-    PaymentType paymentType,
-    Coin amountBTC
+          Wallet wallet,
+          Transaction transaction,
+          String transactionHashAsString,
+          PaymentType paymentType,
+          Coin amountBTC
   ) {
 
     StringBuilder description = new StringBuilder();
@@ -560,14 +558,14 @@ public class WalletService extends AbstractService {
               if (MBHDPaymentRequestData.getLabel() != null && MBHDPaymentRequestData.getLabel().length() > 0) {
                 descriptiveTextIsAvailable = true;
                 description
-                  .append(MBHDPaymentRequestData.getLabel())
-                  .append(" ");
+                        .append(MBHDPaymentRequestData.getLabel())
+                        .append(" ");
               }
               if (MBHDPaymentRequestData.getNote() != null && MBHDPaymentRequestData.getNote().length() > 0) {
                 descriptiveTextIsAvailable = true;
                 description
-                  .append(MBHDPaymentRequestData.getNote())
-                  .append(" ");
+                        .append(MBHDPaymentRequestData.getNote())
+                        .append(" ");
               }
             }
           }
@@ -577,21 +575,21 @@ public class WalletService extends AbstractService {
       if (!descriptiveTextIsAvailable) {
         // TODO localise
         description
-          .append("By")
-          .append(PREFIX_SEPARATOR)
-          .append(addresses.trim());
+                .append("By")
+                .append(PREFIX_SEPARATOR)
+                .append(addresses.trim());
       }
     } else {
       // Sent
       // TODO localise
       description
-        .append("To")
-        .append(PREFIX_SEPARATOR);
+              .append("To")
+              .append(PREFIX_SEPARATOR);
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           description
-            .append(" ")
-            .append(transactionOutput.getScriptPubKey().getToAddress(networkParameters));
+                  .append(" ")
+                  .append(transactionOutput.getScriptPubKey().getToAddress(networkParameters));
         }
       }
     }
@@ -734,8 +732,8 @@ public class WalletService extends AbstractService {
       log.debug("Reading payments from\n'{}'", paymentDatabaseFile.getAbsolutePath());
 
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
-        paymentDatabaseFile,
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
+              paymentDatabaseFile,
+              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
       Payments payments = protobufSerializer.readPayments(decryptedInputStream);
 
       // For quick access payment requests and transaction infos are stored in maps
@@ -781,10 +779,10 @@ public class WalletService extends AbstractService {
       readPaymentRequestsDataFiles(paymentRequestDataMap.values(), paymentDatabaseFile);
 
       log.debug(
-        "Reading payments completed\nTransactionInfo count: {}\nMBHD payment request count: {}\nBIP70 payment request count: {}",
-        transactionInfoMap.values().size(),
-        mbhdPaymentRequestDataMap.values().size(),
-        paymentRequestDataMap.values().size()
+              "Reading payments completed\nTransactionInfo count: {}\nMBHD payment request count: {}\nBIP70 payment request count: {}",
+              transactionInfoMap.values().size(),
+              mbhdPaymentRequestDataMap.values().size(),
+              paymentRequestDataMap.values().size()
       );
 
     } catch (EncryptedFileReaderWriterException e) {
@@ -810,16 +808,16 @@ public class WalletService extends AbstractService {
       payments.setPaymentRequestDataCollection(paymentRequestDataMap.values());
       protobufSerializer.writePayments(payments, byteArrayOutputStream);
       EncryptedFileReaderWriter.encryptAndWrite(
-        byteArrayOutputStream.toByteArray(),
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
-        paymentDatabaseFile
+              byteArrayOutputStream.toByteArray(),
+              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(),
+              paymentDatabaseFile
       );
 
       writePaymentRequestDataFiles(paymentRequestDataMap.values(), paymentDatabaseFile);
 
       log.debug(
-        "Writing payments completed\nTransaction infos: {}\nMBHD payment requests: {}\nBIP70 payment requests: {}",
-        transactionInfoMap.values().size(), mbhdPaymentRequestDataMap.values().size(), paymentRequestDataMap.values().size());
+              "Writing payments completed\nTransaction infos: {}\nMBHD payment requests: {}\nBIP70 payment requests: {}",
+              transactionInfoMap.values().size(), mbhdPaymentRequestDataMap.values().size(), paymentRequestDataMap.values().size());
     } catch (Exception e) {
       log.error("Could not write to payments db\n'{}'", paymentDatabaseFile.getAbsolutePath(), e);
       throw new PaymentsSaveException("Could not write payments db '" + paymentDatabaseFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.", e);
@@ -840,17 +838,16 @@ public class WalletService extends AbstractService {
   }
 
   /**
-   * @param uuid                  The UUID of the PaymentRequestData identifying the overall payment
-   * @param backingStoreDirectory The backing store directory
-   *
+   * @param uuid             The UUID of the PaymentRequestData identifying the overall payment
+   * @param backingStoreFile The backing store file
    * @return A File referencing the PaymentRequest
    */
-  private File getPaymentRequestFile(UUID uuid, File backingStoreDirectory) {
+  private File getPaymentRequestFile(UUID uuid, File backingStoreFile) {
     return new File(
-      getOrCreateBip70PaymentRequestDirectory(backingStoreDirectory)
-        + File.separator
-        + uuid.toString()
-        + BIP70_PAYMENT_REQUEST_SUFFIX
+            getOrCreateBip70PaymentRequestDirectory(backingStoreFile)
+                    + File.separator
+                    + uuid.toString()
+                    + BIP70_PAYMENT_REQUEST_SUFFIX
     );
   }
 
@@ -883,8 +880,8 @@ public class WalletService extends AbstractService {
           byte[] serialisedBytes = paymentRequestData.getPaymentRequest().toByteArray();
           try {
             EncryptedFileReaderWriter.encryptAndWrite(
-              serialisedBytes,
-              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), outputFile);
+                    serialisedBytes,
+                    WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), outputFile);
             log.debug("Written serialised bytes of unencrypted length {} to output file {}", serialisedBytes.length, outputFile.getAbsolutePath());
           } catch (EncryptedFileReaderWriterException e) {
             log.error("Failed to write BIP70 payment request file with UUID {}, error was {}", paymentRequestData.getUuid(), e);
@@ -930,18 +927,18 @@ public class WalletService extends AbstractService {
 
     // Locate the PaymentRequest
     File inputFile = new File(
-      bip70PaymentRequestDirectory.getAbsolutePath()
-        + File.separator
-        + paymentRequestData.getUuid().toString()
-        + BIP70_PAYMENT_REQUEST_SUFFIX
+            bip70PaymentRequestDirectory.getAbsolutePath()
+                    + File.separator
+                    + paymentRequestData.getUuid().toString()
+                    + BIP70_PAYMENT_REQUEST_SUFFIX
     );
 
 
     if (inputFile.exists()) {
       try {
         byte[] serialisedBytes = EncryptedFileReaderWriter.readAndDecryptToByteArray(
-          inputFile,
-          WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
+                inputFile,
+                WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
         log.debug("Read serialised bytes of unencrypted length {} from input file:\n'{}'", serialisedBytes.length, inputFile.getAbsolutePath());
 
         // Read the serialised Payment Request
@@ -1003,7 +1000,6 @@ public class WalletService extends AbstractService {
    * Get a freshly adapted transaction from the current wallet by hash
    *
    * @param transactionHashAsString transaction hash as a string
-   *
    * @return transactionData freshly adapted TransactionData or null if no match
    */
   public TransactionData getTransactionDataByHash(String transactionHashAsString) {
@@ -1032,7 +1028,6 @@ public class WalletService extends AbstractService {
    * worked out deterministically and uses the lastIndexUsed on the Payments so that each address is unique
    *
    * @param walletPasswordOptional Either: Optional.absent() = just recycle the first address in the wallet or:  credentials of the wallet to which the new private key is added
-   *
    * @return Address the next generated address, as a String. The corresponding private key will be added to the wallet
    */
   public String generateNextReceivingAddress(Optional<CharSequence> walletPasswordOptional) {
@@ -1059,7 +1054,6 @@ public class WalletService extends AbstractService {
    * Find the payment requests that are either partially or fully funded by the transaction specified
    *
    * @param transactionData The transaction data
-   *
    * @return The list of payment requests that the transaction data funds
    */
   public List<MBHDPaymentRequestData> findPaymentRequestsThisTransactionFunds(TransactionData transactionData) {
@@ -1137,34 +1131,34 @@ public class WalletService extends AbstractService {
    * @param paymentRequestFileStem     The stem of the export file for the BIP70 payment requests (will be suffixed with a file suffix and possibly a bracketed number for uniqueness)
    */
   public void exportPayments(
-    File exportDirectory,
-    String transactionFileStem,
-    String mbhdPaymentRequestFileStem,
-    String paymentRequestFileStem,
-    CSVEntryConverter<TransactionData> transactionHeaderConverter,
-    CSVEntryConverter<TransactionData> transactionConverter,
-    CSVEntryConverter<MBHDPaymentRequestData> mbhdPaymentRequestHeaderConverter,
-    CSVEntryConverter<MBHDPaymentRequestData> mbhdPaymentRequestConverter,
-    CSVEntryConverter<PaymentRequestData> paymentRequestHeaderConverter,
-    CSVEntryConverter<PaymentRequestData> paymentRequestConverter
+          File exportDirectory,
+          String transactionFileStem,
+          String mbhdPaymentRequestFileStem,
+          String paymentRequestFileStem,
+          CSVEntryConverter<TransactionData> transactionHeaderConverter,
+          CSVEntryConverter<TransactionData> transactionConverter,
+          CSVEntryConverter<MBHDPaymentRequestData> mbhdPaymentRequestHeaderConverter,
+          CSVEntryConverter<MBHDPaymentRequestData> mbhdPaymentRequestConverter,
+          CSVEntryConverter<PaymentRequestData> paymentRequestHeaderConverter,
+          CSVEntryConverter<PaymentRequestData> paymentRequestConverter
 
   ) {
     // Refresh all payments
     Set<PaymentData> paymentDataSet = getPaymentDataSet();
     ExportManager.export(
-      paymentDataSet,
-      getMBHDPaymentRequestDatas(),
-      getPaymentRequestDatas(),
-      exportDirectory,
-      transactionFileStem,
-      mbhdPaymentRequestFileStem,
-      paymentRequestFileStem,
-      transactionHeaderConverter,
-      transactionConverter,
-      mbhdPaymentRequestHeaderConverter,
-      mbhdPaymentRequestConverter,
-      paymentRequestHeaderConverter,
-      paymentRequestConverter
+            paymentDataSet,
+            getMBHDPaymentRequestDatas(),
+            getPaymentRequestDatas(),
+            exportDirectory,
+            transactionFileStem,
+            mbhdPaymentRequestFileStem,
+            paymentRequestFileStem,
+            transactionHeaderConverter,
+            transactionConverter,
+            mbhdPaymentRequestHeaderConverter,
+            mbhdPaymentRequestConverter,
+            paymentRequestHeaderConverter,
+            paymentRequestConverter
     );
   }
 
@@ -1179,115 +1173,150 @@ public class WalletService extends AbstractService {
   public static void changeWalletPassword(final WalletSummary walletSummary, final String oldPassword, final String newPassword) {
 
     executorService.submit(
-      new Runnable() {
-        @Override
-        public void run() {
-          WalletService.changeWalletPasswordInternal(walletSummary, oldPassword, newPassword);
-        }
-      });
+            new Runnable() {
+              @Override
+              public void run() {
+                WalletService.changeWalletPasswordInternal(walletSummary, oldPassword, newPassword);
+              }
+            });
   }
 
   static void changeWalletPasswordInternal(final WalletSummary walletSummary, final String oldPassword, final String newPassword) {
-
-    if (walletSummary.getWallet() != null) {
-
-      Wallet wallet = walletSummary.getWallet();
-      WalletId walletId = walletSummary.getWalletId();
-
-      // Check old credentials
-      if (!walletSummary.getWallet().checkPassword(oldPassword)) {
-        CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_WRONG_OLD_PASSWORD, null));
-        return;
-      }
-
-      // TODO Close the Network connection to stop writes to the wallet + payments database
-      // TODO close  Contacts / History / Payments
-      try {
-        // Decrypt the seedDerivedAESKey using the old credentials and encrypt it with the new one
-        byte[] encryptedOldBackupAESKey = walletSummary.getEncryptedBackupKey();
-
-        KeyParameter oldWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(oldPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
-        byte[] decryptedOldBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(
-          encryptedOldBackupAESKey,
-          oldWalletPasswordDerivedAESKey,
-          WalletManager.aesInitialisationVector());
-
-        KeyParameter newWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(newPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
-        byte[] encryptedNewBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(
-          decryptedOldBackupAESKey,
-          newWalletPasswordDerivedAESKey,
-          WalletManager.aesInitialisationVector());
-
-        // Check the encryption is reversible
-        byte[] decryptedRebornBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(
-          encryptedNewBackupAESKey,
-          newWalletPasswordDerivedAESKey,
-          WalletManager.aesInitialisationVector());
-
-        if (!Arrays.equals(decryptedOldBackupAESKey, decryptedRebornBackupAESKey)) {
-          throw new IllegalStateException("The encryption of the backup AES key was not reversible. Aborting change of wallet credentials");
-        }
-
-        // Encrypt the new credentials with an the decryptedOldBackupAESKey
-        // Pad the new credentials
-        byte[] newPasswordBytes = newPassword.getBytes(Charsets.UTF_8);
-        byte[] paddedNewPassword = WalletManager.padPasswordBytes(newPasswordBytes);
-        byte[] encryptedPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(
-          paddedNewPassword,
-          new KeyParameter(decryptedOldBackupAESKey),
-          WalletManager.aesInitialisationVector());
-
-        // Check the encryption is reversible
-        byte[] decryptedRebornPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.decrypt(
-          encryptedPaddedNewPassword,
-          new KeyParameter(decryptedOldBackupAESKey),
-          WalletManager.aesInitialisationVector());
-
-        if (!Arrays.equals(newPasswordBytes, WalletManager.unpadPasswordBytes(decryptedRebornPaddedNewPassword))) {
-          throw new IllegalStateException("The encryption of the new credentials was not reversible. Aborting change of wallet credentials");
-        }
-
-        // Locate the installation directory
-        File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-
-        // Load up all the history, contacts and payments using the old credentials
-        ContactService contactService = CoreServices.getOrCreateContactService(walletId);
-        HistoryService historyService = CoreServices.getOrCreateHistoryService(walletSummary.getWalletPassword());
-        WalletService walletService = CoreServices.getOrCreateWalletService(walletId);
-
-        // TODO Change the password on all the non-wallet files, save them to disk but don't "rename existing + rename new + delete old"
-
-        // Change the credentials used to encrypt the wallet
-        wallet.decrypt(oldPassword);
-        walletSummary.setWalletPassword(new WalletPassword(newPassword, walletSummary.getWalletId()));
-        walletSummary.setEncryptedBackupKey(encryptedNewBackupAESKey);
-        walletSummary.setEncryptedPassword(encryptedPaddedNewPassword);
-
-        // Save the wallet summary file
-        WalletManager.updateWalletSummary(WalletManager.INSTANCE.getCurrentWalletSummaryFile(applicationDataDirectory).get(), walletSummary);
-
-        // TODO Commit the changed non-wallet files by "rename existing + rename new + delete old"
-
-        // Save all the Contacts, history and payment information using the new wallet credentials
-        contactService.writeContacts();
-        historyService.writeHistory();
-        walletService.writePayments();
-
-        wallet.encrypt(newPassword);
-
-        // TODO restart Contacts / History / Payments / Bitcoin network
-
-        CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(true, CoreMessageKey.CHANGE_PASSWORD_SUCCESS, null));
-      } catch (RuntimeException | NoSuchAlgorithmException e) {
-        log.error("Failed to change password", e);
-        CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_ERROR, new Object[]{e.getMessage()}));
-      }
-    } else {
+    if (walletSummary == null || walletSummary.getWallet() == null) {
       // No wallet to change the credentials for
       CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_ERROR, new Object[]{"There is no wallet"}));
+      return;
+    }
+
+    Wallet wallet = walletSummary.getWallet();
+    WalletId walletId = walletSummary.getWalletId();
+
+    // Check old credentials
+    if (!walletSummary.getWallet().checkPassword(oldPassword)) {
+      CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_WRONG_OLD_PASSWORD, null));
+      return;
+    }
+
+    // Locate the installation directory and current wallet paths
+    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+    Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).isPresent());
+    String currentWalletDirectoryPath = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get().getParentFile().getAbsolutePath();
+    File currentWalletSummaryFile = WalletManager.INSTANCE.getCurrentWalletSummaryFile(applicationDataDirectory).get();
+
+    List<PaymentRequestData> paymentRequestDatas = CoreServices.getOrCreateWalletService(walletId).getPaymentRequestDatas();
+    WalletService walletService = CoreServices.getOrCreateWalletService(walletId);
+
+    // Create a List of all the non-wallet files that need to have their password changed
+    List<File> filesToChangePassword = Lists.newArrayList();
+
+    // History
+    filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + HistoryService.HISTORY_DIRECTORY_NAME + File.separator + HistoryService.HISTORY_DATABASE_NAME));
+
+    // Contacts
+    filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + ContactService.CONTACTS_DIRECTORY_NAME + File.separator + ContactService.CONTACTS_DATABASE_NAME));
+
+    // Payments
+    filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + PAYMENTS_DIRECTORY_NAME + File.separator + PAYMENTS_DATABASE_NAME));
+
+    // BIP70 Payment requests
+    if (paymentRequestDatas != null) {
+      for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
+        File paymentRequestFile = walletService.getPaymentRequestFile(paymentRequestData.getUuid(), walletService.getPaymentDatabaseFile());
+        filesToChangePassword.add(paymentRequestFile);
+      }
+    }
+
+    // Close the Network connection to stop writes to the wallet + payments database
+    // Close  Contacts / History / Payments
+    CoreServices.shutdownNow(ShutdownEvent.ShutdownType.SWITCH);
+
+    // Close the current wallet
+    WalletManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.SWITCH);
+
+    // Close the backup manager for the wallet
+    BackupManager.INSTANCE.shutdownNow();
+
+    // Close the installation manager
+    InstallationManager.shutdownNow(ShutdownEvent.ShutdownType.SWITCH);
+
+    try {
+      // Decrypt the seedDerivedAESKey using the old credentials and encrypt it with the new one
+      byte[] encryptedOldBackupAESKey = walletSummary.getEncryptedBackupKey();
+
+      KeyParameter oldWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(oldPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
+      byte[] decryptedOldBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+              encryptedOldBackupAESKey,
+              oldWalletPasswordDerivedAESKey,
+              WalletManager.aesInitialisationVector());
+
+      KeyParameter newWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(newPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
+      byte[] encryptedNewBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(
+              decryptedOldBackupAESKey,
+              newWalletPasswordDerivedAESKey,
+              WalletManager.aesInitialisationVector());
+
+      // Check the encryption is reversible
+      byte[] decryptedRebornBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+              encryptedNewBackupAESKey,
+              newWalletPasswordDerivedAESKey,
+              WalletManager.aesInitialisationVector());
+
+      if (!Arrays.equals(decryptedOldBackupAESKey, decryptedRebornBackupAESKey)) {
+        throw new IllegalStateException("The encryption of the backup AES key was not reversible. Aborting change of wallet credentials");
+      }
+
+      // Encrypt the new credentials with an the decryptedOldBackupAESKey
+      // Pad the new credentials
+      byte[] newPasswordBytes = newPassword.getBytes(Charsets.UTF_8);
+      byte[] paddedNewPassword = WalletManager.padPasswordBytes(newPasswordBytes);
+      byte[] encryptedPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(
+              paddedNewPassword,
+              new KeyParameter(decryptedOldBackupAESKey),
+              WalletManager.aesInitialisationVector());
+
+      // Check the encryption is reversible
+      byte[] decryptedRebornPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+              encryptedPaddedNewPassword,
+              new KeyParameter(decryptedOldBackupAESKey),
+              WalletManager.aesInitialisationVector());
+
+      if (!Arrays.equals(newPasswordBytes, WalletManager.unpadPasswordBytes(decryptedRebornPaddedNewPassword))) {
+        throw new IllegalStateException("The encryption of the new credentials was not reversible. Aborting change of wallet credentials");
+      }
+
+      // Change the password on all the non-wallet files, save them to disk but don't do the "rename existing + rename new + delete old" commit
+      List<File> newFiles = EncryptedFileReaderWriter.changeEncryptionPrepare(filesToChangePassword, oldPassword, newPassword);
+
+      // Change the credentials used to encrypt the wallet
+      wallet.decrypt(oldPassword);
+      walletSummary.setWalletPassword(new WalletPassword(newPassword, walletId));
+      walletSummary.setEncryptedBackupKey(encryptedNewBackupAESKey);
+      walletSummary.setEncryptedPassword(encryptedPaddedNewPassword);
+      wallet.encrypt(newPassword);
+
+      // Save the wallet summary file
+      WalletManager.updateWalletSummary(currentWalletSummaryFile, walletSummary);
+      WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
+      WalletManager.INSTANCE.saveWallet();
+
+      // Wallet was saved successfully do the commit of the changed non-wallet files by "rename existing + rename new + delete old"
+      EncryptedFileReaderWriter.changeEncryptionCommit(filesToChangePassword, newFiles);
+
+      // Restart Contacts / History / Payments / Bitcoin network services
+      CoreServices.bootstrap();
+      CoreServices.getOrCreateBackupService();
+      CoreServices.getOrCreateWalletService(walletId);
+      BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
+      CoreServices.getCurrentHistoryService();
+      CoreServices.getOrCreateContactService(walletId);
+      bitcoinNetworkService.replayWallet(applicationDataDirectory, Optional.<Date>absent(), false);
+
+      CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(true, CoreMessageKey.CHANGE_PASSWORD_SUCCESS, null));
+    } catch (RuntimeException | NoSuchAlgorithmException e) {
+      log.error("Failed to change password", e);
+      CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_ERROR, new Object[]{e.getMessage()}));
     }
   }
-
 
   /**
    * <p>When a transaction is seen by the network, ensure there is a transaction info available storing the exchange rate</p>
@@ -1314,8 +1343,8 @@ public class WalletService extends AbstractService {
 
           amountFiat.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
           BigDecimal localAmount = Coins.toLocalAmount(
-            transactionSeenEvent.getAmount(),
-            exchangeRateChangedEvent.get().getRate()
+                  transactionSeenEvent.getAmount(),
+                  exchangeRateChangedEvent.get().getRate()
           );
 
           if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
@@ -1360,5 +1389,9 @@ public class WalletService extends AbstractService {
         return o1.getAmountCoin().compareTo(o2.getAmountCoin());
       }
     }
+  }
+
+  public File getPaymentDatabaseFile() {
+    return paymentDatabaseFile;
   }
 }

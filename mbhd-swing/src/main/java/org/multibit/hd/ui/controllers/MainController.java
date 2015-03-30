@@ -647,7 +647,7 @@ public class MainController extends AbstractController implements
    * Handles the process of shutting down the current wallet support services
    */
 
-  private void shutdownCurrentWallet(ShutdownEvent.ShutdownType shutdownType) {
+  public void shutdownCurrentWallet(ShutdownEvent.ShutdownType shutdownType) {
 
     log.debug("Shutdown current wallet...");
 

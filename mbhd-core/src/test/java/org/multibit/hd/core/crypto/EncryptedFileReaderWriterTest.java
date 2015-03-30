@@ -110,7 +110,8 @@ public class EncryptedFileReaderWriterTest {
     filesToChange.add(outputFile2);
 
     // Change the encryption on the file
-    EncryptedFileReaderWriter.changeEncryption(filesToChange, PASSWORD1, PASSWORD2);
+    List<File> newFiles = EncryptedFileReaderWriter.changeEncryptionPrepare(filesToChange, PASSWORD1, PASSWORD2);
+    EncryptedFileReaderWriter.changeEncryptionCommit(filesToChange, newFiles);
 
     int i = 0;
     for (File loopFile : filesToChange) {

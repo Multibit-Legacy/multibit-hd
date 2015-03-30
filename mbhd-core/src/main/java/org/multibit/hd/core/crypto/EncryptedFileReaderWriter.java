@@ -146,13 +146,17 @@ public class EncryptedFileReaderWriter {
 
   /**
    * Change the encryption on Collection of files.
+   * This method is split into two parts:
+   * 1) changeEncryptionPrepare - change the encryption on the files, giving them the suffix ".new"
+   * 2) changeEncryptionCommit - rename the files
    *
    * @param files       The List of files to change the encryption on
    * @param oldPassword The original password
    * @param newPassword The new password
+   * @return newFiles   A list containing the newly encrypted files
    * @throws EncryptedFileReaderWriterException
    */
-  public static void changeEncryption(List<File> files, CharSequence oldPassword, CharSequence newPassword) throws EncryptedFileReaderWriterException {
+  public static List<File> changeEncryptionPrepare(List<File> files, CharSequence oldPassword, CharSequence newPassword) throws EncryptedFileReaderWriterException {
     Preconditions.checkNotNull(files);
     Preconditions.checkNotNull(oldPassword);
     Preconditions.checkNotNull(newPassword);
@@ -183,29 +187,46 @@ public class EncryptedFileReaderWriter {
         newFiles.add(newFile);
         SecureFiles.writeFile(new ByteArrayInputStream(newEncryptedBytes), newFile);
       }
+      return newFiles;
     } catch (IOException ioe) {
       throw new EncryptedFileReaderWriterException("Could not decrypt with old password and re-encrypt with new", ioe);
     }
+  }
+
+  /**
+   * Change the encryption on Collection of files.
+   * This method is split into two parts:
+   * 1) changeEncryptionPrepare - change the encryption on the files, giving them the suffix ".new"
+   * 2) changeEncryptionCommit - rename the files to  ".old", rename the ".new" files to the original, secure delete the ".old"
+   *
+   * @param originalFiles The List of files to change the encryption on
+   * @param newFiles      The list of new files, after their encryption has been changed
+   * @throws EncryptedFileReaderWriterException
+   */
+  public static void changeEncryptionCommit(List<File> originalFiles, List<File> newFiles) throws EncryptedFileReaderWriterException {
+    Preconditions.checkNotNull(originalFiles);
+    Preconditions.checkNotNull(newFiles);
+    Preconditions.checkState(originalFiles.size() == newFiles.size());
 
     // Once all files have been written to the ".new" files, rename the files to have the suffix ".old"
     List<File> oldFiles = Lists.newArrayList();
-    for (int index = 0; index < files.size(); index++) {
+    for (int index = 0; index < originalFiles.size(); index++) {
        try {
         // Rename the file, giving it the suffix ".old"
-        File oldFile = new File(files.get(index).getAbsolutePath() + OLD_FILE_EXTENSION);
+        File oldFile = new File(originalFiles.get(index).getAbsolutePath() + OLD_FILE_EXTENSION);
         oldFiles.add(oldFile);
-        SecureFiles.rename(files.get(index), oldFile);
+        SecureFiles.rename(originalFiles.get(index), oldFile);
        } catch (IOException ioe) {
-         throw new EncryptedFileReaderWriterException("Could not rename file " + files.get(index).getAbsolutePath() + " to " + oldFiles.get(index).getAbsolutePath());
+         throw new EncryptedFileReaderWriterException("Could not rename file " + originalFiles.get(index).getAbsolutePath() + " to " + oldFiles.get(index).getAbsolutePath());
        }
      }
 
     // Rename all the new files to the original ones passed in
-    for (int index = 0; index < files.size(); index++) {
+    for (int index = 0; index < originalFiles.size(); index++) {
       try {
-        SecureFiles.rename(newFiles.get(index), files.get(index));
+        SecureFiles.rename(newFiles.get(index), originalFiles.get(index));
       } catch (IOException ioe) {
-        throw new EncryptedFileReaderWriterException("Could not rename file " + newFiles.get(index).getAbsolutePath() + " to " + files.get(index).getAbsolutePath());
+        throw new EncryptedFileReaderWriterException("Could not rename file " + newFiles.get(index).getAbsolutePath() + " to " + originalFiles.get(index).getAbsolutePath());
       }
     }
 
