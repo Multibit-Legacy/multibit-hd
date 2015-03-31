@@ -1460,7 +1460,7 @@ public class MainController extends AbstractController implements
             // Check for external data (wants to be quick)
             log.debug("Check for external data...");
             handleExternalDataAlerts();
-            
+
             // Check for system time drift (runs in the background)
             log.debug("Check for system time drift...");
             handleSystemTimeDrift();

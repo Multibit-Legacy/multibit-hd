@@ -1205,31 +1205,10 @@ public class WalletService extends AbstractService {
     // Locate the installation directory and current wallet paths
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).isPresent());
-    String currentWalletDirectoryPath = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get().getParentFile().getAbsolutePath();
     File currentWalletSummaryFile = WalletManager.INSTANCE.getCurrentWalletSummaryFile(applicationDataDirectory).get();
 
-    List<PaymentRequestData> paymentRequestDatas = CoreServices.getOrCreateWalletService(walletId).getPaymentRequestDatas();
-    WalletService walletService = CoreServices.getOrCreateWalletService(walletId);
-
     // Create a List of all the non-wallet files that need to have their password changed
-    List<File> filesToChangePassword = Lists.newArrayList();
-
-    // History
-    filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + HistoryService.HISTORY_DIRECTORY_NAME + File.separator + HistoryService.HISTORY_DATABASE_NAME));
-
-    // Contacts
-    filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + ContactService.CONTACTS_DIRECTORY_NAME + File.separator + ContactService.CONTACTS_DATABASE_NAME));
-
-    // Payments
-    filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + PAYMENTS_DIRECTORY_NAME + File.separator + PAYMENTS_DATABASE_NAME));
-
-    // BIP70 Payment requests
-    if (paymentRequestDatas != null) {
-      for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
-        File paymentRequestFile = walletService.getPaymentRequestFile(paymentRequestData.getUuid(), walletService.getPaymentDatabaseFile());
-        filesToChangePassword.add(paymentRequestFile);
-      }
-    }
+    List<File> filesToChangePassword = createListOfFilesToChangePassword(applicationDataDirectory, walletId);
 
     // Close the Network connection to stop writes to the wallet + payments database
     // Close  Contacts / History / Payments
@@ -1295,16 +1274,20 @@ public class WalletService extends AbstractService {
       // Change the credentials used to encrypt the wallet
       wallet.decrypt(oldPassword);
       walletSummary.setWalletPassword(new WalletPassword(newPassword, walletId));
-      walletSummary.setEncryptedBackupKey(encryptedNewBackupAESKey);
       walletSummary.setEncryptedPassword(encryptedPaddedNewPassword);
       wallet.encrypt(newPassword);
+
+      // WALLET WAS ENCRYPTED OK - SAVE EVERYTHING WITH NEW PASSWORD
+
+      // Save the new encrypted backup key using the new password
+      walletSummary.setEncryptedBackupKey(encryptedNewBackupAESKey);
 
       // Save the wallet summary file
       WalletManager.updateWalletSummary(currentWalletSummaryFile, walletSummary);
       WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
       WalletManager.INSTANCE.saveWallet();
 
-      // Wallet was saved successfully do the commit of the changed non-wallet files by "rename existing + rename new + delete old"
+      // Do the commit of the changed non-wallet files by "rename existing + rename new + delete old"
       EncryptedFileReaderWriter.changeEncryptionCommit(filesToChangePassword, newFiles);
 
       // Restart Contacts / History / Payments / Bitcoin network services
@@ -1321,6 +1304,34 @@ public class WalletService extends AbstractService {
       log.error("Failed to change password", e);
       CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_ERROR, new Object[]{e.getMessage()}));
     }
+  }
+
+  private static List<File> createListOfFilesToChangePassword(File applicationDataDirectory, WalletId walletId) {
+    String currentWalletDirectoryPath = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get().getParentFile().getAbsolutePath();
+
+    List<PaymentRequestData> paymentRequestDatas = CoreServices.getOrCreateWalletService(walletId).getPaymentRequestDatas();
+    WalletService walletService = CoreServices.getOrCreateWalletService(walletId);
+
+      // Create a List of all the non-wallet files that need to have their password changed
+    List<File> filesToChangePassword = Lists.newArrayList();
+
+    // History
+    filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + HistoryService.HISTORY_DIRECTORY_NAME + File.separator + HistoryService.HISTORY_DATABASE_NAME));
+
+    // Contacts
+    filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + ContactService.CONTACTS_DIRECTORY_NAME + File.separator + ContactService.CONTACTS_DATABASE_NAME));
+
+    // Payments
+    filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + PAYMENTS_DIRECTORY_NAME + File.separator + PAYMENTS_DATABASE_NAME));
+
+    // BIP70 Payment requests
+    if (paymentRequestDatas != null) {
+      for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
+        File paymentRequestFile = walletService.getPaymentRequestFile(paymentRequestData.getUuid(), walletService.getPaymentDatabaseFile());
+        filesToChangePassword.add(paymentRequestFile);
+      }
+    }
+    return filesToChangePassword;
   }
 
   /**
