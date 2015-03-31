@@ -46,10 +46,10 @@ public class PaymentTableModel extends AbstractTableModel {
 
   private Object[][] data;
 
-  private List<PaymentData> paymentData;
+  private List<PaymentData> paymentDataList;
 
-  public PaymentTableModel(Set<PaymentData> paymentData) {
-    setPaymentData(paymentData, false);
+  public PaymentTableModel(Set<PaymentData> paymentDataList) {
+    setPaymentData(paymentDataList, false);
   }
 
   /**
@@ -67,7 +67,7 @@ public class PaymentTableModel extends AbstractTableModel {
    * @param paymentData The paymentData to show in the table as a List
    */
   public void setPaymentData(List<PaymentData> paymentData, boolean fireTableDataChanged) {
-    this.paymentData = paymentData;
+    this.paymentDataList = paymentData;
 
     data = new Object[paymentData.size()][];
 
@@ -141,8 +141,8 @@ public class PaymentTableModel extends AbstractTableModel {
     // No table updates allowed
   }
 
-  public List<PaymentData> getPaymentData() {
-    return paymentData;
+  public List<PaymentData> getPaymentDataList() {
+    return paymentDataList;
   }
 
 }

@@ -246,7 +246,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
           return;
         }
         int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
-        PaymentData paymentData = ((PaymentTableModel) paymentsTable.getModel()).getPaymentData().get(selectedModelRow);
+        PaymentData paymentData = ((PaymentTableModel) paymentsTable.getModel()).getPaymentDataList().get(selectedModelRow);
         log.debug("getDetailsAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow + ", paymentData = " + paymentData.toString());
 
         PaymentsWizard wizard = Wizards.newPaymentsWizard(paymentData);
@@ -306,7 +306,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
         int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
         log.debug("getExportAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow);
 
-        PaymentData paymentData = ((PaymentTableModel) paymentsTable.getModel()).getPaymentData().get(selectedModelRow);
+        PaymentData paymentData = ((PaymentTableModel) paymentsTable.getModel()).getPaymentDataList().get(selectedModelRow);
 
         if (paymentData instanceof MBHDPaymentRequestData) {
           // We can delete this

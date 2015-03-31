@@ -90,17 +90,17 @@ public class PaymentsProtobufSerializer {
 
     Preconditions.checkNotNull(payments, "Payments must be specified");
 
-    Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas = payments.getMBHDPaymentRequestDataCollection();
-    if (MBHDPaymentRequestDatas != null) {
-      for (MBHDPaymentRequestData MBHDPaymentRequestData : MBHDPaymentRequestDatas) {
+    Collection<MBHDPaymentRequestData> mbhdPaymentRequestDataCollection = payments.getMBHDPaymentRequestDataCollection();
+    if (mbhdPaymentRequestDataCollection != null) {
+      for (MBHDPaymentRequestData MBHDPaymentRequestData : mbhdPaymentRequestDataCollection) {
         MBHDPaymentsProtos.MBHDPaymentRequest paymentRequestProto = makeMbhdPaymentRequestProto(MBHDPaymentRequestData);
         paymentsBuilder.addMbhdPaymentRequest(paymentRequestProto);
       }
     }
 
-    Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDataCollection();
-    if (paymentRequestDatas != null) {
-      for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
+    Collection<PaymentRequestData> paymentRequestDataCollection = payments.getPaymentRequestDataCollection();
+    if (paymentRequestDataCollection != null) {
+      for (PaymentRequestData paymentRequestData : paymentRequestDataCollection) {
         MBHDPaymentsProtos.PaymentRequest paymentRequestProto = makePaymentRequestProto(paymentRequestData);
         paymentsBuilder.addPaymentRequest(paymentRequestProto);
       }
@@ -146,9 +146,9 @@ public class PaymentsProtobufSerializer {
    * @throws org.multibit.hd.core.exceptions.PaymentsLoadException thrown in various error conditions (see description).
    */
   private void readPayments(MBHDPaymentsProtos.Payments paymentsProto, Payments payments) throws PaymentsLoadException {
-    Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas = Lists.newArrayList();
+    Collection<MBHDPaymentRequestData> mbhdPaymentRequestDataCollection = Lists.newArrayList();
     Collection<TransactionInfo> transactionInfos = Lists.newArrayList();
-    Collection<PaymentRequestData> paymentRequestDatas = Lists.newArrayList();
+    Collection<PaymentRequestData> paymentRequestDataCollection = Lists.newArrayList();
 
     List<MBHDPaymentsProtos.MBHDPaymentRequest> mbhdPaymentRequestProtos = paymentsProto.getMbhdPaymentRequestList();
     if (mbhdPaymentRequestProtos != null) {
@@ -219,7 +219,7 @@ public class PaymentsProtobufSerializer {
           }
         }
 
-        MBHDPaymentRequestDatas.add(MBHDPaymentRequestData);
+        mbhdPaymentRequestDataCollection.add(MBHDPaymentRequestData);
       }
     }
 
@@ -315,7 +315,7 @@ public class PaymentsProtobufSerializer {
         }
       }
 
-      paymentRequestDatas.add(paymentRequestData);
+      paymentRequestDataCollection.add(paymentRequestData);
     }
 
 
@@ -401,9 +401,9 @@ public class PaymentsProtobufSerializer {
       }
     }
 
-    payments.setMBHDPaymentRequestDataCollection(MBHDPaymentRequestDatas);
+    payments.setMBHDPaymentRequestDataCollection(mbhdPaymentRequestDataCollection);
     payments.setTransactionInfoCollection(transactionInfos);
-    payments.setPaymentRequestDataCollection(paymentRequestDatas);
+    payments.setPaymentRequestDataCollection(paymentRequestDataCollection);
   }
 
   /**

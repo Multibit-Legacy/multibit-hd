@@ -751,10 +751,10 @@ public class WalletService extends AbstractService {
         Payments payments = protobufSerializer.readPayments(decryptedInputStream);
 
         // For quick access payment requests and transaction infos are stored in maps
-        Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas = payments.getMBHDPaymentRequestDataCollection();
+        Collection<MBHDPaymentRequestData> mbhdPaymentRequestDataCollection = payments.getMBHDPaymentRequestDataCollection();
 
-        if (MBHDPaymentRequestDatas != null) {
-          for (MBHDPaymentRequestData MBHDPaymentRequestData : MBHDPaymentRequestDatas) {
+        if (mbhdPaymentRequestDataCollection != null) {
+          for (MBHDPaymentRequestData MBHDPaymentRequestData : mbhdPaymentRequestDataCollection) {
             mbhdPaymentRequestDataMap.put(MBHDPaymentRequestData.getAddress(), MBHDPaymentRequestData);
           }
         }
@@ -769,10 +769,10 @@ public class WalletService extends AbstractService {
 
         Optional<WalletSummary> walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
 
-        Collection<PaymentRequestData> paymentRequestDatas = payments.getPaymentRequestDataCollection();
+        Collection<PaymentRequestData> paymentRequestDataCollection = payments.getPaymentRequestDataCollection();
 
-        if (paymentRequestDatas != null) {
-          for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
+        if (paymentRequestDataCollection != null) {
+          for (PaymentRequestData paymentRequestData : paymentRequestDataCollection) {
 
             // Clear any tx hash if the tx is not in the wallet
             // (See issue https://github.com/bitcoin-solutions/multibit-hd/issues/463)

@@ -100,7 +100,7 @@ public class WalletServiceTest {
   @Test
   public void testCreateMBHDPaymentRequest() throws Exception {
     // Initially there are no payment requests
-    assertThat(walletService.getMBHDPaymentRequestDatas().size()).isEqualTo(0);
+    assertThat(walletService.getMBHDPaymentRequestDataList().size()).isEqualTo(0);
 
     // Create a new payment request
     MBHDPaymentRequestData mbhdPaymentRequestData = new MBHDPaymentRequestData();
@@ -128,24 +128,24 @@ public class WalletServiceTest {
     walletService.readPayments();
 
     // Check the new payment request is present
-    Collection<MBHDPaymentRequestData> newMBHDPaymentRequestDatas = walletService.getMBHDPaymentRequestDatas();
-    assertThat(newMBHDPaymentRequestDatas.size()).isEqualTo(1);
+    Collection<MBHDPaymentRequestData> newMBHDPaymentRequestDataList = walletService.getMBHDPaymentRequestDataList();
+    assertThat(newMBHDPaymentRequestDataList.size()).isEqualTo(1);
 
-    checkMBHDPaymentRequestData(mbhdPaymentRequestData, newMBHDPaymentRequestDatas.iterator().next());
+    checkMBHDPaymentRequestData(mbhdPaymentRequestData, newMBHDPaymentRequestDataList.iterator().next());
 
     // Delete the payment request
     walletService.deleteMBHDPaymentRequest(mbhdPaymentRequestData);
 
     // Check the new payment request is deleted
-    Collection<MBHDPaymentRequestData> deletedMBHDPaymentRequestDatas = walletService.getMBHDPaymentRequestDatas();
-    assertThat(deletedMBHDPaymentRequestDatas.size()).isEqualTo(0);
+    Collection<MBHDPaymentRequestData> deletedMBHDPaymentRequestDataList = walletService.getMBHDPaymentRequestDataList();
+    assertThat(deletedMBHDPaymentRequestDataList.size()).isEqualTo(0);
 
     // Undo the delete
     walletService.undoDeletePaymentData();
 
     // Check it is back
-    Collection<MBHDPaymentRequestData> rebornMBHDPaymentRequestDatas = walletService.getMBHDPaymentRequestDatas();
-    assertThat(rebornMBHDPaymentRequestDatas.size()).isEqualTo(1);
+    Collection<MBHDPaymentRequestData> rebornMBHDPaymentRequestDataList = walletService.getMBHDPaymentRequestDataList();
+    assertThat(rebornMBHDPaymentRequestDataList.size()).isEqualTo(1);
   }
 
   private void checkMBHDPaymentRequestData(MBHDPaymentRequestData MBHDPaymentRequestData, MBHDPaymentRequestData other) {
@@ -224,7 +224,7 @@ public class WalletServiceTest {
 
 
     // Initially there are no BIP70 payment requests
-    assertThat(walletService.getPaymentRequestDatas().size()).isEqualTo(0);
+    assertThat(walletService.getPaymentRequestDataList().size()).isEqualTo(0);
     walletService.addPaymentRequestData(paymentRequestData);
 
     // Write the payment requests, payments and paymentACKs to the backing store
@@ -250,17 +250,17 @@ public class WalletServiceTest {
     walletService.readPayments();
 
     // Check the new payment request is present
-    Collection<PaymentRequestData> newPaymentRequestDatas = walletService.getPaymentRequestDatas();
-    assertThat(newPaymentRequestDatas.size()).isEqualTo(1);
+    Collection<PaymentRequestData> newPaymentRequestDataList = walletService.getPaymentRequestDataList();
+    assertThat(newPaymentRequestDataList.size()).isEqualTo(1);
 
-    checkPaymentRequestData(paymentRequestData, newPaymentRequestDatas.iterator().next());
+    checkPaymentRequestData(paymentRequestData, newPaymentRequestDataList.iterator().next());
 
     // Delete the BIP70 payment request, this will also delete any payment and paymentACK files
     walletService.deletePaymentRequest(paymentRequestData);
 
     // Check the new payment request, payment and paymentACK are deleted
-    Collection<PaymentRequestData> deletedPaymentRequestDatas = walletService.getPaymentRequestDatas();
-    assertThat(deletedPaymentRequestDatas.size()).isEqualTo(0);
+    Collection<PaymentRequestData> deletedPaymentRequestDataList = walletService.getPaymentRequestDataList();
+    assertThat(deletedPaymentRequestDataList.size()).isEqualTo(0);
 
     // Check the payment request, payment and payment ACK files are deleted
     assertThat(expectedPaymentRequestFile.exists()).isFalse();
@@ -271,10 +271,10 @@ public class WalletServiceTest {
     walletService.undoDeletePaymentData();
 
     // Check everything is back
-    Collection<PaymentRequestData> rebornPaymentRequestDatas = walletService.getPaymentRequestDatas();
-    assertThat(rebornPaymentRequestDatas.size()).isEqualTo(1);
+    Collection<PaymentRequestData> rebornPaymentRequestDataList = walletService.getPaymentRequestDataList();
+    assertThat(rebornPaymentRequestDataList.size()).isEqualTo(1);
 
-    checkPaymentRequestData(paymentRequestData, rebornPaymentRequestDatas.iterator().next());
+    checkPaymentRequestData(paymentRequestData, rebornPaymentRequestDataList.iterator().next());
 
     // Check the payment request, payment and paymentACK files are back
     assertThat(expectedPaymentRequestFile.exists()).isTrue();

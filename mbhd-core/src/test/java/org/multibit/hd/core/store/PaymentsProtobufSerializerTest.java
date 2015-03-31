@@ -42,56 +42,56 @@ public class PaymentsProtobufSerializerTest {
   @Test
   public void testRequests() throws Exception {
     // Test you can add some payment requests and read them back
-    Collection<MBHDPaymentRequestData> MBHDPaymentRequestDatas = Lists.newArrayList();
+    Collection<MBHDPaymentRequestData> mbhdPaymentRequestDataCollection = Lists.newArrayList();
 
-    MBHDPaymentRequestData MBHDPaymentRequestData1 = new MBHDPaymentRequestData();
+    MBHDPaymentRequestData mbhdPaymentRequestData1 = new MBHDPaymentRequestData();
 
-    MBHDPaymentRequestData1.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
-    MBHDPaymentRequestData1.setAmountCoin(Coin.valueOf(245));
+    mbhdPaymentRequestData1.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
+    mbhdPaymentRequestData1.setAmountCoin(Coin.valueOf(245));
     DateTime date1 = new DateTime();
-    MBHDPaymentRequestData1.setDate(date1);
-    MBHDPaymentRequestData1.setLabel("label1");
-    MBHDPaymentRequestData1.setNote("note1");
+    mbhdPaymentRequestData1.setDate(date1);
+    mbhdPaymentRequestData1.setLabel("label1");
+    mbhdPaymentRequestData1.setNote("note1");
 
     FiatPayment fiatPayment1 = new FiatPayment();
-    MBHDPaymentRequestData1.setAmountFiat(fiatPayment1);
+    mbhdPaymentRequestData1.setAmountFiat(fiatPayment1);
     fiatPayment1.setAmount(Optional.of(new BigDecimal("12345.6")));
     fiatPayment1.setCurrency(Optional.of(Currency.getInstance("USD")));
     fiatPayment1.setRate(Optional.of("10.0"));
     fiatPayment1.setExchangeName(Optional.of("Bitstamp"));
 
-    MBHDPaymentRequestData MBHDPaymentRequestData2 = new MBHDPaymentRequestData();
-    MBHDPaymentRequestData2.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
-    MBHDPaymentRequestData2.setAmountCoin(Coin.valueOf(789));
+    MBHDPaymentRequestData mbhdPaymentRequestData2 = new MBHDPaymentRequestData();
+    mbhdPaymentRequestData2.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
+    mbhdPaymentRequestData2.setAmountCoin(Coin.valueOf(789));
     DateTime date2 = date1.plusDays(7);
-    MBHDPaymentRequestData2.setDate(date2);
-    MBHDPaymentRequestData2.setLabel("label2");
-    MBHDPaymentRequestData2.setNote("note2");
+    mbhdPaymentRequestData2.setDate(date2);
+    mbhdPaymentRequestData2.setLabel("label2");
+    mbhdPaymentRequestData2.setNote("note2");
 
     FiatPayment fiatPayment2 = new FiatPayment();
-    MBHDPaymentRequestData2.setAmountFiat(fiatPayment2);
+    mbhdPaymentRequestData2.setAmountFiat(fiatPayment2);
     fiatPayment2.setAmount(Optional.of(new BigDecimal("12345.678")));
     fiatPayment2.setCurrency(Optional.of(Currency.getInstance("GBP")));
     fiatPayment2.setRate(Optional.of("20.0"));
     fiatPayment2.setExchangeName(Optional.of("OER"));
 
-    MBHDPaymentRequestDatas.add(MBHDPaymentRequestData1);
-    MBHDPaymentRequestDatas.add(MBHDPaymentRequestData2);
+    mbhdPaymentRequestDataCollection.add(mbhdPaymentRequestData1);
+    mbhdPaymentRequestDataCollection.add(mbhdPaymentRequestData2);
 
     Payments payments = new Payments();
-    payments.setMBHDPaymentRequestDataCollection(MBHDPaymentRequestDatas);
+    payments.setMBHDPaymentRequestDataCollection(mbhdPaymentRequestDataCollection);
 
     Payments newPayments = roundTrip(payments);
 
-    Collection<MBHDPaymentRequestData> newMBHDPaymentRequestDatas = newPayments.getMBHDPaymentRequestDataCollection();
-    assertThat(newMBHDPaymentRequestDatas.size()).isEqualTo(2);
+    Collection<MBHDPaymentRequestData> newMBHDPaymentRequestDataCollection = newPayments.getMBHDPaymentRequestDataCollection();
+    assertThat(newMBHDPaymentRequestDataCollection.size()).isEqualTo(2);
 
-    Iterator<MBHDPaymentRequestData> iterator = newMBHDPaymentRequestDatas.iterator();
+    Iterator<MBHDPaymentRequestData> iterator = newMBHDPaymentRequestDataCollection.iterator();
     MBHDPaymentRequestData newMBHDPaymentRequestData1 = iterator.next();
     MBHDPaymentRequestData newMBHDPaymentRequestData2 = iterator.next();
 
-    checkPaymentRequest(MBHDPaymentRequestData1, newMBHDPaymentRequestData1);
-    checkPaymentRequest(MBHDPaymentRequestData2, newMBHDPaymentRequestData2);
+    checkPaymentRequest(mbhdPaymentRequestData1, newMBHDPaymentRequestData1);
+    checkPaymentRequest(mbhdPaymentRequestData2, newMBHDPaymentRequestData2);
   }
 
   private void checkPaymentRequest(MBHDPaymentRequestData MBHDPaymentRequestData, MBHDPaymentRequestData other) {
