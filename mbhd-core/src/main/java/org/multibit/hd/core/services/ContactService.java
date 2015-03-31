@@ -75,8 +75,9 @@ public interface ContactService {
    * <p>Load the contacts from the store</p>
    *
    * @throws ContactsLoadException If something goes wrong
+   * @param password
    */
-  void loadContacts() throws ContactsLoadException;
+  void loadContacts(CharSequence password) throws ContactsLoadException;
 
   /**
    * @param selectedContacts The selected contacts to remove from the store

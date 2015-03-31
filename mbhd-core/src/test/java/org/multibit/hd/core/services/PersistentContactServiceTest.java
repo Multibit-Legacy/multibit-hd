@@ -140,7 +140,7 @@ public class PersistentContactServiceTest {
     assertThat(allContacts.size()).isEqualTo(0);
 
     // Reload it - there should be the same number of contacts and the new contact should be available
-    contactService.loadContacts();
+    contactService.loadContacts(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
 
     allContacts = contactService.allContacts();
 

@@ -97,7 +97,7 @@ public class PersistentContactService extends AbstractService implements Contact
 
     // Load the contact data from the backing writeContacts if it exists
     if (backingStoreFile.exists()) {
-      loadContacts();
+      loadContacts(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
     }
 
   }
@@ -266,15 +266,14 @@ public class PersistentContactService extends AbstractService implements Contact
   }
 
   @Override
-  public void loadContacts() throws ContactsLoadException {
+  public void loadContacts(CharSequence password) throws ContactsLoadException {
 
     log.debug("Loading contacts from\n'{}'", backingStoreFile.getAbsolutePath());
 
     try {
       contacts.clear();
       if (backingStoreFile.exists()) {
-        ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile,
-                WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
+        ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(backingStoreFile, password);
         Set<Contact> loadedContacts = protobufSerializer.readContacts(decryptedInputStream);
 
         contacts.addAll(loadedContacts);

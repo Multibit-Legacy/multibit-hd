@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.MnemonicCode;
+import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.testing.FakeTxBuilder;
 import org.bitcoinj.wallet.DeterministicSeed;
 import org.joda.time.DateTime;
@@ -41,8 +42,6 @@ public class WalletServiceTest {
 
   private WalletService walletService;
 
-  private WalletId walletId;
-
   private WalletSummary walletSummary;
 
   public static final String PASSWORD = "1throckSplockChockAdock";
@@ -72,7 +71,7 @@ public class WalletServiceTest {
     byte[] entropy1 = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
-    walletId = new WalletId(seed1);
+    WalletId walletId = new WalletId(seed1);
 
     BackupManager.INSTANCE.initialise(temporaryDirectory, Optional.<File>absent());
     InstallationManager.setCurrentApplicationDataDirectory(temporaryDirectory);
@@ -350,7 +349,7 @@ public class WalletServiceTest {
     assertThat(wallet).isNotNull();
 
     // Reload contacts db
-    CoreServices.getCurrentContactService().loadContacts();
+    CoreServices.getCurrentContactService().loadContacts(password);
 
     // Reload history db
     CoreServices.getCurrentHistoryService().loadHistory(password);
@@ -391,7 +390,7 @@ public class WalletServiceTest {
    * https://code.google.com/p/bitcoinj/issues/detail?id=573&thanks=573&ts=1406733004
    */
   public void testChangePasswordSimple() throws Exception {
-    NetworkParameters networkParameters = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
+    NetworkParameters networkParameters = MainNetParams.get();
 
     long creationTimeSecs = MnemonicCode.BIP39_STANDARDISATION_TIME_SECS;
     String seedStr = "letter advice cage absurd amount doctor acoustic avoid letter advice cage above";
