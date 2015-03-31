@@ -925,7 +925,7 @@ public class WalletService extends AbstractService {
             EncryptedFileReaderWriter.encryptAndWrite(
                     serialisedBytes,
                     WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), paymentRequestFile);
-            log.debug("Written serialised bytes of unencrypted length {} to output file {}", serialisedBytes.length, paymentRequestFile.getAbsolutePath());
+            log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'", serialisedBytes.length, paymentRequestFile.getAbsolutePath());
           } catch (EncryptedFileReaderWriterException e) {
             log.error("Failed to write BIP70 payment request file with UUID {}, error was {}", paymentRequestData.getUuid(), e);
           }
@@ -941,7 +941,7 @@ public class WalletService extends AbstractService {
             EncryptedFileReaderWriter.encryptAndWrite(
                     serialisedBytes,
                     WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), paymentFile);
-            log.debug("Written serialised bytes of unencrypted length {} to output file {}", serialisedBytes.length, paymentFile.getAbsolutePath());
+            log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'", serialisedBytes.length, paymentFile.getAbsolutePath());
           } catch (EncryptedFileReaderWriterException e) {
             log.error("Failed to write BIP70 payment file with UUID {}, error was {}", paymentRequestData.getUuid(), e);
           }
@@ -957,7 +957,7 @@ public class WalletService extends AbstractService {
             EncryptedFileReaderWriter.encryptAndWrite(
                     serialisedBytes,
                     WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), paymentACKFile);
-            log.debug("Written serialised bytes of unencrypted length {} to output file {}", serialisedBytes.length, paymentACKFile.getAbsolutePath());
+            log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'", serialisedBytes.length, paymentACKFile.getAbsolutePath());
           } catch (EncryptedFileReaderWriterException e) {
             log.error("Failed to write BIP70 payment ACK file with UUID {}, error was {}", paymentRequestData.getUuid(), e);
           }
@@ -1102,11 +1102,11 @@ public class WalletService extends AbstractService {
   }
 
 
-  public List<MBHDPaymentRequestData> getMBHDPaymentRequestDatas() {
+  public List<MBHDPaymentRequestData> getMBHDPaymentRequestDataList() {
     return Lists.newArrayList(mbhdPaymentRequestDataMap.values());
   }
 
-  public List<PaymentRequestData> getPaymentRequestDatas() {
+  public List<PaymentRequestData> getPaymentRequestDataList() {
     return Lists.newArrayList(bip70PaymentRequestDataMap.values());
   }
 
@@ -1186,7 +1186,7 @@ public class WalletService extends AbstractService {
         SecureFiles.secureDelete(paymentRequestFile);
       }
     } catch (IOException e) {
-      log.error("Could not delete the payment request file " + paymentRequestFile.getAbsolutePath());
+      log.error("Could not delete the payment request file\n'{}'", paymentRequestFile.getAbsolutePath());
     }
 
     // Delete the serialised payment file
@@ -1196,7 +1196,7 @@ public class WalletService extends AbstractService {
         SecureFiles.secureDelete(paymentFile);
       }
     } catch (IOException e) {
-      log.error("Could not delete the paymentfile " + paymentRequestFile.getAbsolutePath());
+      log.error("Could not delete the payment file\n'{}'", paymentRequestFile.getAbsolutePath());
     }
 
     // Delete the serialised payment ACK file
@@ -1206,7 +1206,7 @@ public class WalletService extends AbstractService {
         SecureFiles.secureDelete(paymentACKFile);
       }
     } catch (IOException e) {
-      log.error("Could not delete the payment ACK file " + paymentACKFile.getAbsolutePath());
+      log.error("Could not delete the payment ACK file\n'{}'", paymentACKFile.getAbsolutePath());
     }
 
     writePayments();
@@ -1258,8 +1258,8 @@ public class WalletService extends AbstractService {
     Set<PaymentData> paymentDataSet = getPaymentDataSet();
     ExportManager.export(
             paymentDataSet,
-            getMBHDPaymentRequestDatas(),
-            getPaymentRequestDatas(),
+            getMBHDPaymentRequestDataList(),
+            getPaymentRequestDataList(),
             exportDirectory,
             transactionFileStem,
             mbhdPaymentRequestFileStem,
@@ -1415,7 +1415,7 @@ public class WalletService extends AbstractService {
   private static List<File> createListOfFilesToChangePassword(File applicationDataDirectory, WalletId walletId) {
     String currentWalletDirectoryPath = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get().getParentFile().getAbsolutePath();
 
-    List<PaymentRequestData> paymentRequestDatas = CoreServices.getOrCreateWalletService(walletId).getPaymentRequestDatas();
+    List<PaymentRequestData> paymentRequestDataList = CoreServices.getOrCreateWalletService(walletId).getPaymentRequestDataList();
     WalletService walletService = CoreServices.getOrCreateWalletService(walletId);
 
     // Create a List of all the non-wallet files that need to have their password changed
@@ -1431,8 +1431,8 @@ public class WalletService extends AbstractService {
     filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + PAYMENTS_DIRECTORY_NAME + File.separator + PAYMENTS_DATABASE_NAME));
 
     // BIP70 Payment requests
-    if (paymentRequestDatas != null) {
-      for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
+    if (paymentRequestDataList != null) {
+      for (PaymentRequestData paymentRequestData : paymentRequestDataList) {
         File paymentRequestFile = walletService.getPaymentRequestFile(paymentRequestData.getUuid(), walletService.getPaymentDatabaseFile());
         filesToChangePassword.add(paymentRequestFile);
       }
