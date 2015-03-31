@@ -1,12 +1,12 @@
 package org.multibit.hd.core.services;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.MnemonicCode;
+import org.bitcoinj.testing.FakeTxBuilder;
 import org.bitcoinj.wallet.DeterministicSeed;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -17,8 +17,8 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
-import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.HttpsManager;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.utils.Addresses;
 import org.multibit.hd.core.utils.BitcoinNetwork;
@@ -31,9 +31,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.security.KeyStore;
-import java.util.Collection;
-import java.util.Currency;
-import java.util.List;
+import java.util.*;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -57,6 +55,7 @@ public class WalletServiceTest {
 
   private static final Logger log = LoggerFactory.getLogger(WalletServiceTest.class);
 
+  private static final byte[] MERCHANT_DATA = new byte[] { 0, 1, 2 };
 
   @Before
   public void setUp() throws Exception {
@@ -165,6 +164,13 @@ public class WalletServiceTest {
 
   @Test
   public void testCreateBIP70PaymentRequest() throws Exception {
+    // Create a BIP70 PaymentRequestData that the BIP70 protobuf objects will be stored in
+    PaymentRequestData paymentRequestData = new PaymentRequestData();
+    paymentRequestData.setUuid(UUID.randomUUID());
+    paymentRequestData.setAmountCoin(Coin.MILLICOIN);
+    paymentRequestData.setTrustStatus(PaymentSessionStatus.UNKNOWN);
+    paymentRequestData.setTrustErrorMessage("");
+
     PaymentProtocolService paymentProtocolService = new PaymentProtocolService(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
     assertThat(paymentProtocolService).isNotNull();
 
@@ -178,34 +184,67 @@ public class WalletServiceTest {
             Coin.MILLICOIN,
             "Please donate to MultiBit",
             new URL("https://localhost:8443/payment"),
-            "Donation 0001".getBytes(Charsets.UTF_8),
+            MERCHANT_DATA,
             keyStore,
             "serverkey",
             HttpsManager.PASSPHRASE.toCharArray()
     );
 
-    // Act
+    // Create a payment request
     final Optional<Protos.PaymentRequest> paymentRequest = paymentProtocolService.newSignedPaymentRequest(signedPaymentRequestSummary);
-
     assertThat(paymentRequest).isNotNull();
     assertThat(paymentRequest.isPresent()).isTrue();
 
+    paymentRequestData.setPaymentRequest(paymentRequest);
+
+
+    // Create a payment for the above payment request
+    String paymentMemo = "This is a payment memo";
+    List<Transaction> transactions = new LinkedList<>();
+    Coin amount = Coin.COIN;
+    Address toAddress = new ECKey().toAddress(networkParameters);
+    transactions.add(FakeTxBuilder.createFakeTx(networkParameters, amount, toAddress));
+    Coin refundAmount = Coin.SATOSHI;
+    Address refundAddress = new ECKey().toAddress(networkParameters);
+
+    final Optional<Protos.Payment> payment = paymentProtocolService.newPayment(MERCHANT_DATA, transactions, refundAmount, refundAddress, paymentMemo);
+    assertThat(payment).isNotNull();
+    assertThat(payment.isPresent()).isTrue();
+
+    paymentRequestData.setPayment(payment);
+
+
+    // Create a payment ACK for the above payment
+    String paymentACKMemo = "This is a payment ACK memo";
+    final Optional<Protos.PaymentACK> paymentACK = paymentProtocolService.newPaymentACK(payment.get(), paymentACKMemo);
+    assertThat(paymentACK).isNotNull();
+    assertThat(paymentACK.isPresent()).isTrue();
+
+    paymentRequestData.setPaymentACK(paymentACK);
+
+
     // Initially there are no BIP70 payment requests
     assertThat(walletService.getPaymentRequestDatas().size()).isEqualTo(0);
-
-    PaymentRequestData paymentRequestData = new PaymentRequestData(paymentRequest.get(), Optional.<Sha256Hash>absent());
-
     walletService.addPaymentRequestData(paymentRequestData);
 
-    // Write the payment requests to the backing store
+    // Write the payment requests, payments and paymentACKs to the backing store
     walletService.writePayments();
 
-    // Check the payment request file is stored - it is stored in a subdirectoy 'bip70' with the name "uuid".aes
-    File expectedFile = new File (WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletFile().getParentFile()
-            + File.separator + "payments" + File.separator + "bip70"
-            + File.separator + paymentRequestData.getUuid().toString() + ".aes");
-    log.debug("Expected payment request file is {}", expectedFile.getAbsoluteFile());
-    assertThat(expectedFile.exists()).isTrue();
+    // Check the BIP70 files are stored - they are stored in a subdirectory 'bip70' with the name "uuid".paymentrequest.aes or ".payment.aes" or ".packmentack.aes"
+    String root = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletFile().getParentFile()
+                + File.separator + "payments" + File.separator + "bip70"
+                + File.separator + paymentRequestData.getUuid().toString();
+
+    File expectedPaymentRequestFile = new File (root + ".paymentrequest.aes");
+    File expectedPaymentFile = new File (root + ".payment.aes");
+    File expectedPaymentACKFile = new File (root + ".paymentack.aes");
+
+    log.debug("Expected payment request file is {}", expectedPaymentRequestFile.getAbsoluteFile());
+    log.debug("Expected payment file is {}", expectedPaymentFile.getAbsoluteFile());
+    log.debug("Expected payment ACK file is {}", expectedPaymentACKFile.getAbsoluteFile());
+    assertThat(expectedPaymentRequestFile.exists()).isTrue();
+    assertThat(expectedPaymentFile.exists()).isTrue();
+    assertThat(expectedPaymentACKFile.exists()).isTrue();
 
     // Read the payment requests from disk
     walletService.readPayments();
@@ -216,57 +255,57 @@ public class WalletServiceTest {
 
     checkPaymentRequestData(paymentRequestData, newPaymentRequestDatas.iterator().next());
 
-    // Delete the BIP70 payment request
+    // Delete the BIP70 payment request, this will also delete any payment and paymentACK files
     walletService.deletePaymentRequest(paymentRequestData);
 
-    // Check the new payment request is deleted
+    // Check the new payment request, payment and paymentACK are deleted
     Collection<PaymentRequestData> deletedPaymentRequestDatas = walletService.getPaymentRequestDatas();
     assertThat(deletedPaymentRequestDatas.size()).isEqualTo(0);
 
-    // Check the payment request file is deleted
-    assertThat(expectedFile.exists()).isFalse();
+    // Check the payment request, payment and payment ACK files are deleted
+    assertThat(expectedPaymentRequestFile.exists()).isFalse();
+    assertThat(expectedPaymentFile.exists()).isFalse();
+    assertThat(expectedPaymentACKFile.exists()).isFalse();
 
     // Undo the delete
     walletService.undoDeletePaymentData();
 
-    // Check it is back
+    // Check everything is back
     Collection<PaymentRequestData> rebornPaymentRequestDatas = walletService.getPaymentRequestDatas();
     assertThat(rebornPaymentRequestDatas.size()).isEqualTo(1);
 
-    // Check the payment request file is deleted
-    assertThat(expectedFile.exists()).isTrue();
+    checkPaymentRequestData(paymentRequestData, rebornPaymentRequestDatas.iterator().next());
+
+    // Check the payment request, payment and paymentACK files are back
+    assertThat(expectedPaymentRequestFile.exists()).isTrue();
+    assertThat(expectedPaymentFile.exists()).isTrue();
+    assertThat(expectedPaymentACKFile.exists()).isTrue();
   }
 
   private void checkPaymentRequestData(PaymentRequestData first, PaymentRequestData other) {
-    assertThat(other.getUuid().equals(first.getUuid()));
-    assertThat(other.getTransactionHash().equals(first.getTransactionHash()));
-    assertThat(other.getDescription().equals(first.getDescription()));
-    assertThat(other.getAmountCoin().equals(first.getAmountCoin()));
-    assertThat(other.getAmountFiat().equals(first.getAmountFiat()));
-    if (other.getDate() == null) {
-      assertThat(first.getDate() == null);
-    } else {
-      assertThat(other.getDate().equals(first.getDate()));
-    }
-    if (other.getExpirationDate() == null) {
-      assertThat(first.getExpirationDate() == null);
-    } else {
-      assertThat(other.getExpirationDate().equals(first.getExpirationDate()));
-    }
-    assertThat(other.getTrustStatus().equals(first.getTrustStatus()));
-    assertThat(other.getTrustErrorMessage().equals(first.getTrustErrorMessage()));
-    assertThat(other.getIdentityDisplayName().equals(first.getIdentityDisplayName()));
-    assertThat(other.getNote().equals(first.getNote()));
-    assertThat(other.getType().equals(first.getType()));
+    assertThat(other.getUuid()).isEqualTo(first.getUuid());
+    assertThat(other.getTransactionHash()).isEqualTo(first.getTransactionHash());
+    assertThat(other.getDescription()).isEqualTo(first.getDescription());
+    assertThat(other.getAmountCoin()).isEqualTo(first.getAmountCoin());
+    assertThat(other.getAmountFiat()).isEqualTo(first.getAmountFiat());
+    assertThat(other.getDate()).isEqualTo(first.getDate());
+    assertThat(other.getExpirationDate()).isEqualTo(first.getExpirationDate());
+    assertThat(other.getTrustStatus()).isEqualTo(first.getTrustStatus());
+    assertThat(other.getTrustErrorMessage()).isEqualTo(first.getTrustErrorMessage());
+    assertThat(other.getIdentityDisplayName()).isEqualTo(first.getIdentityDisplayName());
+    assertThat(other.getNote()).isEqualTo(first.getNote());
+    assertThat(other.getType()).isEqualTo(first.getType());
 
-    if (first.getPaymentRequest() == null) {
-      assertThat(other.getPaymentRequest()).isNull();
-    } else {
-      assertThat(other.getPaymentRequest()).isNotNull();
-      log.debug("first payment request:\n{}\n", first.getPaymentRequest());
-      log.debug("other payment request:\n{}\n", other.getPaymentRequest());
-      //assertThat(other.getPaymentRequest().equals(first.getPaymentRequest()));
-    }
+    // BIP 70 payment request
+    assertThat(first.getPaymentRequest().isPresent()).isEqualTo(other.getPaymentRequest().isPresent());
+
+    // BIP 70 payment
+    assertThat(first.getPayment().isPresent()).isEqualTo(other.getPayment().isPresent());
+    assertThat(other.getPayment().get().getMemo()).isEqualTo(first.getPayment().get().getMemo());
+
+    // BIP 70 payment ACK
+    assertThat(first.getPaymentACK().isPresent()).isEqualTo(other.getPaymentACK().isPresent());
+    assertThat(other.getPaymentACK().get().getMemo()).isEqualTo(first.getPaymentACK().get().getMemo());
   }
 
   @Test

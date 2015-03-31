@@ -5,7 +5,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.io.Resources;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.bitcoin.protocols.payments.Protos;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.Transaction;
 import org.bitcoinj.crypto.TrustStoreLoader;
 import org.bitcoinj.protocols.payments.PaymentProtocol;
 import org.bitcoinj.protocols.payments.PaymentProtocolException;
@@ -23,6 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.security.*;
 import java.security.cert.X509Certificate;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -183,10 +187,6 @@ public class PaymentProtocolService extends AbstractService {
 
       }
 
-      // Handy code to copy a payment request to local file system
-//      OutputStream os = new FileOutputStream(new File("example.bitcoinpaymentrequest"));
-//      paymentSession.getPaymentRequest().writeTo(os);
-
       // Must be OK to be here
       log.debug("Created payment session summary");
       return PaymentSessionSummary.newPaymentSessionOK(paymentSession, pkiVerificationData);
@@ -209,14 +209,12 @@ public class PaymentProtocolService extends AbstractService {
     } catch (TimeoutException e) {
       return PaymentSessionSummary.newPaymentSessionFromException(e, hostName);
     }
-
   }
 
   /**
    * @return A new signed BIP70 PaymentRequest or absent
    */
   public Optional<Protos.PaymentRequest> newSignedPaymentRequest(SignedPaymentRequestSummary signedPaymentRequestSummary) throws NoSuchAlgorithmException {
-
     KeyStore keyStore = signedPaymentRequestSummary.getKeyStore();
     String keyAlias = signedPaymentRequestSummary.getKeyAlias();
     char[] keyStorePassword = signedPaymentRequestSummary.getKeyStorePassword();
@@ -262,7 +260,26 @@ public class PaymentProtocolService extends AbstractService {
 
     // Must have failed to be here
     return Optional.absent();
-
   }
 
-}
+  /**
+   * @param merchantData The merchant data bytes (from the PaymentRequest) to reference
+   * @param transactions The transactions that paid the payment request
+   * @param refundAmount The amount to refund
+   * @param refundAddress The refund address
+   * @param paymentMemo The memo for the payment
+   * @return a new BIP70 payment
+   */
+  public Optional<Protos.Payment> newPayment(byte[] merchantData, List<Transaction> transactions, Coin refundAmount, Address refundAddress, String paymentMemo) {
+        return Optional.of(PaymentProtocol.createPaymentMessage(transactions, refundAmount, refundAddress, paymentMemo, merchantData));
+  }
+
+  /**
+    * @param payment The BIP70 payment to reference
+    * @param paymentACKMemo The memo for the paymentACK
+    * @return a new BIP70 payment
+    */
+   public Optional<Protos.PaymentACK> newPaymentACK(Protos.Payment payment, String paymentACKMemo) {
+     return Optional.of(PaymentProtocol.createPaymentAck(payment, paymentACKMemo));
+   }
+ }

@@ -37,7 +37,7 @@ public class PaymentRequestData implements PaymentData {
   /**
    * The BIP70 PaymentRequest - stored as a file on the file system and provided externally
    */
-  private Protos.PaymentRequest paymentRequest;
+  private Optional<Protos.PaymentRequest> paymentRequest = Optional.absent();
 
   /**
    * The BIP70 Payment - stored as a file on the file system when present
@@ -84,7 +84,7 @@ public class PaymentRequestData implements PaymentData {
   /**
    * If the trust status is ERROR or DOWN, a localised text string describing the problem
    */
-  private String trustErrorMessage;
+  private String trustErrorMessage = "";
 
   /**
    * The expiration date for the payment request
@@ -104,7 +104,7 @@ public class PaymentRequestData implements PaymentData {
    */
   public PaymentRequestData(PaymentSessionSummary paymentSessionSummary) {
 
-    this(paymentSessionSummary.getPaymentSession().get().getPaymentRequest(), Optional.<Sha256Hash>absent());
+    this(Optional.of(paymentSessionSummary.getPaymentSession().get().getPaymentRequest()), Optional.<Sha256Hash>absent());
 
     PaymentSession paymentSession = paymentSessionSummary.getPaymentSession().get();
 
@@ -125,7 +125,7 @@ public class PaymentRequestData implements PaymentData {
    * @param paymentRequest  A PaymentRequest
    * @param transactionHash A transaction hash if a Bitcoin transaction has been successfully broadcast
    */
-  public PaymentRequestData(Protos.PaymentRequest paymentRequest, Optional<Sha256Hash> transactionHash) {
+  public PaymentRequestData(Optional<Protos.PaymentRequest> paymentRequest, Optional<Sha256Hash> transactionHash) {
     Preconditions.checkNotNull(paymentRequest);
     Preconditions.checkNotNull(transactionHash);
 
@@ -150,12 +150,20 @@ public class PaymentRequestData implements PaymentData {
     this.transactionHash = transactionHash;
   }
 
-  public Protos.PaymentRequest getPaymentRequest() {
+  public Optional<Protos.PaymentRequest> getPaymentRequest() {
     return paymentRequest;
   }
 
-  public void setPaymentRequest(Protos.PaymentRequest paymentRequest) {
+  public void setPaymentRequest(Optional<Protos.PaymentRequest> paymentRequest) {
     this.paymentRequest = paymentRequest;
+  }
+
+  public void setPayment(Optional<Protos.Payment> payment) {
+    this.payment = payment;
+  }
+
+  public void setPaymentACK(Optional<Protos.PaymentACK> paymentACK) {
+    this.paymentACK = paymentACK;
   }
 
   @Override
