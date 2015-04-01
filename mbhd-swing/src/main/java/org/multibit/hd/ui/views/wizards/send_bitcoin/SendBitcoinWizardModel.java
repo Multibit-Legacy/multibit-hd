@@ -750,11 +750,13 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
                 // Have successfully received a PaymentAck from the merchant
                 log.info("Received PaymentAck from merchant. Memo: {}", result.getMemo());
 
-                // TODO (JB) Implement the persistence
                 WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
 
-                walletService.writePayments();
-
+                // Write payments
+                CharSequence password = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword();
+                if (password != null) {
+                  walletService.writePayments(password);
+                }
               }
 
               @Override

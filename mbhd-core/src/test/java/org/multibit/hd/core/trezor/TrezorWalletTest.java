@@ -18,12 +18,14 @@ import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
+import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.slf4j.Logger;
@@ -492,20 +494,31 @@ public class TrezorWalletTest {
         "trezor-soft-example",
         true);
 
+    WalletService walletService = CoreServices.getOrCreateWalletService(walletSummary.getWalletId());
+    // Remove any extant BIP70 payment requests
+    List<PaymentRequestData> extantPaymentRequestDatas = walletService.getPaymentRequestDataList();
+    if (extantPaymentRequestDatas != null) {
+      for (PaymentRequestData extantPaymentRequestData : extantPaymentRequestDatas) {
+        walletService.deletePaymentRequest(extantPaymentRequestData);
+      }
+    }
+
+    assertThat(walletService.getPaymentRequestDataList().size()).isEqualTo(0);
+
     Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
 
     // Check the old password is what is expected
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
 
     // Change the password
-    WalletService.changeWalletPassword(walletSummary, (String) PASSWORD, (String) CHANGED_PASSWORD1);
+    WalletService.changeCurrentWalletPassword((String) PASSWORD, (String) CHANGED_PASSWORD1);
 
     // The change password is run on an executor thread so wait 20 seconds for it to complete
     Uninterruptibles.sleepUninterruptibly(20, TimeUnit.SECONDS);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD1)).isTrue();
 
     // Change the password again
-    WalletService.changeWalletPassword(walletSummary, (String) CHANGED_PASSWORD1, (String) CHANGED_PASSWORD2);
+    WalletService.changeCurrentWalletPassword((String) CHANGED_PASSWORD1, (String) CHANGED_PASSWORD2);
 
     // The change password is run on an executor thread so wait 20 seconds for it to complete
     Uninterruptibles.sleepUninterruptibly(20, TimeUnit.SECONDS);

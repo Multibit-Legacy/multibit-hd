@@ -102,8 +102,8 @@ public class EncryptedFileReaderWriterTest {
     File outputFile2 = new File(temporaryDirectory + File.separator + "outputFile2.aes");
 
     // Write out the test bytes to the output files
-    EncryptedFileReaderWriter.encryptAndWrite(TEST_BYTES1, PASSWORD1, outputFile1);
-    EncryptedFileReaderWriter.encryptAndWrite(TEST_BYTES2, PASSWORD1, outputFile2);
+    EncryptedFileReaderWriter.encryptAndWriteDirect(TEST_BYTES1, PASSWORD1, outputFile1);
+    EncryptedFileReaderWriter.encryptAndWriteDirect(TEST_BYTES2, PASSWORD1, outputFile2);
 
     List<File> filesToChange = Lists.newArrayList();
     filesToChange.add(outputFile1);

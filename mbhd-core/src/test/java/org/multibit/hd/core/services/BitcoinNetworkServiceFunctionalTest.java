@@ -128,7 +128,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     // See if there are any payments
     WalletService walletService = new WalletService(BitcoinNetwork.current().get());
 
-    walletService.initialise(temporaryDirectory, new WalletId(seed));
+    walletService.initialise(temporaryDirectory, new WalletId(seed), WALLET_PASSWORD);
 
     // Get the current wallets payments - there should be some
     Set<PaymentData> transactions = walletService.getPaymentDataSet();

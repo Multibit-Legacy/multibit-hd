@@ -225,7 +225,10 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     walletService.addMBHDPaymentRequestData(MBHDPaymentRequestData);
     try {
       log.debug("Saving payment information");
-      walletService.writePayments();
+      CharSequence password = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword();
+      if (password != null) {
+        walletService.writePayments(password);
+      }
     } catch (PaymentsSaveException pse) {
       ExceptionHandler.handleThrowable(pse);
     }

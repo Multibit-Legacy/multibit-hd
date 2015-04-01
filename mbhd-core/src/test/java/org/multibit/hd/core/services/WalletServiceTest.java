@@ -52,9 +52,9 @@ public class WalletServiceTest {
 
   public static final String CHANGED_PASSWORD1 = "2orinocoFlow";
 
-  public static final String CHANGED_PASSWORD2 = "3the quick brown fox jumps over the lazy dog";
+  public static final String CHANGED_PASSWORD2 = PASSWORD; // "3the quick brown fox jumps over the lazy dog";
 
-  public static final String CHANGED_PASSWORD3 = "4bebop a doolah shen am o bing bang";
+  public static final String CHANGED_PASSWORD3 = PASSWORD; // "4bebop a doolah shen am o bing bang";
 
   private static final Logger log = LoggerFactory.getLogger(WalletServiceTest.class);
 
@@ -95,9 +95,8 @@ public class WalletServiceTest {
 
     WalletManager.INSTANCE.setCurrentWalletSummary(walletSummary);
 
-    walletService = new WalletService(networkParameters);
-
-    walletService.initialise(temporaryDirectory, walletId);
+    walletService = CoreServices.getOrCreateWalletService(walletSummary.getWalletId());
+    walletService.initialise(temporaryDirectory, walletId, PASSWORD);
   }
 
   @Test
@@ -125,10 +124,10 @@ public class WalletServiceTest {
     walletService.addMBHDPaymentRequestData(mbhdPaymentRequestData);
 
     // Write the payment requests to the backing store
-    walletService.writePayments();
+    walletService.writePayments(PASSWORD);
 
     // Read the payment requests
-    walletService.readPayments();
+    walletService.readPayments(PASSWORD);
 
     // Check the new payment request is present
     Collection<MBHDPaymentRequestData> newMBHDPaymentRequestDataList = walletService.getMBHDPaymentRequestDataList();
@@ -175,7 +174,7 @@ public class WalletServiceTest {
     walletService.addPaymentRequestData(paymentRequestData);
 
     // Write the payment requests, payments and paymentACKs to the backing store
-    walletService.writePayments();
+    walletService.writePayments(PASSWORD);
 
     // Check the BIP70 files are stored - they are stored in a subdirectory 'bip70' with the name "uuid".paymentrequest.aes or ".payment.aes" or ".packmentack.aes"
     String root = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletFile().getParentFile()
@@ -194,7 +193,7 @@ public class WalletServiceTest {
     assertThat(expectedPaymentACKFile.exists()).isTrue();
 
     // Read the payment requests from disk
-    walletService.readPayments();
+    walletService.readPayments(PASSWORD);
 
     // Check the new payment request is present
     Collection<PaymentRequestData> newPaymentRequestDataList = walletService.getPaymentRequestDataList();
@@ -204,6 +203,7 @@ public class WalletServiceTest {
 
     // Delete the BIP70 payment request, this will also delete any payment and paymentACK files
     walletService.deletePaymentRequest(paymentRequestData);
+    walletService.writePayments(PASSWORD);
 
     // Check the new payment request, payment and paymentACK are deleted
     Collection<PaymentRequestData> deletedPaymentRequestDataList = walletService.getPaymentRequestDataList();
@@ -216,6 +216,7 @@ public class WalletServiceTest {
 
     // Undo the delete
     walletService.undoDeletePaymentData();
+    walletService.writePayments(PASSWORD);
 
     // Check everything is back
     Collection<PaymentRequestData> rebornPaymentRequestDataList = walletService.getPaymentRequestDataList();
@@ -320,11 +321,23 @@ public class WalletServiceTest {
   @Test
   public void testChangePassword() throws Exception {
     log.debug("Start of testChangePassword");
-
-    // Create a PaymentDataRequest holding a Payment and PaymentACK and write them all out
+     // Create a BIP70 PaymentRequestData containing a Payment and a PaymentACK
     PaymentRequestData paymentRequestData = WalletServiceTest.createPlumpPaymentDataRequest();
+
+    // Remove any extant BIP70 payment requests
+    List<PaymentRequestData> extantPaymentRequestDatas = walletService.getPaymentRequestDataList();
+    if (extantPaymentRequestDatas != null) {
+      for (PaymentRequestData extantPaymentRequestData : extantPaymentRequestDatas) {
+        walletService.deletePaymentRequest(extantPaymentRequestData);
+      }
+    }
+    assertThat(walletService.getPaymentRequestDataList().size()).isEqualTo(0);
     walletService.addPaymentRequestData(paymentRequestData);
-    walletService.writePayments();
+
+    // Write the payment requests, payments and paymentACKs to the backing store
+    walletService.writePayments(PASSWORD);
+
+    assertThat(walletService.getPaymentRequestDataList().size()).isEqualTo(1);
 
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
 
@@ -333,26 +346,26 @@ public class WalletServiceTest {
     WalletManager.INSTANCE.saveWallet();
 
     // Change the credentials once
-    // (use the changeWalletPasswordInternal as that does not use an executor - easier to test)
-    WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD1);
+    // (use the changeCurrentWalletPasswordInternal as that does not use an executor - easier to test)
+    WalletService.changeCurrentWalletPasswordInternal(PASSWORD, CHANGED_PASSWORD1);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD1)).isTrue();
 
     checkPasswordHasChanged(CHANGED_PASSWORD1);
 
     // Change the credentials again
-    WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD1, CHANGED_PASSWORD2);
+    WalletService.changeCurrentWalletPasswordInternal(CHANGED_PASSWORD1, CHANGED_PASSWORD2);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD2)).isTrue();
 
     checkPasswordHasChanged(CHANGED_PASSWORD2);
 
     // And change it back to the original value just for good measure
-    WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD2, PASSWORD);
+    WalletService.changeCurrentWalletPasswordInternal(CHANGED_PASSWORD2, PASSWORD);
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
 
     checkPasswordHasChanged(PASSWORD);
 
     // Change the credentials again
-    WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD3);
+    WalletService.changeCurrentWalletPasswordInternal(PASSWORD, CHANGED_PASSWORD3);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD3)).isTrue();
 
     checkPasswordHasChanged(CHANGED_PASSWORD3);
@@ -370,7 +383,7 @@ public class WalletServiceTest {
     CoreServices.getCurrentHistoryService().loadHistory(password);
 
     // Reload payment db
-    CoreServices.getCurrentWalletService().get().readPayments();
+    CoreServices.getCurrentWalletService().get().readPayments(password);
   }
 
   @Test
@@ -383,19 +396,19 @@ public class WalletServiceTest {
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
 
     // Change the credentials once
-    WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD1);
+    WalletService.changeCurrentWalletPasswordInternal(PASSWORD, CHANGED_PASSWORD1);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD1)).isTrue();
 
     // Change the credentials again
-    WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD1, CHANGED_PASSWORD2);
+    WalletService.changeCurrentWalletPasswordInternal(CHANGED_PASSWORD1, CHANGED_PASSWORD2);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD2)).isTrue();
 
     // Change it back to the original value
-    WalletService.changeWalletPasswordInternal(walletSummary, CHANGED_PASSWORD2, PASSWORD);
+    WalletService.changeCurrentWalletPasswordInternal(CHANGED_PASSWORD2, PASSWORD);
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
 
     // Change the credentials again
-    WalletService.changeWalletPasswordInternal(walletSummary, PASSWORD, CHANGED_PASSWORD3);
+    WalletService.changeCurrentWalletPasswordInternal(PASSWORD, CHANGED_PASSWORD3);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD3)).isTrue();
   }
 

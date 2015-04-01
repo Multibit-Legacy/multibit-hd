@@ -56,12 +56,13 @@ public class EncryptedFileReaderWriter {
     Preconditions.checkNotNull(password);
     try {
       // Read the encrypted file in and decrypt it.
+      log.debug("Encrypted file is of size {} bytes", encryptedProtobufFile.length());
       byte[] encryptedWalletBytes = Files.toByteArray(encryptedProtobufFile);
 
       KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(makeScryptParameters(WalletManager.scryptSalt()));
       KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
 
-      // Decrypt the wallet bytes
+      // Decrypt the file bytes
       return AESUtils.decrypt(encryptedWalletBytes, keyParameter, WalletManager.aesInitialisationVector());
     } catch (Exception e) {
       throw new EncryptedFileReaderWriterException("Cannot read and decrypt the file '" + encryptedProtobufFile.getAbsolutePath() + "'", e);
@@ -83,6 +84,19 @@ public class EncryptedFileReaderWriter {
     }
   }
 
+  /**
+   * Encrypt a byte array and output directly to a file
+   */
+  public static void encryptAndWriteDirect(byte[] unencryptedBytes, CharSequence password, File outputFile) throws EncryptedFileReaderWriterException {
+    try {
+      byte[] encryptedBytes = encrypt(unencryptedBytes, password);
+
+      ByteArrayInputStream encryptedWalletByteArrayInputStream = new ByteArrayInputStream(encryptedBytes);
+      SecureFiles.writeFile(encryptedWalletByteArrayInputStream, outputFile);
+    } catch (Exception e) {
+      throw new EncryptedFileReaderWriterException("Cannot encryptAndWriteDirect", e);
+    }
+  }
   /**
    * Encrypt the file specified using the backup AES key derived from the supplied credentials
    *
@@ -143,7 +157,6 @@ public class EncryptedFileReaderWriter {
     return encryptAndDeleteOriginal(fileToEncrypt, destinationFile, keyParameter);
   }
 
-
   /**
    * Change the encryption on Collection of files.
    * This method is split into two parts:
@@ -173,6 +186,7 @@ public class EncryptedFileReaderWriter {
       KeyParameter newKeyParameter = keyCrypterScrypt.deriveKey(newPassword);
 
       for (File file : files) {
+        log.debug("Processing file {}", file.getAbsolutePath());
         File newFile = new File(file.getAbsolutePath() + NEW_FILE_EXTENSION);
         newFiles.add(newFile);
         if (file.exists()) {
@@ -219,6 +233,7 @@ public class EncryptedFileReaderWriter {
         oldFiles.add(oldFile);
          if (originalFiles.get(index).exists()){
            SecureFiles.rename(originalFiles.get(index), oldFile);
+           log.debug("Renamed {} to file {}", originalFiles.get(index).getAbsolutePath(), oldFile.getAbsolutePath());
          }
        } catch (IOException ioe) {
          throw new EncryptedFileReaderWriterException("Could not rename file " + originalFiles.get(index).getAbsolutePath() + " to " + oldFiles.get(index).getAbsolutePath());
@@ -230,6 +245,7 @@ public class EncryptedFileReaderWriter {
       try {
         if (newFiles.get(index).exists()) {
           SecureFiles.rename(newFiles.get(index), originalFiles.get(index));
+          log.debug("Renamed {} to file {}", newFiles.get(index).getAbsolutePath(), originalFiles.get(index).getAbsolutePath());
         }
       } catch (IOException ioe) {
         throw new EncryptedFileReaderWriterException("Could not rename file " + newFiles.get(index).getAbsolutePath() + " to " + originalFiles.get(index).getAbsolutePath());
@@ -284,7 +300,7 @@ public class EncryptedFileReaderWriter {
           encryptedWalletOutputStream.close();
           encryptedWalletOutputStream = null;
         } catch (IOException e) {
-          log.error("Cannot close wallet outpur stream", e);
+          log.error("Cannot close wallet output stream", e);
         }
       }
     }

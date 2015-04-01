@@ -512,7 +512,10 @@ public class CoreServices {
 
       walletService = Optional.of(new WalletService(BitcoinNetwork.current().get()));
       try {
-        walletService.get().initialise(applicationDirectory, walletId);
+        if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+          CharSequence password = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword();
+          walletService.get().initialise(applicationDirectory, walletId, password);
+        }
       } catch (PaymentsLoadException ple) {
         ExceptionHandler.handleThrowable(ple);
       }

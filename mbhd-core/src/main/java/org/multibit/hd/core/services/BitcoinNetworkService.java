@@ -259,7 +259,6 @@ public class BitcoinNetworkService extends AbstractService {
    * The blockstore is deleted and created anew, checkpointed and then the blockchain is downloaded.
    */
   public void replayWallet(File applicationDataDirectory, Optional<Date> dateToReplayFromOptional, boolean useFastCatchup) {
-
     Preconditions.checkNotNull(dateToReplayFromOptional);
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent());
     Preconditions.checkState(!SwingUtilities.isEventDispatchThread(), "Replay should not take place on the EDT");

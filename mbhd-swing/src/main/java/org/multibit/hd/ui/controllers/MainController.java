@@ -875,7 +875,10 @@ public class MainController extends AbstractController implements
     walletService.addTransactionInfo(transactionInfo);
     log.debug("Added transactionInfo {} to walletService {}", transactionInfo, walletService);
     try {
-      walletService.writePayments();
+      CharSequence password = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword();
+      if (password != null) {
+        walletService.writePayments(password);
+      }
     } catch (PaymentsSaveException pse) {
       ExceptionHandler.handleThrowable(pse);
     }
@@ -888,7 +891,6 @@ public class MainController extends AbstractController implements
    */
   @Subscribe
   public void onHardwareWalletEvent(final HardwareWalletEvent event) {
-
     log.debug("Received hardware event: '{}'", event.getEventType().name());
 
     // Quick check for relevancy

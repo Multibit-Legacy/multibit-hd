@@ -160,7 +160,9 @@ public class WalletService extends AbstractService {
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       try {
-        writePayments();
+        if (WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword() != null) {
+          writePayments(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
+        }
       } catch (PaymentsSaveException pse) {
         // Cannot do much as shutting down
         log.error("Failed to write payments.", pse);
@@ -176,7 +178,7 @@ public class WalletService extends AbstractService {
    *
    * @param walletId the walletId to use for this WalletService
    */
-  public void initialise(File applicationDataDirectory, WalletId walletId) {
+  public void initialise(File applicationDataDirectory, WalletId walletId, CharSequence password) {
     Preconditions.checkNotNull(applicationDataDirectory, "'applicationDataDirectory' must be present");
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
@@ -195,7 +197,7 @@ public class WalletService extends AbstractService {
     protobufSerializer = new PaymentsProtobufSerializer();
 
     if (paymentDatabaseFile.exists()) {
-      readPayments();
+      readPayments(password);
     }
   }
 
@@ -733,7 +735,7 @@ public class WalletService extends AbstractService {
   /**
    * <p>Populate the internal cache of Payments from the payment database</p>
    */
-  public void readPayments() throws PaymentsLoadException {
+  public void readPayments(CharSequence password) throws PaymentsLoadException {
     Preconditions.checkNotNull(paymentDatabaseFile, "'paymentDatabaseFile' must be present. Please initialise WalletService.");
 
     log.debug("Reading payments from\n'{}'", paymentDatabaseFile.getAbsolutePath());
@@ -744,7 +746,7 @@ public class WalletService extends AbstractService {
     if (paymentDatabaseFile.exists()) {
       ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
               paymentDatabaseFile,
-              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
+              password);
       Payments payments = protobufSerializer.readPayments(decryptedInputStream);
 
       // For quick access payment requests and transaction infos are stored in maps
@@ -788,7 +790,7 @@ public class WalletService extends AbstractService {
       }
     }
 
-    readPaymentRequestsDataFiles(bip70PaymentRequestDataMap.values(), paymentDatabaseFile);
+    readPaymentRequestsDataFiles(bip70PaymentRequestDataMap.values(), paymentDatabaseFile, password);
 
     log.debug(
             "Reading payments completed\nTransactionInfo count: {}\nMBHD payment request count: {}\nBIP70 payment request count: {}",
@@ -801,7 +803,7 @@ public class WalletService extends AbstractService {
   /**
    * <p>Save the payments data to the backing store</p>
    */
-  public void writePayments() throws PaymentsSaveException {
+  public void writePayments(CharSequence password) throws PaymentsSaveException {
     Preconditions.checkNotNull(paymentDatabaseFile, "'backingStoreFile' must be present. Initialise WalletService.");
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent(), "Current wallet summary must be present");
 
@@ -821,7 +823,7 @@ public class WalletService extends AbstractService {
               paymentDatabaseFile
       );
 
-      writePaymentRequestDataFiles(bip70PaymentRequestDataMap.values(), paymentDatabaseFile);
+      writePaymentRequestDataFiles(bip70PaymentRequestDataMap.values(), paymentDatabaseFile, password);
 
       log.debug(
               "Writing payments completed\nTransaction infos: {}\nMBHD payment requests: {}\nBIP70 payment requests: {}",
@@ -894,7 +896,7 @@ public class WalletService extends AbstractService {
    * @param paymentRequestDataCollection The collection of PaymentRequestData entries to write
    * @param backingStoreFile             The location of the backing store
    */
-  private void writePaymentRequestDataFiles(Collection<PaymentRequestData> paymentRequestDataCollection, File backingStoreFile) throws EncryptedFileReaderWriterException {
+  private void writePaymentRequestDataFiles(Collection<PaymentRequestData> paymentRequestDataCollection, File backingStoreFile, CharSequence password) throws EncryptedFileReaderWriterException {
     Preconditions.checkNotNull(paymentRequestDataCollection);
 
     // Work out the directory the raw BIP70 payment requests get written to.
@@ -914,10 +916,10 @@ public class WalletService extends AbstractService {
         // Write the PaymentRequest
         if (paymentRequestData.getPaymentRequest().isPresent()) {
           byte[] serialisedBytes = paymentRequestData.getPaymentRequest().get().toByteArray();
-          EncryptedFileReaderWriter.encryptAndWrite(
+          EncryptedFileReaderWriter.encryptAndWriteDirect(
                   serialisedBytes,
-                  WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), paymentRequestFile);
-          log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'", serialisedBytes.length, paymentRequestFile.getAbsolutePath());
+                  password, paymentRequestFile);
+          log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'\n Password: {}", serialisedBytes.length, paymentRequestFile.getAbsolutePath(), password);
         }
       }
 
@@ -927,9 +929,9 @@ public class WalletService extends AbstractService {
         if (paymentRequestData.getPayment().isPresent()) {
           byte[] serialisedBytes = paymentRequestData.getPayment().get().toByteArray();
 
-          EncryptedFileReaderWriter.encryptAndWrite(
+          EncryptedFileReaderWriter.encryptAndWriteDirect(
                   serialisedBytes,
-                  WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), paymentFile);
+                  password, paymentFile);
           log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'", serialisedBytes.length, paymentFile.getAbsolutePath());
         }
       }
@@ -940,9 +942,9 @@ public class WalletService extends AbstractService {
         if (paymentRequestData.getPaymentACK().isPresent()) {
           byte[] serialisedBytes = paymentRequestData.getPaymentACK().get().toByteArray();
 
-          EncryptedFileReaderWriter.encryptAndWrite(
+          EncryptedFileReaderWriter.encryptAndWriteDirect(
                   serialisedBytes,
-                  WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), paymentACKFile);
+                  password, paymentACKFile);
           log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'", serialisedBytes.length, paymentACKFile.getAbsolutePath());
         }
       }
@@ -955,14 +957,14 @@ public class WalletService extends AbstractService {
    * @param paymentRequestDataCollection The collection of PaymentRequestData entries to read
    * @param backingStoreFile             The backing store file
    */
-  private void readPaymentRequestsDataFiles(Collection<PaymentRequestData> paymentRequestDataCollection, File backingStoreFile) throws EncryptedFileReaderWriterException {
+  private void readPaymentRequestsDataFiles(Collection<PaymentRequestData> paymentRequestDataCollection, File backingStoreFile, CharSequence password) throws EncryptedFileReaderWriterException {
 
     Preconditions.checkNotNull(paymentRequestDataCollection);
     Preconditions.checkNotNull(backingStoreFile);
 
     // Read all the payment requests from disk
     for (PaymentRequestData paymentRequestData : paymentRequestDataCollection) {
-      addBIP70PaymentInfoFromFiles(backingStoreFile, paymentRequestData);
+      addBIP70PaymentInfoFromFiles(backingStoreFile, paymentRequestData, password);
     }
   }
 
@@ -970,7 +972,7 @@ public class WalletService extends AbstractService {
    * @param backingStoreFile   The backing store file
    * @param paymentRequestData The payment request data providing the location and receiving the deserialized object
    */
-  private void addBIP70PaymentInfoFromFiles(File backingStoreFile, PaymentRequestData paymentRequestData) throws EncryptedFileReaderWriterException {
+  private void addBIP70PaymentInfoFromFiles(File backingStoreFile, PaymentRequestData paymentRequestData, CharSequence password) throws EncryptedFileReaderWriterException {
     // Locate the PaymentRequest
     File paymentRequestFile = getPaymentRequestFile(paymentRequestData.getUuid(), backingStoreFile);
 
@@ -979,7 +981,7 @@ public class WalletService extends AbstractService {
 
         byte[] serialisedBytes = EncryptedFileReaderWriter.readAndDecryptToByteArray(
                 paymentRequestFile,
-                WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
+                password);
         log.debug("Read serialised bytes of unencrypted length {} from input file:\n'{}'", serialisedBytes.length, paymentRequestFile.getAbsolutePath());
 
         // Read the serialised Payment Request
@@ -993,7 +995,7 @@ public class WalletService extends AbstractService {
       if (paymentFile.exists()) {
         byte[] serialisedBytes = EncryptedFileReaderWriter.readAndDecryptToByteArray(
                 paymentFile,
-                WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
+                password);
         log.debug("Read serialised bytes of unencrypted length {} from input file:\n'{}'", serialisedBytes.length, paymentFile.getAbsolutePath());
 
         // Read the serialised Payment
@@ -1007,7 +1009,7 @@ public class WalletService extends AbstractService {
       if (paymentACKFile.exists()) {
         byte[] serialisedBytes = EncryptedFileReaderWriter.readAndDecryptToByteArray(
                 paymentACKFile,
-                WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
+                password);
         log.debug("Read serialised bytes of unencrypted length {} from input file:\n'{}'", serialisedBytes.length, paymentACKFile.getAbsolutePath());
 
         // Read the serialised PaymentACK
@@ -1144,9 +1146,7 @@ public class WalletService extends AbstractService {
   public void deleteMBHDPaymentRequest(MBHDPaymentRequestData mbhdPaymentRequestData) {
     undoDeletePaymentDataStack.push(mbhdPaymentRequestData);
     mbhdPaymentRequestDataMap.remove(mbhdPaymentRequestData.getAddress());
-    writePayments();
   }
-
 
   /**
    * Delete a BIP70 payment request
@@ -1184,8 +1184,6 @@ public class WalletService extends AbstractService {
     } catch (IOException e) {
       log.error("Could not delete the payment ACK file\n'{}'", paymentACKFile.getAbsolutePath());
     }
-
-    writePayments();
   }
 
   /**
@@ -1203,8 +1201,6 @@ public class WalletService extends AbstractService {
           addMBHDPaymentRequestData((MBHDPaymentRequestData) paymentData);
         }
       }
-
-      writePayments();
     }
   }
 
@@ -1250,36 +1246,37 @@ public class WalletService extends AbstractService {
   }
 
   /**
-   * Change the wallet credentials.
+   * Change the wallet credentials for the current wallet
    * The result of the operation is emitted as a ChangePasswordResultEvent
    *
-   * @param walletSummary The walletsummary with the wallet whose credentials to change
    * @param oldPassword   The old wallet credentials
    * @param newPassword   The new wallet credentials
    */
-  public static void changeWalletPassword(final WalletSummary walletSummary, final String oldPassword, final String newPassword) {
-
+  public static void changeCurrentWalletPassword(final String oldPassword, final String newPassword) {
     executorService.submit(
             new Runnable() {
               @Override
               public void run() {
-                WalletService.changeWalletPasswordInternal(walletSummary, oldPassword, newPassword);
+                WalletService.changeCurrentWalletPasswordInternal(oldPassword, newPassword);
               }
             });
   }
 
-  static void changeWalletPasswordInternal(final WalletSummary walletSummary, final String oldPassword, final String newPassword) {
-    if (walletSummary == null || walletSummary.getWallet() == null) {
-      // No wallet to change the credentials for
-      CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_ERROR, new Object[]{"There is no wallet"}));
-      return;
-    }
+  static void changeCurrentWalletPasswordInternal(final String oldPassword, final String newPassword) {
+    Optional<WalletSummary> walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
 
+    if (walletSummaryOptional == null || !walletSummaryOptional.isPresent() || walletSummaryOptional.get().getWallet() == null) {
+       // No wallet to change the credentials for
+       CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_ERROR, new Object[]{"There is no wallet"}));
+       return;
+     }
+
+    WalletSummary walletSummary = walletSummaryOptional.get();
     Wallet wallet = walletSummary.getWallet();
     WalletId walletId = walletSummary.getWalletId();
 
     // Check old credentials
-    if (!walletSummary.getWallet().checkPassword(oldPassword)) {
+    if (!wallet.checkPassword(oldPassword)) {
       CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_WRONG_OLD_PASSWORD, null));
       return;
     }
@@ -1292,7 +1289,11 @@ public class WalletService extends AbstractService {
     // Create a List of all the non-wallet files that need to have their password changed
     List<File> filesToChangePassword = createListOfFilesToChangePassword(applicationDataDirectory, walletId);
 
-    // Close the Network connection to stop writes to the wallet + payments database
+    for (File file : filesToChangePassword) {
+      log.debug("File to change password on {}", file.getAbsolutePath());
+    }
+
+    // Close the Network connection to stop writes to the wallet + payments database whilst we are rewriting files
     // Close  Contacts / History / Payments
     CoreServices.shutdownNow(ShutdownEvent.ShutdownType.SWITCH);
 
@@ -1389,10 +1390,10 @@ public class WalletService extends AbstractService {
   }
 
   private static List<File> createListOfFilesToChangePassword(File applicationDataDirectory, WalletId walletId) {
-    String currentWalletDirectoryPath = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get().getParentFile().getAbsolutePath();
+    String currentWalletDirectoryPath = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId)).getAbsolutePath();
 
-    List<PaymentRequestData> paymentRequestDataList = CoreServices.getOrCreateWalletService(walletId).getPaymentRequestDataList();
     WalletService walletService = CoreServices.getOrCreateWalletService(walletId);
+    List<PaymentRequestData> paymentRequestDataList = walletService.getPaymentRequestDataList();
 
     // Create a List of all the non-wallet files that need to have their password changed
     List<File> filesToChangePassword = Lists.newArrayList();
