@@ -28,10 +28,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.*;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -163,64 +167,8 @@ public class WalletServiceTest {
 
   @Test
   public void testCreateBIP70PaymentRequest() throws Exception {
-    // Create a BIP70 PaymentRequestData that the BIP70 protobuf objects will be stored in
-    PaymentRequestData paymentRequestData = new PaymentRequestData();
-    paymentRequestData.setUuid(UUID.randomUUID());
-    paymentRequestData.setAmountCoin(Coin.MILLICOIN);
-    paymentRequestData.setTrustStatus(PaymentSessionStatus.UNKNOWN);
-    paymentRequestData.setTrustErrorMessage("");
-
-    PaymentProtocolService paymentProtocolService = new PaymentProtocolService(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
-    assertThat(paymentProtocolService).isNotNull();
-
-    // Load the signing key store locally
-    KeyStore keyStore = KeyStore.getInstance("JKS");
-    InputStream keyStream = PaymentProtocolService.class.getResourceAsStream("/localhost.jks");
-    keyStore.load(keyStream, HttpsManager.PASSPHRASE.toCharArray());
-
-    SignedPaymentRequestSummary signedPaymentRequestSummary = new SignedPaymentRequestSummary(
-            new Address(networkParameters, "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"),
-            Coin.MILLICOIN,
-            "Please donate to MultiBit",
-            new URL("https://localhost:8443/payment"),
-            MERCHANT_DATA,
-            keyStore,
-            "serverkey",
-            HttpsManager.PASSPHRASE.toCharArray()
-    );
-
-    // Create a payment request
-    final Optional<Protos.PaymentRequest> paymentRequest = paymentProtocolService.newSignedPaymentRequest(signedPaymentRequestSummary);
-    assertThat(paymentRequest).isNotNull();
-    assertThat(paymentRequest.isPresent()).isTrue();
-
-    paymentRequestData.setPaymentRequest(paymentRequest);
-
-
-    // Create a payment for the above payment request
-    String paymentMemo = "This is a payment memo";
-    List<Transaction> transactions = new LinkedList<>();
-    Coin amount = Coin.COIN;
-    Address toAddress = new ECKey().toAddress(networkParameters);
-    transactions.add(FakeTxBuilder.createFakeTx(networkParameters, amount, toAddress));
-    Coin refundAmount = Coin.SATOSHI;
-    Address refundAddress = new ECKey().toAddress(networkParameters);
-
-    final Optional<Protos.Payment> payment = paymentProtocolService.newPayment(MERCHANT_DATA, transactions, refundAmount, refundAddress, paymentMemo);
-    assertThat(payment).isNotNull();
-    assertThat(payment.isPresent()).isTrue();
-
-    paymentRequestData.setPayment(payment);
-
-
-    // Create a payment ACK for the above payment
-    String paymentACKMemo = "This is a payment ACK memo";
-    final Optional<Protos.PaymentACK> paymentACK = paymentProtocolService.newPaymentACK(payment.get(), paymentACKMemo);
-    assertThat(paymentACK).isNotNull();
-    assertThat(paymentACK.isPresent()).isTrue();
-
-    paymentRequestData.setPaymentACK(paymentACK);
-
+    // Create a BIP70 PaymentRequestData containing a Payment and a PaymentACK
+    PaymentRequestData paymentRequestData = WalletServiceTest.createPlumpPaymentDataRequest();
 
     // Initially there are no BIP70 payment requests
     assertThat(walletService.getPaymentRequestDataList().size()).isEqualTo(0);
@@ -307,9 +255,76 @@ public class WalletServiceTest {
     assertThat(other.getPaymentACK().get().getMemo()).isEqualTo(first.getPaymentACK().get().getMemo());
   }
 
+  public static PaymentRequestData createPlumpPaymentDataRequest() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, AddressFormatException {
+      // Create a BIP70 PaymentRequestData that the BIP70 protobuf objects will be stored in
+    PaymentRequestData paymentRequestData = new PaymentRequestData();
+    paymentRequestData.setUuid(UUID.randomUUID());
+    paymentRequestData.setAmountCoin(Coin.MILLICOIN);
+    paymentRequestData.setTrustStatus(PaymentSessionStatus.UNKNOWN);
+    paymentRequestData.setTrustErrorMessage("");
+
+    PaymentProtocolService paymentProtocolService = new PaymentProtocolService(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+    assertThat(paymentProtocolService).isNotNull();
+
+    // Load the signing key store locally
+    KeyStore keyStore = KeyStore.getInstance("JKS");
+    InputStream keyStream = PaymentProtocolService.class.getResourceAsStream("/localhost.jks");
+    keyStore.load(keyStream, HttpsManager.PASSPHRASE.toCharArray());
+
+    SignedPaymentRequestSummary signedPaymentRequestSummary = new SignedPaymentRequestSummary(
+            new Address(networkParameters, "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty"),
+            Coin.MILLICOIN,
+            "Please donate to MultiBit",
+            new URL("https://localhost:8443/payment"),
+            MERCHANT_DATA,
+            keyStore,
+            "serverkey",
+            HttpsManager.PASSPHRASE.toCharArray()
+    );
+
+    // Create a payment request
+    final Optional<Protos.PaymentRequest> paymentRequest = paymentProtocolService.newSignedPaymentRequest(signedPaymentRequestSummary);
+    assertThat(paymentRequest).isNotNull();
+    assertThat(paymentRequest.isPresent()).isTrue();
+
+    paymentRequestData.setPaymentRequest(paymentRequest);
+
+
+    // Create a payment for the above payment request
+    String paymentMemo = "This is a payment memo";
+    List<Transaction> transactions = new LinkedList<>();
+    Coin amount = Coin.COIN;
+    Address toAddress = new ECKey().toAddress(networkParameters);
+    transactions.add(FakeTxBuilder.createFakeTx(networkParameters, amount, toAddress));
+    Coin refundAmount = Coin.SATOSHI;
+    Address refundAddress = new ECKey().toAddress(networkParameters);
+
+    final Optional<Protos.Payment> payment = paymentProtocolService.newPayment(MERCHANT_DATA, transactions, refundAmount, refundAddress, paymentMemo);
+    assertThat(payment).isNotNull();
+    assertThat(payment.isPresent()).isTrue();
+
+    paymentRequestData.setPayment(payment);
+
+
+    // Create a payment ACK for the above payment
+    String paymentACKMemo = "This is a payment ACK memo";
+    final Optional<Protos.PaymentACK> paymentACK = paymentProtocolService.newPaymentACK(payment.get(), paymentACKMemo);
+    assertThat(paymentACK).isNotNull();
+    assertThat(paymentACK.isPresent()).isTrue();
+
+    paymentRequestData.setPaymentACK(paymentACK);
+
+    return paymentRequestData;
+  }
+
   @Test
   public void testChangePassword() throws Exception {
     log.debug("Start of testChangePassword");
+
+    // Create a PaymentDataRequest holding a Payment and PaymentACK and write them all out
+    PaymentRequestData paymentRequestData = WalletServiceTest.createPlumpPaymentDataRequest();
+    walletService.addPaymentRequestData(paymentRequestData);
+    walletService.writePayments();
 
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
 

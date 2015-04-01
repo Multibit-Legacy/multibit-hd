@@ -22,6 +22,8 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.CoreException;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -509,7 +511,11 @@ public class CoreServices {
       File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
       walletService = Optional.of(new WalletService(BitcoinNetwork.current().get()));
-      walletService.get().initialise(applicationDirectory, walletId);
+      try {
+        walletService.get().initialise(applicationDirectory, walletId);
+      } catch (PaymentsLoadException ple) {
+        ExceptionHandler.handleThrowable(ple);
+      }
       walletService.get().start();
     }
 

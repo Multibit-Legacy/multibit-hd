@@ -17,7 +17,6 @@ import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.*;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
@@ -735,74 +734,68 @@ public class WalletService extends AbstractService {
    * <p>Populate the internal cache of Payments from the payment database</p>
    */
   public void readPayments() throws PaymentsLoadException {
-
     Preconditions.checkNotNull(paymentDatabaseFile, "'paymentDatabaseFile' must be present. Please initialise WalletService.");
 
-    try {
-      log.debug("Reading payments from\n'{}'", paymentDatabaseFile.getAbsolutePath());
-      mbhdPaymentRequestDataMap.clear();
-      transactionInfoMap.clear();
-      bip70PaymentRequestDataMap.clear();
+    log.debug("Reading payments from\n'{}'", paymentDatabaseFile.getAbsolutePath());
+    mbhdPaymentRequestDataMap.clear();
+    transactionInfoMap.clear();
+    bip70PaymentRequestDataMap.clear();
 
-      if (paymentDatabaseFile.exists()) {
-        ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
-                paymentDatabaseFile,
-                WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
-        Payments payments = protobufSerializer.readPayments(decryptedInputStream);
+    if (paymentDatabaseFile.exists()) {
+      ByteArrayInputStream decryptedInputStream = EncryptedFileReaderWriter.readAndDecrypt(
+              paymentDatabaseFile,
+              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
+      Payments payments = protobufSerializer.readPayments(decryptedInputStream);
 
-        // For quick access payment requests and transaction infos are stored in maps
-        Collection<MBHDPaymentRequestData> mbhdPaymentRequestDataCollection = payments.getMBHDPaymentRequestDataCollection();
+      // For quick access payment requests and transaction infos are stored in maps
+      Collection<MBHDPaymentRequestData> mbhdPaymentRequestDataCollection = payments.getMBHDPaymentRequestDataCollection();
 
-        if (mbhdPaymentRequestDataCollection != null) {
-          for (MBHDPaymentRequestData MBHDPaymentRequestData : mbhdPaymentRequestDataCollection) {
-            mbhdPaymentRequestDataMap.put(MBHDPaymentRequestData.getAddress(), MBHDPaymentRequestData);
-          }
-        }
-
-        Collection<TransactionInfo> transactionInfos = payments.getTransactionInfoCollection();
-
-        if (transactionInfos != null) {
-          for (TransactionInfo transactionInfo : transactionInfos) {
-            transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
-          }
-        }
-
-        Optional<WalletSummary> walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
-
-        Collection<PaymentRequestData> paymentRequestDataCollection = payments.getPaymentRequestDataCollection();
-
-        if (paymentRequestDataCollection != null) {
-          for (PaymentRequestData paymentRequestData : paymentRequestDataCollection) {
-
-            // Clear any tx hash if the tx is not in the wallet
-            // (See issue https://github.com/bitcoin-solutions/multibit-hd/issues/463)
-            // This will get persisted at MBHD close or when payments is next written
-            Optional<Sha256Hash> transactionHashOptional = paymentRequestData.getTransactionHash();
-            if (transactionHashOptional.isPresent() && walletSummaryOptional.isPresent()) {
-              Wallet wallet = walletSummaryOptional.get().getWallet();
-              if (wallet != null && wallet.getTransaction(transactionHashOptional.get()) == null) {
-                // Transaction is not in the wallet - clear it from the paymentRequestData
-                paymentRequestData.setTransactionHash(Optional.<Sha256Hash>absent());
-              }
-            }
-
-            bip70PaymentRequestDataMap.put(paymentRequestData.getUuid(), paymentRequestData);
-          }
+      if (mbhdPaymentRequestDataCollection != null) {
+        for (MBHDPaymentRequestData MBHDPaymentRequestData : mbhdPaymentRequestDataCollection) {
+          mbhdPaymentRequestDataMap.put(MBHDPaymentRequestData.getAddress(), MBHDPaymentRequestData);
         }
       }
 
-      readPaymentRequestsDataFiles(bip70PaymentRequestDataMap.values(), paymentDatabaseFile);
+      Collection<TransactionInfo> transactionInfos = payments.getTransactionInfoCollection();
 
-      log.debug(
-              "Reading payments completed\nTransactionInfo count: {}\nMBHD payment request count: {}\nBIP70 payment request count: {}",
-              transactionInfoMap.values().size(),
-              mbhdPaymentRequestDataMap.values().size(),
-              bip70PaymentRequestDataMap.values().size()
-      );
+      if (transactionInfos != null) {
+        for (TransactionInfo transactionInfo : transactionInfos) {
+          transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
+        }
+      }
 
-    } catch (EncryptedFileReaderWriterException e) {
-      ExceptionHandler.handleThrowable(new PaymentsLoadException("Could not load payments db '" + paymentDatabaseFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'."));
+      Optional<WalletSummary> walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
+
+      Collection<PaymentRequestData> paymentRequestDataCollection = payments.getPaymentRequestDataCollection();
+
+      if (paymentRequestDataCollection != null) {
+        for (PaymentRequestData paymentRequestData : paymentRequestDataCollection) {
+
+          // Clear any tx hash if the tx is not in the wallet
+          // (See issue https://github.com/bitcoin-solutions/multibit-hd/issues/463)
+          // This will get persisted at MBHD close or when payments is next written
+          Optional<Sha256Hash> transactionHashOptional = paymentRequestData.getTransactionHash();
+          if (transactionHashOptional.isPresent() && walletSummaryOptional.isPresent()) {
+            Wallet wallet = walletSummaryOptional.get().getWallet();
+            if (wallet != null && wallet.getTransaction(transactionHashOptional.get()) == null) {
+              // Transaction is not in the wallet - clear it from the paymentRequestData
+              paymentRequestData.setTransactionHash(Optional.<Sha256Hash>absent());
+            }
+          }
+
+          bip70PaymentRequestDataMap.put(paymentRequestData.getUuid(), paymentRequestData);
+        }
+      }
     }
+
+    readPaymentRequestsDataFiles(bip70PaymentRequestDataMap.values(), paymentDatabaseFile);
+
+    log.debug(
+            "Reading payments completed\nTransactionInfo count: {}\nMBHD payment request count: {}\nBIP70 payment request count: {}",
+            transactionInfoMap.values().size(),
+            mbhdPaymentRequestDataMap.values().size(),
+            bip70PaymentRequestDataMap.values().size()
+    );
   }
 
   /**
@@ -901,7 +894,7 @@ public class WalletService extends AbstractService {
    * @param paymentRequestDataCollection The collection of PaymentRequestData entries to write
    * @param backingStoreFile             The location of the backing store
    */
-  private void writePaymentRequestDataFiles(Collection<PaymentRequestData> paymentRequestDataCollection, File backingStoreFile) {
+  private void writePaymentRequestDataFiles(Collection<PaymentRequestData> paymentRequestDataCollection, File backingStoreFile) throws EncryptedFileReaderWriterException {
     Preconditions.checkNotNull(paymentRequestDataCollection);
 
     // Work out the directory the raw BIP70 payment requests get written to.
@@ -921,14 +914,10 @@ public class WalletService extends AbstractService {
         // Write the PaymentRequest
         if (paymentRequestData.getPaymentRequest().isPresent()) {
           byte[] serialisedBytes = paymentRequestData.getPaymentRequest().get().toByteArray();
-          try {
-            EncryptedFileReaderWriter.encryptAndWrite(
-                    serialisedBytes,
-                    WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), paymentRequestFile);
-            log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'", serialisedBytes.length, paymentRequestFile.getAbsolutePath());
-          } catch (EncryptedFileReaderWriterException e) {
-            log.error("Failed to write BIP70 payment request file with UUID {}, error was {}", paymentRequestData.getUuid(), e);
-          }
+          EncryptedFileReaderWriter.encryptAndWrite(
+                  serialisedBytes,
+                  WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), paymentRequestFile);
+          log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'", serialisedBytes.length, paymentRequestFile.getAbsolutePath());
         }
       }
 
@@ -937,14 +926,11 @@ public class WalletService extends AbstractService {
         // Write the Payment
         if (paymentRequestData.getPayment().isPresent()) {
           byte[] serialisedBytes = paymentRequestData.getPayment().get().toByteArray();
-          try {
-            EncryptedFileReaderWriter.encryptAndWrite(
-                    serialisedBytes,
-                    WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), paymentFile);
-            log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'", serialisedBytes.length, paymentFile.getAbsolutePath());
-          } catch (EncryptedFileReaderWriterException e) {
-            log.error("Failed to write BIP70 payment file with UUID {}, error was {}", paymentRequestData.getUuid(), e);
-          }
+
+          EncryptedFileReaderWriter.encryptAndWrite(
+                  serialisedBytes,
+                  WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), paymentFile);
+          log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'", serialisedBytes.length, paymentFile.getAbsolutePath());
         }
       }
 
@@ -953,14 +939,11 @@ public class WalletService extends AbstractService {
         // Write the PaymentACK
         if (paymentRequestData.getPaymentACK().isPresent()) {
           byte[] serialisedBytes = paymentRequestData.getPaymentACK().get().toByteArray();
-          try {
-            EncryptedFileReaderWriter.encryptAndWrite(
-                    serialisedBytes,
-                    WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), paymentACKFile);
-            log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'", serialisedBytes.length, paymentACKFile.getAbsolutePath());
-          } catch (EncryptedFileReaderWriterException e) {
-            log.error("Failed to write BIP70 payment ACK file with UUID {}, error was {}", paymentRequestData.getUuid(), e);
-          }
+
+          EncryptedFileReaderWriter.encryptAndWrite(
+                  serialisedBytes,
+                  WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword(), paymentACKFile);
+          log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'", serialisedBytes.length, paymentACKFile.getAbsolutePath());
         }
       }
     }
@@ -972,7 +955,7 @@ public class WalletService extends AbstractService {
    * @param paymentRequestDataCollection The collection of PaymentRequestData entries to read
    * @param backingStoreFile             The backing store file
    */
-  private void readPaymentRequestsDataFiles(Collection<PaymentRequestData> paymentRequestDataCollection, File backingStoreFile) {
+  private void readPaymentRequestsDataFiles(Collection<PaymentRequestData> paymentRequestDataCollection, File backingStoreFile) throws EncryptedFileReaderWriterException {
 
     Preconditions.checkNotNull(paymentRequestDataCollection);
     Preconditions.checkNotNull(backingStoreFile);
@@ -987,12 +970,13 @@ public class WalletService extends AbstractService {
    * @param backingStoreFile   The backing store file
    * @param paymentRequestData The payment request data providing the location and receiving the deserialized object
    */
-  private void addBIP70PaymentInfoFromFiles(File backingStoreFile, PaymentRequestData paymentRequestData) {
+  private void addBIP70PaymentInfoFromFiles(File backingStoreFile, PaymentRequestData paymentRequestData) throws EncryptedFileReaderWriterException {
     // Locate the PaymentRequest
     File paymentRequestFile = getPaymentRequestFile(paymentRequestData.getUuid(), backingStoreFile);
 
-    if (paymentRequestFile.exists()) {
-      try {
+    try {
+      if (paymentRequestFile.exists()) {
+
         byte[] serialisedBytes = EncryptedFileReaderWriter.readAndDecryptToByteArray(
                 paymentRequestFile,
                 WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
@@ -1001,16 +985,12 @@ public class WalletService extends AbstractService {
         // Read the serialised Payment Request
         Optional<Protos.PaymentRequest> paymentRequest = Optional.of(Protos.PaymentRequest.parseFrom(serialisedBytes));
         paymentRequestData.setPaymentRequest(paymentRequest);
-      } catch (InvalidProtocolBufferException | EncryptedFileReaderWriterException e) {
-        log.error("Failed to read BIP70 payment request file\n'{}'. Error was {}", paymentRequestFile.getAbsolutePath(), e);
       }
-    }
 
-    // Locate the Payment
-    File paymentFile = getPaymentFile(paymentRequestData.getUuid(), backingStoreFile);
+      // Locate the Payment
+      File paymentFile = getPaymentFile(paymentRequestData.getUuid(), backingStoreFile);
 
-    if (paymentFile.exists()) {
-      try {
+      if (paymentFile.exists()) {
         byte[] serialisedBytes = EncryptedFileReaderWriter.readAndDecryptToByteArray(
                 paymentFile,
                 WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
@@ -1019,16 +999,12 @@ public class WalletService extends AbstractService {
         // Read the serialised Payment
         Optional<Protos.Payment> payment = Optional.of(Protos.Payment.parseFrom(serialisedBytes));
         paymentRequestData.setPayment(payment);
-      } catch (InvalidProtocolBufferException | EncryptedFileReaderWriterException e) {
-        log.error("Failed to read BIP70 payment file\n'{}'. Error was {}", paymentFile.getAbsolutePath(), e);
       }
-    }
 
-    // Locate the PaymentACK
-    File paymentACKFile = getPaymentACKFile(paymentRequestData.getUuid(), backingStoreFile);
+      // Locate the PaymentACK
+      File paymentACKFile = getPaymentACKFile(paymentRequestData.getUuid(), backingStoreFile);
 
-    if (paymentACKFile.exists()) {
-      try {
+      if (paymentACKFile.exists()) {
         byte[] serialisedBytes = EncryptedFileReaderWriter.readAndDecryptToByteArray(
                 paymentACKFile,
                 WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
@@ -1037,9 +1013,9 @@ public class WalletService extends AbstractService {
         // Read the serialised PaymentACK
         Optional<Protos.PaymentACK> paymentACK = Optional.of(Protos.PaymentACK.parseFrom(serialisedBytes));
         paymentRequestData.setPaymentACK(paymentACK);
-      } catch (InvalidProtocolBufferException | EncryptedFileReaderWriterException e) {
-        log.error("Failed to read BIP70 paymentACK file\n'{}'. Error was {}", paymentACKFile.getAbsolutePath(), e);
       }
+    } catch (InvalidProtocolBufferException e) {
+      throw new EncryptedFileReaderWriterException("Failed to read BIP70 payment request/ payment/ paymentACK", e);
     }
   }
 
@@ -1433,8 +1409,17 @@ public class WalletService extends AbstractService {
     // BIP70 Payment requests
     if (paymentRequestDataList != null) {
       for (PaymentRequestData paymentRequestData : paymentRequestDataList) {
-        File paymentRequestFile = walletService.getPaymentRequestFile(paymentRequestData.getUuid(), walletService.getPaymentDatabaseFile());
+        UUID uuid = paymentRequestData.getUuid();
+        File paymentBackingStore = walletService.getPaymentDatabaseFile();
+
+        File paymentRequestFile = walletService.getPaymentRequestFile(uuid, paymentBackingStore);
         filesToChangePassword.add(paymentRequestFile);
+
+        File paymentFile = walletService.getPaymentFile(uuid, paymentBackingStore);
+        filesToChangePassword.add(paymentFile);
+
+        File paymentACKFile = walletService.getPaymentACKFile(uuid, paymentBackingStore);
+        filesToChangePassword.add(paymentACKFile);
       }
     }
     return filesToChangePassword;
