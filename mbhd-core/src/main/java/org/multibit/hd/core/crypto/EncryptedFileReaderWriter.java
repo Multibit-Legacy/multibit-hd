@@ -186,7 +186,7 @@ public class EncryptedFileReaderWriter {
       KeyParameter newKeyParameter = keyCrypterScrypt.deriveKey(newPassword);
 
       for (File file : files) {
-        log.debug("Processing file {}", file.getAbsolutePath());
+        log.debug("Processing file\n'{}'", file.getAbsolutePath());
         File newFile = new File(file.getAbsolutePath() + NEW_FILE_EXTENSION);
         newFiles.add(newFile);
         if (file.exists()) {
@@ -233,7 +233,7 @@ public class EncryptedFileReaderWriter {
         oldFiles.add(oldFile);
          if (originalFiles.get(index).exists()){
            SecureFiles.rename(originalFiles.get(index), oldFile);
-           log.debug("Renamed {} to file {}", originalFiles.get(index).getAbsolutePath(), oldFile.getAbsolutePath());
+           log.debug("Renamed:\n'{}'\n'{}'", originalFiles.get(index).getAbsolutePath(), oldFile.getAbsolutePath());
          }
        } catch (IOException ioe) {
          throw new EncryptedFileReaderWriterException("Could not rename file " + originalFiles.get(index).getAbsolutePath() + " to " + oldFiles.get(index).getAbsolutePath());
@@ -245,7 +245,7 @@ public class EncryptedFileReaderWriter {
       try {
         if (newFiles.get(index).exists()) {
           SecureFiles.rename(newFiles.get(index), originalFiles.get(index));
-          log.debug("Renamed {} to file {}", newFiles.get(index).getAbsolutePath(), originalFiles.get(index).getAbsolutePath());
+          log.debug("Renamed:\n'{}'\n'{}'", newFiles.get(index).getAbsolutePath(), originalFiles.get(index).getAbsolutePath());
         }
       } catch (IOException ioe) {
         throw new EncryptedFileReaderWriterException("Could not rename file " + newFiles.get(index).getAbsolutePath() + " to " + originalFiles.get(index).getAbsolutePath());
