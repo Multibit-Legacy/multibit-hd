@@ -9,7 +9,7 @@ import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
@@ -185,7 +185,7 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
           SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-              ViewEvents.fireAlertAddedEvent(alertModel);
+              ControllerEvents.fireAddAlertEvent(alertModel);
             }
           });
         }

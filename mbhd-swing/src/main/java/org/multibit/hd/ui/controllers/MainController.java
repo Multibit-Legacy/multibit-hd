@@ -1481,7 +1481,6 @@ public class MainController extends AbstractController implements
    * @param transactionCreationEvent The transaction creation event from the EventBus
    */
   private void initiateDelayedTransactionStatusCheck(final TransactionCreationEvent transactionCreationEvent) {
-
     transactionCheckingExecutorService.submit(
       new Runnable() {
 
@@ -1508,7 +1507,7 @@ public class MainController extends AbstractController implements
                   new Runnable() {
                     @Override
                     public void run() {
-                      ViewEvents.fireAlertAddedEvent(alertModel);
+                      ControllerEvents.fireAddAlertEvent(alertModel);
                     }
                   });
               }
