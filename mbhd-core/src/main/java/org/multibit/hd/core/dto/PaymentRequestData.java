@@ -302,62 +302,18 @@ public class PaymentRequestData implements PaymentData {
     if (!uuid.equals(that.uuid)) {
       return false;
     }
-    if (!transactionHash.equals(that.transactionHash)) {
-      return false;
-    }
-    if (!fiatPayment.equals(that.fiatPayment)) {
-      return false;
-    }
-    if (!paymentRequest.equals(that.paymentRequest)) {
-      return false;
-    }
-    if (!payment.equals(that.payment)) {
-      return false;
-    }
-    if (!paymentACK.equals(that.paymentACK)) {
-      return false;
-    }
-    if (!paymentSessionSummary.equals(that.paymentSessionSummary)) {
-      return false;
-    }
     if (!date.equals(that.date)) {
       return false;
     }
-    if (!amountCoin.equals(that.amountCoin)) {
-      return false;
-    }
-    if (!note.equals(that.note)) {
-      return false;
-    }
-    if (!identityDisplayName.equals(that.identityDisplayName)) {
-      return false;
-    }
-    if (trustStatus != that.trustStatus) {
-      return false;
-    }
-    if (!trustErrorMessage.equals(that.trustErrorMessage)) {
-      return false;
-    }
-    return expirationDate.equals(that.expirationDate);
+    return amountCoin.equals(that.amountCoin);
 
   }
 
   @Override
   public int hashCode() {
     int result = uuid.hashCode();
-    result = 31 * result + transactionHash.hashCode();
-    result = 31 * result + fiatPayment.hashCode();
-    result = 31 * result + paymentRequest.hashCode();
-    result = 31 * result + payment.hashCode();
-    result = 31 * result + paymentACK.hashCode();
-    result = 31 * result + paymentSessionSummary.hashCode();
     result = 31 * result + date.hashCode();
     result = 31 * result + amountCoin.hashCode();
-    result = 31 * result + note.hashCode();
-    result = 31 * result + identityDisplayName.hashCode();
-    result = 31 * result + trustStatus.hashCode();
-    result = 31 * result + trustErrorMessage.hashCode();
-    result = 31 * result + expirationDate.hashCode();
     return result;
   }
 
