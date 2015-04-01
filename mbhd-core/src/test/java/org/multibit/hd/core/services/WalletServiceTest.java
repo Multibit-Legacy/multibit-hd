@@ -325,9 +325,9 @@ public class WalletServiceTest {
     PaymentRequestData paymentRequestData = WalletServiceTest.createPlumpPaymentDataRequest();
 
     // Remove any extant BIP70 payment requests
-    List<PaymentRequestData> extantPaymentRequestDatas = walletService.getPaymentRequestDataList();
-    if (extantPaymentRequestDatas != null) {
-      for (PaymentRequestData extantPaymentRequestData : extantPaymentRequestDatas) {
+    List<PaymentRequestData> extantPaymentRequestDataList = walletService.getPaymentRequestDataList();
+    if (extantPaymentRequestDataList != null) {
+      for (PaymentRequestData extantPaymentRequestData : extantPaymentRequestDataList) {
         walletService.deletePaymentRequest(extantPaymentRequestData);
       }
     }
