@@ -200,21 +200,6 @@ public class MultiBitHD {
       // Fix for version.txt not visible for Java 7
       System.setProperty("jsse.enableSNIExtension", "false");
 
-      if (OSUtils.isMac()) {
-
-        // Ensure the correct name is displayed in the application menu
-        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "multiBit HD");
-
-        // Ensure OSX key bindings are used for copy, paste etc
-        // Use the Nimbus keys and ensure this occurs before any component creation
-        addOSXKeyStrokes((InputMap) UIManager.get("TextField.focusInputMap"));
-        addOSXKeyStrokes((InputMap) UIManager.get("FormattedTextField.focusInputMap"));
-        addOSXKeyStrokes((InputMap) UIManager.get("TextArea.focusInputMap"));
-        addOSXKeyStrokes((InputMap) UIManager.get("PasswordField.focusInputMap"));
-        addOSXKeyStrokes((InputMap) UIManager.get("EditorPane.focusInputMap"));
-
-      }
-
       // Execute the CA certificates download on a separate thread to avoid slowing
       // the startup time
       SafeExecutors.newSingleThreadExecutor("install-cacerts").submit(
@@ -364,6 +349,22 @@ public class MultiBitHD {
     // Ensure that we are using the configured theme
     ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme());
     Themes.switchTheme(themeKey.theme());
+
+    if (OSUtils.isMac()) {
+
+      // Ensure the correct name is displayed in the application menu
+      System.setProperty("com.apple.mrj.application.apple.menu.about.name", "multiBit HD");
+
+      // Ensure OSX key bindings are used for copy, paste etc
+      // Use the Nimbus keys and ensure this occurs before any component creation
+      addOSXKeyStrokes((InputMap) UIManager.get("EditorPane.focusInputMap"));
+      addOSXKeyStrokes((InputMap) UIManager.get("FormattedTextField.focusInputMap"));
+      addOSXKeyStrokes((InputMap) UIManager.get("PasswordField.focusInputMap"));
+      addOSXKeyStrokes((InputMap) UIManager.get("TextField.focusInputMap"));
+      addOSXKeyStrokes((InputMap) UIManager.get("TextPane.focusInputMap"));
+      addOSXKeyStrokes((InputMap) UIManager.get("TextArea.focusInputMap"));
+
+    }
 
     log.debug("Building MainView...");
 
