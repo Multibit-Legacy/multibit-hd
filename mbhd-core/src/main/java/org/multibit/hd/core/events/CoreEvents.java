@@ -12,7 +12,7 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.ExchangeSummary;
 import org.multibit.hd.core.dto.HistoryEntry;
-import org.multibit.hd.core.dto.SecuritySummary;
+import org.multibit.hd.core.dto.EnvironmentSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -349,17 +349,17 @@ public class CoreEvents {
   }
 
   /**
-   * <p>Broadcast a new "security" event</p>
+   * <p>Broadcast a new "environment" event</p>
    *
-   * @param securitySummary The security summary
+   * @param environmentSummary The environment summary
    */
-  public static void fireSecurityEvent(final SecuritySummary securitySummary) {
+  public static void fireEnvironmentEvent(final EnvironmentSummary environmentSummary) {
     eventExecutor.submit(
       new Runnable() {
         @Override
         public void run() {
-          log.trace("Firing 'security' event");
-          coreEventBus.post(new SecurityEvent(securitySummary));
+          log.trace("Firing 'environment' event");
+          coreEventBus.post(new EnvironmentEvent(environmentSummary));
         }
       });
   }

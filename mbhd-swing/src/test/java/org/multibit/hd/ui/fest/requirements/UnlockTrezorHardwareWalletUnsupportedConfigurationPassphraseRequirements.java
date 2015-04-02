@@ -5,9 +5,9 @@ import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
 import org.multibit.hd.ui.fest.use_cases.credentials.QuickUnlockWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.credentials.UnlockReportUseCase;
+import org.multibit.hd.ui.fest.use_cases.environment.CloseUnsupportedConfigurationEnvironmentPopoverUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorRequestCipherKeyUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorRequestMasterPublicKeyUseCase;
-import org.multibit.hd.ui.fest.use_cases.environment.CloseUnsupportedFirmwareEnvironmentPopoverUseCase;
 
 import java.util.Map;
 
@@ -15,12 +15,12 @@ import java.util.Map;
  * <p>FEST Swing UI test to provide:</p>
  * <ul>
  * <li>Exercise the responses to hardware wallet events in the context of
- * unlocking a Trezor wallet with unsupported firmware</li>
+ * unlocking a Trezor wallet with unsupported configuration "passphrase"</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.8
  */
-public class UnlockTrezorHardwareWalletUnsupportedFirmwareRequirements {
+public class UnlockTrezorHardwareWalletUnsupportedConfigurationPassphraseRequirements {
 
   public static void verifyUsing(FrameFixture window, HardwareWalletFixture hardwareWalletFixture) {
 
@@ -32,8 +32,8 @@ public class UnlockTrezorHardwareWalletUnsupportedFirmwareRequirements {
     // Request the cipher key (refer to mock client for PIN entry responses)
     new TrezorRequestCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
-    // Expect "unsupported firmware" popover to be showing
-    new CloseUnsupportedFirmwareEnvironmentPopoverUseCase(window).execute(null);
+    // Expect "unsupported configuration" popover to be showing
+    new CloseUnsupportedConfigurationEnvironmentPopoverUseCase(window).execute(null);
 
     // Unlock the wallet
     new QuickUnlockWalletUseCase(window).execute(null);

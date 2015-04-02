@@ -29,6 +29,7 @@ import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.multibit.hd.hardware.core.messages.Features;
+import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.SwitchWalletEvent;
@@ -420,14 +421,14 @@ public class MainController extends AbstractController implements
   }
 
   @Subscribe
-  public void onSecurityEvent(SecurityEvent event) {
+  public void onEnvironmentEvent(EnvironmentEvent event) {
 
-    log.trace("Received 'security' event");
+    log.trace("Received 'environment' event");
 
     Preconditions.checkNotNull(event, "'event' must be present");
     Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");
 
-    SecuritySummary summary = event.getSummary();
+    EnvironmentSummary summary = event.getSummary();
 
     Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
     Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
@@ -476,6 +477,7 @@ public class MainController extends AbstractController implements
         );
         break;
       case UNSUPPORTED_FIRMWARE_ATTACHED:
+      case UNSUPPORTED_CONFIGURATION_ATTACHED:
         Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
         if (walletSummary.isPresent() && !Panels.isLightBoxShowing()) {
@@ -901,11 +903,16 @@ public class MainController extends AbstractController implements
         // An alert tends to stack and gets messy/irrelevant
         deferredCredentialsRequestType = CredentialsRequestType.PASSWORD;
 
-        // Clear any UNSUPPORTED_FIRMWARE_ATTACHED events as the user has detached the causative device
-        Optional<SecurityEvent> lastSecurityEventOptional = CoreServices.getApplicationEventService().getLatestSecurityEvent();
-        if (lastSecurityEventOptional.isPresent()
-          && lastSecurityEventOptional.get().is(SecuritySummary.AlertType.UNSUPPORTED_FIRMWARE_ATTACHED)) {
-          CoreServices.getApplicationEventService().onSecurityEvent(null);
+        // Clear any UNSUPPORTED_FIRMWARE_ATTACHED or UNSUPPORTED_CONFIGURATION_ATTACHED events
+        // as the user has detached the causative device
+        Optional<EnvironmentEvent> lastEnvironmentEventOptional = CoreServices.getApplicationEventService().getLatestEnvironmentEvent();
+        if (lastEnvironmentEventOptional.isPresent()
+          && lastEnvironmentEventOptional.get().is(EnvironmentSummary.AlertType.UNSUPPORTED_FIRMWARE_ATTACHED)) {
+          CoreServices.getApplicationEventService().onEnvironmentEvent(null);
+        }
+        if (lastEnvironmentEventOptional.isPresent()
+          && lastEnvironmentEventOptional.get().is(EnvironmentSummary.AlertType.UNSUPPORTED_CONFIGURATION_ATTACHED)) {
+          CoreServices.getApplicationEventService().onEnvironmentEvent(null);
         }
 
         break;
@@ -943,11 +950,18 @@ public class MainController extends AbstractController implements
     // Determine the nature of the failure
     Optional<Features> featuresOptional = hardwareWalletService.get().getContext().getFeatures();
 
-    boolean isUnsupportedFirmware = featuresOptional.isPresent() && !featuresOptional.get().isSupported();
+    boolean isUnsupportedFirmware = featuresOptional.isPresent()
+      && !featuresOptional.get().isSupported();
+    boolean isUnsupportedConfigurationPassphrase = featuresOptional.isPresent()
+      && featuresOptional.get().isSupported()
+      && featuresOptional.get().hasPassphraseProtection();
 
     if (isUnsupportedFirmware) {
-      // Show as a security popover
-      CoreEvents.fireSecurityEvent(SecuritySummary.newUnsupportedFirmware());
+      // Show as a environment popover
+      CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newUnsupportedFirmware());
+    } else if (isUnsupportedConfigurationPassphrase) {
+        // Show as an info popover
+        CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newUnsupportedConfigurationPassphrase());
     } else {
       // Use the alert bar mechanism
 
@@ -975,11 +989,27 @@ public class MainController extends AbstractController implements
    * <li>there is a current wallet</li>
    * <li>the current wallet is not the same "hard" Trezor wallet as in the alert</li>
    * <li>there has not been a "wipe Trezor" in the last few seconds</li>
+   * <li>the Trezor has a supported configuration (e.g. not passphrase protected)</li>
    * </ul>
    *
    * @param event The hardware wallet event
    */
   private void handleShowDeviceReady(final HardwareWalletEvent event) {
+
+    // Configuration check
+    if (event.getMessage().isPresent()) {
+      final HardwareWalletMessage message = event.getMessage().get();
+      if (message instanceof Features) {
+
+        Features features = (Features) message;
+
+        if (features.hasPassphraseProtection()) {
+          handleShowDeviceFailed(event);
+          return;
+        }
+
+      }
+    }
 
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
@@ -1225,8 +1255,8 @@ public class MainController extends AbstractController implements
 
           if (result != null && Math.abs(result) > 3_600_000) {
             log.warn("System time is adrift by: {} min(s)", result / 60_000);
-            // Issue the alert
-            CoreEvents.fireSecurityEvent(SecuritySummary.newSystemTimeDrift());
+            // Issue the info alert
+            CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newSystemTimeDrift());
           } else {
             log.debug("System time drift is within limits");
           }

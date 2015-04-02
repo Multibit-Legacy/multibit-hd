@@ -6,7 +6,7 @@ import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.create_wallet.*;
 import org.multibit.hd.ui.fest.use_cases.credentials.QuickUnlockWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.credentials.UnlockReportUseCase;
-import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
+import org.multibit.hd.ui.fest.use_cases.environment.CloseDebugEnvironmentPopoverUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.ShowManageWalletScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.edit_wallet.ShowThenCancelEditWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
@@ -30,7 +30,7 @@ public class WelcomeWizardCreateWallet_en_US_Requirements {
 
     Map<String, Object> parameters = Maps.newHashMap();
 
-    new CloseDebugSecurityPopoverUseCase(window).execute(parameters);
+    new CloseDebugEnvironmentPopoverUseCase(window).execute(parameters);
 
     new AcceptLicenceUseCase(window).execute(parameters);
 

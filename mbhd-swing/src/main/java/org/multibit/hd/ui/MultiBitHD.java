@@ -120,17 +120,18 @@ public class MultiBitHD {
     }
 
     log.info("This is the primary instance so showing splash screen.");
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        splashScreen = new SplashScreen();
-      }
-    });
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          splashScreen = new SplashScreen();
+        }
+      });
 
     // Prepare the JVM (Nimbus, system properties etc)
     initialiseJVM();
 
-    // Start core services (logging, security alerts, configuration, Bitcoin URI handling etc)
+    // Start core services (logging, environment alerts, configuration, Bitcoin URI handling etc)
     initialiseCore(args);
 
     // Create controllers so that the generic app can access listeners

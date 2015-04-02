@@ -1,11 +1,9 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.ui.views.components.display_message.DisplayInfoMessageModel;
-import org.multibit.hd.ui.views.components.display_message.DisplayInfoMessageView;
 import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeModel;
 import org.multibit.hd.ui.views.components.display_qrcode.DisplayQRCodeView;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
+import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertModel;
+import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertView;
 import org.multibit.hd.ui.views.components.enter_yes_no.EnterYesNoModel;
 import org.multibit.hd.ui.views.components.enter_yes_no.EnterYesNoView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -65,40 +63,20 @@ public class Popovers {
   }
 
   /**
-   * <p>A "display security alert" model and view displays a security alert with the following features:</p>
+   * <p>A "display environment alert" model and view displays an alert with the following features:</p>
    * <ul>
-   * <li>Danger themed message panel</li>
+   * <li>Appropriately themed message panel</li>
    * <li>Button to close the light box popover</li>
    * </ul>
    *
    * @param panelName The underlying panel name for this popover
    *
-   * @return A new "display security alert" model and view
+   * @return A new "display environment alert" model and view
    */
-  public static ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> newDisplaySecurityPopoverMaV(String panelName) {
+  public static ModelAndView<DisplayEnvironmentAlertModel, DisplayEnvironmentAlertView> newDisplayEnvironmentPopoverMaV(String panelName) {
 
-    DisplaySecurityAlertModel model = new DisplaySecurityAlertModel(panelName);
-    DisplaySecurityAlertView view = new DisplaySecurityAlertView(model);
-
-    return new ModelAndView<>(model, view);
-
-  }
-
-  /**
-   * <p>A "display info message" model and view displays a message with the following features:</p>
-   * <ul>
-   * <li>Success themed message panel</li>
-   * <li>Button to close the light box popover</li>
-   * </ul>
-   *
-   * @param panelName The underlying panel name for this popover
-   *
-   * @return A new "display info message" model and view
-   */
-  public static ModelAndView<DisplayInfoMessageModel, DisplayInfoMessageView> newDisplayInfoPopoverMaV(String panelName) {
-
-    DisplayInfoMessageModel model = new DisplayInfoMessageModel(panelName);
-    DisplayInfoMessageView view = new DisplayInfoMessageView(model);
+    DisplayEnvironmentAlertModel model = new DisplayEnvironmentAlertModel(panelName);
+    DisplayEnvironmentAlertView view = new DisplayEnvironmentAlertView(model);
 
     return new ModelAndView<>(model, view);
 

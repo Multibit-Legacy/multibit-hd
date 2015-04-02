@@ -1,7 +1,7 @@
 package org.multibit.hd.core.services;
 
 import org.joda.time.DateTime;
-import org.multibit.hd.core.dto.SecuritySummary;
+import org.multibit.hd.core.dto.EnvironmentSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.utils.Dates;
@@ -14,29 +14,29 @@ import java.util.concurrent.TimeUnit;
 /**
  * <p>Service to provide the following to application API:</p>
  * <ul>
- * <li>Periodic environment checking for security issues</li>
+ * <li>Periodic environment checking for various issues</li>
  * </ul>
  *
  * @since 0.0.1
  */
-public class SecurityCheckingService extends AbstractService {
+public class EnvironmentCheckingService extends AbstractService {
 
-  private static final Logger log = LoggerFactory.getLogger(SecurityCheckingService.class);
+  private static final Logger log = LoggerFactory.getLogger(EnvironmentCheckingService.class);
 
   public static final int ENVIRONMENT_REFRESH_SECONDS = 2;
 
   /**
-   * Initialise to allow single security alert for debugger attachment
+   * Initialise to allow single environment alert for debugger attachment
    */
   private DateTime nextDebuggerAlert = Dates.nowUtc().minusSeconds(1);
 
   @Override
   public boolean startInternal() {
 
-    log.debug("Starting security service");
+    log.debug("Starting environment service");
 
     // Use the provided executor service management
-    requireSingleThreadScheduledExecutor("security");
+    requireSingleThreadScheduledExecutor("environment");
 
     // Use the provided executor service management
     getScheduledExecutorService().scheduleAtFixedRate(
@@ -60,7 +60,7 @@ public class SecurityCheckingService extends AbstractService {
             nextDebuggerAlert = Dates.nowUtc().plusMinutes(5);
 
             // Issue the alert
-            CoreEvents.fireSecurityEvent(SecuritySummary.newDebuggerAttached());
+            CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newDebuggerAttached());
 
           }
 

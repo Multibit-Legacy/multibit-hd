@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.security;
+package org.multibit.hd.ui.fest.use_cases.environment;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.core.dto.CoreMessageKey;
@@ -10,28 +10,28 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "security unsupported firmware" popover can be closed</li>
+ * <li>Verify the "environment unsupported configuration" popover can be closed</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.8
  */
-public class CloseUnsupportedFirmwareSecurityPopoverUseCase extends AbstractFestUseCase {
+public class CloseUnsupportedConfigurationEnvironmentPopoverUseCase extends AbstractFestUseCase {
 
-  public CloseUnsupportedFirmwareSecurityPopoverUseCase(FrameFixture window) {
+  public CloseUnsupportedConfigurationEnvironmentPopoverUseCase(FrameFixture window) {
     super(window);
   }
 
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Expect "unsupported firmware" popover to be showing
+    // Expect "unsupported configuration" popover to be showing
     window
-      .panel(CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED.getKey())
+      .panel(CoreMessageKey.UNSUPPORTED_CONFIGURATION_PASSPHRASE.getKey())
       .requireVisible();
 
     // Dismiss
     window
-      .button("security_alert." + MessageKey.CLOSE.getKey())
+      .button("environment_alert." + MessageKey.CLOSE.getKey())
       .requireVisible()
       .requireEnabled()
       .click();

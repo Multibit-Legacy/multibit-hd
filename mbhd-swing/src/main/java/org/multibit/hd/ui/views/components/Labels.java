@@ -508,10 +508,10 @@ public class Labels {
     JLabel label = Labels.newLabel(MessageKey.DISPLAY_LANGUAGE);
 
     AwesomeDecorator.applyIcon(
-            AwesomeIcon.GLOBE,
-            label,
-            true,
-            MultiBitUI.NORMAL_PLUS_ICON_SIZE
+      AwesomeIcon.GLOBE,
+      label,
+      true,
+      MultiBitUI.NORMAL_PLUS_ICON_SIZE
     );
 
     return label;
@@ -1179,11 +1179,12 @@ public class Labels {
    */
   public static JLabel newWelcomeNote() {
 
-    return newNoteLabel(new MessageKey[]{
-      MessageKey.WELCOME_NOTE_1,
-      MessageKey.WELCOME_NOTE_2,
-      MessageKey.WELCOME_NOTE_3
-    }, new Object[][]{});
+    return newNoteLabel(
+      new MessageKey[]{
+        MessageKey.WELCOME_NOTE_1,
+        MessageKey.WELCOME_NOTE_2,
+        MessageKey.WELCOME_NOTE_3
+      }, new Object[][]{});
   }
 
   /**
@@ -1278,6 +1279,23 @@ public class Labels {
     JLabel label = newNoteLabel(new CoreMessageKey[]{
         CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED,
         CoreMessageKey.SECURITY_ADVICE
+      }, new Object[][]{});
+
+    // Allow for warning theme
+    label.setForeground(Themes.currentTheme.warningAlertText());
+
+    return label;
+
+  }
+
+  /**
+   * @return A new "unsupported configuration passphrase" note
+   */
+  public static JLabel newUnsupportedConfigurationPassphrase() {
+
+    JLabel label = newNoteLabel(new CoreMessageKey[]{
+        CoreMessageKey.UNSUPPORTED_CONFIGURATION_PASSPHRASE,
+        CoreMessageKey.UNSUPPORTED_CONFIGURATION_ADVICE
       }, new Object[][]{});
 
     // Allow for warning theme

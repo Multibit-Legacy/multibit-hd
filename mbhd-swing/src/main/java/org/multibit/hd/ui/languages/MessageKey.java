@@ -367,6 +367,7 @@ public enum MessageKey {
   ABOUT_TITLE("about_title"),
 
   SECURITY_TITLE("security_title"),
+  INFO_TITLE("info_title"),
 
   WELCOME_TITLE("welcome_title"),
   SELECT_LANGUAGE_TITLE("select_language_title"),

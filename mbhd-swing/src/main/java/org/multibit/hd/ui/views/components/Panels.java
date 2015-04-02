@@ -653,6 +653,31 @@ public class Panels {
   }
 
   /**
+   * <p>An "unsupported configuration" panel displays instructions to the user about a hardware wallet with unsupported configuration (behaviour risk) being attached</p>
+   *
+   * @return A new "unsupported configuration passphrase" panel
+   */
+  public static JPanel newUnsupportedConfigurationPassphrase() {
+
+    JPanel panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[]", // Columns
+        "[]" // Rows
+      ));
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(panel, CoreMessageKey.UNSUPPORTED_CONFIGURATION_PASSPHRASE);
+
+    PanelDecorator.applyWarningTheme(panel);
+
+    // Add to the panel
+    panel.add(Labels.newUnsupportedConfigurationPassphrase(), "w 350");
+
+    return panel;
+  }
+
+  /**
    * <p>A "language change" panel displays instructions to the user about a language change</p>
    *
    * @return A new "language change" panel

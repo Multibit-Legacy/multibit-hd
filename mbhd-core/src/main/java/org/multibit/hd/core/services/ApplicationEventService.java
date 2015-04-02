@@ -19,7 +19,7 @@ import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 public class ApplicationEventService extends AbstractService {
 
   private Optional<ExchangeRateChangedEvent> latestExchangeRateChangedEvent = Optional.absent();
-  private Optional<SecurityEvent> latestSecurityEvent = Optional.absent();
+  private Optional<EnvironmentEvent> latestEnvironmentEvent = Optional.absent();
   private Optional<BitcoinNetworkChangedEvent> latestBitcoinNetworkChangedEvent = Optional.absent();
   private Optional<HardwareWalletEvent> latestHardwareWalletEvent = Optional.absent();
 
@@ -54,7 +54,7 @@ public class ApplicationEventService extends AbstractService {
         latestBitcoinNetworkChangedEvent = Optional.absent();
         latestExchangeRateChangedEvent = Optional.absent();
         latestHardwareWalletEvent = Optional.absent();
-        latestSecurityEvent = Optional.absent();
+        latestEnvironmentEvent = Optional.absent();
 
         // Avoid ongoing cleanup
         return false;
@@ -72,10 +72,10 @@ public class ApplicationEventService extends AbstractService {
   }
 
   /**
-   * @return The latest "security" event
+   * @return The latest "environment" event
    */
-  public Optional<SecurityEvent> getLatestSecurityEvent() {
-    return latestSecurityEvent;
+  public Optional<EnvironmentEvent> getLatestEnvironmentEvent() {
+    return latestEnvironmentEvent;
   }
 
   /**
@@ -97,7 +97,7 @@ public class ApplicationEventService extends AbstractService {
    */
   public void repeatLatestEvents() {
 
-    // Don't replay security events - it gives a false positive
+    // Don't replay environment events - it gives a false positive
 
     // Don't replay hardware events - it gives a false positive and race conditions
 
@@ -125,11 +125,11 @@ public class ApplicationEventService extends AbstractService {
   }
 
   /**
-   * @param event The "security" event
+   * @param event The "environment" event
    */
   @Subscribe
-  public void onSecurityEvent(SecurityEvent event) {
-    latestSecurityEvent = Optional.fromNullable(event);
+  public void onEnvironmentEvent(EnvironmentEvent event) {
+    latestEnvironmentEvent = Optional.fromNullable(event);
   }
 
   /**

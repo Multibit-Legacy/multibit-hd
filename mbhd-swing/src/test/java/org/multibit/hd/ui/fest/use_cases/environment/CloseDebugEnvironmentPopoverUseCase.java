@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.use_cases.security;
+package org.multibit.hd.ui.fest.use_cases.environment;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.core.dto.CoreMessageKey;
@@ -11,15 +11,15 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "security debugger attached" popover can be closed</li>
+ * <li>Verify the "environment debugger attached" popover can be closed</li>
  * </ul>
  *
  * @since 0.0.1
  *
  */
-public class CloseDebugSecurityPopoverUseCase extends AbstractFestUseCase {
+public class CloseDebugEnvironmentPopoverUseCase extends AbstractFestUseCase {
 
-  public CloseDebugSecurityPopoverUseCase(FrameFixture window) {
+  public CloseDebugEnvironmentPopoverUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -35,7 +35,7 @@ public class CloseDebugSecurityPopoverUseCase extends AbstractFestUseCase {
 
       // Dismiss
       window
-        .button("security_alert." + MessageKey.CLOSE.getKey())
+        .button("environment_alert." + MessageKey.CLOSE.getKey())
         .requireVisible()
         .requireEnabled()
         .click();
