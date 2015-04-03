@@ -23,10 +23,12 @@ import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.ApplicationEventService;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.BitcoinSymbol;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
 import org.multibit.hd.hardware.core.utils.TransactionUtils;
@@ -717,6 +719,9 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       default:
         throw new IllegalStateException("Should not reach here from " + state.name());
     }
+
+    // Ignore device reset messages
+    ApplicationEventService.setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
 
   }
 

@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.services.ApplicationEventService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -217,6 +218,9 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     state=UseTrezorState.USE_TREZOR_REPORT_PANEL;
     setReportMessageKey(MessageKey.TREZOR_WIPE_DEVICE_FAILURE);
     setReportMessageStatus(false);
+
+    // Ignore device reset messages
+    ApplicationEventService.setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
 
   }
 

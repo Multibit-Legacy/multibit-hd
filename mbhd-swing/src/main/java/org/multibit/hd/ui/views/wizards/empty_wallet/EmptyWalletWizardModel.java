@@ -14,9 +14,11 @@ import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.ApplicationEventService;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.BitcoinSymbol;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -457,6 +459,9 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
     state = EMPTY_WALLET_REPORT;
     setReportMessageKey(MessageKey.TREZOR_SIGN_FAILURE);
     setReportMessageStatus(false);
+
+    // Ignore device reset messages
+    ApplicationEventService.setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
 
   }
 
