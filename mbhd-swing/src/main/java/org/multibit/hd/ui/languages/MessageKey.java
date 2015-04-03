@@ -361,6 +361,11 @@ public enum MessageKey {
   DISPLAY_PAYMENT_REQUEST_TITLE("display_payment_request_title"),
   CONFIRM_SEND_TITLE("confirm_send_title"),
   SEND_PROGRESS_TITLE("send_progress_title"),
+  SEND_PAYMENT_MEMO_TITLE("send_payment_memo_title"),
+  SEND_PAYMENT_MEMO_LABEL("send_payment_memo_label"),
+
+  SEND_PAYMENT_ACK_MEMO_LABEL("send_payment_ack_memo_label"),
+  SEND_PAYMENT_ACK_MEMO_TITLE("send_payment_ack_memo_title"),
 
   EXIT_OR_SWITCH_TITLE("exit_or_switch_title"),
 

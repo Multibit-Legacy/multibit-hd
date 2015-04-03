@@ -16,6 +16,8 @@ public enum SendBitcoinState {
   SEND_CONFIRM_AMOUNT,
   SEND_CONFIRM_TREZOR,
   SEND_REPORT,
+  SEND_BIP70_PAYMENT_MEMO,
+  SEND_BIP70_PAYMENT_ACK_MEMO
 
   // End of enum
   ;
