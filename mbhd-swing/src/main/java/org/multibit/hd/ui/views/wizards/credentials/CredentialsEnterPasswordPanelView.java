@@ -10,8 +10,8 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
+import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertModel;
+import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertView;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
 import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -21,8 +21,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.util.List;
@@ -38,10 +36,8 @@ import java.util.Locale;
  */
 public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<CredentialsWizardModel, CredentialsEnterPasswordPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(CredentialsEnterPasswordPanelView.class);
-
   // Panel specific components
-  private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
+  private ModelAndView<DisplayEnvironmentAlertModel, DisplayEnvironmentAlertView> displayEnvironmentPopoverMaV;
   private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
   private ModelAndView<SelectWalletModel, SelectWalletView> selectWalletMaV;
 
@@ -57,7 +53,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
   @Override
   public void newPanelModel() {
 
-    displaySecurityPopoverMaV = Popovers.newDisplaySecurityPopoverMaV(getPanelName());
+    displayEnvironmentPopoverMaV = Popovers.newDisplayEnvironmentPopoverMaV(getPanelName());
     enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
     enterPasswordMaV.getView().setAddLabel(false);
     selectWalletMaV = Components.newSelectWalletMaV(getPanelName());
@@ -75,7 +71,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
     getWizardModel().setEnterPasswordPanelView(this);
 
     // Register components
-    registerComponents(displaySecurityPopoverMaV, enterPasswordMaV, selectWalletMaV);
+    registerComponents(displayEnvironmentPopoverMaV, enterPasswordMaV, selectWalletMaV);
 
   }
 
@@ -144,8 +140,8 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
 
         enterPasswordMaV.getView().requestInitialFocus();
 
-        // This requires a security popover check
-        checkForSecurityEventPopover(displaySecurityPopoverMaV);
+        // This requires a environment popover check
+        checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
 
         selectWalletMaV.getView().updateViewFromModel();
 

@@ -5,13 +5,13 @@ import com.google.common.base.Optional;
 /**
  * <p>Value object to provide the following to Core API:</p>
  * <ul>
- * <li>Information about the Bitcoin network status</li>
+ * <li>Information about the operating environment</li>
  * </ul>
  *
  * @since 0.0.1
  *
  */
-public class SecuritySummary {
+public class EnvironmentSummary {
 
   public enum AlertType {
 
@@ -20,6 +20,7 @@ public class SecuritySummary {
     BACKUP_FAILED,
     CERTIFICATE_FAILED,
     UNSUPPORTED_FIRMWARE_ATTACHED,
+    UNSUPPORTED_CONFIGURATION_ATTACHED,
 
     // End of enum
     ;
@@ -38,8 +39,8 @@ public class SecuritySummary {
    *
    * @return A new "debugger attached" summary
    */
-  public static SecuritySummary newDebuggerAttached() {
-    return new SecuritySummary(
+  public static EnvironmentSummary newDebuggerAttached() {
+    return new EnvironmentSummary(
       RAGStatus.RED,
       Optional.of(CoreMessageKey.DEBUGGER_ATTACHED),
       Optional.<Object[]>absent(),
@@ -52,8 +53,8 @@ public class SecuritySummary {
    *
    * @return A new "system time drift" summary
    */
-  public static SecuritySummary newSystemTimeDrift() {
-    return new SecuritySummary(
+  public static EnvironmentSummary newSystemTimeDrift() {
+    return new EnvironmentSummary(
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.SYSTEM_TIME_DRIFT),
       Optional.<Object[]>absent(),
@@ -66,8 +67,8 @@ public class SecuritySummary {
    *
    * @return A new "backup failed" summary
    */
-  public static SecuritySummary newBackupFailed() {
-    return new SecuritySummary(
+  public static EnvironmentSummary newBackupFailed() {
+    return new EnvironmentSummary(
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.BACKUP_FAILED),
       Optional.<Object[]>absent(),
@@ -80,8 +81,8 @@ public class SecuritySummary {
    *
    * @return A new "certificate failure" summary
    */
-  public static SecuritySummary newCertificateFailed() {
-    return new SecuritySummary(
+  public static EnvironmentSummary newCertificateFailed() {
+    return new EnvironmentSummary(
       RAGStatus.RED,
       Optional.of(CoreMessageKey.CERTIFICATE_FAILED),
       Optional.<Object[]>absent(),
@@ -94,8 +95,8 @@ public class SecuritySummary {
    *
    * @return A new "unsupported firmware" summary
    */
-  public static SecuritySummary newUnsupportedFirmware() {
-    return new SecuritySummary(
+  public static EnvironmentSummary newUnsupportedFirmware() {
+    return new EnvironmentSummary(
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED),
       Optional.<Object[]>absent(),
@@ -104,11 +105,25 @@ public class SecuritySummary {
   }
 
   /**
+   * <p>A hardware wallet with unsupported configuration is attached - unsupported operations are present</p>
+   *
+   * @return A new "unsupported configuration" summary
+   */
+  public static EnvironmentSummary newUnsupportedConfigurationPassphrase() {
+    return new EnvironmentSummary(
+      RAGStatus.AMBER,
+      Optional.of(CoreMessageKey.UNSUPPORTED_CONFIGURATION_PASSPHRASE),
+      Optional.<Object[]>absent(),
+      AlertType.UNSUPPORTED_CONFIGURATION_ATTACHED
+    );
+  }
+
+  /**
    * @param severity    The severity (Red, Amber, Green)
    * @param messageKey  The error key to allow localisation
    * @param messageData The error data for insertion into the error message
    */
-  public SecuritySummary(
+  public EnvironmentSummary(
     RAGStatus severity,
     Optional<CoreMessageKey> messageKey,
     Optional<Object[]> messageData,
@@ -152,7 +167,7 @@ public class SecuritySummary {
 
   @Override
   public String toString() {
-    return "SecuritySummary{" +
+    return "EnvironmentSummary{" +
       "alertType=" + alertType +
       ", severity=" + severity +
       ", messageKey=" + messageKey +

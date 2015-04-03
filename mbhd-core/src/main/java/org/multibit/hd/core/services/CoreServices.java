@@ -65,16 +65,16 @@ public class CoreServices {
   public static final String LIVE_MATCHER_PUBLIC_KEY_FILE = "multibit-org-matcher-key.asc";
 
   /**
-   * Keep track of selected application events (e.g. exchange rate changes, security alerts etc)
+   * Keep track of selected application events (e.g. exchange rate changes, environment alerts etc)
    * Not an optional service
    */
   private static ApplicationEventService applicationEventService;
 
   /**
-   * Keep track of security events (e.g. debugger, file permissions etc) across all wallets
+   * Keep track of environment events (e.g. debugger, file permissions etc) across all wallets
    * Not an optional service
    */
-  private static SecurityCheckingService securityCheckingService;
+  private static EnvironmentCheckingService environmentCheckingService;
 
   /**
    * Keep track of shutdown events and ensure the configuration is persisted
@@ -173,7 +173,7 @@ public class CoreServices {
 
     // Order is important here
     applicationEventService = new ApplicationEventService();
-    securityCheckingService = new SecurityCheckingService();
+    environmentCheckingService = new EnvironmentCheckingService();
 
     if (configurationService == null) {
       bootstrap();
@@ -182,8 +182,8 @@ public class CoreServices {
     // Configure logging now that we have a configuration
     new LoggingFactory(Configurations.currentConfiguration.getLogging(), "MultiBit HD").configure();
 
-    // Start security checking service
-    securityCheckingService.start();
+    // Start environment checking service
+    environmentCheckingService.start();
 
     // Start application event service
     applicationEventService.start();
@@ -290,8 +290,8 @@ public class CoreServices {
     if (configurationService != null) {
       configurationService.shutdownNow(shutdownType);
     }
-    if (securityCheckingService != null) {
-      securityCheckingService.shutdownNow(shutdownType);
+    if (environmentCheckingService != null) {
+      environmentCheckingService.shutdownNow(shutdownType);
     }
     if (applicationEventService != null) {
       applicationEventService.shutdownNow(shutdownType);
@@ -426,11 +426,11 @@ public class CoreServices {
   }
 
   /**
-   * @return The security checking service singleton
+   * @return The environment checking service singleton
    */
-  public static SecurityCheckingService getSecurityCheckingService() {
-    log.debug("Get security checking service");
-    return securityCheckingService;
+  public static EnvironmentCheckingService getEnvironmentCheckingService() {
+    log.debug("Get environment checking service");
+    return environmentCheckingService;
   }
 
   /**

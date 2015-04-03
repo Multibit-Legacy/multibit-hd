@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
+import org.multibit.hd.ui.fest.use_cases.environment.CloseDebugEnvironmentPopoverUseCase;
 
 import java.util.Map;
 
@@ -14,13 +14,13 @@ import java.util.Map;
  *
  * @since 0.0.1
  */
-public class SecurityAlertPopoverRequirements {
+public class EnvironmentAlertPopoverRequirements {
 
   public static void verifyUsing(FrameFixture window) {
 
     Map<String, Object> parameters = Maps.newHashMap();
 
-    new CloseDebugSecurityPopoverUseCase(window).execute(parameters);
+    new CloseDebugEnvironmentPopoverUseCase(window).execute(parameters);
 
   }
 }

@@ -6,7 +6,7 @@ import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.fest.use_cases.credentials.RestoreButtonUseCase;
 import org.multibit.hd.ui.fest.use_cases.restore_password.RestorePasswordEnterSeedPhraseUseCase;
 import org.multibit.hd.ui.fest.use_cases.restore_password.RestorePasswordReportUseCase;
-import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
+import org.multibit.hd.ui.fest.use_cases.environment.CloseDebugEnvironmentPopoverUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectRestorePasswordUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -26,7 +26,7 @@ public class WelcomeWizardRestorePasswordRequirements {
 
     Map<String, Object> parameters = Maps.newHashMap();
 
-    new CloseDebugSecurityPopoverUseCase(window).execute(parameters);
+    new CloseDebugEnvironmentPopoverUseCase(window).execute(parameters);
 
     // Start the restore process
     new RestoreButtonUseCase(window).execute(parameters);

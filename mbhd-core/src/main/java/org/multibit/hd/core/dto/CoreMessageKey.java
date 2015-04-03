@@ -33,14 +33,16 @@ public enum CoreMessageKey {
   BITCOIN_SENT_OK("core_bitcoin_sent_ok"),
   BITCOIN_SEND_FAILED("core_bitcoin_send_failed"),
 
-  // Security
+  // Environment
   DEBUGGER_ATTACHED("core_debugger_attached"),
   SYSTEM_TIME_DRIFT("core_system_time_drift"),
   BACKUP_FAILED("core_backup_failed"),
   CERTIFICATE_FAILED("core_certificate_failed"),
-  SECURITY_ADVICE("core_security_advice"),
   BACKUP_WALLET_WAS_LOADED("core_backup_wallet_was_loaded"),
   UNSUPPORTED_FIRMWARE_ATTACHED("core_unsupported_firmware_attached"),
+  SECURITY_ADVICE("core_security_advice"),
+  UNSUPPORTED_CONFIGURATION_PASSPHRASE("core_unsupported_configuration_passphrase"),
+  UNSUPPORTED_CONFIGURATION_ADVICE("core_unsupported_configuration_advice"),
 
   // Connection / Sync
   THE_ERROR_WAS("core_the_error_was"),

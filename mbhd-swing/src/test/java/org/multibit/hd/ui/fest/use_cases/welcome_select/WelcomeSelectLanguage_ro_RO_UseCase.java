@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest.use_cases.welcome_select;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
-import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
+import org.multibit.hd.ui.fest.use_cases.environment.CloseDebugEnvironmentPopoverUseCase;
 import org.multibit.hd.ui.languages.LanguageKey;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -44,8 +44,8 @@ public class WelcomeSelectLanguage_ro_RO_UseCase extends AbstractFestUseCase {
 
     pauseForViewReset();
 
-    // Clear any security popover
-    new CloseDebugSecurityPopoverUseCase(window).execute(parameters);
+    // Clear any environment popover
+    new CloseDebugEnvironmentPopoverUseCase(window).execute(parameters);
 
     // Verify that the Romanian welcome note is showing
     assertLabelText(MessageKey.WELCOME_NOTE_1);

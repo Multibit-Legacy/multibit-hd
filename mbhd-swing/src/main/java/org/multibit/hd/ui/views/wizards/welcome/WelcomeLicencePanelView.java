@@ -10,8 +10,8 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
+import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertModel;
+import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -39,7 +39,7 @@ public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWiza
 
   private static final Logger log = LoggerFactory.getLogger(WelcomeLicencePanelView.class);
 
-  private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
+  private ModelAndView<DisplayEnvironmentAlertModel, DisplayEnvironmentAlertView> displayEnvironmentPopoverMaV;
 
   private boolean licenceAccepted = false;
 
@@ -56,7 +56,7 @@ public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWiza
   @Override
   public void newPanelModel() {
 
-    displaySecurityPopoverMaV = Popovers.newDisplaySecurityPopoverMaV(getPanelName());
+    displayEnvironmentPopoverMaV = Popovers.newDisplayEnvironmentPopoverMaV(getPanelName());
 
   }
 
@@ -134,8 +134,8 @@ public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWiza
       @Override
       public void run() {
 
-        // This requires a security popover check
-        checkForSecurityEventPopover(displaySecurityPopoverMaV);
+        // This requires a environment popover check
+        checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
 
       }
     });

@@ -542,7 +542,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with standard application directory</li>
-   * <li>Show the PIN entry, unlock screen and restore from there. This FEST test creates a local backup</li>
+   * <li>Show the unsupported firmware popover</li>
    * </ul>
    */
   @Test
@@ -554,8 +554,29 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Start with the empty hardware wallet fixture
     arrangeStandard(Optional.of(hardwareWalletFixture));
 
-    // Verify up to the restore
+    // Verify up to unlock
     UnlockTrezorHardwareWalletUnsupportedFirmwareRequirements.verifyUsing(window, hardwareWalletFixture);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with standard application directory</li>
+   * <li>Show the unsupported configuration "passphrase" popover</li>
+   * </ul>
+   */
+  @Test
+  public void verifyUnsupportedTrezorConfiguration_Passphrase() throws Exception {
+
+    // Prepare an initialised and attached Trezor device that will be restored then unlocked
+    HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedUnsupportedConfigurationPassphraseFixture();
+
+    // Start with the empty hardware wallet fixture
+    arrangeStandard(Optional.of(hardwareWalletFixture));
+
+    // Verify up to unlock
+    UnlockTrezorHardwareWalletUnsupportedConfigurationPassphraseRequirements.verifyUsing(window, hardwareWalletFixture);
 
   }
 
@@ -594,7 +615,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Copy the MBHD cacerts
-    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/" + InstallationManager.CA_CERTS_NAME);
+    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/mbhd-cacerts-with-localhost");
     OutputStream target = new FileOutputStream(new File(applicationDirectory + "/" + InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
@@ -637,7 +658,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Copy the MBHD cacerts
-    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/" + InstallationManager.CA_CERTS_NAME);
+    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/mbhd-cacerts-with-localhost");
     OutputStream target = new FileOutputStream(new File(applicationDirectory + "/" + InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
