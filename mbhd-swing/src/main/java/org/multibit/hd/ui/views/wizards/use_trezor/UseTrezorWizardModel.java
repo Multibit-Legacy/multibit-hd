@@ -149,7 +149,6 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
   @Override
   public void showButtonPress(HardwareWalletEvent event) {
-
     log.debug("Received hardwareWalletEvent {}", event);
 
     ButtonRequest buttonRequest = (ButtonRequest) event.getMessage().get();
@@ -179,12 +178,10 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
     }
-
   }
 
   @Override
   public void showOperationSucceeded(HardwareWalletEvent event) {
-
     switch (state) {
       case CONFIRM_WIPE_TREZOR:
         // Indicate a successful wipe
@@ -208,12 +205,10 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
           event.getMessage().get()
         );
     }
-
   }
 
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
-
     // In all cases move to the report panel with a failure message
     state=UseTrezorState.USE_TREZOR_REPORT_PANEL;
     setReportMessageKey(MessageKey.TREZOR_WIPE_DEVICE_FAILURE);
