@@ -5,8 +5,8 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.services.ApplicationEventService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -45,12 +45,6 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
    * The hardware wallet message status (true if successful, false if failed)
    */
   private boolean reportMessageStatus = false;
-
-  /**
-   * Ignore a device event occurring before this time to simplify the logic
-   * in dealing with a cancellation request followed by replacement of device
-   */
-  private DateTime ignoreHardwareWalletEventsThreshold = Dates.nowUtc();
 
   protected AbstractHardwareWalletWizardModel(S state) {
     super(state);
@@ -224,20 +218,6 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   }
 
   /**
-   * @return The instant at which a device events will be acted upon once more
-   */
-  public DateTime getIgnoreHardwareWalletEventsThreshold() {
-    return ignoreHardwareWalletEventsThreshold;
-  }
-
-  /**
-   * @param ignoreHardwareWalletEventsThreshold The instant at which a device events will be acted upon once more
-   */
-  public void setIgnoreHardwareWalletEventsThreshold(DateTime ignoreHardwareWalletEventsThreshold) {
-    this.ignoreHardwareWalletEventsThreshold = ignoreHardwareWalletEventsThreshold;
-  }
-
-  /**
    * @return The report panel view message key for the hardware wallet operation
    */
   public Optional<MessageKey> getReportMessageKey() {
@@ -288,7 +268,7 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
             // Cancel the current Trezor operation
 
             // The Trezor should respond quickly to a cancel
-            setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusMillis(100));
+            ApplicationEventService.setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusMillis(100));
 
             log.debug("Sending 'request cancel'");
 

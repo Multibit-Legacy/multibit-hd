@@ -25,6 +25,7 @@ import org.multibit.hd.core.exceptions.HistoryLoadException;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.ApplicationEventService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -308,8 +309,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     switch (state) {
       case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
         // An unsuccessful get master public key has been performed
-        log.debug("CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY was unsuccessful");
-        setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
+        ApplicationEventService.setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
 
         break;
       case CREDENTIALS_ENTER_PIN:
@@ -342,7 +342,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   @Override
   public void showDeviceReady(HardwareWalletEvent event) {
 
-    if (Dates.nowUtc().isAfter(getIgnoreHardwareWalletEventsThreshold())) {
+    if (ApplicationEventService.isHardwareWalletEventAllowed()) {
       // User attached an operational device in place of whatever
       // they are currently doing so start again.
 
@@ -358,7 +358,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   public void showDeviceDetached(HardwareWalletEvent event) {
     log.debug("Device is now detached - showing password screen");
 
-    if (Dates.nowUtc().isAfter(getIgnoreHardwareWalletEventsThreshold())) {
+    if (ApplicationEventService.isHardwareWalletEventAllowed()) {
 
       // If the wallet is loading then do not switch to password entry
       if (!state.equals(CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT)) {

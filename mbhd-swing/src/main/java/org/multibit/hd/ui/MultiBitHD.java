@@ -245,7 +245,6 @@ public class MultiBitHD {
 
     // Including the other controllers avoids dangling references during a soft shutdown
     mainController = new MainController(
-      externalDataListeningService,
       new HeaderController()
     );
 

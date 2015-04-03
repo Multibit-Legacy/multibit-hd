@@ -18,10 +18,7 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.BackupService;
-import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.ExchangeTickerService;
-import org.multibit.hd.core.services.WalletService;
+import org.multibit.hd.core.services.*;
 import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -96,8 +93,6 @@ public class MainController extends AbstractController implements
 
   private Optional<HardwareWalletService> hardwareWalletService = Optional.absent();
 
-  private final ExternalDataListeningService externalDataListeningService;
-
   private final ListeningExecutorService handoverExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-handover");
 
   // Keep a thread pool for transaction status checking
@@ -131,23 +126,17 @@ public class MainController extends AbstractController implements
   private DateTime lastWipedTrezorDateTime = Dates.nowUtc().minusDays(1);
 
   /**
-   * @param ExternalDataListeningService The Bitcoin URI listening service (must be present to permit a UI)
    * @param headerController             The header controller
    */
-  public MainController(
-    ExternalDataListeningService ExternalDataListeningService,
-    HeaderController headerController
-  ) {
+  public MainController(HeaderController headerController) {
 
     super();
 
     // MainController must also subscribe to ViewEvents
     ViewEvents.subscribe(this);
 
-    Preconditions.checkNotNull(ExternalDataListeningService, "'bitcoinURIListeningService' must be present");
     Preconditions.checkNotNull(headerController, "'headerController' must be present");
 
-    this.externalDataListeningService = ExternalDataListeningService;
     this.headerController = headerController;
 
   }
@@ -895,6 +884,11 @@ public class MainController extends AbstractController implements
   public void onHardwareWalletEvent(final HardwareWalletEvent event) {
     log.debug("Received hardware event: '{}'", event.getEventType().name());
 
+    if (!ApplicationEventService.isHardwareWalletEventAllowed()) {
+      log.debug("Ignoring hardware wallet event due to event threshold");
+      return;
+    }
+
     // Quick check for relevancy
     switch (event.getEventType()) {
       case SHOW_DEVICE_STOPPED:
@@ -1014,15 +1008,15 @@ public class MainController extends AbstractController implements
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
     if (walletSummary.isPresent()) {
-      Optional<HardwareWalletService> hardwareWalletService1 = CoreServices.getOrCreateHardwareWalletService();
+      Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
       boolean showAlert = false;
       if (!WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
         // Not currently using a Trezor hard wallet so show the alert
         showAlert = true;
       } else {
-        if (hardwareWalletService1.isPresent()) {
-          Optional<Features> features = hardwareWalletService.get().getContext().getFeatures();
+        if (hardwareWalletService.isPresent()) {
+          Optional<Features> features = this.hardwareWalletService.get().getContext().getFeatures();
           String currentWalletName = walletSummary.get().getName();
           if (features.isPresent() && !features.get().getDeviceId().equals(currentWalletName)) {
             // The newly plugged in Trezor is a different one
@@ -1030,7 +1024,7 @@ public class MainController extends AbstractController implements
           }
         }
       }
-      if (hardwareWalletService.isPresent()) {
+      if (this.hardwareWalletService.isPresent()) {
         if (lastWipedTrezorDateTime
           .plusSeconds(TREZOR_WIPE_TIME_THRESHOLD)
           .isAfter(Dates.nowUtc())) {

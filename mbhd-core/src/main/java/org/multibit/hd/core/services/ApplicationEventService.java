@@ -2,8 +2,10 @@ package org.multibit.hd.core.services;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.*;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 
@@ -18,12 +20,32 @@ import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
  */
 public class ApplicationEventService extends AbstractService {
 
+  /**
+   * Ignore a device event occurring before this time to simplify the logic
+   * in dealing with a cancellation request followed by replacement of device
+   */
+  private static DateTime ignoreHardwareWalletEventsThreshold = Dates.nowUtc();
+
   private Optional<ExchangeRateChangedEvent> latestExchangeRateChangedEvent = Optional.absent();
   private Optional<EnvironmentEvent> latestEnvironmentEvent = Optional.absent();
   private Optional<BitcoinNetworkChangedEvent> latestBitcoinNetworkChangedEvent = Optional.absent();
   private Optional<HardwareWalletEvent> latestHardwareWalletEvent = Optional.absent();
 
   private boolean isRegistered = false;
+
+  /**
+   * @return True if the hardware wallet ignore event threshold is not in force
+   */
+  public static boolean isHardwareWalletEventAllowed() {
+    return Dates.nowUtc().isAfter(ApplicationEventService.ignoreHardwareWalletEventsThreshold);
+  }
+
+  /**
+   * @param threshold The instant at which a device events will be acted upon once more
+   */
+  public static void setIgnoreHardwareWalletEventsThreshold(DateTime threshold) {
+    ignoreHardwareWalletEventsThreshold = threshold;
+  }
 
   @Override
   protected boolean startInternal() {
@@ -44,7 +66,7 @@ public class ApplicationEventService extends AbstractService {
         if (isRegistered) {
           // Unsubscribe from hardware wallet events
           HardwareWalletEvents.unsubscribe(this);
-          isRegistered=false;
+          isRegistered = false;
         }
 
         // Allow ongoing cleanup
@@ -148,7 +170,16 @@ public class ApplicationEventService extends AbstractService {
    */
   @Subscribe
   public void onHardwareWalletEvent(HardwareWalletEvent event) {
+
+    if (!isHardwareWalletEventAllowed()) {
+
+      log.debug("Ignoring hardware wallet event due to event threshold");
+      return;
+    }
+
+    // Retain the event
     latestHardwareWalletEvent = Optional.of(event);
+
   }
 
 }

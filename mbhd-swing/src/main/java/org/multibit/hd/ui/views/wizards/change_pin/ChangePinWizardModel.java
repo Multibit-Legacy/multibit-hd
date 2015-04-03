@@ -7,7 +7,9 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.services.ApplicationEventService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.*;
@@ -408,10 +410,14 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
     switch (state) {
 
       case CONFIRM_ADD_PIN:
-        state = ChangePinState.SELECT_OPTION;
+        state = ChangePinState.SHOW_REPORT;
+        setReportMessageKey(MessageKey.TREZOR_ADD_PIN_FAILURE);
+        setReportMessageStatus(false);
         break;
       case CONFIRM_CHANGE_PIN:
-        state = ChangePinState.SELECT_OPTION;
+        state = ChangePinState.SHOW_REPORT;
+        setReportMessageKey(MessageKey.TREZOR_CHANGE_PIN_FAILURE);
+        setReportMessageStatus(false);
         break;
       case CONFIRM_REMOVE_PIN:
         state = ChangePinState.SELECT_OPTION;
@@ -427,6 +433,9 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
         throw new IllegalStateException("Should not reach here from " + state.name());
 
     }
+
+    // Ignore device reset messages
+    ApplicationEventService.setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
 
   }
 }
