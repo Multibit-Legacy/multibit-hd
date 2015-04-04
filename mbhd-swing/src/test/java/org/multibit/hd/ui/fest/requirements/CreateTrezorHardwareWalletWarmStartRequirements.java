@@ -79,7 +79,7 @@ public class CreateTrezorHardwareWalletWarmStartRequirements {
     new TrezorRequestCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Verify PIN entry
-    new TrezorEnterPinUseCase(window, hardwareWalletFixture).execute(parameters);
+    new TrezorEnterPinFromCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Unlock with cipher key
     new TrezorConfirmUnlockUseCase(window, hardwareWalletFixture).execute(parameters);

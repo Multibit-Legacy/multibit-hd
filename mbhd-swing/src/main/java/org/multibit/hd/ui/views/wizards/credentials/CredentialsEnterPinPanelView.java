@@ -150,7 +150,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    log.debug("updateFromComponentModel called");
+    log.debug("PIN panel interaction");
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(

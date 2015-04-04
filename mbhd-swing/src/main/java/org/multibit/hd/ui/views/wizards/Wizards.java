@@ -262,10 +262,10 @@ public class Wizards {
     CredentialsWizardModel model;
     switch (credentialsRequestType) {
       case TREZOR:
-        model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY, credentialsRequestType);
+        model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY);
         break;
       case PASSWORD:
-        model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD, credentialsRequestType);
+        model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD);
         break;
       default:
         throw new UnsupportedOperationException("The '" + credentialsRequestType.name() + "' is not supported");

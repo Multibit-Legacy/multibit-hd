@@ -45,9 +45,7 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractWizardPa
   @Override
   public void newPanelModel() {
 
-    // Bind it to the wizard model in case of failure
-    getWizardModel().setRequestMasterPublicKeyPanelView(this);
-
+    // Do nothing
   }
 
   @Override

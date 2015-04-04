@@ -20,13 +20,13 @@ import java.util.concurrent.TimeUnit;
  *
  * @since 0.0.5
  */
-public class TrezorEnterPinUseCase extends AbstractHardwareWalletFestUseCase {
+public class TrezorEnterPinFromCipherKeyUseCase extends AbstractHardwareWalletFestUseCase {
 
   /**
    * @param window                The FEST window frame fixture
    * @param hardwareWalletFixture The hardware wallet fixture
    */
-  public TrezorEnterPinUseCase(FrameFixture window, HardwareWalletFixture hardwareWalletFixture) {
+  public TrezorEnterPinFromCipherKeyUseCase(FrameFixture window, HardwareWalletFixture hardwareWalletFixture) {
     super(window, hardwareWalletFixture);
   }
 
@@ -50,6 +50,9 @@ public class TrezorEnterPinUseCase extends AbstractHardwareWalletFestUseCase {
         .requireEnabled()
         .click();
     }
+
+    // Allow time for the popover to close
+    pauseForViewReset();
 
     // Check that the Trezor enter new PIN panel view is showing
     window

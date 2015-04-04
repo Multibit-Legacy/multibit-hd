@@ -6,7 +6,7 @@ import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
 import org.multibit.hd.ui.fest.use_cases.credentials.UnlockReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorConfirmUnlockUseCase;
-import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorEnterPinUseCase;
+import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorEnterPinFromCipherKeyUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorRequestCipherKeyUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorRequestMasterPublicKeyUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
@@ -44,7 +44,7 @@ public class UnlockTrezorHardwareWalletColdStartRequirements {
     new TrezorRequestCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Verify PIN entry
-    new TrezorEnterPinUseCase(window, hardwareWalletFixture).execute(parameters);
+    new TrezorEnterPinFromCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Unlock with cipher key
     new TrezorConfirmUnlockUseCase(window, hardwareWalletFixture).execute(parameters);

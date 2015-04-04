@@ -729,9 +729,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     MainView frame = GuiActionRunner.execute(
       new GuiQuery<MainView>() {
         protected MainView executeInEDT() {
-
-          InstallationManager.getOrCreateApplicationDataDirectory();
-
           log.info("FEST initialising UI...");
           return testObject.initialiseUIViews();
         }
@@ -745,6 +742,9 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     window.show();
 
     log.info("FEST setup complete");
+
+    // Allow time for UI to render
+    Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
   }
 

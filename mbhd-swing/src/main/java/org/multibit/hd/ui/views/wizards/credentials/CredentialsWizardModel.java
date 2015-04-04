@@ -67,19 +67,9 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   private CredentialsEnterPasswordPanelModel enterPasswordPanelModel;
 
   /**
-   * The type of credentials being requested password/ Trezor PIN / no Trezor PIN
-   */
-  private final CredentialsRequestType credentialsRequestType;
-
-  /**
-   * The "enter PIN" panel view
+   * The current "enter PIN" panel view (might have one each for master public key and cipher key)
    */
   private CredentialsEnterPinPanelView enterPinPanelView;
-
-  /**
-   * The "request master public key" panel node
-   */
-  private CredentialsRequestMasterPublicKeyPanelView requestMasterPublicKeyPanelView;
 
   /**
    * The "request cipher key" panel view
@@ -117,9 +107,11 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    */
   private boolean createNewTrezorWallet = false;
 
-  public CredentialsWizardModel(CredentialsState credentialsState, CredentialsRequestType credentialsRequestType) {
+  /**
+   * @param credentialsState The starting state
+   */
+  public CredentialsWizardModel(CredentialsState credentialsState) {
     super(credentialsState);
-    this.credentialsRequestType = credentialsRequestType;
   }
 
   @Override
@@ -281,7 +273,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         // Indicate a successful PIN
         getEnterPinPanelView().setPinStatus(true, true);
 
-      // Fall through to "press confirm for unlock"
+        // Fall through to "press confirm for unlock"
       case CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK:
 
         SwingUtilities.invokeLater(
@@ -398,7 +390,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         // Transition to request a cipher key (to provide entropy).
         // This will most likely trigger a PIN request
         state = CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY;
-        ;
         break;
 
       default:
@@ -922,16 +913,15 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     this.enterPasswordPanelModel = enterPasswordPanelModel;
   }
 
+  /**
+   * @return The current "enter PIN" panel view
+   */
   public CredentialsEnterPinPanelView getEnterPinPanelView() {
     return enterPinPanelView;
   }
 
   public void setEnterPinPanelView(CredentialsEnterPinPanelView enterPinPanelView) {
     this.enterPinPanelView = enterPinPanelView;
-  }
-
-  public void setRequestMasterPublicKeyPanelView(CredentialsRequestMasterPublicKeyPanelView requestMasterPublicKeyPanelView) {
-    this.requestMasterPublicKeyPanelView = requestMasterPublicKeyPanelView;
   }
 
   public void setRequestCipherKeyPanelView(CredentialsRequestCipherKeyPanelView requestCipherKeyPanelView) {

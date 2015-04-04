@@ -70,15 +70,11 @@ public class MultiBitHD {
         new Runnable() {
           @Override
           public void run() {
-
             multiBitHD.initialiseUIViews();
-
           }
         });
 
     }
-
-    log.debug("Bootstrap complete.");
 
   }
 
@@ -120,6 +116,7 @@ public class MultiBitHD {
     }
 
     log.info("This is the primary instance so showing splash screen.");
+    // Require Swing EDT for image load capabilities
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
@@ -324,20 +321,23 @@ public class MultiBitHD {
     log.debug("Initialising UI...");
 
     Preconditions.checkNotNull(mainController, "'mainController' must be present. FEST will cause this if another instance is running.");
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must execute on EDT. Check calling environment.");
 
-    final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-    long hardwareInitialisationTime = System.currentTimeMillis();
     // Give MultiBit Hardware a chance to process any attached hardware wallet
     // and for MainController to subsequently process the events
     // The delay observed in reality and FEST tests ranges from 1400-2200ms and is
     // not included results in wiped hardware wallets being missed on startup
+    final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
     log.debug("Starting the clock for hardware wallet initialisation");
+    long hardwareInitialisationTime = System.currentTimeMillis();
 
     try {
-      // Set look and feel
+      // Set look and feel (expect ~1000ms to perform this)
+      log.debug("Loading Nimbus LaF...");
       UIManager.setLookAndFeel(new NimbusLookAndFeel());
     } catch (UnsupportedLookAndFeelException e) {
       try {
+        log.warn("Falling back to cross platform LaF...");
         UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
       } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {
         log.error("No look and feel available. MultiBit HD requires Java 7 or higher.", e1);
@@ -345,7 +345,7 @@ public class MultiBitHD {
       }
     }
 
-    log.debug("Switching theme...");
+    log.debug("LaF loaded. Switching theme...");
     // Ensure that we are using the configured theme
     ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme());
     Themes.switchTheme(themeKey.theme());
