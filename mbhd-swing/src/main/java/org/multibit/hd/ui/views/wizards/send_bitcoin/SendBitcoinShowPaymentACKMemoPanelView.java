@@ -65,10 +65,13 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
   @Override
   public void initialiseContent(JPanel contentPanel) {
     paymentSentOKSummary = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
+    paymentSentOKSummary.setText(Languages.safeText(CoreMessageKey.PAYMENT_SENDING_TO_REQUESTOR));
+
     AccessibilityDecorator.apply(paymentSentOKSummary, CoreMessageKey.PAYMENT_SENDING_TO_REQUESTOR);
 
     // BIP70 PaymentACK memo
     paymentACKMemo = TextBoxes.newReadOnlyTextArea(6, MultiBitUI.PASSWORD_LENGTH);
+    paymentACKMemo.setVisible(false);
 
     // Apply any Payment Request parameters
     if (getWizardModel().getPaymentRequestData().isPresent()) {
@@ -80,6 +83,7 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
     }
 
     paymentACKMemoLabel = Labels.newBlankLabel();
+    paymentACKMemoLabel.setVisible(false);
     paymentACKMemoLabel.setText(Languages.safeText(MessageKey.SEND_PAYMENT_ACK_MEMO_LABEL));
     AccessibilityDecorator.apply(paymentACKMemoLabel, MessageKey.SEND_PAYMENT_ACK_MEMO_TITLE);
 
@@ -116,7 +120,7 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
             new Runnable() {
               @Override
               public void run() {
-                paymentACKMemo.requestFocusInWindow();
+                getFinishButton().requestFocusInWindow();
 
                 // Transaction must be progressing in some manner
                 if (lastPaymentSentToRequestorEvent != null) {
@@ -148,7 +152,11 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
                   LabelDecorator.applyWrappingLabel(paymentSentOKSummary, Languages.safeText(CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_OK));
                   LabelDecorator.applyStatusLabel(paymentSentOKSummary, Optional.of(Boolean.TRUE));
 
+                  paymentACKMemoLabel.setVisible(true);
+                  paymentACKMemo.setVisible(true);
                 } else {
+                  paymentACKMemoLabel.setVisible(false);
+                  paymentACKMemo.setVisible(false);
                   String summaryMessage = Languages.safeText(CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_FAILED, paymentSentToRequestorEvent.getSendFailureReasonData());
                   LabelDecorator.applyWrappingLabel(paymentSentOKSummary, summaryMessage);
                   LabelDecorator.applyStatusLabel(paymentSentOKSummary, Optional.of(Boolean.FALSE));
