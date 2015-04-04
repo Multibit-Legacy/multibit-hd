@@ -93,12 +93,7 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<S
   }
 
   public void setOperationText(final MessageKey key) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
         trezorDisplayMaV.getView().setOperationText(key);
-      }
-    });
   }
 
   public void setDisplayVisible(final boolean visible) {

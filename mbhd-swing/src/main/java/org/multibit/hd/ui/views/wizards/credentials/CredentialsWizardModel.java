@@ -282,7 +282,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             public void run() {
 
               confirmCipherKeyPanelView.getTrezorDisplayView().setOperationText(MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION);
-              confirmCipherKeyPanelView.setDisplayVisible(false);
+              confirmCipherKeyPanelView.getTrezorDisplayView().setDisplayVisible(false);
               confirmCipherKeyPanelView.getTrezorDisplayView().setSpinnerVisible(true);
 
             }
@@ -623,16 +623,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             Sounds.playBeep();
 
             // Ensure the view hides the spinner and enables components
-            SwingUtilities.invokeLater(
-              new Runnable() {
-                @Override
-                public void run() {
-
-                  confirmCipherKeyPanelView.incorrectEntropy();
-                  confirmCipherKeyPanelView.enableForFailedUnlock();
-
-                }
-              });
+            confirmCipherKeyPanelView.incorrectEntropy();
+            confirmCipherKeyPanelView.enableForFailedUnlock();
 
           }
         }
@@ -640,17 +632,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         @Override
         public void onFailure(Throwable t) {
           // Ensure the view hides the spinner and enables components
-          SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
-
-                confirmCipherKeyPanelView.incorrectEntropy();
-                confirmCipherKeyPanelView.enableForFailedUnlock();
-
-              }
-            });
-
+          confirmCipherKeyPanelView.incorrectEntropy();
+          confirmCipherKeyPanelView.enableForFailedUnlock();
         }
       }
     );

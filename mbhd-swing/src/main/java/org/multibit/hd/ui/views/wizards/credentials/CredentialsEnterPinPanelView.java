@@ -112,16 +112,21 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   @Override
   public void afterShow() {
 
+    // This requires environment popover check
+    checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
+
     registerDefaultButton(getFinishButton());
 
-    // Finally check that the firmware is supported (we do not tolerate any absent values at this point)
-    final boolean enabled = CoreServices.getOrCreateHardwareWalletService().get().getContext().getFeatures().get().isSupported();
+    // Finally check that the firmware is supported
+    // The user may try to ignore the popover warnings
+    final boolean enabled = CoreServices
+      .getOrCreateHardwareWalletService().get()
+      .getContext()
+      .getFeatures().get()
+      .isSupported();
 
     enterPinMaV.getView().requestInitialFocus();
     enterPinMaV.getView().setEnabled(enabled);
-
-    // This requires environment popover check
-    checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
 
   }
 

@@ -113,34 +113,26 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractWizardPa
       }
     }
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
+    // Set the communication message
+    trezorDisplayMaV.getView().setOperationText(operationKey);
 
-          // Set the communication message
-          trezorDisplayMaV.getView().setOperationText(operationKey);
+    if (nextEnabled) {
+      if (createNewTrezorWallet) {
+        trezorDisplayMaV.getView().setRecoveryText(MessageKey.TREZOR_NO_WALLET_RECOVERY);
+      } else {
+        trezorDisplayMaV.getView().setRecoveryText(MessageKey.TREZOR_FAILURE_RECOVERY);
+      }
+    }
 
-          if (nextEnabled) {
-            if (createNewTrezorWallet) {
-              trezorDisplayMaV.getView().setRecoveryText(MessageKey.TREZOR_NO_WALLET_RECOVERY);
-            } else {
-              trezorDisplayMaV.getView().setRecoveryText(MessageKey.TREZOR_FAILURE_RECOVERY);
-            }
-          }
+    // No spinner on a failure
+    trezorDisplayMaV.getView().setSpinnerVisible(!nextEnabled);
 
-          // No spinner on a failure
-          trezorDisplayMaV.getView().setSpinnerVisible(!nextEnabled);
-
-          // Override the earlier button enable setting
-          ViewEvents.fireWizardButtonEnabledEvent(
-            getPanelName(),
-            WizardButton.NEXT,
-            nextEnabled
-          );
-
-        }
-      });
+    // Override the earlier button enable setting
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.NEXT,
+      nextEnabled
+    );
 
     // Update the wizard model so we can change state
     getWizardModel().setSwitchToPassword(nextEnabled && !createNewTrezorWallet);

@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.components.trezor_display;
 
-import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
@@ -40,11 +39,12 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
   @Override
   public JPanel newComponentPanel() {
 
-    panel = Panels.newPanel(new MigLayout(
-      Panels.migXLayout(), // Layout
-      "[]", // Columns
-      "[]10[]10[]" // Rows
-    ));
+    panel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(), // Layout
+        "[]", // Columns
+        "[]10[]10[]" // Rows
+      ));
 
     // Initialise the components
     operationText = Labels.newCommunicatingWithTrezor();
@@ -84,11 +84,19 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
    *
    * @param key The message key defining the operation text (e.g. "Communicating with Trezor")
    */
-  public void setOperationText(MessageKey key) {
+  public void setOperationText(final MessageKey key) {
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
-
-    operationText.setText(Languages.safeText(key));
+    if (SwingUtilities.isEventDispatchThread()) {
+      operationText.setText(Languages.safeText(key));
+    } else {
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            operationText.setText(Languages.safeText(key));
+          }
+        });
+    }
 
   }
 
@@ -97,11 +105,19 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
    *
    * @param key The message key defining the recovery text (e.g. "Click next to continue" etc)
    */
-  public void setRecoveryText(MessageKey key) {
+  public void setRecoveryText(final MessageKey key) {
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
-
-    recoveryText.setText(Languages.safeText(key));
+    if (SwingUtilities.isEventDispatchThread()) {
+      recoveryText.setText(Languages.safeText(key));
+    } else {
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            recoveryText.setText(Languages.safeText(key));
+          }
+        });
+    }
 
   }
 
@@ -111,12 +127,21 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
    * @param key    The message key defining the Trezor text
    * @param values Any supporting values (such as addresses and values)
    */
-  public void setDisplayText(MessageKey key, Object... values) {
+  public void setDisplayText(final MessageKey key, final Object... values) {
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT.");
-
-    setDisplayVisible(true);
-    deviceDisplayTextArea.setText(Languages.safeText(key, values));
+    if (SwingUtilities.isEventDispatchThread()) {
+      setDisplayVisible(true);
+      deviceDisplayTextArea.setText(Languages.safeText(key, values));
+    } else {
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            setDisplayVisible(true);
+            deviceDisplayTextArea.setText(Languages.safeText(key, values));
+          }
+        });
+    }
 
   }
 
@@ -125,11 +150,19 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
    *
    * @param visible True if the display should be visible
    */
-  public void setDisplayVisible(boolean visible) {
+  public void setDisplayVisible(final boolean visible) {
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
-
-    deviceDisplayTextArea.setVisible(visible);
+    if (SwingUtilities.isEventDispatchThread()) {
+      deviceDisplayTextArea.setVisible(visible);
+    } else {
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            deviceDisplayTextArea.setVisible(visible);
+          }
+        });
+    }
 
   }
 
@@ -138,11 +171,19 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
    *
    * @param visible True if the spinner should be visible (such as when a prolonged operation has been invoked)
    */
-  public void setSpinnerVisible(boolean visible) {
+  public void setSpinnerVisible(final boolean visible) {
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
-
-    spinner.setVisible(visible);
+    if (SwingUtilities.isEventDispatchThread()) {
+      spinner.setVisible(visible);
+    } else {
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            spinner.setVisible(visible);
+          }
+        });
+    }
 
   }
 
@@ -150,8 +191,6 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
    * <p>The device has presented incorrect entropy</p>
    */
   public void incorrectEntropy() {
-
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
     setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
 

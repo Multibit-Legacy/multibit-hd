@@ -29,9 +29,6 @@ public class TrezorRequestMasterPublicKeyUseCase extends AbstractHardwareWalletF
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Allow time for events to propagate
-    pauseForViewReset();
-
     // This transitional panel is too variable to trap reliably
 
   }
