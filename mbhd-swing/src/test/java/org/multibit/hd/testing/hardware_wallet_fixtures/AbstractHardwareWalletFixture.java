@@ -1,17 +1,32 @@
 package org.multibit.hd.testing.hardware_wallet_fixtures;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.Uninterruptibles;
+import com.google.protobuf.Message;
+import org.bitcoinj.crypto.ChildNumber;
+import org.bitcoinj.wallet.KeyChain;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.multibit.hd.hardware.core.HardwareWalletClient;
 import org.multibit.hd.hardware.core.events.MessageEvent;
 import org.multibit.hd.hardware.core.events.MessageEventType;
 import org.multibit.hd.hardware.core.events.MessageEvents;
+import org.multibit.hd.hardware.core.messages.Features;
+import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
+import org.multibit.hd.hardware.core.messages.PublicKey;
+import org.multibit.hd.testing.MessageEventFixtures;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
+
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.when;
 
 /**
  * <p>Abstract base class to provide the following to hardware wallet fixtures:</p>
@@ -19,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * <li>Support code common to all hardware wallet fixtures</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.5
  *  
  */
 public abstract class AbstractHardwareWalletFixture implements HardwareWalletFixture {
@@ -106,4 +121,294 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
    */
   public abstract void setUpMessageQueue();
 
+  /**
+   * <p>Configure for a PUBLIC_KEY message for M</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param client The mock client
+   */
+  @SuppressWarnings("unchecked")
+  protected void useDeterministicHierarchyNoPIN(HardwareWalletClient client) {
+
+    when(client.getDeterministicHierarchy(anyListOf(ChildNumber.class))).thenAnswer(
+      new Answer<Optional<Message>>() {
+
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          // This unchecked cast is known to be OK
+          List<ChildNumber> childNumberList = (List<ChildNumber>) invocation.getArguments()[0];
+
+          final PublicKey publicKey;
+
+          switch (childNumberList.size()) {
+            case 0:
+              // M
+              publicKey = MessageEventFixtures.newStandardPublicKey_M();
+              break;
+            case 1:
+              // M/44H
+              publicKey = MessageEventFixtures.newStandardPublicKey_M_44H();
+              break;
+            case 2:
+              // M/44H/0H
+              publicKey = MessageEventFixtures.newStandardPublicKey_M_44H_0H();
+              break;
+            case 3:
+              // M/44H/0H/0H
+              publicKey = MessageEventFixtures.newStandardPublicKey_M_44H_0H_0H();
+              break;
+            default:
+              throw new IllegalStateException("Unexpected child number count: " + childNumberList.size());
+          }
+
+          final MessageEvent event = new MessageEvent(
+            MessageEventType.PUBLIC_KEY,
+            Optional.<HardwareWalletMessage>of(publicKey),
+            Optional.<Message>absent()
+          );
+
+          fireMessageEvent("Provide Public Key", event);
+
+          return Optional.absent();
+        }
+      });
+  }
+
+  /**
+   * <p>Configure for a CIPHER_KEY value</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param client The mock client
+   */
+  protected void useGetCipherKeyWithPIN(HardwareWalletClient client) {
+
+    byte[] key = "MultiBit HD     Unlock".getBytes(Charsets.UTF_8);
+    byte[] keyValue = "0123456789abcdef".getBytes(Charsets.UTF_8);
+
+    when(client.cipherKeyValue(0, KeyChain.KeyPurpose.RECEIVE_FUNDS, 0, key, keyValue, true, true, true)).thenAnswer(
+      new Answer<Optional<Message>>() {
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          final MessageEvent event = new MessageEvent(
+            MessageEventType.PIN_MATRIX_REQUEST,
+            Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCurrentPinMatrix()),
+            Optional.<Message>absent()
+          );
+
+          fireMessageEvent("Cipher key protected. Provide PIN.", event);
+
+          return Optional.absent();
+        }
+      });
+
+  }
+
+  /**
+   * <p>Configure for PIN matrix responses when unlocking a wallet (no previous create)</p>
+   * <ol>
+   * <li>"1234" is a correct PIN, "6789" will trigger FAILURE</li>
+   * <li>All calls trigger a "protect call" BUTTON_REQUEST</li>
+   * </ol>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param client The mock client
+   */
+  protected void usePinMatrixAckWithProtect(HardwareWalletClient client) {
+
+    when(client.pinMatrixAck("1234")).thenAnswer(
+      new Answer<Optional<Message>>() {
+
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          MessageEvent event = new MessageEvent(
+            MessageEventType.BUTTON_REQUEST,
+            Optional.<HardwareWalletMessage>of(MessageEventFixtures.newProtectCallButtonRequest()),
+            Optional.<Message>absent()
+          );
+          fireMessageEvent("Correct current PIN. Confirm encrypt.", event);
+
+          return Optional.absent();
+        }
+      });
+  }
+
+  /**
+   * <p>Configure for a CIPHER_KEY value</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param client The mock client
+   */
+  protected void useGetCipherKeyNoPIN(HardwareWalletClient client) {
+    byte[] key = "MultiBit HD     Unlock".getBytes(Charsets.UTF_8);
+    byte[] keyValue = "0123456789abcdef".getBytes(Charsets.UTF_8);
+
+    when(client.cipherKeyValue(0, KeyChain.KeyPurpose.RECEIVE_FUNDS, 0, key, keyValue, true, true, true)).thenAnswer(
+      new Answer<Optional<Message>>() {
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          final MessageEvent event = new MessageEvent(
+            MessageEventType.BUTTON_REQUEST,
+            Optional.<HardwareWalletMessage>of(MessageEventFixtures.newOtherButtonRequest()),
+            Optional.<Message>absent()
+          );
+
+          fireMessageEvent("Cipher key requires button press", event);
+
+          return Optional.absent();
+        }
+      });
+  }
+
+  /**
+   * <p>Configure for PIN matrix responses when unlocking a wallet (no previous create)</p>
+   * <ol>
+   * <li>"1234" is a correct PIN, "6789" will trigger FAILURE</li>
+   * <li>First call provides a standard PUBLIC_KEY of M</li>
+   * <li>Subsequent calls do nothing so rely on event fixtures to provide use case context</li>
+   * </ol>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param client The mock client
+   */
+  protected void usePinMatrixAckWithPublicKey(HardwareWalletClient client) {
+    // Failed PIN
+    when(client.pinMatrixAck("1234")).thenAnswer(
+      new Answer<Optional<Message>>() {
+
+        int count = 0;
+
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          MessageEvent event;
+          switch (count) {
+            case 0:
+              // PIN entered (current)
+              event = new MessageEvent(
+                MessageEventType.PUBLIC_KEY,
+                Optional.<HardwareWalletMessage>of(MessageEventFixtures.newStandardPublicKey_M()),
+                Optional.<Message>absent()
+              );
+              fireMessageEvent("Correct current PIN. Provide public key.", event);
+              break;
+            default:
+              // Do nothing
+          }
+
+          count++;
+
+          return Optional.absent();
+        }
+      });
+  }
+
+  /**
+   * <p>Configure for series of PUBLIC_KEY messages for PIN, M, M/44H, M/44H/0H, M/44H/0H/0H</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param client The mock client
+   */
+  protected void useDeterministicHierarchyPIN(HardwareWalletClient client) {
+    when(client.getDeterministicHierarchy(anyListOf(ChildNumber.class))).thenAnswer(
+      new Answer<Optional<Message>>() {
+
+        private int count = 0;
+
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          if (count == 0) {
+
+            count++;
+
+            final MessageEvent event = new MessageEvent(
+              MessageEventType.PIN_MATRIX_REQUEST,
+              Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCurrentPinMatrix()),
+              Optional.<Message>absent()
+            );
+
+            fireMessageEvent("Deterministic hierarchy is protected (1.3.3+ firmware). Provide PIN.", event);
+
+            return Optional.absent();
+
+          }
+
+          // This unchecked cast is known to be OK
+          List<ChildNumber> childNumberList = (List<ChildNumber>) invocation.getArguments()[0];
+
+          final PublicKey publicKey;
+
+          switch (childNumberList.size()) {
+            case 0:
+              // M
+              publicKey = MessageEventFixtures.newStandardPublicKey_M();
+              break;
+            case 1:
+              // M/44H
+              publicKey = MessageEventFixtures.newStandardPublicKey_M_44H();
+              break;
+            case 2:
+              // M/44H/0H
+              publicKey = MessageEventFixtures.newStandardPublicKey_M_44H_0H();
+              break;
+            case 3:
+              // M/44H/0H/0H
+              publicKey = MessageEventFixtures.newStandardPublicKey_M_44H_0H_0H();
+              break;
+            default:
+              throw new IllegalStateException("Unexpected child number count: " + childNumberList.size());
+          }
+
+          final MessageEvent event = new MessageEvent(
+            MessageEventType.PUBLIC_KEY,
+            Optional.<HardwareWalletMessage>of(publicKey),
+            Optional.<Message>absent()
+          );
+
+          fireMessageEvent("Provide Public Key", event);
+
+          return Optional.absent();
+        }
+      });
+  }
+
+  /**
+   * <p>Configure for a FEATURES based on the standard features</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param client The mock client
+   */
+  protected void useInitialiseWithStandardFeatures(HardwareWalletClient client) {
+    when(client.initialise()).thenAnswer(
+      new Answer<Optional<MessageEvent>>() {
+        public Optional<MessageEvent> answer(InvocationOnMock invocation) throws Throwable {
+
+          Features features = MessageEventFixtures.newStandardFeatures();
+
+          MessageEvent event = new MessageEvent(
+            MessageEventType.FEATURES,
+            Optional.<HardwareWalletMessage>of(features),
+            Optional.<Message>absent()
+          );
+
+          fireMessageEvent("Provide Features", event);
+
+          return Optional.absent();
+        }
+      });
+  }
+
+  /**
+   * <p>Configure for a DEVICE_CONNECTED</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param client The mock client
+   */
+  protected void useConnectWithConnected(HardwareWalletClient client) {
+    when(client.connect()).thenAnswer(
+      new Answer<Boolean>() {
+        public Boolean answer(InvocationOnMock invocation) throws Throwable {
+          fireMessageEvent("Device connected", MessageEventType.DEVICE_CONNECTED);
+          return true;
+        }
+      });
+  }
 }

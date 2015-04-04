@@ -32,7 +32,7 @@ import static org.multibit.hd.testing.MessageEventFixtures.*;
  *
  * <p>Emulates an attached wiped (factory fresh) Trezor during the create wallet use case</p>
  *
- * @since 0.0.1
+ * @since 0.0.5
  *  
  */
 public class TrezorWipedFixture extends AbstractHardwareWalletFixture {
@@ -121,13 +121,7 @@ public class TrezorWipedFixture extends AbstractHardwareWalletFixture {
    * @param client The mock client
    */
   private void mockConnect(HardwareWalletClient client) {
-    when(client.connect()).thenAnswer(
-      new Answer<Boolean>() {
-        public Boolean answer(InvocationOnMock invocation) throws Throwable {
-          fireMessageEvent("Device connected", MessageEventType.DEVICE_CONNECTED);
-          return true;
-        }
-      });
+    useConnectWithConnected(client);
   }
 
   /**
@@ -200,6 +194,33 @@ public class TrezorWipedFixture extends AbstractHardwareWalletFixture {
   }
 
   /**
+   * <p>Configure for a ENTROPY_ACK message </p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param mockClient The mock client
+   */
+  private void mockEntropyAck(HardwareWalletClient mockClient) {
+
+    when(mockClient.entropyAck(Matchers.<byte[]>anyObject())).thenAnswer(
+      new Answer<Optional<Message>>() {
+
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          final MessageEvent event;
+          event = new MessageEvent(
+            MessageEventType.BUTTON_REQUEST,
+            Optional.<HardwareWalletMessage>of(newConfirmWordButtonRequest()),
+            Optional.<Message>absent()
+          );
+
+          fireMessageEvent("Entropy ack, confirm 1st word", event);
+
+          return Optional.absent();
+        }
+      });
+  }
+
+  /**
    * <p>Configure for PIN matrix responses when unlocking a wallet (no previous create)</p>
    * <ol>
    * <li>"1234" is a correct PIN</li>
@@ -259,33 +280,6 @@ public class TrezorWipedFixture extends AbstractHardwareWalletFixture {
         }
       });
 
-  }
-
-  /**
-   * <p>Configure for a ENTROPY_ACK message </p>
-   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
-   *
-   * @param mockClient The mock client
-   */
-  private void mockEntropyAck(HardwareWalletClient mockClient) {
-
-    when(mockClient.entropyAck(Matchers.<byte[]>anyObject())).thenAnswer(
-      new Answer<Optional<Message>>() {
-
-        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
-
-          final MessageEvent event;
-          event = new MessageEvent(
-            MessageEventType.BUTTON_REQUEST,
-            Optional.<HardwareWalletMessage>of(newConfirmWordButtonRequest()),
-            Optional.<Message>absent()
-          );
-
-          fireMessageEvent("Entropy ack, confirm 1st word", event);
-
-          return Optional.absent();
-        }
-      });
   }
 
   /**

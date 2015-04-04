@@ -258,21 +258,22 @@ public class Wizards {
    */
   public static CredentialsWizard newExitingCredentialsWizard(CredentialsRequestType credentialsRequestType) {
 
-    log.debug("Creating 'Credentials wizard' with credentialsRequestType = " + credentialsRequestType);
-    CredentialsWizardModel model;
-    switch (credentialsRequestType) {
-      case TREZOR:
-        model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY);
-        break;
-      case PASSWORD:
-        model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD);
-        break;
-      default:
-        throw new UnsupportedOperationException("The '" + credentialsRequestType.name() + "' is not supported");
-    }
-
-    // TODO This needs to be fixed (see #348)
+    // Use a synchronized block here to ensure that hardware wallets are
+    // handled correctly during startup
     synchronized (Wizards.class) {
+      log.debug("Creating 'Credentials wizard' with credentialsRequestType = " + credentialsRequestType);
+      CredentialsWizardModel model;
+      switch (credentialsRequestType) {
+        case TREZOR:
+          model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY);
+          break;
+        case PASSWORD:
+          model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD);
+          break;
+        default:
+          throw new UnsupportedOperationException("The '" + credentialsRequestType.name() + "' is not supported");
+      }
+
       if (credentialsWizard != null) {
         // Clear down all existing subscriptions
         credentialsWizard.unsubscribeAll();
@@ -399,6 +400,7 @@ public class Wizards {
 
     return new FeeSettingsWizard(new FeeSettingsWizardModel(FeeSettingsState.FEE_ENTER_DETAILS, configuration));
   }
+
   /**
    * @return A new "sound settings" wizard for sound selection
    */

@@ -24,7 +24,7 @@ import java.util.List;
  * <li>Repeatable wallet scenarios</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.5
  *
  */
 public class WalletFixtures {
