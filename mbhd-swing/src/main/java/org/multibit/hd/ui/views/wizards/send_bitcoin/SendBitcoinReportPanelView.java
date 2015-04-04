@@ -46,7 +46,6 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   private TransactionCreationEvent lastTransactionCreationEvent;
   private BitcoinSendingEvent lastBitcoinSendingEvent;
   private BitcoinSendProgressEvent lastBitcoinSendProgressEvent;
-  private BitcoinSentEvent lastBitcoinSentEvent;
 
   private boolean initialised = false;
 
@@ -62,7 +61,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     lastTransactionCreationEvent = null;
     lastBitcoinSendingEvent = null;
     lastBitcoinSendProgressEvent = null;
-    lastBitcoinSentEvent = null;
+    getWizardModel().setLastBitcoinSentEvent(null);
   }
 
   @Override
@@ -108,9 +107,9 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   @Override
   protected void initialiseButtons(AbstractWizard<SendBitcoinWizardModel> wizard) {
     if (getWizardModel().isBIP70()) {
-      // BIP 70 send reports have a Next and a Finish
-      // (Finish is used instead of Cancel as a Cancel might give te impression that the transaction send is being cancelled)
-      PanelDecorator.addNextFinish(this, wizard);
+      // BIP 70 send reports have a Next
+      PanelDecorator.addNext(this, wizard);
+      getNextButton().setEnabled(true);
     } else {
       // Regular send reports have a Finish button
       PanelDecorator.addFinish(this, wizard);
@@ -169,9 +168,8 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
               lastBitcoinSendProgressEvent = null;
             }
 
-            if (lastBitcoinSentEvent != null) {
-              onBitcoinSentEvent(lastBitcoinSentEvent);
-              lastBitcoinSentEvent = null;
+            if (getWizardModel().getLastBitcoinSentEvent() != null) {
+              onBitcoinSentEvent(getWizardModel().getLastBitcoinSentEvent());
             }
           }
         }
@@ -281,7 +279,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   public void onBitcoinSentEvent(final BitcoinSentEvent bitcoinSentEvent) {
     log.debug("Received the BitcoinSentEvent: " + bitcoinSentEvent);
 
-    lastBitcoinSentEvent = bitcoinSentEvent;
+    getWizardModel().setLastBitcoinSentEvent(bitcoinSentEvent);
     // The event may be fired before the UI has initialised
     if (!initialised) {
       return;
@@ -291,6 +289,12 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
       new Runnable() {
         @Override
         public void run() {
+
+          // Enable the next button on BIP70 payments once the transaction is sent
+          if (getWizardModel().isBIP70()) {
+            getNextButton().setEnabled(true);
+          }
+
           if (bitcoinSentEvent.isSendWasSuccessful()) {
             LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
             LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
@@ -302,16 +306,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
             LabelDecorator.applyWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
             LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
           }
-
-          // Enable the next button on BIP70 payments once the transaction is sent
-          if (getWizardModel().isBIP70()) {
-            getNextButton().setEnabled(true);
-          }
         }
       });
-
-    // Handle the rest of the send
-    // TODO move this to the wizardModel next from this panel
-    getWizardModel().sendPaymentToMerchant(bitcoinSentEvent);
   }
 }

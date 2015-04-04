@@ -206,6 +206,24 @@ public class CoreEvents {
         }
       });
   }
+
+  /**
+    * <p>Broadcast PaymentSentToRequestorEvent </p>
+    *
+    * @param paymentSentToRequestorEvent containing send information
+    */
+   public static void firePaymentSentToRequestorEvent(final PaymentSentToRequestorEvent paymentSentToRequestorEvent) {
+
+     eventExecutor.submit(
+       new Runnable() {
+         @Override
+         public void run() {
+           log.trace("Firing 'PaymentSentToRequestorEvent' event");
+           coreEventBus.post(paymentSentToRequestorEvent);
+         }
+       });
+   }
+
   /**
     * <p>Broadcast BitcoinSendingEvent</p>
     *

@@ -106,6 +106,8 @@ public class PaymentRequestData implements PaymentData {
 
     this(Optional.of(paymentSessionSummary.getPaymentSession().get().getPaymentRequest()), Optional.<Sha256Hash>absent());
 
+    this.paymentSessionSummary = Optional.of(paymentSessionSummary);
+
     PaymentSession paymentSession = paymentSessionSummary.getPaymentSession().get();
 
     setDate(new DateTime(paymentSession.getDate()));
@@ -117,7 +119,6 @@ public class PaymentRequestData implements PaymentData {
     if (paymentSessionSummary.getPkiVerificationData().isPresent()) {
       setIdentityDisplayName(paymentSessionSummary.getPkiVerificationData().get().displayName);
     }
-
   }
 
   /**

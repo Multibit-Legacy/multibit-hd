@@ -11,11 +11,11 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
  * @since 0.0.1
  *
  */
-public class SendBitcoinEnterPaymentACKMemoPanelModel extends AbstractWizardPanelModel {
+public class SendBitcoinShowPaymentACKMemoPanelModel extends AbstractWizardPanelModel {
 
   private String paymentACKMemo;
 
-  public SendBitcoinEnterPaymentACKMemoPanelModel(String panelName) {
+  public SendBitcoinShowPaymentACKMemoPanelModel(String panelName) {
     super(panelName);
   }
 

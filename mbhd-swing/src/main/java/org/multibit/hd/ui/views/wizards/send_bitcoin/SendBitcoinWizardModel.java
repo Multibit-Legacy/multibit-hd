@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -20,7 +21,9 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.BitcoinSentEvent;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.events.PaymentSentToRequestorEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ApplicationEventService;
@@ -78,7 +81,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   /**
     * The "payment ack memo" panel model
     */
-   private SendBitcoinEnterPaymentACKMemoPanelModel sendBitcoinEnterPaymentACKMemoPanelModel;
+   private SendBitcoinShowPaymentACKMemoPanelModel sendBitcoinShowPaymentACKMemoPanelModel;
 
   /**
    * Keep track of which transaction output is being signed
@@ -103,6 +106,11 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    * Boolean indicating whether this is processing a BIP70 payment request
    */
   private boolean isBIP70 = false;
+
+  /**
+   * The last bitcoin sent event
+   */
+  private BitcoinSentEvent lastBitcoinSentEvent;
 
   /**
    * @param state     The state object
@@ -205,6 +213,9 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       case SEND_BIP70_PAYMENT_MEMO:
         // BIP 70 payment requests have a BIP70_PAYMENT_ACK_MEMO page after the report
         if (isBIP70) {
+          // Send the Payment (with the payment memo) to the merchant
+              // Handle the rest of the send
+              sendPaymentToMerchant();
           state = SEND_BIP70_PAYMENT_ACK_MEMO;
         }
         break;
@@ -311,12 +322,12 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     this.sendBitcoinEnterPaymentMemoPanelModel = sendBitcoinEnterPaymentMemoPanelModel;
   }
 
-  public SendBitcoinEnterPaymentACKMemoPanelModel getSendBitcoinEnterPaymentACKMemoPanelModel() {
-    return sendBitcoinEnterPaymentACKMemoPanelModel;
+  public SendBitcoinShowPaymentACKMemoPanelModel getSendBitcoinShowPaymentACKMemoPanelModel() {
+    return sendBitcoinShowPaymentACKMemoPanelModel;
   }
 
-  public void setSendBitcoinEnterPaymentACKMemoPanelModel(SendBitcoinEnterPaymentACKMemoPanelModel sendBitcoinEnterPaymentACKMemoPanelModel) {
-    this.sendBitcoinEnterPaymentACKMemoPanelModel = sendBitcoinEnterPaymentACKMemoPanelModel;
+  public void setSendBitcoinShowPaymentACKMemoPanelModel(SendBitcoinShowPaymentACKMemoPanelModel sendBitcoinShowPaymentACKMemoPanelModel) {
+    this.sendBitcoinShowPaymentACKMemoPanelModel = sendBitcoinShowPaymentACKMemoPanelModel;
   }
 
   /**
@@ -457,6 +468,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
     log.debug("Just about to send bitcoin: {}", sendRequestSummary);
+    lastBitcoinSentEvent = null;
     bitcoinNetworkService.send(sendRequestSummary, paymentRequestData);
 
     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
@@ -710,12 +722,15 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
   /**
    * Handles the process of sending a BIP70 Payment to the merchant and receiving a PaymentAck
-   *
-   * @param bitcoinSentEvent Indication of broadcast success or failure with transaction details
    */
-  public void sendPaymentToMerchant(BitcoinSentEvent bitcoinSentEvent) {
+  public void sendPaymentToMerchant() {
     // Check for successful send and a BIP70 Payment requirement
-    if (bitcoinSentEvent.isSendWasSuccessful() && getPaymentRequestData().isPresent()) {
+    if (lastBitcoinSentEvent != null && lastBitcoinSentEvent.isSendWasSuccessful()) {
+      Preconditions.checkNotNull(getPaymentRequestData());
+      Preconditions.checkState(getPaymentRequestData().isPresent());;
+      Preconditions.checkNotNull(getPaymentRequestData().get().getPaymentSessionSummary());
+      Preconditions.checkState(getPaymentRequestData().get().getPaymentSessionSummary().isPresent());
+      Preconditions.checkState(getPaymentRequestData().get().getPaymentSessionSummary().get().getPaymentSession().isPresent());
 
       PaymentSession paymentSession = getPaymentRequestData().get()
               .getPaymentSessionSummary().get()
@@ -723,11 +738,13 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
       // Send the Payment message to the merchant
       try {
+        final List<Transaction> transactionsSent = Lists.newArrayList(lastBitcoinSentEvent.getTransaction().get());
+
         final ListenableFuture<PaymentProtocol.Ack> future = paymentSession.sendPayment(
-                Lists.newArrayList(bitcoinSentEvent.getTransaction().get()),
-                bitcoinSentEvent.getChangeAddress(),
-                "" // TODO Ideally we should use getWizardModel().getMemo() and add a new field for "merchant notes" on the confirm screen
-        );
+                transactionsSent,
+                lastBitcoinSentEvent.getChangeAddress(),
+                getSendBitcoinEnterPaymentMemoPanelModel().getPaymentMemo());
+
         if (future != null) {
           Futures.addCallback(
                   future, new FutureCallback<PaymentProtocol.Ack>() {
@@ -736,6 +753,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
                       // Have successfully received a PaymentAck from the merchant
                       log.info("Received PaymentAck from merchant. Memo: {}", result.getMemo());
+                      getSendBitcoinShowPaymentACKMemoPanelModel().setPaymentACKMemo(result.getMemo());
 
                       WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
 
@@ -744,28 +762,45 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
                       if (password != null) {
                         walletService.writePayments(password);
                       }
+
+                      CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(true, CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_OK, null));
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
-
                       // Failed to communicate with the merchant
-                      // TODO Need an alert bar indicating failure here
                       log.error("Unexpected failure", t);
-
+                      CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(false, CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_FAILED, new String[]{t.getClass().getCanonicalName() + " " + t.getMessage()}));
                     }
                   });
         } else {
           throw new PaymentProtocolException("Failed to create future from Ack");
         }
       } catch (IOException | PaymentProtocolException e) {
-        // TODO Need an alert bar indicating failure here
         log.error("Unexpected failure", e);
+        CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(false, CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_FAILED, new String[] {e.getClass().getCanonicalName() + " " + e.getMessage()}));
       }
+    } else {
+      String message = "Bitcoin not sent successfully so no payment sent to requestor";
+      log.debug(message);
+      CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(false, CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_FAILED, new String[]{message}));
     }
   }
 
   public boolean isBIP70() {
     return isBIP70;
+  }
+
+  @Subscribe
+  public void onBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
+    lastBitcoinSentEvent = bitcoinSentEvent;
+  }
+
+  public BitcoinSentEvent getLastBitcoinSentEvent() {
+    return lastBitcoinSentEvent;
+  }
+
+  public void setLastBitcoinSentEvent(BitcoinSentEvent lastBitcoinSentEvent) {
+    this.lastBitcoinSentEvent = lastBitcoinSentEvent;
   }
 }
