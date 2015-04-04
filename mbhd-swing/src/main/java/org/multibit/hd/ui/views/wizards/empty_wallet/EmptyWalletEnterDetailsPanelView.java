@@ -129,15 +129,9 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          // Only show if the address shown is in the wallet
-          isAddressMineStatusLabel.setVisible(getPanelModel().get().isAddressMine());
-          enterRecipientMaV.getView().requestInitialFocus();
-        }
-      });
+    // Only show if the address shown is in the wallet
+    isAddressMineStatusLabel.setVisible(getPanelModel().get().isAddressMine());
+    enterRecipientMaV.getView().requestInitialFocus();
 
   }
 

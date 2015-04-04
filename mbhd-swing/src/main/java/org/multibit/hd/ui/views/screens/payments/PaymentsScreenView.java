@@ -354,12 +354,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
       walletDetail.setNumberOfPayments(CoreServices.getCurrentWalletService().get().getPaymentDataSetSize());
 
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          ViewEvents.fireWalletDetailChangedEvent(walletDetail);
-        }
-      });
+      ViewEvents.fireWalletDetailChangedEvent(walletDetail);
     }
   }
 }

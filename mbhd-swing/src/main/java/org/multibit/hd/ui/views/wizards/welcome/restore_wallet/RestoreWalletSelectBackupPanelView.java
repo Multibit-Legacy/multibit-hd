@@ -105,12 +105,7 @@ public class RestoreWalletSelectBackupPanelView extends AbstractWizardPanelView<
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        selectBackupMaV.getView().requestInitialFocus();
-      }
-    });
+    selectBackupMaV.getView().requestInitialFocus();
 
   }
 

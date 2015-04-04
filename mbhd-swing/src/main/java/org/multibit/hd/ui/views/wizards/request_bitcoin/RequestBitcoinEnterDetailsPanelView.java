@@ -168,12 +168,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        enterAmountMaV.getView().requestInitialFocus();
-      }
-    });
+    enterAmountMaV.getView().requestInitialFocus();
 
   }
 

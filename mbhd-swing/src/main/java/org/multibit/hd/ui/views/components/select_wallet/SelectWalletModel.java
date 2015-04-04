@@ -6,7 +6,6 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
-import javax.swing.*;
 import java.util.List;
 
 /**
@@ -41,12 +40,7 @@ public class SelectWalletModel implements Model<WalletSummary> {
   public void setValue(WalletSummary value) {
     this.selectedWallet = value;
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
-      }
-    });
+    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
   }
 
   /**

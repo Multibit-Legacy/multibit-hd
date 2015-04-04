@@ -51,7 +51,7 @@ public class SendBitcoinEnterPaymentMemoPanelView extends AbstractWizardPanelVie
   public void newPanelModel() {
     // Configure the panel model
     panelModel = new SendBitcoinEnterPaymentMemoPanelModel(
-            getPanelName());
+      getPanelName());
     setPanelModel(panelModel);
 
     // Bind it to the wizard model
@@ -78,11 +78,11 @@ public class SendBitcoinEnterPaymentMemoPanelView extends AbstractWizardPanelVie
     paymentMemoLabel.setText(Languages.safeText(MessageKey.SEND_PAYMENT_MEMO_LABEL));
 
     contentPanel.setLayout(
-            new MigLayout(
-                    Panels.migXYLayout(),
-                    "[]", // Column constraints
-                    "[]10[]" // Row constraints
-            ));
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[]", // Column constraints
+        "[]10[]" // Row constraints
+      ));
 
     contentPanel.add(paymentMemoLabel, "wrap");
     contentPanel.add(paymentMemo, "growx,push,wrap");
@@ -104,13 +104,7 @@ public class SendBitcoinEnterPaymentMemoPanelView extends AbstractWizardPanelVie
 
   @Override
   public void afterShow() {
-    SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
-                paymentMemo.requestFocusInWindow();
-              }
-            });
+    paymentMemo.requestFocusInWindow();
   }
 
   @Override

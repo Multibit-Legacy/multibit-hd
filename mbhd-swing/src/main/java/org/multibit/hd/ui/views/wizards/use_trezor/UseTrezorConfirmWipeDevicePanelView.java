@@ -70,22 +70,14 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
+    // Set the confirm text
+    trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
 
-      @Override public void run() {
+    // Show unlock message
+    trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
 
-        // Set the confirm text
-        trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
-
-        // Show unlock message
-        trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
-
-        // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
-        getNextButton().setEnabled(false);
-
-      }
-
-    });
+    // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
+    getNextButton().setEnabled(false);
   }
 
   @Override

@@ -59,9 +59,9 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
     // Configure the panel model
     final SendBitcoinEnterAmountPanelModel panelModel = new SendBitcoinEnterAmountPanelModel(
-            getPanelName(),
-            enterRecipientMaV.getModel(),
-            enterAmountMaV.getModel()
+      getPanelName(),
+      enterRecipientMaV.getModel(),
+      enterAmountMaV.getModel()
     );
     setPanelModel(panelModel);
 
@@ -74,11 +74,12 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
-    contentPanel.setLayout(new MigLayout(
-            Panels.migXYLayout(),
-            "[]", // Column constraints
-            "[]10[]" // Row constraints
-    ));
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[]", // Column constraints
+        "[]10[]" // Row constraints
+      ));
 
     // Apply any Bitcoin URI parameters
     if (getWizardModel().getBitcoinURI().isPresent()) {
@@ -110,25 +111,18 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
   }
 
   @Override
-   public boolean beforeShow() {
-     // Ensure the pay request button is kept up to date
-     Optional<BitcoinNetworkChangedEvent> changedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
-     if (changedEvent.isPresent()) {
-       updateNextButton(changedEvent.get());
-     }
-     return true;
-   }
+  public boolean beforeShow() {
+    // Ensure the pay request button is kept up to date
+    Optional<BitcoinNetworkChangedEvent> changedEvent = CoreServices.getApplicationEventService().getLatestBitcoinNetworkChangedEvent();
+    if (changedEvent.isPresent()) {
+      updateNextButton(changedEvent.get());
+    }
+    return true;
+  }
 
   @Override
   public void afterShow() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        enterRecipientMaV.getView().requestInitialFocus();
-
-      }
-    });
+    enterRecipientMaV.getView().requestInitialFocus();
   }
 
   @Override
@@ -137,9 +131,9 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(
-            getPanelName(),
-            WizardButton.NEXT,
-            isNextEnabled()
+      getPanelName(),
+      WizardButton.NEXT,
+      isNextEnabled()
     );
   }
 
@@ -148,14 +142,14 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
    */
   private boolean isNextEnabled() {
     boolean bitcoinAmountOK = !getPanelModel().get()
-            .getEnterAmountModel()
-            .getCoinAmount()
-            .equals(Coin.ZERO);
+      .getEnterAmountModel()
+      .getCoinAmount()
+      .equals(Coin.ZERO);
 
     boolean recipientOK = getPanelModel().get()
-            .getEnterRecipientModel()
-            .getRecipient()
-            .isPresent();
+      .getEnterRecipientModel()
+      .getRecipient()
+      .isPresent();
 
     return bitcoinAmountOK && recipientOK && networkOk;
   }
@@ -213,12 +207,13 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
       // If button is not enabled and the newEnabled is false don't do anything
       // This cuts down the number of events
       if (getNextButton().isEnabled() || newEnabled) {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            getNextButton().setEnabled(finalNewEnabled);
-          }
-        });
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              getNextButton().setEnabled(finalNewEnabled);
+            }
+          });
       }
     }
   }

@@ -126,7 +126,7 @@ public class MainController extends AbstractController implements
   private DateTime lastWipedTrezorDateTime = Dates.nowUtc().minusDays(1);
 
   /**
-   * @param headerController             The header controller
+   * @param headerController The header controller
    */
   public MainController(HeaderController headerController) {
 
@@ -306,18 +306,12 @@ public class MainController extends AbstractController implements
     if (BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus())) {
       final boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
       log.debug("Firing event to header viewable to:  {}", viewHeader);
-      SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
-          }
-        });
+      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
 
       // For Trezor hard wallets, get the date of the earliest transaction and use it to set the
       // earliestKeyCreationDate. This enables future repair wallets to be quicker
       if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() &&
-              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType() == WalletType.TREZOR_HARD_WALLET) {
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType() == WalletType.TREZOR_HARD_WALLET) {
         // See if the synced wallet has transactions
         Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
         java.util.List<Transaction> transactions = wallet.getTransactionsByTime();
@@ -345,16 +339,10 @@ public class MainController extends AbstractController implements
       localisedMessage = summary.getStatus().name();
     }
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
+    ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
 
-          // Ensure everyone is aware of the update
-          ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
-        }
-      });
+    // Ensure everyone is aware of the update
+    ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
   }
 
   @Subscribe
@@ -766,14 +754,8 @@ public class MainController extends AbstractController implements
   public void onAboutEvent(GenericAboutEvent event) {
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            // Show the Tools screen
-            ViewEvents.fireShowDetailScreenEvent(Screen.TOOLS);
-          }
-        });
+      // Show the Tools screen
+      ViewEvents.fireShowDetailScreenEvent(Screen.TOOLS);
 
       // Show the About screen
       Panels.showLightBox(Wizards.newAboutWizard().getWizardScreenHolder());
@@ -807,14 +789,8 @@ public class MainController extends AbstractController implements
   public void onPreferencesEvent(GenericPreferencesEvent event) {
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            // Show the Preferences screen
-            ViewEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
-          }
-        });
+      // Show the Preferences screen
+      ViewEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
     }
 
   }
@@ -954,8 +930,8 @@ public class MainController extends AbstractController implements
       // Show as a environment popover
       CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newUnsupportedFirmware());
     } else if (isUnsupportedConfigurationPassphrase) {
-        // Show as an info popover
-        CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newUnsupportedConfigurationPassphrase());
+      // Show as an info popover
+      CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newUnsupportedConfigurationPassphrase());
     } else {
       // Use the alert bar mechanism
 

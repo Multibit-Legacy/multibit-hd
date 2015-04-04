@@ -103,14 +103,7 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        themesComboBox.requestFocusInWindow();
-
-      }
-    });
+     themesComboBox.requestFocusInWindow();
 
   }
 

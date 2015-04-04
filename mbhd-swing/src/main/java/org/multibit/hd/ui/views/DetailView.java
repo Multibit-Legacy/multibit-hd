@@ -64,7 +64,9 @@ public class DetailView extends AbstractView {
 
   @Subscribe
   public void onShowDetailScreen(final ShowScreenEvent event) {
+
     Preconditions.checkNotNull(event, "'event' must be present");
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "This should run on the EDT. Check ViewEvents.");
 
     Screen screen = event.getScreen();
 

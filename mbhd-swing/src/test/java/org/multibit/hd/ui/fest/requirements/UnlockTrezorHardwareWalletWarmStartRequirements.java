@@ -29,11 +29,11 @@ public class UnlockTrezorHardwareWalletWarmStartRequirements {
     // Request the master public key (refer to mock client for PublicKey responses)
     new TrezorRequestMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
-    // Request the cipher key (refer to mock client for PIN entry responses)
-    new TrezorRequestCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
-
     // Verify PIN entry
     new TrezorEnterPinUseCase(window, hardwareWalletFixture).execute(parameters);
+
+    // Request the cipher key (refer to mock client for PIN entry responses)
+    new TrezorRequestCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Unlock with cipher key
     new TrezorConfirmUnlockUseCase(window, hardwareWalletFixture).execute(parameters);

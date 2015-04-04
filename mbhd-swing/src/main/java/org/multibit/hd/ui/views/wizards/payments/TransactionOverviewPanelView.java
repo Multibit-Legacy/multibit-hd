@@ -1,13 +1,13 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
-import org.bitcoinj.core.Address;
-import org.bitcoinj.core.Coin;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.PaymentData;
@@ -41,7 +41,6 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class TransactionOverviewPanelView extends AbstractWizardPanelView<PaymentsWizardModel, TransactionOverviewPanelModel> {
 
@@ -137,14 +136,8 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          getNextButton().requestFocusInWindow();
-          getNextButton().setEnabled(true);
-        }
-      });
+    getNextButton().requestFocusInWindow();
+    getNextButton().setEnabled(true);
 
     update();
 
@@ -197,7 +190,7 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
               default:
                 // More than one match
                 recipientValue.setText(Joiner.on("\n").join(outputAddresses));
-                recipientValue.setRows(outputAddresses.size() <=5 ? outputAddresses.size() : 5);
+                recipientValue.setRows(outputAddresses.size() <= 5 ? outputAddresses.size() : 5);
                 break;
             }
           }

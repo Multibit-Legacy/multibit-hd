@@ -4,7 +4,10 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
-import org.multibit.hd.core.events.*;
+import org.multibit.hd.core.events.BitcoinSendProgressEvent;
+import org.multibit.hd.core.events.BitcoinSendingEvent;
+import org.multibit.hd.core.events.BitcoinSentEvent;
+import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -113,58 +116,45 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
   @Override
   public boolean beforeShow() {
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
+    LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
+    transactionConstructionStatusDetail.setText("");
+    transactionBroadcastStatusSummary.setText("");
+    transactionBroadcastStatusDetail.setText("");
 
-          LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
-          transactionConstructionStatusDetail.setText("");
-          transactionBroadcastStatusSummary.setText("");
-          transactionBroadcastStatusDetail.setText("");
-        }
-      });
     return true;
   }
 
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
+    // Check for report message from hardware wallet
+    LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
 
-          // Check for report message from hardware wallet
-          LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
+    if (getWizardModel().getReportMessageKey().isPresent() && !getWizardModel().getReportMessageStatus()) {
+      // Hardware wallet report indicates cancellation
+      transactionConstructionStatusSummary.setVisible(false);
+      transactionConstructionStatusDetail.setVisible(false);
+    } else {
+      // Transaction must be progressing in some manner
+      if (lastTransactionCreationEvent != null) {
+        onTransactionCreationEvent(lastTransactionCreationEvent);
+        lastTransactionCreationEvent = null;
+      }
 
-          if (getWizardModel().getReportMessageKey().isPresent() && !getWizardModel().getReportMessageStatus()) {
-            // Hardware wallet report indicates cancellation
-            transactionConstructionStatusSummary.setVisible(false);
-            transactionConstructionStatusDetail.setVisible(false);
-          } else {
-            // Transaction must be progressing in some manner
-            if (lastTransactionCreationEvent != null) {
-              onTransactionCreationEvent(lastTransactionCreationEvent);
-              lastTransactionCreationEvent = null;
-            }
+      if (lastBitcoinSendingEvent != null) {
+        onBitcoinSendingEvent(lastBitcoinSendingEvent);
+        lastBitcoinSendingEvent = null;
+      }
+      if (lastBitcoinSendProgressEvent != null) {
+        onBitcoinSendProgressEvent(lastBitcoinSendProgressEvent);
+        lastBitcoinSendProgressEvent = null;
+      }
 
-            if (lastBitcoinSendingEvent != null) {
-              onBitcoinSendingEvent(lastBitcoinSendingEvent);
-              lastBitcoinSendingEvent = null;
-            }
-            if (lastBitcoinSendProgressEvent != null) {
-              onBitcoinSendProgressEvent(lastBitcoinSendProgressEvent);
-              lastBitcoinSendProgressEvent = null;
-            }
-
-            if (lastBitcoinSentEvent != null) {
-              onBitcoinSentEvent(lastBitcoinSentEvent);
-              lastBitcoinSentEvent = null;
-            }
-          }
-        }
-      });
+      if (lastBitcoinSentEvent != null) {
+        onBitcoinSentEvent(lastBitcoinSentEvent);
+        lastBitcoinSentEvent = null;
+      }
+    }
   }
 
   @Override

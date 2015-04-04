@@ -360,6 +360,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    *
    * <p>Typically this is where a panel view would reference the wizard model to obtain earlier values for display</p>
    *
+   * <p>This method is guaranteed to run on the EDT</p>
+   *
    * @return True if the panel can be shown, false if the show operation should be aborted
    */
   public boolean beforeShow() {
@@ -378,18 +380,13 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    * <li>register a default button to speed up keyboard data entry</li>
    * </ul>
    *
-   * the Swing thread as follows:</p>
+   * <p>To set focus to a primary component use this construct:</p>
    *
    * <pre>
-   * SwingUtilities.invokeLater(new Runnable() {
-   *
-   * {@literal @}Override public void run() {
-   *   getCancelButton().requestFocusInWindow();
-   * }
-   *
-   * });
-   *
+   * getCancelButton().requestFocusInWindow();
    * </pre>
+   *
+   * <p>This method is guaranteed to run on the EDT</p>
    */
   public void afterShow() {
 
@@ -408,6 +405,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
     Optional<EnvironmentEvent> environmentEvent = CoreServices.getApplicationEventService().getLatestEnvironmentEvent();
 
     if (environmentEvent.isPresent()) {
+
+      log.debug("Showing environment event popover");
 
       // Provide the event as the model
       displayEnvironmentPopoverMaV.getModel().setValue(environmentEvent.get());
@@ -444,6 +443,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    * <p>Called before this wizard is about to be hidden.</p>
    *
    * <p>Typically this is where a panel view would {@link #updateFromComponentModels}, but implementations will vary</p>
+   *
+   * <p>This method is guaranteed to run on the EDT</p>
    *
    * @param isExitCancel True if this hide action comes from a exit or cancel operation
    *

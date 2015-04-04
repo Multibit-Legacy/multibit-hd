@@ -105,13 +105,8 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
 
           recoverPassword();
 
-          // Enable the Finish button
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
-            }
-          });
+          // Enable the Finish button when it's done
+          ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
         }
       });
   }

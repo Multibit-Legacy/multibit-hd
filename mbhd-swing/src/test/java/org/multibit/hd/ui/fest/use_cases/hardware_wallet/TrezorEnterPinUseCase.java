@@ -2,6 +2,8 @@ package org.multibit.hd.ui.fest.use_cases.hardware_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.timing.Timeout;
+import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractHardwareWalletFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -34,6 +36,21 @@ public class TrezorEnterPinUseCase extends AbstractHardwareWalletFestUseCase {
     // Allow time for UI to catch up with events
     pauseForViewReset();
 
+    if (OSUtils.isDebuggerAttached()) {
+
+      // Expect debug popover to be showing
+      window
+        .panel(CoreMessageKey.DEBUGGER_ATTACHED.getKey())
+        .requireVisible();
+
+      // Dismiss
+      window
+        .button("environment_alert." + MessageKey.CLOSE.getKey())
+        .requireVisible()
+        .requireEnabled()
+        .click();
+    }
+
     // Check that the Trezor enter new PIN panel view is showing
     window
       .label(MessageKey.PIN_TITLE.getKey())
@@ -41,25 +58,25 @@ public class TrezorEnterPinUseCase extends AbstractHardwareWalletFestUseCase {
 
     // Click some buttons
     window
-      .button(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".button_1")
+      .button(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".button_1")
       .requireEnabled()
       .click();
     window
-      .button(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".button_2")
+      .button(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".button_2")
       .requireEnabled()
       .click();
     window
-      .button(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".button_3")
+      .button(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".button_3")
       .requireEnabled()
       .click();
     window
-      .button(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".button_4")
+      .button(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".button_4")
       .requireEnabled()
       .click();
 
     // Check that the PIN entry has populated
     window
-      .textBox(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".textbox")
+      .textBox(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".textbox")
       .requireText("****");
 
     // Check the 'Next' button is present and click it

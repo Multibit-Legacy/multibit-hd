@@ -1,11 +1,11 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
-import org.bitcoinj.core.Address;
-import org.bitcoinj.core.Coin;
-import org.bitcoinj.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.uri.BitcoinURI;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
@@ -39,7 +39,6 @@ import java.awt.event.ActionEvent;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<PaymentsWizardModel, PaymentRequestDetailPanelModel> {
 
@@ -76,18 +75,19 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   public void newPanelModel() {
     // Configure the panel model
     PaymentRequestDetailPanelModel panelModel = new PaymentRequestDetailPanelModel(
-            getPanelName()
+      getPanelName()
     );
     setPanelModel(panelModel);
   }
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
-    contentPanel.setLayout(new MigLayout(
-            Panels.migXYLayout(),
-            "[]20[][]", // Column constraints
-            "[]10[]10[]" // Row constraints
-    ));
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[]20[][]", // Column constraints
+        "[]10[]10[]" // Row constraints
+      ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -114,9 +114,9 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
     amountBTCValue = Labels.newBlankLabel();
     // Bitcoin column
     LabelDecorator.applyBitcoinSymbolLabel(
-            amountBTCLabel,
-            Configurations.currentConfiguration.getBitcoin(),
-            Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
+      amountBTCLabel,
+      Configurations.currentConfiguration.getBitcoin(),
+      Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ");
 
     amountFiatLabel = Labels.newValueLabel(Languages.safeText(MessageKey.LOCAL_AMOUNT));
     amountFiatValue = Labels.newBlankLabel();
@@ -171,13 +171,8 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
   @Override
   public void afterShow() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        getFinishButton().requestFocusInWindow();
-        getFinishButton().setEnabled(true);
-      }
-    });
+    getFinishButton().requestFocusInWindow();
+    getFinishButton().setEnabled(true);
   }
 
   @Override
@@ -275,10 +270,10 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
         // Form a Bitcoin URI from the contents
         String bitcoinUri = BitcoinURI.convertToBitcoinURI(
-                bitcoinAddress,
-                coin,
-                label,
-                null
+          bitcoinAddress,
+          coin,
+          label,
+          null
         );
 
         displayQRCodePopoverMaV.getModel().setValue(bitcoinUri);

@@ -614,8 +614,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Get the temporary application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
-    // Copy the MBHD cacerts
-    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/mbhd-cacerts-with-localhost");
+    // Copy the standard MBHD cacerts
+    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/mbhd-cacerts");
     OutputStream target = new FileOutputStream(new File(applicationDirectory + "/" + InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
@@ -657,8 +657,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Get the temporary application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
-    // Copy the MBHD cacerts
-    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/mbhd-cacerts-with-localhost");
+    // Copy the standard MBHD cacerts
+    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/mbhd-cacerts");
     OutputStream target = new FileOutputStream(new File(applicationDirectory + "/" + InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 

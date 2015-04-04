@@ -131,14 +131,7 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        verifyingAddress.requestFocusInWindow();
-
-      }
-    });
+    verifyingAddress.requestFocusInWindow();
 
   }
 

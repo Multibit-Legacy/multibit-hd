@@ -131,14 +131,7 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        alertSoundYesNoComboBox.requestFocusInWindow();
-
-      }
-    });
+    alertSoundYesNoComboBox.requestFocusInWindow();
 
   }
 

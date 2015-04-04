@@ -15,6 +15,7 @@ import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
 import org.multibit.hd.hardware.core.messages.PublicKey;
 import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
+import org.multibit.hd.testing.MessageEventFixtures;
 
 import java.util.List;
 
@@ -326,7 +327,25 @@ public class TrezorWipedFixture extends AbstractHardwareWalletFixture {
 
     when(client.getDeterministicHierarchy(anyListOf(ChildNumber.class))).thenAnswer(
       new Answer<Optional<Message>>() {
+        private int count = 0;
+
         public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          if (count == 0) {
+
+            count++;
+
+            final MessageEvent event = new MessageEvent(
+              MessageEventType.PIN_MATRIX_REQUEST,
+              Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCurrentPinMatrix()),
+              Optional.<Message>absent()
+            );
+
+            fireMessageEvent("Deterministic hierarchy is protected (1.3.3+ firmware). Provide PIN.", event);
+
+            return Optional.absent();
+
+          }
 
           // This unchecked cast is known to be OK
           List<ChildNumber> childNumberList = (List<ChildNumber>) invocation.getArguments()[0];

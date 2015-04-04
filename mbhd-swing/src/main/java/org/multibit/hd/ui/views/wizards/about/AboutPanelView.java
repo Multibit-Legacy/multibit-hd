@@ -78,12 +78,7 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        getFinishButton().requestFocusInWindow();
-      }
-    });
+     getFinishButton().requestFocusInWindow();
 
   }
 

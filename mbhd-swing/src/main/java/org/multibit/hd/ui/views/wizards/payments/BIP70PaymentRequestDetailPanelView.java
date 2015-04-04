@@ -82,11 +82,11 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
   @Override
   public void initialiseContent(JPanel contentPanel) {
     contentPanel.setLayout(
-            new MigLayout(
-                    Panels.migXYLayout(),
-                    "[][]", // Column constraints
-                    "[][][][][][][30]" // Row constraints
-            ));
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[][]", // Column constraints
+        "[][][][][][][30]" // Row constraints
+      ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -96,9 +96,9 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
 
     // Payment request amount
     paymentRequestAmountMaV = Components.newDisplayAmountMaV(
-            DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT,
-            true,
-            SendBitcoinState.SEND_DISPLAY_PAYMENT_REQUEST.name() + ".amount"
+      DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT,
+      true,
+      SendBitcoinState.SEND_DISPLAY_PAYMENT_REQUEST.name() + ".amount"
     );
     // Show the local amount as we have it
     paymentRequestAmountMaV.getModel().setLocalAmountVisible(true);
@@ -176,79 +176,73 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
 
   @Override
   public void afterShow() {
-    SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
-                PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
-                Preconditions.checkNotNull(paymentRequestData);
+    PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
+    Preconditions.checkNotNull(paymentRequestData);
 
-                statusValue.setText(Languages.safeText(paymentRequestData.getStatus().getStatusKey(), paymentRequestData.getStatus().getStatusData()));
-                LabelDecorator.applyPaymentStatusIconAndColor(paymentRequestData.getStatus(), statusValue, false, MultiBitUI.SMALL_ICON_SIZE);
+    statusValue.setText(Languages.safeText(paymentRequestData.getStatus().getStatusKey(), paymentRequestData.getStatus().getStatusData()));
+    LabelDecorator.applyPaymentStatusIconAndColor(paymentRequestData.getStatus(), statusValue, false, MultiBitUI.SMALL_ICON_SIZE);
 
-                memo.setText(paymentRequestData.getNote());
-                DateTime paymentRequestDate = new DateTime(paymentRequestData.getDate());
-                date.setText(Dates.formatTransactionDateLocal(paymentRequestDate));
+    memo.setText(paymentRequestData.getNote());
+    DateTime paymentRequestDate = new DateTime(paymentRequestData.getDate());
+    date.setText(Dates.formatTransactionDateLocal(paymentRequestDate));
 
-                // Update the model and view for the amount
-                Configuration configuration = Configurations.currentConfiguration;
-                paymentRequestAmountMaV.getModel().setCoinAmount(paymentRequestData.getAmountCoin());
-                if (paymentRequestData.getAmountFiat().getAmount().isPresent()) {
-                  paymentRequestAmountMaV.getModel().setLocalAmount(paymentRequestData.getAmountFiat().getAmount().get());
-                  paymentRequestAmountMaV.getModel().setLocalAmountVisible(true);
-                } else {
-                  paymentRequestAmountMaV.getModel().setLocalAmount(null);
-                  paymentRequestAmountMaV.getModel().setLocalAmountVisible(false);
-                }
-                paymentRequestAmountMaV.getView().updateView(configuration);
+    // Update the model and view for the amount
+    Configuration configuration = Configurations.currentConfiguration;
+    paymentRequestAmountMaV.getModel().setCoinAmount(paymentRequestData.getAmountCoin());
+    if (paymentRequestData.getAmountFiat().getAmount().isPresent()) {
+      paymentRequestAmountMaV.getModel().setLocalAmount(paymentRequestData.getAmountFiat().getAmount().get());
+      paymentRequestAmountMaV.getModel().setLocalAmountVisible(true);
+    } else {
+      paymentRequestAmountMaV.getModel().setLocalAmount(null);
+      paymentRequestAmountMaV.getModel().setLocalAmountVisible(false);
+    }
+    paymentRequestAmountMaV.getView().updateView(configuration);
 
-                displayName.setText(paymentRequestData.getIdentityDisplayName());
+    displayName.setText(paymentRequestData.getIdentityDisplayName());
 
-                if (paymentRequestData.getExpirationDate() == null) {
-                  expires.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
-                } else {
-                  expires.setText(Dates.formatTransactionDateLocal(paymentRequestData.getExpirationDate()));
-                  // TODO Handle display of expiry and button control
-                  //            if (expiresDate.isBeforeNow()) {
-                  //              // This payment request has expired
-                  //            } else {
-                  //            }
-                }
+    if (paymentRequestData.getExpirationDate() == null) {
+      expires.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+    } else {
+      expires.setText(Dates.formatTransactionDateLocal(paymentRequestData.getExpirationDate()));
+      // TODO Handle display of expiry and button control
+      //            if (expiresDate.isBeforeNow()) {
+      //              // This payment request has expired
+      //            } else {
+      //            }
+    }
 
-                switch (paymentRequestData.getTrustStatus()) {
-                  case TRUSTED:
-                    LabelDecorator.applyPaymentSessionStatusIcon(
-                            paymentRequestData.getTrustStatus(),
-                            trustStatusLabel,
-                            MessageKey.PAYMENT_PROTOCOL_TRUSTED_NOTE,
-                            MultiBitUI.NORMAL_ICON_SIZE);
-                    break;
-                  case UNTRUSTED:
-                    LabelDecorator.applyPaymentSessionStatusIcon(
-                            paymentRequestData.getTrustStatus(),
-                            trustStatusLabel,
-                            MessageKey.PAYMENT_PROTOCOL_UNTRUSTED_NOTE,
-                            MultiBitUI.NORMAL_ICON_SIZE);
-                    break;
-                  case DOWN:
-                  case ERROR:
-                    // Provide more details on the failure
-                    LabelDecorator.applyPaymentSessionStatusIcon(
-                            paymentRequestData.getTrustStatus(),
-                            trustStatusLabel,
-                            MessageKey.PAYMENT_PROTOCOL_ERROR_NOTE,
-                            MultiBitUI.NORMAL_ICON_SIZE);
-                    memo.setText(paymentRequestData.getTrustErrorMessage());
-                    return;
-                  default:
-                    throw new IllegalStateException("Unknown payment session summary status: " + paymentRequestData.getTrustStatus());
-                }
+    switch (paymentRequestData.getTrustStatus()) {
+      case TRUSTED:
+        LabelDecorator.applyPaymentSessionStatusIcon(
+          paymentRequestData.getTrustStatus(),
+          trustStatusLabel,
+          MessageKey.PAYMENT_PROTOCOL_TRUSTED_NOTE,
+          MultiBitUI.NORMAL_ICON_SIZE);
+        break;
+      case UNTRUSTED:
+        LabelDecorator.applyPaymentSessionStatusIcon(
+          paymentRequestData.getTrustStatus(),
+          trustStatusLabel,
+          MessageKey.PAYMENT_PROTOCOL_UNTRUSTED_NOTE,
+          MultiBitUI.NORMAL_ICON_SIZE);
+        break;
+      case DOWN:
+      case ERROR:
+        // Provide more details on the failure
+        LabelDecorator.applyPaymentSessionStatusIcon(
+          paymentRequestData.getTrustStatus(),
+          trustStatusLabel,
+          MessageKey.PAYMENT_PROTOCOL_ERROR_NOTE,
+          MultiBitUI.NORMAL_ICON_SIZE);
+        memo.setText(paymentRequestData.getTrustErrorMessage());
+        return;
+      default:
+        throw new IllegalStateException("Unknown payment session summary status: " + paymentRequestData.getTrustStatus());
+    }
 
-                // Set finish button to be the default
-                getFinishButton().requestFocusInWindow();
-                getFinishButton().setEnabled(true);
-              }
-            });
+    // Set finish button to be the default
+    getFinishButton().requestFocusInWindow();
+    getFinishButton().setEnabled(true);
   }
 
   @Override
@@ -332,12 +326,13 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
 
       // If button is not enabled and the newEnabled is false don't do anything
       if (payThisPaymentRequestButton.isEnabled() || newEnabled) {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            payThisPaymentRequestButton.setEnabled(finalNewEnabled);
-          }
-        });
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              payThisPaymentRequestButton.setEnabled(finalNewEnabled);
+            }
+          });
       }
     }
   }

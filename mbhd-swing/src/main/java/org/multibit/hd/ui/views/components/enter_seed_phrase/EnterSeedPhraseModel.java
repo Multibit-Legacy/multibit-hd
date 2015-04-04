@@ -10,7 +10,6 @@ import org.multibit.hd.ui.models.Model;
 import org.multibit.hd.ui.views.components.TextBoxes;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
-import javax.swing.*;
 import java.util.List;
 
 /**
@@ -108,27 +107,17 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
 
     // Perform a basic verification of the seed phrase
     if (SeedPhraseSize.isValid(seedPhrase.size())) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          // Have a possible match so alert the panel model to do more detailed checking
-          ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
-        }
-      });
+        // Have a possible match so alert the panel model to do more detailed checking
+        ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
     } else {
 
       // Definitely a fail so don't bother the panel model with it
 
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          // Ensure the "next" button is kept disabled and no "verified" message
-          ViewEvents.fireWizardButtonEnabledEvent(panelName, WizardButton.NEXT, false);
+      // Ensure the "next" button is kept disabled and no "verified" message
+      ViewEvents.fireWizardButtonEnabledEvent(panelName, WizardButton.NEXT, false);
 
-          // Fire "seed phrase verification" event
-          ViewEvents.fireVerificationStatusChangedEvent(panelName + componentName, false);
-        }
-      });
+      // Fire "seed phrase verification" event
+      ViewEvents.fireVerificationStatusChangedEvent(panelName + componentName, false);
 
     }
 

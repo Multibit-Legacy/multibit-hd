@@ -154,16 +154,8 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        localSymbolComboBox.requestFocusInWindow();
-
-        displayAmountMaV.getView().updateView(getPanelModel().get().getConfiguration());
-
-      }
-    });
+    localSymbolComboBox.requestFocusInWindow();
+    displayAmountMaV.getView().updateView(getPanelModel().get().getConfiguration());
 
   }
 

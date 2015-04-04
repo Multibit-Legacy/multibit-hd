@@ -118,17 +118,10 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    enterPasswordMaV.getView().requestInitialFocus();
 
-        enterPasswordMaV.getView().requestInitialFocus();
-
-        // This requires a environment popover check
-        checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
-
-      }
-    });
+    // This requires a environment popover check
+    checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
 
   }
 
@@ -142,6 +135,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
       return true;
     }
 
+    // TODO This is already on the EDT so could be reconsidered
     // Start the spinner (we are deferring the hide)
     SwingUtilities.invokeLater(new Runnable() {
       @Override

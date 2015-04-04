@@ -99,14 +99,7 @@ public class PaymentSettingsPanelView extends AbstractWizardPanelView<PaymentSet
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        blockExplorerComboBox.requestFocusInWindow();
-
-      }
-    });
+    blockExplorerComboBox.requestFocusInWindow();
 
   }
 

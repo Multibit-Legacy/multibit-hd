@@ -5,8 +5,6 @@ import com.google.common.base.Preconditions;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
-import javax.swing.*;
-
 /**
  * <p>Model to provide the following to view:</p>
  * <ul>
@@ -60,13 +58,8 @@ public class EnterPasswordModel implements Model<String> {
 
     this.password = Optional.of(password);
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        // Alert the panel model that a component has changed
-        ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
-      }
-    });
+    // Alert the panel model that a component has changed
+    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
 
   }
 }

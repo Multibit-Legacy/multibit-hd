@@ -37,7 +37,6 @@ import java.awt.event.ActionEvent;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 
 public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWizardModel, FeeSettingsPanelModel> implements ChangeListener {
@@ -76,11 +75,12 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
-    contentPanel.setLayout(new MigLayout(
-            Panels.migXYLayout(),
-            "[]20[]", // Column constraints
-            "[]1[]6[]18[]4[]4[]1[]" // Row constraints
-    ));
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[]20[]", // Column constraints
+        "[]1[]6[]18[]4[]4[]1[]" // Row constraints
+      ));
 
     WalletConfiguration walletConfiguration = Configurations.currentConfiguration.getWallet().deepCopy();
     feePerKBSlider = Sliders.newAdjustTransactionFeeSlider(this, walletConfiguration.getFeePerKB());
@@ -150,13 +150,7 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
 
   @Override
   public void afterShow() {
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          feePerKBSlider.requestFocusInWindow();
-        }
-      });
+    feePerKBSlider.requestFocusInWindow();
   }
 
   @Override

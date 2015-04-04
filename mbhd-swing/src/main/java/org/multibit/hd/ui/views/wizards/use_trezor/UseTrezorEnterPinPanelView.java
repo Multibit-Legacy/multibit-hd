@@ -113,19 +113,11 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
     // Finally check that the firmware is supported (we do not tolerate any absent values at this point)
     final boolean enabled = CoreServices.getOrCreateHardwareWalletService().get().getContext().getFeatures().get().isSupported();
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
+    enterPinMaV.getView().requestInitialFocus();
+    enterPinMaV.getView().setEnabled(enabled);
 
-          enterPinMaV.getView().requestInitialFocus();
-          enterPinMaV.getView().setEnabled(enabled);
-
-          // This requires a environment popover check
-          checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
-
-        }
-      });
+    // This requires a environment popover check
+    checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
 
   }
 
@@ -137,19 +129,10 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
       return true;
     }
 
-    // Start the spinner (we are deferring the hide)
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-
-          // Ensure the view disables components
-          getFinishButton().setEnabled(false);
-          getCancelButton().setEnabled(false);
-          getRestoreButton().setEnabled(false);
-
-        }
-      });
+    // Ensure the view disables components
+    getFinishButton().setEnabled(false);
+    getCancelButton().setEnabled(false);
+    getRestoreButton().setEnabled(false);
 
     // Use the wizard model to handle the traffic to the Trezor
     getWizardModel().requestPinCheck(enterPinMaV.getModel().getValue());

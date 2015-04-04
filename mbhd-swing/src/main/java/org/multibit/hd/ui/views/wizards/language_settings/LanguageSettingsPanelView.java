@@ -104,12 +104,7 @@ public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageS
 
   @Override
   public void afterShow() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        languagesComboBox.requestFocusInWindow();
-      }
-    });
+    languagesComboBox.requestFocusInWindow();
   }
 
   @Override

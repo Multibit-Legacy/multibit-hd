@@ -98,14 +98,9 @@ public class CreateWalletSeedPhrasePanelView extends AbstractWizardPanelView<Wel
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        displaySeedPhraseMaV.getView().requestInitialFocus();
-        // Ensure there is a new seed phrase each time to strongly urge the use of pen and paper
-        displaySeedPhraseMaV.getView().newSeedPhrase(displaySeedPhraseMaV.getModel().getCurrentSeedSize());
-      }
-    });
+    displaySeedPhraseMaV.getView().requestInitialFocus();
+    // Ensure there is a new seed phrase each time to strongly urge the use of pen and paper
+    displaySeedPhraseMaV.getView().newSeedPhrase(displaySeedPhraseMaV.getModel().getCurrentSeedSize());
 
   }
 

@@ -100,14 +100,7 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
 
   @Override
   public void afterShow() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        torYesNoComboBox.requestFocusInWindow();
-
-      }
-    });
+    torYesNoComboBox.requestFocusInWindow();
   }
 
   @Override

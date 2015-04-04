@@ -72,20 +72,20 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   private final static ListeningExecutorService wizardHideExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-hide");
 
   /**
-    * @param wizardModel     The overall wizard data model containing the aggregate information of all components in the wizard
-    * @param isExiting       True if the exit button should trigger an application shutdown
-    * @param wizardParameter An optional parameter that can be referenced during construction
-    */
-   protected AbstractWizard(M wizardModel, boolean isExiting, Optional wizardParameter) {
-     this(wizardModel, isExiting, wizardParameter, true);
-   }
+   * @param wizardModel     The overall wizard data model containing the aggregate information of all components in the wizard
+   * @param isExiting       True if the exit button should trigger an application shutdown
+   * @param wizardParameter An optional parameter that can be referenced during construction
+   */
+  protected AbstractWizard(M wizardModel, boolean isExiting, Optional wizardParameter) {
+    this(wizardModel, isExiting, wizardParameter, true);
+  }
 
 
   /**
    * @param wizardModel     The overall wizard data model containing the aggregate information of all components in the wizard
    * @param isExiting       True if the exit button should trigger an application shutdown
    * @param wizardParameter An optional parameter that can be referenced during construction
-   * @param escapeIsCancel   If true, ESC cancels the wizard, if false, it does nothing
+   * @param escapeIsCancel  If true, ESC cancels the wizard, if false, it does nothing
    */
   protected AbstractWizard(M wizardModel, boolean isExiting, Optional wizardParameter, boolean escapeIsCancel) {
 
@@ -158,9 +158,13 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   /**
    * <p>Show the named panel</p>
    *
+   * <p>This is guaranteed to be on the EDT</p>
+   *
    * @param panelName The panel name
    */
   public void show(String panelName) {
+
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "This method should run on the EDT");
 
     if (!wizardViewMap.containsKey(panelName)) {
       log.error("'{}' is not a valid panel name. Check the panel has been registered in the view map. Registered panels are\n{}", wizardViewMap.keySet());
@@ -193,11 +197,14 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
   /**
    * <p>Hide the wizard if <code>beforeHide</code> returns true</p>
+   * <p>Guaranteed to run on the EDT</p>
    *
    * @param panelName    The panel name
    * @param isExitCancel True if this hide operation comes from an exit or cancel
    */
   public void hide(final String panelName, final boolean isExitCancel) {
+
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "This method should run on the EDT");
 
     if (!wizardViewMap.containsKey(panelName)) {
       log.error("'{}' is not a valid panel name. Check the panel has been registered in the view map. Registered panels are\n{}", wizardViewMap.keySet());
@@ -421,6 +428,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   @Subscribe
   public void onWizardDeferredHideEvent(WizardDeferredHideEvent event) {
 
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "This method should be run on the EDT. Check ViewEvents.");
+
     // Fail fast
     if (wizardViewMap.isEmpty()) {
       log.trace("Wizard panel view {} is still finalising.", event.getPanelName());
@@ -443,6 +452,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   /**
    * <p>Hide the wizard</p>
    *
+   * <p>This method is guaranteed to run on the EDT</p>
+   *
    * @param panelName       The panel name
    * @param isExitCancel    True if this hide operation comes from an exit or cancel
    * @param wizardPanelView The wizard panel view from the wizard view map
@@ -458,14 +469,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     getWizardModel().unsubscribe();
     unsubscribe();
 
-
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        // Issue the wizard hide event before the hide takes place to give panel views time to update
-        ViewEvents.fireWizardHideEvent(panelName, wizardModel, isExitCancel);
-      }
-    });
+    // Issue the wizard hide event before the hide takes place to give panel views time to update
+    ViewEvents.fireWizardHideEvent(panelName, wizardModel, isExitCancel);
 
     // Required to run on a new thread since this may take some time to complete
     wizardHideExecutorService.submit(
@@ -543,11 +548,11 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   }
 
   /**
-    * @return The wizard model
-    */
-   public M getWizardModel() {
-     return wizardModel;
-   }
+   * @return The wizard model
+   */
+  public M getWizardModel() {
+    return wizardModel;
+  }
 
   public void setWizardModel(M wizardModel) {
     Preconditions.checkNotNull(wizardModel, "'model' must be present");

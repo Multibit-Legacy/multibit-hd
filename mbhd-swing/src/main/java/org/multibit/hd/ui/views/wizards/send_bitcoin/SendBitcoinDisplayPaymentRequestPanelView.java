@@ -87,16 +87,16 @@ public class SendBitcoinDisplayPaymentRequestPanelView extends AbstractWizardPan
 
     // Populate value labels
     memo = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));
-    memo.setName(MessageKey.NOTES.getKey()+".value");
+    memo.setName(MessageKey.NOTES.getKey() + ".value");
 
     date = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));
-    date.setName(MessageKey.DATE.getKey()+".value");
+    date.setName(MessageKey.DATE.getKey() + ".value");
 
     expires = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));
-    expires.setName(MessageKey.EXPIRES.getKey()+".value");
+    expires.setName(MessageKey.EXPIRES.getKey() + ".value");
 
     displayName = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));
-    displayName.setName(MessageKey.NAME.getKey()+".value");
+    displayName.setName(MessageKey.NAME.getKey() + ".value");
 
     trustStatusLabel = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
     trustStatusLabel.setName("trust_status");
@@ -130,82 +130,74 @@ public class SendBitcoinDisplayPaymentRequestPanelView extends AbstractWizardPan
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
+    // Fail fast
+    Preconditions.checkState(getWizardModel().getPaymentRequestData().isPresent(), "'paymentRequestData' must be present");
 
-          // Fail fast
-          Preconditions.checkState(getWizardModel().getPaymentRequestData().isPresent(), "'paymentRequestData' must be present");
+    PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData().get();
 
-          PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData().get();
+    switch (paymentRequestData.getTrustStatus()) {
+      case TRUSTED:
+        LabelDecorator.applyPaymentSessionStatusIcon(
+          paymentRequestData.getTrustStatus(),
+          trustStatusLabel,
+          MessageKey.PAYMENT_PROTOCOL_TRUSTED_NOTE,
+          MultiBitUI.NORMAL_ICON_SIZE);
+        break;
+      case UNTRUSTED:
+        LabelDecorator.applyPaymentSessionStatusIcon(
+          paymentRequestData.getTrustStatus(),
+          trustStatusLabel,
+          MessageKey.PAYMENT_PROTOCOL_UNTRUSTED_NOTE,
+          MultiBitUI.NORMAL_ICON_SIZE);
+        break;
+      case DOWN:
+      case ERROR:
+        // Provide more details on the failure
+        LabelDecorator.applyPaymentSessionStatusIcon(
+          paymentRequestData.getTrustStatus(),
+          trustStatusLabel,
+          MessageKey.PAYMENT_PROTOCOL_ERROR_NOTE,
+          MultiBitUI.NORMAL_ICON_SIZE);
+        memo.setText(paymentRequestData.getTrustErrorMessage());
+        displayName.setVisible(false);
+        date.setVisible(false);
+        expires.setVisible(false);
+        paymentRequestAmountMaV.getView().setVisible(false);
+        return;
+      default:
+        throw new IllegalStateException("Unknown trust status: " + paymentRequestData.getTrustStatus());
+    }
 
-          switch (paymentRequestData.getTrustStatus()) {
-            case TRUSTED:
-              LabelDecorator.applyPaymentSessionStatusIcon(
-                      paymentRequestData.getTrustStatus(),
-                trustStatusLabel,
-                MessageKey.PAYMENT_PROTOCOL_TRUSTED_NOTE,
-                MultiBitUI.NORMAL_ICON_SIZE);
-              break;
-            case UNTRUSTED:
-              LabelDecorator.applyPaymentSessionStatusIcon(
-                      paymentRequestData.getTrustStatus(),
-                trustStatusLabel,
-                MessageKey.PAYMENT_PROTOCOL_UNTRUSTED_NOTE,
-                MultiBitUI.NORMAL_ICON_SIZE);
-              break;
-            case DOWN:
-            case ERROR:
-              // Provide more details on the failure
-              LabelDecorator.applyPaymentSessionStatusIcon(
-                      paymentRequestData.getTrustStatus(),
-                trustStatusLabel,
-                MessageKey.PAYMENT_PROTOCOL_ERROR_NOTE,
-                MultiBitUI.NORMAL_ICON_SIZE);
-              memo.setText(paymentRequestData.getTrustErrorMessage());
-              displayName.setVisible(false);
-              date.setVisible(false);
-              expires.setVisible(false);
-              paymentRequestAmountMaV.getView().setVisible(false);
-              return;
-            default:
-              throw new IllegalStateException("Unknown trust status: " + paymentRequestData.getTrustStatus());
-          }
+    memo.setText(paymentRequestData.getNote());
 
-          memo.setText(paymentRequestData.getNote());
+    date.setText(Dates.formatTransactionDateLocal(paymentRequestData.getDate()));
 
-          date.setText(Dates.formatTransactionDateLocal(paymentRequestData.getDate()));
-
-          if (paymentRequestData.getExpirationDate() == null) {
-            expires.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
-          } else {
-            expires.setText(Dates.formatTransactionDateLocal(paymentRequestData.getExpirationDate()));
-            // TODO Handle display of expiry and button control
+    if (paymentRequestData.getExpirationDate() == null) {
+      expires.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+    } else {
+      expires.setText(Dates.formatTransactionDateLocal(paymentRequestData.getExpirationDate()));
+      // TODO Handle display of expiry and button control
 //            if (expiresDate.isBeforeNow()) {
 //              // This payment request has expired
 //            } else {
 //            }
-          }
+    }
 
-          // Update the model and view for the amount
-          // (no local in case of different exchange rates causing confusion)
-          Configuration configuration = Configurations.currentConfiguration;
-          paymentRequestAmountMaV.getModel().setCoinAmount(paymentRequestData.getAmountCoin());
-          paymentRequestAmountMaV.getModel().setLocalAmount(null);
-          paymentRequestAmountMaV.getView().updateView(configuration);
+    // Update the model and view for the amount
+    // (no local in case of different exchange rates causing confusion)
+    Configuration configuration = Configurations.currentConfiguration;
+    paymentRequestAmountMaV.getModel().setCoinAmount(paymentRequestData.getAmountCoin());
+    paymentRequestAmountMaV.getModel().setLocalAmount(null);
+    paymentRequestAmountMaV.getView().updateView(configuration);
 
-          if (paymentRequestData.getIdentityDisplayName() != null) {
-            displayName.setText(paymentRequestData.getIdentityDisplayName());
-          } else {
-            displayName.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
-          }
+    if (paymentRequestData.getIdentityDisplayName() != null) {
+      displayName.setText(paymentRequestData.getIdentityDisplayName());
+    } else {
+      displayName.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+    }
 
-          // Ensure the next button is enabled
-          ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
-
-        }
-      });
+    // Ensure the next button is enabled
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
 
   }
 

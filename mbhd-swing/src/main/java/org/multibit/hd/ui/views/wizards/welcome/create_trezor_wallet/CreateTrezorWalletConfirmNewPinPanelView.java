@@ -80,14 +80,7 @@ public class CreateTrezorWalletConfirmNewPinPanelView extends AbstractWizardPane
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        enterPinMaV.getView().requestInitialFocus();
-
-      }
-    });
+    enterPinMaV.getView().requestInitialFocus();
 
   }
 

@@ -130,15 +130,9 @@ public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWiza
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    // This requires a environment popover check
+    checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
 
-        // This requires a environment popover check
-        checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
-
-      }
-    });
   }
 
   @Override

@@ -78,12 +78,7 @@ public class ExportPaymentsLocationPanelView extends AbstractWizardPanelView<Exp
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        selectFileMaV.getView().requestInitialFocus();
-      }
-    });
+     selectFileMaV.getView().requestInitialFocus();
 
   }
 

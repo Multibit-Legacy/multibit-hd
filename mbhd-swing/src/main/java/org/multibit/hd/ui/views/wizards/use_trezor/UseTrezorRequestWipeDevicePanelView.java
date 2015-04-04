@@ -108,29 +108,22 @@ public class UseTrezorRequestWipeDevicePanelView extends AbstractWizardPanelView
     }
     getWizardModel().setReportMessageKey(operationKey);
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    // Set the communication message
+    trezorDisplayMaV.getView().setOperationText(operationKey);
 
-        // Set the communication message
-        trezorDisplayMaV.getView().setOperationText(operationKey);
+    if (showReportView) {
+      trezorDisplayMaV.getView().setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
+    }
 
-        if (showReportView) {
-          trezorDisplayMaV.getView().setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
-        }
+    // This could take a while (device may tarpit after failed PINs etc)
+    trezorDisplayMaV.getView().setSpinnerVisible(!showReportView);
 
-        // This could take a while (device may tarpit after failed PINs etc)
-        trezorDisplayMaV.getView().setSpinnerVisible(!showReportView);
-
-        // Override the earlier button enable setting
-        ViewEvents.fireWizardButtonEnabledEvent(
-          getPanelName(),
-          WizardButton.NEXT,
-          showReportView
-        );
-
-      }
-    });
+    // Override the earlier button enable setting
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.NEXT,
+      showReportView
+    );
 
     // Update the wizard model so we can change state
     //getWizardModel().setShowReportView(showReportView);

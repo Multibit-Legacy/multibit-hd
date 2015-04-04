@@ -142,14 +142,7 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
 
   @Override
   public void afterShow() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        signingAddress.requestFocusInWindow();
-
-      }
-    });
+    signingAddress.requestFocusInWindow();
   }
 
   @Override

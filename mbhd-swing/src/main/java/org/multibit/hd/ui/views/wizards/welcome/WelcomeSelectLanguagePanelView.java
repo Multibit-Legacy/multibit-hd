@@ -95,14 +95,8 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    languagesComboBox.requestFocus();
 
-        languagesComboBox.requestFocus();
-
-      }
-    });
   }
 
   @Override

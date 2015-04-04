@@ -87,12 +87,7 @@ public class RestorePasswordEnterSeedPhraseView extends AbstractWizardPanelView<
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        enterSeedPhraseMaV.getView().requestInitialFocus();
-      }
-    });
+    enterSeedPhraseMaV.getView().requestInitialFocus();
 
   }
 

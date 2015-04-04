@@ -119,63 +119,50 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   @Override
   public boolean beforeShow() {
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
+    LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
+    transactionConstructionStatusDetail.setText("");
+    transactionBroadcastStatusSummary.setText("");
+    transactionBroadcastStatusDetail.setText("");
 
-          LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
-          transactionConstructionStatusDetail.setText("");
-          transactionBroadcastStatusSummary.setText("");
-          transactionBroadcastStatusDetail.setText("");
-        }
-      });
     return true;
   }
 
   @Override
   public void afterShow() {
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
+    if (getWizardModel().isBIP70()) {
+      getNextButton().requestFocusInWindow();
+    } else {
+      getFinishButton().requestFocusInWindow();
+    }
+    // Check for report message from hardware wallet
+    LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
 
-          if (getWizardModel().isBIP70()) {
-            getNextButton().requestFocusInWindow();
-          } else {
-            getFinishButton().requestFocusInWindow();
-          }
-          // Check for report message from hardware wallet
-          LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
+    if (getWizardModel().getReportMessageKey().isPresent() && !getWizardModel().getReportMessageStatus()) {
+      // Hardware wallet report indicates cancellation
+      transactionConstructionStatusSummary.setVisible(false);
+      transactionConstructionStatusDetail.setVisible(false);
+    } else {
+      // Transaction must be progressing in some manner
+      if (lastTransactionCreationEvent != null) {
+        onTransactionCreationEvent(lastTransactionCreationEvent);
+        lastTransactionCreationEvent = null;
+      }
 
-          if (getWizardModel().getReportMessageKey().isPresent() && !getWizardModel().getReportMessageStatus()) {
-            // Hardware wallet report indicates cancellation
-            transactionConstructionStatusSummary.setVisible(false);
-            transactionConstructionStatusDetail.setVisible(false);
-          } else {
-            // Transaction must be progressing in some manner
-            if (lastTransactionCreationEvent != null) {
-              onTransactionCreationEvent(lastTransactionCreationEvent);
-              lastTransactionCreationEvent = null;
-            }
+      if (lastBitcoinSendingEvent != null) {
+        onBitcoinSendingEvent(lastBitcoinSendingEvent);
+        lastBitcoinSendingEvent = null;
+      }
 
-            if (lastBitcoinSendingEvent != null) {
-              onBitcoinSendingEvent(lastBitcoinSendingEvent);
-              lastBitcoinSendingEvent = null;
-            }
+      if (lastBitcoinSendProgressEvent != null) {
+        onBitcoinSendProgressEvent(lastBitcoinSendProgressEvent);
+        lastBitcoinSendProgressEvent = null;
+      }
 
-            if (lastBitcoinSendProgressEvent != null) {
-              onBitcoinSendProgressEvent(lastBitcoinSendProgressEvent);
-              lastBitcoinSendProgressEvent = null;
-            }
-
-            if (lastBitcoinSentEvent != null) {
-              onBitcoinSentEvent(lastBitcoinSentEvent);
-              lastBitcoinSentEvent = null;
-            }
-          }
-        }
-      });
+      if (lastBitcoinSentEvent != null) {
+        onBitcoinSentEvent(lastBitcoinSentEvent);
+        lastBitcoinSentEvent = null;
+      }
+    }
   }
 
   @Override
@@ -250,31 +237,31 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     }
 
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
-                double progress = bitcoinSendProgressEvent.getProgress();
+      new Runnable() {
+        @Override
+        public void run() {
+          double progress = bitcoinSendProgressEvent.getProgress();
 
-                if (0 < progress && progress < 0.4) {
-                  // bullhorn-quarter
-                  Icon icon = Images.newBullhornQuarterIcon();
-                  transactionBroadcastStatusSummary.setIcon(icon);
-                } else {
-                  if (0.4 <= progress && progress < 0.6) {
-                    // bullhorn-half
-                    Icon icon = Images.newBullhornHalfIcon();
-                    transactionBroadcastStatusSummary.setIcon(icon);
-                  } else {
-                    if (0.6 <= progress && progress < 1.0) {
-                      // bullhorn-three-quarters
-                      Icon icon = Images.newBullhornThreeQuartersIcon();
-                      transactionBroadcastStatusSummary.setIcon(icon);
-                   }
-                  }
-                }
+          if (0 < progress && progress < 0.4) {
+            // bullhorn-quarter
+            Icon icon = Images.newBullhornQuarterIcon();
+            transactionBroadcastStatusSummary.setIcon(icon);
+          } else {
+            if (0.4 <= progress && progress < 0.6) {
+              // bullhorn-half
+              Icon icon = Images.newBullhornHalfIcon();
+              transactionBroadcastStatusSummary.setIcon(icon);
+            } else {
+              if (0.6 <= progress && progress < 1.0) {
+                // bullhorn-three-quarters
+                Icon icon = Images.newBullhornThreeQuartersIcon();
+                transactionBroadcastStatusSummary.setIcon(icon);
               }
+            }
+          }
+        }
 
-            });
+      });
   }
 
   @Subscribe
