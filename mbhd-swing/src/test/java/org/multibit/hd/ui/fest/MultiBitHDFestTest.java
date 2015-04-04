@@ -535,7 +535,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Do the restore with the local backup available
     RestoreTrezorRestoreWithLocalBackupRequirements.verifyUsing(window, hardwareWalletFixture);
 
-    Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
   }
 
   /**

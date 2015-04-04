@@ -207,7 +207,8 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
    * <p>Configure for PIN matrix responses when unlocking a wallet (no previous create)</p>
    * <ol>
    * <li>"1234" is a correct PIN, "6789" will trigger FAILURE</li>
-   * <li>All calls trigger a "protect call" BUTTON_REQUEST</li>
+   * <li>Each call provides a standard BUTTON_REQUEST.Protect</li>
+   * <li>Subsequent calls do nothing so rely on event fixtures to provide use case context</li>
    * </ol>
    * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
    *
@@ -226,33 +227,6 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
             Optional.<Message>absent()
           );
           fireMessageEvent("Correct current PIN. Confirm encrypt.", event);
-
-          return Optional.absent();
-        }
-      });
-  }
-
-  /**
-   * <p>Configure for a CIPHER_KEY value</p>
-   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
-   *
-   * @param client The mock client
-   */
-  protected void useGetCipherKeyNoPIN(HardwareWalletClient client) {
-    byte[] key = "MultiBit HD     Unlock".getBytes(Charsets.UTF_8);
-    byte[] keyValue = "0123456789abcdef".getBytes(Charsets.UTF_8);
-
-    when(client.cipherKeyValue(0, KeyChain.KeyPurpose.RECEIVE_FUNDS, 0, key, keyValue, true, true, true)).thenAnswer(
-      new Answer<Optional<Message>>() {
-        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
-
-          final MessageEvent event = new MessageEvent(
-            MessageEventType.BUTTON_REQUEST,
-            Optional.<HardwareWalletMessage>of(MessageEventFixtures.newOtherButtonRequest()),
-            Optional.<Message>absent()
-          );
-
-          fireMessageEvent("Cipher key requires button press", event);
 
           return Optional.absent();
         }
@@ -295,6 +269,33 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
           }
 
           count++;
+
+          return Optional.absent();
+        }
+      });
+  }
+
+  /**
+   * <p>Configure for a CIPHER_KEY value</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   *
+   * @param client The mock client
+   */
+  protected void useGetCipherKeyNoPIN(HardwareWalletClient client) {
+    byte[] key = "MultiBit HD     Unlock".getBytes(Charsets.UTF_8);
+    byte[] keyValue = "0123456789abcdef".getBytes(Charsets.UTF_8);
+
+    when(client.cipherKeyValue(0, KeyChain.KeyPurpose.RECEIVE_FUNDS, 0, key, keyValue, true, true, true)).thenAnswer(
+      new Answer<Optional<Message>>() {
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          final MessageEvent event = new MessageEvent(
+            MessageEventType.BUTTON_REQUEST,
+            Optional.<HardwareWalletMessage>of(MessageEventFixtures.newOtherButtonRequest()),
+            Optional.<Message>absent()
+          );
+
+          fireMessageEvent("Cipher key requires button press", event);
 
           return Optional.absent();
         }

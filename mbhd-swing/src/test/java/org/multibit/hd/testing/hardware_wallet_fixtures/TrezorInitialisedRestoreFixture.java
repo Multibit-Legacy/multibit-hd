@@ -2,12 +2,9 @@ package org.multibit.hd.testing.hardware_wallet_fixtures;
 
 import com.google.common.base.Optional;
 import com.google.protobuf.Message;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.multibit.hd.hardware.core.HardwareWalletClient;
 import org.multibit.hd.hardware.core.events.MessageEvent;
 import org.multibit.hd.hardware.core.events.MessageEventType;
-import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
 import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
 import org.multibit.hd.testing.MessageEventFixtures;
@@ -22,7 +19,7 @@ import static org.mockito.Mockito.when;
  * </ul>
  *
  * <p>Emulates an attached initialised Trezor during the Restore use case</p>
- * <p>Presents a PIN request on "get master public key"</p>
+ * <p>Presents a PIN request on "get cipher key"</p>
  *
  * @since 0.0.5
  *  
@@ -103,7 +100,7 @@ public class TrezorInitialisedRestoreFixture extends AbstractHardwareWalletFixtu
    */
   @SuppressWarnings("unchecked")
   private void mockDeterministicHierarchy(HardwareWalletClient client) {
-    useDeterministicHierarchyPIN(client);
+    useDeterministicHierarchyNoPIN(client);
   }
 
   /**
@@ -113,14 +110,14 @@ public class TrezorInitialisedRestoreFixture extends AbstractHardwareWalletFixtu
    * @param client The mock client
    */
   private void mockGetCipherKey(HardwareWalletClient client) {
-    useGetCipherKeyNoPIN(client);
+    useGetCipherKeyWithPIN(client);
   }
 
   /**
    * <p>Configure for PIN matrix responses when unlocking a wallet (no previous create)</p>
    * <ol>
    * <li>"1234" is a correct PIN, "6789" will trigger FAILURE</li>
-   * <li>First call provides a standard PUBLIC_KEY of M</li>
+   * <li>Each call provides a standard BUTTON_REQUEST.Protect</li>
    * <li>Subsequent calls do nothing so rely on event fixtures to provide use case context</li>
    * </ol>
    * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
@@ -128,7 +125,7 @@ public class TrezorInitialisedRestoreFixture extends AbstractHardwareWalletFixtu
    * @param client The mock client
    */
   private void mockPinMatrixAck(HardwareWalletClient client) {
-    usePinMatrixAckWithPublicKey(client);
+    usePinMatrixAckWithProtect(client);
   }
 
 }

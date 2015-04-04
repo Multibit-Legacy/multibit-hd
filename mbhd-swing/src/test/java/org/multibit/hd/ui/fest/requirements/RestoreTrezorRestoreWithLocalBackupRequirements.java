@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * restoring a hard Trezor</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.5
  */
 public class RestoreTrezorRestoreWithLocalBackupRequirements {
 
