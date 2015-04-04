@@ -55,7 +55,7 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
   public void newPanelModel() {
     // Configure the panel model
     panelModel = new SendBitcoinShowPaymentACKMemoPanelModel(
-            getPanelName());
+      getPanelName());
     setPanelModel(panelModel);
 
     // Bind it to the wizard model
@@ -65,13 +65,10 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
   @Override
   public void initialiseContent(JPanel contentPanel) {
     paymentSentOKSummary = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
-    paymentSentOKSummary.setText(Languages.safeText(CoreMessageKey.PAYMENT_SENDING_TO_REQUESTOR));
-
     AccessibilityDecorator.apply(paymentSentOKSummary, CoreMessageKey.PAYMENT_SENDING_TO_REQUESTOR);
 
     // BIP70 PaymentACK memo
     paymentACKMemo = TextBoxes.newReadOnlyTextArea(6, MultiBitUI.PASSWORD_LENGTH);
-    paymentACKMemo.setVisible(false);
 
     // Apply any Payment Request parameters
     if (getWizardModel().getPaymentRequestData().isPresent()) {
@@ -83,16 +80,15 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
     }
 
     paymentACKMemoLabel = Labels.newBlankLabel();
-    paymentACKMemoLabel.setVisible(false);
     paymentACKMemoLabel.setText(Languages.safeText(MessageKey.SEND_PAYMENT_ACK_MEMO_LABEL));
     AccessibilityDecorator.apply(paymentACKMemoLabel, MessageKey.SEND_PAYMENT_ACK_MEMO_TITLE);
 
     contentPanel.setLayout(
-            new MigLayout(
-                    Panels.migXYLayout(),
-                    "[]", // Column constraints
-                    "[]40[]2[]" // Row constraints
-            ));
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[]", // Column constraints
+        "[]40[]2[]" // Row constraints
+      ));
 
     contentPanel.add(paymentSentOKSummary, "wrap");
     contentPanel.add(paymentACKMemoLabel, "wrap");
@@ -117,19 +113,19 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
   @Override
   public void afterShow() {
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
-                getFinishButton().requestFocusInWindow();
+      new Runnable() {
+        @Override
+        public void run() {
+          paymentACKMemo.requestFocusInWindow();
 
-                // Transaction must be progressing in some manner
-                if (lastPaymentSentToRequestorEvent != null) {
-                  onPaymentSentToRequestorEvent(lastPaymentSentToRequestorEvent);
-                  lastPaymentSentToRequestorEvent = null;
-                }
+          // Transaction must be progressing in some manner
+          if (lastPaymentSentToRequestorEvent != null) {
+            onPaymentSentToRequestorEvent(lastPaymentSentToRequestorEvent);
+            lastPaymentSentToRequestorEvent = null;
+          }
 
-              }
-            });
+        }
+      });
   }
 
   @Override
@@ -145,23 +141,19 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
     }
 
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
-                if (paymentSentToRequestorEvent.isSendWasSuccessful()) {
-                  LabelDecorator.applyWrappingLabel(paymentSentOKSummary, Languages.safeText(CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_OK));
-                  LabelDecorator.applyStatusLabel(paymentSentOKSummary, Optional.of(Boolean.TRUE));
+      new Runnable() {
+        @Override
+        public void run() {
+          if (paymentSentToRequestorEvent.isSendWasSuccessful()) {
+            LabelDecorator.applyWrappingLabel(paymentSentOKSummary, Languages.safeText(CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_OK));
+            LabelDecorator.applyStatusLabel(paymentSentOKSummary, Optional.of(Boolean.TRUE));
 
-                  paymentACKMemoLabel.setVisible(true);
-                  paymentACKMemo.setVisible(true);
-                } else {
-                  paymentACKMemoLabel.setVisible(false);
-                  paymentACKMemo.setVisible(false);
-                  String summaryMessage = Languages.safeText(CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_FAILED, paymentSentToRequestorEvent.getSendFailureReasonData());
-                  LabelDecorator.applyWrappingLabel(paymentSentOKSummary, summaryMessage);
-                  LabelDecorator.applyStatusLabel(paymentSentOKSummary, Optional.of(Boolean.FALSE));
-                }
-              }
-            });
+          } else {
+            String summaryMessage = Languages.safeText(CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_FAILED, paymentSentToRequestorEvent.getSendFailureReasonData());
+            LabelDecorator.applyWrappingLabel(paymentSentOKSummary, summaryMessage);
+            LabelDecorator.applyStatusLabel(paymentSentOKSummary, Optional.of(Boolean.FALSE));
+          }
+        }
+      });
   }
 }
