@@ -200,12 +200,12 @@ public class TrezorInitialisedUnlockFixture extends AbstractHardwareWalletFixtur
         public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
 
           final MessageEvent event = new MessageEvent(
-            MessageEventType.PIN_MATRIX_REQUEST,
-            Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCurrentPinMatrix()),
+            MessageEventType.BUTTON_REQUEST,
+            Optional.<HardwareWalletMessage>of(MessageEventFixtures.newOtherButtonRequest()),
             Optional.<Message>absent()
           );
 
-          fireMessageEvent("Cipher key protected. Provide PIN.", event);
+          fireMessageEvent("Cipher key requires button press", event);
 
           return Optional.absent();
         }
@@ -216,7 +216,7 @@ public class TrezorInitialisedUnlockFixture extends AbstractHardwareWalletFixtur
    * <p>Configure for PIN matrix responses when unlocking a wallet (no previous create)</p>
    * <ol>
    * <li>"1234" is a correct PIN, "6789" will trigger FAILURE</li>
-   * <li>First call triggers a "protect call" BUTTON_REQUEST</li>
+   * <li>First call triggers a "get public key" PIN_MATRIX_REQUEST</li>
    * <li>Subsequent calls do nothing so rely on event fixtures to provide use case context</li>
    * </ol>
    * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
@@ -238,8 +238,8 @@ public class TrezorInitialisedUnlockFixture extends AbstractHardwareWalletFixtur
             case 0:
               // PIN entered (current)
               event = new MessageEvent(
-                MessageEventType.BUTTON_REQUEST,
-                Optional.<HardwareWalletMessage>of(MessageEventFixtures.newProtectCallButtonRequest()),
+                MessageEventType.PUBLIC_KEY,
+                Optional.<HardwareWalletMessage>of(MessageEventFixtures.newStandardPublicKey_M()),
                 Optional.<Message>absent()
               );
               fireMessageEvent("Correct current PIN. Confirm encrypt.", event);

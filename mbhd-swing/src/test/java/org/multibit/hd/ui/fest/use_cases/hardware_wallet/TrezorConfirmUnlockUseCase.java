@@ -35,7 +35,7 @@ public class TrezorConfirmUnlockUseCase extends AbstractHardwareWalletFestUseCas
     // Allow time for UI to catch up with events
     pauseForViewReset();
 
-    // Check that the Trezor press confirm to wipe panel view is showing
+    // Check that the Trezor press confirm to unlock panel view is showing
     window
       .label(MessageKey.TREZOR_PRESS_CONFIRM_TITLE.getKey())
       .requireVisible();

@@ -165,13 +165,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         // createNewTrezorWallet dealt with in MainController as it is in WelcomeWizard
         if (createNewTrezorWallet) {
           final CredentialsWizardModel finalThis = this;
-          SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
-                ViewEvents.fireWizardHideEvent(getPanelName(), finalThis, false);
-              }
-            });
+          ViewEvents.fireWizardHideEvent(getPanelName(), finalThis, false);
         }
         break;
       case CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY:
@@ -240,13 +234,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   @Override
   public void showPINEntry(HardwareWalletEvent event) {
 
-    // Device is PIN protected
-
     switch (state) {
       case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
+        log.debug("Master public key is PIN protected");
         state = CredentialsState.CREDENTIALS_ENTER_PIN_FROM_MASTER_PUBLIC_KEY;
         break;
       case CREDENTIALS_REQUEST_CIPHER_KEY:
+        log.debug("Cipher key is PIN protected");
         state = CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY;
         break;
       default:
@@ -383,6 +377,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   public void receivedDeterministicHierarchy(HardwareWalletEvent event) {
 
     switch (state) {
+      case CREDENTIALS_ENTER_PIN_FROM_MASTER_PUBLIC_KEY:
+        // Fall through since there may have been no PIN request
       case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
         // A successful get master public key has been performed
         log.debug("CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY was successful");
@@ -584,14 +580,8 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     // Set the state to move to the load wallet report form
     state = CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT;
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
-          ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
-        }
-      });
+    // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
+    ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
 
     // Check the password (might take a while so do it asynchronously while showing a spinner)
     ListenableFuture<Optional<WalletSummary>> passwordFuture = unlockWalletService.submit(
@@ -640,22 +630,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
   }
 
-
   /**
    * <p>Continue the hide process after user has entered a password and clicked unlock</p>
    */
   public void unlockWalletWithPassword() {
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-
-          // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
-          ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
-
-        }
-      });
+    // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
+    ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
 
     // Check the password (might take a while so do it asynchronously)
     // Tar pit (must be in a separate thread to ensure UI updates)
