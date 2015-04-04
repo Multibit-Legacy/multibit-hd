@@ -61,7 +61,7 @@ public class SendBitcoinEnterPaymentMemoPanelView extends AbstractWizardPanelVie
   @Override
   public void initialiseContent(JPanel contentPanel) {
     // BIP70 Payment memo
-    paymentMemo = TextBoxes.newEnterPrivateNotes(getWizardModel());
+    paymentMemo = TextBoxes.newEnterNotes(getWizardModel());
 
     // Apply any Payment Request parameters
     if (getWizardModel().getPaymentRequestData().isPresent()) {
@@ -90,7 +90,7 @@ public class SendBitcoinEnterPaymentMemoPanelView extends AbstractWizardPanelVie
 
   @Override
   protected void initialiseButtons(AbstractWizard<SendBitcoinWizardModel> wizard) {
-    PanelDecorator.addCancelNext(this, wizard);
+    PanelDecorator.addNext(this, wizard);
   }
 
   @Override

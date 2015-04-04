@@ -46,7 +46,6 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   private TransactionCreationEvent lastTransactionCreationEvent;
   private BitcoinSendingEvent lastBitcoinSendingEvent;
   private BitcoinSendProgressEvent lastBitcoinSendProgressEvent;
-  private BitcoinSentEvent lastBitcoinSentEvent;
 
   private boolean initialised = false;
 
@@ -62,17 +61,17 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     lastTransactionCreationEvent = null;
     lastBitcoinSendingEvent = null;
     lastBitcoinSendProgressEvent = null;
-    lastBitcoinSentEvent = null;
+    getWizardModel().setLastBitcoinSentEvent(null);
   }
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
     contentPanel.setLayout(
-      new MigLayout(
-        Panels.migXYLayout(),
-        "[][][]", // Column constraints
-        "10[24]10[24]15[24]10[24]15[24]10" // Row constraints
-      ));
+            new MigLayout(
+                    Panels.migXYLayout(),
+                    "[][][]", // Column constraints
+                    "10[24]10[24]15[24]10[24]15[24]10" // Row constraints
+            ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -108,9 +107,8 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   @Override
   protected void initialiseButtons(AbstractWizard<SendBitcoinWizardModel> wizard) {
     if (getWizardModel().isBIP70()) {
-      // BIP 70 send reports have a Next and a Finish
-      // (Finish is used instead of Cancel as a Cancel might give te impression that the transaction send is being cancelled)
-      PanelDecorator.addNextFinish(this, wizard);
+      // BIP 70 send reports have a Cancel and a Next
+      PanelDecorator.addCancelNext(this, wizard);
     } else {
       // Regular send reports have a Finish button
       PanelDecorator.addFinish(this, wizard);
@@ -119,48 +117,49 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
   @Override
   public boolean beforeShow() {
-    LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
-    transactionConstructionStatusDetail.setText("");
-    transactionBroadcastStatusSummary.setText("");
-    transactionBroadcastStatusDetail.setText("");
+      public void run() {
 
+        LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
+        transactionConstructionStatusDetail.setText("");
+        transactionBroadcastStatusSummary.setText("");
+        transactionBroadcastStatusDetail.setText("");
     return true;
   }
 
   @Override
   public void afterShow() {
-    if (getWizardModel().isBIP70()) {
-      getNextButton().requestFocusInWindow();
-    } else {
-      getFinishButton().requestFocusInWindow();
-    }
-    // Check for report message from hardware wallet
-    LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
-
-    if (getWizardModel().getReportMessageKey().isPresent() && !getWizardModel().getReportMessageStatus()) {
-      // Hardware wallet report indicates cancellation
-      transactionConstructionStatusSummary.setVisible(false);
-      transactionConstructionStatusDetail.setVisible(false);
-    } else {
-      // Transaction must be progressing in some manner
-      if (lastTransactionCreationEvent != null) {
-        onTransactionCreationEvent(lastTransactionCreationEvent);
-        lastTransactionCreationEvent = null;
+      if (getWizardModel().isBIP70()) {
+        getNextButton().requestFocusInWindow();
+      } else {
+        getFinishButton().requestFocusInWindow();
       }
+      // Check for report message from hardware wallet
+      LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
 
-      if (lastBitcoinSendingEvent != null) {
-        onBitcoinSendingEvent(lastBitcoinSendingEvent);
-        lastBitcoinSendingEvent = null;
-      }
+      if (getWizardModel().getReportMessageKey().isPresent() && !getWizardModel().getReportMessageStatus()) {
+        // Hardware wallet report indicates cancellation
+        transactionConstructionStatusSummary.setVisible(false);
+        transactionConstructionStatusDetail.setVisible(false);
+      } else {
+        // Transaction must be progressing in some manner
+        if (lastTransactionCreationEvent != null) {
+          onTransactionCreationEvent(lastTransactionCreationEvent);
+          lastTransactionCreationEvent = null;
+        }
 
-      if (lastBitcoinSendProgressEvent != null) {
-        onBitcoinSendProgressEvent(lastBitcoinSendProgressEvent);
-        lastBitcoinSendProgressEvent = null;
-      }
+        if (lastBitcoinSendingEvent != null) {
+          onBitcoinSendingEvent(lastBitcoinSendingEvent);
+          lastBitcoinSendingEvent = null;
+        }
 
-      if (lastBitcoinSentEvent != null) {
-        onBitcoinSentEvent(lastBitcoinSentEvent);
-        lastBitcoinSentEvent = null;
+        if (lastBitcoinSendProgressEvent != null) {
+          onBitcoinSendProgressEvent(lastBitcoinSendProgressEvent);
+          lastBitcoinSendProgressEvent = null;
+        }
+
+        if (getWizardModel().getLastBitcoinSentEvent() != null) {
+          onBitcoinSentEvent(getWizardModel().getLastBitcoinSentEvent());
+        }
       }
     }
   }
@@ -182,26 +181,26 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     }
 
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
+            new Runnable() {
+              @Override
+              public void run() {
 
-          if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
-            LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
-            LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, "");
-            LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
-          } else {
-            String detailMessage = Languages.safeText(
-              transactionCreationEvent.getTransactionCreationFailureReasonKey(),
-              (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData()
-            );
+                if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+                  LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
+                  LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, "");
+                  LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
+                } else {
+                  String detailMessage = Languages.safeText(
+                          transactionCreationEvent.getTransactionCreationFailureReasonKey(),
+                          (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData()
+                  );
 
-            LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
-            LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, detailMessage);
-            LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
-          }
-        }
-      });
+                  LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
+                  LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, detailMessage);
+                  LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
+                }
+              }
+            });
   }
 
   @Subscribe
@@ -216,13 +215,13 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     }
 
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.SENDING_BITCOIN));
-          AwesomeDecorator.bindIcon(AwesomeIcon.BULLHORN, transactionBroadcastStatusSummary, true, MultiBitUI.NORMAL_ICON_SIZE);
-        }
-      });
+            new Runnable() {
+              @Override
+              public void run() {
+                LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.SENDING_BITCOIN));
+                AwesomeDecorator.bindIcon(AwesomeIcon.BULLHORN, transactionBroadcastStatusSummary, true, MultiBitUI.NORMAL_ICON_SIZE);
+              }
+            });
   }
 
   @Subscribe
@@ -242,20 +241,23 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
         public void run() {
           double progress = bitcoinSendProgressEvent.getProgress();
 
-          if (0 < progress && progress < 0.4) {
-            // bullhorn-quarter
-            Icon icon = Images.newBullhornQuarterIcon();
-            transactionBroadcastStatusSummary.setIcon(icon);
-          } else {
-            if (0.4 <= progress && progress < 0.6) {
-              // bullhorn-half
-              Icon icon = Images.newBullhornHalfIcon();
-              transactionBroadcastStatusSummary.setIcon(icon);
-            } else {
-              if (0.6 <= progress && progress < 1.0) {
-                // bullhorn-three-quarters
-                Icon icon = Images.newBullhornThreeQuartersIcon();
-                transactionBroadcastStatusSummary.setIcon(icon);
+                if (0 < progress && progress < 0.4) {
+                  // bullhorn-quarter
+                  Icon icon = Images.newBullhornQuarterIcon();
+                  transactionBroadcastStatusSummary.setIcon(icon);
+                } else {
+                  if (0.4 <= progress && progress < 0.6) {
+                    // bullhorn-half
+                    Icon icon = Images.newBullhornHalfIcon();
+                    transactionBroadcastStatusSummary.setIcon(icon);
+                  } else {
+                    if (0.6 <= progress && progress < 1.0) {
+                      // bullhorn-three-quarters
+                      Icon icon = Images.newBullhornThreeQuartersIcon();
+                      transactionBroadcastStatusSummary.setIcon(icon);
+                    }
+                  }
+                }
               }
             }
           }
@@ -268,37 +270,33 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   public void onBitcoinSentEvent(final BitcoinSentEvent bitcoinSentEvent) {
     log.debug("Received the BitcoinSentEvent: " + bitcoinSentEvent);
 
-    lastBitcoinSentEvent = bitcoinSentEvent;
+    getWizardModel().setLastBitcoinSentEvent(bitcoinSentEvent);
     // The event may be fired before the UI has initialised
     if (!initialised) {
       return;
     }
 
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          if (bitcoinSentEvent.isSendWasSuccessful()) {
-            LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
-            LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
+            new Runnable() {
+              @Override
+              public void run() {
 
-          } else {
-            String summaryMessage = Languages.safeText(CoreMessageKey.BITCOIN_SEND_FAILED);
-            String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReason(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
-            LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, summaryMessage);
-            LabelDecorator.applyWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
-            LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
-          }
-
-          // Enable the next button on BIP70 payments once the transaction is sent
-          if (getWizardModel().isBIP70()) {
-            getNextButton().setEnabled(true);
-          }
-        }
-      });
-
-    // Handle the rest of the send
-    // TODO move this to the wizardModel next from this panel
-    getWizardModel().sendPaymentToMerchant(bitcoinSentEvent);
+                if (bitcoinSentEvent.isSendWasSuccessful()) {
+                  // Enable the next button on BIP70 payments once the transaction is sent successfully and disable the cancel
+                  if (getWizardModel().isBIP70()) {
+                    getCancelButton().setEnabled(false);
+                    getNextButton().setEnabled(true);
+                  }
+                  LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
+                  LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
+                } else {
+                  String summaryMessage = Languages.safeText(CoreMessageKey.BITCOIN_SEND_FAILED);
+                  String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReason(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
+                  LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, summaryMessage);
+                  LabelDecorator.applyWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
+                  LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
+                }
+              }
+            });
   }
 }

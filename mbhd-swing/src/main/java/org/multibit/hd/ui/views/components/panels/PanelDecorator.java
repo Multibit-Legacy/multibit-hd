@@ -133,6 +133,62 @@ public class PanelDecorator {
   }
 
   /**
+   * <p>Add a next only button</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends AbstractWizardModel, P> void addNext(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+
+    // Use the wizard panel
+    JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
+
+    // Add an invisible button to push the next
+    JButton empty = Buttons.newExitButton(null, false);
+    empty.setVisible(false);
+
+    wizardScreenPanel.add(empty, "cell 0 2,push");
+
+    addNext(view, wizard, wizardScreenPanel);
+
+    view.getNextButton().requestFocusInWindow();
+
+  }
+  /**
+    * <p>Add a finish only button</p>
+    *
+    * @param view   The view containing the panel to decorate
+    * @param wizard The wizard providing the actions
+    * @param <M>    The wizard model type
+    * @param <P>    The wizard panel model type
+    */
+   public static <M extends AbstractWizardModel, P> void addPreviousFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+
+     Preconditions.checkNotNull(view, "'view' must be present");
+     Preconditions.checkNotNull(view, "'wizard' must be present");
+
+     // Use the wizard panel
+     JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
+
+     // Add an invisible button to push the finish
+     JButton empty = Buttons.newExitButton(null, false);
+     empty.setVisible(false);
+
+     wizardScreenPanel.add(empty, "cell 0 2,push");
+
+     addPrevious(view, wizard, wizardScreenPanel);
+     addFinish(view, wizard, wizardScreenPanel);
+
+     view.getFinishButton().requestFocusInWindow();
+
+   }
+
+  /**
    * <p>Add a cancel, finish combination</p>
    *
    * @param view   The view containing the panel to decorate

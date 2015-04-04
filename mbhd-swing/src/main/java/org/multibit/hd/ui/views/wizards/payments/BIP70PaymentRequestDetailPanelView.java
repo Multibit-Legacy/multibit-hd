@@ -152,9 +152,9 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
     if (getWizardModel().isShowPrevOnPaymentRequestDetailScreen()) {
-      PanelDecorator.addCancelPreviousFinish(this, wizard);
+      PanelDecorator.addPreviousFinish(this, wizard);
     } else {
-      PanelDecorator.addCancelFinish(this, wizard);
+      PanelDecorator.addFinish(this, wizard);
     }
   }
 

@@ -50,7 +50,7 @@ public class SendBitcoinEnterPaymentACKMemoPanelView extends AbstractWizardPanel
   public void newPanelModel() {
     // Configure the panel model
     panelModel = new SendBitcoinEnterPaymentACKMemoPanelModel(
-      getPanelName());
+            getPanelName());
     setPanelModel(panelModel);
 
     // Bind it to the wizard model
@@ -76,11 +76,11 @@ public class SendBitcoinEnterPaymentACKMemoPanelView extends AbstractWizardPanel
     AccessibilityDecorator.apply(paymentACKMemoLabel, MessageKey.SEND_PAYMENT_ACK_MEMO_TITLE);
 
     contentPanel.setLayout(
-      new MigLayout(
-        Panels.migXYLayout(),
-        "[]", // Column constraints
-        "[]10[]" // Row constraints
-      ));
+            new MigLayout(
+                    Panels.migXYLayout(),
+                    "[]", // Column constraints
+                    "[]10[]" // Row constraints
+            ));
 
     contentPanel.add(paymentACKMemoLabel, "wrap");
     contentPanel.add(paymentACKMemo, "growx,push,wrap");
@@ -102,7 +102,13 @@ public class SendBitcoinEnterPaymentACKMemoPanelView extends AbstractWizardPanel
 
   @Override
   public void afterShow() {
-    paymentACKMemo.requestFocusInWindow();
+    SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+                paymentACKMemo.requestFocusInWindow();
+              }
+            });
   }
 
   @Override
