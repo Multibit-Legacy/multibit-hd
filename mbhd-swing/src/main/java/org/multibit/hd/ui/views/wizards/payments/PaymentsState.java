@@ -39,7 +39,12 @@ public enum PaymentsState {
   /**
    * Details of a BIP70 payment request
    */
-  BIP70_PAYMENT_REQUEST_DETAILS
+  BIP70_PAYMENT_REQUEST_DETAILS,
+
+  /**
+   * Details of the BIP70 payment request memos
+   */
+  BIP70_PAYMENT_REQUEST_MEMO_DETAILS
 
   // End of enum
 }

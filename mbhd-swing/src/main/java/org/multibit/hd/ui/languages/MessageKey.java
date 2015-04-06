@@ -359,10 +359,12 @@ public enum MessageKey {
 
   SEND_BITCOIN_TITLE("send_bitcoin_title"),
   DISPLAY_PAYMENT_REQUEST_TITLE("display_payment_request_title"),
+  DISPLAY_PAYMENT_REQUEST_MEMO_TITLE("display_payment_request_memo_title"),
   CONFIRM_SEND_TITLE("confirm_send_title"),
   SEND_PROGRESS_TITLE("send_progress_title"),
   SEND_PAYMENT_MEMO_TITLE("send_payment_memo_title"),
   SEND_PAYMENT_MEMO_LABEL("send_payment_memo_label"),
+  SEND_PAYMENT_MEMO_LABEL_READ_ONLY("send_payment_memo_label_read_only"),
 
   SEND_PAYMENT_ACK_MEMO_LABEL("send_payment_ack_memo_label"),
   SEND_PAYMENT_ACK_MEMO_TITLE("send_payment_ack_memo_title"),

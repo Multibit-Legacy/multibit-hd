@@ -75,7 +75,7 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
       PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData().get();
       // Fill in the paymentACK memo
       if (paymentRequestData.getPaymentACK().isPresent()) {
-        paymentACKMemo.setText(paymentRequestData.getPayment().get().getMemo());
+        paymentACKMemo.setText(paymentRequestData.getPaymentACK().get().getMemo());
       }
     }
 
