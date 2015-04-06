@@ -248,20 +248,12 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   @Override
   public void showPassphraseEntry(HardwareWalletEvent event) {
 
-    switch (state) {
-      case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
-        log.debug("Master public key is passphrase protected");
-        CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newUnsupportedConfigurationPassphrase());
-        setSwitchToPassword(true);
-        state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
-        break;
-      case CREDENTIALS_REQUEST_CIPHER_KEY:
-        log.debug("Cipher key is PIN protected");
-        state = CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY;
-        break;
-      default:
-        throw new IllegalStateException("Unknown state: " + state.name());
-    }
+    log.warn("Device is passphrase protected (not currently supported)");
+
+    CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newUnsupportedConfigurationPassphrase());
+
+    setSwitchToPassword(true);
+    state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
   }
 
   // A note is added to the switch to cover this
