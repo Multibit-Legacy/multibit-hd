@@ -46,7 +46,7 @@ public class ShowRequestEnterAmountBitcoinUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled()
       .requireEmpty()
-      .enterText("31.23");
+      .enterText("31.23123");
 
     // Enter a QR code label label
     window
@@ -78,11 +78,14 @@ public class ShowRequestEnterAmountBitcoinUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     // Verify the amount is showing as receiving in the correct position
-    String paymentReceiving0 = window
-      .label("SEND_REQUEST_REQUESTED.requested.0.primary_balance")
+    String paymentReceivingPrimary = window
+      .label("SEND_REQUEST_REQUESTED.you_requested.0.primary_balance")
       .text();
-
-    assertThat(paymentReceiving0).contains("31.23");
+    assertThat(paymentReceivingPrimary).contains("31.23");
+    String paymentReceivingSecondary = window
+      .label("SEND_REQUEST_REQUESTED.you_requested.0.secondary_balance")
+      .text();
+    assertThat(paymentReceivingSecondary).contains("123");
 
   }
 
