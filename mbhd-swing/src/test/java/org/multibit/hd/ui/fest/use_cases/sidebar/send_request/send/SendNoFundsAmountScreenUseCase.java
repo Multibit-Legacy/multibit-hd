@@ -46,7 +46,7 @@ public class SendNoFundsAmountScreenUseCase extends AbstractFestUseCase {
     window
       .button(MessageKey.NEXT.getKey())
       .requireVisible()
-      .requireDisabled();
+      .requireEnabled(); // This is due to unrestricted
 
     window
       .button(MessageKey.CANCEL.getKey())

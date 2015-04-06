@@ -30,11 +30,11 @@ public class SendRequestScreenRequirements {
     new ShowSendRequestScreenUseCase(window).execute(parameters);
 
     // Send
-    //verifySend_Simple(window, parameters);
+    verifySend_Simple(window, parameters);
     verifySend_PaymentProtocol(window, parameters);
 
     // Request
-    //verifyRequest(window, parameters);
+    verifyRequest(window, parameters);
 
   }
 
