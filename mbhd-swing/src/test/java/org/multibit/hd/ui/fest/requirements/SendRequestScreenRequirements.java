@@ -56,7 +56,7 @@ public class SendRequestScreenRequirements {
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Click Send and fill in the amount panel
-    new SendNoFundsAmountScreenUseCase(window).execute(parameters);
+    new SendEnterAmountUseCase(window).execute(parameters);
 
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 

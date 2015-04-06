@@ -27,6 +27,7 @@ import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.testing.hardware_wallet_fixtures.*;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.fest.requirements.*;
+import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorSendBitcoinTrezorRequirements;
 import org.multibit.hd.ui.views.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -576,6 +577,31 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     // Verify up to unlock
     UnlockTrezorHardwareWalletUnsupportedConfigurationPassphraseRequirements.verifyUsing(window, hardwareWalletFixture);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with empty wallet fixture (warm)</li>
+   * <li>Unlock the wallet</li>
+   * <li>Send and force a PIN request</li>
+   * </ul>
+   */
+  @Test
+  public void verifySendTrezorScreen() throws Exception {
+
+    // Prepare an initialised and attached Trezor device that will be restored then unlocked
+    HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedUnsupportedConfigurationPassphraseFixture();
+
+    // Start with the empty hardware wallet fixture
+    arrangeStandard(Optional.of(hardwareWalletFixture));
+
+    // Verify up to unlock
+    UnlockTrezorHardwareWalletUnsupportedConfigurationPassphraseRequirements.verifyUsing(window, hardwareWalletFixture);
+
+    // Verify send workflow
+    TrezorSendBitcoinTrezorRequirements.verifyUsing(window, hardwareWalletFixture);
 
   }
 
