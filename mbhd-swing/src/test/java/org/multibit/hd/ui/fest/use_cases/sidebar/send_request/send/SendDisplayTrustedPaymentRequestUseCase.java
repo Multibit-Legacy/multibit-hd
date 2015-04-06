@@ -52,21 +52,17 @@ public class SendDisplayTrustedPaymentRequestUseCase extends AbstractFestUseCase
     // Verify the wizard appears
     assertLabelText(MessageKey.DISPLAY_PAYMENT_REQUEST_TITLE);
 
-    // Verify buttons
+      // Verify 'Pay this payment request' button
     window
-      .button(MessageKey.NEXT.getKey())
-      .requireVisible()
-      .requireDisabled();
-
-    // Verify buttons
-    window
-      .button(MessageKey.CANCEL.getKey())
+      .button(MessageKey.PAY_THIS_PAYMENT_REQUEST.getKey())
       .requireVisible()
       .requireEnabled();
+
+    // Verify the Finish button
     window
-      .button(MessageKey.NEXT.getKey())
-      .requireVisible()
-      .requireDisabled();
+       .button(MessageKey.FINISH.getKey())
+       .requireVisible()
+       .requireEnabled();
 
     // Verify content
     window
@@ -82,17 +78,18 @@ public class SendDisplayTrustedPaymentRequestUseCase extends AbstractFestUseCase
     window
       .label(MessageKey.NAME.getKey()+".value")
       .requireVisible()
-      .requireText("n/a");
+      .requireText("");
 
     window
       .label(MessageKey.DATE.getKey()+".value")
       .requireVisible()
       .requireText("01 Mar 2015 17:16");
 
-    window
-      .label(MessageKey.EXPIRES.getKey()+".value")
-      .requireVisible()
-      .requireText("n/a");
+// TODO - Expires filled in with now
+//    window
+//      .label(MessageKey.EXPIRES.getKey()+".value")
+//      .requireVisible()
+//      .requireText("n/a");
 
     window
       .label(SendBitcoinState.SEND_DISPLAY_PAYMENT_REQUEST.name() + ".amount.primary_balance")
@@ -103,16 +100,39 @@ public class SendDisplayTrustedPaymentRequestUseCase extends AbstractFestUseCase
       .requireVisible()
       .requireText("000");
 
-    // Click Cancel
+    // Click the 'Pay the Payment request' button
+    window
+      .button(MessageKey.PAY_THIS_PAYMENT_REQUEST.getKey())
+      .click();
+
+    // Verify the 'Send progress' screen appears
+    // There won't be any money to pay the payment request
+    assertLabelText(MessageKey.SEND_PROGRESS_TITLE);
+
+    // There should be an enabled Cancel button and a disabled Next button
+    window
+       .button(MessageKey.CANCEL.getKey())
+       .requireVisible()
+       .requireEnabled();
+
+    window
+        .button(MessageKey.NEXT.getKey())
+        .requireVisible()
+        .requireDisabled();
+
+     // Click the 'Cancel' button to dismiss the 'Send progress' screen
     window
       .button(MessageKey.CANCEL.getKey())
       .click();
 
+    // Allow time for component to change
+    pauseForComponentReset();
+
     // Verify the underlying screen is back
     window
       .button(MessageKey.SHOW_SEND_WIZARD.getKey())
-      .requireVisible();
-
+      .requireVisible()
+      .requireEnabled();
   }
 
 }
