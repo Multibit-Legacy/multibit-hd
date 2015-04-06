@@ -128,6 +128,21 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   }
 
   /**
+   * Handles state transition to a "passphrase entry" panel
+   *
+   * Usually this will be an "EnterCurrentPassphrase" panel following a "Request" and the
+   * panel will show a passphrase dialog (this is currently unsupported see #4 in MultiBit Hardware)
+   *
+   * Clicking "Next" or "Unlock" will trigger the sending of passphrase to the device
+   * and subsequent state transitions
+   *
+   * @param event The hardware wallet event containing payload and context
+   */
+  public void showPassphraseEntry(HardwareWalletEvent event) {
+    // Do nothing
+  }
+
+  /**
    * Handles state transition to a "button press" panel
    *
    * Usually this will be a "Confirm" panel following a "Request" and the

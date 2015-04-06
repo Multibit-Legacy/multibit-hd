@@ -15,10 +15,7 @@ import org.bitcoinj.wallet.KeyChain;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.dto.CoreMessageKey;
-import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.dto.WalletPassword;
-import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.WalletLoadEvent;
 import org.multibit.hd.core.exceptions.HistoryLoadException;
@@ -248,6 +245,24 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     }
   }
 
+  @Override
+  public void showPassphraseEntry(HardwareWalletEvent event) {
+
+    switch (state) {
+      case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
+        log.debug("Master public key is passphrase protected");
+        CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newUnsupportedConfigurationPassphrase());
+        setSwitchToPassword(true);
+        state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+        break;
+      case CREDENTIALS_REQUEST_CIPHER_KEY:
+        log.debug("Cipher key is PIN protected");
+        state = CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY;
+        break;
+      default:
+        throw new IllegalStateException("Unknown state: " + state.name());
+    }
+  }
 
   // A note is added to the switch to cover this
   @SuppressFBWarnings({"SF_SWITCH_FALLTHROUGH"})
@@ -309,7 +324,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
     Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
-    final Failure failure = (Failure) event.getMessage().get();
+    final Failure failure = (Failure) event.getMessage().orNull();
     log.debug("A failure event has occurred {}", failure);
 
     switch (state) {
