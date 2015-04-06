@@ -7,6 +7,7 @@ import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Sha256Hash;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.joda.time.DateTime;
+import org.multibit.hd.core.utils.Dates;
 
 import java.util.UUID;
 
@@ -111,7 +112,12 @@ public class PaymentRequestData implements PaymentData {
     PaymentSession paymentSession = paymentSessionSummary.getPaymentSession().get();
 
     setDate(new DateTime(paymentSession.getDate()));
-    setExpirationDate(new DateTime(paymentSession.getExpires()));
+    if (paymentSession.getExpires() == null) {
+      // Expire a long way into the future
+      setExpirationDate(Dates.thenUtc(2199, 12,31, 23, 59 ,59));
+    } else {
+      setExpirationDate(new DateTime(paymentSession.getExpires()));
+    }
 
     setAmountCoin(paymentSession.getValue());
     setNote(paymentSession.getMemo());
