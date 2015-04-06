@@ -10,6 +10,7 @@ import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
@@ -19,6 +20,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,7 +119,7 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
   public void afterShow() {
 
     getNextButton().requestFocusInWindow();
-    getNextButton().setEnabled(true);
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
 
     PaymentData paymentData = getWizardModel().getPaymentData();
     if (paymentData != null && paymentData instanceof TransactionData) {

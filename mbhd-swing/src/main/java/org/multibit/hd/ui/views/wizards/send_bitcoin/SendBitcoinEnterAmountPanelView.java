@@ -211,7 +211,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
           new Runnable() {
             @Override
             public void run() {
-              getNextButton().setEnabled(finalNewEnabled);
+              ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, finalNewEnabled);
             }
           });
       }
