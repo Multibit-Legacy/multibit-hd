@@ -178,23 +178,6 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
   }
 
   /**
-   * Prevent further user interaction during the unlock process
-   */
-  public void disableForUnlock() {
-
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
-
-    getNextButton().setEnabled(false);
-    getExitButton().setEnabled(false);
-    getRestoreButton().setEnabled(false);
-
-    enterPasswordMaV.getView().setSpinnerVisible(true);
-
-    selectWalletMaV.getView().setEnabled(false);
-
-  }
-
-  /**
    * Allow further user interaction after a failed unlock process
    */
   public void enableForFailedUnlock() {

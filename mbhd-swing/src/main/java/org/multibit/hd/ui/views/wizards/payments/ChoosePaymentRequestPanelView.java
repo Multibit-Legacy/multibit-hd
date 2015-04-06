@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.ComboBoxes;
@@ -16,6 +17,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -94,7 +96,7 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
   public void afterShow() {
     // Leave focus on Next button for consistency
     getNextButton().requestFocusInWindow();
-    getNextButton().setEnabled(true);
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
   }
 
   @Override

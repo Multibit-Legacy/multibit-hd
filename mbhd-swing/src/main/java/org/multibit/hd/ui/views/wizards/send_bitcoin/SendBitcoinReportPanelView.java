@@ -9,6 +9,7 @@ import org.multibit.hd.core.events.BitcoinSendingEvent;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -18,6 +19,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,9 +109,10 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   @Override
   protected void initialiseButtons(AbstractWizard<SendBitcoinWizardModel> wizard) {
     if (getWizardModel().isBIP70()) {
-      // BIP 70 send reports have a Next
-      PanelDecorator.addNext(this, wizard);
-      getNextButton().setEnabled(true);
+      // BIP 70 send reports have a Cancel and a Next
+      PanelDecorator.addCancelNext(this, wizard);
+      getCancelButton().setEnabled(true);
+      ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
     } else {
       // Regular send reports have a Finish button
       PanelDecorator.addFinish(this, wizard);
@@ -292,7 +295,8 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
           // Enable the next button on BIP70 payments once the transaction is sent
           if (getWizardModel().isBIP70()) {
-            getNextButton().setEnabled(true);
+            getCancelButton().setEnabled(false);
+            ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
           }
 
           if (bitcoinSentEvent.isSendWasSuccessful()) {

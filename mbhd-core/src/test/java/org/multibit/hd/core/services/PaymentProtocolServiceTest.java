@@ -59,7 +59,7 @@ public class PaymentProtocolServiceTest {
     "r2=https://localhost:8443/ghi789&" +
     "amount=1";
 
-  private static final String PAYMENT_REQUEST_BIP72_SINGLE = "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?" +
+  public static final String PAYMENT_REQUEST_BIP72_SINGLE = "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?" +
     "r=https://localhost:8443/abc123&" +
     "amount=1";
 

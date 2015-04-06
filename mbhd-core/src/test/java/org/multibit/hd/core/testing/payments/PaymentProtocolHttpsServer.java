@@ -1,12 +1,16 @@
 package org.multibit.hd.core.testing.payments;
 
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.*;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.bitcoinj.crypto.TrustStoreLoader;
+import org.bitcoinj.params.MainNetParams;
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.managers.HttpsManager;
+import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.services.PaymentProtocolService;
+import org.multibit.hd.core.services.PaymentProtocolServiceTest;
 import org.multibit.hd.hardware.core.concurrent.SafeExecutors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +23,7 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.security.KeyStore;
 import java.util.concurrent.TimeUnit;
@@ -147,6 +152,43 @@ public class PaymentProtocolHttpsServer {
       serverSocket.close();
     } catch (IOException e) {
       log.warn("Failed to close server socket", e);
+    }
+
+  }
+
+  /**
+   * Start an https Payment Protocol server which can respond to a MultiBit HD instance
+   * Start MBHD with the commandline parameter "project dir"/fixtures/payments/test-net-faucet.bitcoinpaymentrequest
+   * @param args No args are needed
+   */
+  public static void main(String[] args) {
+    InstallationManager.unrestricted = true;
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+
+    PaymentProtocolHttpsServer server = new PaymentProtocolHttpsServer();
+
+    log.debug("Result of server.start() was {}", server.start());
+
+    // Add two fixtures - we consume one here, the other is left for MBHD
+    server.addFixture("/fixtures/payments/test-net-faucet.bitcoinpaymentrequest");
+    server.addFixture("/fixtures/payments/test-net-faucet.bitcoinpaymentrequest");
+
+    // Probe it once to see if it is up
+    PaymentProtocolService paymentProtocolService = new PaymentProtocolService(MainNetParams.get());
+    paymentProtocolService.start();
+
+    final URI uri = URI.create(PaymentProtocolServiceTest.PAYMENT_REQUEST_BIP72_SINGLE);
+
+
+    // Wait until the HTTPS server is up before setting the trust store loader
+    TrustStoreLoader trustStoreLoader = new TrustStoreLoader.DefaultTrustStoreLoader();
+    final PaymentSessionSummary paymentSessionSummary = paymentProtocolService.probeForPaymentSession(uri, false, trustStoreLoader);
+    log.debug(paymentSessionSummary.toString());
+
+    // Runs forever
+    while (true) {
+      Uninterruptibles.sleepUninterruptibly(20, TimeUnit.SECONDS);
+      log.debug("Still running...");
     }
 
   }

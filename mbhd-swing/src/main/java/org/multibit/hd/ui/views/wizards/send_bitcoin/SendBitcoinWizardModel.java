@@ -740,6 +740,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       try {
         final List<Transaction> transactionsSent = Lists.newArrayList(lastBitcoinSentEvent.getTransaction().get());
 
+        log.debug("Sending payment details to requestor at URL {}", paymentSession.getPaymentUrl());
         final ListenableFuture<PaymentProtocol.Ack> future = paymentSession.sendPayment(
                 transactionsSent,
                 lastBitcoinSentEvent.getChangeAddress(),

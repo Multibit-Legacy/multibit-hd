@@ -45,5 +45,8 @@ public class PaymentsWizard extends AbstractWizard<PaymentsWizardModel> {
     wizardViewMap.put(
             PaymentsState.BIP70_PAYMENT_REQUEST_DETAILS.name(),
             new BIP70PaymentRequestDetailPanelView(this, PaymentsState.BIP70_PAYMENT_REQUEST_DETAILS.name()));
+    wizardViewMap.put(
+            PaymentsState.BIP70_PAYMENT_REQUEST_MEMO_DETAILS.name(),
+            new BIP70PaymentRequestMemoPanelView(this, PaymentsState.BIP70_PAYMENT_REQUEST_MEMO_DETAILS.name()));
   }
 }

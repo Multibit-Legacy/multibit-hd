@@ -17,6 +17,7 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -28,6 +29,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
@@ -135,12 +137,10 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
   @Override
   public void afterShow() {
-
     getNextButton().requestFocusInWindow();
-    getNextButton().setEnabled(true);
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
 
     update();
-
   }
 
   @Override

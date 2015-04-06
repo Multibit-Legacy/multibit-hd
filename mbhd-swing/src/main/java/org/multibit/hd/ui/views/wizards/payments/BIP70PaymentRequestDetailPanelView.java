@@ -15,6 +15,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -26,6 +27,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinState;
@@ -152,7 +154,8 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
   @Override
   protected void initialiseButtons(AbstractWizard<PaymentsWizardModel> wizard) {
     if (getWizardModel().isShowPrevOnPaymentRequestDetailScreen()) {
-      PanelDecorator.addPreviousFinish(this, wizard);
+      // In the Payments wizard - show a Cancel, Previous and Next
+      PanelDecorator.addExitCancelPreviousNext(this, wizard);
     } else {
       PanelDecorator.addFinish(this, wizard);
     }
@@ -162,6 +165,12 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
   public boolean beforeShow() {
     PaymentRequestData paymentRequestData = getWizardModel().getPaymentRequestData();
     Preconditions.checkNotNull(paymentRequestData);
+
+    if (getWizardModel().isShowPrevOnPaymentRequestDetailScreen()) {
+      ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+    } else {
+      ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+    }
 
     // Show the 'pay this payment' button only if it is not already paid
     payThisPaymentRequestButton.setVisible(paymentRequestData.getStatus().getStatusKey() != CoreMessageKey.PAYMENT_PAID);
@@ -240,9 +249,12 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
         throw new IllegalStateException("Unknown payment session summary status: " + paymentRequestData.getTrustStatus());
     }
 
-    // Set finish button to be the default
-    getFinishButton().requestFocusInWindow();
-    getFinishButton().setEnabled(true);
+    // Set next/finish button to be the default
+    if (getWizardModel().isShowPrevOnPaymentRequestDetailScreen()) {
+      getNextButton().requestFocusInWindow();
+    } else {
+      getFinishButton().requestFocusInWindow();
+    }
   }
 
   @Override
