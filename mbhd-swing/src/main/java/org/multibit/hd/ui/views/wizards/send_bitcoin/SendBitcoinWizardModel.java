@@ -26,7 +26,10 @@ import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.PaymentSentToRequestorEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.*;
+import org.multibit.hd.core.services.ApplicationEventService;
+import org.multibit.hd.core.services.BitcoinNetworkService;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -678,98 +681,95 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   @Override
   public void showOperationSucceeded(HardwareWalletEvent event) {
 
-    switch (state) {
-      case SEND_ENTER_PIN_FROM_CONFIRM_TREZOR:
-        // Indicate a successful PIN
-        getEnterPinPanelView().setPinStatus(true, true);
-        break;
-
-      case SEND_CONFIRM_TREZOR:
-
-        // Enable next button
-        ViewEvents.fireWizardButtonEnabledEvent(
-          getPanelName(),
-          WizardButton.NEXT,
-          true
-        );
-
-        // TODO Refactor this off the EDT
-        SwingUtilities.invokeLater(
-          new Runnable() {
-            @Override
-            public void run() {
-
-              // The tx is now complete so commit and broadcast it
-              // Trezor will provide a signed serialized transaction
-              byte[] deviceTxPayload = CoreServices.getOrCreateHardwareWalletService().get().getContext().getSerializedTx().toByteArray();
-
-              log.info("DeviceTx payload:\n{}", Utils.HEX.encode(deviceTxPayload));
-
-              // Load deviceTx
-              Transaction deviceTx = new Transaction(MainNetParams.get(), deviceTxPayload);
-
-              log.info("deviceTx:\n{}", deviceTx.toString());
-
-              // Check the signatures are canonical
-              for (TransactionInput txInput : deviceTx.getInputs()) {
-                byte[] signature = txInput.getScriptSig().getChunks().get(0).data;
-                if (signature != null) {
-                  log.debug(
-                    "Is signature canonical test result '{}' for txInput '{}', signature '{}'",
-                    TransactionSignature.isEncodingCanonical(signature),
-                    txInput.toString(),
-                    Utils.HEX.encode(signature));
-                } else {
-                  log.warn("No signature data");
-                }
-              }
-
-              log.debug("Committing and broadcasting the last tx");
-
-              BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
-
-              if (bitcoinNetworkService.getLastSendRequestSummaryOptional().isPresent()
-                && bitcoinNetworkService.getLastWalletOptional().isPresent()) {
-
-                SendRequestSummary sendRequestSummary = bitcoinNetworkService.getLastSendRequestSummaryOptional().get();
-
-                // Check the unsigned and signed tx are essentially the same as a check against malware attacks on the Trezor
-                if (TransactionUtils.checkEssentiallyEqual(sendRequestSummary.getSendRequest().get().tx, deviceTx)) {
-                  // Substitute the signed tx from the trezor
-                  log.debug(
-                    "Substituting the Trezor signed tx '{}' for the unsigned version {}",
-                    deviceTx.toString(),
-                    sendRequestSummary.getSendRequest().get().tx.toString()
-                  );
-                  sendRequestSummary.getSendRequest().get().tx = deviceTx;
-                  log.debug("The transaction fee was {}", sendRequestSummary.getSendRequest().get().fee);
-
-                  sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_TRANSACTION_CREATED_OPERATION);
-                  sendBitcoinConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
-                  sendBitcoinConfirmTrezorPanelView.setDisplayVisible(false);
-
-                  // Get the last wallet
-                  Wallet wallet = bitcoinNetworkService.getLastWalletOptional().get();
-
-                  // Commit and broadcast
-                  bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet, paymentRequestData);
-                } else {
-                  // The signed transaction is essentially different from what was sent to it - abort send
-                  sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
-                  sendBitcoinConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
-                  sendBitcoinConfirmTrezorPanelView.setDisplayVisible(false);
-                }
-              } else {
-                log.debug("Cannot commit and broadcast the last send as it is not present in bitcoinNetworkService");
-              }
-              // Clear the previous remembered tx
-              bitcoinNetworkService.setLastSendRequestSummaryOptional(Optional.<SendRequestSummary>absent());
-              bitcoinNetworkService.setLastWalletOptional(Optional.<Wallet>absent());
-            }
-          });
-
-        break;
+    if (state == SEND_ENTER_PIN_FROM_CONFIRM_TREZOR) {
+      // Indicate a successful PIN
+      getEnterPinPanelView().setPinStatus(true, true);
+      return;
     }
+
+    // Must be showing signing Trezor display
+
+    // Enable next button
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.NEXT,
+      true
+    );
+
+    // TODO Refactor this off the EDT
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+
+          // The tx is now complete so commit and broadcast it
+          // Trezor will provide a signed serialized transaction
+          byte[] deviceTxPayload = CoreServices.getOrCreateHardwareWalletService().get().getContext().getSerializedTx().toByteArray();
+
+          log.info("DeviceTx payload:\n{}", Utils.HEX.encode(deviceTxPayload));
+
+          // Load deviceTx
+          Transaction deviceTx = new Transaction(MainNetParams.get(), deviceTxPayload);
+
+          log.info("deviceTx:\n{}", deviceTx.toString());
+
+          // Check the signatures are canonical
+          for (TransactionInput txInput : deviceTx.getInputs()) {
+            byte[] signature = txInput.getScriptSig().getChunks().get(0).data;
+            if (signature != null) {
+              log.debug(
+                "Is signature canonical test result '{}' for txInput '{}', signature '{}'",
+                TransactionSignature.isEncodingCanonical(signature),
+                txInput.toString(),
+                Utils.HEX.encode(signature));
+            } else {
+              log.warn("No signature data");
+            }
+          }
+
+          log.debug("Committing and broadcasting the last tx");
+
+          BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
+
+          if (bitcoinNetworkService.getLastSendRequestSummaryOptional().isPresent()
+            && bitcoinNetworkService.getLastWalletOptional().isPresent()) {
+
+            SendRequestSummary sendRequestSummary = bitcoinNetworkService.getLastSendRequestSummaryOptional().get();
+
+            // Check the unsigned and signed tx are essentially the same as a check against malware attacks on the Trezor
+            if (TransactionUtils.checkEssentiallyEqual(sendRequestSummary.getSendRequest().get().tx, deviceTx)) {
+              // Substitute the signed tx from the trezor
+              log.debug(
+                "Substituting the Trezor signed tx '{}' for the unsigned version {}",
+                deviceTx.toString(),
+                sendRequestSummary.getSendRequest().get().tx.toString()
+              );
+              sendRequestSummary.getSendRequest().get().tx = deviceTx;
+              log.debug("The transaction fee was {}", sendRequestSummary.getSendRequest().get().fee);
+
+              sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_TRANSACTION_CREATED_OPERATION);
+              sendBitcoinConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
+              sendBitcoinConfirmTrezorPanelView.setDisplayVisible(false);
+
+              // Get the last wallet
+              Wallet wallet = bitcoinNetworkService.getLastWalletOptional().get();
+
+              // Commit and broadcast
+              bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet, paymentRequestData);
+            } else {
+              // The signed transaction is essentially different from what was sent to it - abort send
+              sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
+              sendBitcoinConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
+              sendBitcoinConfirmTrezorPanelView.setDisplayVisible(false);
+            }
+          } else {
+            log.debug("Cannot commit and broadcast the last send as it is not present in bitcoinNetworkService");
+          }
+          // Clear the previous remembered tx
+          bitcoinNetworkService.setLastSendRequestSummaryOptional(Optional.<SendRequestSummary>absent());
+          bitcoinNetworkService.setLastWalletOptional(Optional.<Wallet>absent());
+        }
+      });
 
   }
 
