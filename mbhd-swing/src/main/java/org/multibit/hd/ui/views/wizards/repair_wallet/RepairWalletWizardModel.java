@@ -82,6 +82,7 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
    * <p>Reduced visibility for panel view</p>
    */
   void installCACertificates() {
+    log.debug("Starting refresh of SSL certs...");
 
     ListenableFuture cacertsFuture = cacertsExecutorService.submit(
       new Runnable() {
@@ -100,6 +101,7 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       cacertsFuture, new FutureCallback() {
         @Override
         public void onSuccess(@Nullable Object result) {
+          log.debug("SSL certs refreshed successfully");
           cacertsRepaired = Optional.of(Boolean.TRUE);
           SwingUtilities.invokeLater(
             new Runnable() {
@@ -112,6 +114,7 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
 
         @Override
         public void onFailure(Throwable t) {
+          log.debug("SSL certs were NOT refreshed successfully");
           cacertsRepaired = Optional.of(Boolean.FALSE);
           SwingUtilities.invokeLater(
             new Runnable() {

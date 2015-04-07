@@ -94,6 +94,7 @@ public enum HttpsManager {
     try {
       final Optional<File> appCacertsFile = getOrCreateTrustStore(applicationDirectory, localTrustStoreName, force);
       if (!appCacertsFile.isPresent()) {
+        log.debug("Using the system default trust store since we can't make one");
         // Use the system default trust store since we can't make one
         return;
       }
@@ -111,6 +112,7 @@ public enum HttpsManager {
         // Must have finished to be here so define the cacerts file to be the one used for all HTTPS operations
         System.setProperty("javax.net.ssl.trustStore", appCacertsFile.get().getAbsolutePath());
 
+        log.debug("No forced refresh so reusing the trust store: {}", appCacertsFile.get().getAbsolutePath());
         return;
       }
 
@@ -173,8 +175,10 @@ public enum HttpsManager {
 
       // Must have finished to be here so define the cacerts file to be the one used for all HTTPS operations
       System.setProperty("javax.net.ssl.trustStore", appCacertsFile.get().getAbsolutePath());
+      log.debug("Successfully refreshed the trust store: {}", appCacertsFile.get().getAbsolutePath());
 
     } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException | KeyManagementException e) {
+      log.error("CA Certificate update has failed: {}.", e.getClass().getCanonicalName() + " " + e.getMessage());
 
       throw new IllegalStateException("CA Certificate update has failed.", e);
 
