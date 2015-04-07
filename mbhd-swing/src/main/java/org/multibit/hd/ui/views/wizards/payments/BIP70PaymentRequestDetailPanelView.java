@@ -167,8 +167,10 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
     Preconditions.checkNotNull(paymentRequestData);
 
     if (getWizardModel().isShowPrevOnPaymentRequestDetailScreen()) {
+      getNextButton().requestFocusInWindow();
       ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
     } else {
+      getFinishButton().requestFocusInWindow();
       ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
     }
 

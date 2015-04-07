@@ -109,7 +109,8 @@ public class BIP70PaymentRequestMemoPanelView extends AbstractWizardPanelView<Pa
 
   @Override
   public void afterShow() {
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+    getFinishButton().requestFocusInWindow();
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
   }
 
   @Override
