@@ -213,11 +213,18 @@ public enum HttpsManager {
       // Trust store exists
       if (force) {
         log.info("Forced replacement of existing CA certs with template...");
-        try (FileOutputStream fos = new FileOutputStream(appCacertsFile)) {
-          // Remove the existing trust store
+        // Remove the existing trust store
+        // DO NOT combine the two tries below - the byte copy then does not work
+        try {
           SecureFiles.secureDelete(appCacertsFile);
+        } catch (IOException ioe) {
+          log.error("Unexpected exception", ioe);
+          return Optional.absent();
+        }
+        
+        try (FileOutputStream fos = new FileOutputStream(appCacertsFile)) {
           Resources.copy(
-            HttpsManager.class.getResource("/mbhd-cacerts"),
+                  HttpsManager.class.getResource("/mbhd-cacerts"),
             fos
           );
           log.debug("Template CA certs in place. File size is {} bytes", appCacertsFile.length());
