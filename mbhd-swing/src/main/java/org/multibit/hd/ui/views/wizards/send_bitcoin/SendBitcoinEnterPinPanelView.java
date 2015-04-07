@@ -142,7 +142,7 @@ public class SendBitcoinEnterPinPanelView extends AbstractWizardPanelView<SendBi
 
     // Ensure the view disables components
     getFinishButton().setEnabled(false);
-    getExitButton().setEnabled(false);
+    getCancelButton().setEnabled(false);
 
     // Use the wizard model to handle the traffic to the Trezor
     getWizardModel().requestPinCheck(enterPinMaV.getModel().getValue());
@@ -184,7 +184,7 @@ public class SendBitcoinEnterPinPanelView extends AbstractWizardPanelView<SendBi
           getFinishButton().setEnabled(status);
 
           // Ensure the view enables the escape components
-          getExitButton().setEnabled(true);
+          getCancelButton().setEnabled(true);
         }
       });
   }

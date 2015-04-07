@@ -592,13 +592,13 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   public void verifySendTrezorScreen() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be restored then unlocked
-    HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedUnsupportedConfigurationPassphraseFixture();
+    HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedUnlockFixture();
 
     // Start with the empty hardware wallet fixture
     arrangeStandard(Optional.of(hardwareWalletFixture));
 
     // Verify up to unlock
-    UnlockTrezorHardwareWalletUnsupportedConfigurationPassphraseRequirements.verifyUsing(window, hardwareWalletFixture);
+    UnlockTrezorHardwareWalletWarmStartRequirements.verifyUsing(window, hardwareWalletFixture);
 
     // Verify send workflow
     TrezorSendBitcoinTrezorRequirements.verifyUsing(window, hardwareWalletFixture);

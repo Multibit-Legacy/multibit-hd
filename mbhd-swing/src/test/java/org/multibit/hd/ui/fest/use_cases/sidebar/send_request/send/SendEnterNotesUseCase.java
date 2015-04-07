@@ -32,15 +32,15 @@ public class SendEnterNotesUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on Send allowing for network initialisation
+    // Click on Next to show notes screen
     window
-      .button(MessageKey.SHOW_SEND_WIZARD.getKey())
+      .button(MessageKey.NEXT.getKey())
       // Allow time for the Bitcoin network to initialise
       .requireEnabled(timeout(5, TimeUnit.SECONDS))
       .click();
 
     // Verify the wizard appears
-    assertLabelText(MessageKey.SEND_BITCOIN_TITLE);
+    assertLabelText(MessageKey.CONFIRM_SEND_TITLE);
 
     // Verify buttons
     window
@@ -54,26 +54,14 @@ public class SendEnterNotesUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     // Set the recipient editor text box to the MultiBit address
-    log.debug("Setting recipient");
+    log.debug("Setting private notes");
     window
-      .textBox(MessageKey.RECIPIENT.getKey())
-      .setText("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
-
-    // Set a nominal amount for sending (the wallet is empty)
-    log.debug("Setting amount");
-    window
-      .textBox(MessageKey.BITCOIN_AMOUNT.getKey())
-      .setText("")
-      .enterText("100.0");
-
-    // Change focus to trigger validation
-    window
-      .button(MessageKey.PASTE.getKey())
-      .focus();
+      .textBox(MessageKey.PRIVATE_NOTES.getKey())
+      .setText("Payment for something");
 
     // Verify the Next button is enabled
     window
-      .button(MessageKey.NEXT.getKey())
+      .button(MessageKey.SEND.getKey())
       .requireVisible()
       .requireEnabled(timeout(1, TimeUnit.SECONDS));
 

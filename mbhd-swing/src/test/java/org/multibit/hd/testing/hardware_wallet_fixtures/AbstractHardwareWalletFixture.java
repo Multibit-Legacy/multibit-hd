@@ -6,6 +6,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.google.protobuf.Message;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.Utils;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.wallet.KeyChain;
 import org.mockito.invocation.InvocationOnMock;
@@ -14,9 +16,7 @@ import org.multibit.hd.hardware.core.HardwareWalletClient;
 import org.multibit.hd.hardware.core.events.MessageEvent;
 import org.multibit.hd.hardware.core.events.MessageEventType;
 import org.multibit.hd.hardware.core.events.MessageEvents;
-import org.multibit.hd.hardware.core.messages.Features;
-import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
-import org.multibit.hd.hardware.core.messages.PublicKey;
+import org.multibit.hd.hardware.core.messages.*;
 import org.multibit.hd.testing.MessageEventFixtures;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.when;
 
@@ -412,4 +413,89 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
         }
       });
   }
+
+  /**
+   * <p>Configure for series of SIGN_TX messages for PIN, TX_INPUT, TX_OUTPUT, TX_META</p>
+   * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
+   * <p>See <a href="https://github.com/bitcoin-solutions/multibit-hardware/wiki/Trezor-SignTx-Messages">MultiBit Hardware wiki</a> for more information</p>
+   *
+   * @param client The mock client
+   */
+  protected void useSignTxPIN(HardwareWalletClient client) {
+    when(client.signTx(any(Transaction.class))).thenAnswer(
+      new Answer<Optional<Message>>() {
+
+        private int count = 0;
+
+        public Optional<Message> answer(InvocationOnMock invocation) throws Throwable {
+
+          if (count == 0) {
+
+            count++;
+
+            final MessageEvent event = new MessageEvent(
+              MessageEventType.PIN_MATRIX_REQUEST,
+              Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCurrentPinMatrix()),
+              Optional.<Message>absent()
+            );
+
+            fireMessageEvent("Deterministic hierarchy is protected (1.3.3+ firmware). Provide PIN.", event);
+
+            return Optional.absent();
+
+          }
+
+          // Treat as a finished signed transaction
+
+          byte[] signedTx = Utils.HEX.decode(
+            "01000000010e7ef28d101c87a83a32aa78b9887eda3eb741dfc9840a" +
+              "2f50c361b4deba4287000000006a473044022010d8e5b0b3800bca7a" +
+              "047bd08dce18d66b8f2930f8c99d666203ef5be7608b0f02201ed659" +
+              "4ce1bc03b6416b8b4411909082f20b70ac6e71a2cb60b097d5286cce" +
+              "9e012102bc8398d00c6ca116c8ce18ee0a4be7c004d679e880a865b7" +
+              "5db866a4e23481dfffffffff02a0860100000000001976a9141ee9f7" +
+              "6e2d8d536ec035601c2b8ef4e28cf50b9888aca08601000000000019" +
+              "76a9141ee9f76e2d8d536ec035601c2b8ef4e28cf50b9888ac000000" +
+              "00"
+          );
+
+          // Build the serialized type
+          TxRequestSerializedType txRequestSerializedType = new TxRequestSerializedType(
+            true,
+            signedTx,
+            true,
+            0,
+            false,
+            new byte[] {}
+          );
+
+          // Build the request details type
+          TxRequestDetailsType txRequestDetailsType = new TxRequestDetailsType(
+            false,
+            0,
+            false,
+            new byte[] {}
+          );
+
+          // Skip to the end
+          HardwareWalletMessage txRequest = new TxRequest(
+            TxRequestType.TX_FINISHED,
+            txRequestDetailsType,
+            txRequestSerializedType
+          );
+
+          final MessageEvent event = new MessageEvent(
+            MessageEventType.TX_REQUEST,
+            Optional.<HardwareWalletMessage>of(txRequest),
+            Optional.<Message>absent()
+          );
+
+          fireMessageEvent("Provide Public Key", event);
+
+          return Optional.absent();
+        }
+      });
+
+  }
+
 }

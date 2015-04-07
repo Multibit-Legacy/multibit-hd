@@ -130,25 +130,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     isBIP70 = paymentRequestData != null && paymentRequestData.isPresent();
   }
 
-  public void prepareWhenBIP70() {
-    // if constructed using a paymentRequestData (BIP70) then prepare the tx immediately
-    if (isBIP70) {
-      if (prepareTransaction()) {
-        log.debug("BIP70 prepareTransaction was successful, moving to SEND_CONFIRM_AMOUNT");
-        this.state = SEND_CONFIRM_AMOUNT;
-      } else {
-        // Transaction did not prepare correctly
-        log.debug("BIP70 prepareTransaction was NOT successful, moving to SEND_REPORT");
-        this.state = SEND_REPORT;
-
-        // TODO disable navigation to SendBIP70InfoViewPanel as transaction was not sent
-      }
-    } else {
-      log.debug("No payment request available, moving to SEND_REPORT");
-      this.state = SEND_REPORT;
-    }
-  }
-
   @Override
   public void showNext() {
 
@@ -571,7 +552,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
         @Override
         public void onSuccess(Boolean result) {
 
-          // Do nothing - message was successfully relayed to the device
+          // Do nothing message was sent to device correctly
 
         }
 
@@ -604,6 +585,9 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   public void showButtonPress(HardwareWalletEvent event) {
 
     log.debug("Received hardware event: '{}'.{}", event.getEventType().name(), event.getMessage());
+
+    // Successful PIN entry or not required so transition to Trezor signing display view
+    state = SEND_CONFIRM_TREZOR;
 
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
 
@@ -792,13 +776,18 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
     switch (state) {
-      case SEND_CONFIRM_TREZOR:
+      case SEND_ENTER_PIN_FROM_CONFIRM_TREZOR:
+        state = SendBitcoinState.SEND_REPORT;
+        setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+        setReportMessageStatus(false);
+        requestCancel();
+        break;
+      default:
         state = SendBitcoinState.SEND_REPORT;
         setReportMessageKey(MessageKey.TREZOR_SIGN_FAILURE);
         setReportMessageStatus(false);
+        requestCancel();
         break;
-      default:
-        throw new IllegalStateException("Should not reach here from " + state.name());
     }
 
     // Ignore device reset messages
@@ -885,6 +874,25 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
   public boolean isBIP70() {
     return isBIP70;
+  }
+
+  public void prepareWhenBIP70() {
+    // if constructed using a paymentRequestData (BIP70) then prepare the tx immediately
+    if (isBIP70) {
+      if (prepareTransaction()) {
+        log.debug("BIP70 prepareTransaction was successful, moving to SEND_CONFIRM_AMOUNT");
+        this.state = SEND_CONFIRM_AMOUNT;
+      } else {
+        // Transaction did not prepare correctly
+        log.debug("BIP70 prepareTransaction was NOT successful, moving to SEND_REPORT");
+        this.state = SEND_REPORT;
+
+        // TODO disable navigation to SendBIP70InfoViewPanel as transaction was not sent
+      }
+    } else {
+      log.debug("No payment request available, moving to SEND_REPORT");
+      this.state = SEND_REPORT;
+    }
   }
 
   @Subscribe

@@ -718,7 +718,7 @@ public class BitcoinNetworkService extends AbstractService {
         return false;
       }
 
-      // Attempt to completeWithoutSigning it
+      // Attempt to completeWithoutSigning it (will fail if insufficient funds)
       if (!completeWithoutSigning(sendRequestSummary, wallet)) {
         return false;
       }
