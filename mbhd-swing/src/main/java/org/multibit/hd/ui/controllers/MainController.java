@@ -994,7 +994,7 @@ public class MainController extends AbstractController implements
         if (hardwareWalletService.isPresent()) {
           Optional<Features> features = this.hardwareWalletService.get().getContext().getFeatures();
           String currentWalletName = walletSummary.get().getName();
-          if (features.isPresent() && !features.get().getDeviceId().equals(currentWalletName)) {
+          if (features.isPresent() && !features.get().getLabel().equals(currentWalletName)) {
             // The newly plugged in Trezor is a different one
             showAlert = true;
           }
