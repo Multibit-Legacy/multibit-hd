@@ -137,9 +137,14 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
   @Override
   public void afterShow() {
-    getNextButton().requestFocusInWindow();
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        getNextButton().requestFocusInWindow();
+      }
+    });
 
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
     update();
   }
 
@@ -149,7 +154,6 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
   }
 
   public void update() {
-
     PaymentData paymentData = getWizardModel().getPaymentData();
 
     if (paymentData != null) {
@@ -162,7 +166,6 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
         TransactionData transactionData = (TransactionData) paymentData;
 
         if (transactionData.getAmountCoin().compareTo(Coin.ZERO) >= 0) {
-
           // Received bitcoin
           recipientValue.setText(Languages.safeText(MessageKey.THIS_BITCOIN_WAS_SENT_TO_YOU));
           recipientValue.setRows(1);
