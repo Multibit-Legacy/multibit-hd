@@ -361,9 +361,13 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
       PaymentSession paymentSession;
       try {
-        // TODO verify PKI using PaymentProtocolService
-        //PaymentProtocolService paymentProtocolService = CoreServices.getPaymentProtocolService();
-        paymentSession = new PaymentSession(paymentRequestData.get().getPaymentRequest().get(), false);
+        // TODO verify PKI
+        if (paymentRequestData.get().getPaymentRequest().isPresent()) {
+          paymentSession = new PaymentSession(paymentRequestData.get().getPaymentRequest().get(), false);
+        } else {
+          log.error("No PaymentRequest in PaymentRequestData - cannot create a paymentSession");
+          return false;
+        }
       } catch (PaymentProtocolException e) {
         log.error("Could not create PaymentSession from payment request {}, error was {}", paymentRequestData.get().getPaymentRequest().get(), e);
         return false;
