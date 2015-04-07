@@ -179,9 +179,7 @@ public class PaymentProtocolService extends AbstractService {
             loader.getKeyStore()
           );
 
-        } catch (PaymentProtocolException e) {
-          return PaymentSessionSummary.newPaymentSessionAlmostOK(paymentSession, e);
-        } catch (KeyStoreException e) {
+        } catch (PaymentProtocolException | KeyStoreException e) {
           return PaymentSessionSummary.newPaymentSessionAlmostOK(paymentSession, e);
         }
 

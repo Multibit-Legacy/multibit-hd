@@ -317,6 +317,11 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
     Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
     final Failure failure = (Failure) event.getMessage().orNull();
+    if (failure == null) {
+      handleRestart(hardwareWalletService);
+      return;
+    }
+
     log.debug("A failure event has occurred {}", failure);
 
     switch (state) {
@@ -331,24 +336,27 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         // Indicate a wrong PIN
         getEnterPinPanelView().setPinStatus(false, true);
 
-        state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
-        // Reset the trezor and start again
-        if (hardwareWalletService.isPresent()) {
-          hardwareWalletService.get().requestCancel();
-        }
+        // Try again
+        handleRestart(hardwareWalletService);
 
         break;
       default:
+
         if (FailureType.ACTION_CANCELLED.equals(failure.getType())) {
           // User is backing out of using their device (switch to password)
           state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
         } else {
           // Something has gone wrong with the device so start again
-          state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
-          if (hardwareWalletService.isPresent()) {
-            hardwareWalletService.get().requestCancel();
-          }
+          handleRestart(hardwareWalletService);
         }
+    }
+  }
+
+  private void handleRestart(Optional<HardwareWalletService> hardwareWalletService) {
+    state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
+    // Reset the trezor and start again
+    if (hardwareWalletService.isPresent()) {
+      hardwareWalletService.get().requestCancel();
     }
   }
 

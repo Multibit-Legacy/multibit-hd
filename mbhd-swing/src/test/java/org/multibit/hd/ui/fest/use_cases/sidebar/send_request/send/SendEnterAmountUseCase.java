@@ -14,18 +14,18 @@ import static org.fest.swing.timing.Timeout.timeout;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "send/request" amount screen with no funds</li>
+ * <li>Verify the "send/request" amount screen by entering a recipient and an amount</li>
  * </ul>
  * <p>Requires the "send/request" screen to be showing</p>
  *
  * @since 0.0.1
  *
  */
-public class SendNoFundsAmountScreenUseCase extends AbstractFestUseCase {
+public class SendEnterAmountUseCase extends AbstractFestUseCase {
 
-  private static final Logger log = LoggerFactory.getLogger(SendNoFundsAmountScreenUseCase.class);
+  private static final Logger log = LoggerFactory.getLogger(SendEnterAmountUseCase.class);
 
-  public SendNoFundsAmountScreenUseCase(FrameFixture window) {
+  public SendEnterAmountUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -58,17 +58,6 @@ public class SendNoFundsAmountScreenUseCase extends AbstractFestUseCase {
     window
       .textBox(MessageKey.RECIPIENT.getKey())
       .setText("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
-
-    // Change focus to trigger validation
-    window
-      .button(MessageKey.PASTE.getKey())
-      .focus();
-
-    // Verify the Next button is disabled (no amount)
-    window
-      .button(MessageKey.NEXT.getKey())
-      .requireVisible()
-      .requireDisabled();
 
     // Set a nominal amount for sending (the wallet is empty)
     log.debug("Setting amount");
