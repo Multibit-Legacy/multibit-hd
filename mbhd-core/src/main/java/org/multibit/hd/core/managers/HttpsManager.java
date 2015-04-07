@@ -221,7 +221,7 @@ public enum HttpsManager {
           log.error("Unexpected exception", ioe);
           return Optional.absent();
         }
-        
+
         try (FileOutputStream fos = new FileOutputStream(appCacertsFile)) {
           Resources.copy(
                   HttpsManager.class.getResource("/mbhd-cacerts"),
