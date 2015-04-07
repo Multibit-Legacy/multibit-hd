@@ -220,7 +220,7 @@ public enum HttpsManager {
             HttpsManager.class.getResource("/mbhd-cacerts"),
             fos
           );
-          log.debug("Template CA certs in place.");
+          log.debug("Template CA certs in place. File size is {} bytes", appCacertsFile.length());
         } catch (RuntimeException | IOException e) {
           log.error("Unexpected exception", e);
           return Optional.absent();
