@@ -3,7 +3,6 @@ package org.multibit.hd.ui.views.wizards.sign_message;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.SignMessageResult;
-import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.utils.BitcoinMessages;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -12,8 +11,6 @@ import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.utils.WhitespaceTrimmer;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordModel;
-import org.multibit.hd.ui.views.components.enter_password.EnterPasswordView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.text_fields.FormattedBitcoinAddressField;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -23,7 +20,6 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 
 /**
@@ -35,7 +31,7 @@ import java.awt.event.ActionEvent;
  * @since 0.0.1
  *
  */
-public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWizardModel, String> {
+public class SignMessageTrezorPanelView extends AbstractWizardPanelView<SignMessageWizardModel, String> {
 
   // Labels
   JLabel signingAddressLabel;
@@ -49,13 +45,12 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
   JLabel reportLabel;
 
   // Panel specific components
-  private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to allow event filtering
    */
-  public SignMessagePanelView(AbstractWizard<SignMessageWizardModel> wizard, String panelName) {
+  public SignMessageTrezorPanelView(AbstractWizard<SignMessageWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, MessageKey.SIGN_MESSAGE_TITLE, AwesomeIcon.PENCIL);
 
@@ -64,8 +59,9 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
   @Override
   public void newPanelModel() {
 
-    enterPasswordMaV = Components.newEnterPasswordMaV(getPanelName());
+    getWizardModel().setSignMessageTrezorPanelView(this);
     setPanelModel("");
+
   }
 
   @Override
@@ -114,8 +110,6 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
 
     contentPanel.add(messageLabel);
     contentPanel.add(messageScrollPane, "grow,span 3,push,wrap");
-
-    contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "growx,span 3,wrap");
 
     contentPanel.add(Buttons.newSignMessageButton(getSignMessageAction()), "cell 1 3,align right");
     contentPanel.add(Buttons.newCopyAllButton(getCopyClipboardAction()), "cell 2 3");
@@ -196,15 +190,8 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
       public void actionPerformed(ActionEvent e) {
         signingAddress.setText("");
         messageTextArea.setText("");
-        enterPasswordMaV.getModel().setPassword("".toCharArray());
-        enterPasswordMaV.getModel().setValue("");
-        enterPasswordMaV.getView().updateViewFromModel();
 
         // Clear the credentials on the UI as update view from model does not work
-        Component passwordField = enterPasswordMaV.getView().currentComponentPanel().getComponent(1);
-        if (passwordField instanceof JPasswordField) {
-          ((JPasswordField) passwordField).setText("");
-        }
         signature.setText("");
         reportLabel.setText("");
         reportLabel.setIcon(null);
@@ -221,16 +208,9 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
   private void signMessage() {
     String addressText = WhitespaceTrimmer.trim(signingAddress.getText());
     String messageText = messageTextArea.getText();
-    String walletPassword = enterPasswordMaV.getModel().getValue();
 
-    SignMessageResult signMessageResult = WalletManager.INSTANCE.signMessage(addressText, messageText, walletPassword);
+    getWizardModel().requestSignMessage(addressText, messageText);
 
-    reportLabel.setText(Languages.safeText(signMessageResult.getSignatureKey(), signMessageResult.getSignatureData()));
-    LabelDecorator.applyStatusLabel(reportLabel, Optional.of(signMessageResult.isSigningWasSuccessful()));
-
-    if (signMessageResult.isSigningWasSuccessful() && signMessageResult.getSignature().isPresent()) {
-      signature.setText(signMessageResult.getSignature().get());
-    }
   }
 
   /**
@@ -255,6 +235,26 @@ public class SignMessagePanelView extends AbstractWizardPanelView<SignMessageWiz
       }
 
     };
+  }
+
+  /**
+   * @param signMessageResult The sign message result
+   */
+  public void showSignMessageResult(final SignMessageResult signMessageResult) {
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          reportLabel.setText(Languages.safeText(signMessageResult.getSignatureKey(), signMessageResult.getSignatureData()));
+          LabelDecorator.applyStatusLabel(reportLabel, Optional.of(signMessageResult.isSigningWasSuccessful()));
+
+          if (signMessageResult.isSigningWasSuccessful() && signMessageResult.getSignature().isPresent()) {
+            signature.setText(signMessageResult.getSignature().get());
+          }
+        }
+      });
+
   }
 
 }

@@ -11,7 +11,9 @@ package org.multibit.hd.ui.views.wizards.sign_message;
  */
 public enum SignMessageState {
 
-  EDIT_MESSAGE,
+  SIGN_MESSAGE_PASSWORD,
+  SIGN_MESSAGE_ENTER_PIN,
+  SIGN_MESSAGE_TREZOR,
 
   // End of enum
   ;

@@ -234,9 +234,19 @@ public class Wizards {
    */
   public static SignMessageWizard newSignMessageWizard() {
 
-    log.debug("New 'Sign message wizard'");
-
-    return new SignMessageWizard(new SignMessageWizardModel(SignMessageState.EDIT_MESSAGE), false);
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType() == WalletType.TREZOR_HARD_WALLET) {
+      log.debug("New 'Sign message wizard' with Trezor");
+      return new SignMessageWizard(
+        new SignMessageWizardModel(SignMessageState.SIGN_MESSAGE_TREZOR),
+        false
+      );
+    } else {
+      log.debug("New 'Sign message wizard' with password");
+      return new SignMessageWizard(
+        new SignMessageWizardModel(SignMessageState.SIGN_MESSAGE_PASSWORD),
+        false
+      );
+    }
 
   }
 
