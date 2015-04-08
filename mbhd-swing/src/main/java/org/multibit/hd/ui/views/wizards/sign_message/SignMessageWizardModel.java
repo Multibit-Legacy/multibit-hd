@@ -5,15 +5,16 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import org.bitcoinj.core.Address;
-import org.bitcoinj.core.ECKey;
-import org.bitcoinj.core.Utils;
+import org.bitcoinj.core.*;
+import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.wallet.KeyChain;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.SignMessageResult;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ApplicationEventService;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
@@ -88,10 +89,10 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
   }
 
   /**
-   * @param address The Bitcoin address to use for signing
+   * @param addressText The Bitcoin address to use for signing
    * @param finalMessage The message to be signed
    */
-  public void requestSignMessage(final String address, final String finalMessage) {
+  public void requestSignMessage(final String addressText, final String finalMessage) {
 
     setMessage(finalMessage);
 
@@ -101,10 +102,26 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
         @Override
         public Boolean call() {
 
-          // Convert the address into a signing address
-          int index = 0; // TODO Decode the given address into an index using Wallet
+          final Address signingAddress;
+          try {
+            signingAddress = new Address(BitcoinNetwork.current().get(), addressText);
+          } catch (AddressFormatException e) {
+            return false;
+          }
 
-          log.debug("Performing a sign message");
+          // Convert the address into a signing address
+          Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+          ECKey signingKey = wallet.findKeyFromPubHash(signingAddress.getHash160());
+          if (signingKey == null) {
+            log.warn("Could not find ECKey for address '{}'", addressText);
+            return false;
+          }
+          DeterministicKey keyFromPubKey = wallet.getActiveKeychain().findKeyFromPubKey(signingKey.getPubKey());
+          if (keyFromPubKey == null) {
+            log.warn("Could not find DeterministicKey for address '{}'", addressText);
+            return false;
+          }
+          int index = keyFromPubKey.getChildNumber().getI();
 
           // Talk to the Trezor and get it to sign the message
           // This call to the Trezor will (sometime later) fire a

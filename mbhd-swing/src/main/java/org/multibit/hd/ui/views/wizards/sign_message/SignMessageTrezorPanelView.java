@@ -85,10 +85,9 @@ public class SignMessageTrezorPanelView extends AbstractWizardPanelView<SignMess
 
     signingAddress = TextBoxes.newEnterBitcoinAddress(getWizardModel(), false);
 
-    // Provide a fresh address for signing
+    // Suggest the current receiving address for signing
     WalletSummary currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
     ECKey newKey = currentWalletSummary.getWallet().currentKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
-    int index = currentWalletSummary.getWallet().currentReceiveKey().getChildNumber().getI();
     String address = newKey.toAddress(BitcoinNetwork.current().get()).toString();
     signingAddress.setText(address);
 
@@ -148,7 +147,7 @@ public class SignMessageTrezorPanelView extends AbstractWizardPanelView<SignMess
 
   @Override
   public void afterShow() {
-    signingAddress.requestFocusInWindow();
+    messageTextArea.requestFocusInWindow();
   }
 
   @Override
