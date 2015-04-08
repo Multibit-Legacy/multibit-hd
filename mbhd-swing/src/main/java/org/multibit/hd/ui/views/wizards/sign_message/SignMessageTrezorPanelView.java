@@ -2,8 +2,13 @@ package org.multibit.hd.ui.views.wizards.sign_message;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.ECKey;
+import org.bitcoinj.wallet.KeyChain;
 import org.multibit.hd.core.dto.SignMessageResult;
+import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.utils.BitcoinMessages;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -79,6 +84,13 @@ public class SignMessageTrezorPanelView extends AbstractWizardPanelView<SignMess
     signatureLabel = Labels.newSignature();
 
     signingAddress = TextBoxes.newEnterBitcoinAddress(getWizardModel(), false);
+
+    // Provide a fresh address for signing
+    WalletSummary currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
+    ECKey newKey = currentWalletSummary.getWallet().currentKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    int index = currentWalletSummary.getWallet().currentReceiveKey().getChildNumber().getI();
+    String address = newKey.toAddress(BitcoinNetwork.current().get()).toString();
+    signingAddress.setText(address);
 
     messageTextArea = TextBoxes.newEnterMessage();
 

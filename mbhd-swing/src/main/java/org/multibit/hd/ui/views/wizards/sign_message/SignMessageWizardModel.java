@@ -226,6 +226,9 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
 
     log.info("Signature:\n{}", Utils.HEX.encode(signature.getSignature()));
 
+    // Ensure we show the Trezor panel view (might be on a PIN screen)
+    state = SignMessageState.SIGN_MESSAGE_TREZOR;
+
     // Verify the signature
     String base64Signature = Base64.toBase64String(signature.getSignature());
 
