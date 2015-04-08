@@ -55,6 +55,7 @@ public class DisplayEnvironmentAlertView extends AbstractComponentView<DisplayEn
         break;
       case SYSTEM_TIME_DRIFT:
       case UNSUPPORTED_CONFIGURATION_ATTACHED:
+      case DEPRECATED_FIRMWARE_ATTACHED:
         panel.add(Labels.newTitleLabel(MessageKey.INFO_TITLE), "aligny top, alignx center,shrink,wrap");
         break;
       default:

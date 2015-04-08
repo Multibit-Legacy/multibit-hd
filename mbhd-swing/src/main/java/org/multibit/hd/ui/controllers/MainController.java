@@ -454,6 +454,7 @@ public class MainController extends AbstractController implements
         );
         break;
       case UNSUPPORTED_FIRMWARE_ATTACHED:
+      case DEPRECATED_FIRMWARE_ATTACHED:
       case UNSUPPORTED_CONFIGURATION_ATTACHED:
         Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
@@ -873,8 +874,7 @@ public class MainController extends AbstractController implements
         // An alert tends to stack and gets messy/irrelevant
         deferredCredentialsRequestType = CredentialsRequestType.PASSWORD;
 
-        // Clear any UNSUPPORTED_FIRMWARE_ATTACHED or UNSUPPORTED_CONFIGURATION_ATTACHED events
-        // as the user has detached the causative device
+        // Clear any alert-inducing events as the user has detached the device
         Optional<EnvironmentEvent> lastEnvironmentEventOptional = CoreServices.getApplicationEventService().getLatestEnvironmentEvent();
         if (lastEnvironmentEventOptional.isPresent()
           && lastEnvironmentEventOptional.get().is(EnvironmentSummary.AlertType.UNSUPPORTED_FIRMWARE_ATTACHED)) {
@@ -882,6 +882,10 @@ public class MainController extends AbstractController implements
         }
         if (lastEnvironmentEventOptional.isPresent()
           && lastEnvironmentEventOptional.get().is(EnvironmentSummary.AlertType.UNSUPPORTED_CONFIGURATION_ATTACHED)) {
+          CoreServices.getApplicationEventService().onEnvironmentEvent(null);
+        }
+        if (lastEnvironmentEventOptional.isPresent()
+          && lastEnvironmentEventOptional.get().is(EnvironmentSummary.AlertType.DEPRECATED_FIRMWARE_ATTACHED)) {
           CoreServices.getApplicationEventService().onEnvironmentEvent(null);
         }
 
@@ -976,6 +980,15 @@ public class MainController extends AbstractController implements
         if (features.hasPassphraseProtection()) {
           handleShowDeviceFailed(event);
           return;
+        }
+
+        // Check for deprecated versions (typically one behind latest unless a critical security problem is found)
+        if (features.getVersion().equals("1.3.0")
+          || features.getVersion().equals("1.3.1")
+          || features.getVersion().equals("1.3.2") // Doesn't formally exist but in for completeness
+          ) {
+          // Show as a environment popover
+          CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newDeprecatedFirmware());
         }
 
       }

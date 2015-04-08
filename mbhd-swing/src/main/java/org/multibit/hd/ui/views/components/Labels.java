@@ -1289,13 +1289,28 @@ public class Labels {
   }
 
   /**
+   * @return A new "deprecated firmware" note
+   */
+  public static JLabel newDeprecatedFirmwareNote() {
+
+    JLabel label = newNoteLabel(new CoreMessageKey[]{
+        CoreMessageKey.DEPRECATED_FIRMWARE_ATTACHED
+      }, new Object[][]{});
+
+    // Allow for warning theme
+    label.setForeground(Themes.currentTheme.warningAlertText());
+
+    return label;
+
+  }
+
+  /**
    * @return A new "unsupported configuration passphrase" note
    */
   public static JLabel newUnsupportedConfigurationPassphrase() {
 
     JLabel label = newNoteLabel(new CoreMessageKey[]{
-        CoreMessageKey.UNSUPPORTED_CONFIGURATION_PASSPHRASE,
-        CoreMessageKey.UNSUPPORTED_CONFIGURATION_ADVICE
+        CoreMessageKey.UNSUPPORTED_CONFIGURATION_PASSPHRASE
       }, new Object[][]{});
 
     // Allow for warning theme
