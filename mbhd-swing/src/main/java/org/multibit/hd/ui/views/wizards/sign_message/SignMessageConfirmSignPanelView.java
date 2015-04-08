@@ -78,7 +78,7 @@ public class SignMessageConfirmSignPanelView extends AbstractWizardPanelView<Sig
     String truncatedMessage = getWizardModel().getMessage().substring(0, Math.min(getWizardModel().getMessage().length(), 64));
 
     // Set the confirm text
-    trezorDisplayMaV.getView().setOperationText(MessageKey.SIGN_MESSAGE);
+    trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
 
     // Show sign message
     trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_SIGN_CONFIRM_DISPLAY, truncatedMessage);
