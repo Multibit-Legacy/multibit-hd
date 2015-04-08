@@ -430,11 +430,10 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
             break;
           case SIGN_TX:
             // Transaction#getValue() provides the net amount leaving the wallet which includes the fee
-            // Trezor displays the sum of all external outputs and the fee separately
-            // Thus we perform the calculation below to arrive at the same figure the transaction amount to reassure the user all is well
-            Coin transactionAmount = currentTransaction.getValue(wallet).negate().subtract(currentTransaction.getFee());
+            // See #499: Trezor firmware below 1.3.3 displays the sum of all external outputs (including fee) and the fee separately
+            // From 1.3.3+ the display is the net amount leaving the wallet with fees shown separately
+            Coin transactionAmount = currentTransaction.getValue(wallet).negate();
             String[] transactionAmountFormatted = Formats.formatCoinAsSymbolic(transactionAmount, languageConfiguration, bitcoinConfiguration);
-
             String[] feeAmount = Formats.formatCoinAsSymbolic(currentTransaction.getFee(), languageConfiguration, bitcoinConfiguration);
 
             key = MessageKey.TREZOR_SIGN_CONFIRM_DISPLAY;
