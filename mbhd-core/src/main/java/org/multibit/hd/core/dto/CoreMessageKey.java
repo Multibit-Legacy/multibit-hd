@@ -40,6 +40,7 @@ public enum CoreMessageKey {
   CERTIFICATE_FAILED("core_certificate_failed"),
   BACKUP_WALLET_WAS_LOADED("core_backup_wallet_was_loaded"),
   UNSUPPORTED_FIRMWARE_ATTACHED("core_unsupported_firmware_attached"),
+  DEPRECATED_FIRMWARE_ATTACHED("core_deprecated_firmware_attached"),
   SECURITY_ADVICE("core_security_advice"),
   UNSUPPORTED_CONFIGURATION_PASSPHRASE("core_unsupported_configuration_passphrase"),
   UNSUPPORTED_CONFIGURATION_ADVICE("core_unsupported_configuration_advice"),

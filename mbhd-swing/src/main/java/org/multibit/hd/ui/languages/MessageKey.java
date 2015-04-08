@@ -475,6 +475,7 @@ public enum MessageKey {
   TREZOR_CHECK_WORD_DISPLAY("trezor_check_word_display"),
   TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY("trezor_transaction_output_confirm_display"),
   TREZOR_SIGN_CONFIRM_DISPLAY("trezor_sign_confirm_display"),
+  TREZOR_SIGN_MESSAGE_CONFIRM_DISPLAY("trezor_sign_message_confirm_display"),
   TREZOR_WIPE_CONFIRM_DISPLAY("trezor_wipe_confirm_display"),
 
   USE_TREZOR_REPORT_TITLE("use_trezor_report_title"),

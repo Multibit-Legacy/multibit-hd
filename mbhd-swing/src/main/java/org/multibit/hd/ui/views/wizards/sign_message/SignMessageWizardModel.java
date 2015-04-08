@@ -49,6 +49,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
 
   private SignMessageEnterPinPanelView enterPinPanelView;
   private SignMessageTrezorPanelView signMessageTrezorPanelView;
+  private SignMessageConfirmSignPanelView confirmSignPanelView;
 
   /**
    * @param state The state object
@@ -63,7 +64,10 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     switch (state) {
       case SIGN_MESSAGE_PASSWORD:
         break;
-      case SIGN_MESSAGE_ENTER_PIN:
+      case SIGN_MESSAGE_TREZOR_ENTER_PIN:
+        state = SignMessageState.SIGN_MESSAGE_TREZOR;
+        break;
+      case SIGN_MESSAGE_TREZOR_CONFIRM_SIGN:
         state = SignMessageState.SIGN_MESSAGE_TREZOR;
         break;
       case SIGN_MESSAGE_TREZOR:
@@ -78,7 +82,10 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     switch (state) {
       case SIGN_MESSAGE_PASSWORD:
         break;
-      case SIGN_MESSAGE_ENTER_PIN:
+      case SIGN_MESSAGE_TREZOR_ENTER_PIN:
+        state = SignMessageState.SIGN_MESSAGE_TREZOR;
+        break;
+      case SIGN_MESSAGE_TREZOR_CONFIRM_SIGN:
         state = SignMessageState.SIGN_MESSAGE_TREZOR;
         break;
       case SIGN_MESSAGE_TREZOR:
@@ -221,7 +228,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     switch (state) {
       case SIGN_MESSAGE_TREZOR:
         log.debug("Transaction signing is PIN protected");
-        state = SignMessageState.SIGN_MESSAGE_ENTER_PIN;
+        state = SignMessageState.SIGN_MESSAGE_TREZOR_ENTER_PIN;
         break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
@@ -233,6 +240,9 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
 
     log.debug("Received hardware event: '{}'.{}", event.getEventType().name(), event.getMessage());
 
+    // Ensure we transition to the confirm screen
+    state = SignMessageState.SIGN_MESSAGE_TREZOR_CONFIRM_SIGN;
+
   }
 
   @Override
@@ -243,7 +253,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
 
     log.info("Signature:\n{}", Utils.HEX.encode(signature.getSignature()));
 
-    // Ensure we show the Trezor panel view (might be on a PIN screen)
+    // Ensure we show the Trezor panel view
     state = SignMessageState.SIGN_MESSAGE_TREZOR;
 
     // Verify the signature
@@ -358,5 +368,9 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
 
   public void setSignMessageTrezorPanelView(SignMessageTrezorPanelView signMessageTrezorPanelView) {
     this.signMessageTrezorPanelView = signMessageTrezorPanelView;
+  }
+
+  public void setConfirmSignPanelView(SignMessageConfirmSignPanelView confirmSignPanelView) {
+    this.confirmSignPanelView = confirmSignPanelView;
   }
 }

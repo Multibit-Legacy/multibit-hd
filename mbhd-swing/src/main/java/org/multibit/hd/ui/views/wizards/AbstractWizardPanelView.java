@@ -422,6 +422,9 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
         case UNSUPPORTED_FIRMWARE_ATTACHED:
           popoverPanel.add(Panels.newUnsupportedFirmware(), "align center,wrap");
           break;
+        case DEPRECATED_FIRMWARE_ATTACHED:
+          popoverPanel.add(Panels.newDeprecatedFirmware(), "align center,wrap");
+          break;
         case UNSUPPORTED_CONFIGURATION_ATTACHED:
           popoverPanel.add(Panels.newUnsupportedConfigurationPassphrase(), "align center,wrap");
           break;

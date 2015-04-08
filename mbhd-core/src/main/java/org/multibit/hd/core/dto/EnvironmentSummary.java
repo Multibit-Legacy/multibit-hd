@@ -15,11 +15,33 @@ public class EnvironmentSummary {
 
   public enum AlertType {
 
+    /**
+     * A debugger has been detected attached to this JVM
+     */
     DEBUGGER_ATTACHED,
+    /**
+     * The system time has drifted from time standards
+     */
     SYSTEM_TIME_DRIFT,
+    /**
+     * A backup operation failed
+     */
     BACKUP_FAILED,
+    /**
+     * A certificate failed for an external site (e.g. an exchange)
+     */
     CERTIFICATE_FAILED,
+    /**
+     * Unsupported firmware has been attached - user must upgrade to continue
+     */
     UNSUPPORTED_FIRMWARE_ATTACHED,
+    /**
+     * Deprecated firmware has been attached - user may continue but UI may be different
+     */
+    DEPRECATED_FIRMWARE_ATTACHED,
+    /**
+     * Unsupported configuration has been detected (e.g. passphrase in Trezor)
+     */
     UNSUPPORTED_CONFIGURATION_ATTACHED,
 
     // End of enum
@@ -105,11 +127,39 @@ public class EnvironmentSummary {
   }
 
   /**
+   * <p>A hardware wallet with unsupported firmware is attached - could expose user to risk</p>
+   *
+   * @return A new "unsupported firmware" summary
+   */
+  public static EnvironmentSummary newDeprecatedFirmware() {
+    return new EnvironmentSummary(
+      RAGStatus.AMBER,
+      Optional.of(CoreMessageKey.DEPRECATED_FIRMWARE_ATTACHED),
+      Optional.<Object[]>absent(),
+      AlertType.DEPRECATED_FIRMWARE_ATTACHED
+    );
+  }
+
+  /**
    * <p>A hardware wallet with unsupported configuration is attached - unsupported operations are present</p>
    *
    * @return A new "unsupported configuration" summary
    */
   public static EnvironmentSummary newUnsupportedConfigurationPassphrase() {
+    return new EnvironmentSummary(
+      RAGStatus.AMBER,
+      Optional.of(CoreMessageKey.UNSUPPORTED_CONFIGURATION_PASSPHRASE),
+      Optional.<Object[]>absent(),
+      AlertType.UNSUPPORTED_CONFIGURATION_ATTACHED
+    );
+  }
+
+  /**
+   * <p>A hardware wallet with unsupported configuration is attached - unsupported operations are present</p>
+   *
+   * @return A new "unsupported configuration" summary
+   */
+  public static EnvironmentSummary newUnsupportedConfigurationFirmware() {
     return new EnvironmentSummary(
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.UNSUPPORTED_CONFIGURATION_PASSPHRASE),

@@ -30,6 +30,7 @@ public class TrezorRequestMasterPublicKeyUseCase extends AbstractHardwareWalletF
   public void execute(Map<String, Object> parameters) {
 
     // This transitional panel is too variable to trap reliably
+    pauseForViewReset();
 
   }
 }
