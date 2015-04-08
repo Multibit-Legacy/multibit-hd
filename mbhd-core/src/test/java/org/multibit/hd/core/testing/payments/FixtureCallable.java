@@ -79,8 +79,6 @@ public class FixtureCallable implements Callable<Boolean> {
       } catch (IOException e) {
         throw new IllegalStateException("Unexpected IOException", e);
       }
-
     }
-
   }
 }

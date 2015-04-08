@@ -162,6 +162,7 @@ public enum HttpsManager {
           isTrusted = true;
         } catch (UnknownHostException | SocketTimeoutException | SocketException e) {
           // The host is unavailable or the network is down - continue to the next one
+          e.printStackTrace();
           continue;
         } catch (SSLException e) {
           // Need to import the certificate
@@ -290,25 +291,40 @@ public enum HttpsManager {
    */
   private String[] populateHosts() {
 
-    String[] hosts = new String[ExchangeKey.values().length + 1];
+    String[] hosts = new String[ExchangeKey.values().length + 5];
     int i = 0;
     hosts[i] = "multibit.org";
+    log.debug("Added {}' to SSL hosts", hosts[i]);
     i++;
     hosts[i] = "beta.multibit.org";
+    log.debug("Added {}' to SSL hosts", hosts[i]);
     i++;
     hosts[i] = "www.multibit.org";
+    log.debug("Added {}' to SSL hosts", hosts[i]);
+    i++;
+    // Support local payment protocol servers on both ports 443 and 8443
+    hosts[i] = "localhost:443";
+    log.debug("Added {}' to SSL hosts", hosts[i]);
+    i++;
+    hosts[i] = "localhost:8443";
+    log.debug("Added {}' to SSL hosts", hosts[i]);
     i++;
     for (ExchangeKey exchangeKey : ExchangeKey.values()) {
       if (ExchangeKey.NONE.equals(exchangeKey)) {
         continue;
       }
-      String sslUri = exchangeKey.getExchange().get().getExchangeSpecification().getSslUri();
-      if (sslUri != null && sslUri.startsWith("https://")) {
-        hosts[i] = URI.create(sslUri).getHost();
-        log.debug("Added {}' to SSL hosts", hosts[i]);
-        i++;
+      try {
+        String sslUri = exchangeKey.getExchange().get().getExchangeSpecification().getSslUri();
+        if (sslUri != null && sslUri.startsWith("https://")) {
+          hosts[i] = URI.create(sslUri).getHost();
+          log.debug("Added {}' to SSL hosts", hosts[i]);
+          i++;
+        }
+      } catch (Exception e) {
+        log.error("Did not add exchange {}, error was {}", exchangeKey.getExchangeName(), e);
       }
     }
+    log.debug("There are a total of {} hosts", hosts.length);
     return hosts;
   }
 

@@ -127,6 +127,29 @@ public class PaymentProtocolHttpsServer {
     });
 
   }
+  /**
+    */
+   public void addPaymentACKCallable() {
+
+     Preconditions.checkState(!executorService.isTerminated(), "Executor service must not be terminated");
+
+     log.debug("Adding PaymentACKCallable");
+
+     ListenableFuture<Boolean> listenableFuture = executorService.submit(new PaymentACKCallable(serverSocket, "application/bitcoin-paymentack"));
+     Futures.addCallback(listenableFuture, new FutureCallback<Boolean>() {
+       @Override
+       public void onSuccess(@Nullable Boolean result) {
+
+         log.info("PaymentACKCallable served successfully");
+       }
+
+       @Override
+       public void onFailure(Throwable t) {
+         fail("Unexpected failure for PaymentACKCallable: ", t);
+       }
+     });
+
+   }
 
   /**
    * Remove all entries from the fixture queue and reset the executor service
@@ -169,9 +192,12 @@ public class PaymentProtocolHttpsServer {
 
     log.debug("Result of server.start() was {}", server.start());
 
-    // Add two fixtures - we consume one here, the other is left for MBHD
-    server.addFixture("/fixtures/payments/test-net-faucet.bitcoinpaymentrequest");
-    server.addFixture("/fixtures/payments/test-net-faucet.bitcoinpaymentrequest");
+    // Add some responses - we consume one here (a PaymentRequest fixture) and then add three PaymentACKCallable responses
+    server.addFixture("/fixtures/payments/localhost-signed.bitcoinpaymentrequest");
+    server.addPaymentACKCallable();
+    server.addPaymentACKCallable();
+    server.addPaymentACKCallable();
+
 
     // Probe it once to see if it is up
     PaymentProtocolService paymentProtocolService = new PaymentProtocolService(MainNetParams.get());
@@ -190,6 +216,5 @@ public class PaymentProtocolHttpsServer {
       Uninterruptibles.sleepUninterruptibly(20, TimeUnit.SECONDS);
       log.debug("Still running...");
     }
-
   }
 }
