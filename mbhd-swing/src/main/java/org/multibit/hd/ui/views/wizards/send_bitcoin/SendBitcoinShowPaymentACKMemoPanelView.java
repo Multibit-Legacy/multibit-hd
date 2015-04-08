@@ -144,6 +144,8 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
       new Runnable() {
         @Override
         public void run() {
+          paymentACKMemo.setText(getPanelModel().get().getPaymentACKMemo());
+
           if (paymentSentToRequestorEvent.isSendWasSuccessful()) {
             LabelDecorator.applyWrappingLabel(paymentSentOKSummary, Languages.safeText(CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_OK));
             LabelDecorator.applyStatusLabel(paymentSentOKSummary, Optional.of(Boolean.TRUE));

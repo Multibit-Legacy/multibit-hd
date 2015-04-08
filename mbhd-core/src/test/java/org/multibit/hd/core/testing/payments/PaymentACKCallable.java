@@ -3,6 +3,7 @@ package org.multibit.hd.core.testing.payments;
 import com.google.common.base.Charsets;
 import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.protocols.payments.PaymentProtocol;
+import org.multibit.hd.hardware.core.utils.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,6 @@ public class PaymentACKCallable implements Callable<Boolean> {
     } else {
 
       try {
-
         // Wait for a client connection
         log.debug("Await client connection to SSLSocket");
         SSLSocket socket = (SSLSocket) serverSocket.accept();
@@ -78,31 +78,29 @@ public class PaymentACKCallable implements Callable<Boolean> {
 
         // Get the Content-Length and read those - this is expected to be the serialised Payment
         if (contentLength > -1) {
-          ByteArrayOutputStream baos = new ByteArrayOutputStream();
           byte buffer[] = new byte[contentLength];
-          int s = inputStream.read(buffer);
-          baos.write(buffer, 0, s);
-          log.debug("\n" + new String(buffer, Charsets.UTF_8));
-          byte result[] = baos.toByteArray();
+          for (int i = 0; i < contentLength; i++) {
+            buffer[i] = (byte)inputStream.read();
+          }
 
-          log.debug("Read {} bytes on server socket", baos.size());
+          log.debug("Read:\n", HexUtils.toHexBytes(buffer));
 
           try {
-            Protos.Payment payment = Protos.Payment.parseFrom(result);
+            Protos.Payment payment = Protos.Payment.parseFrom(buffer);
 
             log.debug("Successfully parsed a payment {}", payment);
 
             // Create a PaymentACK for the payment
             Protos.PaymentACK paymentAck = PaymentProtocol.createPaymentAck(payment, "You sent:'" + payment.getMemo() + "'");
 
-            log.debug("Sending paymentACK directly: {}", paymentAck);
+            log.debug("Sending paymentACK as a response: {}", paymentAck);
             // Write the HTTP header
-//            outputStream.write("HTTP/1.0 200 OK\n".getBytes(Charsets.UTF_8));
-//            outputStream.write("Content-Type: ".getBytes(Charsets.UTF_8));
-//            outputStream.write(contentType.getBytes(Charsets.UTF_8));
-//            outputStream.write("\n\n".getBytes(Charsets.UTF_8));
+            outputStream.write("HTTP/1.0 200 OK\n".getBytes(Charsets.UTF_8));
+            outputStream.write("Content-Type: ".getBytes(Charsets.UTF_8));
+            outputStream.write(contentType.getBytes(Charsets.UTF_8));
+            outputStream.write("\n\n".getBytes(Charsets.UTF_8));
 
-            // Write the protobuf directly - no HTTP header
+            // Write the protobuf response
             paymentAck.writeTo(outputStream);
 
             //ByteArrayInputStream responseInputStream = new ByteArrayInputStream(paymentAckBytes);
