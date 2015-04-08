@@ -988,6 +988,7 @@ public class MainController extends AbstractController implements
           || features.getVersion().equals("1.3.2") // Doesn't formally exist but in for completeness
           ) {
           // Show as a environment popover
+          log.warn("Deprecated firmware detected");
           CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newDeprecatedFirmware());
         }
 

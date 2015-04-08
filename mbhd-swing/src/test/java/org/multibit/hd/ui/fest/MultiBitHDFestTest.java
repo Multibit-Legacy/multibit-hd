@@ -583,6 +583,27 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   /**
    * <p>Verify the following:</p>
    * <ul>
+   * <li>Start with standard application directory</li>
+   * <li>Show the deprecated firmware popover</li>
+   * </ul>
+   */
+  @Test
+  public void verifyDeprecatedTrezorFirmware() throws Exception {
+
+    // Prepare an initialised and attached Trezor device that will be restored then unlocked
+    HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedDeprecatedFirmwareFixture();
+
+    // Start with the empty hardware wallet fixture
+    arrangeStandard(Optional.of(hardwareWalletFixture));
+
+    // Verify up to unlock
+    UnlockTrezorHardwareWalletDeprecatedFirmwareRequirements.verifyUsing(window, hardwareWalletFixture);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
    * <li>Start with empty wallet fixture (warm)</li>
    * <li>Unlock the wallet</li>
    * <li>Send and force a PIN request</li>
