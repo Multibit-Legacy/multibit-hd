@@ -81,7 +81,7 @@ public class SignMessageConfirmSignPanelView extends AbstractWizardPanelView<Sig
     trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
 
     // Show sign message
-    trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_SIGN_CONFIRM_DISPLAY, truncatedMessage);
+    trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_SIGN_MESSAGE_CONFIRM_DISPLAY, truncatedMessage);
 
     // Reassure users that this is a sign screen but rely on the Trezor buttons to do it
     getNextButton().setEnabled(false);
