@@ -387,8 +387,6 @@ public class MainView extends JFrame {
     detailView = new DetailView();
     footerView = new FooterView();
 
-    log.debug("Creating split pane...");
-
     // Create a splitter pane
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
@@ -466,8 +464,6 @@ public class MainView extends JFrame {
 
       String[] lastFrameDimension = frameDimension.split(",");
       if (lastFrameDimension.length == 4) {
-
-        log.debug("Using absolute coordinates");
 
         try {
           int x = Integer.parseInt(lastFrameDimension[0]);

@@ -1441,28 +1441,6 @@ public class MainController extends AbstractController implements
       );
     }
 
-    // Allow time for MainView to refresh
-    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
-
-    // Start the backup manager
-    log.debug("Starting backup manager...");
-    handleBackupManager();
-
-    // Get the current wallet summary
-    Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-    mainView.sidebarWalletName(walletSummary.get().getName());
-
-    // Start the wallet service
-    log.debug("Starting wallet service...");
-    CoreServices.getOrCreateWalletService(walletSummary.get().getWalletId());
-
-    // Record this in the history
-    CoreServices.logHistory(Languages.safeText(MessageKey.HISTORY_WALLET_OPENED, walletSummary.get().getName()));
-
-    // Show the initial detail screen
-    Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
-    ViewEvents.fireShowDetailScreenEvent(screen);
-
     // Don't hold up the UI thread with these background operations
     walletExecutorService.submit(
       new Runnable() {
@@ -1487,6 +1465,26 @@ public class MainController extends AbstractController implements
           }
         }
       });
+
+    // Start the backup manager
+    log.debug("Starting backup manager...");
+    handleBackupManager();
+
+    // Get the current wallet summary
+    Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+    mainView.sidebarWalletName(walletSummary.get().getName());
+
+
+    // Start the wallet service
+    log.debug("Starting wallet service...");
+    CoreServices.getOrCreateWalletService(walletSummary.get().getWalletId());
+
+    // Record this in the history
+    CoreServices.logHistory(Languages.safeText(MessageKey.HISTORY_WALLET_OPENED, walletSummary.get().getName()));
+
+    // Show the initial detail screen
+    Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
+    ViewEvents.fireShowDetailScreenEvent(screen);
   }
 
   /**

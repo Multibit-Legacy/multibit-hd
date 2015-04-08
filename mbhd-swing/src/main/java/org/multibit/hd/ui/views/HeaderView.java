@@ -202,7 +202,7 @@ public class HeaderView extends AbstractView {
     if (event.getViewKey().equals(ViewKey.HEADER)) {
       log.trace("Saw a ViewChangedEvent {}", event);
 
-      log.debug("Header now has visibility: {} ", event.isVisible());
+      log.trace("Header now has visibility: {} ", event.isVisible());
       balanceDisplayMaV.getView().setVisible(event.isVisible());
       if (alertMessageLabel.getText().length() != 0 && event.isVisible()) {
         alertPanel.setVisible(event.isVisible());
