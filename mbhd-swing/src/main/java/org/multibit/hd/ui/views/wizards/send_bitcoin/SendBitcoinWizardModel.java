@@ -7,6 +7,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.params.MainNetParams;
@@ -26,10 +27,7 @@ import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.PaymentSentToRequestorEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.ApplicationEventService;
-import org.multibit.hd.core.services.BitcoinNetworkService;
-import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.WalletService;
+import org.multibit.hd.core.services.*;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -818,8 +816,12 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       // Send the Payment message to the merchant
       try {
         final List<Transaction> transactionsSent = Lists.newArrayList(lastBitcoinSentEvent.getTransaction().get());
+        final PaymentRequestData finalPaymentRequestData = getPaymentRequestData().get();
 
         log.debug("Sending payment details to requestor at URL {}", paymentSession.getPaymentUrl());
+        final Protos.Payment finalPayment = paymentSession.getPayment(transactionsSent,
+                  lastBitcoinSentEvent.getChangeAddress(),
+                  getSendBitcoinEnterPaymentMemoPanelModel().getPaymentMemo());
         final ListenableFuture<PaymentProtocol.Ack> future = paymentSession.sendPayment(
           transactionsSent,
           lastBitcoinSentEvent.getChangeAddress(),
@@ -835,15 +837,27 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
                 log.info("Received PaymentAck from merchant. Memo: {}", result.getMemo());
                 getSendBitcoinShowPaymentACKMemoPanelModel().setPaymentACKMemo(result.getMemo());
 
-                WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+                PaymentProtocolService paymentProtocolService = CoreServices.getPaymentProtocolService();
 
-                // Write payments
-                CharSequence password = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword();
-                if (password != null) {
-                  walletService.writePayments(password);
+                if (finalPayment != null) {
+                  Optional<Protos.PaymentACK> paymentACK = paymentProtocolService.newPaymentACK(finalPayment, result.getMemo());
+
+                  finalPaymentRequestData.setPayment(Optional.of(finalPayment));
+                  finalPaymentRequestData.setPaymentACK(paymentACK);
+                  log.debug("Saving PaymentMemo of {} and PaymentACKMemo of {}", finalPayment.getMemo(), paymentACK.isPresent() ? paymentACK.get().getMemo() : "n/a");
+                  WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+                  walletService.addPaymentRequestData(finalPaymentRequestData);
+
+                  // Write payments
+                  CharSequence password = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword();
+                  if (password != null) {
+                    walletService.writePayments(password);
+                  }
+
+                  CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(true, CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_OK, null));
+                } else {
+                  log.error("No payment and hence cannot save payment or paymentACK");
                 }
-
-                CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(true, CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_OK, null));
               }
 
               @Override

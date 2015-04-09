@@ -919,7 +919,7 @@ public class WalletService extends AbstractService {
           EncryptedFileReaderWriter.encryptAndWriteDirect(
                   serialisedBytes,
                   password, paymentRequestFile);
-          log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'\n Password: {}", serialisedBytes.length, paymentRequestFile.getAbsolutePath(), password);
+          log.debug("Written serialised bytes of unencrypted length {} to output file\n'{}'", serialisedBytes.length, paymentRequestFile.getAbsolutePath());
         }
       }
 
