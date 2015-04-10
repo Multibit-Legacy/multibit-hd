@@ -19,7 +19,6 @@ public class SendRequestSummary {
 
   private final Address destinationAddress;
   private final Optional<FiatPayment> fiatPayment;
-  private final Address changeAddress;
   private final Coin feePerKB;
   private final Optional<FeeState> feeState;
 
@@ -31,6 +30,7 @@ public class SendRequestSummary {
   private Optional<String> notes = Optional.absent();
   private String password;
   private boolean applyClientFee = false;
+  private Address changeAddress;
 
   /**
    * The client fee added to the sendRequest.tx
@@ -133,6 +133,10 @@ public class SendRequestSummary {
    */
   public Address getChangeAddress() {
     return changeAddress;
+  }
+
+  public void setChangeAddress(Address changeAddress) {
+    this.changeAddress = changeAddress;
   }
 
   /**

@@ -275,6 +275,7 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
 
         SendBitcoinParameter sendBitcoinParameter = new SendBitcoinParameter(null, Optional.fromNullable(paymentRequestData));
         SendBitcoinWizard sendBitcoinWizard = Wizards.newSendBitcoinWizard(sendBitcoinParameter);
+        sendBitcoinWizard.getWizardModel().setLocalAmount(paymentRequestData.getAmountFiat().getAmount());
         sendBitcoinWizard.getWizardModel().prepareWhenBIP70();
         sendBitcoinWizard.show(sendBitcoinWizard.getWizardModel().getPanelName());
         Panels.showLightBox(sendBitcoinWizard.getWizardScreenHolder());

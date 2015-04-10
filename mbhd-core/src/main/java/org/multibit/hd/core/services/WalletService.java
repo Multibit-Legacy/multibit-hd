@@ -622,6 +622,8 @@ public class WalletService extends AbstractService {
   private FiatPayment calculateFiatPaymentEquivalent(Coin amountBTC) {
     FiatPayment amountFiat = new FiatPayment();
 
+    log.debug("Calculating fiat amount of {}", amountBTC);
+
     // Work it out from the current settings
     amountFiat.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
 
@@ -648,6 +650,7 @@ public class WalletService extends AbstractService {
       }
     }
 
+    log.debug("Calculated amount was {}", amountFiat);
     return amountFiat;
   }
 
@@ -1042,7 +1045,7 @@ public class WalletService extends AbstractService {
 
     bip70PaymentRequestDataMap.put(paymentRequestData.getUuid(), paymentRequestData);
 
-    log.debug("PaymentRequestDataMap:\n{}\n", bip70PaymentRequestDataMap);
+    log.debug("Adding payment request data: {}", paymentRequestData);
   }
 
   public void addTransactionInfo(TransactionInfo transactionInfo) {

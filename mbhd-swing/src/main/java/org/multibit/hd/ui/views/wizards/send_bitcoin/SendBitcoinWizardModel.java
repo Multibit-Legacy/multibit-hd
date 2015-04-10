@@ -264,6 +264,10 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       .getLocalAmount();
   }
 
+  public void setLocalAmount(Optional<BigDecimal> fiatAmount) {
+    enterAmountPanelModel.getEnterAmountModel().setLocalAmount(fiatAmount);
+  }
+
   /**
    * @return The credentials the user entered
    */
@@ -343,7 +347,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   }
 
   /**
-   * Prepare the Bitcoin transaction that will be sent after user confirmation
+   * Prepare the Bitcoin transaction that will be sent (after user confirmation for non BIP70 sends)
    *
    * @return True if the transaction was prepared OK
    */
@@ -353,13 +357,13 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
-    // Determine if this came from a payment request
+    Address changeAddress = bitcoinNetworkService.getNextChangeAddress();
+
+    // Determine if this came from a BIP70 payment request
     if (paymentRequestData.isPresent()) {
-
-
+      Optional<FiatPayment>  fiatPayment = paymentRequestData.get().getFiatPayment();
       PaymentSession paymentSession;
       try {
-        // TODO verify PKI
         if (paymentRequestData.get().getPaymentRequest().isPresent()) {
           paymentSession = new PaymentSession(paymentRequestData.get().getPaymentRequest().get(), false);
         } else {
@@ -373,23 +377,9 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
       // Build the send request summary from the payment request
       Wallet.SendRequest sendRequest = paymentSession.getSendRequest();
+      log.debug("SendRequest from BIP70 paymentSession: {}", sendRequest);
 
       Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState(true);
-
-      // Create the fiat payment - note that the fiat amount is not populated, only the exchange rate data.
-      // This is because the client and transaction fee is only worked out at point of sending, and the fiat equivalent is computed from that
-      Optional<FiatPayment> fiatPayment;
-      Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-      if (exchangeRateChangedEvent.isPresent()) {
-        fiatPayment = Optional.of(new FiatPayment());
-        fiatPayment.get().setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
-        // A send is denoted with a negative fiat amount
-        fiatPayment.get().setAmount(Optional.<BigDecimal>absent());
-        fiatPayment.get().setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
-        fiatPayment.get().setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
-      } else {
-        fiatPayment = Optional.absent();
-      }
 
       // Prepare the transaction i.e work out the fee sizes (not empty wallet)
       sendRequestSummary = new SendRequestSummary(
@@ -400,13 +390,14 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
         feeState
       );
 
+      // Ensure we keep track of the change address (used when calculating fiat equivalent)
+      sendRequestSummary.setChangeAddress(changeAddress);
+      sendRequest.changeAddress = changeAddress;
     } else {
       Preconditions.checkNotNull(enterAmountPanelModel);
       Preconditions.checkNotNull(confirmPanelModel);
 
       // Build the send request summary from the user data
-      Address changeAddress = bitcoinNetworkService.getNextChangeAddress();
-
       Coin coin = enterAmountPanelModel.getEnterAmountModel().getCoinAmount();
       Address bitcoinAddress = enterAmountPanelModel
         .getEnterRecipientModel()

@@ -91,7 +91,7 @@ public class PaymentACKCallable implements Callable<Boolean> {
             log.debug("Successfully parsed a payment {}", payment);
 
             // Create a PaymentACK for the payment
-            Protos.PaymentACK paymentAck = PaymentProtocol.createPaymentAck(payment, "You sent:'" + payment.getMemo() + "'");
+            Protos.PaymentACK paymentAck = PaymentProtocol.createPaymentAck(payment, "You sent: '" + payment.getMemo() + "'");
 
             log.debug("Sending paymentACK as a response: {}", paymentAck);
             // Write the HTTP header
