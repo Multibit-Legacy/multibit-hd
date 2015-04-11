@@ -1,5 +1,14 @@
+<h2 class="text-center">Thank you for choosing MultiBit HD</h2>
+
+<p>Please take a look at our <a href="getting-started.html" target="_blank">Getting Started guide</a> so you can be up and running with Bitcoin quickly and safely.</p>
+
+<p><a href="https://www.ej-technologies.com" target="_blank">Install4j by EJ Technologies GmBH</a> was used to create our installers.
+  If you're a Java developer needing an installer solution you should check them out.</p>
+
 <h3>How to install on Linux</h3>
-<p>The Linux installer does not come with a pre-packaged Java installation due to the huge variety of Linux distros that are available. Consequently you will need to arrange for a suitable JVM to be installed prior to running the installer. We recommend <a href="http://openjdk.java.net/install/" target="_blank">Open Java 1.7.0_72</a>.</p>
+
+<p>The Linux installer does not come with a pre-packaged Java installation due to the huge variety of Linux distros that are available. Consequently you will need to arrange for a
+  suitable JVM to be installed prior to running the installer. We recommend <a href="http://openjdk.java.net/install/" target="_blank">Open Java 1.7.0_72</a>.</p>
 
 <p>Assuming you have a suitable JVM installed and have downloaded the installer to your home directory, do the following at the command shell:</p>
 <pre>
@@ -7,13 +16,18 @@ cd ~
 chmod +x multibit-hd-unix-0.0.5.sh
 ./multibit-hd-unix-0.0.5.sh
 </pre>
-<p>After a short time MultiBit HD will show a wizard and install into <code>~/multibit-hd</code>. Your application directory will be <code>~/.multibit-hd</code> and will hold all your configuration and wallet files. It will appear on first startup. A basic Unity <code>.desktop</code> file will be created and registered if available so you should be able to simply open Unity and search for "MultiBit" to get started (but see later). Alternatively you can run from the command line as follows (you'll see a lot of logging messages this way):</p>
+<p>After a short time MultiBit HD will show a wizard and install into <code>~/multibit-hd</code>. Your application directory will be <code>~/.multibit-hd</code> and will hold all
+  your configuration and wallet files. It will appear on first startup. A basic Unity <code>.desktop</code> file will be created and registered if available so you should be able
+  to simply open Unity and search for "MultiBit" to get started (but see later). Alternatively you can run from the command line as follows (you'll see a lot of logging messages
+  this way):</p>
 <pre>
 cd multibit-hd
 ./multibit-hd &
 </pre>
 
-<p>After running the installer you may need to run some scripts to further integrate MultiBit HD into your environment. In particular the Trezor support requires certain <code>udev</code> rules to be in place. The following sections provide these scripts. If you have a distro that is not included and have a script you'd like to share please let us know through the website issue link at the foot of the page.</p>
+<p>After running the installer you may need to run some scripts to further integrate MultiBit HD into your environment. In particular the Trezor support requires certain
+  <code>udev</code> rules to be in place. The following sections provide these scripts. If you have a distro that is not included and have a script you'd like to share please let
+  us know through the website issue link at the foot of the page.</p>
 
 <h4>Ubuntu</h4>
 <p>This script will activate the USB HID rules for Trezor and will ensure that MultiBit HD can respond correctly to Bitcoin links in web pages:</p>
@@ -67,14 +81,15 @@ cd ~/multibit-hd
 java -jar multibit-hd.jar
 </pre>
 
-<h4>OpenJDK doesn't work for me...</h4>
-<p>Some people have had issues using MultiBit with OpenJDK on Arch Linux and OpenSuse distributions. The error manifests when trying to add a password to a wallet and occurs deep
+<h4>I'm seeing a SIGSEV (0xb)</h4>
+<p>Some people have had issues using MultiBit HD with OpenJDK on Arch Linux, CentOS and OpenSuse distributions. The error manifests when trying to add a password to a wallet and occurs deep
   within the platform-specific parts of the JVM. If this affects you the error will be like this:</p>
 <pre>
 SIGSEGV (0xb) at pc=0x00007f97ec7d06a0, pid=588, tid=140289289742080
 </pre>
 
-<p>After some research <a href="https://github.com/jim618/multibit/issues/325" target="_blank">members of the MultiBit community</a> found that installing the Oracle Java 7 JVM fixed the problem. To install Oracle's JDK do the following:</p>
+<p>After some research <a href="https://github.com/jim618/multibit/issues/325" target="_blank">members of the MultiBit community</a> found that installing the Oracle Java 7 JVM
+  fixed the problem. To install Oracle's JDK do the following:</p>
 <pre>
 sudo add-apt-repository ppa:webupd8team/java
 sudo apt-get update
@@ -88,7 +103,8 @@ deleting: lib/x86_64/linux/libscrypt.so
 </pre>
 
 <h4>Clicking a Bitcoin link in Firefox doesn't work</h4>
-<p>Assuming that you have installed MultiBit HD and run the post-install script this should work out of the box. However some people have fixed this by manually editing the <code>~/.mozilla/firefox/YOUR_PROFILE.default/mimeTypes.rdf</code> file with an entry as follows:</p> 
+<p>Assuming that you have installed MultiBit HD and run the post-install script this should work out of the box. However some people have fixed this by manually editing the <code>~/.mozilla/firefox/YOUR_PROFILE.default/mimeTypes.rdf</code>
+  file with an entry as follows:</p>
 <pre>  &lt;RDF:Description RDF:about="urn:scheme:bitcoin"
                    NC:value="~/multibit-hd/multibit-hd”&gt;
     &lt;NC:handlerProp RDF:resource="urn:scheme:handler:bitcoin"/&gt;
@@ -99,5 +115,6 @@ deleting: lib/x86_64/linux/libscrypt.so
 <h4>Related articles</h4>
 <p>Here are some related articles:</p>
 <ul>
+  <li><a href="getting-started.html">Getting started</a></li>
   <li><a href="/blog/2013/07/24/how-to-check-signatures.html">How to check signatures</a></li>
 </ul>

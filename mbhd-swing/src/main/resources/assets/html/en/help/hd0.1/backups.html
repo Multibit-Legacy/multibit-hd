@@ -18,13 +18,13 @@
 
 <p>Setting up a cloud backup service is quite straightforward and for small amounts of data (under 2GB) it is often free. We would strongly
   urge you to consider SpiderOak for its end to end encryption. However Dropbox is extremely common and provides an excellent user experience.
-  MultiBit HD encrypts all your information locally using a strong AES key derived from your password so it is safe to store the wallet files
+  MultiBit HD encrypts all your information locally using a strong AES key derived from your wallet words so it is safe to store the wallet files
   in the cloud without worrying about a malicious administrator being able to read them.</p>
 
 <p>Overall, a good backup is a copy of your wallet file that you regularly store off your computer. That way if something happens to your
   computer you still have access to the backups.</p>
 
-<p>To tell Multibit where your cloud backup is on your computer, use the <a href="edit-wallet.html">"Edit wallet"</a> screen.</p>
+<p>To tell MultiBit HD where your cloud backup is on your computer, use the <a href="edit-wallet.html">"Edit wallet"</a> screen.</p>
 
 <h3>Technical details of rolling backup process</h3>
 
@@ -33,14 +33,14 @@
 
 <p>After successfully unlocking a wallet MultiBit HD will follow this process to maintain backups:</p>
 <ol>
-  <li>Wait 1 minutes after MBHD starts and then start "ticking" every 2 minutes.</li>
+  <li>Wait 1 minute after MultiBit HD starts and then start "ticking" every 2 minutes.</li>
   <li>Every "tick" (2 minutes), create a rolling wallet backup. This is a copy of the encrypted wallet stored in the 
   wallet's <code>rolling-backup</code> sub-directory. It is timestamped and encrypted with the wallet password. 
   There are up to 4 of these in place covering the last 8 minutes of activity.</li>
   <li>Every "tick modulo 5" (10 minutes), create a zip backup in the wallet <code>zip-backup</code> directory. These 
   are the local zip backups. This is everything in the wallet directory except the blockstore (always retrievable from
   the Bitcoin network) and the zip-backups themselves. Note that the rolling backups are put in the zip backup. 
-  It is actually a zip file which is then AES encrypted using a very long key derived from your "wallet words".</li>
+  It is actually a zip file which is then AES encrypted using a very long key derived from your wallet words.</li>
   <li>Every "tick modulo 15" (30 minutes), copy the just created zip backup to the cloud backup directory if one has
   been set.</li>
 </ol>
