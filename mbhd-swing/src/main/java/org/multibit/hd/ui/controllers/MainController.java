@@ -982,16 +982,8 @@ public class MainController extends AbstractController implements
           return;
         }
 
-        // Check for deprecated versions (typically one behind latest unless a critical security problem is found)
-        if (features.getVersion().equals("1.3.0")
-          || features.getVersion().equals("1.3.1")
-          || features.getVersion().equals("1.3.2") // Doesn't formally exist but in for completeness
-          ) {
-          // Show as a environment popover
-          log.warn("Deprecated firmware detected");
-          CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newDeprecatedFirmware());
-        }
-
+        // You would check for deprecated firmware versions here - there are none currently.
+        // See git history for how to do it.
       }
     }
 
