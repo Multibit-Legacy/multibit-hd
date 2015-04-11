@@ -255,6 +255,5 @@ public class LabelDecorator {
         AwesomeDecorator.bindIcon(AwesomeIcon.TIMES, statusLabel, true, MultiBitUI.NORMAL_ICON_SIZE);
       }
     }
-
   }
 }
