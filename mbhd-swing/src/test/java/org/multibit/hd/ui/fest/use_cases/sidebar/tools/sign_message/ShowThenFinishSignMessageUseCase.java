@@ -87,12 +87,12 @@ public class ShowThenFinishSignMessageUseCase extends AbstractFestUseCase {
       .button(MessageKey.SIGN_MESSAGE.getKey())
       .click();
 
-    // Check report notes - should be asking for bitcoin address
+    // Check report notes - should be asking for bitcoin message
     window
        .label(MessageKey.NOTES.getKey())
        .requireVisible()
        .requireEnabled()
-       .requireText(Languages.safeText(CoreMessageKey.SIGN_MESSAGE_ENTER_ADDRESS));
+       .requireText(Languages.safeText(CoreMessageKey.SIGN_MESSAGE_ENTER_MESSAGE));
 
     // Set the address to use with the sign
     window

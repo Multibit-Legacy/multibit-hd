@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.fest.use_cases.sidebar.payments;
 
+import org.fest.swing.data.TableCell;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -39,8 +40,8 @@ public class ShowDetailPaymentsUseCase extends AbstractFestUseCase {
             .table(MessageKey.PAYMENTS.getKey())
             .rowCount();
 
-    // Select the first 7 rows in turn
-    for (int i = 0; i < Math.min(rowCount1, 7); i++) {
+    // Select the first 5 rows in turn
+    for (int i = 0; i < Math.min(rowCount1, 5); i++) {
       // Get the payment data
 
       String[][] payments = window
@@ -50,14 +51,18 @@ public class ShowDetailPaymentsUseCase extends AbstractFestUseCase {
       // See if it is a payment request or a transaction
       boolean isPaymentRequest = Languages.safeText(CoreMessageKey.PAYMENT_REQUESTED_BY_YOU).equals(WhitespaceTrimmer.trim(payments[i][PaymentTableModel.TYPE_COLUMN_INDEX]));
 
-      window
-              .table(MessageKey.PAYMENTS.getKey())
-              .selectRows(i);
+      window.table(MessageKey.PAYMENTS.getKey()).selectCell(TableCell.row(i).column(0));
+
+      pauseForComponentReset();
+
+      window.table(MessageKey.PAYMENTS.getKey()).requireSelectedRows(i);
 
       // Show the details
       window
               .button(MessageKey.DETAILS.getKey())
               .click();
+
+      pauseForComponentReset();
 
       if (isPaymentRequest) {
         // Verify the payment details wizard appears, showing a payment request

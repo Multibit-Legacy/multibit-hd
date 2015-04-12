@@ -32,7 +32,7 @@ public class SelectGettingStartedUseCase extends AbstractFestUseCase {
     helpContents = window
       .textBox(MessageKey.HELP.getKey() + ".editorPane")
       .text();
-    assertThat(helpContents).contains("MultiBit HD help for version 0.1");
+    assertThat(helpContents).contains("MultiBit HD help");
 
     Component editorPane = window
       .textBox(MessageKey.HELP.getKey() + ".editorPane")

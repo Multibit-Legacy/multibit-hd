@@ -586,8 +586,10 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <li>Start with standard application directory</li>
    * <li>Show the deprecated firmware popover</li>
    * </ul>
+   *
+   * Currently there are no deprecated firmware versions
    */
-  @Test
+  @Ignore
   public void verifyDeprecatedTrezorFirmware() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be restored then unlocked
