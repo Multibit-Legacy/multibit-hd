@@ -249,50 +249,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   /**
    * <p>Verify the following:</p>
    * <ul>
-   * <li>Start with standard wallet fixture</li>
-   * <li>Unlock wallet</li>
-   * <li>Exercise the Send/Request screen</li>
-   * </ul>
-   */
-  @Test
-  public void verifySendRequestScreen() throws Exception {
-
-    // Start with the standard hardware wallet fixture
-    arrangeStandard(Optional.<HardwareWalletFixture>absent());
-
-    // Unlock the wallet
-    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
-
-    // Verify
-    SendRequestScreenRequirements.verifyUsing(window);
-
-  }
-
-  /**
-   * <p>Verify the following:</p>
-   * <ul>
-   * <li>Start with standard wallet fixture</li>
-   * <li>Unlock wallet</li>
-   * <li>Exercise the Payments screen</li>
-   * </ul>
-   */
-  @Test
-  public void verifyPaymentsScreen() throws Exception {
-
-    // Start with the standard hardware wallet fixture
-    arrangeStandard(Optional.<HardwareWalletFixture>absent());
-
-    // Unlock the wallet
-    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
-
-    // Verify
-    PaymentsScreenRequirements.verifyUsing(window);
-
-  }
-
-  /**
-   * <p>Verify the following:</p>
-   * <ul>
    * <li>Start with empty wallet fixture</li>
    * <li>Unlock wallet</li>
    * <li>Exercise the Contacts screen</li>
@@ -539,6 +495,53 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   }
 
   /**
+    * <p>Verify the following:</p>
+    * <ul>
+    * <li>Start with empty wallet fixture (warm)</li>
+    * <li>Unlock the wallet</li>
+    * <li>Send and force a PIN request</li>
+    * </ul>
+    */
+   @Test
+   public void verifySendTrezorScreen() throws Exception {
+
+     // Prepare an initialised and attached Trezor device that will be restored then unlocked
+     HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedUnlockFixture();
+
+     // Start with the empty hardware wallet fixture
+     arrangeStandard(Optional.of(hardwareWalletFixture));
+
+     // Verify up to unlock
+     UnlockTrezorHardwareWalletWarmStartRequirements.verifyUsing(window, hardwareWalletFixture);
+
+     // Verify send workflow
+     TrezorSendBitcoinTrezorRequirements.verifyUsing(window, hardwareWalletFixture);
+
+   }
+
+  /**
+    * <p>Verify the following:</p>
+    * <ul>
+    * <li>Start with standard wallet fixture</li>
+    * <li>Unlock wallet</li>
+    * <li>Exercise the Send/Request screen</li>
+    * </ul>
+    */
+   @Test
+   public void verifySendRequestScreen() throws Exception {
+
+     // Start with the standard hardware wallet fixture
+     arrangeStandard(Optional.<HardwareWalletFixture>absent());
+
+     // Unlock the wallet
+     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
+
+     // Verify
+     SendRequestScreenRequirements.verifyUsing(window);
+
+   }
+
+  /**
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with standard application directory</li>
@@ -556,27 +559,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     // Verify up to unlock
     UnlockTrezorHardwareWalletUnsupportedFirmwareRequirements.verifyUsing(window, hardwareWalletFixture);
-
-  }
-
-  /**
-   * <p>Verify the following:</p>
-   * <ul>
-   * <li>Start with standard application directory</li>
-   * <li>Show the unsupported configuration "passphrase" popover</li>
-   * </ul>
-   */
-  @Test
-  public void verifyUnsupportedTrezorConfiguration_Passphrase() throws Exception {
-
-    // Prepare an initialised and attached Trezor device that will be restored then unlocked
-    HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedUnsupportedConfigurationPassphraseFixture();
-
-    // Start with the empty hardware wallet fixture
-    arrangeStandard(Optional.of(hardwareWalletFixture));
-
-    // Verify up to unlock
-    UnlockTrezorHardwareWalletUnsupportedConfigurationPassphraseRequirements.verifyUsing(window, hardwareWalletFixture);
 
   }
 
@@ -603,30 +585,49 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
   }
 
+
   /**
    * <p>Verify the following:</p>
    * <ul>
-   * <li>Start with empty wallet fixture (warm)</li>
-   * <li>Unlock the wallet</li>
-   * <li>Send and force a PIN request</li>
+   * <li>Start with standard wallet fixture</li>
+   * <li>Unlock wallet</li>
+   * <li>Exercise the Payments screen</li>
    * </ul>
    */
   @Test
-  public void verifySendTrezorScreen() throws Exception {
+  public void verifyPaymentsScreen() throws Exception {
 
-    // Prepare an initialised and attached Trezor device that will be restored then unlocked
-    HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedUnlockFixture();
+    // Start with the standard hardware wallet fixture
+    arrangeStandard(Optional.<HardwareWalletFixture>absent());
 
-    // Start with the empty hardware wallet fixture
-    arrangeStandard(Optional.of(hardwareWalletFixture));
+    // Unlock the wallet
+    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
 
-    // Verify up to unlock
-    UnlockTrezorHardwareWalletWarmStartRequirements.verifyUsing(window, hardwareWalletFixture);
-
-    // Verify send workflow
-    TrezorSendBitcoinTrezorRequirements.verifyUsing(window, hardwareWalletFixture);
+    // Verify
+    PaymentsScreenRequirements.verifyUsing(window);
 
   }
+
+  /**
+    * <p>Verify the following:</p>
+    * <ul>
+    * <li>Start with standard application directory</li>
+    * <li>Show the unsupported configuration "passphrase" popover</li>
+    * </ul>
+    */
+   @Test
+   public void verifyUnsupportedTrezorConfiguration_Passphrase() throws Exception {
+
+     // Prepare an initialised and attached Trezor device that will be restored then unlocked
+     HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedUnsupportedConfigurationPassphraseFixture();
+
+     // Start with the standard hardware wallet fixture
+     arrangeStandard(Optional.of(hardwareWalletFixture));
+
+     // Verify up to unlock
+     UnlockTrezorHardwareWalletUnsupportedConfigurationPassphraseRequirements.verifyUsing(window, hardwareWalletFixture);
+
+   }
 
   ////////////////////////////////////////////////////////////////
 

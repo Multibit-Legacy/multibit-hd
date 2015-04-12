@@ -62,6 +62,8 @@ public class WelcomeWizardCreateWallet_ro_RO_Requirements {
 
     new UnlockReportUseCase(window).execute(parameters);
 
+    Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+
     // Show the manage wallets screen
     new ShowManageWalletScreenUseCase(window).execute(parameters);
 

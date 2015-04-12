@@ -34,17 +34,6 @@ public class TrezorSendBitcoinTrezorRequirements {
 
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
-    // Fill in the notes then click Next
-    new SendEnterNotesUseCase(window).execute(parameters);
-
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-
-    // Fill in the notes then click Next
-    new TrezorEnterPinFromSignTransactionUseCase(window, hardwareWalletFixture).execute(parameters);
-
-    // TODO Add report verification
     new SendNoFundsReportScreenUseCase(window);
-
   }
-
 }
