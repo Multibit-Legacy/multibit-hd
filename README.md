@@ -1,3 +1,4 @@
+
 Build status: [![Build Status](https://travis-ci.org/bitcoin-solutions/multibit-hd.png?branch=develop)](https://travis-ci.org/bitcoin-solutions/multibit-hd)
 
 Coverage status: [![Coverage Status](https://img.shields.io/coveralls/bitcoin-solutions/multibit-hd.svg)](https://coveralls.io/r/bitcoin-solutions/multibit-hd)
