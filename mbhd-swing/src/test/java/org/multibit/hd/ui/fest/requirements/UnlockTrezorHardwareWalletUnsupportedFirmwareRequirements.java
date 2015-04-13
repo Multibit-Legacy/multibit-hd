@@ -7,7 +7,7 @@ import org.multibit.hd.ui.fest.use_cases.credentials.QuickUnlockWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.credentials.UnlockReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorRequestCipherKeyUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorRequestMasterPublicKeyUseCase;
-import org.multibit.hd.ui.fest.use_cases.security.CloseUnsupportedFirmwareSecurityPopoverUseCase;
+import org.multibit.hd.ui.fest.use_cases.environment.CloseUnsupportedFirmwareEnvironmentPopoverUseCase;
 
 import java.util.Map;
 
@@ -33,7 +33,7 @@ public class UnlockTrezorHardwareWalletUnsupportedFirmwareRequirements {
     new TrezorRequestCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Expect "unsupported firmware" popover to be showing
-    new CloseUnsupportedFirmwareSecurityPopoverUseCase(window).execute(null);
+    new CloseUnsupportedFirmwareEnvironmentPopoverUseCase(window).execute(null);
 
     // Unlock the wallet
     new QuickUnlockWalletUseCase(window).execute(null);

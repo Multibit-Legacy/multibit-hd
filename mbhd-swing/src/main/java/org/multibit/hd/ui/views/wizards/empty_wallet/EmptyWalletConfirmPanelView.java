@@ -190,16 +190,10 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
   public void afterShow() {
 
     // Start with Cancel having focus to avoid accidental confirmation
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        getCancelButton().requestFocusInWindow();
-        // Enable the Send button after showing since there is nothing to stop confirmation
-        // It should start disabled to avoid double click skipping the confirmation
-        ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
-
-      }
-    });
+    getCancelButton().requestFocusInWindow();
+    // Enable the Send button after showing since there is nothing to stop confirmation
+    // It should start disabled to avoid double click skipping the confirmation
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
 
   }
 

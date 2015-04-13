@@ -68,49 +68,20 @@
   </issueManagement>
 
   <repositories>
-    <!-- Define the MultiBit staging repository for snapshots
-     GitHub requires mixture of raw text and blob for POMs and JARs -->
+    <!-- Define the MultiBit staging repository for releases and snapshots -->
+    <!-- Use https://rawgithub.com to provide a consistent result -->
     <repository>
-      <id>mbhd-maven-release-raw-text</id>
-      <url>https://raw.githubusercontent.com/bitcoin-solutions/mbhd-maven/master/releases</url>
+      <id>mbhd-maven-release</id>
+      <url>https://rawgithub.com/bitcoin-solutions/mbhd-maven/master/releases</url>
       <releases/>
     </repository>
     <repository>
-      <id>mbhd-maven-release-raw-blob</id>
-      <url>https://github.com/bitcoin-solutions/mbhd-maven/raw/master/releases</url>
-      <releases/>
-    </repository>
-    <repository>
-      <id>mbhd-maven-snapshot-raw-text</id>
-      <url>https://raw.githubusercontent.com/bitcoin-solutions/mbhd-maven/master/snapshots</url>
+      <id>mbhd-maven-snapshot</id>
+      <url>https://rawgithub.com/bitcoin-solutions/mbhd-maven/master/snapshots</url>
       <!-- These artifacts change frequently during development iterations -->
       <snapshots>
         <updatePolicy>always</updatePolicy>
       </snapshots>
-    </repository>
-    <repository>
-      <id>mbhd-maven-snapshot-raw-blob</id>
-      <url>https://github.com/bitcoin-solutions/mbhd-maven/raw/master/snapshots</url>
-      <!-- These artifacts change frequently during development iterations -->
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-    </repository>
-
-    <!-- Bitcoinj releases -->
-    <repository>
-      <id>bitcoinj-releases</id>
-      <name>Bitcoinj Releases</name>
-      <url>http://distribution.bitcoinj.googlecode.com/git/releases</url>
-      <releases/>
-    </repository>
-
-    <!-- ZXing releases -->
-    <repository>
-      <id>mvn-adamgent</id>
-      <name>Adam Gent Maven Repository</name>
-      <url>http://mvn-adamgent.googlecode.com/svn/maven/release</url>
-      <releases/>
     </repository>
 
   </repositories>
@@ -273,10 +244,11 @@
     <dependencies>
 
       <!-- MultiBit Hardware for Trezor integration -->
+      <!-- This also brings in the corresponding bitcoinj-alice artifact transitively -->
       <dependency>
         <groupId>org.multibit.hd.hardware</groupId>
         <artifactId>trezor</artifactId>
-        <version>0.3.0</version>
+        <version>develop-SNAPSHOT</version>
       </dependency>
 
       <!-- Logging is through SLF4J and Logback -->
@@ -293,7 +265,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.0.10</version>
+        <version>1.0.13</version>
       </dependency>
 
       <!-- Google Guava for code utilities -->
@@ -309,13 +281,6 @@
         <groupId>com.google.code.findbugs</groupId>
         <artifactId>annotations</artifactId>
         <version>2.0.1</version>
-      </dependency>
-
-      <!-- Bitcoinj for Bitcoin operations -->
-      <dependency>
-        <groupId>org.bitcoinj</groupId>
-        <artifactId>bitcoinj-core</artifactId>
-        <version>0.13-alice-SNAPSHOT</version>
       </dependency>
 
       <!-- Crypto -->
@@ -379,6 +344,7 @@
   <dependencies>
 
     <!-- MultiBit Hardware for Trezor integration -->
+    <!-- This also brings in the corresponding bitcoinj-alice artifact transitively -->
     <dependency>
       <groupId>org.multibit.hd.hardware</groupId>
       <artifactId>trezor</artifactId>
@@ -406,12 +372,6 @@
       <artifactId>annotations</artifactId>
     </dependency>
 
-    <!-- Bitcoinj for Bitcoin operations -->
-    <dependency>
-      <groupId>org.bitcoinj</groupId>
-      <artifactId>bitcoinj-core</artifactId>
-    </dependency>
-
     <!-- Joda time for timestamps -->
     <dependency>
       <groupId>joda-time</groupId>
@@ -437,7 +397,5 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
     </dependency>
-
   </dependencies>
-
 </project>

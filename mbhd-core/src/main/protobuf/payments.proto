@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 multibit.org
+ * Copyright 2015 multibit.org
  *
  * Licensed under the MIT license (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,10 @@
  
 /* Notes:
  * - To regenerate after editing, run mvn clean package -DupdateProtobuf
+ * - Then manually add the following to the top level generated classes:
+ * // This class is auto-generated so is exempt from warnings and Findbugs
+ * @SuppressWarnings(value="")
+ * @SuppressFBWarnings
  */
 
 option java_package = "org.multibit.hd.core.protobuf";
@@ -44,12 +48,12 @@ option java_outer_classname = "MBHDPaymentsProtos";
 /** 
  * A single payment request (as created on the Request bitcoin screen)
  */
-message PaymentRequest {
+message MBHDPaymentRequest {
   required string address = 1;           // The payment request bitcoin address (as per the bitcoin URI spec)
                                          // Each new request has a distinct address so it can be used as a key for Requests
   
   optional string label = 2;             // The label (as per the bitcoin URI spec)
-  optional int64 amountBTC = 3;         // The bitcoin amount, in satoshi (as per the bitcoin URI spec)
+  optional int64 amountBTC = 3;          // The bitcoin amount, in satoshi (as per the bitcoin URI spec)
   optional FiatPayment amount_fiat = 4;  // The fiat equivalent of the bitcoin amount
   optional string note = 5;              // The private note (this is not included on any QRcode)
   optional int64 date = 6;               // The creation datetime (millis since epoch)
@@ -59,8 +63,8 @@ message PaymentRequest {
  * A single "extra" transaction info (this is data additional to the bitcoinj Transaction)
  */
 message TransactionInfo {
-  required string hash = 1;                 	// The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
-                                            	// The corresponding transaction is expected to be in the wallet.
+  required string hash = 1;                 	  // The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
+                                             	  // The corresponding transaction is expected to be in the wallet.
 
   // id = 2 was used by request_address - removed
   optional FiatPayment amount_fiat = 3;     	  // The fiat amount of the transaction at the time it was first sent or received.
@@ -72,13 +76,32 @@ message TransactionInfo {
 
 
 /**
+ * A single BIP70 payment request
+ */
+message PaymentRequest {
+  required string uuid = 1;     // The UUID of the payment request (the BIP70 payment request itself is stored as a binary file in a directory)
+  optional string hash = 2;     // The transaction hash (i.e. the transaction id as per the wallet Transaction.hash.toString)
+                                // If present the corresponding transaction is expected to be in the wallet.
+
+  optional FiatPayment amount_fiat = 3;  // The fiat equivalent of the bitcoin amount
+  optional int64 amountBTC = 4;          // The bitcoin amount, in satoshi (as per the bitcoin URI spec)
+  optional string note = 5;              // The memo on the BIP70 payment request
+  optional int64 date = 6;               // The creation datetime (millis since epoch)
+  optional string identity_display_name = 7; // The identity display name from the PKI data
+  optional string trust_status = 8;      // The trust status of the payment
+  optional string trust_error_message = 9; // The trust error message
+  optional int64 expiration_date = 10;   // The payment request expiration date
+}
+
+/**
  * The top level message
  */
 message Payments {
-  repeated PaymentRequest payment_request = 1;        // Collection of requests
-  repeated TransactionInfo transaction_info = 2;      // Collection of transactions
+  repeated MBHDPaymentRequest mbhd_payment_request = 1;    // Collection of MBHD payment requests
+  repeated TransactionInfo transaction_info = 2;           // Collection of transactions
+  repeated PaymentRequest payment_request = 4;             // Collection of BIP70 payment requests
 
   // id=3 was used by last_used_used - removed
 
-  // Next tag: 4
+  // Next tag: 5
 }

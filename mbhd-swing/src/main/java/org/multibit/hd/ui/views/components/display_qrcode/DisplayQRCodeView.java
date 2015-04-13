@@ -126,13 +126,8 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
 
         Panels.hideLightBoxPopoverIfPresent();
 
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            // Issue the wizard popover hide event
-            ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
-          }
-        });
+        // Issue the wizard popover hide event
+        ViewEvents.fireWizardPopoverHideEvent(getModel().get().getPanelName(), true);
 
       }
 

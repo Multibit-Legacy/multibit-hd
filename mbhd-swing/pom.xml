@@ -160,8 +160,8 @@
     <!-- ZXing for QR code generation -->
     <dependency>
       <groupId>com.google.zxing</groupId>
-      <artifactId>javase</artifactId>
-      <version>1.6</version>
+      <artifactId>core</artifactId>
+      <version>1.7</version>
     </dependency>
 
   </dependencies>

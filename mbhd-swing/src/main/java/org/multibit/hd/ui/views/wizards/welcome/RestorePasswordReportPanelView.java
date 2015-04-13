@@ -97,7 +97,6 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
 
   @Override
   public void afterShow() {
-
     // Run the decryption on a different thread
     listeningExecutorService.submit(
       new Runnable() {
@@ -106,12 +105,10 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
 
           recoverPassword();
 
-          // Enable the Finish button
+          // Enable the Finish button when it's done
           ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
-
         }
       });
-
   }
 
   @Override
@@ -134,7 +131,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
 
-    // Trezor soft wallets use a diferent salt in creating wallet ids
+    // Trezor soft wallets use a different salt in creating wallet ids
     boolean restoreAsTrezor = model.getRestorePasswordEnterSeedPhraseModel().isRestoreAsTrezor();
     WalletId walletId;
     if (restoreAsTrezor) {
@@ -177,7 +174,6 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
             passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
             AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
             AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
-
           }
         });
       return;
@@ -233,5 +229,4 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
         });
     }
   }
-
 }

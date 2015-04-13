@@ -53,7 +53,7 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
    */
   public UnitsSettingsPanelView(AbstractWizard<UnitsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.UNITS_SETTINGS_TITLE, AwesomeIcon.BITCOIN);
+    super(wizard, panelName, MessageKey.SHOW_UNITS_WIZARD, AwesomeIcon.BITCOIN);
 
   }
 
@@ -154,16 +154,8 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        localSymbolComboBox.requestFocusInWindow();
-
-        displayAmountMaV.getView().updateView(getPanelModel().get().getConfiguration());
-
-      }
-    });
+    localSymbolComboBox.requestFocusInWindow();
+    displayAmountMaV.getView().updateView(getPanelModel().get().getConfiguration());
 
   }
 

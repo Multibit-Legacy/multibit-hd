@@ -40,7 +40,7 @@ $ mvn --version
 
 #### We currently use a forked version of Bitcoinj
 
-The [MultiBit Staging repository](https://github.com/bitcoin-solutions/mbhd-maven) contains a `bitcoinj-0.12-alice` 
+The [MultiBit Staging repository](https://github.com/bitcoin-solutions/mbhd-maven) contains a `bitcoinj-0.13-alice-develop-SNAPSHOT`
 and supporting Orchid JAR for TOR that is aligned with the MultiBit HD `develop` branch. This should be used for 
 development builds and is suitable for production. As we make changes to our fork we update the staging repository. 
 
@@ -53,15 +53,16 @@ To run the application within an IDE, simply execute `MultiBitHD.main()` in the 
 
 #### Start the application (from the command line)
 
-To run the application from the command line, first build from the project root directory:
+To run the application from the command line, first build from the project root directory (pulling in all sources from upstream):
 ```
-$ mvn clean install
+$ mvn clean dependency:sources install
 ```
 then start the application using the shaded JAR:
 ```
 $ java -jar mbhd-swing/target/multibit-hd.jar
 ```
-No command line parameters are needed, although a Bitcoin URI is accepted (the quotes are required to avoid URL decoding):
+No command line parameters are needed, although BIP 21 and BIP 72 Bitcoin URIs are accepted. In the example below a BIP 21 Bitcoin URI
+is presented, the quotes are required to avoid URL decoding:
 ```
 $ java -jar mbhd-swing/target/multibit-hd.jar "bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org"
 ```

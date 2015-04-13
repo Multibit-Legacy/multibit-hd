@@ -98,12 +98,7 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        enterSeedPhraseMaV.getView().requestInitialFocus();
-      }
-    });
+    enterSeedPhraseMaV.getView().requestInitialFocus();
 
   }
 
@@ -138,13 +133,8 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
 
     final boolean finalIsTimestampValid = isTimestampValid;
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        // Fire the "timestamp verified" event
-        ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".timestamp", finalIsTimestampValid);
-      }
-    });
+    // Fire the "timestamp verified" event
+    ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".timestamp", finalIsTimestampValid);
 
     // Confirm credentials will fire its own event
 

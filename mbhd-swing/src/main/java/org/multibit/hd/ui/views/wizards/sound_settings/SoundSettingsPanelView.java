@@ -44,7 +44,7 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
    */
   public SoundSettingsPanelView(AbstractWizard<SoundSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SOUNDS_SETTINGS_TITLE, AwesomeIcon.MUSIC);
+    super(wizard, panelName, MessageKey.SHOW_SOUNDS_WIZARD, AwesomeIcon.MUSIC);
 
   }
 
@@ -131,14 +131,7 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        alertSoundYesNoComboBox.requestFocusInWindow();
-
-      }
-    });
+    alertSoundYesNoComboBox.requestFocusInWindow();
 
   }
 

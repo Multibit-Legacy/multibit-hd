@@ -31,7 +31,7 @@ public class ShowThenCancelUnitsUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the "units" wizard appears
-    assertLabelText(MessageKey.UNITS_SETTINGS_TITLE);
+    assertLabelText(MessageKey.SHOW_UNITS_WIZARD);
 
     // Verify cancel is present
     window

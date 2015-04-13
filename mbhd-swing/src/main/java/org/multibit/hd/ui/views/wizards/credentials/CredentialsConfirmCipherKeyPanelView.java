@@ -51,11 +51,12 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
-    contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[]", // Column constraints
-      "[]10[]" // Row constraints
-    ));
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[]", // Column constraints
+        "[]10[]" // Row constraints
+      ));
 
     trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
 
@@ -76,22 +77,14 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
+    // Set the confirm text
+    trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_UNLOCK_OPERATION);
 
-      @Override public void run() {
+    // Show unlock message
+    trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY);
 
-        // Set the confirm text
-        trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_UNLOCK_OPERATION);
-
-        // Show unlock message
-        trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY);
-
-        // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
-        getFinishButton().setEnabled(false);
-
-      }
-
-    });
+    // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
+    getFinishButton().setEnabled(false);
 
   }
 
@@ -121,24 +114,6 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
     return trezorDisplayMaV.getView();
   }
 
-  /**
-   * @param visible True if the display should not be visible
-   */
-  public void setDisplayVisible(boolean visible) {
-    this.trezorDisplayMaV.getView().setDisplayVisible(visible);
-  }
-
-  public void disableForUnlock() {
-
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
-
-    getFinishButton().setEnabled(false);
-    getExitButton().setEnabled(false);
-
-    trezorDisplayMaV.getView().setSpinnerVisible(true);
-
-  }
-
   public void enableForFailedUnlock() {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
@@ -150,10 +125,7 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
 
   }
 
-  // TODO Check is this is correct
   public void incorrectEntropy() {
-
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
     trezorDisplayMaV.getView().incorrectEntropy();
 

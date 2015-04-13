@@ -36,6 +36,7 @@ wallet:
 licenceAccepted: false
 tor: false
 trezor: true
+showRestoreBeta7Wallets: false
 wibble:
   aardvark: 42
   xray: "hello"

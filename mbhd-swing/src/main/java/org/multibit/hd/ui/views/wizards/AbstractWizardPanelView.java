@@ -5,7 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.events.SecurityEvent;
+import org.multibit.hd.core.events.EnvironmentEvent;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
@@ -15,8 +15,8 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
+import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertModel;
+import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.slf4j.Logger;
@@ -123,7 +123,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
 
     // Add the title to the wizard
     JLabel title = Labels.newTitleLabel(titleKey);
-    wizardScreenPanel.add(title, "span 4," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",shrink 200,aligny top,align center,h 96lp!,wrap");
+    wizardScreenPanel.add(title, "span 4," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",gap 0, shrink 200,aligny top,align center,h 90lp!,wrap");
 
     // Provide a basic empty content panel (allows lazy initialisation later)
     contentPanel = Panels.newDetailBackgroundPanel(backgroundIcon);
@@ -360,6 +360,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    *
    * <p>Typically this is where a panel view would reference the wizard model to obtain earlier values for display</p>
    *
+   * <p>This method is guaranteed to run on the EDT</p>
+   *
    * @return True if the panel can be shown, false if the show operation should be aborted
    */
   public boolean beforeShow() {
@@ -378,18 +380,13 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    * <li>register a default button to speed up keyboard data entry</li>
    * </ul>
    *
-   * the Swing thread as follows:</p>
+   * <p>To set focus to a primary component use this construct:</p>
    *
    * <pre>
-   * SwingUtilities.invokeLater(new Runnable() {
-   *
-   * {@literal @}Override public void run() {
-   *   getCancelButton().requestFocusInWindow();
-   * }
-   *
-   * });
-   *
+   * getCancelButton().requestFocusInWindow();
    * </pre>
+   *
+   * <p>This method is guaranteed to run on the EDT</p>
    */
   public void afterShow() {
 
@@ -398,29 +395,38 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   }
 
   /**
-   * <p>Standard handling for security popovers</p>
+   * <p>Standard handling for environment popovers</p>
    *
-   * @param displaySecurityPopoverMaV The display security popover MaV
+   * @param displayEnvironmentPopoverMaV The display environment popover MaV
    */
-  protected void checkForSecurityEventPopover(ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV) {
+  protected void checkForEnvironmentEventPopover(ModelAndView<DisplayEnvironmentAlertModel, DisplayEnvironmentAlertView> displayEnvironmentPopoverMaV) {
 
-    // Check for any security alerts
-    Optional<SecurityEvent> securityEvent = CoreServices.getApplicationEventService().getLatestSecurityEvent();
+    // Check for any environment alerts
+    Optional<EnvironmentEvent> environmentEvent = CoreServices.getApplicationEventService().getLatestEnvironmentEvent();
 
-    if (securityEvent.isPresent()) {
+    if (environmentEvent.isPresent()) {
 
-      displaySecurityPopoverMaV.getModel().setValue(securityEvent.get());
+      log.debug("Showing environment event popover");
 
-      // Show the security alert as a popover
-      JPanel popoverPanel = displaySecurityPopoverMaV.getView().newComponentPanel();
+      // Provide the event as the model
+      displayEnvironmentPopoverMaV.getModel().setValue(environmentEvent.get());
+
+      // Show the environment alert as a popover
+      JPanel popoverPanel = displayEnvironmentPopoverMaV.getView().newComponentPanel();
 
       // Potentially decorate the panel (or do nothing)
-      switch (securityEvent.get().getSummary().getAlertType()) {
+      switch (environmentEvent.get().getSummary().getAlertType()) {
         case DEBUGGER_ATTACHED:
           popoverPanel.add(Panels.newDebuggerWarning(), "align center,wrap");
           break;
         case UNSUPPORTED_FIRMWARE_ATTACHED:
           popoverPanel.add(Panels.newUnsupportedFirmware(), "align center,wrap");
+          break;
+        case DEPRECATED_FIRMWARE_ATTACHED:
+          popoverPanel.add(Panels.newDeprecatedFirmware(), "align center,wrap");
+          break;
+        case UNSUPPORTED_CONFIGURATION_ATTACHED:
+          popoverPanel.add(Panels.newUnsupportedConfigurationPassphrase(), "align center,wrap");
           break;
         default:
           // Do nothing
@@ -430,9 +436,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
       // Show the popover
       Panels.showLightBoxPopover(popoverPanel);
 
-      // Discard the security event now that the user is aware (this prevents multiple showings)
-      CoreServices.getApplicationEventService().onSecurityEvent(null);
-
+      // Discard the environment event now that the user is aware (this prevents multiple showings)
+      CoreServices.getApplicationEventService().onEnvironmentEvent(null);
 
     }
   }
@@ -441,6 +446,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    * <p>Called before this wizard is about to be hidden.</p>
    *
    * <p>Typically this is where a panel view would {@link #updateFromComponentModels}, but implementations will vary</p>
+   *
+   * <p>This method is guaranteed to run on the EDT</p>
    *
    * @param isExitCancel True if this hide action comes from a exit or cancel operation
    *
@@ -471,7 +478,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    */
   public void deregisterDefaultButton() {
 
-    //   Panels.frame.getRootPane().setDefaultButton(null);
+    Panels.getApplicationFrame().getRootPane().setDefaultButton(null);
 
   }
 

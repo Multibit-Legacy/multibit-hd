@@ -15,7 +15,7 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.ExchangeSummary;
-import org.multibit.hd.core.dto.SecuritySummary;
+import org.multibit.hd.core.dto.EnvironmentSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
@@ -333,7 +333,7 @@ public class ExchangeTickerService extends AbstractService {
             currencyPairs = exchange.get().getPollingMarketDataService().getExchangeSymbols();
           } catch (SSLHandshakeException e) {
             // Inform the user of a serious problem with current certificates
-            CoreEvents.fireSecurityEvent(SecuritySummary.newCertificateFailed());
+            CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newCertificateFailed());
             // Trigger the failure handler
             throw new IllegalStateException(e.getMessage(), e);
           }

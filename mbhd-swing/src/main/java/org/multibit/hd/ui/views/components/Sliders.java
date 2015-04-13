@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
 import org.multibit.hd.brit.services.FeeService;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import javax.swing.*;
@@ -49,9 +48,9 @@ public class Sliders {
 
     // Create the label table
     Hashtable<Integer, JComponent> labelTable = new Hashtable<>();
-    labelTable.put( minimumPosition, new JLabel(Languages.safeText(MessageKey.LOWER)));
-    labelTable.put( defaultPosition, new JLabel(Languages.toCapitalCase(Languages.safeText(MessageKey.DEFAULT))));
-    labelTable.put(maximumPosition, new JLabel(Languages.safeText(MessageKey.HIGHER)));
+    labelTable.put( minimumPosition, Labels.newLabel(MessageKey.LOWER));
+    labelTable.put( defaultPosition, Labels.newDefaultNote());
+    labelTable.put(maximumPosition, Labels.newLabel(MessageKey.HIGHER));
     feePerKBSlider.setLabelTable(labelTable);
     feePerKBSlider.setPaintLabels(true);
 

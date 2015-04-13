@@ -42,7 +42,7 @@ public class SendVerifyRecipientAndCancelContactUseCase extends AbstractFestUseC
     window
       .button(MessageKey.NEXT.getKey())
       .requireVisible()
-      .requireDisabled();
+      .requireEnabled(); // This is due to unrestricted
 
     window
       .button(MessageKey.CANCEL.getKey())

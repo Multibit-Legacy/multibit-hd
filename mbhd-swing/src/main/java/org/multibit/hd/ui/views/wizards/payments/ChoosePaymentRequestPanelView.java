@@ -2,8 +2,9 @@ package org.multibit.hd.ui.views.wizards.payments;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.ComboBoxes;
@@ -16,6 +17,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -29,11 +31,10 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<PaymentsWizardModel, ChoosePaymentRequestPanelModel> implements ActionListener {
 
-  private JComboBox<PaymentRequestData> paymentRequestDataJComboBox;
+  private JComboBox<MBHDPaymentRequestData> paymentRequestDataJComboBox;
   private JLabel paymentRequestInfoLabel;
   private JLabel paymentRequestSelectLabel;
 
@@ -58,21 +59,22 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
-    contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[]10[][]", // Column constraints
-      "10[24]30[24]30[24]10" // Row constraints
-    ));
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[]10[][]", // Column constraints
+        "10[24]30[24]30[24]10" // Row constraints
+      ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    List<PaymentRequestData> matchingPaymentRequestDataList = getWizardModel().getMatchingPaymentRequestList();
-    paymentRequestDataJComboBox = ComboBoxes.newPaymentRequestsComboBox(this, matchingPaymentRequestDataList);
+    List<MBHDPaymentRequestData> matchingMBHDPaymentRequestDataList = getWizardModel().getMatchingPaymentRequestList();
+    paymentRequestDataJComboBox = ComboBoxes.newPaymentRequestsComboBox(this, matchingMBHDPaymentRequestDataList);
     paymentRequestDataJComboBox.setRenderer(new PaymentRequestDataListCellRenderer());
     // initialise model to first payment request in case the user uses the initial setting
-    if (matchingPaymentRequestDataList.size() > 0) {
-      getWizardModel().setPaymentRequestData(matchingPaymentRequestDataList.get(0));
+    if (matchingMBHDPaymentRequestDataList.size() > 0) {
+      getWizardModel().setMBHDPaymentRequestData(matchingMBHDPaymentRequestDataList.get(0));
     }
 
     paymentRequestInfoLabel = Labels.newBlankLabel();
@@ -92,34 +94,24 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
 
   @Override
   public void afterShow() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        // Leave focus on Next button for consistency
-        getNextButton().requestFocusInWindow();
-        getNextButton().setEnabled(true);
-      }
-    });
+    // Leave focus on Next button for consistency
+    getNextButton().requestFocusInWindow();
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
   }
 
   @Override
   public boolean beforeShow() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        int size = getWizardModel().getMatchingPaymentRequestList().size();
-        if (size == 1) {
-          paymentRequestInfoLabel.setText(Languages.safeText(MessageKey.PAYMENT_REQUEST_INFO_SINGULAR));
-        } else {
-          paymentRequestInfoLabel.setText(Languages.safeText(MessageKey.PAYMENT_REQUEST_INFO_PLURAL, size));
-        }
+    int size = getWizardModel().getMatchingPaymentRequestList().size();
+    if (size == 1) {
+      paymentRequestInfoLabel.setText(Languages.safeText(MessageKey.PAYMENT_REQUEST_INFO_SINGULAR));
+    } else {
+      paymentRequestInfoLabel.setText(Languages.safeText(MessageKey.PAYMENT_REQUEST_INFO_PLURAL, size));
+    }
 
-        boolean showComboBox = (size != 0);
-        paymentRequestSelectLabel.setVisible(showComboBox);
-        paymentRequestDataJComboBox.setVisible(showComboBox);
-      }
-    });
+    boolean showComboBox = (size != 0);
+    paymentRequestSelectLabel.setVisible(showComboBox);
+    paymentRequestDataJComboBox.setVisible(showComboBox);
+
     return true;
   }
 
@@ -131,10 +123,10 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
   @SuppressWarnings("unchecked")
   @Override
   public void actionPerformed(ActionEvent e) {
-    JComboBox<PaymentRequestData> source = (JComboBox<PaymentRequestData>) e.getSource();
-    PaymentRequestData paymentRequestData = (PaymentRequestData) source.getSelectedItem();
+    JComboBox<MBHDPaymentRequestData> source = (JComboBox<MBHDPaymentRequestData>) e.getSource();
+    MBHDPaymentRequestData MBHDPaymentRequestData = (MBHDPaymentRequestData) source.getSelectedItem();
 
     // Update the model
-    getWizardModel().setPaymentRequestData(paymentRequestData);
+    getWizardModel().setMBHDPaymentRequestData(MBHDPaymentRequestData);
   }
 }

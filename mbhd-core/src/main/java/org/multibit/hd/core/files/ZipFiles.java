@@ -53,8 +53,10 @@ public class ZipFiles {
 
     try {
       // Add the contents of the srcFolder to the zip - note the top folder (with the wallet id) is not added as it is coded in the name of the zip
-      if (new File(srcFolder).list() != null) {
-        for (String fileName : new File(srcFolder).list()) {
+      String[] srcFolderList = new File(srcFolder).list();
+
+      if (srcFolderList != null) {
+        for (String fileName : srcFolderList) {
           if (!includeBlockStore && fileName.endsWith(InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX)) {
             // Do not include the block chain (to save space)
             continue;
@@ -119,7 +121,7 @@ public class ZipFiles {
     }
   }
 
-  private static void addFileToZip(String path, String srcFile, ZipOutputStream zip, Boolean includeBlockStore)
+  private static void addFileToZip(String path, String srcFile, ZipOutputStream zip, boolean includeBlockStore)
     throws IOException {
 
     File srcFileOnDisk = new File(path + File.separator + srcFile);
@@ -144,7 +146,7 @@ public class ZipFiles {
     }
   }
 
-  private static void addFolderToZip(String path, String srcFolder, ZipOutputStream zip, Boolean includeBlockStore)
+  private static void addFolderToZip(String path, String srcFolder, ZipOutputStream zip, boolean includeBlockStore)
     throws IOException {
 
     File folder = new File(srcFolder);
@@ -155,8 +157,9 @@ public class ZipFiles {
       return;
     }
 
-    if (folderOnDisk.list() != null) {
-      for (String fileName : folderOnDisk.list()) {
+    String[] folderOnDiskList = folderOnDisk.list();
+    if (folderOnDiskList != null) {
+      for (String fileName : folderOnDiskList) {
         if (!includeBlockStore && fileName.endsWith(InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX)) {
           // Do not include the block writeContacts (to save space)
           continue;

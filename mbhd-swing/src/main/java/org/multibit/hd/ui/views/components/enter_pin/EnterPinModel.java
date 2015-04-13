@@ -7,7 +7,6 @@ import org.multibit.hd.ui.models.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,14 +73,8 @@ public class EnterPinModel implements Model<String> {
 
     buttonPositionsPressed.add(buttonPosition);
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        // Alert the panel model that a component has changed
-        ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
-
-      }
-    });
+    // Alert the panel model that a component has changed
+    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
   }
 
   public void removeLastButtonPressed() {
@@ -89,14 +82,8 @@ public class EnterPinModel implements Model<String> {
     if (!buttonPositionsPressed.isEmpty()) {
       buttonPositionsPressed.remove(buttonPositionsPressed.size() - 1);
 
-
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          // Alert the panel model that a component has changed
-          ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
-        }
-      });
+      // Alert the panel model that a component has changed
+      ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
 
     }
 

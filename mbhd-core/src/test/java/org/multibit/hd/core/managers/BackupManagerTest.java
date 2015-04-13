@@ -18,6 +18,7 @@ package org.multibit.hd.core.managers;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.bitcoinj.core.Wallet;
+import org.bitcoinj.crypto.MnemonicCode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +35,6 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -66,7 +66,7 @@ public class BackupManagerTest {
   }
 
   @Test
-  public void testBackupWallet() throws IOException {
+  public void testBackupWallet() throws Exception {
 
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
@@ -81,21 +81,24 @@ public class BackupManagerTest {
 
     // Create a temporary seed phrase
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+    List<String> seedPhraseList = Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1);
+    byte[] entropy = MnemonicCode.INSTANCE.toEntropy(seedPhraseList);
+    byte[] seed = seedGenerator.convertToSeed(seedPhraseList);
     long nowInSeconds = Dates.nowInSeconds();
     String password = "credentials";
 
     // Create a wallet summary (requires a backup manager to be in place)
     WalletSummary walletSummary = WalletManager
       .INSTANCE
-      .getOrCreateMBHDSoftWalletSummaryFromSeed(
+      .getOrCreateMBHDSoftWalletSummaryFromEntropy(
               applicationDirectory,
+              entropy,
               seed,
               nowInSeconds,
               password,
               "Example",
               "Example",
-        true);
+              true);
 
     // Wallet manager does not initiate the backup
     BackupManager.INSTANCE.createRollingBackup(walletSummary, password);

@@ -5,7 +5,6 @@ import org.bitcoinj.core.Coin;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
-import javax.swing.*;
 import java.math.BigDecimal;
 
 /**
@@ -63,13 +62,8 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
 
     coinAmount = Optional.of(value);
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        // Fire a component model updated event
-        ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
-      }
-    });
+    // Fire a component model updated event
+    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
   }
 
   /**

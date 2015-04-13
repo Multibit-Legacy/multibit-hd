@@ -38,7 +38,59 @@ public class MessageEventFixtures {
 
     Features features = new Features();
     features.setVendor("bitcointrezor.com");
-    features.setVersion("1.3.0");
+    features.setVersion("1.3.3");
+    features.setBootloaderMode(false);
+    features.setDeviceId("5DE10270051613895EEB68ED");
+    features.setPinProtection(true);
+    features.setPassphraseProtection(false);
+    features.setLanguage("english");
+    features.setLabel(STANDARD_LABEL);
+    features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin", "Dogecoin", "Dash"));
+    features.setInitialized(true);
+    features.setRevision(Utils.HEX.decode("0cc270e6df3eca352eb8c72b602b7d5a0633b086"));
+    features.setBootloaderHash(Utils.HEX.decode("a03e7e8e9da0b92d3d4b39efff38673512ececc56db602303022e5e87be12261"));
+    features.setImported(false);
+    features.setSupported(true);
+
+    return features;
+
+  }
+
+  /**
+   * @return A "wiped" Features for use with FEST testing (abandon wallet)
+   */
+  public static Features newWipedFeatures() {
+
+    Features features = new Features();
+    features.setVendor("bitcointrezor.com");
+    features.setVersion("1.3.3");
+    features.setBootloaderMode(false);
+    features.setDeviceId("5DE10270051613895EEB68ED");
+    features.setPinProtection(true);
+    features.setPassphraseProtection(false);
+    features.setLanguage("english");
+    features.setLabel(STANDARD_LABEL);
+    features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin", "Dogecoin", "Dash"));
+    features.setRevision(Utils.HEX.decode("0cc270e6df3eca352eb8c72b602b7d5a0633b086"));
+    features.setBootloaderHash(Utils.HEX.decode("a03e7e8e9da0b92d3d4b39efff38673512ececc56db602303022e5e87be12261"));
+    features.setImported(false);
+    features.setSupported(true);
+
+    // Non-standard
+    features.setInitialized(false);
+
+    return features;
+
+  }
+
+  /**
+   * @return An "initialised" Features for use with FEST testing (abandon wallet) with unsupported firmware (1.2.0)
+   */
+  public static Features newUnsupportedFirmwareFeatures() {
+
+    Features features = new Features();
+    features.setVendor("bitcointrezor.com");
+    features.setVersion("1.2.1"); // Fails firmware
     features.setBootloaderMode(false);
     features.setDeviceId("D18894FA25FA90CD589EDE57");
     features.setPinProtection(true);
@@ -56,37 +108,40 @@ public class MessageEventFixtures {
   }
 
   /**
-   * @return A "wiped" Features for use with FEST testing (abandon wallet)
+   * @return An "initialised" Features for use with FEST testing (abandon wallet) with unsupported configuration ("passphrase")
    */
-  public static Features newWipedFeatures() {
+  public static Features newUnsupportedConfigurationPassphraseFeatures() {
 
     Features features = new Features();
     features.setVendor("bitcointrezor.com");
-    features.setVersion("1.3.0");
+    features.setVersion("1.3.3");
     features.setBootloaderMode(false);
-    features.setDeviceId("D18894FA25FA90CD589EDE57");
-    features.setPinProtection(false);
-    features.setPassphraseProtection(false);
+    features.setDeviceId("5DE10270051613895EEB68ED");
+    features.setInitialized(false);
+    features.setPinProtection(true);
     features.setLanguage("english");
     features.setLabel(STANDARD_LABEL);
-    features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin"));
-    features.setInitialized(false);
-    features.setRevision(Utils.HEX.decode("524f2a957afb66e6a869384aceaca1cb7f9cba60"));
-    features.setBootloaderHash(Utils.HEX.decode("c4c32539b4a025a8e753a4c46264285911a45fcb14f4718179e711b1ce990524"));
+    features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin", "Dogecoin", "Dash"));
+    features.setRevision(Utils.HEX.decode("0cc270e6df3eca352eb8c72b602b7d5a0633b086"));
+    features.setBootloaderHash(Utils.HEX.decode("a03e7e8e9da0b92d3d4b39efff38673512ececc56db602303022e5e87be12261"));
     features.setImported(false);
+    features.setSupported(true);
+
+    // Non-standard
+    features.setPassphraseProtection(true);
 
     return features;
 
   }
 
   /**
-   * @return An "initialised" Features for use with FEST testing (abandon wallet) with unsupported firmware (1.2.0)
+   * @return An "initialised" Features for use with FEST testing (abandon wallet) with deprecated firmware ("1.3.0")
    */
-  public static Features newUnsupportedFirmwareFeatures() {
+  public static Features newDeprecatedFirmwareFeatures() {
 
     Features features = new Features();
     features.setVendor("bitcointrezor.com");
-    features.setVersion("1.2.1");
+    features.setVersion("1.3.0");
     features.setBootloaderMode(false);
     features.setDeviceId("D18894FA25FA90CD589EDE57");
     features.setPinProtection(true);

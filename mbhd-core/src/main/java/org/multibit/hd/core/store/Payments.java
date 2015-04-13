@@ -1,6 +1,7 @@
 package org.multibit.hd.core.store;
 
 import com.google.common.collect.Lists;
+import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.core.dto.PaymentRequestData;
 
 import java.util.Collection;
@@ -10,33 +11,50 @@ import java.util.Collection;
  * <ul>
  * <li>Top level encapsulating class around payment requests and transaction info</li>
  * </p>
- *
  */
-
 public class Payments {
 
-  private Collection<PaymentRequestData> paymentRequestDatas;
+  private Collection<MBHDPaymentRequestData> MBHDPaymentRequestDataCollection;
 
-  private Collection<TransactionInfo> transactionInfos;
+  private Collection<TransactionInfo> transactionInfoCollection;
+
+  private Collection<PaymentRequestData> paymentRequestDataCollection;
 
   public Payments() {
-    this.paymentRequestDatas = Lists.newArrayList();
-    this.transactionInfos = Lists.newArrayList();
+    this.MBHDPaymentRequestDataCollection = Lists.newArrayList();
+    this.transactionInfoCollection = Lists.newArrayList();
   }
 
-  public Collection<PaymentRequestData> getPaymentRequestDatas() {
-    return paymentRequestDatas;
+  /**
+   * @return The MBHD PaymentRequest collection
+   */
+  public Collection<MBHDPaymentRequestData> getMBHDPaymentRequestDataCollection() {
+    return MBHDPaymentRequestDataCollection;
   }
 
-  public void setPaymentRequestDatas(Collection<PaymentRequestData> paymentRequestDatas) {
-    this.paymentRequestDatas = paymentRequestDatas;
+  public void setMBHDPaymentRequestDataCollection(Collection<MBHDPaymentRequestData> MBHDPaymentRequestDataCollection) {
+    this.MBHDPaymentRequestDataCollection = MBHDPaymentRequestDataCollection;
   }
 
-  public Collection<TransactionInfo> getTransactionInfos() {
-    return transactionInfos;
+  /**
+   * @return The BIP70 PaymentRequestData collection
+   */
+  public Collection<PaymentRequestData> getPaymentRequestDataCollection() {
+    return paymentRequestDataCollection;
   }
 
-  public void setTransactionInfos(Collection<TransactionInfo> transactionInfos) {
-    this.transactionInfos = transactionInfos;
+  public void setPaymentRequestDataCollection(Collection<PaymentRequestData> paymentRequestDataCollection) {
+    this.paymentRequestDataCollection = paymentRequestDataCollection;
+  }
+
+  /**
+   * @return The TransactionInfo collection
+   */
+  public Collection<TransactionInfo> getTransactionInfoCollection() {
+    return transactionInfoCollection;
+  }
+
+  public void setTransactionInfoCollection(Collection<TransactionInfo> transactionInfoCollection) {
+    this.transactionInfoCollection = transactionInfoCollection;
   }
 }

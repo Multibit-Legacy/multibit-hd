@@ -9,16 +9,6 @@ package org.multibit.hd.core.dto;
  *
  */
 public enum PaymentType {
-  /**
-   * The payment has been requested, using the 'Request bitcoin' screen but no transaction to that address
-   * has been received.
-   */
-  REQUESTED(CoreMessageKey.PAYMENT_REQUESTED),
-
-  /**
-   * The payment has been partly paid - some bitcoin has been received but less than the amount requested
-   */
-  PART_PAID(CoreMessageKey.PAYMENT_PART_PAID),
 
   /**
    * The payment has been fully paid
@@ -26,14 +16,30 @@ public enum PaymentType {
   PAID(CoreMessageKey.PAYMENT_PAID),
 
   /**
+   * The payment has been partly paid - some bitcoin has been received but less than the amount requested
+   */
+  PART_PAID(CoreMessageKey.PAYMENT_PART_PAID),
+
+  /**
+    * The transaction has been received i.e at least one confirmation
+    */
+  RECEIVED(CoreMessageKey.PAYMENT_RECEIVED),
+
+  /**
    * The transaction is currently being received to the wallet i.e. zero confirmation
    */
   RECEIVING(CoreMessageKey.PAYMENT_RECEIVING),
 
   /**
-   * The transaction has been received i.e at least one confirmation
+    * The payment has been requested, using the 'Request bitcoin' screen but no transaction to that address
+    * has been received.
+    */
+  YOU_REQUESTED(CoreMessageKey.PAYMENT_REQUESTED_BY_YOU),
+
+  /**
+   * A BIP70 payment request has been received but it is not paid yet
    */
-  RECEIVED(CoreMessageKey.PAYMENT_RECEIVED),
+  THEY_REQUESTED(CoreMessageKey.PAYMENT_REQUESTED_BY_THEM),
 
   /**
    * The transaction is currently being sent i.e. zero confirmation

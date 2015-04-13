@@ -82,12 +82,7 @@ public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPan
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        selectFileMaV.getView().requestInitialFocus();
-      }
-    });
+    selectFileMaV.getView().requestInitialFocus();
 
   }
 

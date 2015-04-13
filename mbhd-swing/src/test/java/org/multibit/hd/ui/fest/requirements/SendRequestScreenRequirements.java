@@ -30,14 +30,15 @@ public class SendRequestScreenRequirements {
     new ShowSendRequestScreenUseCase(window).execute(parameters);
 
     // Send
-    verifySend(window, parameters);
+    verifySend_Simple(window, parameters);
+    verifySend_PaymentProtocol(window, parameters);
 
     // Request
     verifyRequest(window, parameters);
 
   }
 
-  private static void verifySend(FrameFixture window, Map<String, Object> parameters) {
+  private static void verifySend_Simple(FrameFixture window, Map<String, Object> parameters) {
 
     // Click Send then immediately Cancel
     new ShowSendThenCancelUseCase(window).execute(parameters);
@@ -55,7 +56,7 @@ public class SendRequestScreenRequirements {
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Click Send and fill in the amount panel
-    new SendNoFundsAmountScreenUseCase(window).execute(parameters);
+    new SendEnterAmountUseCase(window).execute(parameters);
 
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
@@ -63,6 +64,16 @@ public class SendRequestScreenRequirements {
     new SendNoFundsReportScreenUseCase(window).execute(parameters);
 
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+  }
+
+  private static void verifySend_PaymentProtocol(FrameFixture window, Map<String, Object> parameters) {
+
+    new SendDisplayUntrustedPaymentRequestUseCase(window).execute(parameters);
+
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
+    new SendDisplayTrustedPaymentRequestUseCase(window).execute(parameters);
+
   }
 
   private static void verifyRequest(FrameFixture window, Map<String, Object> parameters) {

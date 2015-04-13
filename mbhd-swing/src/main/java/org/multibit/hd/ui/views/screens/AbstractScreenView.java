@@ -197,5 +197,4 @@ public abstract class AbstractScreenView<M extends ScreenModel> {
   public void onScreenComponentModelChangedEvent(ScreenComponentModelChangedEvent event) {
 
   }
-
 }

@@ -132,8 +132,6 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
     BitcoinNetworkSummary summary = event.getSummary();
 
     Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
-    Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
-    Preconditions.checkNotNull(summary.getMessageData(), "'errorData' must be present");
 
     // Keep the UI response to a minimum due to the volume of these events
     updateEmptyButton(event);
@@ -307,19 +305,22 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
         throw new IllegalStateException("Unknown event severity " + event.getSummary().getSeverity());
     }
 
-    log.debug("BitcoinNetworkChangedEvent = {}, showEmptyWalletButton.isEnabled() = {}, newEnabled = {}, canChange = {}", event, showEmptyWalletButton.isEnabled(), newEnabled, canChange);
+    log.trace("BitcoinNetworkChangedEvent = {}, showEmptyWalletButton.isEnabled() = {}, newEnabled = {}, canChange = {}", event, showEmptyWalletButton.isEnabled(), newEnabled, canChange);
 
     if (canChange) {
       final boolean finalNewEnabled = newEnabled;
 
-      SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            log.debug("Changing button enable state, newEnabled = " + finalNewEnabled);
-            showEmptyWalletButton.setEnabled(finalNewEnabled);
-          }
-        });
+      // If button is not enabled and the newEnabled is false don't do anything
+      if (showEmptyWalletButton.isEnabled() || newEnabled) {
+        SwingUtilities.invokeLater(
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    log.debug("Changing button enable state, newEnabled = " + finalNewEnabled);
+                    showEmptyWalletButton.setEnabled(finalNewEnabled);
+                  }
+                });
+      }
     }
   }
 }

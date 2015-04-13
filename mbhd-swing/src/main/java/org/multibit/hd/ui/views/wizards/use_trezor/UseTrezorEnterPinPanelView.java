@@ -7,8 +7,8 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
+import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertModel;
+import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertView;
 import org.multibit.hd.ui.views.components.enter_pin.EnterPinModel;
 import org.multibit.hd.ui.views.components.enter_pin.EnterPinView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -35,7 +35,7 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
   private static final Logger log = LoggerFactory.getLogger(UseTrezorEnterPinPanelView.class);
 
   // Panel specific components
-  private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
+  private ModelAndView<DisplayEnvironmentAlertModel, DisplayEnvironmentAlertView> displayEnvironmentPopoverMaV;
   private ModelAndView<EnterPinModel, EnterPinView> enterPinMaV;
 
   /**
@@ -50,7 +50,7 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
   @Override
   public void newPanelModel() {
 
-    displaySecurityPopoverMaV = Popovers.newDisplaySecurityPopoverMaV(getPanelName());
+    displayEnvironmentPopoverMaV = Popovers.newDisplayEnvironmentPopoverMaV(getPanelName());
     enterPinMaV = Components.newEnterPinMaV(getPanelName());
 
     // Configure the panel model
@@ -64,7 +64,7 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
     getWizardModel().setEnterPinPanelView(this);
 
     // Register components
-    registerComponents(displaySecurityPopoverMaV, enterPinMaV);
+    registerComponents(displayEnvironmentPopoverMaV, enterPinMaV);
 
   }
 
@@ -113,19 +113,11 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
     // Finally check that the firmware is supported (we do not tolerate any absent values at this point)
     final boolean enabled = CoreServices.getOrCreateHardwareWalletService().get().getContext().getFeatures().get().isSupported();
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
+    enterPinMaV.getView().requestInitialFocus();
+    enterPinMaV.getView().setEnabled(enabled);
 
-          enterPinMaV.getView().requestInitialFocus();
-          enterPinMaV.getView().setEnabled(enabled);
-
-          // This requires a security popover check
-          checkForSecurityEventPopover(displaySecurityPopoverMaV);
-
-        }
-      });
+    // This requires a environment popover check
+    checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
 
   }
 
@@ -137,19 +129,10 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
       return true;
     }
 
-    // Start the spinner (we are deferring the hide)
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-
-          // Ensure the view disables components
-          getFinishButton().setEnabled(false);
-          getCancelButton().setEnabled(false);
-          getRestoreButton().setEnabled(false);
-
-        }
-      });
+    // Ensure the view disables components
+    getFinishButton().setEnabled(false);
+    getCancelButton().setEnabled(false);
+    getRestoreButton().setEnabled(false);
 
     // Use the wizard model to handle the traffic to the Trezor
     getWizardModel().requestPinCheck(enterPinMaV.getModel().getValue());

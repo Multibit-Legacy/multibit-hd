@@ -6,12 +6,13 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.ExchangeSummary;
 import org.multibit.hd.core.dto.HistoryEntry;
-import org.multibit.hd.core.dto.SecuritySummary;
+import org.multibit.hd.core.dto.EnvironmentSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,10 @@ public class CoreEvents {
   private static ListeningExecutorService eventExecutor = SafeExecutors.newFixedThreadPool(10, "core-events");
 
   // Provide a slower transaction seen thread that is isolated from the EDT
-  private static ListeningScheduledExecutorService txSeenExecutor = SafeExecutors.newSingleThreadScheduledExecutor("tx-seen");
+  // See http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html, section "Fixing Double-Checked Locking using Volatile"
+  private static volatile Optional<ListeningScheduledExecutorService> txSeenExecutorOptional = Optional.absent();
+  private static boolean creatingTxSeenExecutor = false;
+  private static final Object txSeenExecutorLock = new Object();
 
   /**
    * Use Guava to handle subscribers to events
@@ -202,6 +206,24 @@ public class CoreEvents {
         }
       });
   }
+
+  /**
+    * <p>Broadcast PaymentSentToRequestorEvent </p>
+    *
+    * @param paymentSentToRequestorEvent containing send information
+    */
+   public static void firePaymentSentToRequestorEvent(final PaymentSentToRequestorEvent paymentSentToRequestorEvent) {
+
+     eventExecutor.submit(
+       new Runnable() {
+         @Override
+         public void run() {
+           log.trace("Firing 'PaymentSentToRequestorEvent' event");
+           coreEventBus.post(paymentSentToRequestorEvent);
+         }
+       });
+   }
+
   /**
     * <p>Broadcast BitcoinSendingEvent</p>
     *
@@ -256,15 +278,46 @@ public class CoreEvents {
    *
    * @param transactionSeenEvent containing transaction information
    */
+  @SuppressFBWarnings({"DC_DOUBLECHECK"})
   public static void fireTransactionSeenEvent(final TransactionSeenEvent transactionSeenEvent) {
+    // If no txSeenExecutor construct it
+    if (!txSeenExecutorOptional.isPresent() && !creatingTxSeenExecutor) {
+      // Create inside a synchronized
+      synchronized (txSeenExecutorLock) {
+        // Double check creation condition inside synchronize
+        if (!txSeenExecutorOptional.isPresent() && !creatingTxSeenExecutor) {
+          // Mark that creation has started - this takes about 600 ms
+          creatingTxSeenExecutor = true;
+          txSeenExecutorOptional = Optional.of(SafeExecutors.newSingleThreadScheduledExecutor("tx-seen"));
+          creatingTxSeenExecutor = false;
+        }
+      }
+    }
 
     // Use the tx-seen pool
-    txSeenExecutor.submit(
+    if (txSeenExecutorOptional.isPresent()) {
+      txSeenExecutorOptional.get().submit(
+              new Runnable() {
+                @Override
+                public void run() {
+                  coreEventBus.post(transactionSeenEvent);
+                  consolidateTransactionSeenEvents();
+                }
+              });
+    }
+  }
+
+  /**
+   * <p>Broadcast BitcoinSendProgressEvent</p>
+   *
+   * @param bitcoinSendProgressEvent containing transaction broadcast progress information
+   */
+  public static void fireBitcoinSendProgressEvent(final BitcoinSendProgressEvent bitcoinSendProgressEvent) {
+    eventExecutor.submit(
       new Runnable() {
         @Override
         public void run() {
-          coreEventBus.post(transactionSeenEvent);
-          consolidateTransactionSeenEvents();
+          coreEventBus.post(bitcoinSendProgressEvent);
         }
       });
   }
@@ -278,17 +331,17 @@ public class CoreEvents {
       if (!waitingToFireSlowTransactionSeenEvent) {
         // Fire in the future
         waitingToFireSlowTransactionSeenEvent = true;
-        txSeenExecutor.schedule(
-          new Callable() {
-            @Override
-            public Object call() throws Exception {
-              coreEventBus.post(new SlowTransactionSeenEvent());
-              synchronized (lockObject) {
-                waitingToFireSlowTransactionSeenEvent = false;
-              }
-              return null;
-            }
-          }, 1, TimeUnit.SECONDS);
+        txSeenExecutorOptional.get().schedule(
+                new Callable() {
+                  @Override
+                  public Object call() throws Exception {
+                    coreEventBus.post(new SlowTransactionSeenEvent());
+                    synchronized (lockObject) {
+                      waitingToFireSlowTransactionSeenEvent = false;
+                    }
+                    return null;
+                  }
+                }, 300, TimeUnit.MILLISECONDS);
       }
     }
 
@@ -314,17 +367,17 @@ public class CoreEvents {
   }
 
   /**
-   * <p>Broadcast a new "security" event</p>
+   * <p>Broadcast a new "environment" event</p>
    *
-   * @param securitySummary The security summary
+   * @param environmentSummary The environment summary
    */
-  public static void fireSecurityEvent(final SecuritySummary securitySummary) {
+  public static void fireEnvironmentEvent(final EnvironmentSummary environmentSummary) {
     eventExecutor.submit(
       new Runnable() {
         @Override
         public void run() {
-          log.trace("Firing 'security' event");
-          coreEventBus.post(new SecurityEvent(securitySummary));
+          log.trace("Firing 'environment' event");
+          coreEventBus.post(new EnvironmentEvent(environmentSummary));
         }
       });
   }

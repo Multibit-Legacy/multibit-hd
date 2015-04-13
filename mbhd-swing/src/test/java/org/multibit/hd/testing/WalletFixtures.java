@@ -3,6 +3,7 @@ package org.multibit.hd.testing;
 import com.google.common.io.ByteStreams;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.crypto.HDKeyDerivation;
+import org.bitcoinj.crypto.MnemonicCode;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.dto.WalletSummary;
@@ -23,7 +24,7 @@ import java.util.List;
  * <li>Repeatable wallet scenarios</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.5
  *
  */
 public class WalletFixtures {
@@ -87,7 +88,7 @@ public class WalletFixtures {
    *
    * @return The wallet summary if successful
    */
-  public static WalletSummary createEmptyMBHDSoftWalletFixture() throws IOException {
+  public static WalletSummary createEmptyMBHDSoftWalletFixture() throws Exception {
 
     String applicationDirectoryName = InstallationManager
       .getOrCreateApplicationDataDirectory()
@@ -98,18 +99,20 @@ public class WalletFixtures {
     List<String> seedPhrase = Bip39SeedPhraseGenerator.split(EMPTY_WALLET_SEED_PHRASE);
 
     WalletManager walletManager = WalletManager.INSTANCE;
+    byte[] entropy = MnemonicCode.INSTANCE.toEntropy(seedPhrase);
     byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    return walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
-      new File(applicationDirectoryName),
-      seed,
-      nowInSeconds,
-      STANDARD_PASSWORD,
-      "Example MBHD soft wallet",
-      "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.",
-      false); // No need to sync
+    return walletManager.getOrCreateMBHDSoftWalletSummaryFromEntropy(
+            new File(applicationDirectoryName),
+            entropy,
+            seed,
+            nowInSeconds,
+            STANDARD_PASSWORD,
+            "Example MBHD soft wallet",
+            "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.",
+            false); // No need to sync
   }
 
   /**

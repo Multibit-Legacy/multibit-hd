@@ -3,7 +3,7 @@ package org.multibit.hd.ui.fest.requirements;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.credentials.RestoreButtonUseCase;
-import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
+import org.multibit.hd.ui.fest.use_cases.environment.CloseDebugEnvironmentPopoverUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectExistingWalletUseCase;
 
 import java.util.Map;
@@ -22,7 +22,7 @@ public class WelcomeWizardUseExistingWalletRequirements {
 
     Map<String, Object> parameters = Maps.newHashMap();
 
-    new CloseDebugSecurityPopoverUseCase(window).execute(parameters);
+    new CloseDebugEnvironmentPopoverUseCase(window).execute(parameters);
 
     // Start the restore process to access the welcome wizard
     new RestoreButtonUseCase(window).execute(parameters);

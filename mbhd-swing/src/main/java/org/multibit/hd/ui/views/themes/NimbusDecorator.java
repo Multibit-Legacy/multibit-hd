@@ -68,6 +68,15 @@ public class NimbusDecorator {
     buttonTheme.put("Button[Pressed].backgroundPainter", new NamedButtonRegionPainter(color, NamedButtonRegionPainter.BACKGROUND_PRESSED));
     buttonTheme.put("Button[Focused+Pressed].backgroundPainter", new NamedButtonRegionPainter(color, NamedButtonRegionPainter.BACKGROUND_PRESSED_FOCUSED));
 
+    // The commented out section provides the default button coloring but the effect is not straightforward
+    // and involves time consuming selection of color values in NimbusButtonRegionPainter to get right
+//    buttonTheme.put("Button[Default].backgroundPainter", new NamedButtonRegionPainter(color, NamedButtonRegionPainter.BACKGROUND_DEFAULT));
+//    buttonTheme.put("Button[Default+Focused].backgroundPainter", new NamedButtonRegionPainter(color, NamedButtonRegionPainter.BACKGROUND_DEFAULT_FOCUSED));
+//    buttonTheme.put("Button[Default+MouseOver].backgroundPainter", new NamedButtonRegionPainter(color, NamedButtonRegionPainter.BACKGROUND_MOUSEOVER_DEFAULT));
+//    buttonTheme.put("Button[Default+Focused+MouseOver].backgroundPainter", new NamedButtonRegionPainter(color, NamedButtonRegionPainter.BACKGROUND_MOUSEOVER_DEFAULT_FOCUSED));
+//    buttonTheme.put("Button[Default+Pressed].backgroundPainter", new NamedButtonRegionPainter(color, NamedButtonRegionPainter.BACKGROUND_PRESSED_DEFAULT));
+//    buttonTheme.put("Button[Default+Focused+Pressed].backgroundPainter", new NamedButtonRegionPainter(color, NamedButtonRegionPainter.BACKGROUND_PRESSED_DEFAULT_FOCUSED));
+
     // Add the theme to the component
     button.putClientProperty("Nimbus.Overrides.InheritDefaults", Boolean.TRUE);
     button.putClientProperty("Nimbus.Overrides", buttonTheme);

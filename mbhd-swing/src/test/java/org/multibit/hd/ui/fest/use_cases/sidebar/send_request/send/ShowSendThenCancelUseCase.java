@@ -41,8 +41,7 @@ public class ShowSendThenCancelUseCase extends AbstractFestUseCase {
     // Verify buttons
     window
       .button(MessageKey.NEXT.getKey())
-      .requireVisible()
-      .requireDisabled();
+      .requireEnabled(); // This is due to unrestricted
 
     // Verify empty fields to start
     window

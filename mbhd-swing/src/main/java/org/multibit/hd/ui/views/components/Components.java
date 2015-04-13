@@ -66,7 +66,7 @@ public class Components {
   /**
    * <p>A "display payments" panel provides summary details of the current wallet</p>
    *
-   * @return A new "walletDetail" panel
+   * @return A new "display payments" panel
    */
   public static ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> newDisplayPaymentsMaV(String panelName) {
 

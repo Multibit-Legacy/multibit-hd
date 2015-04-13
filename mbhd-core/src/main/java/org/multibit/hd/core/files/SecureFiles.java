@@ -30,6 +30,8 @@ public class SecureFiles {
 
   private static SecureRandom secureRandom = new SecureRandom();
 
+  private static boolean initialised = false;
+
    // Nonsense bytes to fill up deleted files - these have no meaning.
   static final byte[] NONSENSE_BYTES = new byte[]{(byte) 0xF0, (byte) 0xA6, (byte) 0x55, (byte) 0xAA, (byte) 0x33,
     (byte) 0x77, (byte) 0x33, (byte) 0x37, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0x78, (byte) 0xC2, (byte) 0xB3,
@@ -42,7 +44,7 @@ public class SecureFiles {
   static final int BULKING_UP_FACTOR = 16;
   static final byte[] SECURE_DELETE_FILL_BYTES = new byte[NONSENSE_BYTES.length * BULKING_UP_FACTOR];
 
-  static {
+  private static void initialise() {
     // Make some SECURE_DELETE_FILL_BYTES bytes = x BULKING_UP_FACTOR the
     // NONSENSE just to save write time.
     for (int i = 0; i < BULKING_UP_FACTOR; i++) {
@@ -51,6 +53,7 @@ public class SecureFiles {
         SECURE_DELETE_FILL_BYTES, NONSENSE_BYTES.length * i,
         NONSENSE_BYTES.length);
     }
+    initialised = true;
   }
 
   /**
@@ -69,8 +72,10 @@ public class SecureFiles {
    * @throws java.io.IOException if the operation fails for any reason
    */
   public static synchronized void secureDelete(File file) throws IOException {
+    if (!initialised) {
+      initialise();
+    }
 
-    long start = System.currentTimeMillis();
     log.trace("Start of secureDelete");
 
     if (Utils.isWindows()) {
@@ -80,8 +85,6 @@ public class SecureFiles {
       fastSecureDelete(file);
     }
     log.trace("End of secureDelete");
-    log.debug("Secure delete took {} milliseconds", System.currentTimeMillis() - start);
-
   }
 
   /**
@@ -305,7 +308,6 @@ public class SecureFiles {
    * Securely write a file to the file system using temporary file then renaming to the destination
    */
   public static void writeFile(InputStream inputStream, File tempFile, File destFile) throws IOException {
-
     try (OutputStream tempStream = new FileOutputStream(tempFile)) {
       // Copy the original to the temporary location
       ByteStreams.copy(inputStream, tempStream);
@@ -314,20 +316,41 @@ public class SecureFiles {
       tempStream.flush();
     }
 
+    rename(tempFile, destFile);
+  }
+
+  /**
+    * Securely write a file to the file system.
+    * This variant does not use a temporary file
+    */
+   public static void writeFile(InputStream inputStream, File destFile) throws IOException {
+     try (OutputStream destStream = new FileOutputStream(destFile)) {
+       // Copy the original to the destination location
+       ByteStreams.copy(inputStream, destStream);
+       // Attempt to force the bits to hit the disk. In reality the OS or hard disk itself may still decide
+       // to not write through to physical media for at least a few seconds, but this is the best we can do.
+       destStream.flush();
+     }
+   }
+
+  /**
+   * Rename oldFile to newFile
+   * @param oldFile
+   * @param newFile
+   */
+  public static void rename(File oldFile, File newFile) throws IOException{
     // Use JDK7 NIO Files to move the file since it offers the following benefits:
     // * best chance at an atomic operation
     // * relies on native code
     // * ensures destination is deleted
     // * performs a rename where possible to reduce data corruption if power fails
     // * works on Windows
-    Path tempFilePath = tempFile.toPath();
-    Path destFilePath = destFile.toPath();
+    Path oldFilePath = oldFile.toPath();
+    Path newFilePath = newFile.toPath();
     java.nio.file.Files.move(
-            tempFilePath,
-            destFilePath,
+            oldFilePath,
+            newFilePath,
             StandardCopyOption.REPLACE_EXISTING
     );
-
   }
-
 }

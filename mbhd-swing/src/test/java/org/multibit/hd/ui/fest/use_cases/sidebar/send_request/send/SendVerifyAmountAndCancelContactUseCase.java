@@ -42,7 +42,7 @@ public class SendVerifyAmountAndCancelContactUseCase extends AbstractFestUseCase
     window
       .button(MessageKey.NEXT.getKey())
       .requireVisible()
-      .requireDisabled();
+      .requireEnabled(); // This is due to unrestricted
 
     window
       .button(MessageKey.CANCEL.getKey())

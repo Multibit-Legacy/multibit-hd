@@ -1,18 +1,21 @@
 package org.multibit.hd.ui.languages;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.uri.BitcoinURI;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
+import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.core.utils.Coins;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -30,6 +33,8 @@ import java.util.Locale;
  *
  */
 public class Formats {
+
+  private static final Logger log = LoggerFactory.getLogger(Formats.class);
 
   /**
    * The number of decimal places for showing the exchange rate depends on the bitcoin symbol used, with this offset
@@ -143,6 +148,25 @@ public class Formats {
 
   }
 
+  /**
+   * <p>Provide a simple representation for a coin amount respecting decimal and grouping separators.</p>
+   * <p>For example, 123456789 becomes "1,234,567.89" or "1.234.567,89" depending on configuration</p>
+   * <p>The amount will be adjusted by the symbolic multiplier from the current configuration</p>
+   *
+   * @param coin                  The amount in coins
+   * @param languageConfiguration The  language configuration to use as the basis for presentation
+   * @param bitcoinConfiguration  The Bitcoin configuration to use as the basis for the symbol
+   *
+   * @return The string suitable for presentation as a balance without symbol in a UTF-8 string
+   */
+  public static String formatCoinAmount(Coin coin, LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration) {
+
+    String[] formattedAmount = formatCoinAsSymbolic(coin, languageConfiguration, bitcoinConfiguration);
+
+    // Convert to single text line
+    return formattedAmount[0] + formattedAmount[1];
+
+  }
 
   /**
    * <p>Provide a simple representation for a local currency amount.</p>
@@ -325,15 +349,13 @@ public class Formats {
     // Decode the Bitcoin URI
     Optional<Address> address = Optional.fromNullable(bitcoinURI.getAddress());
     Optional<Coin> amount = Optional.fromNullable(bitcoinURI.getAmount());
-    // Truncate the label field to avoid overrun on the display
-    // (35+ overruns label + address + amount in mB + alert count at min width)
-    // Send Bitcoin confirm wizard will fill in the complete details later
-    Optional<String> label;
-    if (Strings.isNullOrEmpty(bitcoinURI.getLabel())) {
-      label = Optional.absent();
-    } else {
-      label = Optional.of(Languages.truncatedList(Lists.newArrayList(bitcoinURI.getLabel()), 35));
+
+    // Do not truncate the label here leave it to the MiG layout
+    String label = bitcoinURI.getLabel();
+    if (Strings.isNullOrEmpty(label)) {
+      label = Languages.safeText(MessageKey.NOT_AVAILABLE);
     }
+
     // Only proceed if we have an address
     if (address.isPresent()) {
 
@@ -349,11 +371,92 @@ public class Formats {
         messageAmount = Languages.safeText(MessageKey.NOT_AVAILABLE);
       }
 
-      // Ensure we truncate the label if present
-      String truncatedLabel = Languages.truncatedList(Lists.newArrayList(label.or(Languages.safeText(MessageKey.NOT_AVAILABLE))), 35);
+      // Construct a suitable alert message
+      alertMessage = Optional.of(Languages.safeText(
+          MessageKey.BITCOIN_URI_ALERT,
+          label,
+          address.get().toString(),
+          messageAmount
+        ));
+    }
+
+    return alertMessage;
+
+  }
+
+  /**
+   * @param paymentSessionSummary The payment session summary
+   *
+   * @return A String suitably formatted for presentation as an alert message
+   */
+  public static Optional<String> formatAlertMessage(PaymentSessionSummary paymentSessionSummary) {
+
+    if (!paymentSessionSummary.getPaymentSession().isPresent()) {
+            // Construct a suitable alert message
+      return Optional.of(Languages.safeText(
+          paymentSessionSummary.getMessageKey(),
+          paymentSessionSummary.getMessageData()
+        ));
+    }
+
+    final boolean isTrusted;
+    // Decode the payment session summary
+    switch (paymentSessionSummary.getStatus()) {
+      case TRUSTED:
+        isTrusted = true;
+        break;
+      case UNTRUSTED:
+        isTrusted = false;
+        break;
+      case DOWN:
+        // Fall through to error
+      case ERROR:
+        // Construct a suitable alert message
+        return Optional.of(Languages.safeText(
+            MessageKey.PAYMENT_PROTOCOL_ERROR_ALERT,
+            paymentSessionSummary.getMessageData()
+          ));
+      default:
+        log.error("Unknown payment session status: {}", paymentSessionSummary.getStatus());
+        return Optional.absent();
+    }
+
+    // Extract merchant information (payment session must be present)
+    PaymentSession paymentSession = paymentSessionSummary.getPaymentSession().get();
+    Optional<Coin> amount = Optional.fromNullable(paymentSession.getValue());
+
+    // We do not truncate here since it is needed for the history
+    // The UI will handle truncation
+    String label = paymentSession.getMemo();
+    if (Strings.isNullOrEmpty(label)) {
+      label = Languages.safeText(MessageKey.NOT_AVAILABLE);
+    }
+
+    Optional<String> alertMessage = Optional.absent();
+
+    // Only proceed if we have outputs
+    if (!paymentSession.getOutputs().isEmpty()) {
+
+      final String messageAmount;
+      if (amount.isPresent()) {
+        // Create a suitable representation for inline text (no icon)
+        messageAmount = Formats.formatCoinAsSymbolicText(
+          amount.get(),
+          Configurations.currentConfiguration.getLanguage(),
+          Configurations.currentConfiguration.getBitcoin()
+        );
+      } else {
+        messageAmount = Languages.safeText(MessageKey.NOT_AVAILABLE);
+      }
 
       // Construct a suitable alert message
-      alertMessage = Optional.of(Languages.safeText(MessageKey.BITCOIN_URI_ALERT, truncatedLabel, address.get().toString(), messageAmount));
+      MessageKey messageKey = isTrusted? MessageKey.PAYMENT_PROTOCOL_TRUSTED_ALERT : MessageKey.PAYMENT_PROTOCOL_UNTRUSTED_ALERT;
+
+      alertMessage = Optional.of(Languages.safeText(
+          messageKey,
+          label,
+          messageAmount
+        ));
     }
 
     return alertMessage;

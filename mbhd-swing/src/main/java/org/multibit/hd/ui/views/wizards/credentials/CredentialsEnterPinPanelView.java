@@ -7,8 +7,8 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertModel;
-import org.multibit.hd.ui.views.components.display_security_alert.DisplaySecurityAlertView;
+import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertModel;
+import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertView;
 import org.multibit.hd.ui.views.components.enter_pin.EnterPinModel;
 import org.multibit.hd.ui.views.components.enter_pin.EnterPinView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -35,7 +35,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   private static final Logger log = LoggerFactory.getLogger(CredentialsEnterPinPanelView.class);
 
   // Panel specific components
-  private ModelAndView<DisplaySecurityAlertModel, DisplaySecurityAlertView> displaySecurityPopoverMaV;
+  private ModelAndView<DisplayEnvironmentAlertModel, DisplayEnvironmentAlertView> displayEnvironmentPopoverMaV;
   private ModelAndView<EnterPinModel, EnterPinView> enterPinMaV;
 
   /**
@@ -50,7 +50,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   @Override
   public void newPanelModel() {
 
-    displaySecurityPopoverMaV = Popovers.newDisplaySecurityPopoverMaV(getPanelName());
+    displayEnvironmentPopoverMaV = Popovers.newDisplayEnvironmentPopoverMaV(getPanelName());
     enterPinMaV = Components.newEnterPinMaV(getPanelName());
 
     // Configure the panel model
@@ -64,7 +64,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
     getWizardModel().setEnterPinPanelView(this);
 
     // Register components
-    registerComponents(displaySecurityPopoverMaV, enterPinMaV);
+    registerComponents(displayEnvironmentPopoverMaV, enterPinMaV);
 
   }
 
@@ -112,24 +112,21 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   @Override
   public void afterShow() {
 
+    // This requires environment popover check
+    checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
+
     registerDefaultButton(getFinishButton());
 
-    // Finally check that the firmware is supported (we do not tolerate any absent values at this point)
-    final boolean enabled = CoreServices.getOrCreateHardwareWalletService().get().getContext().getFeatures().get().isSupported();
+    // Finally check that the firmware is supported
+    // The user may try to ignore the popover warnings
+    final boolean enabled = CoreServices
+      .getOrCreateHardwareWalletService().get()
+      .getContext()
+      .getFeatures().get()
+      .isSupported();
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-
-          enterPinMaV.getView().requestInitialFocus();
-          enterPinMaV.getView().setEnabled(enabled);
-
-          // This requires a security popover check
-          checkForSecurityEventPopover(displaySecurityPopoverMaV);
-
-        }
-      });
+    enterPinMaV.getView().requestInitialFocus();
+    enterPinMaV.getView().setEnabled(enabled);
 
   }
 
@@ -143,17 +140,9 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
       return true;
     }
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-
-          // Ensure the view disables components
-          getFinishButton().setEnabled(false);
-          getExitButton().setEnabled(false);
-
-        }
-      });
+    // Ensure the view disables components
+    getFinishButton().setEnabled(false);
+    getExitButton().setEnabled(false);
 
     // Use the wizard model to handle the traffic to the Trezor
     getWizardModel().requestPinCheck(enterPinMaV.getModel().getValue());
@@ -166,7 +155,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    log.debug("updateFromComponentModel called");
+    log.debug("PIN panel interaction");
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(

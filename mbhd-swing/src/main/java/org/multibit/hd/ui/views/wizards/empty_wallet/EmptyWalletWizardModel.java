@@ -2,6 +2,9 @@ package org.multibit.hd.ui.views.wizards.empty_wallet;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.params.MainNetParams;
@@ -14,9 +17,12 @@ import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.ApplicationEventService;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.BitcoinSymbol;
+import org.multibit.hd.core.utils.Dates;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -30,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.math.BigDecimal;
+import java.util.concurrent.Callable;
 
 import static org.multibit.hd.ui.views.wizards.empty_wallet.EmptyWalletState.*;
 
@@ -74,6 +81,7 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
    */
   private SendRequestSummary sendRequestSummary;
   private EmptyWalletConfirmTrezorPanelView emptyWalletConfirmTrezorPanelView;
+  private EmptyWalletEnterPinPanelView enterPinPanelView;
 
   /**
    * @param state The state object
@@ -135,6 +143,11 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
         }
 
         break;
+
+      case EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_TREZOR:
+        // Do nothing
+        break;
+
       case EMPTY_WALLET_CONFIRM_TREZOR:
         // Move to report
         state = EMPTY_WALLET_REPORT;
@@ -283,10 +296,74 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
     this.emptyWalletConfirmTrezorPanelView = emptyWalletConfirmTrezorPanelView;
   }
 
+  /**
+   * @param pinPositions The PIN positions providing a level of obfuscation to protect the PIN
+   */
+  public void requestPinCheck(final String pinPositions) {
+
+    ListenableFuture<Boolean> pinCheckFuture = hardwareWalletRequestService.submit(
+      new Callable<Boolean>() {
+
+        @Override
+        public Boolean call() {
+
+          log.debug("Performing a PIN check");
+
+          // Talk to the Trezor and get it to check the PIN
+          // This call to the Trezor will (sometime later) fire a
+          // HardwareWalletEvent containing the encrypted text (or a PIN failure)
+          // Expect a SHOW_OPERATION_SUCCEEDED or SHOW_OPERATION_FAILED
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          hardwareWalletService.get().providePIN(pinPositions);
+
+          // Must have successfully send the message to be here
+          return true;
+
+        }
+      });
+    Futures.addCallback(
+      pinCheckFuture, new FutureCallback<Boolean>() {
+
+        @Override
+        public void onSuccess(Boolean result) {
+
+          // Do nothing message was sent to device correctly
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          log.error(t.getMessage(), t);
+          // Failed to send the message
+          enterPinPanelView.failedPin();
+        }
+      }
+    );
+
+  }
+
+  @Override
+  public void showPINEntry(HardwareWalletEvent event) {
+
+    switch (state) {
+      case EMPTY_WALLET_CONFIRM_TREZOR:
+        log.debug("Transaction signing is PIN protected");
+        state = EmptyWalletState.EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_TREZOR;
+        break;
+      default:
+        throw new IllegalStateException("Unknown state: " + state.name());
+    }
+  }
+
+
   @Override
   public void showButtonPress(HardwareWalletEvent event) {
 
     log.debug("Received hardware event: '{}'.{}", event.getEventType().name(), event.getMessage());
+
+    // Successful PIN entry or not required so transition to Trezor signing display view
+    state = EMPTY_WALLET_CONFIRM_TREZOR;
 
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
 
@@ -353,11 +430,10 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
             break;
           case SIGN_TX:
             // Transaction#getValue() provides the net amount leaving the wallet which includes the fee
-            // Trezor displays the sum of all external outputs and the fee separately
-            // Thus we perform the calculation below to arrive at the same figure the transaction amount to reassure the user all is well
-            Coin transactionAmount = currentTransaction.getValue(wallet).negate().subtract(currentTransaction.getFee());
+            // See #499: Trezor firmware below 1.3.3 displays the sum of all external outputs (including fee) and the fee separately
+            // From 1.3.3+ the display is the net amount leaving the wallet with fees shown separately
+            Coin transactionAmount = currentTransaction.getValue(wallet).negate();
             String[] transactionAmountFormatted = Formats.formatCoinAsSymbolic(transactionAmount, languageConfiguration, bitcoinConfiguration);
-
             String[] feeAmount = Formats.formatCoinAsSymbolic(currentTransaction.getFee(), languageConfiguration, bitcoinConfiguration);
 
             key = MessageKey.TREZOR_SIGN_CONFIRM_DISPLAY;
@@ -379,16 +455,25 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
   @Override
   public void showOperationSucceeded(HardwareWalletEvent event) {
 
+    if (state == EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_TREZOR) {
+      // Indicate a successful PIN
+      getEnterPinPanelView().setPinStatus(true, true);
+      return;
+    }
+
+    // Must be showing signing Trezor display
+
+    // Enable next button
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.NEXT,
+      true
+    );
+
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
         public void run() {
-          // Enable next button
-          ViewEvents.fireWizardButtonEnabledEvent(
-            getPanelName(),
-            WizardButton.NEXT,
-            true
-          );
 
           // The tx is now complete so commit and broadcast it
           // Trezor will provide a signed serialized transaction
@@ -439,7 +524,7 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
             emptyWalletConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
             emptyWalletConfirmTrezorPanelView.setDisplayVisible(false);
 
-            bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet);
+            bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet, Optional.<PaymentRequestData>absent());
 
           } else {
             log.debug("Cannot commit and broadcast the last send as it is not present in bitcoinNetworkService");
@@ -452,12 +537,32 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
 
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
+    switch (state) {
+      case EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_TREZOR:
+        state = EmptyWalletState.EMPTY_WALLET_REPORT;
+        setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+        setReportMessageStatus(false);
+        requestCancel();
+        break;
+      default:
+        state = EmptyWalletState.EMPTY_WALLET_REPORT;
+        setReportMessageKey(MessageKey.TREZOR_SIGN_FAILURE);
+        setReportMessageStatus(false);
+        requestCancel();
+        break;
+    }
 
-    // Always transition to report
-    state = EMPTY_WALLET_REPORT;
-    setReportMessageKey(MessageKey.TREZOR_SIGN_FAILURE);
-    setReportMessageStatus(false);
+    // Ignore device reset messages
+    ApplicationEventService.setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
 
+  }
+
+  public void setEnterPinPanelView(EmptyWalletEnterPinPanelView enterPinPanelView) {
+    this.enterPinPanelView = enterPinPanelView;
+  }
+
+  public EmptyWalletEnterPinPanelView getEnterPinPanelView() {
+    return enterPinPanelView;
   }
 
 }

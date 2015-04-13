@@ -276,7 +276,10 @@ public enum MessageKey {
   SELECT_TREZOR("select_trezor"),
   SELECT_TREZOR_TOOLTIP("select_trezor_tooltip"),
 
-  // Sidebar
+  SELECT_SHOW_RESTORE_BETA7_WALLETS("select_show_restore_beta7_wallets"),
+  SELECT_SHOW_RESTORE_BETA7_WALLETSTOOLTIP("select_show_restore_beta7_wallets_tooltip"),
+
+   // Sidebar
 
   SIDEBAR_TREE("sidebar_tree"),
   WALLET("wallet"),
@@ -307,6 +310,17 @@ public enum MessageKey {
   DECIMAL_COMMA("decimal_comma"),
   DECIMAL_POINT("decimal_point"),
   DECIMAL_SPACE("decimal_space"),
+
+  // Payment Protocol messages
+  PAYMENT_PROTOCOL_TRUSTED_NOTE("payment_protocol_trusted_note"),
+  PAYMENT_PROTOCOL_UNTRUSTED_NOTE("payment_protocol_untrusted_note"),
+  PAYMENT_PROTOCOL_ERROR_NOTE("payment_protocol_error_note"),
+  PAYMENT_PROTOCOL_TRUSTED_ALERT("payment_protocol_trusted_alert"),
+  PAYMENT_PROTOCOL_UNTRUSTED_ALERT("payment_protocol_untrusted_alert"),
+  PAYMENT_PROTOCOL_ERROR_ALERT("payment_protocol_error_alert"),
+
+  PAY_THIS_PAYMENT_REQUEST("pay_this_payment_request"),
+  PAY_THIS_PAYMENT_REQUEST_TOOLTIP("pay_this_payment_request_tooltip"),
 
   BITCOIN_URI_ALERT("bitcoin_uri_label"),
   PAYMENT_RECEIVED_ALERT("payment_received_label"),
@@ -344,14 +358,23 @@ public enum MessageKey {
   REQUEST_BITCOIN_TITLE("request_bitcoin_title"),
 
   SEND_BITCOIN_TITLE("send_bitcoin_title"),
+  DISPLAY_PAYMENT_REQUEST_TITLE("display_payment_request_title"),
+  DISPLAY_PAYMENT_REQUEST_MEMO_TITLE("display_payment_request_memo_title"),
   CONFIRM_SEND_TITLE("confirm_send_title"),
   SEND_PROGRESS_TITLE("send_progress_title"),
+  SEND_PAYMENT_MEMO_TITLE("send_payment_memo_title"),
+  SEND_PAYMENT_MEMO_LABEL("send_payment_memo_label"),
+  SEND_PAYMENT_MEMO_LABEL_READ_ONLY("send_payment_memo_label_read_only"),
+
+  SEND_PAYMENT_ACK_MEMO_LABEL("send_payment_ack_memo_label"),
+  SEND_PAYMENT_ACK_MEMO_TITLE("send_payment_ack_memo_title"),
 
   EXIT_OR_SWITCH_TITLE("exit_or_switch_title"),
 
   ABOUT_TITLE("about_title"),
 
   SECURITY_TITLE("security_title"),
+  INFO_TITLE("info_title"),
 
   WELCOME_TITLE("welcome_title"),
   SELECT_LANGUAGE_TITLE("select_language_title"),
@@ -435,9 +458,13 @@ public enum MessageKey {
   TREZOR_WIPE_DEVICE_SUCCESS("trezor_wipe_device_success"),
 
   TREZOR_INCORRECT_PIN_FAILURE("trezor_incorrect_pin_failure"),
+  TREZOR_ADD_PIN_FAILURE("trezor_add_pin_failure"),
+  TREZOR_CHANGE_PIN_FAILURE("trezor_change_pin_failure"),
+
   TREZOR_WIPE_DEVICE_FAILURE("trezor_wipe_device_failure"),
 
   TREZOR_SIGN_FAILURE("trezor_sign_failure"),
+
 
   // Trezor display text
   TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY("trezor_encrypt_multibit_hd_unlock_display"),
@@ -448,6 +475,7 @@ public enum MessageKey {
   TREZOR_CHECK_WORD_DISPLAY("trezor_check_word_display"),
   TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY("trezor_transaction_output_confirm_display"),
   TREZOR_SIGN_CONFIRM_DISPLAY("trezor_sign_confirm_display"),
+  TREZOR_SIGN_MESSAGE_CONFIRM_DISPLAY("trezor_sign_message_confirm_display"),
   TREZOR_WIPE_CONFIRM_DISPLAY("trezor_wipe_confirm_display"),
 
   USE_TREZOR_REPORT_TITLE("use_trezor_report_title"),
@@ -478,9 +506,16 @@ public enum MessageKey {
 
   LANGUAGE_SETTINGS_TITLE("language_settings_title"),
   EXCHANGE_SETTINGS_TITLE("exchange_settings_title"),
+
+  @Deprecated
   UNITS_SETTINGS_TITLE("units_settings_title"),
+
+  @Deprecated
   APPEARANCE_SETTINGS_TITLE("appearance_settings_title"),
+
+  @Deprecated
   SOUNDS_SETTINGS_TITLE("sounds_settings_title"),
+
   FEES_SETTINGS_TITLE("fees_settings_title"),
   LABS_SETTINGS_TITLE("labs_settings_title"),
 
@@ -522,6 +557,9 @@ public enum MessageKey {
   EXCHANGE_RATE_PROVIDER("exchange_rate_provider"),
   EXCHANGE_RATE_PROVIDER_TOOLTIP("exchange_rate_provider_tooltip"),
 
+  UUID("uuid"),
+  IDENTITY("identity"),
+
   BROADCAST_STATUS("broadcast_status"),
   RELAY_STATUS("relay_status"),
   CONFIRMATION_STATUS("confirmation_status"),
@@ -560,6 +598,7 @@ public enum MessageKey {
   SELECT_WALLET_TYPE("select_wallet_type"),
   SELECT_WALLET_TYPE_TOOLTIP("select_wallet_type_tooltip"),
   SELECT_WALLET_TYPE_BIP32("select_wallet_type_bip32"),
+  SELECT_WALLET_TYPE_BETA7("select_wallet_type_beta7"),
   SELECT_WALLET_TYPE_BIP44("select_wallet_type_bip44"),
 
   SEED_SIZE("seed_size"),
@@ -805,6 +844,7 @@ public enum MessageKey {
   TYPE("type"),
   FIAT_AMOUNT("fiat_amount"),
   FIAT_CURRENCY("fiat_currency"),
+  EXPIRES("expires"),
 
   DESCRIPTION("description"),
   DESCRIPTION_READ_ONLY("description_read_only"),
@@ -842,7 +882,8 @@ public enum MessageKey {
   EXPORT_PAYMENT_REQUESTS_STEM("export_payment_requests_stem"),
   EXPORT_WAS_SUCCESSFUL("export_was_successful"),
   TRANSACTIONS_WERE_EXPORTED_TO_THE_FILE("transactions_were_exported_to_the_file"),
-  PAYMENT_REQUESTS_WERE_EXPORTED_TO_THE_FILE("payment_requests_were_exported_to_the_file"),
+  YOUR_PAYMENT_REQUESTS_WERE_EXPORTED_TO_THE_FILE("your_payment_requests_were_exported_to_the_file"),
+  THEIR_PAYMENT_REQUESTS_WERE_EXPORTED_TO_THE_FILE("their_payment_requests_were_exported_to_the_file"),
   COULD_NOT_WRITE_TO_THE_DIRECTORY("could_not_write_to_the_directory"),
 
   // Repair wallet

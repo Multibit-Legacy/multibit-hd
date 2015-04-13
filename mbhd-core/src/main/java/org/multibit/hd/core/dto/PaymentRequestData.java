@@ -1,140 +1,194 @@
 package org.multibit.hd.core.dto;
 
-import org.bitcoinj.core.Address;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.Coin;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
+import org.bitcoinj.core.Sha256Hash;
+import org.bitcoinj.protocols.payments.PaymentSession;
 import org.joda.time.DateTime;
+import org.multibit.hd.core.utils.Dates;
 
-import java.util.Set;
+import java.util.UUID;
 
 /**
  * <p>DTO to provide the following to WalletService:</p>
  * <ul>
- * <li>Additional payment request info</li>
+ * <li>Additional payment protocol (BIP70) payment request info</li>
  * </ul>
- *
  */
 public class PaymentRequestData implements PaymentData {
 
-  private Address address;
-  private String label;
-  private Coin amountCoin;
-  private FiatPayment amountFiat;
-  private String note;
+  /**
+   * A UUID used in persisting the BIP70 payment request and as a foreign key to find data from the transaction hash
+   */
+  private UUID uuid;
+
+  /**
+   * The transaction hash of the transaction that paid this payment request.
+   * May be absent if the payment request has not been paid yet.
+   */
+  private Optional<Sha256Hash> transactionHash = Optional.absent();
+
+  /**
+   * The fiat payment equivalent of the payment Coin
+   */
+  private Optional<FiatPayment> fiatPayment = Optional.absent();
+
+  /**
+   * The BIP70 PaymentRequest - stored as a file on the file system and provided externally
+   */
+  private Optional<Protos.PaymentRequest> paymentRequest = Optional.absent();
+
+  /**
+   * The BIP70 Payment - stored as a file on the file system when present
+   */
+  private Optional<Protos.Payment> payment = Optional.absent();
+
+  /**
+   * The BIP70 PaymentACK - stored as a file on the file system when present
+   */
+  private Optional<Protos.PaymentACK> paymentACK = Optional.absent();
+
+  /**
+   * The Payment Session Summary wrapping the final state of the BIP70 PaymentSession
+   * This provides additional PKI verification information and ensures that the
+   * PaymentSession isn't persisted
+   */
+  private Optional<PaymentSessionSummary> paymentSessionSummary = Optional.absent();
+
+  /**
+   * The date of the payment request
+   */
   private DateTime date;
 
   /**
-   * The amount of bitcoin actually paid by transactions
+   * The amount in bitcoin of the payment request
    */
-  private Coin paidAmountCoin;
+  private Coin amountCoin;
 
-  private final Set<String> payingTransactionHashes;
+  /**
+   * The description of the payment request
+   */
+  private String note = "";
 
-  public static final String SEPARATOR = ". ";
+  /**
+   * The display name of the PKI identity
+   */
+  private String identityDisplayName = "";
 
+  /**
+   * The trust status - whether the PKI verify was successful
+   */
+  private PaymentSessionStatus trustStatus;
+
+  /**
+   * If the trust status is ERROR or DOWN, a localised text string describing the problem
+   */
+  private String trustErrorMessage = "";
+
+  /**
+   * The expiration date for the payment request
+   */
+  private DateTime expirationDate;
+
+  /**
+   * For protobuf - you probably do not want to use this
+   */
   public PaymentRequestData() {
-    paidAmountCoin = Coin.ZERO;
-    payingTransactionHashes = Sets.newHashSet();
-  }
-
-  public Set<String> getPayingTransactionHashes() {
-    return payingTransactionHashes;
   }
 
   /**
-   * @return The amount paid so far in coins
+   * Build the PaymentRequestData from a PaymentSessionSummary
+   *
+   * @param paymentSessionSummary The Payment Session Summary with a PaymentSession
    */
-  public Coin getPaidAmountCoin() {
-    return paidAmountCoin;
-  }
+  public PaymentRequestData(PaymentSessionSummary paymentSessionSummary) {
 
-  public void setPaidAmountCoin(Coin paidAmountCoin) {
-    this.paidAmountCoin = paidAmountCoin;
+    this(Optional.of(paymentSessionSummary.getPaymentSession().get().getPaymentRequest()), Optional.<Sha256Hash>absent());
+
+    this.paymentSessionSummary = Optional.of(paymentSessionSummary);
+
+    PaymentSession paymentSession = paymentSessionSummary.getPaymentSession().get();
+
+    setDate(new DateTime(paymentSession.getDate()));
+    if (paymentSession.getExpires() == null) {
+      // Expire a long way into the future
+      setExpirationDate(Dates.thenUtc(2199, 12,31, 23, 59 ,59));
+    } else {
+      setExpirationDate(new DateTime(paymentSession.getExpires()));
+    }
+
+    setAmountCoin(paymentSession.getValue());
+    setNote(paymentSession.getMemo());
+
+    if (paymentSessionSummary.getPkiVerificationData().isPresent()) {
+      setIdentityDisplayName(paymentSessionSummary.getPkiVerificationData().get().displayName);
+    }
   }
 
   /**
-   * @return The Bitcoin address
+   * See also the
+   * @param paymentRequest  A PaymentRequest
+   * @param transactionHash A transaction hash if a Bitcoin transaction has been successfully broadcast
    */
-  public Address getAddress() {
+  public PaymentRequestData(Optional<Protos.PaymentRequest> paymentRequest, Optional<Sha256Hash> transactionHash) {
+    Preconditions.checkNotNull(paymentRequest);
+    Preconditions.checkNotNull(transactionHash);
 
-    return address;
+    this.paymentRequest = paymentRequest;
+    this.transactionHash = transactionHash;
+    this.uuid = UUID.randomUUID();
   }
 
-  public void setAddress(Address address) {
-    this.address = address;
+  public UUID getUuid() {
+    return uuid;
   }
 
-  /**
-   * @return The transaction label (often for a QR code)
-   */
-  public String getLabel() {
-    return label;
+  public void setUuid(UUID uuid) {
+    this.uuid = uuid;
   }
 
-  public void setLabel(String label) {
-    this.label = label;
+  public Optional<Sha256Hash> getTransactionHash() {
+    return transactionHash;
   }
 
-  @Override
-  public Coin getAmountCoin() {
-    return amountCoin;
+  public void setTransactionHash(Optional<Sha256Hash> transactionHash) {
+    this.transactionHash = transactionHash;
   }
 
-  public void setAmountCoin(Coin amountBTC) {
-    this.amountCoin = amountBTC;
+  public Optional<Protos.PaymentRequest> getPaymentRequest() {
+    return paymentRequest;
   }
 
-  @Override
-  public FiatPayment getAmountFiat() {
-    return amountFiat;
+  public void setPaymentRequest(Optional<Protos.PaymentRequest> paymentRequest) {
+    this.paymentRequest = paymentRequest;
   }
 
-  public void setAmountFiat(FiatPayment amountFiat) {
-    this.amountFiat = amountFiat;
+  public void setPayment(Optional<Protos.Payment> payment) {
+    this.payment = payment;
   }
 
-  @Override
-  public String getNote() {
-    return note;
-  }
-
-  @Override
-  public boolean isCoinBase() {
-    return false;
+  public void setPaymentACK(Optional<Protos.PaymentACK> paymentACK) {
+    this.paymentACK = paymentACK;
   }
 
   @Override
-  public String getDescription() {
-
-    StringBuilder builder = new StringBuilder();
-    boolean appendAddress = true;
-    boolean appendSeparator = false;
-
-    if (!Strings.isNullOrEmpty(getLabel())) {
-      builder.append(getLabel());
-      appendAddress = false;
-      appendSeparator = true;
+  public PaymentType getType() {
+    if (transactionHash.isPresent()) {
+      return PaymentType.PAID;
+    } else {
+      return PaymentType.THEY_REQUESTED;
     }
-
-    if (!Strings.isNullOrEmpty(getNote())) {
-      if (appendSeparator) {
-        builder.append(SEPARATOR);
-      }
-      builder.append(getNote());
-      appendAddress = false;
-    }
-
-    if (appendAddress) {
-      builder
-        .append(getAddress());
-    }
-
-    return builder.toString();
   }
 
-  public void setNote(String note) {
-    this.note = note;
+  @Override
+  public PaymentStatus getStatus() {
+    if (transactionHash.isPresent()) {
+      return new PaymentStatus(RAGStatus.GREEN, CoreMessageKey.PAYMENT_PAID);
+    } else {
+      return new PaymentStatus(RAGStatus.PINK, CoreMessageKey.PAYMENT_REQUESTED_BY_THEM);
+    }
   }
 
   @Override
@@ -147,74 +201,146 @@ public class PaymentRequestData implements PaymentData {
   }
 
   @Override
-  public PaymentType getType() {
-    PaymentType type = PaymentType.REQUESTED;
-    // Work out if it is requested, partly paid or fully paid
-    if (paidAmountCoin != null && amountCoin != null) {
-      if (paidAmountCoin.compareTo(Coin.ZERO) > 0) {
-        // bitcoin has been paid to this payment request
-        if (paidAmountCoin.compareTo(amountCoin) >= 0) {
-          // fully paid
-          type = PaymentType.PAID;
-        } else {
-          // partly paid
-          type = PaymentType.PART_PAID;
-        }
-      }
-    }
-    return type;
+  public Coin getAmountCoin() {
+    return amountCoin;
+  }
+
+  public void setAmountCoin(Coin amountBTC) {
+    this.amountCoin = amountBTC;
+  }
+
+  public void setAmountFiat(FiatPayment fiatPayment) {
+    this.fiatPayment = Optional.of(fiatPayment);
   }
 
   @Override
-  public PaymentStatus getStatus() {
-
-    final PaymentStatus paymentStatus;
-
-    // Work out if it is requested, part paid or fully paid
-    if (paidAmountCoin != null && amountCoin != null) {
-      if (paidAmountCoin.compareTo(Coin.ZERO) > 0) {
-        // Bitcoin has been paid to this payment request
-        if (paidAmountCoin.compareTo(amountCoin) >= 0) {
-          // Fully paid (or overpaid)
-          return new PaymentStatus(RAGStatus.GREEN, CoreMessageKey.PAYMENT_PAID);
-        } else {
-          // Part paid
-          return new PaymentStatus(RAGStatus.PINK, CoreMessageKey.PAYMENT_PART_PAID);
-        }
-      }
+  public FiatPayment getAmountFiat() {
+    if (fiatPayment.isPresent()) {
+      return fiatPayment.get();
+    } else {
+      return new FiatPayment();
     }
+  }
 
-    // Must be payment requested to be here
-    paymentStatus = new PaymentStatus(RAGStatus.PINK, CoreMessageKey.PAYMENT_REQUESTED);
+  @Override
+  public String getNote() {
+    return note;
+  }
 
-    return paymentStatus;
+  @Override
+  public String getDescription() {
+    return getNote();
+  }
+
+  public void setNote(String note) {
+    this.note = note;
+  }
+
+  @Override
+  public boolean isCoinBase() {
+    return false;
+  }
+
+  public String getIdentityDisplayName() {
+    return identityDisplayName;
+  }
+
+  public void setIdentityDisplayName(String identityDisplayName) {
+    this.identityDisplayName = identityDisplayName;
+  }
+
+  public PaymentSessionStatus getTrustStatus() {
+    return trustStatus;
+  }
+
+  public void setTrustStatus(PaymentSessionStatus trustStatus) {
+    this.trustStatus = trustStatus;
+  }
+
+  public String getTrustErrorMessage() {
+    return trustErrorMessage;
+  }
+
+  public void setTrustErrorMessage(String trustErrorMessage) {
+    this.trustErrorMessage = trustErrorMessage;
+  }
+
+  public DateTime getExpirationDate() {
+    return expirationDate;
+  }
+
+  public void setExpirationDate(DateTime expirationDate) {
+    this.expirationDate = expirationDate;
+  }
+
+  public Optional<FiatPayment> getFiatPayment() {
+    return fiatPayment;
+  }
+
+  public Optional<PaymentSessionSummary> getPaymentSessionSummary() {
+    return paymentSessionSummary;
+  }
+
+  /**
+   * @return The BIP70 Payment sent to the server once payment was successfully broadcast
+   */
+  public Optional<Protos.Payment> getPayment() {
+    return payment;
+  }
+
+  /**
+   * @return The BIP70 PaymentACK received from the server
+   */
+  public Optional<Protos.PaymentACK> getPaymentACK() {
+    return paymentACK;
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
 
     PaymentRequestData that = (PaymentRequestData) o;
 
-    if (address != null ? !address.equals(that.address) : that.address != null) return false;
-    if (amountCoin != null ? !amountCoin.equals(that.amountCoin) : that.amountCoin != null) return false;
-    if (date != null ? !date.equals(that.date) : that.date != null) return false;
-    if (amountFiat != null ? !amountFiat.equals(that.amountFiat) : that.amountFiat != null) return false;
-    if (label != null ? !label.equals(that.label) : that.label != null) return false;
-    if (note != null ? !note.equals(that.note) : that.note != null) return false;
+    if (!uuid.equals(that.uuid)) {
+      return false;
+    }
+    if (!date.equals(that.date)) {
+      return false;
+    }
+    return amountCoin.equals(that.amountCoin);
 
-    return true;
   }
 
   @Override
   public int hashCode() {
-    int result = address != null ? address.hashCode() : 0;
-    result = 31 * result + (label != null ? label.hashCode() : 0);
-    result = 31 * result + (amountCoin != null ? amountCoin.hashCode() : 0);
-    result = 31 * result + (amountFiat != null ? amountFiat.hashCode() : 0);
-    result = 31 * result + (note != null ? note.hashCode() : 0);
-    result = 31 * result + (date != null ? date.hashCode() : 0);
+    int result = uuid.hashCode();
+    result = 31 * result + date.hashCode();
+    result = 31 * result + amountCoin.hashCode();
     return result;
+  }
+
+  @Override
+  public String toString() {
+    return "PaymentRequestData{" +
+      "amountBTC=" + amountCoin +
+      ", uuid=" + uuid +
+      ", transactionHash=" + transactionHash +
+      ", fiatPayment=" + fiatPayment +
+      ", paymentRequest=" + paymentRequest +
+      ", payment=" + payment +
+      ", paymentACK=" + paymentACK +
+      ", paymentSessionSummary=" + paymentSessionSummary +
+      ", date=" + date +
+      ", note='" + note + '\'' +
+      ", identityDisplayName='" + identityDisplayName + '\'' +
+      ", trustStatus=" + trustStatus +
+      ", trustErrorMessage='" + trustErrorMessage + '\'' +
+      ", expirationDate=" + expirationDate +
+      '}';
   }
 }

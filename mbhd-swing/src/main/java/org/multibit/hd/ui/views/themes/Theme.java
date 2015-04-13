@@ -243,4 +243,8 @@ public interface Theme {
    */
   Color statusGreen();
 
+  /**
+   * Is the theme invert (predominantly dark)
+   */
+  boolean isInvert();
 }

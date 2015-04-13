@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
-import org.multibit.hd.core.utils.Dates;
+import org.multibit.hd.core.services.ApplicationEventService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.slf4j.Logger;
@@ -198,6 +198,35 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
 
           // Move to the "PIN entry" state
           getWizardModel().showPINEntry(event);
+
+          // Show the panel
+          show(getWizardModel().getPanelName());
+
+        }
+      });
+
+  }
+
+  /**
+   * <p>Inform the wizard model of a "passphrase entry"</p>
+   *
+   * @param event The originating event containing payload and context
+   */
+  public void handlePassphraseEntry(final HardwareWalletEvent event) {
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          // Ensure the panel updates its model (the button is outside of the panel itself)
+          if (getWizardModel().getPanelName() != null) {
+            if (getWizardPanelView(getWizardModel().getPanelName()) != null) {
+              getWizardPanelView(getWizardModel().getPanelName()).updateFromComponentModels(Optional.absent());
+            }
+          }
+
+          // Move to the "passphrase entry" state
+          getWizardModel().showPassphraseEntry(event);
 
           // Show the panel
           show(getWizardModel().getPanelName());
@@ -444,7 +473,7 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
 
     log.debug("{} Received hardware event: '{}'.", this, event.getEventType().name());
 
-    if (!Dates.nowUtc().isAfter(getWizardModel().getIgnoreHardwareWalletEventsThreshold())) {
+    if (!ApplicationEventService.isHardwareWalletEventAllowed()) {
       log.debug("Ignoring device event due to 'ignore threshold' still in force", event);
       return;
     }
@@ -464,6 +493,9 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
         break;
       case SHOW_PIN_ENTRY:
         handlePINEntry(event);
+        break;
+      case SHOW_PASSPHRASE_ENTRY:
+        handlePassphraseEntry(event);
         break;
       case SHOW_BUTTON_PRESS:
         handleButtonPress(event);

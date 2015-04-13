@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
@@ -12,6 +13,7 @@ import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 
@@ -70,22 +72,14 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
+    // Set the confirm text
+    trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
 
-      @Override public void run() {
+    // Show unlock message
+    trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
 
-        // Set the confirm text
-        trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
-
-        // Show unlock message
-        trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
-
-        // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
-        getNextButton().setEnabled(false);
-
-      }
-
-    });
+    // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
   }
 
   @Override

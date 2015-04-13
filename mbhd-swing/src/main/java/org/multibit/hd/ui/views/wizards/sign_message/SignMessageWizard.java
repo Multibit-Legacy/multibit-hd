@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.wizards.sign_message;
 
 import com.google.common.base.Optional;
-import org.multibit.hd.ui.views.wizards.AbstractWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import java.util.Map;
@@ -15,7 +15,7 @@ import java.util.Map;
  * @since 0.0.1
  *
  */
-public class SignMessageWizard extends AbstractWizard<SignMessageWizardModel> {
+public class SignMessageWizard extends AbstractHardwareWalletWizard<SignMessageWizardModel> {
 
   public SignMessageWizard(SignMessageWizardModel model, boolean isExiting) {
     super(model, isExiting, Optional.absent());
@@ -24,7 +24,25 @@ public class SignMessageWizard extends AbstractWizard<SignMessageWizardModel> {
   @Override
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
 
-    wizardViewMap.put(SignMessageState.EDIT_MESSAGE.name(), new SignMessagePanelView(this, SignMessageState.EDIT_MESSAGE.name()));
+    wizardViewMap.put(
+      SignMessageState.SIGN_MESSAGE_PASSWORD.name(),
+      new SignMessagePasswordPanelView(this, SignMessageState.SIGN_MESSAGE_PASSWORD.name())
+    );
+
+    wizardViewMap.put(
+      SignMessageState.SIGN_MESSAGE_TREZOR.name(),
+      new SignMessageTrezorPanelView(this, SignMessageState.SIGN_MESSAGE_TREZOR.name())
+    );
+
+    wizardViewMap.put(
+      SignMessageState.SIGN_MESSAGE_TREZOR_ENTER_PIN.name(),
+      new SignMessageEnterPinPanelView(this, SignMessageState.SIGN_MESSAGE_TREZOR_ENTER_PIN.name())
+    );
+
+    wizardViewMap.put(
+      SignMessageState.SIGN_MESSAGE_TREZOR_CONFIRM_SIGN.name(),
+      new SignMessageConfirmSignPanelView(this, SignMessageState.SIGN_MESSAGE_TREZOR_CONFIRM_SIGN.name())
+    );
 
   }
 

@@ -12,7 +12,7 @@
   <artifactId>mbhd-brit</artifactId>
 
   <name>MultiBit HD BRIT</name>
-  <description>The Burton-Rowe Income Technique (BIRT) uses a large set of public keys to provide an ongoing income.</description>
+  <description>The Burton-Rowe Income Technique (BRIT) uses a large set of public keys to provide an ongoing income.</description>
 
   <!-- Common build -->
   <build>

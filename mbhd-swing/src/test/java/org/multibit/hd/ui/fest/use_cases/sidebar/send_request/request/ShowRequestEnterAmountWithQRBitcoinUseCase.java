@@ -93,11 +93,15 @@ public class ShowRequestEnterAmountWithQRBitcoinUseCase extends AbstractFestUseC
       .requireEnabled();
 
     // Verify the amount is showing as receiving in the correct position
-    String paymentReceiving0= window
-      .label("SEND_REQUEST_REQUESTED.requested.0.primary_balance")
+    String paymentReceivingPrimary= window
+      .label("SEND_REQUEST_REQUESTED.you_requested.0.primary_balance")
       .text();
+    assertThat(paymentReceivingPrimary).contains("100.00");
 
-    assertThat(paymentReceiving0).contains("100.00");
+    String paymentReceivingSecondary= window
+      .label("SEND_REQUEST_REQUESTED.you_requested.0.secondary_balance")
+      .text();
+    assertThat(paymentReceivingSecondary).contains("000");
 
   }
 

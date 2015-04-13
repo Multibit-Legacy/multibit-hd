@@ -2,6 +2,7 @@ package org.multibit.hd.ui.fest.use_cases.restore_wallet;
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 
@@ -27,7 +28,6 @@ public class RestoreWalletEnterSeedPhraseUseCase extends AbstractFestUseCase {
 
   @Override
   public void execute(Map<String, Object> parameters) {
-
     assertThat(parameters).isNotNull();
 
     // Verify that the title appears
@@ -56,16 +56,15 @@ public class RestoreWalletEnterSeedPhraseUseCase extends AbstractFestUseCase {
     // Verify interactions
     verifySeedPhrase(parameters);
     verifySeedPhraseHides(parameters);
+    verifyWalletType(parameters);
 
     // OK to proceed
     window
       .button(MessageKey.NEXT.getKey())
       .click();
-
   }
 
   private void verifySeedPhrase(Map<String, Object> parameters) {
-
     String seedPhrase1 = (String) parameters.get(MessageKey.SEED_PHRASE.getKey());
     String seedPhrase2 = ((String) parameters.get(MessageKey.SEED_PHRASE.getKey())).substring(1);
     String seedPhrase3 = parameters.get(MessageKey.SEED_PHRASE.getKey()) + "x";
@@ -120,11 +119,9 @@ public class RestoreWalletEnterSeedPhraseUseCase extends AbstractFestUseCase {
           "seedphrase"
         )))
       .requireNotVisible();
-
   }
 
   private void verifySeedPhraseHides(Map<String, Object> parameters) {
-
     String seedPhrase1 = (String) parameters.get(MessageKey.SEED_PHRASE.getKey());
 
     window
@@ -152,7 +149,50 @@ public class RestoreWalletEnterSeedPhraseUseCase extends AbstractFestUseCase {
       .text();
 
     assertThat(seedPhrase3).isEqualTo(seedPhrase1);
-
   }
 
+
+  private void verifyWalletType(Map<String, Object> parameters) {
+    String seedPhrase1 = (String) parameters.get(MessageKey.SEED_PHRASE.getKey());
+
+    // Correct seed phrase
+    window
+      .textBox(MessageKey.SEED_PHRASE.getKey())
+      .setText(seedPhrase1)
+        // Trigger the key release action
+      .pressKey(KeyEvent.VK_SHIFT)
+      .releaseKey(KeyEvent.VK_SHIFT);
+
+    // Verification status is showing
+    window
+      .label(
+        getVerificationStatusName(
+          WelcomeWizardState.RESTORE_WALLET_SEED_PHRASE.name(),
+          "seedphrase"
+        ))
+      .requireVisible();
+
+    // Verify "MultiBit HD BIP32" wallet type is selected (0) then select "Trezor" (should be 1 as no MultiBit HD Beta 7 option)
+    window
+      .comboBox(MessageKey.SELECT_WALLET_TYPE.getKey())
+      .requireSelection(0)
+      .selectItem(Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP44));
+
+    pauseForViewReset();
+
+    // Verify "Trezor" wallet type is selected (1) then select "MultiBit HD BIP32"
+    window
+      .comboBox(MessageKey.SELECT_WALLET_TYPE.getKey())
+      .requireSelection(1)
+      .selectItem(Languages.safeText(MessageKey.SELECT_WALLET_TYPE_BIP32));
+
+    pauseForViewReset();
+
+    // Verify "MultiBit HD BIP32" wallet type is selected (0)
+    window
+       .comboBox(MessageKey.SELECT_WALLET_TYPE.getKey())
+       .requireSelection(0);
+
+    pauseForViewReset();
+  }
 }

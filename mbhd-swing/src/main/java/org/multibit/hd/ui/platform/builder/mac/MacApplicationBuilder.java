@@ -19,10 +19,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.ui.platform.GenericApplication;
 import org.multibit.hd.ui.platform.GenericApplicationSpecification;
 import org.multibit.hd.ui.platform.builder.generic.DefaultApplicationBuilder;
-import org.multibit.hd.ui.platform.handler.DefaultAboutHandler;
-import org.multibit.hd.ui.platform.handler.DefaultOpenURIHandler;
-import org.multibit.hd.ui.platform.handler.DefaultPreferencesHandler;
-import org.multibit.hd.ui.platform.handler.DefaultQuitHandler;
+import org.multibit.hd.ui.platform.handler.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,15 +31,12 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- * <p>[Pattern] to provide the following to {@link Object}:</p>
+ * <p>Application builder to provide the following to generic application platform:</p>
  * <ul>
- * <li></li>
+ * <li>Access to the EAWT libraries present on OS X</li>
  * </ul>
- * <p>Example:</p>
- * <pre>
- * </pre>
  *
- * @since 1.0.0
+ * @since 0.0.3
  *         
  */
 public class MacApplicationBuilder {
@@ -88,6 +82,7 @@ public class MacApplicationBuilder {
 
     Object nativeApplication;
     Class nativeOpenURIHandlerClass;
+    Class nativeOpenFilesHandlerClass;
     Class nativePreferencesHandlerClass;
     Class nativeAboutHandlerClass;
     Class nativeQuitHandlerClass;
@@ -102,7 +97,7 @@ public class MacApplicationBuilder {
         // Determine if class loading by URL is supported
         if (URLClassLoader.class.isAssignableFrom(systemClassLoaderClass)) {
           // Get the addURL method from the class loader
-          Method addUrl = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
+          Method addUrl = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
           addUrl.setAccessible(true);
           // Load the Apple JDK classes
           addUrl.invoke(systemClassLoader, file.toURI().toURL());
@@ -118,6 +113,7 @@ public class MacApplicationBuilder {
 
       // Create native instances of the various handlers
       nativeOpenURIHandlerClass = Class.forName("com.apple.eawt.OpenURIHandler");
+      nativeOpenFilesHandlerClass = Class.forName("com.apple.eawt.OpenFilesHandler");
       nativePreferencesHandlerClass = Class.forName("com.apple.eawt.PreferencesHandler");
       nativeAboutHandlerClass = Class.forName("com.apple.eawt.AboutHandler");
       nativeQuitHandlerClass = Class.forName("com.apple.eawt.QuitHandler");
@@ -142,7 +138,7 @@ public class MacApplicationBuilder {
 
     // Open URI handler
     if (!specification.getOpenURIEventListeners().isEmpty()) {
-      log.debug("Adding the DefaultOpenURIHandler");
+      log.trace("Adding the DefaultOpenURIHandler");
       // Native handler
       macApplication.setOpenURIHandlerClass(nativeOpenURIHandlerClass);
       // Listeners
@@ -151,9 +147,20 @@ public class MacApplicationBuilder {
       macApplication.addOpenURIHandler(openURIHandler);
     }
 
+    // Open Files handler
+    if (!specification.getOpenFilesEventListeners().isEmpty()) {
+      log.trace("Adding the DefaultOpenFilesHandler");
+      // Native handler
+      macApplication.setOpenFilesHandlerClass(nativeOpenFilesHandlerClass);
+      // Listeners
+      DefaultOpenFilesHandler openFileHandler = new DefaultOpenFilesHandler();
+      openFileHandler.addListeners(specification.getOpenFilesEventListeners());
+      macApplication.addOpenFilesHandler(openFileHandler);
+    }
+
     // Preferences handler
     if (!specification.getPreferencesEventListeners().isEmpty()) {
-      log.debug("Adding the DefaultPreferencesHandler");
+      log.trace("Adding the DefaultPreferencesHandler");
       // Native handler
       macApplication.setPreferencesHandlerClass(nativePreferencesHandlerClass);
       // Listeners
@@ -164,7 +171,7 @@ public class MacApplicationBuilder {
 
     // About handler
     if (!specification.getAboutEventListeners().isEmpty()) {
-      log.debug("Adding the DefaultAboutHandler");
+      log.trace("Adding the DefaultAboutHandler");
       // Native handler
       macApplication.setAboutHandlerClass(nativeAboutHandlerClass);
       // Listeners
@@ -175,7 +182,7 @@ public class MacApplicationBuilder {
 
     // Quit handler
     if (!specification.getQuitEventListeners().isEmpty()) {
-      log.debug("Adding the DefaultQuitHandler");
+      log.trace("Adding the DefaultQuitHandler");
       // Native handler
       macApplication.setQuitHandlerClass(nativeQuitHandlerClass);
       // Listeners

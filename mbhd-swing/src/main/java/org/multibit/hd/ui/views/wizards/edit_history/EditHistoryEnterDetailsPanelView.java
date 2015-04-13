@@ -158,19 +158,12 @@ public class EditHistoryEnterDetailsPanelView extends AbstractWizardPanelView<Ed
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    descriptionReadOnly.requestFocusInWindow();
 
-        descriptionReadOnly.requestFocusInWindow();
-
-        // Ensure user overwrites
-        if (mode.equals(NEW)) {
-          descriptionReadOnly.selectAll();
-        }
-
-      }
-    });
+    // Ensure user overwrites
+    if (mode.equals(NEW)) {
+      descriptionReadOnly.selectAll();
+    }
 
   }
 

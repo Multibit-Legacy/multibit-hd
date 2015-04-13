@@ -45,7 +45,7 @@ public class TransactionInfoSentBySelfProvider implements TransactionSentBySelfP
 
     // If the transactionConfidence tells us it was sent by self then we are done
     if (transactionConfidenceSentBySelfProvider.isSentBySelf(wallet, transaction)) {
-      log.debug("The transaction confidence indicates this tx was sent by self for tx {}", transactionHashAsString);
+      log.trace("The transaction confidence indicates this tx was sent by self for tx {}", transactionHashAsString);
       return true;
     }
 
@@ -57,7 +57,7 @@ public class TransactionInfoSentBySelfProvider implements TransactionSentBySelfP
       log.debug("Could not find a transactionInfo for the transaction {}", transactionHashAsString);
       return false;
     } else {
-      log.debug("Found a transactionInfo for the transaction {}, sentBySelf was {}", transactionHashAsString, transactionInfo.isSentBySelf());
+      log.trace("Found a transactionInfo for the transaction {}, sentBySelf was {}", transactionHashAsString, transactionInfo.isSentBySelf());
       return transactionInfo.isSentBySelf();
     }
   }

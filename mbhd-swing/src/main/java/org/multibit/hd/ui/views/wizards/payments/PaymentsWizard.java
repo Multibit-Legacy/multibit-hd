@@ -17,7 +17,7 @@ import java.util.Map;
  * </ol>
  *
  * @since 0.0.1
- *         
+ *  
  */
 public class PaymentsWizard extends AbstractWizard<PaymentsWizardModel> {
 
@@ -28,19 +28,25 @@ public class PaymentsWizard extends AbstractWizard<PaymentsWizardModel> {
   @Override
   protected void populateWizardViewMap(Map<String, AbstractWizardPanelView> wizardViewMap) {
     wizardViewMap.put(
-      PaymentsState.TRANSACTION_OVERVIEW.name(),
-      new TransactionOverviewPanelView(this, PaymentsState.TRANSACTION_OVERVIEW.name()));
+            PaymentsState.TRANSACTION_OVERVIEW.name(),
+            new TransactionOverviewPanelView(this, PaymentsState.TRANSACTION_OVERVIEW.name()));
     wizardViewMap.put(
-      PaymentsState.TRANSACTION_AMOUNT.name(),
-      new TransactionAmountPanelView(this, PaymentsState.TRANSACTION_AMOUNT.name()));
+            PaymentsState.TRANSACTION_AMOUNT.name(),
+            new TransactionAmountPanelView(this, PaymentsState.TRANSACTION_AMOUNT.name()));
     wizardViewMap.put(
-      PaymentsState.TRANSACTION_DETAIL.name(),
-      new TransactionDetailPanelView(this, PaymentsState.TRANSACTION_DETAIL.name()));
+            PaymentsState.TRANSACTION_DETAIL.name(),
+            new TransactionDetailPanelView(this, PaymentsState.TRANSACTION_DETAIL.name()));
     wizardViewMap.put(
-      PaymentsState.CHOOSE_PAYMENT_REQUEST.name(),
-      new ChoosePaymentRequestPanelView(this, PaymentsState.CHOOSE_PAYMENT_REQUEST.name()));
+            PaymentsState.CHOOSE_PAYMENT_REQUEST.name(),
+            new ChoosePaymentRequestPanelView(this, PaymentsState.CHOOSE_PAYMENT_REQUEST.name()));
     wizardViewMap.put(
-      PaymentsState.PAYMENT_REQUEST_DETAILS.name(),
-      new PaymentRequestDetailPanelView(this, PaymentsState.PAYMENT_REQUEST_DETAILS.name()));
+            PaymentsState.PAYMENT_REQUEST_DETAILS.name(),
+            new PaymentRequestDetailPanelView(this, PaymentsState.PAYMENT_REQUEST_DETAILS.name()));
+    wizardViewMap.put(
+            PaymentsState.BIP70_PAYMENT_REQUEST_DETAILS.name(),
+            new BIP70PaymentRequestDetailPanelView(this, PaymentsState.BIP70_PAYMENT_REQUEST_DETAILS.name()));
+    wizardViewMap.put(
+            PaymentsState.BIP70_PAYMENT_REQUEST_MEMO_DETAILS.name(),
+            new BIP70PaymentRequestMemoPanelView(this, PaymentsState.BIP70_PAYMENT_REQUEST_MEMO_DETAILS.name()));
   }
 }

@@ -35,7 +35,7 @@ import java.lang.reflect.Proxy;
  * <li><code>E</code>: The generic event class (e.g. {@link org.multibit.hd.ui.platform.listener.GenericAboutEvent}</li>
  * </ul>
  *
- * @since 0.3.0
+ * @since 0.0.3
  */
 public abstract class BaseMacInvocationHandler<H extends GenericHandler, E extends GenericEvent> implements InvocationHandler {
 

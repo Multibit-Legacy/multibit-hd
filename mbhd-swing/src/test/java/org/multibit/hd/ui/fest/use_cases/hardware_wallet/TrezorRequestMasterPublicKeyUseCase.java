@@ -29,15 +29,8 @@ public class TrezorRequestMasterPublicKeyUseCase extends AbstractHardwareWalletF
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Allow time for events to propagate
-    pauseForHardwareEvent();
-
     // This transitional panel is too variable to trap reliably
-
-    // Check that the request panel view is showing
-//    window
-//    .label(MessageKey.TREZOR_UNLOCK_TITLE.getKey())
-//      .requireVisible();
+    pauseForViewReset();
 
   }
 }

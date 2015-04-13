@@ -164,7 +164,6 @@ public class Wizards {
     log.debug("New 'Send bitcoin wizard'");
 
     return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_ENTER_AMOUNT, parameter));
-
   }
 
   /**
@@ -235,9 +234,19 @@ public class Wizards {
    */
   public static SignMessageWizard newSignMessageWizard() {
 
-    log.debug("New 'Sign message wizard'");
-
-    return new SignMessageWizard(new SignMessageWizardModel(SignMessageState.EDIT_MESSAGE), false);
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType() == WalletType.TREZOR_HARD_WALLET) {
+      log.debug("New 'Sign message wizard' with Trezor");
+      return new SignMessageWizard(
+        new SignMessageWizardModel(SignMessageState.SIGN_MESSAGE_TREZOR),
+        false
+      );
+    } else {
+      log.debug("New 'Sign message wizard' with password");
+      return new SignMessageWizard(
+        new SignMessageWizardModel(SignMessageState.SIGN_MESSAGE_PASSWORD),
+        false
+      );
+    }
 
   }
 
@@ -259,21 +268,22 @@ public class Wizards {
    */
   public static CredentialsWizard newExitingCredentialsWizard(CredentialsRequestType credentialsRequestType) {
 
-    log.debug("Creating 'Credentials wizard' with credentialsRequestType = " + credentialsRequestType);
-    CredentialsWizardModel model;
-    switch (credentialsRequestType) {
-      case TREZOR:
-        model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY, credentialsRequestType);
-        break;
-      case PASSWORD:
-        model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD, credentialsRequestType);
-        break;
-      default:
-        throw new UnsupportedOperationException("The '" + credentialsRequestType.name() + "' is not supported");
-    }
-
-    // TODO This needs to be fixed (see #348)
+    // Use a synchronized block here to ensure that hardware wallets are
+    // handled correctly during startup
     synchronized (Wizards.class) {
+      log.debug("Creating 'Credentials wizard' with credentialsRequestType = " + credentialsRequestType);
+      CredentialsWizardModel model;
+      switch (credentialsRequestType) {
+        case TREZOR:
+          model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY);
+          break;
+        case PASSWORD:
+          model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_ENTER_PASSWORD);
+          break;
+        default:
+          throw new UnsupportedOperationException("The '" + credentialsRequestType.name() + "' is not supported");
+      }
+
       if (credentialsWizard != null) {
         // Clear down all existing subscriptions
         credentialsWizard.unsubscribeAll();
@@ -400,6 +410,7 @@ public class Wizards {
 
     return new FeeSettingsWizard(new FeeSettingsWizardModel(FeeSettingsState.FEE_ENTER_DETAILS, configuration));
   }
+
   /**
    * @return A new "sound settings" wizard for sound selection
    */
@@ -462,14 +473,19 @@ public class Wizards {
     Preconditions.checkNotNull(paymentData, "'paymentData' must be present");
 
     PaymentsWizardModel paymentsWizardModel;
-    if (paymentData instanceof PaymentRequestData) {
+    if (paymentData instanceof MBHDPaymentRequestData) {
       paymentsWizardModel = new PaymentsWizardModel(PaymentsState.PAYMENT_REQUEST_DETAILS, paymentData);
+      paymentsWizardModel.setMBHDPaymentRequestData((MBHDPaymentRequestData) paymentData);
+      paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(false);
+    } else if (paymentData instanceof PaymentRequestData) {
+      paymentsWizardModel = new PaymentsWizardModel(PaymentsState.BIP70_PAYMENT_REQUEST_DETAILS, paymentData);
       paymentsWizardModel.setPaymentRequestData((PaymentRequestData) paymentData);
       paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(false);
     } else {
       paymentsWizardModel = new PaymentsWizardModel(PaymentsState.TRANSACTION_OVERVIEW, paymentData);
       paymentsWizardModel.setShowPrevOnPaymentRequestDetailScreen(true);
     }
+
 
     return new PaymentsWizard(paymentsWizardModel, false);
   }

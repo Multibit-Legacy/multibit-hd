@@ -17,7 +17,6 @@ import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.AlertModel;
 
-import javax.swing.*;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -39,12 +38,7 @@ public class HeaderController extends AbstractController {
     if (!alertModels.isEmpty()) {
 
       // The alert structure has changed so inform the view
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          ViewEvents.fireAlertAddedEvent(alertModels.get(0));
-        }
-      });
+      ViewEvents.fireAlertAddedEvent(alertModels.get(0));
     }
   }
 
@@ -67,18 +61,12 @@ public class HeaderController extends AbstractController {
       localBalance = null;
     }
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          // Post the event
-          ViewEvents.fireBalanceChangedEvent(
-            coin.or(Coin.ZERO),
-            localBalance,
-            event.getRateProvider()
-          );
-        }
-      });
+    // Post the event
+    ViewEvents.fireBalanceChangedEvent(
+      coin.or(Coin.ZERO),
+      localBalance,
+      event.getRateProvider()
+    );
 
   }
 
@@ -134,14 +122,8 @@ public class HeaderController extends AbstractController {
       updateRemaining();
     }
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          // The alert structure has changed so inform the view
-          ViewEvents.fireAlertAddedEvent(alertModels.get(0));
-        }
-      });
+    // The alert structure has changed so inform the view
+    ViewEvents.fireAlertAddedEvent(alertModels.get(0));
 
   }
 
@@ -161,17 +143,12 @@ public class HeaderController extends AbstractController {
       updateRemaining();
 
       // The alert structure has changed so inform the view
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          if (!alertModels.isEmpty()) {
-            ViewEvents.fireAlertAddedEvent(alertModels.get(0));
-          } else {
-            // Use an empty event to signal that the event should be hidden
-            ViewEvents.fireAlertRemovedEvent();
-          }
-        }
-      });
+      if (!alertModels.isEmpty()) {
+        ViewEvents.fireAlertAddedEvent(alertModels.get(0));
+      } else {
+        // Use an empty event to signal that the event should be hidden
+        ViewEvents.fireAlertRemovedEvent();
+      }
     }
   }
 

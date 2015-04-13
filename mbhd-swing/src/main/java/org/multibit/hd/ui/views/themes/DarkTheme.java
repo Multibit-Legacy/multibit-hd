@@ -227,4 +227,8 @@ public class DarkTheme extends BaseTheme {
     return inverseText();
   }
 
+  @Override
+  public boolean isInvert() {
+    return true;
+  }
 }

@@ -7,14 +7,17 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public enum SendBitcoinState {
 
+  SEND_DISPLAY_PAYMENT_REQUEST,
   SEND_ENTER_AMOUNT,
   SEND_CONFIRM_AMOUNT,
   SEND_CONFIRM_TREZOR,
+  SEND_ENTER_PIN_FROM_CONFIRM_TREZOR,
   SEND_REPORT,
+  SEND_BIP70_PAYMENT_MEMO,
+  SEND_BIP70_PAYMENT_ACK_MEMO,
 
   // End of enum
   ;

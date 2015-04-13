@@ -39,34 +39,34 @@ public class TrezorEnterPinUnsupportedFirmwareUseCase extends AbstractHardwareWa
 
     // Check that all buttons are disabled
     window
-      .button(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".button_1")
+      .button(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".button_1")
       .requireDisabled();
     window
-      .button(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".button_2")
+      .button(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".button_2")
       .requireDisabled();
     window
-      .button(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".button_3")
+      .button(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".button_3")
       .requireDisabled();
     window
-      .button(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".button_4")
+      .button(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".button_4")
       .requireDisabled();
     window
-      .button(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".button_5")
+      .button(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".button_5")
       .requireDisabled();
     window
-      .button(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".button_6")
+      .button(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".button_6")
       .requireDisabled();
     window
-      .button(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".button_7")
+      .button(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".button_7")
       .requireDisabled();
     window
-      .button(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".button_8")
+      .button(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".button_8")
       .requireDisabled();
     window
-      .button(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".button_9")
+      .button(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".button_9")
       .requireDisabled();
     window
-      .button(CredentialsState.CREDENTIALS_ENTER_PIN.name() + ".button_delete")
+      .button(CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY.name() + ".button_delete")
       .requireDisabled();
 
     // 'Next' button

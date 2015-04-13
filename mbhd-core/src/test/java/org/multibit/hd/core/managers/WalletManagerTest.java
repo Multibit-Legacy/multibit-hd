@@ -19,11 +19,14 @@ package org.multibit.hd.core.managers;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Wallet;
 import org.bitcoinj.crypto.DeterministicKey;
+import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.wallet.KeyChain;
 import org.junit.After;
 import org.junit.Before;
@@ -34,6 +37,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.extensions.WalletTypeExtension;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
@@ -42,6 +46,9 @@ import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -85,51 +92,70 @@ public class WalletManagerTest {
   public final static String TREZOR_ADDRESS_M_44H_0H_0H_0_3 = "1MVGa13XFvvpKGZdX389iU8b3qwtmAyrsJ";
   public final static String TREZOR_ADDRESS_M_44H_0H_0H_1_3 = "1DzVLMA4HzjXPAr6aZoaacDPHXXntsZ2zL";
 
+  /**
+   * The 'skin' seed phrase used in the issue: https://github.com/bitcoin-solutions/multibit-hd/issues/445
+   */
+  public static final String SKIN_SEED_PHRASE = "skin join dog sponsor camera puppy ritual diagram arrow poverty boy elbow";
+
+  // The receiving address being generated in Beta 7 and previous MBHD (not BIP32 compliant)
+  private static final String NON_COMPLIANT_SKIN_ADDRESS_M_0H_0_0 = "1LQ8XnNKqC7Vu7atH5k4X8qVCc9ug2q7WE";
+
+  // The correct BIP32 addresses, generated from https://dcpos.github.io/bip39/ with the skin seed and derivation path m/0'/0
+  private static final String COMPLIANT_SKIN_ADDRESS_M_0H_0_0 = "12QxtuyEM8KBG3ngNRe2CZE28hFw3b1KMJ";
+  private static final String COMPLIANT_SKIN_ADDRESS_M_0H_0_1 = "16mN2Bjap7vSb6Cp4sjV3BrUiCMP3ixo5A";
+  private static final String COMPLIANT_SKIN_ADDRESS_M_0H_0_2 = "1LrC33bZVTHTHMqw8p1NWUoHVArKFwB3mp";
+  private static final String COMPLIANT_SKIN_ADDRESS_M_0H_0_3 = "17Czu38CcLwWr8jFZrDJBHWiEDd2QWhPSU";
+  private static final String COMPLIANT_SKIN_ADDRESS_M_0H_0_4 = "18dbiNgyHKEY4TtynEDZGEDhS9fdYqeZWG";
+
+  private NetworkParameters mainNet;
+
+  @SuppressFBWarnings({"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD", "NP_NONNULL_PARAM_VIOLATION"})
   @Before
   public void setUp() throws Exception {
-
     InstallationManager.unrestricted = true;
 
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
     // Start the core services
     CoreServices.main(null);
+
+    mainNet = NetworkParameters.fromID(NetworkParameters.ID_MAINNET);
+    assertThat(mainNet).isNotNull();
   }
 
   @After
   public void tearDown() throws Exception {
-
     // Order is important here
     CoreServices.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
 
     InstallationManager.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
     BackupManager.INSTANCE.shutdownNow();
     WalletManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.HARD);
-
   }
 
   @Test
   public void testCreateWallet() throws Exception {
-
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     WalletManager walletManager = WalletManager.INSTANCE;
     BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
+    byte[] entropy = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     long nowInSeconds = Dates.nowInSeconds();
 
     WalletSummary walletSummary1 = walletManager
-      .getOrCreateMBHDSoftWalletSummaryFromSeed(
-        applicationDirectory,
-        seed,
-        nowInSeconds,
-        "credentials",
-        "Example",
-        "Example",
-        false); // No need to sync
+      .getOrCreateMBHDSoftWalletSummaryFromEntropy(
+              applicationDirectory,
+              entropy,
+              seed,
+              nowInSeconds,
+              "credentials",
+              "Example",
+              "Example",
+              false); // No need to sync
 
     // Uncomment this next line if you want a wallet created in your MultiBitHD user data directory.
     //walletManager.createWallet( seed, "credentials");
@@ -141,14 +167,15 @@ public class WalletManagerTest {
     BackupManager.INSTANCE.initialise(applicationDirectory2, Optional.<File>absent());
 
     WalletSummary walletSummary2 = walletManager
-      .getOrCreateMBHDSoftWalletSummaryFromSeed(
-        applicationDirectory2,
-        seed,
-        nowInSeconds,
-        "credentials",
-        "Example",
-        "Example",
-        false); // No need to sync
+      .getOrCreateMBHDSoftWalletSummaryFromEntropy(
+              applicationDirectory2,
+              entropy,
+              seed,
+              nowInSeconds,
+              "credentials",
+              "Example",
+              "Example",
+              false); // No need to sync
 
     assertThat(walletSummary2).isNotNull();
 
@@ -168,8 +195,8 @@ public class WalletManagerTest {
     );
 
     assertThat(expectedFile.exists()).isTrue();
-    assertThat(WalletType.MBHD_SOFT_WALLET.equals(walletSummary1.getWalletType()));
-    assertThat(WalletType.MBHD_SOFT_WALLET.equals(walletSummary2.getWalletType()));
+    assertThat(WalletType.MBHD_SOFT_WALLET_BIP32.equals(walletSummary1.getWalletType()));
+    assertThat(WalletType.MBHD_SOFT_WALLET_BIP32.equals(walletSummary2.getWalletType()));
   }
 
   @Test
@@ -177,7 +204,6 @@ public class WalletManagerTest {
    * Test creation of a Trezor (soft) wallet.
    */
   public void testCreateSoftTrezorWallet() throws Exception {
-
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -203,13 +229,13 @@ public class WalletManagerTest {
     Wallet trezorWallet = walletSummary.getWallet();
 
     DeterministicKey trezorKeyM44H_0H_0H_0_0 = trezorWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
-    String addressM44H_0H_0H_0_0 = trezorKeyM44H_0H_0H_0_0.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+    String addressM44H_0H_0H_0_0 = trezorKeyM44H_0H_0H_0_0.toAddress(mainNet).toString();
 
     log.debug("WalletManagerTest - trezorKeyM44H_0H_0H_0_0 = " + trezorKeyM44H_0H_0H_0_0.toString());
     log.debug("WalletManagerTest - addressM44H_0H_0H_0_0 = " + addressM44H_0H_0H_0_0);
 
     DeterministicKey trezorKeyM44H_0H_0H_1_0 = trezorWallet.freshKey(KeyChain.KeyPurpose.CHANGE);
-    String addressM44H_0H_0H_1_0 = trezorKeyM44H_0H_0H_1_0.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+    String addressM44H_0H_0H_1_0 = trezorKeyM44H_0H_0H_1_0.toAddress(mainNet).toString();
 
     log.debug("WalletManagerTest - trezorKeyM44H_0H_0H_1_0 = " + trezorKeyM44H_0H_0H_1_0.toString());
     log.debug("WalletManagerTest - addressM44H_0H_0H_1_0 = " + addressM44H_0H_0H_1_0);
@@ -268,6 +294,192 @@ public class WalletManagerTest {
     // Check the first keys above are in the wallet
     assertThat(rebornWallet2.hasKey(trezorKeyM44H_0H_0H_0_0)).isTrue();
     assertThat(rebornWallet2.hasKey(trezorKeyM44H_0H_0H_1_0)).isTrue();
+  }
+
+  @Test
+  /**
+   * Test creation of an MBHD soft wallet with the 'skin' seed phrase
+   * This replicates the non-BIP32 compliant code we have at the moment
+   */
+  public void testCreateSkinSeedPhraseWalletInABadWay() throws Exception {
+    // Get the application directory
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+    WalletManager walletManager = WalletManager.INSTANCE;
+    BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
+
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(SKIN_SEED_PHRASE));
+
+    long nowInSeconds = Dates.nowInSeconds();
+
+    WalletSummary walletSummary = walletManager.badlyGetOrCreateMBHDSoftWalletSummaryFromSeed(
+            applicationDirectory,
+            seed,
+            nowInSeconds,
+            "aPassword",
+            "Skin",
+            "Skin", true);
+
+    assertThat(walletSummary).isNotNull();
+    assertThat(WalletType.MBHD_SOFT_WALLET.equals(walletSummary.getWalletType()));
+
+    // Check that the generated addresses match the expected
+    Wallet skinWallet = walletSummary.getWallet();
+
+    DeterministicKey skinKeyM0H_0_0 = skinWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    DeterministicKey skinKeyM0H_0_1 = skinWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    DeterministicKey skinKeyM0H_0_2 = skinWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    DeterministicKey skinKeyM0H_0_3 = skinWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    DeterministicKey skinKeyM0H_0_4 = skinWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+    String skinAddressM0H_0_0 = skinKeyM0H_0_0.toAddress(mainNet).toString();
+    String skinAddressM0H_0_1 = skinKeyM0H_0_1.toAddress(mainNet).toString();
+    String skinAddressM0H_0_2 = skinKeyM0H_0_2.toAddress(mainNet).toString();
+    String skinAddressM0H_0_3 = skinKeyM0H_0_3.toAddress(mainNet).toString();
+    String skinAddressM0H_0_4 = skinKeyM0H_0_4.toAddress(mainNet).toString();
+
+    log.debug("WalletManagerTest - BAD skinAddressM0H_0_0 = {}", skinAddressM0H_0_0);
+    log.debug("WalletManagerTest - BAD skinAddressM0H_0_1 = {}", skinAddressM0H_0_1);
+    log.debug("WalletManagerTest - BAD skinAddressM0H_0_2 = {}", skinAddressM0H_0_2);
+    log.debug("WalletManagerTest - BAD skinAddressM0H_0_3 = {}", skinAddressM0H_0_3);
+    log.debug("WalletManagerTest - BAD skinAddressM0H_0_4 = {}", skinAddressM0H_0_4);
+
+    // This test passes now but the address is incorrect in real life - not BIP32 compliant
+    assertThat(NON_COMPLIANT_SKIN_ADDRESS_M_0H_0_0.equals(skinAddressM0H_0_0)).isTrue();
+
+    // These asserts should all be isTrue were the wallet BIP32 complaint - the addresses in MBHD wallets are currently wrong
+    assertThat(COMPLIANT_SKIN_ADDRESS_M_0H_0_0.equals(skinAddressM0H_0_0)).isFalse();
+    assertThat(COMPLIANT_SKIN_ADDRESS_M_0H_0_1.equals(skinAddressM0H_0_1)).isFalse();
+    assertThat(COMPLIANT_SKIN_ADDRESS_M_0H_0_2.equals(skinAddressM0H_0_2)).isFalse();
+    assertThat(COMPLIANT_SKIN_ADDRESS_M_0H_0_3.equals(skinAddressM0H_0_3)).isFalse();
+    assertThat(COMPLIANT_SKIN_ADDRESS_M_0H_0_4.equals(skinAddressM0H_0_4)).isFalse();
+  }
+
+  @Test
+   /**
+    * Test creation of an MBHD soft wallet with the 'skin' seed phrase
+    * This constructs a BIP32 compliant wallet
+    */
+   public void testCreateSkinSeedPhraseWalletInAGoodWay() throws Exception {
+     // Get the application directory
+     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+     WalletManager walletManager = WalletManager.INSTANCE;
+     BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
+
+     byte[] entropy = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(SKIN_SEED_PHRASE));
+     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(SKIN_SEED_PHRASE));
+
+     long nowInSeconds = Dates.nowInSeconds();
+
+     WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromEntropy(
+             applicationDirectory,
+             entropy,
+             seed,
+             nowInSeconds,
+             "aPassword",
+             "Skin",
+             "Skin", true);
+
+     assertThat(walletSummary).isNotNull();
+     assertThat(WalletType.MBHD_SOFT_WALLET_BIP32.equals(walletSummary.getWalletType()));
+
+     // Check that the generated addresses match the expected
+
+     Wallet skinWallet = walletSummary.getWallet();
+
+     DeterministicKey skinKeyM0H_0_0 = skinWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+     DeterministicKey skinKeyM0H_0_1 = skinWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+     DeterministicKey skinKeyM0H_0_2 = skinWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+     DeterministicKey skinKeyM0H_0_3 = skinWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+     DeterministicKey skinKeyM0H_0_4 = skinWallet.freshKey(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+     String skinAddressM0H_0_0 = skinKeyM0H_0_0.toAddress(mainNet).toString();
+     String skinAddressM0H_0_1 = skinKeyM0H_0_1.toAddress(mainNet).toString();
+     String skinAddressM0H_0_2 = skinKeyM0H_0_2.toAddress(mainNet).toString();
+     String skinAddressM0H_0_3 = skinKeyM0H_0_3.toAddress(mainNet).toString();
+     String skinAddressM0H_0_4 = skinKeyM0H_0_4.toAddress(mainNet).toString();
+
+     log.debug("WalletManagerTest - GOOD skinAddressM0H_0_0 = {}", skinAddressM0H_0_0);
+     log.debug("WalletManagerTest - GOOD skinAddressM0H_0_1 = {}", skinAddressM0H_0_1);
+     log.debug("WalletManagerTest - GOOD skinAddressM0H_0_2 = {}", skinAddressM0H_0_2);
+     log.debug("WalletManagerTest - GOOD skinAddressM0H_0_3 = {}", skinAddressM0H_0_3);
+     log.debug("WalletManagerTest - GOOD skinAddressM0H_0_4 = {}", skinAddressM0H_0_4);
+
+     // This is the Beta 7 address that was not BIP32 compliant
+     assertThat(NON_COMPLIANT_SKIN_ADDRESS_M_0H_0_0.equals(skinAddressM0H_0_0)).isFalse();
+
+     // These are BIP32 compliant addresses
+     assertThat(COMPLIANT_SKIN_ADDRESS_M_0H_0_0.equals(skinAddressM0H_0_0)).isTrue();
+     assertThat(COMPLIANT_SKIN_ADDRESS_M_0H_0_1.equals(skinAddressM0H_0_1)).isTrue();
+     assertThat(COMPLIANT_SKIN_ADDRESS_M_0H_0_2.equals(skinAddressM0H_0_2)).isTrue();
+     assertThat(COMPLIANT_SKIN_ADDRESS_M_0H_0_3.equals(skinAddressM0H_0_3)).isTrue();
+     assertThat(COMPLIANT_SKIN_ADDRESS_M_0H_0_4.equals(skinAddressM0H_0_4)).isTrue();
+
+     // Check the wallet can be reloaded ok i.e. the protobuf round trips
+     File temporaryFile = File.createTempFile("WalletManagerTest", ".wallet");
+     skinWallet.saveToFile(temporaryFile);
+     File encryptedWalletFile = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(temporaryFile, "aPassword");
+
+     Wallet rebornWallet = WalletManager.INSTANCE.loadWalletFromFile(encryptedWalletFile, "aPassword");
+     log.debug("Reborn skin wallet, number of keys: " + rebornWallet.getActiveKeychain().numKeys());
+     log.debug("Reborn skin wallet : {}", rebornWallet.toString());
+
+     // Check the first keys above are in the wallet
+     assertThat(rebornWallet.hasKey(skinKeyM0H_0_0)).isTrue();
+     assertThat(rebornWallet.hasKey(skinKeyM0H_0_1)).isTrue();
+
+     // Create a fresh receiving and change address
+     Address freshReceivingAddress = rebornWallet.freshAddress(KeyChain.KeyPurpose.RECEIVE_FUNDS);
+     assertThat(freshReceivingAddress).isNotNull();
+
+     Address freshChangeAddress = rebornWallet.freshAddress(KeyChain.KeyPurpose.CHANGE);
+     assertThat(freshChangeAddress).isNotNull();
+
+     log.debug("Reborn skin wallet with more keys, number of keys: " + rebornWallet.getActiveKeychain().numKeys());
+     log.debug("Reborn skin wallet with more keys : {}", rebornWallet.toString());
+
+     // Round trip it again
+     File temporaryFile2 = File.createTempFile("WalletManagerTest2", ".wallet");
+     rebornWallet.saveToFile(temporaryFile2);
+     File encryptedWalletFile2 = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(temporaryFile2, "aPassword2");
+
+     Wallet rebornWallet2 = WalletManager.INSTANCE.loadWalletFromFile(encryptedWalletFile2, "aPassword2");
+
+     // Check the first keys above are in the wallet
+     assertThat(rebornWallet2.hasKey(skinKeyM0H_0_0)).isTrue();
+     assertThat(rebornWallet2.hasKey(skinKeyM0H_0_0)).isTrue();
+   }
+
+  @Test
+  public void testBackwardsCompatibility_MBHD_SOFT_WALLET_BIP32() throws Exception {
+    backwardsCompatibilityCheck("/wallets/MBHD_SOFT_WALLET_BIP32.wallet.aes", "abc123", WalletType.MBHD_SOFT_WALLET_BIP32);
+  }
+
+  @Test
+  public void testBackwardsCompatibility_MBHD_SOFT_WALLET() throws Exception {
+    backwardsCompatibilityCheck("/wallets/MBHD_SOFT_WALLET.wallet.aes", "abc123", WalletType.MBHD_SOFT_WALLET);
+  }
+
+  private void backwardsCompatibilityCheck(String walletLocation, String password, WalletType expectedWalletType) throws Exception {
+        // Get the application directory
+    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
+    // Copy the extant test wallet to the application directory
+    copyTestWallet(walletLocation, applicationDirectory);
+
+    File walletFile = new File (applicationDirectory.getAbsolutePath() + "/mbhd.wallet.aes");
+
+    WalletManager walletManager = WalletManager.INSTANCE;
+    BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
+
+    Wallet wallet = walletManager.loadWalletFromFile(walletFile, password);
+
+    assertThat(wallet).isNotNull();
+
+    WalletTypeExtension probeWalletTypeExtension = new WalletTypeExtension();
+    WalletTypeExtension existingWalletTypeExtension = (WalletTypeExtension)wallet.addOrGetExistingExtension(probeWalletTypeExtension);
+    assertThat(expectedWalletType.equals(existingWalletTypeExtension.getWalletType()));
   }
 
   @Test
@@ -349,29 +561,32 @@ public class WalletManagerTest {
     WalletManager walletManager = WalletManager.INSTANCE;
     BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
+    byte[] entropy = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+
     long nowInSeconds = Dates.nowInSeconds();
 
     log.debug("");
-    WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
-      applicationDirectory,
-      seed,
-      nowInSeconds,
-      SIGNING_PASSWORD,
-      "Signing Example",
-      "Signing Example",
-      false); // No need to sync
+    WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromEntropy(
+            applicationDirectory,
+            entropy,
+            seed,
+            nowInSeconds,
+            SIGNING_PASSWORD,
+            "Signing Example",
+            "Signing Example",
+            false); // No need to sync
 
     // Address not in wallet
     ECKey ecKey = new ECKey();
-    String addressNotInWalletString = ecKey.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET)).toString();
+    String addressNotInWalletString = ecKey.toAddress(mainNet).toString();
 
     Wallet wallet = walletSummary.getWallet();
 
     // Create a signing key
     DeterministicKey key = wallet.freshReceiveKey();
-    Address signingAddress = key.toAddress(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+    Address signingAddress = key.toAddress(mainNet);
 
     // Successfully sign the address
     log.debug("Expect successful signature");
@@ -429,13 +644,16 @@ public class WalletManagerTest {
 
   @Test
   public void testWriteOfEncryptedPasswordAndSeed() throws Exception {
-
     List<String> passwordList = Lists.newArrayList();
     passwordList.add(SHORT_PASSWORD);
     passwordList.add(MEDIUM_PASSWORD);
     passwordList.add(LONG_PASSWORD);
     passwordList.add(LONGER_PASSWORD);
     passwordList.add(LONGEST_PASSWORD);
+
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] entropy = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
 
     for (String passwordToCheck : passwordList) {
 
@@ -446,19 +664,19 @@ public class WalletManagerTest {
 
       WalletManager walletManager = WalletManager.INSTANCE;
 
-      SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
-      byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
+
       long nowInSeconds = Dates.nowInSeconds();
 
       WalletSummary walletSummary = walletManager
-        .getOrCreateMBHDSoftWalletSummaryFromSeed(
-          applicationDirectory,
-          seed,
-          nowInSeconds,
-          passwordToCheck,
-          "Password/seed encryption Example",
-          "Password/seed encryption Example",
-          false); // No need to sync
+        .getOrCreateMBHDSoftWalletSummaryFromEntropy(
+                applicationDirectory,
+                entropy,
+                seed,
+                nowInSeconds,
+                passwordToCheck,
+                "Password/seed encryption Example",
+                "Password/seed encryption Example",
+                false); // No need to sync
 
       // Check the encrypted wallet credentials and seed are correct
       byte[] foundEncryptedBackupKey = walletSummary.getEncryptedBackupKey();
@@ -491,9 +709,39 @@ public class WalletManagerTest {
       // Perform a unit test cycle to ensure we reset all services correctly
       tearDown();
       setUp();
-
     }
   }
 
+  /**
+   * Copy the named test wallet to the (temporary) installation directory
+   * @param testWalletPath
+   * @throws IOException
+   */
+  private void copyTestWallet(String testWalletPath, File installationDirectory) throws IOException {
+    log.debug("Copying test wallet {} to '{}'", testWalletPath, installationDirectory.getAbsolutePath());
+
+    // Prepare an input stream to the checkpoints
+    final InputStream sourceCheckpointsStream = InstallationManager.class.getResourceAsStream(testWalletPath);
+
+
+    // Create the output stream
+    long bytes;
+    try (FileOutputStream sinkCheckpointsStream = new FileOutputStream(installationDirectory.getAbsolutePath() + "/mbhd.wallet.aes")) {
+
+      // Copy the wallet
+      bytes = ByteStreams.copy(sourceCheckpointsStream, sinkCheckpointsStream);
+
+      // Clean up
+      sourceCheckpointsStream.close();
+      sinkCheckpointsStream.flush();
+      sinkCheckpointsStream.close();
+    } finally {
+      if (sourceCheckpointsStream != null) {
+        sourceCheckpointsStream.close();
+      }
+    }
+
+    log.debug("Wallet {} bytes in length.", bytes);
+  }
 }
 

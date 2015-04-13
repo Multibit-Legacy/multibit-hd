@@ -36,7 +36,7 @@ import java.lang.reflect.Proxy;
  * <li><code>R</code>: The generic response class (e.g. {@link org.multibit.hd.ui.platform.listener.GenericQuitResponse}</li>
  * </ul>
  *
- * @since 0.3.0
+ * @since 0.0.3
  */
 public abstract class BaseMacResponseInvocationHandler<H extends GenericHandler, E extends GenericEvent, R extends GenericEvent> implements InvocationHandler {
   private static final Logger log = LoggerFactory.getLogger(QuitHandlerInvocationHandler.class);
@@ -71,8 +71,8 @@ public abstract class BaseMacResponseInvocationHandler<H extends GenericHandler,
     // Create a bi-directional generic event using based on 2 parameters (the native event, the native response)
     // Require unchecked casts here to avoid this issue:
     // http://blog.sarathonline.com/2010/08/maven-only-type-parameters-of-x-cannot.html
-    E event = (E) createGenericEvent(objects[0]);
-    R response = (R) createGenericResponse(objects[1]);
+    E event = createGenericEvent(objects[0]);
+    R response = createGenericResponse(objects[1]);
     try {
       log.debug("Created event {}", genericEventClass.getSimpleName());
 

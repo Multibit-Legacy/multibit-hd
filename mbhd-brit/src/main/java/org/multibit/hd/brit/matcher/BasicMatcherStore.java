@@ -53,6 +53,8 @@ public class BasicMatcherStore implements MatcherStore {
 
   public static final String LINKS_FILENAME_SUFFIX = ".txt";
 
+  public static final String COMMENT_PREFIX = "#";
+
   /**
    * Produces "2000-04-01" for simplified short user date
    */
@@ -302,7 +304,11 @@ public class BasicMatcherStore implements MatcherStore {
         int line = 0;
         for (String rawAddress : rawAddresses) {
           try {
-            addresses.add(new Address(MainNetParams.get(), rawAddress));
+            if ("".equals(rawAddress) || rawAddress.startsWith(COMMENT_PREFIX)) {
+              log.debug("Ignoring comment/empty line: {}", rawAddress);
+            } else {
+              addresses.add(new Address(MainNetParams.get(), rawAddress));
+            }
             line++;
           } catch (AddressFormatException e) {
             log.error("Malformed BRIT address in 'all.txt' line: " + line + ". Ignoring.", e);

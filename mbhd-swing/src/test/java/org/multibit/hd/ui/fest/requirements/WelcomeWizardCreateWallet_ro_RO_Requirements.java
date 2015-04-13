@@ -6,7 +6,7 @@ import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.create_wallet.*;
 import org.multibit.hd.ui.fest.use_cases.credentials.QuickUnlockWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.credentials.UnlockReportUseCase;
-import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
+import org.multibit.hd.ui.fest.use_cases.environment.CloseDebugEnvironmentPopoverUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.ShowManageWalletScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.edit_wallet.ShowThenCancelEditWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
@@ -30,7 +30,7 @@ public class WelcomeWizardCreateWallet_ro_RO_Requirements {
 
     Map<String, Object> parameters = Maps.newHashMap();
 
-    new CloseDebugSecurityPopoverUseCase(window).execute(parameters);
+    new CloseDebugEnvironmentPopoverUseCase(window).execute(parameters);
 
     new AcceptLicenceUseCase(window).execute(parameters);
 
@@ -61,6 +61,8 @@ public class WelcomeWizardCreateWallet_ro_RO_Requirements {
     new QuickUnlockWalletUseCase(window).execute(parameters);
 
     new UnlockReportUseCase(window).execute(parameters);
+
+    Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
 
     // Show the manage wallets screen
     new ShowManageWalletScreenUseCase(window).execute(parameters);

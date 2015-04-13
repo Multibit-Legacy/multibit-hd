@@ -5,6 +5,7 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.bitcoinj.core.*;
+import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.store.BlockStoreException;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -28,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -107,8 +107,10 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     // Create a wallet from the WALLET_SEED_1_PROPERTY_NAME
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] entropy = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
+
     byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
-    WalletSummary walletSummary = createWallet(temporaryDirectory, seed, "Example", "Example");
+    WalletSummary walletSummary = createWallet(temporaryDirectory, entropy, seed, "Example", "Example");
 
     DateTime timestamp1 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_1_PROPERTY_NAME));
 
@@ -126,10 +128,10 @@ public class BitcoinNetworkServiceFunctionalTest {
     // See if there are any payments
     WalletService walletService = new WalletService(BitcoinNetwork.current().get());
 
-    walletService.initialise(temporaryDirectory, new WalletId(seed));
+    walletService.initialise(temporaryDirectory, new WalletId(seed), WALLET_PASSWORD);
 
     // Get the current wallets payments - there should be some
-    List<PaymentData> transactions = walletService.getPaymentDataList();
+    Set<PaymentData> transactions = walletService.getPaymentDataSet();
 
     log.debug("The payments in the wallet are:\n{}", transactions);
     assertThat(transactions.size() > 0).isTrue();
@@ -144,14 +146,16 @@ public class BitcoinNetworkServiceFunctionalTest {
 
     // Create two wallets from the two seeds
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] entropy1 = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
     byte[] seed1 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_1_PROPERTY_NAME)));
-    WalletSummary walletSummary1 = createWallet(temporaryDirectory, seed1, "Example", "Example");
+    WalletSummary walletSummary1 = createWallet(temporaryDirectory, entropy1, seed1, "Example", "Example");
     String walletRoot1 = WalletManager.createWalletRoot(walletSummary1.getWalletId());
 
     DateTime timestamp1 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_1_PROPERTY_NAME));
 
+    byte[] entropy2 = MnemonicCode.INSTANCE.toEntropy(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_2_PROPERTY_NAME)));
     byte[] seed2 = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(seedProperties.getProperty(WALLET_SEED_2_PROPERTY_NAME)));
-    WalletSummary walletSummary2 = createWallet(temporaryDirectory, seed2, "Example", "Example");
+    WalletSummary walletSummary2 = createWallet(temporaryDirectory, entropy2, seed2, "Example", "Example");
     String walletRoot2 = WalletManager.createWalletRoot(walletSummary2.getWalletId());
 
     DateTime timestamp2 = Dates.parseSeedTimestamp(seedProperties.getProperty(WALLET_TIMESTAMP_2_PROPERTY_NAME));
@@ -257,18 +261,19 @@ public class BitcoinNetworkServiceFunctionalTest {
     }
   }
 
-  private WalletSummary createWallet(File walletDirectory, byte[] seed, String name, String notes) throws IOException {
+  private WalletSummary createWallet(File walletDirectory, byte[] entropy, byte[] seed, String name, String notes) throws IOException {
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
+    WalletSummary walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromEntropy(
             walletDirectory,
+            entropy,
             seed,
             nowInSeconds,
             WALLET_PASSWORD,
             name,
             notes,
-      true); // Perform sync
+            true); // Perform sync
 
     assertThat(walletSummary).isNotNull();
     assertThat(walletSummary.getWallet()).isNotNull();
@@ -286,7 +291,7 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Clear percentage complete
     percentComplete = 0;
 
-    bitcoinNetworkService.replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()));
+    bitcoinNetworkService.replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()), true);
 
     int timeout = 0;
     while (timeout < MAX_TIMEOUT && (percentComplete < 100)) {

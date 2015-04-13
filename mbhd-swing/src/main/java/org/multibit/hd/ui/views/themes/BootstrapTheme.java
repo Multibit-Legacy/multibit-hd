@@ -226,4 +226,8 @@ public class BootstrapTheme extends BaseTheme {
     return text();
   }
 
+  @Override
+  public boolean isInvert() {
+    return false;
+  }
 }

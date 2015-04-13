@@ -96,42 +96,6 @@ public class CreateTrezorWalletConfirmWordPanelView extends AbstractWizardPanelV
   }
 
   /**
-   * @return The Trezor display view to avoid method duplication
-   */
-  public TrezorDisplayView getTrezorDisplayView() {
-    return trezorDisplayMaV.getView();
-  }
-
-  /**
-   * @param visible True if the display should not be visible
-   */
-  public void setDisplayVisible(boolean visible) {
-    this.trezorDisplayMaV.getView().setDisplayVisible(visible);
-  }
-
-  public void disableForNext() {
-
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
-
-    getNextButton().setEnabled(false);
-    getExitButton().setEnabled(false);
-
-    trezorDisplayMaV.getView().setSpinnerVisible(true);
-
-  }
-
-  public void enableForFailure() {
-
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
-
-    getNextButton().setEnabled(false);
-    getExitButton().setEnabled(true);
-
-    trezorDisplayMaV.getView().setSpinnerVisible(false);
-
-  }
-
-  /**
    *
    * @param wordCount The word count
    * @param checking True if the checking phrasing should be used

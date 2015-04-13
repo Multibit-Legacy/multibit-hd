@@ -1,11 +1,15 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.TransactionData;
+import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -17,11 +21,8 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
-
-  private static final Logger log = LoggerFactory.getLogger(PaymentsWizardModel.class);
 
   /**
    * The payment being shown by the payment wizard
@@ -32,18 +33,22 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
    * The matching payment requests for a transactionData
    * (may be empty
    */
-  List<PaymentRequestData> matchingPaymentRequestList = Lists.newArrayList();
+  private List<MBHDPaymentRequestData> matchingPaymentRequestList = Lists.newArrayList();
 
   /**
-   * The payment request to show in the payment request details screen
+   * The MBHD payment request to show in the payment request details screen
    */
-  PaymentRequestData paymentRequestData;
+  private MBHDPaymentRequestData MBHDPaymentRequestData;
+
+  /**
+   * The BIP70 payment request to show in the payment request details screen
+   */
+  private PaymentRequestData paymentRequestData;
 
   /**
    * Whether to show the prev button on the payment request detail screen
    */
   boolean showPrevOnPaymentRequestDetailScreen = false;
-
 
   /**
    * @param state The state object
@@ -64,14 +69,43 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
         state = PaymentsState.TRANSACTION_DETAIL;
         break;
       case TRANSACTION_DETAIL:
-        state = PaymentsState.CHOOSE_PAYMENT_REQUEST;
-        break;
+        // If there is a BIP70 payment request data then show that
+        if (paymentData instanceof TransactionData) {
+          WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+          Optional<PaymentRequestData> paymentRequestDataOptional = walletService.getPaymentRequestDataByHash(((TransactionData) paymentData).getTransactionId());
+          if (paymentRequestDataOptional.isPresent()) {
+            setPaymentRequestData(paymentRequestDataOptional.get());
+            state = PaymentsState.BIP70_PAYMENT_REQUEST_DETAILS;
+            break;
+          }
+        }
+
+        // Regular payment request
+        List<MBHDPaymentRequestData> matchingMBHDPaymentRequestDataList = getMatchingPaymentRequestList();
+        if (matchingMBHDPaymentRequestDataList.size() == 0) {
+          // Show the empty MBHD payment request directly
+          state = PaymentsState.PAYMENT_REQUEST_DETAILS;
+          break;
+        } else if (matchingMBHDPaymentRequestDataList.size() == 1) {
+          // Show the MBHD payment request directly
+          setMBHDPaymentRequestData(matchingMBHDPaymentRequestDataList.get(0));
+          state = PaymentsState.PAYMENT_REQUEST_DETAILS;
+          break;
+        } else {
+          state = PaymentsState.CHOOSE_PAYMENT_REQUEST;
+          break;
+        }
       case CHOOSE_PAYMENT_REQUEST:
         state = PaymentsState.PAYMENT_REQUEST_DETAILS;
         break;
       case PAYMENT_REQUEST_DETAILS:
-        // Finished
+        break;
 
+      case BIP70_PAYMENT_REQUEST_DETAILS:
+        state = PaymentsState.BIP70_PAYMENT_REQUEST_MEMO_DETAILS;
+        break;
+      default:
+        // Finished
         break;
     }
   }
@@ -93,8 +127,24 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
         state = PaymentsState.TRANSACTION_DETAIL;
         break;
       case PAYMENT_REQUEST_DETAILS:
-        state = PaymentsState.CHOOSE_PAYMENT_REQUEST;
+        List<MBHDPaymentRequestData> matchingMBHDPaymentRequestDataList = getMatchingPaymentRequestList();
+        if (matchingMBHDPaymentRequestDataList.size() <= 1) {
+          // Go back to transaction details
+          state = PaymentsState.TRANSACTION_DETAIL;
+          break;
+        } else {
+          // Go back to choose payment request
+          state = PaymentsState.CHOOSE_PAYMENT_REQUEST;
+          break;
+        }
+      case BIP70_PAYMENT_REQUEST_DETAILS:
+        state = PaymentsState.TRANSACTION_DETAIL;
         break;
+      case BIP70_PAYMENT_REQUEST_MEMO_DETAILS:
+        state = PaymentsState.BIP70_PAYMENT_REQUEST_DETAILS;
+        break;
+
+      default:
     }
   }
 
@@ -107,18 +157,31 @@ public class PaymentsWizardModel extends AbstractWizardModel<PaymentsState> {
     return paymentData;
   }
 
-  public List<PaymentRequestData> getMatchingPaymentRequestList() {
+  public List<MBHDPaymentRequestData> getMatchingPaymentRequestList() {
     return matchingPaymentRequestList;
   }
 
-  public void setMatchingPaymentRequestList(List<PaymentRequestData> matchingPaymentRequestList) {
+  public void setMatchingPaymentRequestList(List<MBHDPaymentRequestData> matchingPaymentRequestList) {
     this.matchingPaymentRequestList = matchingPaymentRequestList;
+  }
+
+  public MBHDPaymentRequestData getMBHDPaymentRequestData() {
+    return MBHDPaymentRequestData;
+  }
+
+  public void setMBHDPaymentRequestData(MBHDPaymentRequestData MBHDPaymentRequestData) {
+    this.MBHDPaymentRequestData = MBHDPaymentRequestData;
   }
 
   public PaymentRequestData getPaymentRequestData() {
     return paymentRequestData;
   }
 
+  /**
+   * Set the BIP70 payment data request
+   *
+   * @param paymentRequestData
+   */
   public void setPaymentRequestData(PaymentRequestData paymentRequestData) {
     this.paymentRequestData = paymentRequestData;
   }

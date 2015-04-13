@@ -18,12 +18,14 @@ import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
+import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.slf4j.Logger;
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -210,6 +213,8 @@ public class TrezorWalletTest {
 
     DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed);
 
+    privateMasterKey.setCreationTimeSeconds(TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000);
+
     // Trezor uses BIP-44
     // BIP-44 starts from M/44h/0h/0h
     // Create a root node from which all addresses will be generated
@@ -231,6 +236,8 @@ public class TrezorWalletTest {
         true);
 
     assertThat(WalletType.TREZOR_HARD_WALLET.equals(walletSummary.getWalletType()));
+
+    assertThat(walletSummary.getWallet().getEarliestKeyCreationTime() * 1000).isEqualTo(TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis());
 
     Wallet wallet = walletSummary.getWallet();
 
@@ -276,8 +283,8 @@ public class TrezorWalletTest {
     assertThat(address3).isEqualTo(SNIFF_EXPECTED_ADDRESS_3);
     assertThat(address4).isEqualTo(SNIFF_EXPECTED_ADDRESS_4);
 
-    // Load the wallet up again to check it loads ok
-    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+    // Load the wallet up again to check it loads ok - wait 2 seconds to make sure the earliest key creation time is roundtripped
+    Uninterruptibles.sleepUninterruptibly(2000, TimeUnit.MILLISECONDS);
     Optional<WalletSummary> rereadWalletSummary = WalletManager.INSTANCE.openWalletFromWalletId(temporaryDirectory, walletSummary.getWalletId(), PASSWORD);
     assertThat(rereadWalletSummary.isPresent());
 
@@ -287,6 +294,8 @@ public class TrezorWalletTest {
     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key2.getPubKey())).isNotNull();
     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key3.getPubKey())).isNotNull();
     assertThat(rereadWalletSummary.get().getWallet().findKeyFromPubKey(key4.getPubKey())).isNotNull();
+
+    assertThat(new Date(rereadWalletSummary.get().getWallet().getEarliestKeyCreationTime() * 1000)).isEqualTo(TREZOR_SNIFF_WALLET_CREATION_DATE.toDate());
 
     // Remove comment if you want to: Sync the wallet to get the wallet transactions
     // syncWallet();
@@ -485,20 +494,31 @@ public class TrezorWalletTest {
         "trezor-soft-example",
         true);
 
+    WalletService walletService = CoreServices.getOrCreateWalletService(walletSummary.getWalletId());
+    // Remove any extant BIP70 payment requests
+    List<PaymentRequestData> extantPaymentRequestDataList = walletService.getPaymentRequestDataList();
+    if (extantPaymentRequestDataList != null) {
+      for (PaymentRequestData extantPaymentRequestData : extantPaymentRequestDataList) {
+        walletService.deletePaymentRequest(extantPaymentRequestData);
+      }
+    }
+
+    assertThat(walletService.getPaymentRequestDataList().size()).isEqualTo(0);
+
     Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
 
     // Check the old password is what is expected
     assertThat(walletSummary.getWallet().checkPassword(PASSWORD)).isTrue();
 
     // Change the password
-    WalletService.changeWalletPassword(walletSummary, (String) PASSWORD, (String) CHANGED_PASSWORD1);
+    WalletService.changeCurrentWalletPassword((String) PASSWORD, (String) CHANGED_PASSWORD1);
 
     // The change password is run on an executor thread so wait 20 seconds for it to complete
     Uninterruptibles.sleepUninterruptibly(20, TimeUnit.SECONDS);
     assertThat(walletSummary.getWallet().checkPassword(CHANGED_PASSWORD1)).isTrue();
 
     // Change the password again
-    WalletService.changeWalletPassword(walletSummary, (String) CHANGED_PASSWORD1, (String) CHANGED_PASSWORD2);
+    WalletService.changeCurrentWalletPassword((String) CHANGED_PASSWORD1, (String) CHANGED_PASSWORD2);
 
     // The change password is run on an executor thread so wait 20 seconds for it to complete
     Uninterruptibles.sleepUninterruptibly(20, TimeUnit.SECONDS);

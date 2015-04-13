@@ -51,7 +51,6 @@ import java.util.Map;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeSettingsWizardModel, ExchangeSettingsPanelModel> implements ActionListener {
 
@@ -84,21 +83,23 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
     // Configure the panel model
-    setPanelModel(new ExchangeSettingsPanelModel(
-      getPanelName(),
-      configuration
-    ));
+    setPanelModel(
+      new ExchangeSettingsPanelModel(
+        getPanelName(),
+        configuration
+      ));
 
   }
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
-    contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[][][]", // Column constraints
-      "[][][]" // Row constraints
-    ));
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[][][]", // Column constraints
+        "[][][]" // Row constraints
+      ));
 
     LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage().deepCopy();
     BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin().deepCopy();
@@ -194,27 +195,25 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
     final ExchangeKey exchangeKey = ExchangeKey.valueOf(bitcoinConfiguration.getCurrentExchange());
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    if (!ExchangeKey.NONE.equals(exchangeKey)) {
 
-        if (!ExchangeKey.NONE.equals(exchangeKey)) {
+      exchangeRateProviderComboBox.requestFocusInWindow();
 
-          exchangeRateProviderComboBox.requestFocusInWindow();
+      // Exchange is not NONE so we can browse
+      exchangeRateProviderBrowserButton.setEnabled(true);
 
-          // Exchange is not NONE so we can browse
-          exchangeRateProviderBrowserButton.setEnabled(true);
+      // Get all the currencies available at the exchange
+      final ExchangeTickerService exchangeTickerService = CoreServices.createAndStartExchangeService(bitcoinConfiguration);
 
-          // Get all the currencies available at the exchange
-          final ExchangeTickerService exchangeTickerService = CoreServices.createAndStartExchangeService(bitcoinConfiguration);
+      ListenableFuture<String[]> futureAllCurrencies = exchangeTickerService.allCurrencies();
+      Futures.addCallback(
+        futureAllCurrencies, new FutureCallback<String[]>() {
 
-          ListenableFuture<String[]> futureAllCurrencies = exchangeTickerService.allCurrencies();
-          Futures.addCallback(futureAllCurrencies, new FutureCallback<String[]>() {
+          @Override
+          public void onSuccess(final String[] allCurrencies) {
 
-            @Override
-            public void onSuccess(final String[] allCurrencies) {
-
-              SwingUtilities.invokeLater(new Runnable() {
+            SwingUtilities.invokeLater(
+              new Runnable() {
                 @Override
                 public void run() {
 
@@ -230,30 +229,27 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
                 }
               });
 
-            }
+          }
 
-            @Override
-            public void onFailure(Throwable t) {
+          @Override
+          public void onFailure(Throwable t) {
 
-              // Dispose of the exchange ticker service
-              exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
+            // Dispose of the exchange ticker service
+            exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 
-              handleFailure(t);
-            }
-          });
+            handleFailure(t);
+          }
+        });
 
-        } else {
+    } else {
 
-          setCurrencyCodeVisibility(false);
-          setApiKeyVisibility(false);
+      setCurrencyCodeVisibility(false);
+      setApiKeyVisibility(false);
 
-          // Exchange is NONE so no browsing
-          exchangeRateProviderBrowserButton.setEnabled(false);
+      // Exchange is NONE so no browsing
+      exchangeRateProviderBrowserButton.setEnabled(false);
 
-        }
-      }
-    });
-
+    }
   }
 
   @Override
@@ -417,62 +413,64 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     // Reset the available currencies
     final ExchangeTickerService exchangeTickerService = CoreServices.createAndStartExchangeService(getWizardModel().getConfiguration().getBitcoin());
     ListenableFuture<String[]> futureAllCurrencies = exchangeTickerService.allCurrencies();
-    Futures.addCallback(futureAllCurrencies, new FutureCallback<String[]>() {
-      @Override
-      public void onSuccess(final String[] allCurrencies) {
+    Futures.addCallback(
+      futureAllCurrencies, new FutureCallback<String[]>() {
+        @Override
+        public void onSuccess(final String[] allCurrencies) {
 
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
 
-            if (ExchangeKey.NONE.equals(exchangeKey)) {
+                if (ExchangeKey.NONE.equals(exchangeKey)) {
 
-              // Permit application since there are no currencies to select
-              ViewEvents.fireWizardButtonEnabledEvent(
-                getPanelName(),
-                WizardButton.APPLY,
-                true
-              );
+                  // Permit application since there are no currencies to select
+                  ViewEvents.fireWizardButtonEnabledEvent(
+                    getPanelName(),
+                    WizardButton.APPLY,
+                    true
+                  );
 
-            } else {
-              currencyCodeComboBox.setEnabled(true);
-              currencyCodeComboBox.setModel(new DefaultComboBoxModel<>(allCurrencies));
-              currencyCodeComboBox.setSelectedIndex(-1);
+                } else {
+                  currencyCodeComboBox.setEnabled(true);
+                  currencyCodeComboBox.setModel(new DefaultComboBoxModel<>(allCurrencies));
+                  currencyCodeComboBox.setSelectedIndex(-1);
 
-              // Prevent application until the currency is selected (to allow ticker check)
-              ViewEvents.fireWizardButtonEnabledEvent(
-                getPanelName(),
-                WizardButton.APPLY,
-                false
-              );
+                  // Prevent application until the currency is selected (to allow ticker check)
+                  ViewEvents.fireWizardButtonEnabledEvent(
+                    getPanelName(),
+                    WizardButton.APPLY,
+                    false
+                  );
 
-            }
+                }
 
-            // Hide the spinner
-            tickerSpinner.setVisible(false);
+                // Hide the spinner
+                tickerSpinner.setVisible(false);
 
-          }
-        });
+              }
+            });
 
-        // Dispose of the exchange ticker service
-        exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
+          // Dispose of the exchange ticker service
+          exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 
-      }
+        }
 
-      @Override
-      public void onFailure(Throwable t) {
+        @Override
+        public void onFailure(Throwable t) {
 
-        // Clear the currency combo
-        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-        currencyCodeComboBox.setModel(model);
+          // Clear the currency combo
+          DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+          currencyCodeComboBox.setModel(model);
 
-        // Dispose of the exchange ticker service
-        exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
+          // Dispose of the exchange ticker service
+          exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 
-        handleFailure(t);
+          handleFailure(t);
 
-      }
-    });
+        }
+      });
 
 
   }
@@ -526,57 +524,59 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     ListenableFuture<Ticker> futureTicker = exchangeTickerService.latestTicker();
 
     // Avoid freezing the UI
-    Futures.addCallback(futureTicker, new FutureCallback<Ticker>() {
-      @Override
-      public void onSuccess(final Ticker ticker) {
+    Futures.addCallback(
+      futureTicker, new FutureCallback<Ticker>() {
+        @Override
+        public void onSuccess(final Ticker ticker) {
 
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
 
-            // Network or exchange might be down
-            if (ticker == null) {
-              // Stop the spinner but do not allow the Apply
-              tickerSpinner.setVisible(false);
-              return;
-            }
+                // Network or exchange might be down
+                if (ticker == null) {
+                  // Stop the spinner but do not allow the Apply
+                  tickerSpinner.setVisible(false);
+                  return;
+                }
 
-            // Show the ticker verification
-            tickerVerifiedStatus.setText(Languages.safeText(MessageKey.VERIFICATION_STATUS));
-            AwesomeDecorator.bindIcon(
-              AwesomeIcon.CHECK,
-              tickerVerifiedStatus,
-              true,
-              MultiBitUI.NORMAL_ICON_SIZE
-            );
-            tickerVerifiedStatus.setVisible(true);
+                // Show the ticker verification
+                tickerVerifiedStatus.setText(Languages.safeText(MessageKey.VERIFICATION_STATUS));
+                AwesomeDecorator.bindIcon(
+                  AwesomeIcon.CHECK,
+                  tickerVerifiedStatus,
+                  true,
+                  MultiBitUI.NORMAL_ICON_SIZE
+                );
+                tickerVerifiedStatus.setVisible(true);
 
-            ViewEvents.fireWizardButtonEnabledEvent(
-              getPanelName(),
-              WizardButton.APPLY,
-              true
-            );
+                ViewEvents.fireWizardButtonEnabledEvent(
+                  getPanelName(),
+                  WizardButton.APPLY,
+                  true
+                );
 
-            tickerSpinner.setVisible(false);
+                tickerSpinner.setVisible(false);
 
-          }
-        });
+              }
+            });
 
-        // Dispose of the exchange ticker service
-        exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
+          // Dispose of the exchange ticker service
+          exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 
-      }
+        }
 
-      @Override
-      public void onFailure(Throwable t) {
+        @Override
+        public void onFailure(Throwable t) {
 
-        // Dispose of the exchange ticker service
-        exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
+          // Dispose of the exchange ticker service
+          exchangeTickerService.shutdownNow(ShutdownEvent.ShutdownType.HARD);
 
-        handleFailure(t);
+          handleFailure(t);
 
-      }
-    });
+        }
+      });
 
   }
 
@@ -638,36 +638,38 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
    */
   private void handleFailure(final Throwable t) {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
 
-        Sounds.playBeep();
+          Sounds.playBeep();
 
-        // Ensure we wrap the label
-        String failureHtml = HtmlUtils.localiseWithLineBreaks(new String[]{
-          Languages.safeText(CoreMessageKey.THE_ERROR_WAS, t.getMessage())
-        });
-        tickerVerifiedStatus.setText(failureHtml);
-        AwesomeDecorator.bindIcon(
-          AwesomeIcon.TIMES,
-          tickerVerifiedStatus,
-          true,
-          MultiBitUI.NORMAL_ICON_SIZE
-        );
-        tickerVerifiedStatus.setVisible(true);
+          // Ensure we wrap the label
+          String failureHtml = HtmlUtils.localiseWithLineBreaks(
+            new String[]{
+              Languages.safeText(CoreMessageKey.THE_ERROR_WAS, t.getMessage())
+            });
+          tickerVerifiedStatus.setText(failureHtml);
+          AwesomeDecorator.bindIcon(
+            AwesomeIcon.TIMES,
+            tickerVerifiedStatus,
+            true,
+            MultiBitUI.NORMAL_ICON_SIZE
+          );
+          tickerVerifiedStatus.setVisible(true);
 
-        ViewEvents.fireWizardButtonEnabledEvent(
-          getPanelName(),
-          WizardButton.APPLY,
-          false
-        );
+          ViewEvents.fireWizardButtonEnabledEvent(
+            getPanelName(),
+            WizardButton.APPLY,
+            false
+          );
 
-        tickerSpinner.setVisible(false);
+          tickerSpinner.setVisible(false);
 
-      }
+        }
 
-    });
+      });
 
   }
 

@@ -120,8 +120,7 @@ public class InstallationManager {
         currentApplicationDataDirectory = SecureFiles.createTemporaryDirectory();
         return currentApplicationDataDirectory;
       } catch (IOException e) {
-        log.error("Failed to create temporary directory", e);
-        return null;
+        throw new IllegalStateException("Cannot run without access to temporary directory.", e);
       }
     } else {
 

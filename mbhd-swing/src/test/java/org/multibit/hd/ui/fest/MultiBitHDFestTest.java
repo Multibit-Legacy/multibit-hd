@@ -27,6 +27,7 @@ import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.testing.hardware_wallet_fixtures.*;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.fest.requirements.*;
+import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorSendBitcoinTrezorRequirements;
 import org.multibit.hd.ui.views.MainView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,6 +159,29 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
   }
 
   /**
+    * <p>Verify the following:</p>
+    * <ul>
+    * <li>Start with fresh application directory</li>
+    * <li>Restore a wallet using the seed phrase and timestamp</li>
+    * </ul>
+    */
+   @Test
+   public void verifyRestoreBeta7Wallet_en_US_ColdStart() throws Exception {
+
+     // Start with a completely empty random application directory
+     arrangeFresh(Optional.<HardwareWalletFixture>absent());
+
+     // Set the configuration option to show 'Enable restore Beta7 wallets'
+     Configurations.currentConfiguration.setShowRestoreBeta7Wallets(true);
+
+     // Restore a wallet through the welcome wizard
+     WelcomeWizardRestoreBeta7Wallet_en_US_Requirements.verifyUsing(window);
+
+     // Unlock the wallet
+     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
+
+   }
+  /**
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with standard application directory</li>
@@ -219,50 +243,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     // Explore the sidebar screens
     SidebarTreeScreensRequirements.verifyUsing(window);
-
-  }
-
-  /**
-   * <p>Verify the following:</p>
-   * <ul>
-   * <li>Start with standard wallet fixture</li>
-   * <li>Unlock wallet</li>
-   * <li>Exercise the Send/Request screen</li>
-   * </ul>
-   */
-  @Test
-  public void verifySendRequestScreen() throws Exception {
-
-    // Start with the standard hardware wallet fixture
-    arrangeStandard(Optional.<HardwareWalletFixture>absent());
-
-    // Unlock the wallet
-    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
-
-    // Verify
-    SendRequestScreenRequirements.verifyUsing(window);
-
-  }
-
-  /**
-   * <p>Verify the following:</p>
-   * <ul>
-   * <li>Start with standard wallet fixture</li>
-   * <li>Unlock wallet</li>
-   * <li>Exercise the Payments screen</li>
-   * </ul>
-   */
-  @Test
-  public void verifyPaymentsScreen() throws Exception {
-
-    // Start with the standard hardware wallet fixture
-    arrangeStandard(Optional.<HardwareWalletFixture>absent());
-
-    // Unlock the wallet
-    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
-
-    // Verify
-    PaymentsScreenRequirements.verifyUsing(window);
 
   }
 
@@ -512,14 +492,60 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Do the restore with the local backup available
     RestoreTrezorRestoreWithLocalBackupRequirements.verifyUsing(window, hardwareWalletFixture);
 
-    Uninterruptibles.sleepUninterruptibly(4, TimeUnit.SECONDS);
   }
+
+  /**
+    * <p>Verify the following:</p>
+    * <ul>
+    * <li>Start with empty wallet fixture (warm)</li>
+    * <li>Unlock the wallet</li>
+    * <li>Send and force a PIN request</li>
+    * </ul>
+    */
+   @Test
+   public void verifySendTrezorScreen() throws Exception {
+
+     // Prepare an initialised and attached Trezor device that will be restored then unlocked
+     HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedUnlockFixture();
+
+     // Start with the empty hardware wallet fixture
+     arrangeStandard(Optional.of(hardwareWalletFixture));
+
+     // Verify up to unlock
+     UnlockTrezorHardwareWalletWarmStartRequirements.verifyUsing(window, hardwareWalletFixture);
+
+     // Verify send workflow
+     TrezorSendBitcoinTrezorRequirements.verifyUsing(window, hardwareWalletFixture);
+
+   }
+
+  /**
+    * <p>Verify the following:</p>
+    * <ul>
+    * <li>Start with standard wallet fixture</li>
+    * <li>Unlock wallet</li>
+    * <li>Exercise the Send/Request screen</li>
+    * </ul>
+    */
+   @Test
+   public void verifySendRequestScreen() throws Exception {
+
+     // Start with the standard hardware wallet fixture
+     arrangeStandard(Optional.<HardwareWalletFixture>absent());
+
+     // Unlock the wallet
+     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
+
+     // Verify
+     SendRequestScreenRequirements.verifyUsing(window);
+
+   }
 
   /**
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with standard application directory</li>
-   * <li>Show the PIN entry, unlock screen and restore from there. This FEST test creates a local backup</li>
+   * <li>Show the unsupported firmware popover</li>
    * </ul>
    */
   @Test
@@ -531,10 +557,77 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Start with the empty hardware wallet fixture
     arrangeStandard(Optional.of(hardwareWalletFixture));
 
-    // Verify up to the restore
+    // Verify up to unlock
     UnlockTrezorHardwareWalletUnsupportedFirmwareRequirements.verifyUsing(window, hardwareWalletFixture);
 
   }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with standard application directory</li>
+   * <li>Show the deprecated firmware popover</li>
+   * </ul>
+   *
+   * Currently there are no deprecated firmware versions
+   */
+  @Ignore
+  public void verifyDeprecatedTrezorFirmware() throws Exception {
+
+    // Prepare an initialised and attached Trezor device that will be restored then unlocked
+    HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedDeprecatedFirmwareFixture();
+
+    // Start with the empty hardware wallet fixture
+    arrangeStandard(Optional.of(hardwareWalletFixture));
+
+    // Verify up to unlock
+    UnlockTrezorHardwareWalletDeprecatedFirmwareRequirements.verifyUsing(window, hardwareWalletFixture);
+
+  }
+
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with standard wallet fixture</li>
+   * <li>Unlock wallet</li>
+   * <li>Exercise the Payments screen</li>
+   * </ul>
+   */
+  @Test
+  public void verifyPaymentsScreen() throws Exception {
+
+    // Start with the standard hardware wallet fixture
+    arrangeStandard(Optional.<HardwareWalletFixture>absent());
+
+    // Unlock the wallet
+    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
+
+    // Verify
+    PaymentsScreenRequirements.verifyUsing(window);
+
+  }
+
+  /**
+    * <p>Verify the following:</p>
+    * <ul>
+    * <li>Start with standard application directory</li>
+    * <li>Show the unsupported configuration "passphrase" popover</li>
+    * </ul>
+    */
+   @Test
+   public void verifyUnsupportedTrezorConfiguration_Passphrase() throws Exception {
+
+     // Prepare an initialised and attached Trezor device that will be restored then unlocked
+     HardwareWalletFixture hardwareWalletFixture = new TrezorInitialisedUnsupportedConfigurationPassphraseFixture();
+
+     // Start with the standard hardware wallet fixture
+     arrangeStandard(Optional.of(hardwareWalletFixture));
+
+     // Verify up to unlock
+     UnlockTrezorHardwareWalletUnsupportedConfigurationPassphraseRequirements.verifyUsing(window, hardwareWalletFixture);
+
+   }
 
   ////////////////////////////////////////////////////////////////
 
@@ -570,8 +663,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Get the temporary application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
-    // Copy the MBHD cacerts
-    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/" + InstallationManager.CA_CERTS_NAME);
+    // Copy the standard MBHD cacerts
+    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/mbhd-cacerts");
     OutputStream target = new FileOutputStream(new File(applicationDirectory + "/" + InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
@@ -613,8 +706,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     // Get the temporary application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
-    // Copy the MBHD cacerts
-    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/fixtures/" + InstallationManager.CA_CERTS_NAME);
+    // Copy the standard MBHD cacerts
+    InputStream cacerts = MultiBitHDFestTest.class.getResourceAsStream("/mbhd-cacerts");
     OutputStream target = new FileOutputStream(new File(applicationDirectory + "/" + InstallationManager.CA_CERTS_NAME));
     ByteStreams.copy(cacerts, target);
 
@@ -685,9 +778,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     MainView frame = GuiActionRunner.execute(
       new GuiQuery<MainView>() {
         protected MainView executeInEDT() {
-
-          InstallationManager.getOrCreateApplicationDataDirectory();
-
           log.info("FEST initialising UI...");
           return testObject.initialiseUIViews();
         }
@@ -701,6 +791,9 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     window.show();
 
     log.info("FEST setup complete");
+
+    // Allow time for UI to render
+    Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
 
   }
 

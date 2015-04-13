@@ -25,7 +25,7 @@ public interface MultiBitUI {
   /**
    * The minimum width for a wizard panel (600 is about right) allowing for popovers
    */
-  int WIZARD_MIN_WIDTH = 630;
+  int WIZARD_MIN_WIDTH = 640;
   /**
    * The minimum height for a standard wizard panel (450 is tight) allowing for popovers
    */
@@ -85,6 +85,11 @@ public interface MultiBitUI {
    */
   String TREZOR_DISPLAY_MAX_WIDTH_MIG = "w 150";
 
+  /**
+   * A width constraint to avoid text overflow in alert bars showing long messages (e.g. Payment Requests)
+   */
+  String ALERT_MESSAGE_MAX_WIDTH_MIG = "wmax 100%-200px";
+
   // Corners
 
   /**
@@ -101,7 +106,13 @@ public interface MultiBitUI {
   /**
    * Balance header large font
    */
-  float BALANCE_HEADER_LARGE_FONT_SIZE = 34.0f;
+  float BALANCE_HEADER_LARGE_FONT_SIZE = 36.0f;
+
+  /**
+    * Wizard title font
+    */
+   float WIZARD_TITLE_FONT_SIZE = 30.0f;
+
   /**
    * Balance header normal font (decimals etc)
    */
@@ -202,6 +213,11 @@ public interface MultiBitUI {
    * The maximum length of the credentials
    */
   int PASSWORD_LENGTH = 40;
+
+  /**
+   * The width of the seed phrase window
+   */
+  int SEED_PHRASE_WIDTH = 50;
 
   /**
    * The maximum length of the seed phrase

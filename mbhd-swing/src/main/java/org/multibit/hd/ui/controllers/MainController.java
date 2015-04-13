@@ -4,8 +4,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.*;
-import org.bitcoinj.uri.BitcoinURI;
-import org.bitcoinj.uri.BitcoinURIParseException;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
@@ -18,10 +18,7 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.BackupService;
-import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.ExchangeTickerService;
-import org.multibit.hd.core.services.WalletService;
+import org.multibit.hd.core.services.*;
 import org.multibit.hd.core.store.TransactionInfo;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -29,6 +26,7 @@ import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.multibit.hd.hardware.core.messages.Features;
+import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.SwitchWalletEvent;
@@ -39,7 +37,7 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.platform.listener.*;
-import org.multibit.hd.ui.services.BitcoinURIListeningService;
+import org.multibit.hd.ui.services.ExternalDataListeningService;
 import org.multibit.hd.ui.views.MainView;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -68,6 +66,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.net.URI;
+import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
@@ -82,6 +82,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MainController extends AbstractController implements
   GenericOpenURIEventListener,
+  GenericOpenFilesEventListener,
   GenericPreferencesEventListener,
   GenericAboutEventListener,
   GenericQuitEventListener {
@@ -91,8 +92,6 @@ public class MainController extends AbstractController implements
   private Optional<ExchangeTickerService> exchangeTickerService = Optional.absent();
 
   private Optional<HardwareWalletService> hardwareWalletService = Optional.absent();
-
-  private final BitcoinURIListeningService bitcoinURIListeningService;
 
   private final ListeningExecutorService handoverExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-handover");
 
@@ -127,23 +126,17 @@ public class MainController extends AbstractController implements
   private DateTime lastWipedTrezorDateTime = Dates.nowUtc().minusDays(1);
 
   /**
-   * @param bitcoinURIListeningService The Bitcoin URI listening service (must be present to permit a UI)
-   * @param headerController           The header controller
+   * @param headerController The header controller
    */
-  public MainController(
-    BitcoinURIListeningService bitcoinURIListeningService,
-    HeaderController headerController
-  ) {
+  public MainController(HeaderController headerController) {
 
     super();
 
     // MainController must also subscribe to ViewEvents
     ViewEvents.subscribe(this);
 
-    Preconditions.checkNotNull(bitcoinURIListeningService, "'bitcoinURIListeningService' must be present");
     Preconditions.checkNotNull(headerController, "'headerController' must be present");
 
-    this.bitcoinURIListeningService = bitcoinURIListeningService;
     this.headerController = headerController;
 
   }
@@ -313,13 +306,25 @@ public class MainController extends AbstractController implements
     if (BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus())) {
       final boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
       log.debug("Firing event to header viewable to:  {}", viewHeader);
-      SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
+      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
+
+      // For Trezor hard wallets, get the date of the earliest transaction and use it to set the
+      // earliestKeyCreationDate. This enables future repair wallets to be quicker
+      if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() &&
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType() == WalletType.TREZOR_HARD_WALLET) {
+        // See if the synced wallet has transactions
+        Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+        java.util.List<Transaction> transactions = wallet.getTransactionsByTime();
+        if (!transactions.isEmpty()) {
+          // Last is the oldest
+          Date earliestTransactionDate = transactions.get(transactions.size() - 1).getUpdateTime();
+          if (earliestTransactionDate != null) {
+            // Set the wallet key creation time to be the transaction date (minus one day to cater for blockchain forkiness)
+            wallet.setEarliestKeyCreationTime(earliestTransactionDate.getTime() / 1000 - Dates.NUMBER_OF_SECONDS_IN_A_DAY);
+            log.debug("Setting Trezor hard wallet earliestKeyCreation Date to one day before : {}", earliestTransactionDate);
           }
-        });
+        }
+      }
     }
 
     final String localisedMessage;
@@ -334,16 +339,10 @@ public class MainController extends AbstractController implements
       localisedMessage = summary.getStatus().name();
     }
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
+    ViewEvents.fireProgressChangedEvent(localisedMessage, summary.getPercent());
 
-          // Ensure everyone is aware of the update
-          ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
-        }
-      });
+    // Ensure everyone is aware of the update
+    ViewEvents.fireSystemStatusChangedEvent(localisedMessage, summary.getSeverity());
   }
 
   @Subscribe
@@ -399,14 +398,14 @@ public class MainController extends AbstractController implements
   }
 
   @Subscribe
-  public void onSecurityEvent(SecurityEvent event) {
+  public void onEnvironmentEvent(EnvironmentEvent event) {
 
-    log.trace("Received 'security' event");
+    log.trace("Received 'environment' event");
 
     Preconditions.checkNotNull(event, "'event' must be present");
     Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");
 
-    SecuritySummary summary = event.getSummary();
+    EnvironmentSummary summary = event.getSummary();
 
     Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
     Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
@@ -455,6 +454,8 @@ public class MainController extends AbstractController implements
         );
         break;
       case UNSUPPORTED_FIRMWARE_ATTACHED:
+      case DEPRECATED_FIRMWARE_ATTACHED:
+      case UNSUPPORTED_CONFIGURATION_ATTACHED:
         Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
         if (walletSummary.isPresent() && !Panels.isLightBoxShowing()) {
@@ -499,7 +500,7 @@ public class MainController extends AbstractController implements
    * <p>Complete tear down and rebuild of the detail screens comprising the main view</p>
    * <p>All services are restarted</p>
    * <p>The main view references remain intact</p>
-   *
+   * <p/>
    * <p>This is not done through a simple SWITCH shutdown event being fire since the order
    * of shutdown is important and cannot be guaranteed otherwise.</p>
    */
@@ -626,7 +627,7 @@ public class MainController extends AbstractController implements
    * Handles the process of shutting down the current wallet support services
    */
 
-  private void shutdownCurrentWallet(ShutdownEvent.ShutdownType shutdownType) {
+  public void shutdownCurrentWallet(ShutdownEvent.ShutdownType shutdownType) {
 
     log.debug("Shutdown current wallet...");
 
@@ -754,14 +755,8 @@ public class MainController extends AbstractController implements
   public void onAboutEvent(GenericAboutEvent event) {
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      SwingUtilities.invokeLater(
-              new Runnable() {
-                @Override
-                public void run() {
-                  // Show the Tools screen
-                  ViewEvents.fireShowDetailScreenEvent(Screen.TOOLS);
-                }
-              });
+      // Show the Tools screen
+      ViewEvents.fireShowDetailScreenEvent(Screen.TOOLS);
 
       // Show the About screen
       Panels.showLightBox(Wizards.newAboutWizard().getWizardScreenHolder());
@@ -772,23 +767,22 @@ public class MainController extends AbstractController implements
   @Override
   public void onOpenURIEvent(GenericOpenURIEvent event) {
 
-    // Validate the data
-    final BitcoinURI bitcoinURI;
-    try {
-      bitcoinURI = new BitcoinURI(event.getURI().toString());
-    } catch (BitcoinURIParseException e) {
-      // Quietly ignore
-      return;
+    ExternalDataListeningService.parseRawData(event.getURI().toString());
+
+    // Now would be a good time to attempt to alert the user
+    ExternalDataListeningService.purgeAlertModelQueue();
+  }
+
+  @Override
+  public void onOpenFilesEvent(GenericOpenFilesEvent event) {
+
+    for (File file : event.getFiles()) {
+      URI uri = file.toURI();
+      ExternalDataListeningService.parseRawData(uri.toString());
     }
 
-    Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI);
-
-    // If there is sufficient information in the Bitcoin URI display it to the user as an alert
-    if (alertModel.isPresent()) {
-
-      // Add the alert
-      ControllerEvents.fireAddAlertEvent(alertModel.get());
-    }
+    // Now would be a good time to attempt to alert the user
+    ExternalDataListeningService.purgeAlertModelQueue();
 
   }
 
@@ -796,14 +790,8 @@ public class MainController extends AbstractController implements
   public void onPreferencesEvent(GenericPreferencesEvent event) {
 
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            // Show the Preferences screen
-            ViewEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
-          }
-        });
+      // Show the Preferences screen
+      ViewEvents.fireShowDetailScreenEvent(Screen.SETTINGS);
     }
 
   }
@@ -855,7 +843,10 @@ public class MainController extends AbstractController implements
     walletService.addTransactionInfo(transactionInfo);
     log.debug("Added transactionInfo {} to walletService {}", transactionInfo, walletService);
     try {
-      walletService.writePayments();
+      CharSequence password = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword();
+      if (password != null) {
+        walletService.writePayments(password);
+      }
     } catch (PaymentsSaveException pse) {
       ExceptionHandler.handleThrowable(pse);
     }
@@ -868,8 +859,12 @@ public class MainController extends AbstractController implements
    */
   @Subscribe
   public void onHardwareWalletEvent(final HardwareWalletEvent event) {
-
     log.debug("Received hardware event: '{}'", event.getEventType().name());
+
+    if (!ApplicationEventService.isHardwareWalletEventAllowed()) {
+      log.debug("Ignoring hardware wallet event due to event threshold");
+      return;
+    }
 
     // Quick check for relevancy
     switch (event.getEventType()) {
@@ -879,11 +874,19 @@ public class MainController extends AbstractController implements
         // An alert tends to stack and gets messy/irrelevant
         deferredCredentialsRequestType = CredentialsRequestType.PASSWORD;
 
-        // Clear any UNSUPPORTED_FIRMWARE_ATTACHED events as the user has detached the causative device
-        Optional<SecurityEvent> lastSecurityEventOptional = CoreServices.getApplicationEventService().getLatestSecurityEvent();
-        if (lastSecurityEventOptional.isPresent()
-                && lastSecurityEventOptional.get().is(SecuritySummary.AlertType.UNSUPPORTED_FIRMWARE_ATTACHED)) {
-          CoreServices.getApplicationEventService().onSecurityEvent(null);
+        // Clear any alert-inducing events as the user has detached the device
+        Optional<EnvironmentEvent> lastEnvironmentEventOptional = CoreServices.getApplicationEventService().getLatestEnvironmentEvent();
+        if (lastEnvironmentEventOptional.isPresent()
+          && lastEnvironmentEventOptional.get().is(EnvironmentSummary.AlertType.UNSUPPORTED_FIRMWARE_ATTACHED)) {
+          CoreServices.getApplicationEventService().onEnvironmentEvent(null);
+        }
+        if (lastEnvironmentEventOptional.isPresent()
+          && lastEnvironmentEventOptional.get().is(EnvironmentSummary.AlertType.UNSUPPORTED_CONFIGURATION_ATTACHED)) {
+          CoreServices.getApplicationEventService().onEnvironmentEvent(null);
+        }
+        if (lastEnvironmentEventOptional.isPresent()
+          && lastEnvironmentEventOptional.get().is(EnvironmentSummary.AlertType.DEPRECATED_FIRMWARE_ATTACHED)) {
+          CoreServices.getApplicationEventService().onEnvironmentEvent(null);
         }
 
         break;
@@ -921,11 +924,18 @@ public class MainController extends AbstractController implements
     // Determine the nature of the failure
     Optional<Features> featuresOptional = hardwareWalletService.get().getContext().getFeatures();
 
-    boolean isUnsupportedFirmware = featuresOptional.isPresent() && !featuresOptional.get().isSupported();
+    boolean isUnsupportedFirmware = featuresOptional.isPresent()
+      && !featuresOptional.get().isSupported();
+    boolean isUnsupportedConfigurationPassphrase = featuresOptional.isPresent()
+      && featuresOptional.get().isSupported()
+      && featuresOptional.get().hasPassphraseProtection();
 
     if (isUnsupportedFirmware) {
-      // Show as a security popover
-      CoreEvents.fireSecurityEvent(SecuritySummary.newUnsupportedFirmware());
+      // Show as a environment popover
+      CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newUnsupportedFirmware());
+    } else if (isUnsupportedConfigurationPassphrase) {
+      // Show as an info popover
+      CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newUnsupportedConfigurationPassphrase());
     } else {
       // Use the alert bar mechanism
 
@@ -953,32 +963,50 @@ public class MainController extends AbstractController implements
    * <li>there is a current wallet</li>
    * <li>the current wallet is not the same "hard" Trezor wallet as in the alert</li>
    * <li>there has not been a "wipe Trezor" in the last few seconds</li>
+   * <li>the Trezor has a supported configuration (e.g. not passphrase protected)</li>
    * </ul>
    *
    * @param event The hardware wallet event
    */
   private void handleShowDeviceReady(final HardwareWalletEvent event) {
 
+    // Configuration check
+    if (event.getMessage().isPresent()) {
+      final HardwareWalletMessage message = event.getMessage().get();
+      if (message instanceof Features) {
+
+        Features features = (Features) message;
+
+        if (features.hasPassphraseProtection()) {
+          handleShowDeviceFailed(event);
+          return;
+        }
+
+        // You would check for deprecated firmware versions here - there are none currently.
+        // See git history for how to do it.
+      }
+    }
+
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
     if (walletSummary.isPresent()) {
-      Optional<HardwareWalletService> hardwareWalletService1 = CoreServices.getOrCreateHardwareWalletService();
+      Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
       boolean showAlert = false;
       if (!WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
         // Not currently using a Trezor hard wallet so show the alert
         showAlert = true;
       } else {
-        if (hardwareWalletService1.isPresent()) {
-          Optional<Features> features = hardwareWalletService.get().getContext().getFeatures();
+        if (hardwareWalletService.isPresent()) {
+          Optional<Features> features = this.hardwareWalletService.get().getContext().getFeatures();
           String currentWalletName = walletSummary.get().getName();
-          if (features.isPresent() && !features.get().getDeviceId().equals(currentWalletName)) {
+          if (features.isPresent() && !features.get().getLabel().equals(currentWalletName)) {
             // The newly plugged in Trezor is a different one
             showAlert = true;
           }
         }
       }
-      if (hardwareWalletService.isPresent()) {
+      if (this.hardwareWalletService.isPresent()) {
         if (lastWipedTrezorDateTime
           .plusSeconds(TREZOR_WIPE_TIME_THRESHOLD)
           .isAfter(Dates.nowUtc())) {
@@ -1128,24 +1156,14 @@ public class MainController extends AbstractController implements
   }
 
   /**
-   * <p>Show any command line Bitcoin URI alerts (UI)</p>
+   * <p>Show any alerts coming about as part of the startup sequence (we have just unlocked a wallet).</p>
+   * <p>See the ExternalDataListeningService for runtime handling</p>
    */
-  private void handleBitcoinURIAlert() {
+  private void handleExternalDataAlerts() {
 
-    // Check for Bitcoin URI on the command line
-    Optional<BitcoinURI> bitcoinURI = bitcoinURIListeningService.getBitcoinURI();
+    // Now would be a good time to alert the user to any events
+    ExternalDataListeningService.purgeAlertModelQueue();
 
-    if (bitcoinURI.isPresent()) {
-
-      // Attempt to create an alert model from the Bitcoin URI
-      Optional<AlertModel> alertModel = Models.newBitcoinURIAlertModel(bitcoinURI.get());
-
-      // If successful the fire the event
-      if (alertModel.isPresent()) {
-        ControllerEvents.fireAddAlertEvent(alertModel.get());
-      }
-
-    }
   }
 
   /**
@@ -1213,8 +1231,8 @@ public class MainController extends AbstractController implements
 
           if (result != null && Math.abs(result) > 3_600_000) {
             log.warn("System time is adrift by: {} min(s)", result / 60_000);
-            // Issue the alert
-            CoreEvents.fireSecurityEvent(SecuritySummary.newSystemTimeDrift());
+            // Issue the info alert
+            CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newSystemTimeDrift());
           } else {
             log.debug("System time drift is within limits");
           }
@@ -1415,8 +1433,30 @@ public class MainController extends AbstractController implements
       );
     }
 
-    // Allow time for MainView to refresh
-    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+    // Don't hold up the UI thread with these background operations
+    walletExecutorService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          try {
+            // Get a ticker going
+            log.debug("Starting exchange...");
+            handleExchange();
+
+            // Check for external data (wants to be quick)
+            log.debug("Check for external data...");
+            handleExternalDataAlerts();
+
+            // Check for system time drift (runs in the background)
+            log.debug("Check for system time drift...");
+            handleSystemTimeDrift();
+
+          } catch (Exception e) {
+            // TODO localise and put on UI via an alert
+            log.error("Services did not start ok. Error was {}", e.getClass().getCanonicalName() + " " + e.getMessage(), e);
+          }
+        }
+      });
 
     // Start the backup manager
     log.debug("Starting backup manager...");
@@ -1425,6 +1465,7 @@ public class MainController extends AbstractController implements
     // Get the current wallet summary
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     mainView.sidebarWalletName(walletSummary.get().getName());
+
 
     // Start the wallet service
     log.debug("Starting wallet service...");
@@ -1436,32 +1477,6 @@ public class MainController extends AbstractController implements
     // Show the initial detail screen
     Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
     ViewEvents.fireShowDetailScreenEvent(screen);
-
-    // Don't hold up the UI thread with these background operations
-    walletExecutorService.submit(
-      new Runnable() {
-        @Override
-        public void run() {
-          try {
-
-            // Get a ticker going
-            log.debug("Starting exchange...");
-            handleExchange();
-
-            // Check for system time drift (runs in the background)
-            log.debug("Check for system time drift...");
-            handleSystemTimeDrift();
-
-            // Check for Bitcoin URIs
-            log.debug("Check for Bitcoin URIs...");
-            handleBitcoinURIAlert();
-
-          } catch (Exception e) {
-            // TODO localise and put on UI via an alert
-            log.error("Services did not start ok. Error was {}", e.getClass().getCanonicalName() + " " + e.getMessage(), e);
-          }
-        }
-      });
   }
 
   /**
@@ -1470,7 +1485,6 @@ public class MainController extends AbstractController implements
    * @param transactionCreationEvent The transaction creation event from the EventBus
    */
   private void initiateDelayedTransactionStatusCheck(final TransactionCreationEvent transactionCreationEvent) {
-
     transactionCheckingExecutorService.submit(
       new Runnable() {
 
@@ -1485,23 +1499,21 @@ public class MainController extends AbstractController implements
           // In this case the user will not have access to the tx change and notify them with a warning alert
           WalletService currentWalletService = CoreServices.getCurrentWalletService().get();
           if (currentWalletService != null) {
-            java.util.List<PaymentData> paymentDataList = currentWalletService.getPaymentDataList();
-            if (paymentDataList != null) {
-              for (PaymentData paymentData : paymentDataList) {
-                PaymentStatus status = paymentData.getStatus();
-                if (status.getStatus().equals(RAGStatus.RED)) {
-                  JButton button = Buttons.newAlertPanelButton(getShowHelpAction(), MessageKey.DETAILS, MessageKey.DETAILS_TOOLTIP, AwesomeIcon.QUESTION);
+            TransactionData transactionData = currentWalletService.getTransactionDataByHash(transactionCreationEvent.getTransactionId());
+            if (transactionData != null) {
+              PaymentStatus status = transactionData.getStatus();
+              if (status.getStatus().equals(RAGStatus.RED)) {
+                JButton button = Buttons.newAlertPanelButton(getShowHelpAction(), MessageKey.DETAILS, MessageKey.DETAILS_TOOLTIP, AwesomeIcon.QUESTION);
 
-                  // The transaction has not been sent correctly, or change is not spendable, throw a warning alert
-                  final AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER), RAGStatus.AMBER, button);
-                  SwingUtilities.invokeLater(
-                    new Runnable() {
-                      @Override
-                      public void run() {
-                        ViewEvents.fireAlertAddedEvent(alertModel);
-                      }
-                    });
-                }
+                // The transaction has not been sent correctly, or change is not spendable, throw a warning alert
+                final AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER), RAGStatus.AMBER, button);
+                SwingUtilities.invokeLater(
+                  new Runnable() {
+                    @Override
+                    public void run() {
+                      ControllerEvents.fireAddAlertEvent(alertModel);
+                    }
+                  });
               }
             }
           }

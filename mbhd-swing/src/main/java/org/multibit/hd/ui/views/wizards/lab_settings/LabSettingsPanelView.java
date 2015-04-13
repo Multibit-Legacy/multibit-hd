@@ -34,6 +34,7 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
   // Panel specific components
   private JComboBox<String> torYesNoComboBox;
   private JComboBox<String> trezorYesNoComboBox;
+  private JComboBox<String> showRestoreBeta7WalletsYesNoComboBox;
 
   /**
    * @param wizard    The wizard managing the states
@@ -72,6 +73,7 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
 
     torYesNoComboBox = ComboBoxes.newTorYesNoComboBox(this, configuration.isTor());
     trezorYesNoComboBox = ComboBoxes.newTrezorYesNoComboBox(this, configuration.isTrezor());
+    showRestoreBeta7WalletsYesNoComboBox = ComboBoxes.newShowRestoreBeta7WalletsYesNoComboBox(this, configuration.isShowRestoreBeta7Wallets());
 
     contentPanel.add(Labels.newLabChangeNote(), "growx,span 2,wrap");
 
@@ -81,50 +83,35 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
     contentPanel.add(Labels.newSelectTrezor(), "shrink");
     contentPanel.add(trezorYesNoComboBox, "growx,wrap");
 
+    contentPanel.add(Labels.newSelectShowRestoreBeta7Wallets(), "shrink");
+    contentPanel.add(showRestoreBeta7WalletsYesNoComboBox, "growx,wrap");
   }
 
   @Override
   protected void initialiseButtons(AbstractWizard<LabSettingsWizardModel> wizard) {
-
     PanelDecorator.addCancelApply(this, wizard);
-
   }
 
   @Override
   public void fireInitialStateViewEvents() {
-
     // Apply button starts off enabled
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.APPLY, true);
-
   }
 
   @Override
   public void afterShow() {
-
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        torYesNoComboBox.requestFocusInWindow();
-
-      }
-    });
-
+    torYesNoComboBox.requestFocusInWindow();
   }
 
   @Override
   public boolean beforeHide(boolean isExitCancel) {
-
     if (!isExitCancel) {
-
       // Switch the main configuration over to the new one
       Configurations.switchConfiguration(getWizardModel().getConfiguration());
-
     }
 
     // Must be OK to proceed
     return true;
-
   }
 
   @Override
@@ -153,11 +140,12 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
     if (ComboBoxes.TREZOR_COMMAND.equals(e.getActionCommand())) {
       configuration.setTrezor(source.getSelectedIndex() == 0);
     }
+    if (ComboBoxes.SHOW_RESTORE_BETA7_WALLETS_COMMAND.equals(e.getActionCommand())) {
+      configuration.setShowRestoreBeta7Wallets(source.getSelectedIndex() == 0);
+    }
 
     // Update the model
 
     getWizardModel().setConfiguration(configuration);
-
   }
-
 }

@@ -11,8 +11,8 @@ import org.multibit.hd.ui.languages.MessageKey;
  */
 public class PaymentRequestHeaderConverter implements CSVEntryConverter<PaymentRequestData> {
   @Override
-  public String[] convertEntry(PaymentRequestData paymentRequestData) {
-    String[] columns = new String[13];
+  public String[] convertEntry(PaymentRequestData PaymentRequestData) {
+    String[] columns = new String[12];
 
    // Date
     columns[0] = Languages.safeText(MessageKey.DATE);
@@ -20,38 +20,35 @@ public class PaymentRequestHeaderConverter implements CSVEntryConverter<PaymentR
     // Type
     columns[1] = Languages.safeText(MessageKey.TYPE);
 
-    // Bitcoin address
-    columns[2] = Languages.safeText(MessageKey.BITCOIN_ADDRESS);
+    // UUID
+    columns[2] = Languages.safeText(MessageKey.UUID);
 
     // Description
     columns[3] = Languages.safeText(MessageKey.DESCRIPTION);
 
-    // QR code label
-    columns[4] = Languages.safeText(MessageKey.QR_CODE_LABEL);
-
     // Private notes
-    columns[5] = Languages.safeText(MessageKey.PRIVATE_NOTES);
+    columns[4] = Languages.safeText(MessageKey.PRIVATE_NOTES);
 
     // Amount in satoshi
-    columns[6] = Languages.safeText(MessageKey.LOCAL_AMOUNT) + " "  + BitcoinSymbol.SATOSHI.getTextSymbol();
+    columns[5] = Languages.safeText(MessageKey.LOCAL_AMOUNT) + " "  + BitcoinSymbol.SATOSHI.getTextSymbol();
 
     // Fiat currency symbol
-    columns[7] = Languages.safeText(MessageKey.FIAT_CURRENCY);
+    columns[6] = Languages.safeText(MessageKey.FIAT_CURRENCY);
 
     // Fiat currency amount
-    columns[8] = Languages.safeText(MessageKey.FIAT_AMOUNT);
+    columns[7] = Languages.safeText(MessageKey.FIAT_AMOUNT);
 
     // Exchange rate
-    columns[9] = Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL);
+    columns[8] = Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL);
 
     // Exchange rate provider
-    columns[10] = Languages.safeText(MessageKey.EXCHANGE_RATE_PROVIDER);
+    columns[9] = Languages.safeText(MessageKey.EXCHANGE_RATE_PROVIDER);
 
-    // Paid amount in satoshi
-    columns[11] = Languages.safeText(MessageKey.AMOUNT_PAID) + " " + BitcoinSymbol.SATOSHI.getTextSymbol();
+    // Matching transaction hash
+    columns[10] = Languages.safeText(MessageKey.TRANSACTION_HASH);
 
-    // Funding transactions
-    columns[12] = Languages.safeText(MessageKey.TRANSACTION_HASH);
+    // Identity
+    columns[11] = Languages.safeText(MessageKey.IDENTITY);
 
     return columns;
   }

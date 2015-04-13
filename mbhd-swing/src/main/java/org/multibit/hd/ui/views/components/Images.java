@@ -32,12 +32,60 @@ public class Images {
   }
 
   /**
+   * @return A new "bullhorn-quarter" image icon
+   */
+  public static Icon newBullhornQuarterIcon() {
+    final String resource;
+
+    if (Themes.currentTheme.isInvert()) {
+      resource = "/assets/images/bullhorn-quarter-invert.png";
+    } else {
+      resource = "/assets/images/bullhorn-quarter.png";
+    }
+    return loadIcon(resource);
+  }
+
+  /**
+   * @return A new "bullhorn-half" image icon
+   */
+  public static Icon newBullhornHalfIcon() {
+    final String resource;
+
+    if (Themes.currentTheme.isInvert()) {
+      resource = "/assets/images/bullhorn-half-invert.png";
+    } else {
+      resource = "/assets/images/bullhorn-half.png";
+    }
+    return loadIcon(resource);
+  }
+
+  /**
+   * @return A new "bullhorn-three-quarters" image icon
+   */
+  public static Icon newBullhornThreeQuartersIcon() {
+    final String resource;
+
+    if (Themes.currentTheme.isInvert()) {
+      resource = "/assets/images/bullhorn-three-quarters-invert.png";
+    } else {
+      resource = "/assets/images/bullhorn-three-quarters.png";
+    }
+    return loadIcon(resource);
+  }
+
+  private static Icon loadIcon(String resource) {
+    try (InputStream is = Images.class.getResourceAsStream(resource)) {
+      return new ImageIcon(ImageIO.read(is));
+    } catch (IOException e) {
+      throw new IllegalStateException("The '" + resource + "' image is missing");
+    }
+  }
+
+  /**
    * @return A new "qr code" image icon that's nicer than the Font Awesome version
    */
   public static Icon newQRCodeIcon() {
-
     try (InputStream is = Images.class.getResourceAsStream("/assets/images/qrcode.png")) {
-
       // Transform the mask color into the current themed text
       BufferedImage qrCodePng = ImageDecorator.applyColor(
         ImageIO.read(is),
@@ -49,7 +97,6 @@ public class Images {
     } catch (IOException e) {
       throw new IllegalStateException("The QR code image is missing");
     }
-
   }
 
   /**
@@ -64,6 +111,22 @@ public class Images {
 
     } catch (IOException e) {
       throw new IllegalStateException("The logo image is missing");
+    }
+
+  }
+
+  /**
+   * @return A new "splash screen" image icon
+   */
+  public static BufferedImage newSplashScreenIconImage() {
+
+    try (InputStream is = Images.class.getResourceAsStream("/assets/images/splash-screen.png")) {
+
+      // Transform the mask color into the current themed text
+      return ImageIO.read(is);
+
+    } catch (IOException e) {
+      throw new IllegalStateException("The splash screen image is missing");
     }
 
   }

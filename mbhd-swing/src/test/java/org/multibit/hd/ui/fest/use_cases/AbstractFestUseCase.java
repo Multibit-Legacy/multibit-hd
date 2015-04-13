@@ -314,7 +314,7 @@ public abstract class AbstractFestUseCase {
    * The standard length of time for a wallet credentials to change
    */
   protected void pauseForWalletPasswordChange() {
-    Pause.pause(3, TimeUnit.SECONDS);
+    Pause.pause(10, TimeUnit.SECONDS);
   }
 
   /**

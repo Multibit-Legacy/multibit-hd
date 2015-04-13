@@ -1,13 +1,10 @@
 package org.multibit.hd.core.dto;
 
 /**
- * <p>[Pattern] to provide the following to {@link Object}:</p>
+ * <p>Enum to provide the following to exchange API:</p>
  * <ul>
- * <li></li>
+ * <li>Exchange server status</li>
  * </ul>
- * <p>Example:</p>
- * <pre>
- * </pre>
  *
  * @since 0.0.1
  *

@@ -43,7 +43,7 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
    */
   public AppearanceSettingsPanelView(AbstractWizard<AppearanceSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.APPEARANCE_SETTINGS_TITLE, AwesomeIcon.DESKTOP);
+    super(wizard, panelName, MessageKey.SHOW_APPEARANCE_WIZARD, AwesomeIcon.DESKTOP);
 
   }
 
@@ -103,14 +103,7 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        themesComboBox.requestFocusInWindow();
-
-      }
-    });
+     themesComboBox.requestFocusInWindow();
 
   }
 

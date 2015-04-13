@@ -2,15 +2,15 @@ package org.multibit.hd.ui;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.Uninterruptibles;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
-import org.multibit.hd.core.managers.SSLManager;
+import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.OSUtils;
@@ -22,8 +22,9 @@ import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.platform.GenericApplicationFactory;
 import org.multibit.hd.ui.platform.GenericApplicationSpecification;
-import org.multibit.hd.ui.services.BitcoinURIListeningService;
+import org.multibit.hd.ui.services.ExternalDataListeningService;
 import org.multibit.hd.ui.views.MainView;
+import org.multibit.hd.ui.views.SplashScreen;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public class MultiBitHD {
 
   private MainController mainController;
 
-  private final ListeningExecutorService cacertsExecutorService = SafeExecutors.newSingleThreadExecutor("install-cacerts");
+  private SplashScreen splashScreen;
 
   /**
    * <p>Main entry point to the application</p>
@@ -54,16 +55,6 @@ public class MultiBitHD {
    * @param args None specified
    */
   public static void main(String[] args) throws Exception {
-
-    if (args != null) {
-      // Show the command line arguments
-      for (int i = 0; i < args.length; i++) {
-        log.debug("MultiBit launched with args[{}]: '{}'", i, args[i]);
-      }
-    } else {
-      // Provide empty arguments to avoid potential NPEs
-      args = new String[]{};
-    }
 
     // Hand over to an instance to simplify FEST tests
     final MultiBitHD multiBitHD = new MultiBitHD();
@@ -79,16 +70,80 @@ public class MultiBitHD {
         new Runnable() {
           @Override
           public void run() {
-
             multiBitHD.initialiseUIViews();
-
           }
         });
 
     }
 
-    log.debug("Bootstrap complete.");
+  }
 
+  /**
+   * <p>Start this instance of MultiBit HD</p>
+   *
+   * @param args The command line arguments
+   *
+   * @return True if the application started successfully, false if a shutdown is required
+   *
+   * @throws Exception If something goes wrong
+   */
+  public boolean start(String[] args) throws Exception {
+
+    // Start the logging factory (see later for instance) to get console logging up fast
+    LoggingFactory.bootstrap();
+
+    // Get the configuration fast
+    CoreServices.bootstrap();
+
+    log.info("Starting");
+
+    // Analyse the command line
+    if (args != null && args.length > 0) {
+      // Show the command line arguments
+      for (int i = 0; i < args.length; i++) {
+        log.info("MultiBit launched with args[{}]: '{}'", i, args[i]);
+      }
+    } else {
+      // Provide empty arguments to avoid potential NPEs
+      log.info("No command line arguments");
+      args = new String[]{};
+    }
+
+    // Check for another instance as soon as possible
+    Optional<ExternalDataListeningService> externalDataListeningService = initialiseListeningService(args);
+    if (!externalDataListeningService.isPresent()) {
+      return false;
+    }
+
+    log.info("This is the primary instance so showing splash screen.");
+    // Require Swing EDT for image load capabilities
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          splashScreen = new SplashScreen();
+        }
+      });
+
+    // Prepare the JVM (Nimbus, system properties etc)
+    initialiseJVM();
+
+    // Start core services (logging, environment alerts, configuration, Bitcoin URI handling etc)
+    initialiseCore(args);
+
+    // Create controllers so that the generic app can access listeners
+    if (!initialiseUIControllers(externalDataListeningService.get())) {
+
+      // Required to shut down
+      return false;
+
+    }
+
+    // Prepare platform-specific integration (protocol handlers, quit events etc)
+    initialiseGenericApp();
+
+    // Must be OK to be here
+    return true;
   }
 
   public void stop() {
@@ -105,35 +160,22 @@ public class MultiBitHD {
   }
 
   /**
-   * <p>Start this instance of MultiBit HD</p>
-   *
    * @param args The command line arguments
    *
-   * @return True if the application started successfully, false if a shutdown is required
-   *
-   * @throws Exception If something goes wrong
+   * @return The external data listening service if it could be started successfully, absent implies another instance
    */
-  public boolean start(String[] args) throws Exception {
+  private Optional<ExternalDataListeningService> initialiseListeningService(String[] args) {
 
-    // Prepare the JVM (Nimbus, system properties etc)
-    initialiseJVM();
+    // Determine if another instance is running and shutdown if this is the case
+    ExternalDataListeningService externalDataListeningService = new ExternalDataListeningService(args);
 
-    // Start core services (logging, security alerts, configuration, Bitcoin URI handling etc)
-    initialiseCore(args);
-
-    // Create controllers so that the generic app can access listeners
-    if (!initialiseUIControllers(args)) {
-
-      // Required to shut down
-      return false;
-
+    if (externalDataListeningService.start()) {
+      return Optional.of(externalDataListeningService);
     }
 
-    // Prepare platform-specific integration (protocol handlers, quit events etc)
-    initialiseGenericApp();
+    // Must have failed to be here
+    return Optional.absent();
 
-    // Must be OK to be here
-    return true;
   }
 
   /**
@@ -147,17 +189,6 @@ public class MultiBitHD {
 
     // Although we guarantee the JVM through the packager it is possible that
     // a power user will use their own
-    try {
-      // We guarantee the JVM through the packager so we should try it first
-      UIManager.setLookAndFeel(new NimbusLookAndFeel());
-    } catch (UnsupportedLookAndFeelException e) {
-      try {
-        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {
-        log.error("No look and feel available. MultiBit HD requires Java 7 or higher.", e1);
-        System.exit(-1);
-      }
-    }
 
     // Set any bespoke system properties
     try {
@@ -167,41 +198,23 @@ public class MultiBitHD {
       // Fix for version.txt not visible for Java 7
       System.setProperty("jsse.enableSNIExtension", "false");
 
-      if (OSUtils.isMac()) {
-
-        // Ensure the correct name is displayed in the application menu
-        System.setProperty("com.apple.mrj.application.apple.menu.about.name", "multiBit HD");
-
-        // Ensure OSX key bindings are used for copy, paste etc
-        // Use the Nimbus keys and ensure this occurs before any component creation
-        addOSXKeyStrokes((InputMap) UIManager.get("TextField.focusInputMap"));
-        addOSXKeyStrokes((InputMap) UIManager.get("FormattedTextField.focusInputMap"));
-        addOSXKeyStrokes((InputMap) UIManager.get("TextArea.focusInputMap"));
-        addOSXKeyStrokes((InputMap) UIManager.get("PasswordField.focusInputMap"));
-        addOSXKeyStrokes((InputMap) UIManager.get("EditorPane.focusInputMap"));
-
-      }
-
       // Execute the CA certificates download on a separate thread to avoid slowing
       // the startup time
-      cacertsExecutorService.submit(
+      SafeExecutors.newSingleThreadExecutor("install-cacerts").submit(
         new Runnable() {
           @Override
           public void run() {
-            SSLManager.INSTANCE.installCACertificates(
+            HttpsManager.INSTANCE.installCACertificates(
               InstallationManager.getOrCreateApplicationDataDirectory(),
               InstallationManager.CA_CERTS_NAME,
+              null, // Use default host list
               false // Do not force loading if they are already present
             );
-
           }
         });
-
-
     } catch (SecurityException se) {
-      log.error(se.getClass().getName() + " " + se.getMessage());
+      log.error("Security exception: {} {}", se.getClass().getName(), se.getMessage());
     }
-
   }
 
   /**
@@ -214,14 +227,10 @@ public class MultiBitHD {
    * <li>Backup service</li>
    * <li>Bitcoin network service</li>
    * </ul>
+   *
+   * @param externalDataListeningService The external data listening service
    */
-  public boolean initialiseUIControllers(String[] args) {
-
-    // Determine if another instance is running and shutdown if this is the case
-    BitcoinURIListeningService bitcoinURIListeningService = new BitcoinURIListeningService(args);
-    if (!bitcoinURIListeningService.start()) {
-      return false;
-    }
+  public boolean initialiseUIControllers(ExternalDataListeningService externalDataListeningService) {
 
     if (OSUtils.isWindowsXPOrEarlier()) {
       log.error("Windows XP or earlier detected. Forcing shutdown.");
@@ -233,7 +242,6 @@ public class MultiBitHD {
 
     // Including the other controllers avoids dangling references during a soft shutdown
     mainController = new MainController(
-      bitcoinURIListeningService,
       new HeaderController()
     );
 
@@ -245,7 +253,6 @@ public class MultiBitHD {
 
     // Must be OK to be here
     return true;
-
   }
 
   /**
@@ -270,6 +277,7 @@ public class MultiBitHD {
 
     GenericApplicationSpecification specification = new GenericApplicationSpecification();
     specification.getOpenURIEventListeners().add(mainController);
+    specification.getOpenFilesEventListeners().add(mainController);
     specification.getPreferencesEventListeners().add(mainController);
     specification.getAboutEventListeners().add(mainController);
     specification.getQuitEventListeners().add(mainController);
@@ -308,26 +316,54 @@ public class MultiBitHD {
    * <p>Once the UI renders, control passes to the <code>MainController</code> to
    * respond to the wizard close event which will trigger ongoing initialisation.</p>
    */
+  @SuppressFBWarnings({"DM_EXIT"})
   public MainView initialiseUIViews() {
-
     log.debug("Initialising UI...");
 
     Preconditions.checkNotNull(mainController, "'mainController' must be present. FEST will cause this if another instance is running.");
+    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must execute on EDT. Check calling environment.");
 
-    log.debug("Switching theme...");
+    // Give MultiBit Hardware a chance to process any attached hardware wallet
+    // and for MainController to subsequently process the events
+    // The delay observed in reality and FEST tests ranges from 1400-2200ms and is
+    // not included results in wiped hardware wallets being missed on startup
+    final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    log.debug("Starting the clock for hardware wallet initialisation");
+    long hardwareInitialisationTime = System.currentTimeMillis();
 
+    try {
+      // Set look and feel (expect ~1000ms to perform this)
+      log.debug("Loading Nimbus LaF...");
+      UIManager.setLookAndFeel(new NimbusLookAndFeel());
+    } catch (UnsupportedLookAndFeelException e) {
+      try {
+        log.warn("Falling back to cross platform LaF...");
+        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {
+        log.error("No look and feel available. MultiBit HD requires Java 7 or higher.", e1);
+        System.exit(-1);
+      }
+    }
+
+    log.debug("LaF loaded. Switching theme...");
     // Ensure that we are using the configured theme
     ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme());
     Themes.switchTheme(themeKey.theme());
 
-    final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
-    if (hardwareWalletService.isPresent()) {
-      // Give MultiBit Hardware a chance to process any attached hardware wallet
-      // and for MainController to subsequently process the events
-      // The delay observed in reality and FEST tests ranges from 1400-2200ms and if
-      // not included results in wiped hardware wallets being missed on startup
-      log.debug("Allowing time for hardware wallet state transition");
-      Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+    if (OSUtils.isMac()) {
+
+      // Ensure the correct name is displayed in the application menu
+      System.setProperty("com.apple.mrj.application.apple.menu.about.name", "multiBit HD");
+
+      // Ensure OSX key bindings are used for copy, paste etc
+      // Use the Nimbus keys and ensure this occurs before any component creation
+      addOSXKeyStrokes((InputMap) UIManager.get("EditorPane.focusInputMap"));
+      addOSXKeyStrokes((InputMap) UIManager.get("FormattedTextField.focusInputMap"));
+      addOSXKeyStrokes((InputMap) UIManager.get("PasswordField.focusInputMap"));
+      addOSXKeyStrokes((InputMap) UIManager.get("TextField.focusInputMap"));
+      addOSXKeyStrokes((InputMap) UIManager.get("TextPane.focusInputMap"));
+      addOSXKeyStrokes((InputMap) UIManager.get("TextArea.focusInputMap"));
+
     }
 
     log.debug("Building MainView...");
@@ -349,9 +385,11 @@ public class MultiBitHD {
       log.debug("Wallet directory is empty or no licence accepted");
     }
 
+    // HardwareWalletService needs HARDWARE_INITIALISATION_TIME milliseconds to initialise so sleep the rest
+    conditionallySleep(hardwareInitialisationTime);
+
     // Check for fresh hardware wallet
     if (hardwareWalletService.isPresent()) {
-
       if (hardwareWalletService.get().isDeviceReady() && !hardwareWalletService.get().isWalletPresent()) {
 
         log.debug("Wiped hardware wallet detected");
@@ -360,33 +398,49 @@ public class MultiBitHD {
         // regardless of wallet or licence situation
         // MainController should have handled the events
         showWelcomeWizard = true;
-
       }
-
     }
 
     if (showWelcomeWizard) {
-
       log.debug("Showing the welcome wizard");
       mainView.setShowExitingWelcomeWizard(true);
       mainView.setShowExitingCredentialsWizard(false);
-
     } else {
-
       log.debug("Showing the credentials wizard");
       mainView.setShowExitingCredentialsWizard(true);
       mainView.setShowExitingWelcomeWizard(false);
-
     }
 
     // Provide a backdrop to the user and trigger the showing of the wizard
     mainView.refresh();
 
-    log.debug("Initialising UI: Refresh complete");
+    log.debug("MainView is ready - hide the splash screen");
+    if (splashScreen != null) {
+      splashScreen.dispose();
+    }
 
     // See the MainController wizard hide event for the next stage
 
     return mainView;
+  }
 
+  /**
+   * Allow a delay of HARDWARE_INITIALISATION_TIME from the startTime
+   *
+   * @param startTime The reference time from which to measure the amount of sleep from
+   */
+  private void conditionallySleep(long startTime) {
+    final long HARDWARE_INITIALISATION_TIME = 2000;  // milliseconds
+    long currentTime = System.currentTimeMillis();
+    long timeSpent = currentTime - startTime;
+
+    if (timeSpent < HARDWARE_INITIALISATION_TIME) {
+      long sleepFor = HARDWARE_INITIALISATION_TIME - timeSpent;
+      log.debug("Sleep for an extra {} milliseconds to allow hardwareWalletService to initialise", sleepFor);
+      Uninterruptibles.sleepUninterruptibly(sleepFor, TimeUnit.MILLISECONDS);
+      log.debug("Finished sleep");
+    } else {
+      log.debug("No need for extra sleep time to allow hardwareWalletService to initialise");
+    }
   }
 }

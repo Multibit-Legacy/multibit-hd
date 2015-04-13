@@ -130,7 +130,7 @@ public class Labels {
     AccessibilityDecorator.apply(label, key);
 
     // Font
-    TitleFontDecorator.apply(label, MultiBitUI.BALANCE_HEADER_LARGE_FONT_SIZE);
+    TitleFontDecorator.apply(label, MultiBitUI.WIZARD_TITLE_FONT_SIZE);
 
     // Theme
     label.setForeground(Themes.currentTheme.text());
@@ -508,10 +508,10 @@ public class Labels {
     JLabel label = Labels.newLabel(MessageKey.DISPLAY_LANGUAGE);
 
     AwesomeDecorator.applyIcon(
-            AwesomeIcon.GLOBE,
-            label,
-            true,
-            MultiBitUI.NORMAL_PLUS_ICON_SIZE
+      AwesomeIcon.GLOBE,
+      label,
+      true,
+      MultiBitUI.NORMAL_PLUS_ICON_SIZE
     );
 
     return label;
@@ -1084,6 +1084,13 @@ public class Labels {
   }
 
   /**
+   * @return a new "select Trezor" for lab settings
+   */
+  public static JLabel newSelectShowRestoreBeta7Wallets() {
+    return newLabel(MessageKey.SELECT_SHOW_RESTORE_BETA7_WALLETS);
+  }
+
+  /**
    * @return a new "peer count" for verifying network
    */
   public static JLabel newPeerCount() {
@@ -1133,10 +1140,38 @@ public class Labels {
   }
 
   /**
-   * @return a new Cloud backup location label
+   * @return a new "cloud backup location" label
    */
   public static JLabel newCloudBackupLocation() {
     return newLabel(MessageKey.CLOUD_BACKUP_LOCATION);
+  }
+
+  /**
+   * @return a new "memo" label (notes)
+   */
+  public static JLabel newMemoLabel() {
+    return newLabel(MessageKey.NOTES);
+  }
+
+  /**
+   * @return a new "date" label
+   */
+  public static JLabel newDateLabel() {
+    return newLabel(MessageKey.DATE);
+  }
+
+  /**
+   * @return a new "expires" label
+   */
+  public static JLabel newExpiresLabel() {
+    return newLabel(MessageKey.EXPIRES);
+  }
+
+  /**
+   * @return a new "display name" label (name)
+   */
+  public static JLabel newDisplayNameLabel() {
+    return newLabel(MessageKey.NAME);
   }
 
   /**
@@ -1144,11 +1179,12 @@ public class Labels {
    */
   public static JLabel newWelcomeNote() {
 
-    return newNoteLabel(new MessageKey[]{
-      MessageKey.WELCOME_NOTE_1,
-      MessageKey.WELCOME_NOTE_2,
-      MessageKey.WELCOME_NOTE_3
-    }, new Object[][]{});
+    return newNoteLabel(
+      new MessageKey[]{
+        MessageKey.WELCOME_NOTE_1,
+        MessageKey.WELCOME_NOTE_2,
+        MessageKey.WELCOME_NOTE_3
+      }, new Object[][]{});
   }
 
   /**
@@ -1162,6 +1198,26 @@ public class Labels {
       MessageKey.ABOUT_NOTE_3
     }, new Object[][]{});
   }
+
+  /**
+    * @return A new "default" note for use on the Fee slider
+    */
+   public static JLabel newDefaultNote() {
+     // Wrap in HTML to ensure LTR/RTL and line breaks are respected
+     String[] lines = new String[2];
+     lines[0] = "\u25B2"; // 25B2 =up black triangle
+     lines[1] = Languages.toCapitalCase(Languages.safeText(MessageKey.DEFAULT));
+     JLabel label = new JLabel(HtmlUtils.localiseCenteredWithLineBreaks(lines));
+     label.setHorizontalAlignment(SwingConstants.CENTER);
+
+     // Ensure it is accessible
+     AccessibilityDecorator.apply(label, MessageKey.DEFAULT);
+
+     // Theme
+     label.setForeground(Themes.currentTheme.text());
+
+     return label;
+   }
 
   /**
    * @return A new "wallet credentials" note
@@ -1223,6 +1279,38 @@ public class Labels {
     JLabel label = newNoteLabel(new CoreMessageKey[]{
         CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED,
         CoreMessageKey.SECURITY_ADVICE
+      }, new Object[][]{});
+
+    // Allow for warning theme
+    label.setForeground(Themes.currentTheme.warningAlertText());
+
+    return label;
+
+  }
+
+  /**
+   * @return A new "deprecated firmware" note
+   */
+  public static JLabel newDeprecatedFirmwareNote() {
+
+    JLabel label = newNoteLabel(new CoreMessageKey[]{
+        CoreMessageKey.DEPRECATED_FIRMWARE_ATTACHED
+      }, new Object[][]{});
+
+    // Allow for warning theme
+    label.setForeground(Themes.currentTheme.warningAlertText());
+
+    return label;
+
+  }
+
+  /**
+   * @return A new "unsupported configuration passphrase" note
+   */
+  public static JLabel newUnsupportedConfigurationPassphrase() {
+
+    JLabel label = newNoteLabel(new CoreMessageKey[]{
+        CoreMessageKey.UNSUPPORTED_CONFIGURATION_PASSPHRASE
       }, new Object[][]{});
 
     // Allow for warning theme

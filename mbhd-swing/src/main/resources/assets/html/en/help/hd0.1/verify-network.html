@@ -1,13 +1,43 @@
 <h3>Verify network</h3>
 
-<p>If MultiBit HD seems to be stuck doing nothing, then verifying the network is one way to narrow down what is wrong and fix it.  Verifying the network checks you are still connected to the Bitcoin network.</p>
+<p>If MultiBit HD seems to be stuck doing nothing, then verifying the network is one way to narrow down what is wrong and fix it.
+  Verifying the network checks you are still connected to the Bitcoin network and shows how far behind you are with synchronization.</p>
+
+<p>To synchronize you must be able to connect to "full nodes" which have complete copy of the block chain and are in a position to provide
+the small parts of it that are of interest to your wallet. If the ratio of full nodes to lightweight wallets is high then synchronization
+takes place much more quickly. If the number of full nodes decreases significantly then synchronization takes longer due to more competition
+with other wallets.</p>
+
+<p>If you are in a position to run or sponsor a full node then we would urge you to consider it.</p>
 
 <p>From the Tools select "Verify network"</p>
 
-<!-- TODO explain how to see if port 8333 is open and how to open it
+<p>If the Peer Count is zero, then you aren't connected to the block chain. This could happen for several reasons detailed below</p>
 
-<p>If the Peer Count is zero, then you aren't connected to the blockchain, and multibit recommends you check port 8333 is open on your computer and router.  You can can check port 8333 is open by ....  and if it isn't open you can ...</p>
+<h4>Verify port 8333 is open</h4>
 
+<p>The Bitcoin protocol requires port <a href="http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers" target="_blank">8333</a> to be open on your
+  router or hub for traffic over TCP (and UDP if your settings allow).</p>
 
- -->
+<p>Internally MultiBit HD uses port 8330 to ensure that no other instances are present. There is no need to open it on your router or hub.</p>
 
+<p>You may find this <a href="http://www.wikihow.com/Open-Ports">wikiHow article</a> provides helpful instructions covering how to configure
+your own network setup.</p>
+
+<h4>Synchronization is taking ages - what's wrong ?</h4>
+
+<p>The speed of synchronization depends on many factors:</p>
+<ul>
+  <li>The speed of your network connection</li>
+  <li>The number of connected Peers (6+ is good)</li>
+  <li>The speed of the connected Peers - some nodes don't respond quickly to synchronization requests</li>
+  <li>The overall number of nodes - the more the merrier</li>
+</ul>
+
+<h4>Related</h4>
+
+<ul>
+  <li><a href="sign-message.html">Sign messages</a></li>
+  <li><a href="verify-message.html">Verifying messages</a></li>
+  <li><a href="trezor.html">Trezor</a></li>
+</ul>

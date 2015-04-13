@@ -215,9 +215,6 @@ public class MainView extends JFrame {
       setTitle(Languages.safeText(MessageKey.MULTIBIT_HD_TITLE));
     }
 
-    // Parse the configuration
-    resizeToLastFrameBounds();
-
     // Clear out all the old content
     getContentPane().removeAll();
 
@@ -279,16 +276,17 @@ public class MainView extends JFrame {
       // No wizards so this reset is a wallet unlock or settings change
       // The AbstractWizard.handleHide credentials unlock thread will close the wizard later
       // to get the effect of everything happening behind the wizard
-      detailViewAfterWalletOpened();
+
+      // Clear out all the cached screens
+      if (detailView != null) {
+        detailView.clearScreenCache();
+      }
     }
 
-    log.debug("Pack and show UI");
-
-    // Tidy up and show
-    pack();
+    // Use Configuration to get the last frame bounds
+    resizeToLastFrameBounds();
 
     if (isCentered) {
-
       GraphicsDevice defaultScreen = getGraphicsDevices().get(0);
 
       GraphicsConfiguration defaultConfiguration = defaultScreen.getDefaultConfiguration();
@@ -300,15 +298,16 @@ public class MainView extends JFrame {
         getWidth(),
         getHeight()
       );
-
     }
 
+    log.debug("Show UI");
     setVisible(true);
 
+    // Repeat the the last frame bounds to overcome bug in Swing setting x=0
+    resizeToLastFrameBounds();
+
     log.debug("Refresh complete");
-
   }
-
 
   /**
    * @return True if the exiting welcome wizard will be shown on a reset
@@ -355,14 +354,6 @@ public class MainView extends JFrame {
   }
 
   /**
-   * Update the detail view to reflect the new wallet
-   */
-  public void detailViewAfterWalletOpened() {
-
-    detailView.afterWalletOpened();
-  }
-
-  /**
    * @return The contents of the main panel (header, body and footer)
    */
   private JPanel createMainContent() {
@@ -395,8 +386,6 @@ public class MainView extends JFrame {
     sidebarView = new SidebarView(false);
     detailView = new DetailView();
     footerView = new FooterView();
-
-    log.debug("Creating split pane...");
 
     // Create a splitter pane
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -476,8 +465,6 @@ public class MainView extends JFrame {
       String[] lastFrameDimension = frameDimension.split(",");
       if (lastFrameDimension.length == 4) {
 
-        log.debug("Using absolute coordinates");
-
         try {
           int x = Integer.parseInt(lastFrameDimension[0]);
           int y = Integer.parseInt(lastFrameDimension[1]);
@@ -489,8 +476,9 @@ public class MainView extends JFrame {
           isCentered = false;
 
           // Place the frame in the desired position (setBounds() does not work)
-          setLocation(newBounds.x, newBounds.y);
           setPreferredSize(new Dimension(newBounds.width, newBounds.height));
+          setSize(new Dimension(newBounds.width, newBounds.height));
+          setLocation(newBounds.x, newBounds.y);
 
           return;
 
@@ -512,6 +500,7 @@ public class MainView extends JFrame {
 
           // Place the frame in the desired position (setBounds() does not work)
           setPreferredSize(new Dimension(newBounds.width, newBounds.height));
+          setSize(new Dimension(newBounds.width, newBounds.height));
 
           return;
 

@@ -5,8 +5,6 @@ import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.models.Model;
 
-import javax.swing.*;
-
 /**
  * <p>Model to provide the following to view:</p>
  * <ul>
@@ -47,13 +45,8 @@ public class EnterRecipientModel implements Model<Recipient> {
 
     this.recipient = Optional.fromNullable(value);
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        // Fire a component model updated event
-        ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
-      }
-    });
+    // Fire a component model updated event
+    ViewEvents.fireComponentChangedEvent(panelName, Optional.of(this));
   }
 
   /**

@@ -31,10 +31,5 @@ public class TrezorRequestCipherKeyUseCase extends AbstractHardwareWalletFestUse
 
     // This transitional panel is too variable to trap reliably
 
-//    // Check that the request panel view is showing
-//    window
-//    .label(MessageKey.TREZOR_UNLOCK_TITLE.getKey())
-//      .requireVisible();
-
   }
 }

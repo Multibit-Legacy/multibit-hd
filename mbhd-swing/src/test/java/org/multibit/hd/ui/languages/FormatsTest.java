@@ -1,13 +1,19 @@
 package org.multibit.hd.ui.languages;
 
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.uri.BitcoinURI;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
+import org.multibit.hd.core.dto.PaymentSessionSummary;
+import org.multibit.hd.core.services.PaymentProtocolService;
 import org.multibit.hd.core.utils.BitcoinSymbol;
+
+import java.net.URI;
+import java.util.Locale;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -223,6 +229,45 @@ public class FormatsTest {
   }
 
   @Test
+  public void testFormatCoinAmount_uBTC() throws Exception {
+
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.UBTC.name());
+
+    String balance = Formats.formatCoinAmount(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
+
+    assertThat(balance).isEqualTo("20,999,999,123,456.78");
+
+    balance = Formats.formatCoinAmount(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
+
+    assertThat(balance).isEqualTo("1,000,000.00");
+
+    balance = Formats.formatCoinAmount(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
+
+    assertThat(balance).isEqualTo("0.01");
+  }
+
+  @Test
+  public void testFormatCoinAmount_uBTC_de_DE() throws Exception {
+
+    languageConfiguration.setLocale(Locale.GERMANY);
+    bitcoinConfiguration.setDecimalSeparator(",");
+    bitcoinConfiguration.setGroupingSeparator(".");
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.UBTC.name());
+
+    String balance = Formats.formatCoinAmount(Coin.parseCoin(testAmounts[0]), languageConfiguration, bitcoinConfiguration);
+
+    assertThat(balance).isEqualTo("20.999.999.123.456,78");
+
+    balance = Formats.formatCoinAmount(Coin.parseCoin(testAmounts[1]), languageConfiguration, bitcoinConfiguration);
+
+    assertThat(balance).isEqualTo("1.000.000,00");
+
+    balance = Formats.formatCoinAmount(Coin.parseCoin(testAmounts[2]), languageConfiguration, bitcoinConfiguration);
+
+    assertThat(balance).isEqualTo("0,01");
+  }
+
+  @Test
   public void testFormatAlertMessage_MultiBit_B() throws Exception {
 
     bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.ICON.name());
@@ -263,6 +308,19 @@ public class FormatsTest {
   }
 
   @Test
+  public void testFormatAlertMessage_MultiBit_uXBT_de_DE() throws Exception {
+
+    bitcoinConfiguration.setDecimalSeparator(",");
+    bitcoinConfiguration.setGroupingSeparator(".");
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.UXBT.name());
+
+    final BitcoinURI bitcoinURI = new BitcoinURI("bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org");
+
+    assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment \"Please donate to multibit.org\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"\u00b5XBT 10.000" +
+        ",00\". Continue ?");
+  }
+
+  @Test
   public void testFormatAlertMessage_MultiBit_mBTC_No_Label() throws Exception {
 
     bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.MBTC.name());
@@ -281,7 +339,8 @@ public class FormatsTest {
       "?amount=0.01" +
       "&label=Please%20donate%20to%20multibit.org.%20We%20appreciate%20your%20generosity.");
 
-    assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment \"Please donate to multibit.org. ...\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"mB 10.00000\". Continue ?");
+    // No truncation in the label to ensure History records it correctly
+    assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment \"Please donate to multibit.org. We appreciate your generosity.\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"mB 10.00000\". Continue ?");
   }
 
   @Test
@@ -292,6 +351,42 @@ public class FormatsTest {
     final BitcoinURI bitcoinURI = new BitcoinURI("bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty");
 
     assertThat(Formats.formatAlertMessage(bitcoinURI).get()).isEqualTo("Payment \"n/a\" (1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty) for \"n/a\". Continue ?");
+  }
+
+  @Test
+  public void testFormatAlertMessage_PaymentSessionSummary_OK() throws Exception {
+
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.MBTC.name());
+
+    PaymentProtocolService paymentProtocolService = new PaymentProtocolService(MainNetParams.get());
+    final URI uri = URI.create("/fixtures/payments/pki_test.bitcoinpaymentrequest");
+    final PaymentSessionSummary paymentSessionSummary = paymentProtocolService.probeForPaymentSession(uri, false, null);
+
+    assertThat(Formats.formatAlertMessage(paymentSessionSummary).get()).isEqualTo("Trusted payment request \"n/a\" for \"mBTC 1,000.00000\". Continue ?");
+  }
+
+  @Test
+  public void testFormatAlertMessage_PaymentSessionSummary_AlmostOK() throws Exception {
+
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.MBTC.name());
+
+    PaymentProtocolService paymentProtocolService = new PaymentProtocolService(MainNetParams.get());
+    final URI uri = URI.create("/fixtures/payments/localhost-signed.bitcoinpaymentrequest");
+    final PaymentSessionSummary paymentSessionSummary = paymentProtocolService.probeForPaymentSession(uri, false, null);
+
+    assertThat(Formats.formatAlertMessage(paymentSessionSummary).get()).isEqualTo("Untrusted payment request \"Please donate to MultiBit\" for \"mBTC 10.00000\". Continue ?");
+  }
+
+  @Test
+  public void testFormatAlertMessage_PaymentSessionSummary_Error() throws Exception {
+
+    bitcoinConfiguration.setBitcoinSymbol(BitcoinSymbol.MBTC.name());
+
+    PaymentProtocolService paymentProtocolService = new PaymentProtocolService(MainNetParams.get());
+    final URI uri = URI.create("/fixtures/payments/test-net-faucet-broken.bitcoinpaymentrequest");
+    final PaymentSessionSummary paymentSessionSummary = paymentProtocolService.probeForPaymentSession(uri, false, null);
+
+    assertThat(Formats.formatAlertMessage(paymentSessionSummary).get()).isEqualTo("Error in payment request from \"\" with message \"Protocol message contained an invalid tag (zero).\"");
   }
 
 }

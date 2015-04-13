@@ -5,10 +5,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
 import org.multibit.hd.ui.fest.use_cases.credentials.UnlockReportUseCase;
-import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorConfirmUnlockUseCase;
-import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorEnterPinUseCase;
-import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorRequestCipherKeyUseCase;
-import org.multibit.hd.ui.fest.use_cases.hardware_wallet.TrezorRequestMasterPublicKeyUseCase;
+import org.multibit.hd.ui.fest.use_cases.hardware_wallet.*;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
 
@@ -40,11 +37,11 @@ public class UnlockTrezorHardwareWalletColdStartRequirements {
     // Request the master public key (refer to mock client for PublicKey responses)
     new TrezorRequestMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
-    // Request the cipher key (refer to mock client for PIN entry responses)
-    new TrezorRequestCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
+    // Verify PIN entry (refer to mock client for PIN entry responses)
+    new TrezorEnterPinFromMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
-    // Verify PIN entry
-    new TrezorEnterPinUseCase(window, hardwareWalletFixture).execute(parameters);
+    // Request the cipher key (no PIN usually)
+    new TrezorRequestCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Unlock with cipher key
     new TrezorConfirmUnlockUseCase(window, hardwareWalletFixture).execute(parameters);
@@ -53,7 +50,6 @@ public class UnlockTrezorHardwareWalletColdStartRequirements {
 
     // Verify the wallet unlocked
     new UnlockReportUseCase(window).execute(parameters);
-
 
   }
 }

@@ -1,9 +1,15 @@
 package org.multibit.hd.ui.models;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.bitcoinj.uri.BitcoinURI;
+import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.TransactionSeenEvent;
+import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
@@ -13,6 +19,7 @@ import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
@@ -35,30 +42,6 @@ public class Models {
    * Utilities have no public constructor
    */
   private Models() {
-  }
-
-  /**
-   * @param value The value to set
-   *
-   * @return A model wrapping the value
-   */
-  public static <M> Model<M> newModel(M value) {
-
-    return new Model<M>() {
-
-      private M value;
-
-      @Override
-      public M getValue() {
-        return value;
-      }
-
-      @Override
-      public void setValue(M value) {
-        this.value = value;
-      }
-    };
-
   }
 
   /**
@@ -104,7 +87,7 @@ public class Models {
 
         ControllerEvents.fireRemoveAlertEvent();
 
-        SendBitcoinParameter parameter = new SendBitcoinParameter(Optional.fromNullable(bitcoinURI));
+        SendBitcoinParameter parameter = new SendBitcoinParameter(bitcoinURI, null);
 
         Panels.showLightBox(Wizards.newSendBitcoinWizard(parameter).getWizardScreenHolder());
 
@@ -123,6 +106,64 @@ public class Models {
         RAGStatus.PINK,
         button
       ));
+
+    }
+
+    return Optional.absent();
+  }
+
+  /**
+   * @param paymentSessionSummary The payment session summary providing meta data
+   *
+   * @return An alert model suitable for use for displaying the payment request information, absent if the payment session summary does not contain sufficient information
+   */
+  public static Optional<AlertModel> newPaymentRequestAlertModel(final PaymentSessionSummary paymentSessionSummary) {
+
+    // Action to show the "payment request details" wizard
+    AbstractAction action = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        ControllerEvents.fireRemoveAlertEvent();
+
+        // The user has indicated that the payment request is of interest so persist it
+        Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent());
+        Preconditions.checkNotNull(paymentSessionSummary);
+
+        WalletService walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+        if ( paymentSessionSummary.getPaymentSession().isPresent()) {
+
+          // Build a PaymentRequestData for persistence
+          PaymentRequestData paymentRequestData = new PaymentRequestData(paymentSessionSummary);
+
+          // Add the localised trust status
+          paymentRequestData.setTrustStatus(paymentSessionSummary.getStatus());
+          paymentRequestData.setTrustErrorMessage(Languages.safeText(paymentSessionSummary.getMessageKey(), paymentSessionSummary.getMessageData()));
+
+          // Store it (in memory) in the wallet service
+          walletService.addPaymentRequestData(paymentRequestData);
+
+          // The wallet has changed so UI will need updating
+          ViewEvents.fireWalletDetailChangedEvent(new WalletDetail());
+
+          // Show the wizard and provide the PaymentRequestData to the model
+          Panels.showLightBox(Wizards.newPaymentsWizard(paymentRequestData).getWizardScreenHolder());
+        }
+      }
+    };
+    JButton button = Buttons.newAlertPanelButton(action, MessageKey.YES, MessageKey.YES_TOOLTIP, AwesomeIcon.CHECK);
+
+    // Attempt to decode the Bitcoin URI
+    Optional<String> alertMessage = Formats.formatAlertMessage(paymentSessionSummary);
+
+    // If there is sufficient information in the payment request display it to the user as an alert
+    if (alertMessage.isPresent()) {
+
+      return Optional.of(Models.newAlertModel(
+          alertMessage.get(),
+          RAGStatus.PINK,
+          button
+        ));
 
     }
 
@@ -211,5 +252,4 @@ public class Models {
     };
 
   }
-
 }

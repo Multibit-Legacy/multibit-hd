@@ -94,18 +94,9 @@ public class CreateTrezorWalletEnterDetailsPanelView extends AbstractWizardPanel
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-
-          trezorLabel.setText(getWizardModel().getTrezorWalletLabel());
-          trezorLabel.selectAll();
-          trezorLabel.requestFocusInWindow();
-
-        }
-      }
-    );
+    trezorLabel.setText(getWizardModel().getTrezorWalletLabel());
+    trezorLabel.selectAll();
+    trezorLabel.requestFocusInWindow();
 
   }
 

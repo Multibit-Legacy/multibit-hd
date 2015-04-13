@@ -1,5 +1,6 @@
 package org.multibit.hd.brit.services;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -68,7 +69,7 @@ public class FeeService {
   public static final Coin MAXIMUM_FEE_PER_KB = Coin.valueOf(10000); // 0.1 mBTC per KB - a long used fee structure
 
   public static final String DONATION_ADDRESS = "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty";
-  public static final String DEFAULT_DONATION_AMOUNT= "0.01"; // in BTC
+  public static final String DEFAULT_DONATION_AMOUNT= "0.01"; // in BTC as per BIP21
 
   /**
    * Always work with MainNet in BRIT (no access to wallet configuration)
@@ -117,6 +118,8 @@ public class FeeService {
     // Use a default provider which uses the transaction confidence.
     // This works ok but the user can do a repair wallet and all transaction become not sent by self.
     transactionSentBySelfProvider = new TransactionConfidenceSentBySelfProvider();
+
+    log.debug("Creating FeeService with matcherURL: {}", matcherURL);
   }
 
   public void setTransactionSentBySelfProvider(TransactionSentBySelfProvider transactionSentBySelfProvider) {
@@ -130,6 +133,8 @@ public class FeeService {
    * @param wallet the wallet to perform the BRIT exchange against
    */
   public void performExchangeWithMatcher(byte[] seed, Wallet wallet) {
+
+    log.debug("Performing exchange with matcher ...");
 
     // Work out the BRITWalletId for this seed
     BRITWalletId britWalletId = new BRITWalletId(seed);
@@ -147,6 +152,8 @@ public class FeeService {
     // Ask the payer to create an EncryptedPayerRequest containing a BRITWalletId, a session id and a firstTransactionDate
     PayerRequest payerRequest = payer.newPayerRequest(britWalletId, sessionId, firstTransactionDateOptional);
 
+    log.debug("Payer request:\n{}\n", new String(payerRequest.serialise(), Charsets.UTF_8));
+
     MatcherResponse matcherResponse;
     try {
       // Encrypt the PayerRequest with the Matcher PGP public key.
@@ -155,13 +162,19 @@ public class FeeService {
       // Do the HTTP(S) post which, if successful, returns an EncryptedMatcherResponse as a byte array
       EncryptedMatcherResponse encryptedMatcherResponse = new EncryptedMatcherResponse(doPost(matcherURL, encryptedPayerRequest.getPayload()));
 
+      log.debug("Matcher response (encrypted):{} bytes", encryptedMatcherResponse.getPayload().length);
+
       // Decrypt the MatcherResponse - the payer does this as it knows how it was AES encrypted (by construction)
       matcherResponse = payer.decryptMatcherResponse(encryptedMatcherResponse);
+
+      log.debug("Matcher response (decrypted):\n{}\n", new String(matcherResponse.serialise(), Charsets.UTF_8));
+
     } catch (IOException | PayerRequestException | MatcherResponseException e) {
       // The exchange with the matcher failed
       log.debug("The exchange with the matcher failed. The error was {}", e.getClass().getCanonicalName() + e.getMessage());
 
       // Fall back to the list of hardwired addresses
+      log.debug("Using hardwired addresses");
       matcherResponse = new MatcherResponse(Optional.<Date>absent(), getHardwiredFeeAddresses());
     }
     // Add the MatcherResponse as a wallet extension so that on the next wallet write it will be persisted
@@ -255,7 +268,7 @@ public class FeeService {
       nextSendFeeAddress = sendFeeDto.getSendFeeAddress().get();
 
       log.debug("Reusing the next send fee transaction. It will be at the send count of {}", nextSendFeeCount);
-      log.debug("Reusing the next address to send fee to. It will be is {}", nextSendFeeAddress);
+      log.debug("Reusing the next address to send fee to. It will be {}", nextSendFeeAddress);
     } else {
       // Work out the count of the sends at which the next payment will be made
       // The first nextSendFeeCount is earlier than others by a factor of FIRST_SEND_DELTA_FACTOR
@@ -455,7 +468,8 @@ public class FeeService {
    * @param payload the bytes to post
    */
   private byte[] doPost(URL url, byte[] payload) throws IOException {
-
+    // Send the encrypted request to the Matcher
+    log.debug("Attempting to post {} bytes to URL {}", payload.length, url);
     URLConnection connection;
 
     // URL connection channel

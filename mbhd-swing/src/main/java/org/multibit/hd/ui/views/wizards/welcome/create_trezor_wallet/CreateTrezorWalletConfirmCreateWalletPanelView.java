@@ -1,8 +1,8 @@
 package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
@@ -13,6 +13,7 @@ import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsConfirmCipherKeyPanelModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 
@@ -77,23 +78,14 @@ public class CreateTrezorWalletConfirmCreateWalletPanelView extends AbstractWiza
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
+    // Set the confirm text
+    trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
 
-      @Override public void run() {
+    // Show wipe message
+    trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
 
-        // Set the confirm text
-        trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
-
-        // Show wipe message
-        trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
-
-        // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
-        getNextButton().setEnabled(false);
-
-      }
-
-    });
-
+    // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
   }
 
   @Override
@@ -114,41 +106,4 @@ public class CreateTrezorWalletConfirmCreateWalletPanelView extends AbstractWiza
     // No need to update the wizard it has the references
 
   }
-
-  /**
-   * @return The Trezor display view to avoid method duplication
-   */
-  public TrezorDisplayView getTrezorDisplayView() {
-    return trezorDisplayMaV.getView();
-  }
-
-  /**
-   * @param visible True if the display should not be visible
-   */
-  public void setDisplayVisible(boolean visible) {
-    this.trezorDisplayMaV.getView().setDisplayVisible(visible);
-  }
-
-  public void disableForWipe() {
-
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
-
-    getNextButton().setEnabled(false);
-    getExitButton().setEnabled(false);
-
-    trezorDisplayMaV.getView().setSpinnerVisible(true);
-
-  }
-
-  public void enableForFailedWipe() {
-
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
-
-    getNextButton().setEnabled(false);
-    getExitButton().setEnabled(true);
-
-    trezorDisplayMaV.getView().setSpinnerVisible(false);
-
-  }
-
 }

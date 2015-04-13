@@ -5,6 +5,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.crypto.MnemonicCode;
+import org.bitcoinj.crypto.MnemonicException;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
@@ -13,7 +15,7 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
-import org.multibit.hd.core.managers.SSLManager;
+import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.BackupService;
 import org.multibit.hd.core.services.CoreServices;
@@ -189,6 +191,8 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
       // Attempt to create the wallet (the manager will track the ID etc)
       WalletManager walletManager = WalletManager.INSTANCE;
+      byte[] entropy = MnemonicCode.INSTANCE.toEntropy(seedPhrase);
+
       seed = seedPhraseGenerator.convertToSeed(seedPhrase);
 
       // Seed phrase always OK
@@ -211,14 +215,15 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
         // Provide a precise local creation time
         Dates.formatTransactionDateLocal(Dates.nowUtc(), Configurations.currentConfiguration.getLocale())
       );
-      walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromSeed(
-        applicationDataDirectory,
-        seed,
-        Dates.nowInSeconds(),
-        password,
-        name,
-        notes,
-        true);
+      walletSummary = walletManager.getOrCreateMBHDSoftWalletSummaryFromEntropy(
+              applicationDataDirectory,
+              entropy,
+              seed,
+              Dates.nowInSeconds(),
+              password,
+              name,
+              notes,
+              true);
 
       Preconditions.checkNotNull(walletSummary.getWalletId(), "'walletId' must be present");
 
@@ -282,10 +287,12 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
 
       // Attempt to install the CA certifications for the exchanges and MultiBit.org
       // Configure SSL certificates without forcing
-      SSLManager.INSTANCE.installCACertificates(
+      HttpsManager.INSTANCE.installCACertificates(
         InstallationManager.getOrCreateApplicationDataDirectory(),
         InstallationManager.CA_CERTS_NAME,
-        false);
+        null, // Use default host list
+        false // Do not force loading if they are already present
+      );
 
       // Update the UI after the BRIT exchange completes
       SwingUtilities.invokeLater(new Runnable() {
@@ -344,7 +351,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
           }
         });
 
-    } catch (RuntimeException | IOException | NoSuchAlgorithmException e) {
+    } catch (MnemonicException | IOException | NoSuchAlgorithmException e) {
       // Handing over to the exception handler means a hard shutdown
       ExceptionHandler.handleThrowable(e);
     }

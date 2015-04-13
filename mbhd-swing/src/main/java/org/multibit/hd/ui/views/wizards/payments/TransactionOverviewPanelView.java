@@ -1,13 +1,13 @@
 package org.multibit.hd.ui.views.wizards.payments;
 
-import org.bitcoinj.core.Address;
-import org.bitcoinj.core.Coin;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.PaymentData;
@@ -17,6 +17,7 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -28,6 +29,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
@@ -41,7 +43,6 @@ import java.util.List;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class TransactionOverviewPanelView extends AbstractWizardPanelView<PaymentsWizardModel, TransactionOverviewPanelModel> {
 
@@ -136,18 +137,15 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
   @Override
   public void afterShow() {
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        getNextButton().requestFocusInWindow();
+      }
+    });
 
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          getNextButton().requestFocusInWindow();
-          getNextButton().setEnabled(true);
-        }
-      });
-
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
     update();
-
   }
 
   @Override
@@ -156,7 +154,6 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
   }
 
   public void update() {
-
     PaymentData paymentData = getWizardModel().getPaymentData();
 
     if (paymentData != null) {
@@ -169,7 +166,6 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
         TransactionData transactionData = (TransactionData) paymentData;
 
         if (transactionData.getAmountCoin().compareTo(Coin.ZERO) >= 0) {
-
           // Received bitcoin
           recipientValue.setText(Languages.safeText(MessageKey.THIS_BITCOIN_WAS_SENT_TO_YOU));
           recipientValue.setRows(1);
@@ -197,7 +193,7 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
               default:
                 // More than one match
                 recipientValue.setText(Joiner.on("\n").join(outputAddresses));
-                recipientValue.setRows(outputAddresses.size() <=5 ? outputAddresses.size() : 5);
+                recipientValue.setRows(outputAddresses.size() <= 5 ? outputAddresses.size() : 5);
                 break;
             }
           }

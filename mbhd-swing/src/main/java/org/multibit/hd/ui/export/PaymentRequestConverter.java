@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.export;
 
-import com.google.common.base.Joiner;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentRequestData;
@@ -10,7 +9,7 @@ import java.text.SimpleDateFormat;
 
 
 /**
- * Convert WalletTableData into single fields for use in a CSV file.
+ * Convert PaymentRequestData into single fields for use in a CSV file.
  */
 public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequestData> {
 
@@ -27,34 +26,31 @@ public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequest
     // Type
     columns[1] = paymentRequestData.getType() == null ? "" : paymentRequestData.getType().toString();
 
-    // Bitcoin address
-    columns[2] = paymentRequestData.getAddress() == null ? "" : paymentRequestData.getAddress().toString();
+    // UUID
+    columns[2] = paymentRequestData.getUuid() == null ? "" : paymentRequestData.getUuid().toString();
 
     // Description (cannot be null)
     columns[3] = paymentRequestData.getDescription();
 
-    // QR code label
-    columns[4] = paymentRequestData.getLabel() == null ? "" : paymentRequestData.getLabel();
-
     // Note
-    columns[5] = paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote();
+    columns[4] = paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote();
 
     // Amount in satoshi
-    columns[6] = paymentRequestData.getAmountCoin() == null ? "" : paymentRequestData.getAmountCoin().toString();
+    columns[5] = paymentRequestData.getAmountCoin() == null ? "" : paymentRequestData.getAmountCoin().toString();
 
     // Fiat currency
-    columns[7] = "";
+    columns[6] = "";
 
     // Fiat amount
-    columns[8] = "";
+    columns[7] = "";
     if (paymentRequestData.getAmountFiat() != null) {
       if (paymentRequestData.getAmountFiat().getCurrency().isPresent()) {
-        columns[7] = paymentRequestData.getAmountFiat().getCurrency().get().getCurrencyCode();
+        columns[6] = paymentRequestData.getAmountFiat().getCurrency().get().getCurrencyCode();
       }
       if (paymentRequestData.getAmountFiat().getAmount() != null
         && paymentRequestData.getAmountFiat().getAmount().isPresent()){
           // Ensure we use plain string to avoid "E-05"
-          columns[8] = paymentRequestData.getAmountFiat().getAmount().get().stripTrailingZeros().toPlainString();
+          columns[7] = paymentRequestData.getAmountFiat().getAmount().get().stripTrailingZeros().toPlainString();
       }
     }
 
@@ -70,11 +66,14 @@ public class PaymentRequestConverter implements CSVEntryConverter<PaymentRequest
       columns[9] = paymentRequestData.getAmountFiat().getExchangeName().or("");
     }
 
-    // Paid amount in satoshi
-    columns[10] = paymentRequestData.getPaidAmountCoin() == null ? "" : paymentRequestData.getPaidAmountCoin().toString();
+    // Matching transaction hash
+    columns[10] = "";
+    if (paymentRequestData.getTransactionHash().isPresent()) {
+      columns[10] = paymentRequestData.getTransactionHash().get().toString();
+    }
 
-    // Funding transactions
-    columns[11] = paymentRequestData.getPayingTransactionHashes() == null ? "" : Joiner.on(" ").join(paymentRequestData.getPayingTransactionHashes());
+    // Identity
+    columns[11] = paymentRequestData.getIdentityDisplayName();
 
     return columns;
   }

@@ -3,7 +3,7 @@ package org.multibit.hd.ui.fest.requirements;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.credentials.SlowUnlockWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.credentials.UnlockReportUseCase;
-import org.multibit.hd.ui.fest.use_cases.security.CloseDebugSecurityPopoverUseCase;
+import org.multibit.hd.ui.fest.use_cases.environment.CloseDebugEnvironmentPopoverUseCase;
 
 /**
  * <p>FEST Swing UI test to provide:</p>
@@ -18,7 +18,7 @@ public class SlowUnlockEmptyWalletFixtureRequirements {
 
   public static void verifyUsing(FrameFixture window) {
 
-    new CloseDebugSecurityPopoverUseCase(window).execute(null);
+    new CloseDebugEnvironmentPopoverUseCase(window).execute(null);
 
     new SlowUnlockWalletUseCase(window).execute(null);
 

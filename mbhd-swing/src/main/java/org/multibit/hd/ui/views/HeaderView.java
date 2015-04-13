@@ -4,9 +4,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
-import org.multibit.hd.ui.events.controller.RemoveAlertEvent;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
+import org.multibit.hd.ui.events.view.AlertRemovedEvent;
 import org.multibit.hd.ui.events.view.BalanceChangedEvent;
 import org.multibit.hd.ui.events.view.ViewChangedEvent;
 import org.multibit.hd.ui.languages.Languages;
@@ -50,18 +51,20 @@ public class HeaderView extends AbstractView {
 
     super();
 
-    contentPanel = Panels.newPanel(new MigLayout(
-            Panels.migLayout("fillx,insets 10 10 5 10,hidemode 3"), // Layout insets ensure border is tight to sidebar
-            "[][]", // Columns
-            "[][shrink]" // Rows
-    ));
+    contentPanel = Panels.newPanel(
+      new MigLayout(
+        Panels.migLayout("fillx,insets 10 10 5 10,hidemode 3"), // Layout insets ensure border is tight to sidebar
+        "[][]", // Columns
+        "[][shrink]" // Rows
+      ));
 
     // Create the alert panel
-    alertPanel = Panels.newPanel(new MigLayout(
-            Panels.migXLayout(),
-            "[grow][][][]", // Columns
-            "[]" // Rows
-    ));
+    alertPanel = Panels.newPanel(
+      new MigLayout(
+        Panels.migXLayout(),
+        "[][][][]", // Columns
+        "[]" // Rows
+      ));
 
     // Start off in hiding
     alertPanel.setVisible(false);
@@ -72,7 +75,7 @@ public class HeaderView extends AbstractView {
 
     // Create the balance display not displaying it initially
     balanceDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER, true, "header.balance");
-    log.debug("header is now visible");
+    log.trace("header is now visible");
     balanceDisplayMaV.getView().setVisible(false);
 
     // Provide a fixed height to avoid an annoying "slide down" during unlock
@@ -183,7 +186,7 @@ public class HeaderView extends AbstractView {
    * @param event The remove alert event
    */
   @Subscribe
-  public void onAlertRemovedEvent(RemoveAlertEvent event) {
+  public void onAlertRemovedEvent(final AlertRemovedEvent event) {
     // Hide the alert panel and clear the label
     alertPanel.setVisible(false);
     alertMessageLabel.setText("");
@@ -199,7 +202,7 @@ public class HeaderView extends AbstractView {
     if (event.getViewKey().equals(ViewKey.HEADER)) {
       log.trace("Saw a ViewChangedEvent {}", event);
 
-      log.debug("Header now has visibility: {} ", event.isVisible());
+      log.trace("Header now has visibility: {} ", event.isVisible());
       balanceDisplayMaV.getView().setVisible(event.isVisible());
       if (alertMessageLabel.getText().length() != 0 && event.isVisible()) {
         alertPanel.setVisible(event.isVisible());
@@ -232,15 +235,15 @@ public class HeaderView extends AbstractView {
 
     // Determine how to add them back into the panel
     if (Languages.isLeftToRight()) {
-      alertPanel.add(alertMessageLabel, "push");
-      alertPanel.add(alertRemainingLabel, "shrink,right");
-      alertPanel.add(alertButton, "shrink,right");
+      alertPanel.add(alertMessageLabel, "shrink,left,"+MultiBitUI.ALERT_MESSAGE_MAX_WIDTH_MIG);
+      alertPanel.add(alertRemainingLabel, "push,right");
+      alertPanel.add(alertButton, "push,right");
       alertPanel.add(closeButton);
     } else {
       alertPanel.add(closeButton);
       alertPanel.add(alertButton, "shrink,left");
       alertPanel.add(alertRemainingLabel, "shrink,left");
-      alertPanel.add(alertMessageLabel, "push");
+      alertPanel.add(alertMessageLabel, "shrink,right,"+MultiBitUI.ALERT_MESSAGE_MAX_WIDTH_MIG);
     }
 
   }

@@ -19,7 +19,6 @@ public class SendRequestSummary {
 
   private final Address destinationAddress;
   private final Optional<FiatPayment> fiatPayment;
-  private final Address changeAddress;
   private final Coin feePerKB;
   private final Optional<FeeState> feeState;
 
@@ -31,6 +30,7 @@ public class SendRequestSummary {
   private Optional<String> notes = Optional.absent();
   private String password;
   private boolean applyClientFee = false;
+  private Address changeAddress;
 
   /**
    * The client fee added to the sendRequest.tx
@@ -68,6 +68,27 @@ public class SendRequestSummary {
     this.password = password;
     this.feeState = feeState;
     this.emptyWallet = emptyWallet;
+  }
+
+  /**
+   * @param sendRequest The send request (usually from a PaymentSession)
+   * @param fiatPayment The fiat payment equivalent of the bitcoin amount
+   *                    Note that initially, this is filled up with only the exchange rate details.
+   *                    Only when bitcoin is sent are the fees and hence total bitcoin amount worked out.
+   *                    Then the fiat amount equivalent to the total bitcoin amount is computed and stored.
+   * @param feePerKB    The fee per Kb (in coins)
+   * @param password    The wallet credentials
+   * @param feeState    The BRIT fee state
+   */
+  public SendRequestSummary(Wallet.SendRequest sendRequest, Optional<FiatPayment> fiatPayment, Coin feePerKB, String password, Optional<FeeState> feeState) {
+    this.destinationAddress = null;
+    this.changeAddress = null;
+    this.sendRequest = Optional.of(sendRequest);
+    this.fiatPayment = fiatPayment;
+    this.feePerKB = feePerKB;
+    this.password = password;
+    this.feeState = feeState;
+    this.emptyWallet = false;
   }
 
   /**
@@ -112,6 +133,10 @@ public class SendRequestSummary {
    */
   public Address getChangeAddress() {
     return changeAddress;
+  }
+
+  public void setChangeAddress(Address changeAddress) {
+    this.changeAddress = changeAddress;
   }
 
   /**

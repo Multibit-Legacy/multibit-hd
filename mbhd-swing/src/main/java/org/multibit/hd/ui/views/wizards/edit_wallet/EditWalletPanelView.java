@@ -111,15 +111,8 @@ public class EditWalletPanelView extends AbstractWizardPanelView<EditWalletWizar
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-
-        name.requestFocusInWindow();
-        name.selectAll();
-
-      }
-    });
+    name.requestFocusInWindow();
+    name.selectAll();
   }
 
   @Override

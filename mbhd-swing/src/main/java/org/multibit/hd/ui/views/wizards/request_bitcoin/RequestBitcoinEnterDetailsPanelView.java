@@ -7,7 +7,7 @@ import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.FiatPayment;
-import org.multibit.hd.core.dto.PaymentRequestData;
+import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exceptions.ExceptionHandler;
@@ -168,12 +168,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
   @Override
   public void afterShow() {
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        enterAmountMaV.getView().requestInitialFocus();
-      }
-    });
+    enterAmountMaV.getView().requestInitialFocus();
 
   }
 
@@ -198,12 +193,12 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     Preconditions.checkNotNull(walletService, "'walletService' must be present");
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent(), "'currentWalletSummary' must be present");
 
-    final PaymentRequestData paymentRequestData = new PaymentRequestData();
-    paymentRequestData.setNote(notesTextArea.getText());
-    paymentRequestData.setDate(DateTime.now());
-    paymentRequestData.setAddress(Addresses.parse(displayBitcoinAddressMaV.getModel().getValue()).get());
-    paymentRequestData.setLabel(transactionLabel.getText());
-    paymentRequestData.setAmountCoin(enterAmountMaV.getModel().getCoinAmount());
+    final MBHDPaymentRequestData MBHDPaymentRequestData = new MBHDPaymentRequestData();
+    MBHDPaymentRequestData.setNote(notesTextArea.getText());
+    MBHDPaymentRequestData.setDate(DateTime.now());
+    MBHDPaymentRequestData.setAddress(Addresses.parse(displayBitcoinAddressMaV.getModel().getValue()).get());
+    MBHDPaymentRequestData.setLabel(transactionLabel.getText());
+    MBHDPaymentRequestData.setAmountCoin(enterAmountMaV.getModel().getCoinAmount());
 
     final FiatPayment fiatPayment = new FiatPayment();
     fiatPayment.setAmount(enterAmountMaV.getModel().getLocalAmount());
@@ -220,12 +215,15 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
       fiatPayment.setCurrency(Optional.<Currency>absent());
     }
 
-    paymentRequestData.setAmountFiat(fiatPayment);
+    MBHDPaymentRequestData.setAmountFiat(fiatPayment);
 
-    walletService.addPaymentRequest(paymentRequestData);
+    walletService.addMBHDPaymentRequestData(MBHDPaymentRequestData);
     try {
       log.debug("Saving payment information");
-      walletService.writePayments();
+      CharSequence password = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword();
+      if (password != null) {
+        walletService.writePayments(password);
+      }
     } catch (PaymentsSaveException pse) {
       ExceptionHandler.handleThrowable(pse);
     }
@@ -244,7 +242,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     walletDetail.setApplicationDirectory(applicationDataDirectory.getAbsolutePath());
     walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
     walletDetail.setNumberOfContacts(contactService.allContacts().size());
-    walletDetail.setNumberOfPayments(walletService.getPaymentDataList().size());
+    walletDetail.setNumberOfPayments(walletService.getPaymentDataSetSize());
 
     log.debug("A new receiving address has been issued. The number of external keys is now {}", walletSummary.getWallet().getActiveKeychain().getIssuedExternalKeys());
 

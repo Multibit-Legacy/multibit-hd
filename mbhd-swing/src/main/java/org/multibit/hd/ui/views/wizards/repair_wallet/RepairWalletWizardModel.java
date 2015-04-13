@@ -6,13 +6,16 @@ import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.dto.WalletType;
+import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.InstallationManager;
-import org.multibit.hd.core.managers.SSLManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -29,6 +32,8 @@ import java.util.concurrent.TimeUnit;
  * @since 0.0.1
  */
 public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletState> {
+
+  private static final Logger log = LoggerFactory.getLogger(RepairWalletWizardModel.class);
 
   /**
    * Repair wallet requires a separate executor
@@ -77,41 +82,49 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
    * <p>Reduced visibility for panel view</p>
    */
   void installCACertificates() {
+    log.debug("Starting refresh of SSL certs...");
 
-    ListenableFuture cacertsFuture = cacertsExecutorService.submit(new Runnable() {
-      @Override
-      public void run() {
-        SSLManager.INSTANCE.installCACertificates(
-                InstallationManager.getOrCreateApplicationDataDirectory(),
-                InstallationManager.CA_CERTS_NAME,
-                true
-        );
+    ListenableFuture cacertsFuture = cacertsExecutorService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          HttpsManager.INSTANCE.installCACertificates(
+            InstallationManager.getOrCreateApplicationDataDirectory(),
+            InstallationManager.CA_CERTS_NAME,
+            null, // Use default host list
+            true // Force loading
+          );
 
-      }
-    });
-    Futures.addCallback(cacertsFuture, new FutureCallback() {
-      @Override
-      public void onSuccess(@Nullable Object result) {
-        cacertsRepaired = Optional.of(Boolean.TRUE);
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
-          }
-        });
-      }
+        }
+      });
+    Futures.addCallback(
+      cacertsFuture, new FutureCallback() {
+        @Override
+        public void onSuccess(@Nullable Object result) {
+          log.debug("SSL certs refreshed successfully");
+          cacertsRepaired = Optional.of(Boolean.TRUE);
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+                ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
+              }
+            });
+        }
 
-      @Override
-      public void onFailure(Throwable t) {
-        cacertsRepaired = Optional.of(Boolean.FALSE);
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
-          }
-        });
-      }
-    });
+        @Override
+        public void onFailure(Throwable t) {
+          log.debug("SSL certs were NOT refreshed successfully");
+          cacertsRepaired = Optional.of(Boolean.FALSE);
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+                ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
+              }
+            });
+        }
+      });
 
   }
 
@@ -129,15 +142,24 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       Wallet currentWallet = currentWalletSummary.getWallet();
 
       // Work out the replay date
-      final DateTime replayDate = new DateTime(currentWallet.getEarliestKeyCreationTime() * 1000);
+      long earliestKeyCreationTime = currentWallet.getEarliestKeyCreationTime();
+      log.debug("currentWallet.getEarliestKeyCreationTime(): {}", earliestKeyCreationTime);
+
+      final DateTime replayDate = new DateTime(earliestKeyCreationTime * 1000);
+
+      log.debug("Replay of wallet will be from: {}", replayDate);
+
+      // Trezor hard wallets disable fastCatchup as some early wallets had an incorrect earliestKeyCreation date
+      final boolean enableFastCatchup = currentWalletSummary.getWalletType() != WalletType.TREZOR_HARD_WALLET;
 
       // Hide the header view
-      SwingUtilities.invokeLater(new Runnable() {
-               @Override
-               public void run() {
-                 ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
-               }
-             });
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+          }
+        });
 
       // Allow time the UI to update
       Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
@@ -149,39 +171,42 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       CoreServices.getOrCreateWalletService(currentWalletSummary.getWalletId());
 
       // Start the Bitcoin network synchronization operation
-      ListenableFuture future = walletExecutorService.submit(new Callable<Boolean>() {
+      ListenableFuture future = walletExecutorService.submit(
+        new Callable<Boolean>() {
 
-        @Override
-        public Boolean call() throws Exception {
+          @Override
+          public Boolean call() throws Exception {
 
-          CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()));
-          return true;
+            CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()), enableFastCatchup);
+            return true;
 
-        }
+          }
 
-      });
-      Futures.addCallback(future, new FutureCallback() {
-        @Override
-        public void onSuccess(@Nullable Object result) {
+        });
+      Futures.addCallback(
+        future, new FutureCallback() {
+          @Override
+          public void onSuccess(@Nullable Object result) {
 
-          // Do nothing this just means that the block chain download has begun
+            // Do nothing this just means that the block chain download has begun
 
-        }
+          }
 
-        @Override
-        public void onFailure(Throwable t) {
+          @Override
+          public void onFailure(Throwable t) {
 
-          // Have a failure
-          walletRepaired = Optional.of(Boolean.FALSE);
+            // Have a failure
+            walletRepaired = Optional.of(Boolean.FALSE);
 
-          SwingUtilities.invokeLater(new Runnable() {
-                   @Override
-                   public void run() {
-                     ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
-                   }
-                 });
-        }
-      });
+            SwingUtilities.invokeLater(
+              new Runnable() {
+                @Override
+                public void run() {
+                  ViewEvents.fireComponentChangedEvent(getPanelName(), Optional.of(this));
+                }
+              });
+          }
+        });
     }
   }
 }

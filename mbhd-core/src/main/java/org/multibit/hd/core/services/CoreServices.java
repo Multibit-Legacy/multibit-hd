@@ -22,6 +22,8 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.CoreException;
+import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -55,31 +57,36 @@ public class CoreServices {
   /**
    * The URL of the live matcher daemon
    */
-  public static final String LIVE_MATCHER_URL = "http://localhost:9090/brit";
+  public static final String LIVE_MATCHER_URL = "https://multibit.org/brit";
 
-  // TODO these should point to the multibit.org with the real matcher key
   /**
    * The live matcher PGP public key file
    */
   public static final String LIVE_MATCHER_PUBLIC_KEY_FILE = "multibit-org-matcher-key.asc";
 
   /**
-   * Keep track of selected application events (e.g. exchange rate changes, security alerts etc)
+   * Keep track of selected application events (e.g. exchange rate changes, environment alerts etc)
    * Not an optional service
    */
   private static ApplicationEventService applicationEventService;
 
   /**
-   * Keep track of security events (e.g. debugger, file permissions etc) across all wallets
+   * Keep track of environment events (e.g. debugger, file permissions etc) across all wallets
    * Not an optional service
    */
-  private static SecurityCheckingService securityCheckingService;
+  private static EnvironmentCheckingService environmentCheckingService;
 
   /**
    * Keep track of shutdown events and ensure the configuration is persisted
    * Not an optional service
    */
   private static ConfigurationService configurationService;
+
+  /**
+   * Allow lightweight processing of external data as part of Payment Protocol support
+   * Not an optional service
+   */
+  private static PaymentProtocolService paymentProtocolService;
 
   /**
    * Keep track of the Bitcoin network for the current wallet
@@ -129,19 +136,11 @@ public class CoreServices {
   }
 
   /**
-   * <p>Initialises the core services, and can act as an independent starting point for headless operations</p>
-   *
-   * @param args Any command line arguments
+   * Start the bare minimum to allow correct operation
    */
-  public static void main(String[] args) {
+  public static void bootstrap() {
 
-    // Order is important here
-    applicationEventService = new ApplicationEventService();
-    securityCheckingService = new SecurityCheckingService();
     configurationService = new ConfigurationService();
-
-    // Start the logging factory (see later for instance)
-    LoggingFactory.bootstrap();
 
     // Start the configuration service to ensure shutdown events are trapped
     configurationService.start();
@@ -163,18 +162,38 @@ public class CoreServices {
       Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
     }
 
+  }
+
+  /**
+   * <p>Initialises the core services, and can act as an independent starting point for headless operations</p>
+   *
+   * @param args Any command line arguments
+   */
+  public static void main(String[] args) {
+
+    // Order is important here
+    applicationEventService = new ApplicationEventService();
+    environmentCheckingService = new EnvironmentCheckingService();
+
+    if (configurationService == null) {
+      bootstrap();
+    }
+
     // Configure logging now that we have a configuration
     new LoggingFactory(Configurations.currentConfiguration.getLogging(), "MultiBit HD").configure();
 
-    // Start security checking service
-    securityCheckingService.start();
+    // Start environment checking service
+    environmentCheckingService.start();
 
     // Start application event service
     applicationEventService.start();
 
+    // Create Payment Protocol service (once configuration identifies the network parameters)
+    paymentProtocolService = new PaymentProtocolService(BitcoinNetwork.current().get());
+    paymentProtocolService.start();
+
     // Configure Bitcoinj
     Threading.UserThread.WARNING_THRESHOLD = Integer.MAX_VALUE;
-
   }
 
   /**
@@ -187,6 +206,7 @@ public class CoreServices {
   public static synchronized void shutdownNow(final ShutdownEvent.ShutdownType shutdownType) {
 
     switch (shutdownType) {
+      default:
       case HARD:
         log.info("Applying hard shutdown.");
 
@@ -270,12 +290,14 @@ public class CoreServices {
     if (configurationService != null) {
       configurationService.shutdownNow(shutdownType);
     }
-    if (securityCheckingService != null) {
-      securityCheckingService.shutdownNow(shutdownType);
+    if (environmentCheckingService != null) {
+      environmentCheckingService.shutdownNow(shutdownType);
     }
-
     if (applicationEventService != null) {
       applicationEventService.shutdownNow(shutdownType);
+    }
+    if (paymentProtocolService != null) {
+      paymentProtocolService.shutdownNow(shutdownType);
     }
 
     // Be judicious when clearing references since it leads to complex behaviour during shutdown
@@ -404,11 +426,11 @@ public class CoreServices {
   }
 
   /**
-   * @return The security checking service singleton
+   * @return The environment checking service singleton
    */
-  public static SecurityCheckingService getSecurityCheckingService() {
-    log.debug("Get security checking service");
-    return securityCheckingService;
+  public static EnvironmentCheckingService getEnvironmentCheckingService() {
+    log.debug("Get environment checking service");
+    return environmentCheckingService;
   }
 
   /**
@@ -417,6 +439,15 @@ public class CoreServices {
   public static ConfigurationService getConfigurationService() {
     log.debug("Get configuration service");
     return configurationService;
+  }
+
+  /**
+   * @return The started payment protocol service
+   */
+  public static PaymentProtocolService getPaymentProtocolService() {
+    log.debug("Get or create payment protocol service");
+    return paymentProtocolService;
+
   }
 
   /**
@@ -471,16 +502,23 @@ public class CoreServices {
    */
   public static WalletService getOrCreateWalletService(WalletId walletId) {
 
-    log.debug("Get or create wallet service");
+    log.trace("Get or create wallet service");
 
     Preconditions.checkNotNull(walletId, "'walletId' must be present");
 
     // Check if the wallet service has been created for this wallet ID
-    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-
     if (!walletService.isPresent()) {
+      File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+
       walletService = Optional.of(new WalletService(BitcoinNetwork.current().get()));
-      walletService.get().initialise(applicationDirectory, walletId);
+      try {
+        if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+          CharSequence password = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword();
+          walletService.get().initialise(applicationDirectory, walletId, password);
+        }
+      } catch (PaymentsLoadException ple) {
+        ExceptionHandler.handleThrowable(ple);
+      }
       walletService.get().start();
     }
 
@@ -489,9 +527,9 @@ public class CoreServices {
 
   }
 
-  /**
-   * @return The contact service for the current wallet
-   */
+    /**
+     * @return The contact service for the current wallet
+     */
   public static ContactService getCurrentContactService() {
 
     log.debug("Get current contact service");
@@ -504,7 +542,6 @@ public class CoreServices {
 
     return getOrCreateContactService(walletId);
   }
-
 
   /**
    * @return The history service for the current wallet

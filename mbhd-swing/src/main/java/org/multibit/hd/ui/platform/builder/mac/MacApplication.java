@@ -16,10 +16,7 @@
 package org.multibit.hd.ui.platform.builder.mac;
 
 import org.multibit.hd.ui.platform.GenericApplication;
-import org.multibit.hd.ui.platform.handler.GenericAboutHandler;
-import org.multibit.hd.ui.platform.handler.GenericOpenURIHandler;
-import org.multibit.hd.ui.platform.handler.GenericPreferencesHandler;
-import org.multibit.hd.ui.platform.handler.GenericQuitHandler;
+import org.multibit.hd.ui.platform.handler.*;
 import org.multibit.hd.ui.platform.listener.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +50,10 @@ public class MacApplication implements GenericApplication {
    */
   private Class nativeOpenURIHandlerClass;
   /**
+   * Handles the Open Files use case
+   */
+  private Class nativeOpenFilesHandlerClass;
+  /**
    * Handles the Preferences use case
    */
   private Class nativePreferencesHandlerClass;
@@ -60,10 +61,14 @@ public class MacApplication implements GenericApplication {
    * Handles the About use case
    */
   private Class nativeAboutHandlerClass;
+  /**
+   * Handles the Quit use case
+   */
+  private Class nativeQuitHandlerClass;
 
   public void addOpenURIHandler(GenericOpenURIHandler openURIHandler) {
 
-    log.debug("Adding GenericOpenURIHandler");
+    log.trace("Adding GenericOpenURIHandler");
     // Ensure the implementing class is public
     // This avoids anonymous interface issues
     if (!Modifier.isPublic(openURIHandler.getClass().getModifiers())) {
@@ -81,18 +86,38 @@ public class MacApplication implements GenericApplication {
     // nativeOpenURIHandler is a proxy that actually uses the generic handler
     callNativeMethod(nativeApplication, "setOpenURIHandler", new Class[]{nativeOpenURIHandlerClass}, new Object[]{nativeOpenURIHandler});
 
-    log.debug("GenericOpenURIHandler configured");
+    log.trace("GenericOpenURIHandler configured");
 
   }
 
-  /**
-   * Handles the Quit use case
-   */
-  private Class nativeQuitHandlerClass;
+  public void addOpenFilesHandler(GenericOpenFilesHandler openFilesHandler) {
+
+    log.trace("Adding GenericOpenFilesHandler");
+    // Ensure the implementing class is public
+    // This avoids anonymous interface issues
+    if (!Modifier.isPublic(openFilesHandler.getClass().getModifiers())) {
+      throw new IllegalArgumentException("GenericOpenFilesHandler must be a public class");
+    }
+
+    // Load up an instance of the native OpenFilesHandler
+    // Provide an invocation handler to link the native openURI(AppEvent.OpenFilesEvent event)
+    // back to the generic handler
+    Object nativeOpenFilesHandler = Proxy.newProxyInstance(getClass().getClassLoader(),
+      new Class[]{nativeOpenFilesHandlerClass},
+      new OpenFilesHandlerInvocationHandler(openFilesHandler, GenericOpenFilesEvent.class));
+
+    // Reflective call as application.setOpenFileHandler(nativeOpenFilesHandler)
+    // (note inconsistent singular)
+    // nativeOpenFilesHandler is a proxy that actually uses the generic handler
+    callNativeMethod(nativeApplication, "setOpenFileHandler", new Class[]{nativeOpenFilesHandlerClass}, new Object[]{nativeOpenFilesHandler});
+
+    log.trace("GenericOpenFilesHandler configured");
+
+  }
 
   public void addPreferencesHandler(GenericPreferencesHandler preferencesHandler) {
 
-    log.debug("Adding GenericPreferencesHandler");
+    log.trace("Adding GenericPreferencesHandler");
     // Ensure the implementing class is public
     // This avoids anonymous interface issues
     if (!Modifier.isPublic(preferencesHandler.getClass().getModifiers())) {
@@ -110,13 +135,13 @@ public class MacApplication implements GenericApplication {
     // nativePreferencesHandler is a proxy that actually uses the generic handler
     callNativeMethod(nativeApplication, "setPreferencesHandler", new Class[]{nativePreferencesHandlerClass}, new Object[]{nativePreferencesHandler});
 
-    log.debug("GenericPreferencesHandler configured");
+    log.trace("GenericPreferencesHandler configured");
 
   }
 
   public void addAboutHandler(GenericAboutHandler aboutHandler) {
 
-    log.debug("Adding GenericAboutHandler");
+    log.trace("Adding GenericAboutHandler");
     // Ensure the implementing class is public
     // This avoids anonymous interface issues
     if (!Modifier.isPublic(aboutHandler.getClass().getModifiers())) {
@@ -134,13 +159,13 @@ public class MacApplication implements GenericApplication {
     // nativeAboutHandler is a proxy that actually uses the generic handler
     callNativeMethod(nativeApplication, "setAboutHandler", new Class[]{nativeAboutHandlerClass}, new Object[]{nativeAboutHandler});
 
-    log.debug("GenericAboutHandler configured");
+    log.trace("GenericAboutHandler configured");
 
   }
 
   public void addQuitHandler(GenericQuitHandler quitHandler) {
 
-    log.debug("Adding GenericQuitHandler");
+    log.trace("Adding GenericQuitHandler");
     // Ensure the implementing class is public
     // This avoids anonymous interface issues
     if (!Modifier.isPublic(quitHandler.getClass().getModifiers())) {
@@ -158,7 +183,7 @@ public class MacApplication implements GenericApplication {
     // nativeQuitHandler is a proxy that actually uses the generic handler
     callNativeMethod(nativeApplication, "setQuitHandler", new Class[]{nativeQuitHandlerClass}, new Object[]{nativeQuitHandler});
 
-    log.debug("GenericQuitHandler configured");
+    log.trace("GenericQuitHandler configured");
 
   }
 
@@ -173,7 +198,7 @@ public class MacApplication implements GenericApplication {
    * @return The result of the call
    */
   private Object callNativeMethod(Object object, String methodName, Class[] classes, Object[] arguments) {
-    log.debug("Calling methodName {}", methodName);
+    log.trace("Calling methodName {}", methodName);
     try {
       // Build a suitable Class[] for the method signature based on the arguments
       if (classes == null) {
@@ -211,6 +236,10 @@ public class MacApplication implements GenericApplication {
 
   public void setOpenURIHandlerClass(Class openURIHandlerClass) {
     this.nativeOpenURIHandlerClass = openURIHandlerClass;
+  }
+
+  public void setOpenFilesHandlerClass(Class openFilesHandlerClass) {
+    this.nativeOpenFilesHandlerClass = openFilesHandlerClass;
   }
 
   public void setPreferencesHandlerClass(Class preferencesHandlerClass) {
