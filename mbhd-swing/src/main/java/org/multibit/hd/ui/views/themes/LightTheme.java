@@ -51,6 +51,11 @@ public class LightTheme extends BaseTheme {
   }
 
   @Override
+  public Color buttonDefaultBackground() {
+    return new Color(0,151,50);
+  }
+
+  @Override
   public Color readOnlyBackground() {
     return new Color(193, 226, 248);
   }

@@ -197,7 +197,7 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
               loadedOk = true;
 
               if (walletLoadEvent.getBackupLoaded().isPresent()) {
-                // Indicate backup wallet was loaded with a cross - TODO an exclamation mark would be nicer
+                // Indicate backup wallet was loaded with a cross
                 LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.BACKUP_WALLET_WAS_LOADED));
                 LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.FALSE));
               } else {
@@ -216,6 +216,10 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
                 connectedStatusLabel.setVisible(true);
                 LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTING_TO_BITCOIN_NETWORK));
               }
+
+              // Set focus to finish button since it's the most likely action from here
+              getFinishButton().requestFocusInWindow();
+
             } else {
               // Wallet failed to load
               if (walletLoadEvent.getWalletLoadMessageKey() != null) {
@@ -231,6 +235,10 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
 
               // Enable previous button
               ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.PREVIOUS, true);
+
+              // Set focus to previous button since it's the most likely action from here
+              getPreviousButton().requestFocusInWindow();
+
             }
 
           } else {

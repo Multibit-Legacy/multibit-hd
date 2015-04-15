@@ -37,30 +37,33 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   public static final int BACKGROUND_PRESSED_FOCUSED = 13;
 
   // All Colors used for painting
+  public final Color foreground = adjustForegroundColor(-0.0f, -0.0f, -0.f, 0);
+  public final Color background = adjustBackgroundColor(-0.0f, -0.0f, -0.f, 0);
+
   public final Color color1 = adjustForegroundColor(-0.027777791f, -0.06885965f, -0.36862746f, -190);
   public final Color color2 = adjustBackgroundColor( 5.1498413E-4f, -0.34585923f, -0.007843137f, 0);
   public final Color color3 = adjustBackgroundColor( 5.1498413E-4f, -0.095173776f, -0.25882354f, 0);
-  public final Color color4 = adjustBackgroundColor( 0.004681647f, -0.6197143f, 0.43137252f, 0);
+  public final Color color4 = adjustBackgroundColor( 0.00f, 0.0f, 0.0f, 0);
   public final Color color5 = adjustBackgroundColor( 0.004681647f, -0.5766426f, 0.38039213f, 0);
   public final Color color6 = adjustBackgroundColor( 5.1498413E-4f, -0.43866998f, 0.24705881f, 0);
   public final Color color7 = adjustBackgroundColor( 5.1498413E-4f, -0.46404046f, 0.36470586f, 0);
-  public final Color color8 = adjustBackgroundColor( 5.1498413E-4f, -0.47761154f, 0.44313723f, 0);
+  public final Color color8 = adjustBackgroundColor(5.1498413E-4f, -0.47761154f, 0.44313723f, 0);
   public final Color color9 = decodeColor("nimbusFocus", 0.0f, 0.0f, 0.0f, 0);
-  public final Color color10 = adjustBackgroundColor( 0.0013483167f, -0.1769987f, -0.12156865f, 0);
+  public final Color color10 = adjustBackgroundColor(0.0013483167f, -0.1769987f, -0.12156865f, 0);
   public final Color color11 = adjustBackgroundColor( 0.059279382f, 0.3642857f, -0.43529415f, 0);
   public final Color color12 = adjustBackgroundColor( 0.004681647f, -0.6198413f, 0.43921566f, 0);
   public final Color color13 = adjustBackgroundColor( -0.0017285943f, -0.5822163f, 0.40392154f, 0);
   public final Color color14 = adjustBackgroundColor( 5.1498413E-4f, -0.4555341f, 0.3215686f, 0);
   public final Color color15 = adjustBackgroundColor( 5.1498413E-4f, -0.47698414f, 0.43921566f, 0);
-  public final Color color16 = adjustBackgroundColor( -0.06415892f, -0.5455182f, 0.45098037f, 0);
+  public final Color color16 = adjustBackgroundColor(-0.06415892f, -0.5455182f, 0.45098037f, 0);
   public final Color color17 = adjustForegroundColor(0.0f, -0.110526316f, 0.25490195f, -95);
-  public final Color color18 = adjustBackgroundColor( -0.57865167f, -0.6357143f, -0.54901963f, 0);
+  public final Color color18 = adjustBackgroundColor(-0.57865167f, -0.6357143f, -0.54901963f, 0);
   public final Color color19 = adjustBackgroundColor( -3.528595E-5f, 0.018606722f, -0.23137257f, 0);
   public final Color color20 = adjustBackgroundColor( -4.2033195E-4f, -0.38050595f, 0.20392156f, 0);
   public final Color color21 = adjustBackgroundColor( 0.001903832f, -0.29863563f, 0.1490196f, 0);
   public final Color color22 = adjustBackgroundColor( 0.0f, 0.0f, 0.0f, 0);
   public final Color color23 = adjustBackgroundColor( 0.0018727183f, -0.14126986f, 0.15686274f, 0);
-  public final Color color24 = adjustBackgroundColor( 8.9377165E-4f, -0.20852983f, 0.2588235f, 0);
+  public final Color color24 = adjustBackgroundColor(8.9377165E-4f, -0.20852983f, 0.2588235f, 0);
   public final Color color25 = adjustForegroundColor(-0.027777791f, -0.06885965f, -0.36862746f, -232);
   public final Color color26 = adjustForegroundColor(0.0f, -0.06766917f, 0.07843137f, 0);
   public final Color color27 = adjustForegroundColor(0.0f, -0.06484103f, 0.027450979f, 0);
@@ -80,7 +83,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   public final Color color41 = adjustForegroundColor(0.055555582f, -0.10658931f, 0.25098038f, 0);
   public final Color color42 = adjustForegroundColor(0.0f, -0.098526314f, 0.2352941f, 0);
   public final Color color43 = adjustForegroundColor(0.0f, -0.07333623f, 0.20392156f, 0);
-  public final Color color44 = new Color(245, 250, 255, 160);
+  public final Color color44 = new Color(50, 50, 55, 160);
   public final Color color45 = adjustForegroundColor(0.055555582f, 0.8894737f, -0.7176471f, 0);
   public final Color color46 = adjustForegroundColor(0.0f, 5.847961E-4f, -0.32156864f, 0);
   public final Color color47 = adjustForegroundColor(-0.00505054f, -0.05960039f, 0.10196078f, 0);
@@ -93,11 +96,11 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   private Object[] componentColors;
 
   /**
-   * @param color The color to use as the basis for the painter
+   * @param foregroundBasisColor The color to use as the basis for the painter
    * @param state The state of the button to which this painter will apply
    */
-  public NamedButtonRegionPainter(Color color, int state) {
-    super(color, Themes.currentTheme.detailPanelBackground(), state);
+  public NamedButtonRegionPainter(Color foregroundBasisColor, int state) {
+    super(foregroundBasisColor, Themes.currentTheme.detailPanelBackground(), state);
 
     Insets insets = new Insets(7, 7, 7, 7);
     this.ctx = new AbstractRegionPainter.PaintContext(insets, new Dimension(10, 20), false);
@@ -161,7 +164,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     switch (state) {
       case BACKGROUND_DEFAULT:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", color4, -0.6197143f, 0.43137252f, 0),
+          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
           getComponentColor(c, "background", color5, -0.5766426f, 0.38039213f, 0),
           getComponentColor(c, "background", color6, -0.43866998f, 0.24705881f, 0),
           getComponentColor(c, "background", color7, -0.46404046f, 0.36470586f, 0),
@@ -169,7 +172,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
         break;
       case BACKGROUND_DEFAULT_FOCUSED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", color4, -0.6197143f, 0.43137252f, 0),
+          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
           getComponentColor(c, "background", color5, -0.5766426f, 0.38039213f, 0),
           getComponentColor(c, "background", color6, -0.43866998f, 0.24705881f, 0),
           getComponentColor(c, "background", color7, -0.46404046f, 0.36470586f, 0),
@@ -177,7 +180,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
         break;
       case BACKGROUND_MOUSEOVER_DEFAULT:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", color12, -0.6198413f, 0.43921566f, 0),
+          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
           getComponentColor(c, "background", color13, -0.5822163f, 0.40392154f, 0),
           getComponentColor(c, "background", color14, -0.4555341f, 0.3215686f, 0),
           getComponentColor(c, "background", color15, -0.47698414f, 0.43921566f, 0),
@@ -185,7 +188,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
         break;
       case BACKGROUND_MOUSEOVER_DEFAULT_FOCUSED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", color12, -0.6198413f, 0.43921566f, 0),
+          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
           getComponentColor(c, "background", color13, -0.5822163f, 0.40392154f, 0),
           getComponentColor(c, "background", color14, -0.4555341f, 0.3215686f, 0),
           getComponentColor(c, "background", color15, -0.47698414f, 0.43921566f, 0),
@@ -193,7 +196,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
         break;
       case BACKGROUND_PRESSED_DEFAULT:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", color20, -0.38050595f, 0.20392156f, 0),
+          getComponentColor(c, "background", foreground, -0.38050595f, 0.20392156f, 0),
           getComponentColor(c, "background", color21, -0.29863563f, 0.1490196f, 0),
           getComponentColor(c, "background", color22, 0.0f, 0.0f, 0),
           getComponentColor(c, "background", color23, -0.14126986f, 0.15686274f, 0),
@@ -201,7 +204,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
         break;
       case BACKGROUND_PRESSED_DEFAULT_FOCUSED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", color20, -0.38050595f, 0.20392156f, 0),
+          getComponentColor(c, "background", foreground, -0.38050595f, 0.20392156f, 0),
           getComponentColor(c, "background", color21, -0.29863563f, 0.1490196f, 0),
           getComponentColor(c, "background", color22, 0.0f, 0.0f, 0),
           getComponentColor(c, "background", color23, -0.14126986f, 0.15686274f, 0),
@@ -212,7 +215,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
         break;
       case BACKGROUND_ENABLED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", color35, -0.10655806f, 0.24313724f, 0),
+          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
           getComponentColor(c, "background", color36, -0.09823123f, 0.2117647f, 0),
           getComponentColor(c, "background", color30, -0.07016757f, 0.12941176f, 0),
           getComponentColor(c, "background", color37, -0.0749532f, 0.24705881f, 0),
@@ -220,7 +223,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
         break;
       case BACKGROUND_FOCUSED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", color35, -0.10655806f, 0.24313724f, 0),
+          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
           getComponentColor(c, "background", color36, -0.09823123f, 0.2117647f, 0),
           getComponentColor(c, "background", color30, -0.07016757f, 0.12941176f, 0),
           getComponentColor(c, "background", color37, -0.0749532f, 0.24705881f, 0),
@@ -228,21 +231,21 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
         break;
       case BACKGROUND_MOUSEOVER:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", color41, -0.10658931f, 0.25098038f, 0),
+          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
           getComponentColor(c, "background", color42, -0.098526314f, 0.2352941f, 0),
           getComponentColor(c, "background", color43, -0.07333623f, 0.20392156f, 0),
           getComponentColor(c, "background", color38, -0.110526316f, 0.25490195f, 0)};
         break;
       case BACKGROUND_MOUSEOVER_FOCUSED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", color41, -0.10658931f, 0.25098038f, 0),
+          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
           getComponentColor(c, "background", color42, -0.098526314f, 0.2352941f, 0),
           getComponentColor(c, "background", color43, -0.07333623f, 0.20392156f, 0),
           getComponentColor(c, "background", color38, -0.110526316f, 0.25490195f, 0)};
         break;
       case BACKGROUND_PRESSED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", color47, -0.05960039f, 0.10196078f, 0),
+          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
           getComponentColor(c, "background", color48, -0.04772438f, 0.06666666f, 0),
           getComponentColor(c, "background", color49, -0.0018306673f, -0.02352941f, 0),
           getComponentColor(c, "background", color50, -0.0212406f, 0.13333333f, 0),
@@ -250,7 +253,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
         break;
       case BACKGROUND_PRESSED_FOCUSED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", color47, -0.05960039f, 0.10196078f, 0),
+          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
           getComponentColor(c, "background", color48, -0.04772438f, 0.06666666f, 0),
           getComponentColor(c, "background", color49, -0.0018306673f, -0.02352941f, 0),
           getComponentColor(c, "background", color50, -0.0212406f, 0.13333333f, 0),
@@ -290,7 +293,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
 
   private void paintBackgroundMouseOverAndDefault(Graphics2D g) {
     roundRect = decodeRoundRect5();
-    g.setPaint(color1);
+    g.setPaint(color9);
     g.fill(roundRect);
     roundRect = decodeRoundRect2();
     g.setPaint(decodeGradient3(roundRect));
@@ -316,7 +319,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
 
   private void paintBackgroundPressedAndDefault(Graphics2D g) {
     roundRect = decodeRoundRect1();
-    g.setPaint(color17);
+    g.setPaint(color9);
     g.fill(roundRect);
     roundRect = decodeRoundRect2();
     g.setPaint(decodeGradient4(roundRect));
@@ -407,7 +410,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
 
   private void paintBackgroundPressed(Graphics2D g) {
     roundRect = decodeRoundRect1();
-    g.setPaint(color44);
+    g.setPaint(color9);
     g.fill(roundRect);
     roundRect = decodeRoundRect2();
     g.setPaint(decodeGradient11(roundRect));
@@ -486,8 +489,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.05f, 0.5f, 0.95f},
       new Color[]{color2,
-        decodeColor(color2, color3, 0.5f),
-        color3});
+        decodeColor(color2, color2, 0.5f),
+        color2});
   }
 
   private Paint decodeGradient2(Shape s) {
@@ -499,16 +502,16 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.0f, 0.024f, 0.06f, 0.276f, 0.6f, 0.65f, 0.7f, 0.856f, 0.96f, 0.98399997f, 1.0f},
       new Color[]{(Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[1], 0.5f),
-        (Color) componentColors[1],
-        decodeColor((Color) componentColors[1], (Color) componentColors[2], 0.5f),
-        (Color) componentColors[2],
-        decodeColor((Color) componentColors[2], (Color) componentColors[2], 0.5f),
-        (Color) componentColors[2],
-        decodeColor((Color) componentColors[2], (Color) componentColors[3], 0.5f),
-        (Color) componentColors[3],
-        decodeColor((Color) componentColors[3], (Color) componentColors[4], 0.5f),
-        (Color) componentColors[4]});
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0],
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0],
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0],
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0],
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0]});
   }
 
   private Paint decodeGradient3(Shape s) {
@@ -520,8 +523,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.05f, 0.5f, 0.95f},
       new Color[]{color10,
-        decodeColor(color10, color11, 0.5f),
-        color11});
+        decodeColor(color10, color10, 0.5f),
+        color10});
   }
 
   private Paint decodeGradient4(Shape s) {
@@ -533,8 +536,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.05f, 0.5f, 0.95f},
       new Color[]{color18,
-        decodeColor(color18, color19, 0.5f),
-        color19});
+        decodeColor(color18, color18, 0.5f),
+        color18});
   }
 
   private Paint decodeGradient5(Shape s) {
@@ -546,8 +549,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.09f, 0.52f, 0.95f},
       new Color[]{color26,
-        decodeColor(color26, color27, 0.5f),
-        color27});
+        decodeColor(color26, color26, 0.5f),
+        color26});
   }
 
   private Paint decodeGradient6(Shape s) {
@@ -559,16 +562,16 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.0f, 0.03f, 0.06f, 0.33f, 0.6f, 0.65f, 0.7f, 0.825f, 0.95f, 0.975f, 1.0f},
       new Color[]{color28,
-        decodeColor(color28, color29, 0.5f),
-        color29,
-        decodeColor(color29, color30, 0.5f),
-        color30,
-        decodeColor(color30, color30, 0.5f),
-        color30,
-        decodeColor(color30, color31, 0.5f),
-        color31,
-        decodeColor(color31, color32, 0.5f),
-        color32});
+        decodeColor(color28, color28, 0.5f),
+        color28,
+        decodeColor(color28, color28, 0.5f),
+        color28,
+        decodeColor(color28, color28, 0.5f),
+        color28,
+        decodeColor(color28, color28, 0.5f),
+        color28,
+        decodeColor(color28, color28, 0.5f),
+        color28});
   }
 
   private Paint decodeGradient7(Shape s) {
@@ -580,8 +583,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.09f, 0.52f, 0.95f},
       new Color[]{color33,
-        decodeColor(color33, color34, 0.5f),
-        color34});
+        decodeColor(color33, color33, 0.5f),
+        color33});
   }
 
   private Paint decodeGradient8(Shape s) {
@@ -593,16 +596,16 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.0f, 0.03f, 0.06f, 0.33f, 0.6f, 0.65f, 0.7f, 0.825f, 0.95f, 0.975f, 1.0f},
       new Color[]{(Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[1], 0.5f),
-        (Color) componentColors[1],
-        decodeColor((Color) componentColors[1], (Color) componentColors[2], 0.5f),
-        (Color) componentColors[2],
-        decodeColor((Color) componentColors[2], (Color) componentColors[2], 0.5f),
-        (Color) componentColors[2],
-        decodeColor((Color) componentColors[2], (Color) componentColors[3], 0.5f),
-        (Color) componentColors[3],
-        decodeColor((Color) componentColors[3], (Color) componentColors[4], 0.5f),
-        (Color) componentColors[4]});
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0],
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0],
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0],
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0],
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0]});
   }
 
   private Paint decodeGradient9(Shape s) {
@@ -614,8 +617,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.09f, 0.52f, 0.95f},
       new Color[]{color39,
-        decodeColor(color39, color40, 0.5f),
-        color40});
+        decodeColor(color39, color39, 0.5f),
+        color39});
   }
 
   private Paint decodeGradient10(Shape s) {
@@ -627,16 +630,16 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.0f, 0.024f, 0.06f, 0.276f, 0.6f, 0.65f, 0.7f, 0.856f, 0.96f, 0.98f, 1.0f},
       new Color[]{(Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[1], 0.5f),
-        (Color) componentColors[1],
-        decodeColor((Color) componentColors[1], (Color) componentColors[2], 0.5f),
-        (Color) componentColors[2],
-        decodeColor((Color) componentColors[2], (Color) componentColors[2], 0.5f),
-        (Color) componentColors[2],
-        decodeColor((Color) componentColors[2], (Color) componentColors[3], 0.5f),
-        (Color) componentColors[3],
-        decodeColor((Color) componentColors[3], (Color) componentColors[3], 0.5f),
-        (Color) componentColors[3]});
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0],
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0],
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0],
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0],
+        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
+        (Color) componentColors[0]});
   }
 
   private Paint decodeGradient11(Shape s) {
@@ -648,8 +651,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.05f, 0.5f, 0.95f},
       new Color[]{color45,
-        decodeColor(color45, color46, 0.5f),
-        color46});
+        decodeColor(color45, color45, 0.5f),
+        color45});
   }
 
 }

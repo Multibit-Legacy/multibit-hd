@@ -129,37 +129,29 @@ public class ExitSelectPanelView extends AbstractWizardPanelView<ExitWizardModel
 
   private void decorateFinishButton() {
 
-    // Change the button colour to indicate a dangerous operation
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
+    // Require the finish button to ensure the wizard hide event
+    JButton finishButton = getFinishButton();
 
-          // Require the finish button to ensure the wizard hide event
-          JButton finishButton = getFinishButton();
+    if (ExitState.CONFIRM_EXIT.equals(currentSelection)) {
 
-          if (ExitState.CONFIRM_EXIT.equals(currentSelection)) {
+      finishButton.setText(Languages.safeText(MessageKey.EXIT));
 
-            finishButton.setText(Languages.safeText(MessageKey.EXIT));
+      AccessibilityDecorator.apply(finishButton, MessageKey.EXIT, MessageKey.EXIT_TOOLTIP);
+      NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), finishButton);
 
-            AccessibilityDecorator.apply(finishButton, MessageKey.EXIT, MessageKey.EXIT_TOOLTIP);
-            NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), finishButton);
+      AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, finishButton, false, MultiBitUI.NORMAL_ICON_SIZE);
+    }
+    if (ExitState.SWITCH_WALLET.equals(currentSelection)) {
 
-            AwesomeDecorator.applyIcon(AwesomeIcon.SIGN_OUT, finishButton, false, MultiBitUI.NORMAL_ICON_SIZE);
-          }
-          if (ExitState.SWITCH_WALLET.equals(currentSelection)) {
+      finishButton.setText(Languages.safeText(MessageKey.SWITCH));
 
-            finishButton.setText(Languages.safeText(MessageKey.SWITCH));
+      AccessibilityDecorator.apply(finishButton, MessageKey.SWITCH, MessageKey.SWITCH_TOOLTIP);
+      NimbusDecorator.applyThemeColor(Themes.currentTheme.detailPanelBackground(), finishButton);
 
-            AccessibilityDecorator.apply(finishButton, MessageKey.SWITCH, MessageKey.SWITCH_TOOLTIP);
-            NimbusDecorator.applyThemeColor(Themes.currentTheme.detailPanelBackground(), finishButton);
+      AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_RIGHT, AwesomeIcon.ANGLE_DOUBLE_LEFT);
+      AwesomeDecorator.applyIcon(icon, finishButton, false, MultiBitUI.NORMAL_ICON_SIZE);
 
-            AwesomeIcon icon = AwesomeDecorator.select(AwesomeIcon.ANGLE_DOUBLE_RIGHT, AwesomeIcon.ANGLE_DOUBLE_LEFT);
-            AwesomeDecorator.applyIcon(icon, finishButton, false, MultiBitUI.NORMAL_ICON_SIZE);
-
-          }
-        }
-      });
+    }
   }
 
 }

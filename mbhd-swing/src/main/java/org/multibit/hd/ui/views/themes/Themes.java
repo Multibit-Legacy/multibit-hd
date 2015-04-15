@@ -40,11 +40,15 @@ public class Themes {
     // Gets used in combo box borders and provides the basis for a "default button"
     UIManager.put("nimbusBase", currentTheme.readOnlyComboBox());
 
-    // Provides basis for text
+    // Table header background and sidebar separator
     UIManager.put("nimbusBlueGrey", currentTheme.fadedText());
 
-    UIManager.put("nimbusBorder", currentTheme.text());
+    UIManager.put("Button.foreground", currentTheme.buttonText());
+    UIManager.put("Button[Default+Pressed].textForeground", new ColorUIResource(Color.RED));
+
     UIManager.put("nimbusDisabledText", currentTheme.fadedText());
+
+    UIManager.put("nimbusBorder", currentTheme.text());
 
     UIManager.put("nimbusLightBackground", currentTheme.sidebarPanelBackground());
 
@@ -62,10 +66,7 @@ public class Themes {
     UIManager.put("ScrollBar.thumbHighlight", scrollBarThumb.darker());
 
     Color scrollBarTrack = currentTheme.detailPanelBackground();
-    UIManager.put("ScrollBar.background", new ColorUIResource(Color.RED));
-    UIManager.put("ScrollBar.foreground", new ColorUIResource(Color.BLUE));
     UIManager.put("ScrollBar.track", scrollBarTrack);
-    UIManager.put("ScrollBar.trackHighlight", new ColorUIResource(Color.YELLOW));
 
     // Ensure the language icons match the colour scheme
     LanguageKey.resetIcons();

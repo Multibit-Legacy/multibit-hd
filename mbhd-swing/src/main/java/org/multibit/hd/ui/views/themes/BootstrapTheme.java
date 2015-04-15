@@ -47,7 +47,12 @@ public class BootstrapTheme extends BaseTheme {
 
   @Override
   public Color buttonBackground() {
-    return new Color(200, 200, 200);
+    return new Color(240, 240, 240);
+  }
+
+  @Override
+  public Color buttonDefaultBackground() {
+    return new Color(0,151,50);
   }
 
   @Override

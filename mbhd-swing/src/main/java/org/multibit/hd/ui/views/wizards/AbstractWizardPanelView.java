@@ -11,6 +11,7 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.ModelAndView;
@@ -19,6 +20,8 @@ import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvi
 import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.themes.NimbusDecorator;
+import org.multibit.hd.ui.views.themes.Themes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -498,6 +501,12 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
     // Target the binding for released
     Panels.getApplicationFrame().getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
       .put(KeyStroke.getKeyStroke("released ENTER"), "press");
+
+    if (button.getText().equalsIgnoreCase(Languages.safeText(MessageKey.EXIT))) {
+      NimbusDecorator.applyThemeColor(Themes.currentTheme.dangerAlertBackground(), button);
+    } else {
+      NimbusDecorator.applyThemeColor(Themes.currentTheme.buttonDefaultBackground(), button);
+    }
 
   }
 

@@ -99,9 +99,14 @@ public interface Theme {
   Color invalidDataEntryBackground();
 
   /**
-   * @return The background colour for a button to match the overall theme (needs to contrast with the detail panel backgrond)
+   * @return The background colour for a button to match the overall theme (needs to contrast with the detail panel background)
    */
   Color buttonBackground();
+
+  /**
+   * @return The background colour for a default button to match the overall theme (needs to contrast with the detail panel background)
+   */
+  Color buttonDefaultBackground();
 
   /**
    * @return The normal font colour for the theme
