@@ -5,7 +5,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.ui.languages.LanguageKey;
 
 import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.util.Enumeration;
@@ -43,10 +42,10 @@ public class Themes {
     // Table header background and sidebar separator
     UIManager.put("nimbusBlueGrey", currentTheme.fadedText());
 
-    UIManager.put("Button.foreground", currentTheme.buttonText());
-    UIManager.put("Button[Default+Pressed].textForeground", new ColorUIResource(Color.RED));
-
-    UIManager.put("nimbusDisabledText", currentTheme.fadedText());
+    // Sets the default disabled button text
+    UIManager.put("nimbusDisabledText", currentTheme.buttonFadedText());
+    // Sets the default focused pressed button text
+    UIManager.put("Button[Default+Focused+Pressed].textForeground", currentTheme.buttonText());
 
     UIManager.put("nimbusBorder", currentTheme.text());
 

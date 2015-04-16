@@ -121,6 +121,11 @@ public class BootstrapTheme extends BaseTheme {
   }
 
   @Override
+  public Color buttonFadedText() {
+    return new Color(187, 187, 187);
+  }
+
+  @Override
   public Color successAlertText() {
     return text();
   }

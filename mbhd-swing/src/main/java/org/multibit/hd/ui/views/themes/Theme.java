@@ -109,6 +109,16 @@ public interface Theme {
   Color buttonDefaultBackground();
 
   /**
+   * @return The font colour for a button to match the overall theme
+   */
+  Color buttonText();
+
+  /**
+   * @return The font colour for a disabled button to match the overall theme
+   */
+  Color buttonFadedText();
+
+  /**
    * @return The normal font colour for the theme
    */
   Color text();
@@ -127,11 +137,6 @@ public interface Theme {
    * @return A faded version of the inverse font colour for the theme (to avoid clashing with panel backgrounds)
    */
   Color inverseFadedText();
-
-  /**
-   * @return The font colour for a button to match the overall theme
-   */
-  Color buttonText();
 
   /**
    * @return The background colour of a danger alert
@@ -252,4 +257,5 @@ public interface Theme {
    * Is the theme invert (predominantly dark)
    */
   boolean isInvert();
+
 }

@@ -121,6 +121,11 @@ public class DarkTheme extends BaseTheme {
   }
 
   @Override
+  public Color buttonFadedText() {
+    return new Color(187, 187, 187);
+  }
+
+  @Override
   public Color successAlertText() {
     return inverseText();
   }
