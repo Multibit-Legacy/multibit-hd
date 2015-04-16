@@ -15,7 +15,6 @@ import java.awt.geom.RoundRectangle2D;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
 
@@ -40,29 +39,30 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   public final Color foreground = adjustForegroundColor(-0.0f, -0.0f, -0.f, 0);
   public final Color background = adjustBackgroundColor(-0.0f, -0.0f, -0.f, 0);
 
-  public final Color color1 = adjustForegroundColor(-0.027777791f, -0.06885965f, -0.36862746f, -190);
-  public final Color color2 = adjustBackgroundColor( 5.1498413E-4f, -0.34585923f, -0.007843137f, 0);
-  public final Color color3 = adjustBackgroundColor( 5.1498413E-4f, -0.095173776f, -0.25882354f, 0);
-  public final Color color4 = adjustBackgroundColor( 0.00f, 0.0f, 0.0f, 0);
-  public final Color color5 = adjustBackgroundColor( 0.004681647f, -0.5766426f, 0.38039213f, 0);
-  public final Color color6 = adjustBackgroundColor( 5.1498413E-4f, -0.43866998f, 0.24705881f, 0);
-  public final Color color7 = adjustBackgroundColor( 5.1498413E-4f, -0.46404046f, 0.36470586f, 0);
+  public final Color lowerBorder = adjustForegroundColor(-0.027777791f, -0.06885965f, -0.36862746f, -190);
+  public final Color focusBorder = decodeColor("nimbusFocus", 0.0f, 0.0f, 0.0f, 0);
+
+  public final Color color2 = adjustBackgroundColor(5.1498413E-4f, -0.34585923f, -0.007843137f, 0);
+  public final Color color3 = adjustBackgroundColor(5.1498413E-4f, -0.095173776f, -0.25882354f, 0);
+  public final Color color4 = adjustBackgroundColor(0.00f, 0.0f, 0.0f, 0);
+  public final Color color5 = adjustBackgroundColor(0.004681647f, -0.5766426f, 0.38039213f, 0);
+  public final Color color6 = adjustBackgroundColor(5.1498413E-4f, -0.43866998f, 0.24705881f, 0);
+  public final Color color7 = adjustBackgroundColor(5.1498413E-4f, -0.46404046f, 0.36470586f, 0);
   public final Color color8 = adjustBackgroundColor(5.1498413E-4f, -0.47761154f, 0.44313723f, 0);
-  public final Color color9 = decodeColor("nimbusFocus", 0.0f, 0.0f, 0.0f, 0);
   public final Color color10 = adjustBackgroundColor(0.0013483167f, -0.1769987f, -0.12156865f, 0);
-  public final Color color11 = adjustBackgroundColor( 0.059279382f, 0.3642857f, -0.43529415f, 0);
-  public final Color color12 = adjustBackgroundColor( 0.004681647f, -0.6198413f, 0.43921566f, 0);
-  public final Color color13 = adjustBackgroundColor( -0.0017285943f, -0.5822163f, 0.40392154f, 0);
-  public final Color color14 = adjustBackgroundColor( 5.1498413E-4f, -0.4555341f, 0.3215686f, 0);
-  public final Color color15 = adjustBackgroundColor( 5.1498413E-4f, -0.47698414f, 0.43921566f, 0);
+  public final Color color11 = adjustBackgroundColor(0.059279382f, 0.3642857f, -0.43529415f, 0);
+  public final Color color12 = adjustBackgroundColor(0.004681647f, -0.6198413f, 0.43921566f, 0);
+  public final Color color13 = adjustBackgroundColor(-0.0017285943f, -0.5822163f, 0.40392154f, 0);
+  public final Color color14 = adjustBackgroundColor(5.1498413E-4f, -0.4555341f, 0.3215686f, 0);
+  public final Color color15 = adjustBackgroundColor(5.1498413E-4f, -0.47698414f, 0.43921566f, 0);
   public final Color color16 = adjustBackgroundColor(-0.06415892f, -0.5455182f, 0.45098037f, 0);
   public final Color color17 = adjustForegroundColor(0.0f, -0.110526316f, 0.25490195f, -95);
   public final Color color18 = adjustBackgroundColor(-0.57865167f, -0.6357143f, -0.54901963f, 0);
-  public final Color color19 = adjustBackgroundColor( -3.528595E-5f, 0.018606722f, -0.23137257f, 0);
-  public final Color color20 = adjustBackgroundColor( -4.2033195E-4f, -0.38050595f, 0.20392156f, 0);
-  public final Color color21 = adjustBackgroundColor( 0.001903832f, -0.29863563f, 0.1490196f, 0);
-  public final Color color22 = adjustBackgroundColor( 0.0f, 0.0f, 0.0f, 0);
-  public final Color color23 = adjustBackgroundColor( 0.0018727183f, -0.14126986f, 0.15686274f, 0);
+  public final Color color19 = adjustBackgroundColor(-3.528595E-5f, 0.018606722f, -0.23137257f, 0);
+  public final Color color20 = adjustBackgroundColor(-4.2033195E-4f, -0.38050595f, 0.20392156f, 0);
+  public final Color color21 = adjustBackgroundColor(0.001903832f, -0.29863563f, 0.1490196f, 0);
+  public final Color color22 = adjustBackgroundColor(0.0f, 0.0f, 0.0f, 0);
+  public final Color color23 = adjustBackgroundColor(0.0018727183f, -0.14126986f, 0.15686274f, 0);
   public final Color color24 = adjustBackgroundColor(8.9377165E-4f, -0.20852983f, 0.2588235f, 0);
   public final Color color25 = adjustForegroundColor(-0.027777791f, -0.06885965f, -0.36862746f, -232);
   public final Color color26 = adjustForegroundColor(0.0f, -0.06766917f, 0.07843137f, 0);
@@ -97,7 +97,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
 
   /**
    * @param foregroundBasisColor The color to use as the basis for the painter
-   * @param state The state of the button to which this painter will apply
+   * @param state                The state of the button to which this painter will apply
    */
   public NamedButtonRegionPainter(Color foregroundBasisColor, int state) {
     super(foregroundBasisColor, Themes.currentTheme.detailPanelBackground(), state);
@@ -116,22 +116,22 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     // been painted gets its own KEY and paint method.
     switch (state) {
       case BACKGROUND_DEFAULT:
-        paintBackgroundDefault(g);
+        paintBackgroundDefaultEnabled(g);
         break;
       case BACKGROUND_DEFAULT_FOCUSED:
         paintBackgroundDefaultAndFocused(g);
         break;
       case BACKGROUND_MOUSEOVER_DEFAULT:
-        paintBackgroundMouseOverAndDefault(g);
+        paintBackgroundDefaultAndMouseOver(g);
         break;
       case BACKGROUND_MOUSEOVER_DEFAULT_FOCUSED:
-        paintBackgroundMouseOverAndDefaultAndFocused(g);
+        paintBackgroundDefaultAndMouseOverAndFocused(g);
         break;
       case BACKGROUND_PRESSED_DEFAULT:
-        paintBackgroundPressedAndDefault(g);
+        paintBackgroundDefaultAndPressed(g);
         break;
       case BACKGROUND_PRESSED_DEFAULT_FOCUSED:
-        paintBackgroundPressedAndDefaultAndFocused(g);
+        paintBackgroundDefaultAndPressedAndFocused(g);
         break;
       case BACKGROUND_DISABLED:
         paintBackgroundDisabled(g);
@@ -164,100 +164,66 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     switch (state) {
       case BACKGROUND_DEFAULT:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
-          getComponentColor(c, "background", color5, -0.5766426f, 0.38039213f, 0),
-          getComponentColor(c, "background", color6, -0.43866998f, 0.24705881f, 0),
-          getComponentColor(c, "background", color7, -0.46404046f, 0.36470586f, 0),
-          getComponentColor(c, "background", color8, -0.47761154f, 0.44313723f, 0)};
+          getComponentColor(c, "background", foreground, 0.0f, 0.0f, 0),
+        };
         break;
       case BACKGROUND_DEFAULT_FOCUSED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
-          getComponentColor(c, "background", color5, -0.5766426f, 0.38039213f, 0),
-          getComponentColor(c, "background", color6, -0.43866998f, 0.24705881f, 0),
-          getComponentColor(c, "background", color7, -0.46404046f, 0.36470586f, 0),
-          getComponentColor(c, "background", color8, -0.47761154f, 0.44313723f, 0)};
+          getComponentColor(c, "background", foreground, 0.0f, 0.0f, 0),
+        };
         break;
       case BACKGROUND_MOUSEOVER_DEFAULT:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
-          getComponentColor(c, "background", color13, -0.5822163f, 0.40392154f, 0),
-          getComponentColor(c, "background", color14, -0.4555341f, 0.3215686f, 0),
-          getComponentColor(c, "background", color15, -0.47698414f, 0.43921566f, 0),
-          getComponentColor(c, "background", color16, -0.5455182f, 0.45098037f, 0)};
+          getComponentColor(c, "background", foreground, 0.0f, 0.0f, 0)
+        };
         break;
       case BACKGROUND_MOUSEOVER_DEFAULT_FOCUSED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
-          getComponentColor(c, "background", color13, -0.5822163f, 0.40392154f, 0),
-          getComponentColor(c, "background", color14, -0.4555341f, 0.3215686f, 0),
-          getComponentColor(c, "background", color15, -0.47698414f, 0.43921566f, 0),
-          getComponentColor(c, "background", color16, -0.5455182f, 0.45098037f, 0)};
+          getComponentColor(c, "background", foreground, 0.0f, 0.0f, 0),
+        };
         break;
       case BACKGROUND_PRESSED_DEFAULT:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", foreground, -0.38050595f, 0.20392156f, 0),
-          getComponentColor(c, "background", color21, -0.29863563f, 0.1490196f, 0),
-          getComponentColor(c, "background", color22, 0.0f, 0.0f, 0),
-          getComponentColor(c, "background", color23, -0.14126986f, 0.15686274f, 0),
-          getComponentColor(c, "background", color24, -0.20852983f, 0.2588235f, 0)};
+          getComponentColor(c, "background", foreground, 0.0f, 0.0f, 0),
+        };
         break;
       case BACKGROUND_PRESSED_DEFAULT_FOCUSED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", foreground, -0.38050595f, 0.20392156f, 0),
-          getComponentColor(c, "background", color21, -0.29863563f, 0.1490196f, 0),
-          getComponentColor(c, "background", color22, 0.0f, 0.0f, 0),
-          getComponentColor(c, "background", color23, -0.14126986f, 0.15686274f, 0),
-          getComponentColor(c, "background", color24, -0.20852983f, 0.2588235f, 0)};
+          getComponentColor(c, "background", foreground, 0.0f, 0.0f, 0),
+        };
         break;
       case BACKGROUND_DISABLED:
         // Do nothing
         break;
       case BACKGROUND_ENABLED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
-          getComponentColor(c, "background", color36, -0.09823123f, 0.2117647f, 0),
-          getComponentColor(c, "background", color30, -0.07016757f, 0.12941176f, 0),
-          getComponentColor(c, "background", color37, -0.0749532f, 0.24705881f, 0),
-          getComponentColor(c, "background", color38, -0.110526316f, 0.25490195f, 0)};
+          getComponentColor(c, "background", foreground, 0.0f, 0.0f, 0),
+        };
         break;
       case BACKGROUND_FOCUSED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
-          getComponentColor(c, "background", color36, -0.09823123f, 0.2117647f, 0),
-          getComponentColor(c, "background", color30, -0.07016757f, 0.12941176f, 0),
-          getComponentColor(c, "background", color37, -0.0749532f, 0.24705881f, 0),
-          getComponentColor(c, "background", color38, -0.110526316f, 0.25490195f, 0)};
+          getComponentColor(c, "background", foreground, 0.0f, 0.0f, 0),
+        };
         break;
       case BACKGROUND_MOUSEOVER:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
-          getComponentColor(c, "background", color42, -0.098526314f, 0.2352941f, 0),
-          getComponentColor(c, "background", color43, -0.07333623f, 0.20392156f, 0),
-          getComponentColor(c, "background", color38, -0.110526316f, 0.25490195f, 0)};
+          getComponentColor(c, "background", foreground, 0.0f, 0.0f, 0),
+        };
         break;
       case BACKGROUND_MOUSEOVER_FOCUSED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
-          getComponentColor(c, "background", color42, -0.098526314f, 0.2352941f, 0),
-          getComponentColor(c, "background", color43, -0.07333623f, 0.20392156f, 0),
-          getComponentColor(c, "background", color38, -0.110526316f, 0.25490195f, 0)};
+          getComponentColor(c, "background", foreground, 0.0f, 0.0f, 0),
+        };
         break;
       case BACKGROUND_PRESSED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
-          getComponentColor(c, "background", color48, -0.04772438f, 0.06666666f, 0),
-          getComponentColor(c, "background", color49, -0.0018306673f, -0.02352941f, 0),
-          getComponentColor(c, "background", color50, -0.0212406f, 0.13333333f, 0),
-          getComponentColor(c, "background", color51, -0.030845039f, 0.23921567f, 0)};
+          getComponentColor(c, "background", foreground, 0.0f, 0.0f, 0),
+        };
         break;
       case BACKGROUND_PRESSED_FOCUSED:
         extendedCacheKeys = new Object[]{
-          getComponentColor(c, "background", foreground,0.0f, 0.0f, 0),
-          getComponentColor(c, "background", color48, -0.04772438f, 0.06666666f, 0),
-          getComponentColor(c, "background", color49, -0.0018306673f, -0.02352941f, 0),
-          getComponentColor(c, "background", color50, -0.0212406f, 0.13333333f, 0),
-          getComponentColor(c, "background", color51, -0.030845039f, 0.23921567f, 0)};
+          getComponentColor(c, "background", foreground, 0.0f, 0.0f, 0),
+        };
         break;
       default:
         throw new IllegalStateException("Unknown state:" + state);
@@ -265,25 +231,63 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return extendedCacheKeys;
   }
 
-  private void paintBackgroundDefault(Graphics2D g) {
-    roundRect = decodeRoundRect1();
-    g.setPaint(color1);
+  private void paintBackgroundDefaultEnabled(Graphics2D g) {
+    roundRect = decodeRoundRectOutermost();
+    g.setPaint(lowerBorder);
     g.fill(roundRect);
     roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient1(roundRect));
+    g.setPaint(decodeGradient7(roundRect));
     g.fill(roundRect);
     roundRect = decodeRoundRect3();
     g.setPaint(decodeGradient2(roundRect));
     g.fill(roundRect);
-
   }
 
   private void paintBackgroundDefaultAndFocused(Graphics2D g) {
-    roundRect = decodeRoundRect4();
-    g.setPaint(color9);
+    roundRect = decodeRoundRectFocus();
+    g.setPaint(focusBorder);
     g.fill(roundRect);
     roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient1(roundRect));
+    g.setPaint(decodeGradient7(roundRect));
+    g.fill(roundRect);
+    roundRect = decodeRoundRect3();
+    g.setPaint(decodeGradient8(roundRect));
+    g.fill(roundRect);
+
+  }
+
+  private void paintBackgroundDefaultAndMouseOver(Graphics2D g) {
+    roundRect = decodeRoundRectOutermost();
+    g.setPaint(lowerBorder);
+    g.fill(roundRect);
+    roundRect = decodeRoundRect2();
+    g.setPaint(decodeGradient9(roundRect));
+    g.fill(roundRect);
+    roundRect = decodeRoundRect3();
+    g.setPaint(decodeGradient10(roundRect));
+    g.fill(roundRect);
+
+  }
+
+  private void paintBackgroundDefaultAndMouseOverAndFocused(Graphics2D g) {
+    roundRect = decodeRoundRectFocus();
+    g.setPaint(focusBorder);
+    g.fill(roundRect);
+    roundRect = decodeRoundRect2();
+    g.setPaint(decodeGradient9(roundRect));
+    g.fill(roundRect);
+    roundRect = decodeRoundRect3();
+    g.setPaint(decodeGradient10(roundRect));
+    g.fill(roundRect);
+
+  }
+
+  private void paintBackgroundDefaultAndPressed(Graphics2D g) {
+    roundRect = decodeRoundRectOutermost();
+    g.setPaint(focusBorder);
+    g.fill(roundRect);
+    roundRect = decodeRoundRect2();
+    g.setPaint(decodeGradient11(roundRect));
     g.fill(roundRect);
     roundRect = decodeRoundRect3();
     g.setPaint(decodeGradient2(roundRect));
@@ -291,51 +295,12 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
 
   }
 
-  private void paintBackgroundMouseOverAndDefault(Graphics2D g) {
-    roundRect = decodeRoundRect5();
-    g.setPaint(color9);
+  private void paintBackgroundDefaultAndPressedAndFocused(Graphics2D g) {
+    roundRect = decodeRoundRectFocus();
+    g.setPaint(focusBorder);
     g.fill(roundRect);
     roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient3(roundRect));
-    g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient2(roundRect));
-    g.fill(roundRect);
-
-  }
-
-  private void paintBackgroundMouseOverAndDefaultAndFocused(Graphics2D g) {
-    roundRect = decodeRoundRect4();
-    g.setPaint(color9);
-    g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient3(roundRect));
-    g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient2(roundRect));
-    g.fill(roundRect);
-
-  }
-
-  private void paintBackgroundPressedAndDefault(Graphics2D g) {
-    roundRect = decodeRoundRect1();
-    g.setPaint(color9);
-    g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient4(roundRect));
-    g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient2(roundRect));
-    g.fill(roundRect);
-
-  }
-
-  private void paintBackgroundPressedAndDefaultAndFocused(Graphics2D g) {
-    roundRect = decodeRoundRect4();
-    g.setPaint(color9);
-    g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient4(roundRect));
+    g.setPaint(decodeGradient11(roundRect));
     g.fill(roundRect);
     roundRect = decodeRoundRect3();
     g.setPaint(decodeGradient2(roundRect));
@@ -344,7 +309,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   }
 
   private void paintBackgroundDisabled(Graphics2D g) {
-    roundRect = decodeRoundRect1();
+    roundRect = decodeRoundRectOutermost();
     g.setPaint(color25);
     g.fill(roundRect);
     roundRect = decodeRoundRect2();
@@ -357,8 +322,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   }
 
   private void paintBackgroundEnabled(Graphics2D g) {
-    roundRect = decodeRoundRect1();
-    g.setPaint(color1);
+    roundRect = decodeRoundRectOutermost();
+    g.setPaint(lowerBorder);
     g.fill(roundRect);
     roundRect = decodeRoundRect2();
     g.setPaint(decodeGradient7(roundRect));
@@ -370,8 +335,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   }
 
   private void paintBackgroundFocused(Graphics2D g) {
-    roundRect = decodeRoundRect4();
-    g.setPaint(color9);
+    roundRect = decodeRoundRectFocus();
+    g.setPaint(focusBorder);
     g.fill(roundRect);
     roundRect = decodeRoundRect2();
     g.setPaint(decodeGradient7(roundRect));
@@ -383,8 +348,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   }
 
   private void paintBackgroundMouseOver(Graphics2D g) {
-    roundRect = decodeRoundRect1();
-    g.setPaint(color1);
+    roundRect = decodeRoundRectOutermost();
+    g.setPaint(lowerBorder);
     g.fill(roundRect);
     roundRect = decodeRoundRect2();
     g.setPaint(decodeGradient9(roundRect));
@@ -396,8 +361,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   }
 
   private void paintBackgroundMouseOverAndFocused(Graphics2D g) {
-    roundRect = decodeRoundRect4();
-    g.setPaint(color9);
+    roundRect = decodeRoundRectFocus();
+    g.setPaint(focusBorder);
     g.fill(roundRect);
     roundRect = decodeRoundRect2();
     g.setPaint(decodeGradient9(roundRect));
@@ -409,8 +374,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   }
 
   private void paintBackgroundPressed(Graphics2D g) {
-    roundRect = decodeRoundRect1();
-    g.setPaint(color9);
+    roundRect = decodeRoundRectOutermost();
+    g.setPaint(focusBorder);
     g.fill(roundRect);
     roundRect = decodeRoundRect2();
     g.setPaint(decodeGradient11(roundRect));
@@ -422,8 +387,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   }
 
   private void paintBackgroundPressedAndFocused(Graphics2D g) {
-    roundRect = decodeRoundRect4();
-    g.setPaint(color9);
+    roundRect = decodeRoundRectFocus();
+    g.setPaint(focusBorder);
     g.fill(roundRect);
     roundRect = decodeRoundRect2();
     g.setPaint(decodeGradient11(roundRect));
@@ -435,8 +400,9 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   }
 
 
-  private RoundRectangle2D decodeRoundRect1() {
-    roundRect.setRoundRect(decodeX(0.2857143f), //x
+  private RoundRectangle2D decodeRoundRectOutermost() {
+    roundRect.setRoundRect(
+      decodeX(0.2857143f), //x
       decodeY(0.42857143f), //y
       decodeX(2.7142859f) - decodeX(0.2857143f), //width
       decodeY(2.857143f) - decodeY(0.42857143f), //height
@@ -445,7 +411,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   }
 
   private RoundRectangle2D decodeRoundRect2() {
-    roundRect.setRoundRect(decodeX(0.2857143f), //x
+    roundRect.setRoundRect(
+      decodeX(0.2857143f), //x
       decodeY(0.2857143f), //y
       decodeX(2.7142859f) - decodeX(0.2857143f), //width
       decodeY(2.7142859f) - decodeY(0.2857143f), //height
@@ -454,7 +421,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   }
 
   private RoundRectangle2D decodeRoundRect3() {
-    roundRect.setRoundRect(decodeX(0.42857143f), //x
+    roundRect.setRoundRect(
+      decodeX(0.42857143f), //x
       decodeY(0.42857143f), //y
       decodeX(2.5714285f) - decodeX(0.42857143f), //width
       decodeY(2.5714285f) - decodeY(0.42857143f), //height
@@ -462,8 +430,9 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return roundRect;
   }
 
-  private RoundRectangle2D decodeRoundRect4() {
-    roundRect.setRoundRect(decodeX(0.08571429f), //x
+  private RoundRectangle2D decodeRoundRectFocus() {
+    roundRect.setRoundRect(
+      decodeX(0.08571429f), //x
       decodeY(0.08571429f), //y
       decodeX(2.914286f) - decodeX(0.08571429f), //width
       decodeY(2.914286f) - decodeY(0.08571429f), //height
@@ -471,8 +440,9 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return roundRect;
   }
 
-  private RoundRectangle2D decodeRoundRect5() {
-    roundRect.setRoundRect(decodeX(0.2857143f), //x
+  private RoundRectangle2D decodeRoundRectDefaultOutermost() {
+    roundRect.setRoundRect(
+      decodeX(0.2857143f), //x
       decodeY(0.42857143f), //y
       decodeX(2.7142859f) - decodeX(0.2857143f), //width
       decodeY(2.857143f) - decodeY(0.42857143f), //height
@@ -486,7 +456,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     float y = (float) bounds.getY();
     float w = (float) bounds.getWidth();
     float h = (float) bounds.getHeight();
-    return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
+    return decodeGradient(
+      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.05f, 0.5f, 0.95f},
       new Color[]{color2,
         decodeColor(color2, color2, 0.5f),
@@ -499,7 +470,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     float y = (float) bounds.getY();
     float w = (float) bounds.getWidth();
     float h = (float) bounds.getHeight();
-    return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
+    return decodeGradient(
+      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.0f, 0.024f, 0.06f, 0.276f, 0.6f, 0.65f, 0.7f, 0.856f, 0.96f, 0.98399997f, 1.0f},
       new Color[]{(Color) componentColors[0],
         decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
@@ -520,7 +492,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     float y = (float) bounds.getY();
     float w = (float) bounds.getWidth();
     float h = (float) bounds.getHeight();
-    return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
+    return decodeGradient(
+      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.05f, 0.5f, 0.95f},
       new Color[]{color10,
         decodeColor(color10, color10, 0.5f),
@@ -533,7 +506,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     float y = (float) bounds.getY();
     float w = (float) bounds.getWidth();
     float h = (float) bounds.getHeight();
-    return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
+    return decodeGradient(
+      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.05f, 0.5f, 0.95f},
       new Color[]{color18,
         decodeColor(color18, color18, 0.5f),
@@ -546,7 +520,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     float y = (float) bounds.getY();
     float w = (float) bounds.getWidth();
     float h = (float) bounds.getHeight();
-    return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
+    return decodeGradient(
+      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.09f, 0.52f, 0.95f},
       new Color[]{color26,
         decodeColor(color26, color26, 0.5f),
@@ -559,7 +534,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     float y = (float) bounds.getY();
     float w = (float) bounds.getWidth();
     float h = (float) bounds.getHeight();
-    return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
+    return decodeGradient(
+      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.0f, 0.03f, 0.06f, 0.33f, 0.6f, 0.65f, 0.7f, 0.825f, 0.95f, 0.975f, 1.0f},
       new Color[]{color28,
         decodeColor(color28, color28, 0.5f),
@@ -580,7 +556,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     float y = (float) bounds.getY();
     float w = (float) bounds.getWidth();
     float h = (float) bounds.getHeight();
-    return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
+    return decodeGradient(
+      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.09f, 0.52f, 0.95f},
       new Color[]{color33,
         decodeColor(color33, color33, 0.5f),
@@ -593,7 +570,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     float y = (float) bounds.getY();
     float w = (float) bounds.getWidth();
     float h = (float) bounds.getHeight();
-    return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
+    return decodeGradient(
+      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.0f, 0.03f, 0.06f, 0.33f, 0.6f, 0.65f, 0.7f, 0.825f, 0.95f, 0.975f, 1.0f},
       new Color[]{(Color) componentColors[0],
         decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
@@ -614,7 +592,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     float y = (float) bounds.getY();
     float w = (float) bounds.getWidth();
     float h = (float) bounds.getHeight();
-    return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
+    return decodeGradient(
+      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.09f, 0.52f, 0.95f},
       new Color[]{color39,
         decodeColor(color39, color39, 0.5f),
@@ -627,7 +606,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     float y = (float) bounds.getY();
     float w = (float) bounds.getWidth();
     float h = (float) bounds.getHeight();
-    return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
+    return decodeGradient(
+      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.0f, 0.024f, 0.06f, 0.276f, 0.6f, 0.65f, 0.7f, 0.856f, 0.96f, 0.98f, 1.0f},
       new Color[]{(Color) componentColors[0],
         decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
@@ -648,7 +628,8 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     float y = (float) bounds.getY();
     float w = (float) bounds.getWidth();
     float h = (float) bounds.getHeight();
-    return decodeGradient((0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
+    return decodeGradient(
+      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
       new float[]{0.05f, 0.5f, 0.95f},
       new Color[]{color45,
         decodeColor(color45, color45, 0.5f),
