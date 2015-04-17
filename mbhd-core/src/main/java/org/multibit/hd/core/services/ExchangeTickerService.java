@@ -60,7 +60,7 @@ public class ExchangeTickerService extends AbstractService {
   /**
    * The executor service for managing one off dynamic "all currency" lookups against exchanges
    */
-  private ListeningExecutorService allCurrenciesExecutorService = null;
+  private volatile ListeningExecutorService allCurrenciesExecutorService = null;
   private ListeningExecutorService latestTickerExecutorService = SafeExecutors.newSingleThreadExecutor("latest-ticker");
 
   /**

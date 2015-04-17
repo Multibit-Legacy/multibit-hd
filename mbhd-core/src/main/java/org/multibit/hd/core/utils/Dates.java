@@ -40,7 +40,7 @@ public class Dates {
   /**
    * Provides asynchronous NTP lookup
    */
-  private static ListeningExecutorService systemTimeDriftExecutorService = null;
+  private volatile static ListeningExecutorService systemTimeDriftExecutorService = null;
 
   /**
    * Utilities have private constructor

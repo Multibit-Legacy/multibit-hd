@@ -9,6 +9,7 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.*;
 import org.joda.time.DateTime;
@@ -135,7 +136,7 @@ public class WalletService extends AbstractService {
   /**
    * Handles wallet operations
    */
-  private static ExecutorService executorService = null;
+  private volatile static ExecutorService executorService = null;
 
   public WalletService(NetworkParameters networkParameters) {
 
@@ -167,6 +168,10 @@ public class WalletService extends AbstractService {
         // Cannot do much as shutting down
         log.error("Failed to write payments.", pse);
       }
+    }
+
+    if (executorService != null) {
+      executorService.shutdown();
     }
 
     // Always treat as a hard shutdown
@@ -314,6 +319,7 @@ public class WalletService extends AbstractService {
    * @param query The text fragment to match (case-insensitive, anywhere in the name)
    * @return A filtered set of Payments for the given query
    */
+  @SuppressFBWarnings({"ITC_INHERITANCE_TYPE_CHECKING"})
   public List<PaymentData> filterPaymentsByContent(String query) {
 
     String lowerQuery = query.toLowerCase();
@@ -384,21 +390,24 @@ public class WalletService extends AbstractService {
     // Fiat amount
     FiatPayment amountFiat = calculateFiatPaymentAndAddTransactionInfo(amountBTC, transactionHashAsString);
 
-    TransactionConfidence transactionConfidence = transaction.getConfidence();
+    TransactionConfidence confidence = transaction.getConfidence();
+    TransactionConfidence transactionConfidence = confidence;
 
     // Depth
     int depth = 0; // By default not in a block
     TransactionConfidence.ConfidenceType confidenceType = TransactionConfidence.ConfidenceType.UNKNOWN;
 
+    PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER, CoreMessageKey.UNKNOWN);
     if (transactionConfidence != null) {
-      confidenceType = transaction.getConfidence().getConfidenceType();
-      if (TransactionConfidence.ConfidenceType.BUILDING.equals(confidenceType)) {
-        depth = transaction.getConfidence().getDepthInBlocks();
+      confidenceType = confidence.getConfidenceType();
+      if (TransactionConfidence.ConfidenceType.BUILDING == confidenceType) {
+        depth = confidence.getDepthInBlocks();
       }
+
+      // Payment status
+      paymentStatus = calculateStatus(confidence.getConfidenceType(), depth, confidence.numBroadcastPeers());
     }
 
-    // Payment status
-    PaymentStatus paymentStatus = calculateStatus(transaction.getConfidence().getConfidenceType(), depth, transaction.getConfidence().numBroadcastPeers());
 
     // Payment type
     PaymentType paymentType = calculatePaymentType(amountBTC, depth);
@@ -793,13 +802,14 @@ public class WalletService extends AbstractService {
       }
     }
 
-    readPaymentRequestsDataFiles(bip70PaymentRequestDataMap.values(), paymentDatabaseFile, password);
+    Collection<PaymentRequestData> values = bip70PaymentRequestDataMap.values();
+    readPaymentRequestsDataFiles(values, paymentDatabaseFile, password);
 
     log.debug(
             "Reading payments completed\nTransactionInfo count: {}\nMBHD payment request count: {}\nBIP70 payment request count: {}",
             transactionInfoMap.values().size(),
             mbhdPaymentRequestDataMap.values().size(),
-            bip70PaymentRequestDataMap.values().size()
+            values.size()
     );
   }
 
@@ -816,9 +826,12 @@ public class WalletService extends AbstractService {
 
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
       Payments payments = new Payments();
-      payments.setTransactionInfoCollection(transactionInfoMap.values());
-      payments.setMBHDPaymentRequestDataCollection(mbhdPaymentRequestDataMap.values());
-      payments.setPaymentRequestDataCollection(bip70PaymentRequestDataMap.values());
+      Collection<TransactionInfo> transactionInfoCollection = transactionInfoMap.values();
+      payments.setTransactionInfoCollection(transactionInfoCollection);
+      Collection<MBHDPaymentRequestData> mbhdPaymentRequestDataCollection = mbhdPaymentRequestDataMap.values();
+      payments.setMBHDPaymentRequestDataCollection(mbhdPaymentRequestDataCollection);
+      Collection<PaymentRequestData> paymentRequestDataCollection = bip70PaymentRequestDataMap.values();
+      payments.setPaymentRequestDataCollection(paymentRequestDataCollection);
       protobufSerializer.writePayments(payments, byteArrayOutputStream);
       EncryptedFileReaderWriter.encryptAndWrite(
               byteArrayOutputStream.toByteArray(),
@@ -826,12 +839,12 @@ public class WalletService extends AbstractService {
               paymentDatabaseFile
       );
 
-      writePaymentRequestDataFiles(bip70PaymentRequestDataMap.values(), paymentDatabaseFile, password);
+      writePaymentRequestDataFiles(paymentRequestDataCollection, paymentDatabaseFile, password);
 
       log.debug(
               "Writing payments completed\nTransaction infos: {}\nMBHD payment requests: {}\nBIP70 payment requests: {}",
-              transactionInfoMap.values().size(), mbhdPaymentRequestDataMap.values().size(),
-              bip70PaymentRequestDataMap.values().size());
+              transactionInfoCollection.size(), mbhdPaymentRequestDataCollection.size(),
+              paymentRequestDataCollection.size());
     } catch (Exception e) {
       log.error("Could not write to payments db\n'{}'", paymentDatabaseFile.getAbsolutePath(), e);
       throw new PaymentsSaveException("Could not write payments db '" + paymentDatabaseFile.getAbsolutePath() + "'. Error was '" + e.getMessage() + "'.", e);
@@ -1192,6 +1205,7 @@ public class WalletService extends AbstractService {
   /**
    * Undo the deletion of an MBHD or BIP70 payment request
    */
+  @SuppressFBWarnings({"ITC_INHERITANCE_TYPE_CHECKING"})
   public void undoDeletePaymentData() {
     if (!undoDeletePaymentDataStack.isEmpty()) {
       PaymentData paymentData = undoDeletePaymentDataStack.pop();
