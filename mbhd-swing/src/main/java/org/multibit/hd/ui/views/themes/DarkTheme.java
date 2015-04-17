@@ -144,7 +144,7 @@ public class DarkTheme extends BaseTheme {
     );
 
     // Any of 28, 30, 31, 32
-    return painter.color31;
+    return painter.alertFadedBackground;
   }
 
 
@@ -198,7 +198,7 @@ public class DarkTheme extends BaseTheme {
     );
 
     // Any of 28, 30, 31, 32
-    return painter.color31;
+    return painter.alertFadedBackground;
   }
 
   @Override
@@ -224,7 +224,7 @@ public class DarkTheme extends BaseTheme {
     );
 
     // Any of 28, 30, 31, 32
-    return painter.color31;
+    return painter.alertFadedBackground;
   }
 
   @Override
