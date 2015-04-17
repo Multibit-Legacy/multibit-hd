@@ -172,6 +172,7 @@ public class WalletService extends AbstractService {
 
     if (executorService != null) {
       executorService.shutdown();
+      executorService = null;
     }
 
     // Always treat as a hard shutdown
