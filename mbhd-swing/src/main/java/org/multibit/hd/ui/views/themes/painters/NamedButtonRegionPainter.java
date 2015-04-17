@@ -5,7 +5,6 @@ import org.multibit.hd.ui.views.themes.Themes;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.AbstractRegionPainter;
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
 /**
@@ -36,64 +35,28 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
   public static final int BACKGROUND_PRESSED_FOCUSED = 13;
 
   // All Colors used for painting
-  public final Color foreground = adjustForegroundColor(-0.0f, -0.0f, -0.f, 0);
-  public final Color background = adjustBackgroundColor(-0.0f, -0.0f, -0.f, 0);
+  public final Color foreground = adjustForegroundColor(-0.0f, -0.0f, -0.0f, 0);
+  public final Color background = adjustBackgroundColor(-0.0f, -0.0f, -0.0f, 0);
 
-  public final Color lowerBorder = adjustForegroundColor(-0.027777791f, -0.06885965f, -0.36862746f, -190);
+  public final Color lowerBorder = adjustForegroundColor(-0.027f, -0.068f, -0.368f, -190);
   public final Color focusBorder = decodeColor("nimbusFocus", 0.0f, 0.0f, 0.0f, 0);
 
-  public final Color color2 = adjustBackgroundColor(5.1498413E-4f, -0.34585923f, -0.007843137f, 0);
-  public final Color color3 = adjustBackgroundColor(5.1498413E-4f, -0.095173776f, -0.25882354f, 0);
-  public final Color color4 = adjustBackgroundColor(0.00f, 0.0f, 0.0f, 0);
-  public final Color color5 = adjustBackgroundColor(0.004681647f, -0.5766426f, 0.38039213f, 0);
-  public final Color color6 = adjustBackgroundColor(5.1498413E-4f, -0.43866998f, 0.24705881f, 0);
-  public final Color color7 = adjustBackgroundColor(5.1498413E-4f, -0.46404046f, 0.36470586f, 0);
-  public final Color color8 = adjustBackgroundColor(5.1498413E-4f, -0.47761154f, 0.44313723f, 0);
-  public final Color color10 = adjustBackgroundColor(0.0013483167f, -0.1769987f, -0.12156865f, 0);
-  public final Color color11 = adjustBackgroundColor(0.059279382f, 0.3642857f, -0.43529415f, 0);
-  public final Color color12 = adjustBackgroundColor(0.004681647f, -0.6198413f, 0.43921566f, 0);
-  public final Color color13 = adjustBackgroundColor(-0.0017285943f, -0.5822163f, 0.40392154f, 0);
-  public final Color color14 = adjustBackgroundColor(5.1498413E-4f, -0.4555341f, 0.3215686f, 0);
-  public final Color color15 = adjustBackgroundColor(5.1498413E-4f, -0.47698414f, 0.43921566f, 0);
-  public final Color color16 = adjustBackgroundColor(-0.06415892f, -0.5455182f, 0.45098037f, 0);
-  public final Color color17 = adjustForegroundColor(0.0f, -0.110526316f, 0.25490195f, -95);
-  public final Color color18 = adjustBackgroundColor(-0.57865167f, -0.6357143f, -0.54901963f, 0);
-  public final Color color19 = adjustBackgroundColor(-3.528595E-5f, 0.018606722f, -0.23137257f, 0);
-  public final Color color20 = adjustBackgroundColor(-4.2033195E-4f, -0.38050595f, 0.20392156f, 0);
-  public final Color color21 = adjustBackgroundColor(0.001903832f, -0.29863563f, 0.1490196f, 0);
-  public final Color color22 = adjustBackgroundColor(0.0f, 0.0f, 0.0f, 0);
-  public final Color color23 = adjustBackgroundColor(0.0018727183f, -0.14126986f, 0.15686274f, 0);
-  public final Color color24 = adjustBackgroundColor(8.9377165E-4f, -0.20852983f, 0.2588235f, 0);
-  public final Color color25 = adjustForegroundColor(-0.027777791f, -0.06885965f, -0.36862746f, -232);
-  public final Color color26 = adjustForegroundColor(0.0f, -0.06766917f, 0.07843137f, 0);
-  public final Color color27 = adjustForegroundColor(0.0f, -0.06484103f, 0.027450979f, 0);
-  public final Color color28 = adjustForegroundColor(0.0f, -0.08477524f, 0.16862744f, 0);
-  public final Color color29 = adjustForegroundColor(-0.015872955f, -0.080091536f, 0.15686274f, 0);
-  public final Color color30 = adjustForegroundColor(0.0f, -0.07016757f, 0.12941176f, 0);
-  public final Color color31 = adjustForegroundColor(0.0f, -0.07052632f, 0.1372549f, 0);
-  public final Color color32 = adjustForegroundColor(0.0f, -0.070878744f, 0.14509803f, 0);
-  public final Color color33 = adjustForegroundColor(-0.055555522f, -0.05356429f, -0.12549019f, 0);
-  public final Color color34 = adjustForegroundColor(0.0f, -0.0147816315f, -0.3764706f, 0);
-  public final Color color35 = adjustForegroundColor(0.055555582f, -0.10655806f, 0.24313724f, 0);
-  public final Color color36 = adjustForegroundColor(0.0f, -0.09823123f, 0.2117647f, 0);
-  public final Color color37 = adjustForegroundColor(0.0f, -0.0749532f, 0.24705881f, 0);
-  public final Color color38 = adjustForegroundColor(0.0f, -0.110526316f, 0.25490195f, 0);
-  public final Color color39 = adjustForegroundColor(0.0f, -0.020974077f, -0.21960783f, 0);
-  public final Color color40 = adjustForegroundColor(0.0f, 0.11169591f, -0.53333336f, 0);
-  public final Color color41 = adjustForegroundColor(0.055555582f, -0.10658931f, 0.25098038f, 0);
-  public final Color color42 = adjustForegroundColor(0.0f, -0.098526314f, 0.2352941f, 0);
-  public final Color color43 = adjustForegroundColor(0.0f, -0.07333623f, 0.20392156f, 0);
-  public final Color color44 = new Color(50, 50, 55, 160);
-  public final Color color45 = adjustForegroundColor(0.055555582f, 0.8894737f, -0.7176471f, 0);
-  public final Color color46 = adjustForegroundColor(0.0f, 5.847961E-4f, -0.32156864f, 0);
-  public final Color color47 = adjustForegroundColor(-0.00505054f, -0.05960039f, 0.10196078f, 0);
-  public final Color color48 = adjustForegroundColor(-0.008547008f, -0.04772438f, 0.06666666f, 0);
-  public final Color color49 = adjustForegroundColor(-0.0027777553f, -0.0018306673f, -0.02352941f, 0);
-  public final Color color50 = adjustForegroundColor(-0.0027777553f, -0.0212406f, 0.13333333f, 0);
-  public final Color color51 = adjustForegroundColor(0.0055555105f, -0.030845039f, 0.23921567f, 0);
+  private Color innerFill = adjustForegroundColor(-0.00f, -0.00f, -0.00f, 0);
+  private Color innerFillDisabled = adjustForegroundColor(0.05f, -0.05f, -0.05f, 0);
 
-  // Array of current component colors, updated in each paint call
-  private Object[] componentColors;
+  private Color innerFillPressed = adjustForegroundColor(-0.06f, -0.06f, -0.06f, 0);
+  private Color innerFillFocused = adjustForegroundColor(-0.0f, -0.0f, -0.0f, 0);
+  private Color innerFillPressedFocused = adjustForegroundColor(-0.06f, -0.06f, -0.06f, 0);
+  private Color innerFillMouseOver = adjustForegroundColor(-0.06f, -0.06f, -0.06f, 0);
+
+  private Color innerBorder = adjustForegroundColor(-0.05f, -0.05f, -0.05f, 0);
+  private Color innerBorderDisabled = adjustForegroundColor(-0.05f, -0.05f, -0.05f, 0);
+  private Color innerBorderPressed = adjustForegroundColor(-0.05f, -0.05f, -0.05f, 0);
+  private Color innerBorderMouseOver = adjustForegroundColor(-0.05f, -0.05f, -0.05f, 0);
+
+  public final Color outerBorderDisabled = adjustForegroundColor(-0.05f, -0.05f, -0.05f, 0);
+
+  public final Color alertFadedBackground = adjustForegroundColor(0.0f, -0.07052632f, 0.1372549f, 0);
 
   /**
    * @param foregroundBasisColor The color to use as the basis for the painter
@@ -109,8 +72,6 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
 
   @Override
   protected void doPaint(Graphics2D g, JComponent c, int width, int height, Object[] extendedCacheKeys) {
-    // Populate componentColors array with colors calculated in getExtendedCacheKeys call
-    componentColors = extendedCacheKeys;
 
     // Generate this entire method. Each state/bg/fg/border combo that has
     // been painted gets its own KEY and paint method.
@@ -235,11 +196,11 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     roundRect = decodeRoundRectOutermost();
     g.setPaint(lowerBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient7(roundRect));
+    roundRect = innerBorderRect();
+    g.setPaint(innerBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient2(roundRect));
+    roundRect = innerFillRect();
+    g.setPaint(innerFill);
     g.fill(roundRect);
   }
 
@@ -247,11 +208,11 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     roundRect = decodeRoundRectFocus();
     g.setPaint(focusBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient7(roundRect));
+    roundRect = innerBorderRect();
+    g.setPaint(innerBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient8(roundRect));
+    roundRect = innerFillRect();
+    g.setPaint(innerFillFocused);
     g.fill(roundRect);
 
   }
@@ -260,11 +221,11 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     roundRect = decodeRoundRectOutermost();
     g.setPaint(lowerBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient9(roundRect));
+    roundRect = innerBorderRect();
+    g.setPaint(innerBorderMouseOver);
     g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient10(roundRect));
+    roundRect = innerFillRect();
+    g.setPaint(innerFillMouseOver);
     g.fill(roundRect);
 
   }
@@ -273,11 +234,11 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     roundRect = decodeRoundRectFocus();
     g.setPaint(focusBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient9(roundRect));
+    roundRect = innerBorderRect();
+    g.setPaint(innerBorderMouseOver);
     g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient10(roundRect));
+    roundRect = innerFillRect();
+    g.setPaint(innerFillPressed);
     g.fill(roundRect);
 
   }
@@ -286,11 +247,11 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     roundRect = decodeRoundRectOutermost();
     g.setPaint(focusBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient11(roundRect));
+    roundRect = innerBorderRect();
+    g.setPaint(innerBorderPressed);
     g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient2(roundRect));
+    roundRect = innerFillRect();
+    g.setPaint(innerFillPressed);
     g.fill(roundRect);
 
   }
@@ -299,24 +260,24 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     roundRect = decodeRoundRectFocus();
     g.setPaint(focusBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient11(roundRect));
+    roundRect = innerBorderRect();
+    g.setPaint(innerBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient2(roundRect));
+    roundRect = innerFillRect();
+    g.setPaint(innerFillPressed);
     g.fill(roundRect);
 
   }
 
   private void paintBackgroundDisabled(Graphics2D g) {
     roundRect = decodeRoundRectOutermost();
-    g.setPaint(color25);
+    g.setPaint(outerBorderDisabled);
     g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient5(roundRect));
+    roundRect = innerBorderRect();
+    g.setPaint(innerBorderDisabled);
     g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient6(roundRect));
+    roundRect = innerFillRect();
+    g.setPaint(innerFillDisabled);
     g.fill(roundRect);
 
   }
@@ -325,11 +286,11 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     roundRect = decodeRoundRectOutermost();
     g.setPaint(lowerBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient7(roundRect));
+    roundRect = innerBorderRect();
+    g.setPaint(innerBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient2(roundRect));
+    roundRect = innerFillRect();
+    g.setPaint(innerFill);
     g.fill(roundRect);
 
   }
@@ -338,11 +299,11 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     roundRect = decodeRoundRectFocus();
     g.setPaint(focusBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient7(roundRect));
+    roundRect = innerBorderRect();
+    g.setPaint(innerBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient8(roundRect));
+    roundRect = innerFillRect();
+    g.setPaint(innerFillFocused);
     g.fill(roundRect);
 
   }
@@ -351,11 +312,11 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     roundRect = decodeRoundRectOutermost();
     g.setPaint(lowerBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient9(roundRect));
+    roundRect = innerBorderRect();
+    g.setPaint(innerBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient10(roundRect));
+    roundRect = innerFillRect();
+    g.setPaint(innerFillMouseOver);
     g.fill(roundRect);
 
   }
@@ -364,11 +325,11 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     roundRect = decodeRoundRectFocus();
     g.setPaint(focusBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient9(roundRect));
+    roundRect = innerBorderRect();
+    g.setPaint(innerBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient10(roundRect));
+    roundRect = innerFillRect();
+    g.setPaint(innerFillMouseOver);
     g.fill(roundRect);
 
   }
@@ -377,11 +338,11 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     roundRect = decodeRoundRectOutermost();
     g.setPaint(focusBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient11(roundRect));
+    roundRect = innerBorderRect();
+    g.setPaint(innerBorderPressed);
     g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient2(roundRect));
+    roundRect = innerFillRect();
+    g.setPaint(innerFillPressed);
     g.fill(roundRect);
 
   }
@@ -390,15 +351,14 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     roundRect = decodeRoundRectFocus();
     g.setPaint(focusBorder);
     g.fill(roundRect);
-    roundRect = decodeRoundRect2();
-    g.setPaint(decodeGradient11(roundRect));
+    roundRect = innerBorderRect();
+    g.setPaint(innerBorderPressed);
     g.fill(roundRect);
-    roundRect = decodeRoundRect3();
-    g.setPaint(decodeGradient2(roundRect));
+    roundRect = innerFillRect();
+    g.setPaint(innerFillPressedFocused);
     g.fill(roundRect);
 
   }
-
 
   private RoundRectangle2D decodeRoundRectOutermost() {
     roundRect.setRoundRect(
@@ -410,7 +370,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return roundRect;
   }
 
-  private RoundRectangle2D decodeRoundRect2() {
+  private RoundRectangle2D innerBorderRect() {
     roundRect.setRoundRect(
       decodeX(0.2857143f), //x
       decodeY(0.2857143f), //y
@@ -420,7 +380,7 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
     return roundRect;
   }
 
-  private RoundRectangle2D decodeRoundRect3() {
+  private RoundRectangle2D innerFillRect() {
     roundRect.setRoundRect(
       decodeX(0.42857143f), //x
       decodeY(0.42857143f), //y
@@ -438,202 +398,6 @@ public class NamedButtonRegionPainter extends AbstractNamedRegionPainter {
       decodeY(2.914286f) - decodeY(0.08571429f), //height
       11.0f, 11.0f); //rounding
     return roundRect;
-  }
-
-  private RoundRectangle2D decodeRoundRectDefaultOutermost() {
-    roundRect.setRoundRect(
-      decodeX(0.2857143f), //x
-      decodeY(0.42857143f), //y
-      decodeX(2.7142859f) - decodeX(0.2857143f), //width
-      decodeY(2.857143f) - decodeY(0.42857143f), //height
-      9.0f, 9.0f); //rounding
-    return roundRect;
-  }
-
-  private Paint decodeGradient1(Shape s) {
-    Rectangle2D bounds = s.getBounds2D();
-    float x = (float) bounds.getX();
-    float y = (float) bounds.getY();
-    float w = (float) bounds.getWidth();
-    float h = (float) bounds.getHeight();
-    return decodeGradient(
-      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[]{0.05f, 0.5f, 0.95f},
-      new Color[]{color2,
-        decodeColor(color2, color2, 0.5f),
-        color2});
-  }
-
-  private Paint decodeGradient2(Shape s) {
-    Rectangle2D bounds = s.getBounds2D();
-    float x = (float) bounds.getX();
-    float y = (float) bounds.getY();
-    float w = (float) bounds.getWidth();
-    float h = (float) bounds.getHeight();
-    return decodeGradient(
-      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[]{0.0f, 0.024f, 0.06f, 0.276f, 0.6f, 0.65f, 0.7f, 0.856f, 0.96f, 0.98399997f, 1.0f},
-      new Color[]{(Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0]});
-  }
-
-  private Paint decodeGradient3(Shape s) {
-    Rectangle2D bounds = s.getBounds2D();
-    float x = (float) bounds.getX();
-    float y = (float) bounds.getY();
-    float w = (float) bounds.getWidth();
-    float h = (float) bounds.getHeight();
-    return decodeGradient(
-      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[]{0.05f, 0.5f, 0.95f},
-      new Color[]{color10,
-        decodeColor(color10, color10, 0.5f),
-        color10});
-  }
-
-  private Paint decodeGradient4(Shape s) {
-    Rectangle2D bounds = s.getBounds2D();
-    float x = (float) bounds.getX();
-    float y = (float) bounds.getY();
-    float w = (float) bounds.getWidth();
-    float h = (float) bounds.getHeight();
-    return decodeGradient(
-      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[]{0.05f, 0.5f, 0.95f},
-      new Color[]{color18,
-        decodeColor(color18, color18, 0.5f),
-        color18});
-  }
-
-  private Paint decodeGradient5(Shape s) {
-    Rectangle2D bounds = s.getBounds2D();
-    float x = (float) bounds.getX();
-    float y = (float) bounds.getY();
-    float w = (float) bounds.getWidth();
-    float h = (float) bounds.getHeight();
-    return decodeGradient(
-      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[]{0.09f, 0.52f, 0.95f},
-      new Color[]{color26,
-        decodeColor(color26, color26, 0.5f),
-        color26});
-  }
-
-  private Paint decodeGradient6(Shape s) {
-    Rectangle2D bounds = s.getBounds2D();
-    float x = (float) bounds.getX();
-    float y = (float) bounds.getY();
-    float w = (float) bounds.getWidth();
-    float h = (float) bounds.getHeight();
-    return decodeGradient(
-      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[]{0.0f, 0.03f, 0.06f, 0.33f, 0.6f, 0.65f, 0.7f, 0.825f, 0.95f, 0.975f, 1.0f},
-      new Color[]{color28,
-        decodeColor(color28, color28, 0.5f),
-        color28,
-        decodeColor(color28, color28, 0.5f),
-        color28,
-        decodeColor(color28, color28, 0.5f),
-        color28,
-        decodeColor(color28, color28, 0.5f),
-        color28,
-        decodeColor(color28, color28, 0.5f),
-        color28});
-  }
-
-  private Paint decodeGradient7(Shape s) {
-    Rectangle2D bounds = s.getBounds2D();
-    float x = (float) bounds.getX();
-    float y = (float) bounds.getY();
-    float w = (float) bounds.getWidth();
-    float h = (float) bounds.getHeight();
-    return decodeGradient(
-      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[]{0.09f, 0.52f, 0.95f},
-      new Color[]{color33,
-        decodeColor(color33, color33, 0.5f),
-        color33});
-  }
-
-  private Paint decodeGradient8(Shape s) {
-    Rectangle2D bounds = s.getBounds2D();
-    float x = (float) bounds.getX();
-    float y = (float) bounds.getY();
-    float w = (float) bounds.getWidth();
-    float h = (float) bounds.getHeight();
-    return decodeGradient(
-      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[]{0.0f, 0.03f, 0.06f, 0.33f, 0.6f, 0.65f, 0.7f, 0.825f, 0.95f, 0.975f, 1.0f},
-      new Color[]{(Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0]});
-  }
-
-  private Paint decodeGradient9(Shape s) {
-    Rectangle2D bounds = s.getBounds2D();
-    float x = (float) bounds.getX();
-    float y = (float) bounds.getY();
-    float w = (float) bounds.getWidth();
-    float h = (float) bounds.getHeight();
-    return decodeGradient(
-      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[]{0.09f, 0.52f, 0.95f},
-      new Color[]{color39,
-        decodeColor(color39, color39, 0.5f),
-        color39});
-  }
-
-  private Paint decodeGradient10(Shape s) {
-    Rectangle2D bounds = s.getBounds2D();
-    float x = (float) bounds.getX();
-    float y = (float) bounds.getY();
-    float w = (float) bounds.getWidth();
-    float h = (float) bounds.getHeight();
-    return decodeGradient(
-      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[]{0.0f, 0.024f, 0.06f, 0.276f, 0.6f, 0.65f, 0.7f, 0.856f, 0.96f, 0.98f, 1.0f},
-      new Color[]{(Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0],
-        decodeColor((Color) componentColors[0], (Color) componentColors[0], 0.5f),
-        (Color) componentColors[0]});
-  }
-
-  private Paint decodeGradient11(Shape s) {
-    Rectangle2D bounds = s.getBounds2D();
-    float x = (float) bounds.getX();
-    float y = (float) bounds.getY();
-    float w = (float) bounds.getWidth();
-    float h = (float) bounds.getHeight();
-    return decodeGradient(
-      (0.5f * w) + x, (0.0f * h) + y, (0.5f * w) + x, (1.0f * h) + y,
-      new float[]{0.05f, 0.5f, 0.95f},
-      new Color[]{color45,
-        decodeColor(color45, color45, 0.5f),
-        color45});
   }
 
 }
