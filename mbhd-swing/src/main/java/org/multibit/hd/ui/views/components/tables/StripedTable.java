@@ -28,6 +28,8 @@ public class StripedTable extends JTable {
   public StripedTable(AbstractTableModel model) {
     super(model);
 
+    setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+
   }
 
   @Override

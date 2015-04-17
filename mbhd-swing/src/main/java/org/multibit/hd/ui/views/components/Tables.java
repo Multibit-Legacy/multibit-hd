@@ -214,6 +214,7 @@ public class Tables {
     // Notes column
     TableColumn notesTableColumn = table.getColumnModel().getColumn(HistoryTableModel.NOTES_COLUMN_INDEX);
     notesTableColumn.setCellRenderer(Renderers.newLeadingJustifiedStringRenderer());
+    resizeColumn(table, HistoryTableModel.NOTES_COLUMN_INDEX, HUGE_ICON_SIZE + TABLE_SPACER);
 
     // Row sorter for date
     TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(table.getModel());
@@ -354,9 +355,8 @@ public class Tables {
    * @param preferredWidth The preferred width
    */
   private static void resizeColumn(StripedTable table, int columnIndex, int preferredWidth) {
-
-    resizeColumn(table, columnIndex, preferredWidth, preferredWidth);
-
+    String id = table.getColumnName(columnIndex);
+    table.getColumn(id).setPreferredWidth(preferredWidth);
   }
 
   /**
@@ -368,10 +368,8 @@ public class Tables {
    * @param maxWidth       The maximum width
    */
   private static void resizeColumn(StripedTable table, int columnIndex, int preferredWidth, int maxWidth) {
-
     String id = table.getColumnName(columnIndex);
     table.getColumn(id).setPreferredWidth(preferredWidth);
     table.getColumn(id).setMaxWidth(maxWidth);
-
   }
 }

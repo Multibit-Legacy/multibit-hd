@@ -1,9 +1,7 @@
 package org.multibit.hd.ui.views.screens.history;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.events.HistoryChangedEvent;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
@@ -45,8 +43,6 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
 
   private JButton editButton;
 
-  private final ListeningExecutorService persistenceExecutorService = SafeExecutors.newSingleThreadExecutor("persist-history");
-
   /**
    * @param panelModel The model backing this panel view
    * @param screen     The screen to filter events from components
@@ -67,7 +63,7 @@ public class HistoryScreenView extends AbstractScreenView<HistoryScreenModel> im
     MigLayout layout = new MigLayout(
       Panels.migXYDetailLayout(),
       "[][]push[][]", // Column constraints
-      "[shrink][shrink][grow]" // Row constraints
+      "[shrink][shrink][]" // Row constraints
     );
 
     JPanel contentPanel = Panels.newPanel(layout);
