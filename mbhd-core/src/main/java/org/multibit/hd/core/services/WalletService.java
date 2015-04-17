@@ -135,7 +135,7 @@ public class WalletService extends AbstractService {
   /**
    * Handles wallet operations
    */
-  private static final ExecutorService executorService = SafeExecutors.newSingleThreadExecutor("wallet-service");
+  private static ExecutorService executorService = null;
 
   public WalletService(NetworkParameters networkParameters) {
 
@@ -1256,6 +1256,10 @@ public class WalletService extends AbstractService {
    * @param newPassword   The new wallet credentials
    */
   public static void changeCurrentWalletPassword(final String oldPassword, final String newPassword) {
+    if (executorService == null) {
+      executorService = SafeExecutors.newSingleThreadExecutor("wallet-service");
+    }
+
     executorService.submit(
             new Runnable() {
               @Override

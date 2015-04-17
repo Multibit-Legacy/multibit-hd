@@ -145,15 +145,6 @@ public abstract class AbstractService implements ManagedService {
   }
 
   /**
-   * <p>Provide a single thread executor</p>
-   *
-   * @param poolName The thread pool name (use lowercase hyphenated)
-   */
-  protected void requireSingleThreadExecutor(String poolName) {
-    service = Optional.of(SafeExecutors.newSingleThreadExecutor(poolName));
-  }
-
-  /**
    * <p>Provide a fixed thread pool executor</p>
    *
    * @param threadCount The number of threads
@@ -168,13 +159,6 @@ public abstract class AbstractService implements ManagedService {
    */
   protected ListeningExecutorService getExecutorService() {
     return service.get();
-  }
-
-  /**
-   * @return The executor service optional
-   */
-  protected Optional<ListeningExecutorService> getExecutorServiceOptional() {
-    return service;
   }
 
   /**
