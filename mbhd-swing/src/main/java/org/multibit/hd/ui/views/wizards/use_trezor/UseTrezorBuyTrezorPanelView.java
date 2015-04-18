@@ -32,11 +32,8 @@ import java.net.URISyntaxException;
  */
 
 public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorState> implements ActionListener {
-
-  /**
-   * TODO replace with affiliate link
-   */
-  private static String BUY_TREZOR_URL = "https://www.buytrezor.com";
+  
+  private static String BUY_TREZOR_URL = "https://buytrezor.com?a=4fbc03c60545";
 
   /**
    * @param wizard    The wizard managing the states
