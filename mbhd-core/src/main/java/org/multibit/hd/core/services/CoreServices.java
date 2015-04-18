@@ -162,7 +162,10 @@ public class CoreServices {
       Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
     }
 
-  }
+    // Ensure any errors can be reported
+    ExceptionHandler.registerExceptionHandler();
+
+   }
 
   /**
    * <p>Initialises the core services, and can act as an independent starting point for headless operations</p>
