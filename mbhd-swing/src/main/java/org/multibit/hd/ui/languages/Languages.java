@@ -118,7 +118,7 @@ public class Languages {
 
     ResourceBundle rb = currentResourceBundle();
 
-    final String message;
+    String message;
 
     if (!rb.containsKey(key.getKey())) {
       // If no key is present then use it direct
@@ -126,6 +126,14 @@ public class Languages {
     } else {
       // Must have the key to be here
       message = rb.getString(key.getKey());
+    }
+
+    // Automatically escape single quotes
+    // This is done to avoid confusion with translators having to do this
+    // We check for complex formatting first and avoid auto-escape if present
+    if (!message.contains("'{") && !message.contains("''")) {
+      // OK to auto-escape
+      message = message.replace("'", "''");
     }
 
     return MessageFormat.format(message, values);
