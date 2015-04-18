@@ -32,7 +32,7 @@ import java.net.URISyntaxException;
  */
 
 public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorState> implements ActionListener {
-  
+
   private static String BUY_TREZOR_URL = "https://buytrezor.com?a=4fbc03c60545";
 
   /**
