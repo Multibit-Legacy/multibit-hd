@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.enter_tags;
 
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.slf4j.Logger;

@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;

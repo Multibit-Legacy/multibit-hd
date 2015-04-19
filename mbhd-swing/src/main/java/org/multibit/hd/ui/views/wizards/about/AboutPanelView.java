@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.wizards.about;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;

@@ -10,7 +10,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.RAGStatus;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.ui.audio.Sounds;

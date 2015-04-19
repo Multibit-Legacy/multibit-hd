@@ -10,7 +10,7 @@ import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.InstallationManager;

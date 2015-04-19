@@ -103,6 +103,9 @@ public enum MessageKey {
   VERIFY_MESSAGE("verify_message"),
   VERIFY_MESSAGE_TOOLTIP("verify_message_tooltip"),
 
+  UPLOAD_ERROR_REPORT("upload_error_report"),
+  UPLOAD_ERROR_REPORT_TOOLTIP("upload_error_report_tooltip"),
+
   // Nouns
 
   YES("yes"),
@@ -353,6 +356,13 @@ public enum MessageKey {
   // Titles
 
   MULTIBIT_HD_TITLE("multibit_hd_title"),
+
+  ERROR_REPORTING_TITLE("error_reporting_title"),
+  ERROR_REPORTING_APOLOGY_NOTE_1("error_reporting_apology_note_1"),
+  ERROR_REPORTING_APOLOGY_NOTE_2("error_reporting_apology_note_2"),
+  ERROR_REPORTING_APOLOGY_NOTE_3("error_reporting_apology_note_3"),
+  ERROR_REPORTING_CONTENTS("error_reporting_contents"),
+  ERROR_REPORTING_NOTES("error_reporting_notes"),
 
   // Send/request
   REQUEST_BITCOIN_TITLE("request_bitcoin_title"),

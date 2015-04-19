@@ -403,6 +403,20 @@ public class Buttons {
   /**
    * @param action The click action
    *
+   * @return A new "Upload error report" button with icon
+   */
+  public static JButton newUploadErrorReportButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.UPLOAD_ERROR_REPORT, MessageKey.UPLOAD_ERROR_REPORT_TOOLTIP);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.UPLOAD, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
+  /**
+   * @param action The click action
+   *
    * @return A new "Refresh" button with icon
    */
   public static JButton newRefreshButton(Action action) {

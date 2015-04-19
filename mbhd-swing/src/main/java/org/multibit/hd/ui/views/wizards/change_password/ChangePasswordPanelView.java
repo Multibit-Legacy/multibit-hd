@@ -9,7 +9,7 @@ import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletPassword;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;

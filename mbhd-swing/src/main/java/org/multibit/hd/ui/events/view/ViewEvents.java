@@ -6,7 +6,7 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.dto.RAGStatus;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.ui.events.controller.ShowScreenEvent;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.ViewKey;

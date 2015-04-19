@@ -14,7 +14,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.events.ShutdownEvent;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;

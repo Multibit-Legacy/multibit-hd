@@ -5,7 +5,7 @@ import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.multibit.hd.core.dto.HistoryEntry;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.exceptions.HistoryLoadException;
 import org.multibit.hd.core.protobuf.MBHDHistoryProtos;
 import org.slf4j.Logger;

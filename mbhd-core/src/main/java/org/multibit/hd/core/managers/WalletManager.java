@@ -39,7 +39,7 @@ import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.events.WalletLoadEvent;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletSaveException;
 import org.multibit.hd.core.exceptions.WalletVersionException;

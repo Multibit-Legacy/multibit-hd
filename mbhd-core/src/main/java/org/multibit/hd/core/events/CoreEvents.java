@@ -13,7 +13,7 @@ import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.ExchangeSummary;
 import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.EnvironmentSummary;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
