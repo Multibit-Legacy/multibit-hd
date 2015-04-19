@@ -5,10 +5,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.utils.Threading;
-import org.bouncycastle.openpgp.PGPPublicKey;
-import org.multibit.hd.brit.crypto.PGPUtils;
+import org.bouncycastle.openpgp.PGPException;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.brit.services.BRITServices;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
@@ -40,7 +40,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 /**
  * <p>Factory to provide the following to application API:</p>
@@ -53,16 +52,6 @@ import java.net.URL;
 public class CoreServices {
 
   private static final Logger log = LoggerFactory.getLogger(CoreServices.class);
-
-  /**
-   * The URL of the live matcher daemon
-   */
-  public static final String LIVE_MATCHER_URL = "https://multibit.org/brit";
-
-  /**
-   * The live matcher PGP public key file
-   */
-  public static final String LIVE_MATCHER_PUBLIC_KEY_FILE = "multibit-org-matcher-key.asc";
 
   /**
    * Keep track of selected application events (e.g. exchange rate changes, environment alerts etc)
@@ -624,19 +613,15 @@ public class CoreServices {
    * @return A BRIT fee service pointing to the live Matcher machine
    */
   public static FeeService createFeeService() throws CoreException {
+
     log.debug("Create fee service");
 
-    ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-    InputStream pgpPublicKeyInputStream = classloader.getResourceAsStream(LIVE_MATCHER_PUBLIC_KEY_FILE);
-
     try {
-      PGPPublicKey matcherPublicKey = PGPUtils.readPublicKey(pgpPublicKeyInputStream);
-      URL matcherURL = new URL(LIVE_MATCHER_URL);
-
-      // Return the existing or new fee service
-      return new FeeService(matcherPublicKey, matcherURL);
-    } catch (Exception e) {
-      throw new CoreException(e);
+      return BRITServices.newFeeService();
+    } catch (IOException | PGPException e) {
+      log.error("Failed to create the FeeService", e);
+      // Throw as ISE to trigger ExceptionHandler
+      throw new IllegalStateException("Failed to create the FeeService");
     }
   }
 }

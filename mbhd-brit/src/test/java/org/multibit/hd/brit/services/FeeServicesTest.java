@@ -119,7 +119,7 @@ public class FeeServicesTest {
   public void testCalculateFeeStateWithDummyURL() throws Exception {
 
     // Get the FeeService
-    FeeService feeService = BRITServices.newFeeService(encryptionKey, new URL(DUMMY_MATCHER_URL));
+    FeeService feeService = new FeeService(encryptionKey, new URL(DUMMY_MATCHER_URL));
     assertThat(feeService).isNotNull();
 
     // Perform an exchange with the BRIT Matcher to get the list of fee addresses

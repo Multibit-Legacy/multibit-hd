@@ -32,6 +32,11 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
   private static final Logger log = LoggerFactory.getLogger(ExceptionHandler.class);
 
   /**
+   * The URL of the live error reporting daemon
+   */
+  public static final String LIVE_ERROR_REPORTING_URL = "https://multibit.org/error";
+
+  /**
    * <p>Set this as the default uncaught exception handler</p>
    */
   public static void registerExceptionHandler() {
