@@ -5,6 +5,7 @@ import com.google.common.base.Optional;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.google.common.io.Files;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.text.WordUtils;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
@@ -25,6 +26,7 @@ import java.io.IOException;
  *
  * @since 0.0.1
  */
+@SuppressFBWarnings({"DM_EXIT"})
 public class ExceptionHandler extends EventQueue implements Thread.UncaughtExceptionHandler {
 
   private static final Logger log = LoggerFactory.getLogger(ExceptionHandler.class);
