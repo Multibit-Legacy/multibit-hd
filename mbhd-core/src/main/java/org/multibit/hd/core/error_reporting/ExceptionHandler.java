@@ -67,17 +67,17 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
             // Internationalisation and layout issues require a dynamic invocation
             // of a class present in the Swing module
             Class nativeApplicationClass = Class.forName("org.multibit.hd.ui.error_reporting.ErrorReportingDialog");
-            // Instantiate through newInstance() and supply constructor arguments
+            // Instantiate through newInstance() and supply constructor arguments to indicate an apology is required
             // Dialog will show and handle all further requirements including hard shutdown
-            nativeApplicationClass.getDeclaredConstructor(String.class).newInstance(message);
+            nativeApplicationClass.getDeclaredConstructor(boolean.class).newInstance(true);
           } catch (Throwable t1) {
             log.error("Unable to use standard error reporting dialog.", t1);
             try {
               // This should never happen due to static binding of the Swing library
               JOptionPane.showMessageDialog(
                 null, "Oh Snap!\n\nA serious error has occurred with the following message:\n" + WordUtils.wrap(message, 30),
-                "Error", JOptionPane
-                  .ERROR_MESSAGE);
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
               // Fire a hard shutdown after dialog closes with emergency fallback
               CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
             } catch (Throwable t2) {
@@ -90,6 +90,45 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
         }
       });
 
+  }
+
+  /**
+   * Allow the user to manually enter a problem
+   */
+  @SuppressWarnings("unchecked")
+  public static void handleManualErrorReport() {
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+
+          try {
+            // Internationalisation and layout issues require a dynamic invocation
+            // of a class present in the Swing module
+            Class nativeApplicationClass = Class.forName("org.multibit.hd.ui.error_reporting.ErrorReportingDialog");
+            // Instantiate through newInstance() and supply constructor arguments to thank the user for their feedback
+            // Dialog will show and handle all further requirements
+            nativeApplicationClass.getDeclaredConstructor(boolean.class).newInstance(false);
+          } catch (Throwable t1) {
+            log.error("Unable to use standard error reporting dialog.", t1);
+            try {
+              // This should never happen due to static binding of the Swing library
+              JOptionPane.showMessageDialog(
+                null, "Oh Snap!\n\nA serious error has occurred with the reporting system",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+              // Fire a hard shutdown after dialog closes with emergency fallback
+              CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
+            } catch (Throwable t2) {
+              log.error("Unable to use fallback error reporting dialog. Forcing immediate shutdown.", t2);
+              // Safest option at this point is an emergency shutdown
+              System.exit(-1);
+            }
+          }
+
+        }
+      });
   }
 
   @Override
