@@ -73,7 +73,7 @@ public class ContactsScreenModel extends AbstractScreenModel {
    */
   public Collection<Contact> undo() {
 
-    if (!undoStack.empty()) {
+    if (canUndo()) {
       Collection<Contact> contacts = undoStack.pop();
 
       contactService.addAll(contacts);
@@ -85,4 +85,10 @@ public class ContactsScreenModel extends AbstractScreenModel {
 
   }
 
+  /**
+   * @return true if there is something to undo
+   */
+  public boolean canUndo() {
+    return !undoStack.empty();
+  }
 }
