@@ -1208,7 +1208,7 @@ public class WalletService extends AbstractService {
    */
   @SuppressFBWarnings({"ITC_INHERITANCE_TYPE_CHECKING"})
   public void undoDeletePaymentData() {
-    if (!undoDeletePaymentDataStack.isEmpty()) {
+    if (canUndo()) {
       PaymentData paymentData = undoDeletePaymentDataStack.pop();
       if (paymentData instanceof PaymentRequestData) {
         // BIP70 undo
@@ -1220,6 +1220,13 @@ public class WalletService extends AbstractService {
         }
       }
     }
+  }
+
+  /**
+   * Indicate whether an undo is possible
+   */
+  public boolean canUndo() {
+    return !undoDeletePaymentDataStack.isEmpty();
   }
 
   /**
