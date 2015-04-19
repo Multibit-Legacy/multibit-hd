@@ -63,7 +63,7 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
     MigLayout layout = new MigLayout(
       Panels.migXYDetailLayout(),
       "6[]6[]6[]6[]6", // Column constraints
-      "6[]6[]6" // Row constraints
+            "5%[]2[]5%" // Row constraints
     );
 
     JPanel contentPanel = Panels.newPanel(layout);

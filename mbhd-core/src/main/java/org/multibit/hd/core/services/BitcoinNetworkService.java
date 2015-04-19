@@ -67,13 +67,15 @@ public class BitcoinNetworkService extends AbstractService {
 
   private static final int SIZE_OF_SIGNATURE = 72; // bytes
 
+  private static int CONNECTION_TIMEOUT = 4000; // milliseconds
+
   /**
    * The boundary for when more mining fee is due
    */
   private static final int MINING_FEE_BOUNDARY = 1000;  // bytes
 
   private BlockStore blockStore;
-  private PeerGroup peerGroup;  // May need to add listener as in MultiBitPeerGroup
+  private PeerGroup peerGroup;
   private BlockChain blockChain;
   private MultiBitPeerEventListener peerEventListener;
 
@@ -1344,12 +1346,18 @@ public class BitcoinNetworkService extends AbstractService {
       log.info("Creating new TOR peer group for '{}'", networkParameters);
       InstallationManager.removeCryptographyRestrictions();
       peerGroup = PeerGroup.newWithTor(networkParameters, blockChain, new TorClient());
-
     } else {
+      String[] dnsSeeds = new String[]{
+                     /* "seed.bitcoin.sipa.be",        // Pieter Wuille - not reachable */
+              "dnsseed.bluematt.me",         // Matt Corallo
+              "dnsseed.bitcoin.dashjr.org",  // Luke Dashjr
+              "seed.bitcoinstats.com",       // Chris Decker
+              "seed.bitnodes.io",            // Addy Yeow
+      };
       log.info("Creating new DNS peer group for '{}'", networkParameters);
       peerGroup = new PeerGroup(networkParameters, blockChain);
-      peerGroup.addPeerDiscovery(new DnsDiscovery(networkParameters));
-
+      peerGroup.addPeerDiscovery(new DnsDiscovery(dnsSeeds, networkParameters));
+      peerGroup.setConnectTimeoutMillis(CONNECTION_TIMEOUT);
     }
 
     peerGroup.setUserAgent(
