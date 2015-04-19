@@ -181,7 +181,6 @@ public class FooterView extends AbstractView {
   @Subscribe
   public void onProgressChangedEvent(final ProgressChangedEvent event) {
 
-    log.debug("ProgressChangedEvent: {}", event);
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override

@@ -1481,7 +1481,6 @@ public enum WalletManager implements WalletEventListener {
    */
   public static WalletSummary getOrCreateWalletSummary(File walletDirectory, WalletId walletId) {
 
-    log.debug("getOrCreateWalletSummary called");
     verifyWalletDirectory(walletDirectory);
 
     Optional<WalletSummary> walletSummaryOptional = Optional.absent();

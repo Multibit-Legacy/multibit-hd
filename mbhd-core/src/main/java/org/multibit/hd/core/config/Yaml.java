@@ -41,7 +41,7 @@ public class Yaml {
    * @return The configuration data (<code>Configuration</code>, <code>Wallet Summary</code> etc) if present
    */
   public static synchronized <T> Optional<T> readYaml(InputStream is, Class<T> clazz) {
-    log.debug("Reading YAML data...");
+    log.trace("Reading YAML data...");
 
     Optional<T> value;
 
