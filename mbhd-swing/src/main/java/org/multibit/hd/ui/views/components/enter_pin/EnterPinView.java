@@ -36,15 +36,15 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
    */
   private JLabel pinStatus;
 
-  private final JButton button7 = Buttons.newPinMatixButton(getPinMatrixButtonAction(7), getModel().get().getPanelName() + ".button_7");
-  private final JButton button8 = Buttons.newPinMatixButton(getPinMatrixButtonAction(8), getModel().get().getPanelName() + ".button_8");
-  private final JButton button9 = Buttons.newPinMatixButton(getPinMatrixButtonAction(9), getModel().get().getPanelName() + ".button_9");
-  private final JButton button4 = Buttons.newPinMatixButton(getPinMatrixButtonAction(4), getModel().get().getPanelName() + ".button_4");
-  private final JButton button5 = Buttons.newPinMatixButton(getPinMatrixButtonAction(5), getModel().get().getPanelName() + ".button_5");
-  private final JButton button6 = Buttons.newPinMatixButton(getPinMatrixButtonAction(6), getModel().get().getPanelName() + ".button_6");
-  private final JButton button1 = Buttons.newPinMatixButton(getPinMatrixButtonAction(1), getModel().get().getPanelName() + ".button_1");
-  private final JButton button2 = Buttons.newPinMatixButton(getPinMatrixButtonAction(2), getModel().get().getPanelName() + ".button_2");
-  private final JButton button3 = Buttons.newPinMatixButton(getPinMatrixButtonAction(3), getModel().get().getPanelName() + ".button_3");
+  private final JButton button7 = Buttons.newPinMatrixButton(getPinMatrixButtonAction(7), getModel().get().getPanelName() + ".button_7");
+  private final JButton button8 = Buttons.newPinMatrixButton(getPinMatrixButtonAction(8), getModel().get().getPanelName() + ".button_8");
+  private final JButton button9 = Buttons.newPinMatrixButton(getPinMatrixButtonAction(9), getModel().get().getPanelName() + ".button_9");
+  private final JButton button4 = Buttons.newPinMatrixButton(getPinMatrixButtonAction(4), getModel().get().getPanelName() + ".button_4");
+  private final JButton button5 = Buttons.newPinMatrixButton(getPinMatrixButtonAction(5), getModel().get().getPanelName() + ".button_5");
+  private final JButton button6 = Buttons.newPinMatrixButton(getPinMatrixButtonAction(6), getModel().get().getPanelName() + ".button_6");
+  private final JButton button1 = Buttons.newPinMatrixButton(getPinMatrixButtonAction(1), getModel().get().getPanelName() + ".button_1");
+  private final JButton button2 = Buttons.newPinMatrixButton(getPinMatrixButtonAction(2), getModel().get().getPanelName() + ".button_2");
+  private final JButton button3 = Buttons.newPinMatrixButton(getPinMatrixButtonAction(3), getModel().get().getPanelName() + ".button_3");
 
   private final JButton backspaceDeleteButton = Buttons.newBackspaceDeleteButton(getRemoveLastButtonPressedAction());
 

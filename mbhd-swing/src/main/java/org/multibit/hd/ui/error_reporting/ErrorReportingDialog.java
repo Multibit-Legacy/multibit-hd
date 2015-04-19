@@ -41,13 +41,13 @@ public class ErrorReportingDialog extends JFrame {
   private JTextArea currentLog;
   private JScrollPane currentLogScrollPane;
 
-  private final String message;
+  private final boolean showApology;
 
   /**
-   * @param message A shortened message extracted from the originating exception
+   * @param showApology True if the apology message should be displayed
    */
-  public ErrorReportingDialog(String message) {
-    this.message = message;
+  public ErrorReportingDialog(boolean showApology) {
+    this.showApology = showApology;
     initComponents();
   }
 
@@ -63,14 +63,27 @@ public class ErrorReportingDialog extends JFrame {
         "[]10[][][][][shrink][shrink]" // Rows
       ));
 
-    JLabel apologyLabel = Labels.newNoteLabel(
-      new MessageKey[]{
-        MessageKey.ERROR_REPORTING_APOLOGY_NOTE_1,
-        MessageKey.ERROR_REPORTING_APOLOGY_NOTE_2,
-        MessageKey.ERROR_REPORTING_APOLOGY_NOTE_3
-      },
-      new Object[][]{}
-    );
+
+    JLabel preambleLabel;
+    if (showApology) {
+      preambleLabel = Labels.newNoteLabel(
+        new MessageKey[]{
+          MessageKey.ERROR_REPORTING_APOLOGY_NOTE_1,
+          MessageKey.ERROR_REPORTING_APOLOGY_NOTE_2,
+          MessageKey.ERROR_REPORTING_APOLOGY_NOTE_3
+        },
+        new Object[][]{}
+      );
+    } else {
+      preambleLabel = Labels.newNoteLabel(
+        new MessageKey[]{
+          MessageKey.ERROR_REPORTING_MANUAL_NOTE_1,
+          MessageKey.ERROR_REPORTING_MANUAL_NOTE_2
+        },
+        new Object[][]{}
+      );
+    }
+
     JLabel notesLabel = Labels.newLabel(MessageKey.ERROR_REPORTING_NOTES);
 
     // User message
@@ -128,15 +141,15 @@ public class ErrorReportingDialog extends JFrame {
     currentLogScrollPane.setVisible(false);
 
     // Add them to the panel
-    contentPanel.add(apologyLabel, "span 2,push,wrap");
+    contentPanel.add(preambleLabel, "span 2,push,wrap");
 
     contentPanel.add(notesLabel, "span 2,wrap");
     contentPanel.add(userMessageScrollPane, "span 2,wrap");
 
     contentPanel.add(Buttons.newDetailsButton(getDetailsAction()), "span 2,wrap");
 
-    contentPanel.add(currentLogLabel,"span 2,wrap");
-    contentPanel.add(currentLogScrollPane,"span 2,grow,push,wrap,wmin 10"); // wmin ensures a resize
+    contentPanel.add(currentLogLabel, "span 2,wrap");
+    contentPanel.add(currentLogScrollPane, "span 2,grow,push,wrap,wmin 10"); // wmin ensures a resize
 
     contentPanel.add(Buttons.newCancelButton(getCancelAction()), "align left");
     contentPanel.add(Buttons.newUploadErrorReportButton(getUploadAction()), "align right,wrap");
@@ -147,13 +160,13 @@ public class ErrorReportingDialog extends JFrame {
       new WindowAdapter() {
         @Override
         public void windowClosing(java.awt.event.WindowEvent e) {
-          CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
+          handleClose();
         }
 
 
       });
 
-    setMinimumSize(new Dimension(400,200));
+    setMinimumSize(new Dimension(400, 200));
 
     setLocationRelativeTo(null);
 
@@ -204,11 +217,21 @@ public class ErrorReportingDialog extends JFrame {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        // Do nothing and simply close
-        dispose();
+        handleClose();
       }
     };
 
+  }
+
+  /**
+   * Performs final actions on close
+   */
+  private void handleClose() {
+    dispose();
+    if (showApology) {
+      // Perform a hard shutdown if we've crashed
+      CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
+    }
   }
 
 }

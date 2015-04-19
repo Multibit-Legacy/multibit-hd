@@ -760,6 +760,7 @@ public class Buttons {
 
     return button;
   }
+
   /**
    * @param action The click action
    *
@@ -1239,7 +1240,7 @@ public class Buttons {
    * @param festName The FEST name
    * @return A new "PIN matrix" button with icon
    */
-  public static JButton newPinMatixButton(Action action, String festName) {
+  public static JButton newPinMatrixButton(Action action, String festName) {
 
     JButton button = newButton(action);
 
@@ -1256,4 +1257,22 @@ public class Buttons {
 
     return button;
   }
+
+  /**
+   * @param action The click action
+   *
+   * @return A new "error reporting" button with icon
+   */
+  public static JButton newShowErrorReportButton(Action action) {
+
+    JButton button = newButton(action, MessageKey.SHOW_ERROR_REPORTING, MessageKey.SHOW_ERROR_REPORTING_TOOLTIP);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(button, MessageKey.SHOW_ERROR_REPORTING, MessageKey.SHOW_ERROR_REPORTING_TOOLTIP);
+
+    AwesomeDecorator.applyIcon(AwesomeIcon.BUG, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+
+    return button;
+  }
+
 }

@@ -358,9 +358,14 @@ public enum MessageKey {
   MULTIBIT_HD_TITLE("multibit_hd_title"),
 
   ERROR_REPORTING_TITLE("error_reporting_title"),
+
   ERROR_REPORTING_APOLOGY_NOTE_1("error_reporting_apology_note_1"),
   ERROR_REPORTING_APOLOGY_NOTE_2("error_reporting_apology_note_2"),
   ERROR_REPORTING_APOLOGY_NOTE_3("error_reporting_apology_note_3"),
+
+  ERROR_REPORTING_MANUAL_NOTE_1("error_reporting_manual_note_1"),
+  ERROR_REPORTING_MANUAL_NOTE_2("error_reporting_manual_note_2"),
+
   ERROR_REPORTING_CONTENTS("error_reporting_contents"),
   ERROR_REPORTING_NOTES("error_reporting_notes"),
 
@@ -697,6 +702,9 @@ public enum MessageKey {
 
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),
+
+  SHOW_ERROR_REPORTING("show_error_reporting"),
+  SHOW_ERROR_REPORTING_TOOLTIP("show_error_reporting_tooltip"),
 
   // Radio buttons
   CREATE_WALLET("create_wallet"),
