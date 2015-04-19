@@ -127,7 +127,7 @@ public class CoreServices {
   /**
    * Manages CoreService startup and shutdown operations
    */
-  private static ListeningExecutorService coreServices = SafeExecutors.newFixedThreadPool(10, "core-services");
+  private static volatile ListeningExecutorService coreServices = null;
 
   /**
    * Utilities have a private constructor
@@ -473,6 +473,9 @@ public class CoreServices {
    * <p>This occurs on the CoreServices task thread</p>
    */
   public static synchronized void stopBitcoinNetworkService() {
+    if (coreServices == null) {
+      coreServices = SafeExecutors.newFixedThreadPool(10, "core-services");
+    }
 
     log.debug("Stop Bitcoin network service");
     coreServices.submit(
@@ -485,7 +488,6 @@ public class CoreServices {
           }
         }
       });
-
   }
 
   /**

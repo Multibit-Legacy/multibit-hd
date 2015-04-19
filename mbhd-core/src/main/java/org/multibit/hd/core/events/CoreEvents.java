@@ -39,7 +39,7 @@ public class CoreEvents {
   private static final Object lockObject = new Object();
 
   // Provide a CoreEvent thread pool to ensure non-UI events are isolated from the EDT
-  private static ListeningExecutorService eventExecutor = SafeExecutors.newFixedThreadPool(10, "core-events");
+  private static ListeningExecutorService eventExecutor = null;
 
   // Provide a slower transaction seen thread that is isolated from the EDT
   // See http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html, section "Fixing Double-Checked Locking using Volatile"
@@ -127,6 +127,12 @@ public class CoreEvents {
 
   }
 
+  private synchronized static void createEventExecutorIfNecessary() {
+    if (eventExecutor == null) {
+      eventExecutor = SafeExecutors.newFixedThreadPool(10, "core-events");
+    }
+  }
+
   /**
    * <p>Broadcast a new "exchange rate changed" event</p>
    *
@@ -141,6 +147,7 @@ public class CoreEvents {
     final Optional<String> rateProvider,
     final DateTime expires
   ) {
+    createEventExecutorIfNecessary();
 
     eventExecutor.submit(
       new Runnable() {
@@ -160,6 +167,7 @@ public class CoreEvents {
    * @param exchangeSummary The exchange summary
    */
   public static void fireExchangeStatusChangedEvent(final ExchangeSummary exchangeSummary) {
+    createEventExecutorIfNecessary();
 
     eventExecutor.submit(
       new Runnable() {
@@ -178,6 +186,7 @@ public class CoreEvents {
    * @param transactionCreationEvent containing transaction creation information
    */
   public static void fireTransactionCreationEvent(final TransactionCreationEvent transactionCreationEvent) {
+    createEventExecutorIfNecessary();
 
     eventExecutor.submit(
       new Runnable() {
@@ -196,6 +205,7 @@ public class CoreEvents {
    * @param bitcoinSentEvent containing send information
    */
   public static void fireBitcoinSentEvent(final BitcoinSentEvent bitcoinSentEvent) {
+    createEventExecutorIfNecessary();
 
     eventExecutor.submit(
       new Runnable() {
@@ -213,6 +223,7 @@ public class CoreEvents {
     * @param paymentSentToRequestorEvent containing send information
     */
    public static void firePaymentSentToRequestorEvent(final PaymentSentToRequestorEvent paymentSentToRequestorEvent) {
+     createEventExecutorIfNecessary();
 
      eventExecutor.submit(
        new Runnable() {
@@ -230,6 +241,7 @@ public class CoreEvents {
     * @param bitcoinSendingEvent containing send information
     */
    public static void fireBitcoinSendingEvent(final BitcoinSendingEvent bitcoinSendingEvent) {
+     createEventExecutorIfNecessary();
 
      eventExecutor.submit(
        new Runnable() {
@@ -247,6 +259,7 @@ public class CoreEvents {
    * @param walletLoadEvent containing walletLoad information
    */
   public static void fireWalletLoadEvent(final WalletLoadEvent walletLoadEvent) {
+    createEventExecutorIfNecessary();
 
     eventExecutor.submit(
       new Runnable() {
@@ -262,6 +275,7 @@ public class CoreEvents {
    * Broadcast ChangePasswordResultEvent
    */
   public static void fireChangePasswordResultEvent(final ChangePasswordResultEvent changePasswordResultEvent) {
+    createEventExecutorIfNecessary();
 
     eventExecutor.submit(
       new Runnable() {
@@ -313,6 +327,8 @@ public class CoreEvents {
    * @param bitcoinSendProgressEvent containing transaction broadcast progress information
    */
   public static void fireBitcoinSendProgressEvent(final BitcoinSendProgressEvent bitcoinSendProgressEvent) {
+    createEventExecutorIfNecessary();
+
     eventExecutor.submit(
       new Runnable() {
         @Override
@@ -372,6 +388,8 @@ public class CoreEvents {
    * @param environmentSummary The environment summary
    */
   public static void fireEnvironmentEvent(final EnvironmentSummary environmentSummary) {
+    createEventExecutorIfNecessary();
+
     eventExecutor.submit(
       new Runnable() {
         @Override
@@ -388,6 +406,8 @@ public class CoreEvents {
    * @param historyEntry The history entry from the History service
    */
   public static void fireHistoryChangedEvent(final HistoryEntry historyEntry) {
+    createEventExecutorIfNecessary();
+
     eventExecutor.submit(
       new Runnable() {
         @Override
@@ -406,6 +426,8 @@ public class CoreEvents {
    * @param shutdownType The shutdown type
    */
   public static void fireShutdownEvent(final ShutdownEvent.ShutdownType shutdownType) {
+    createEventExecutorIfNecessary();
+
     eventExecutor.submit(
       new Runnable() {
         @Override
@@ -420,6 +442,8 @@ public class CoreEvents {
    * <p>Broadcast a new "configuration changed" event</p>
    */
   public static void fireConfigurationChangedEvent() {
+    createEventExecutorIfNecessary();
+
     eventExecutor.submit(
       new Runnable() {
         @Override
@@ -436,6 +460,8 @@ public class CoreEvents {
    * @param exportPerformedEvent The export performed event
    */
   public static void fireExportPerformedEvent(final ExportPerformedEvent exportPerformedEvent) {
+    createEventExecutorIfNecessary();
+
     eventExecutor.submit(
       new Runnable() {
         @Override
@@ -445,5 +471,4 @@ public class CoreEvents {
         }
       });
   }
-
 }
