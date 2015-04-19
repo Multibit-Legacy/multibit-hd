@@ -89,7 +89,13 @@ public class MultiBitHD {
     // Get the configuration fast
     CoreServices.bootstrap();
 
-    log.info("Starting");
+    // Record basic operating system information for error reporting
+    log.info(
+      "Starting\nOS:{} {}bit\nMultiBit HD Version:{}\n",
+      OSUtils.platform(),
+      OSUtils.is64Bit() ? "64" : "32",
+      Configurations.currentConfiguration.getCurrentVersion()
+    );
 
     // Analyse the command line
     if (args != null && args.length > 0) {
