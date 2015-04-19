@@ -122,7 +122,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     paymentsTable.addMouseListener(getTableMouseListener());
 
     // Detect row selection changes
-    paymentsTable.getSelectionModel().addListSelectionListener(new TableRowModelListener(paymentsTable));
+    paymentsTable.getSelectionModel().addListSelectionListener(new TableRowModelListener());
 
     // Ensure we maintain the overall theme
     ScrollBarUIDecorator.apply(scrollPane, paymentsTable);
@@ -398,10 +398,8 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   }
 
   class TableRowModelListener implements ListSelectionListener {
-    private JTable table;
 
-    public TableRowModelListener(JTable table) {
-      this.table = table;
+    public TableRowModelListener() {
     }
 
     public void valueChanged(ListSelectionEvent e) {
