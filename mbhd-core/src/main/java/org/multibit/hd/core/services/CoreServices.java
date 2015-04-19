@@ -154,7 +154,6 @@ public class CoreServices {
     // Ensure any errors can be reported
     ExceptionHandler.registerExceptionHandler();
 
-    throw new IllegalArgumentException("Boo!");
    }
 
   /**
