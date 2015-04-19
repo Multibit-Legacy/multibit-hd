@@ -164,7 +164,6 @@ public class CoreServices {
 
     // Ensure any errors can be reported
     ExceptionHandler.registerExceptionHandler();
-
    }
 
   /**
