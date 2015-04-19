@@ -166,8 +166,6 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
 
           registerDefaultButton(getFinishButton());
 
-          getFinishButton().requestFocusInWindow();
-
           if (unprocessedWalletLoadEvent != null) {
             onWalletLoadEvent(unprocessedWalletLoadEvent);
           }
@@ -216,9 +214,6 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
                 connectedStatusLabel.setVisible(true);
                 LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTING_TO_BITCOIN_NETWORK));
               }
-
-              // Set focus to finish button since it's the most likely action from here
-              getFinishButton().requestFocusInWindow();
 
             } else {
               // Wallet failed to load
