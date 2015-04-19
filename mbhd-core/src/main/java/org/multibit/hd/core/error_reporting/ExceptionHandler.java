@@ -7,16 +7,27 @@ import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.google.common.io.Files;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.text.WordUtils;
+import org.bouncycastle.openpgp.PGPException;
+import org.bouncycastle.openpgp.PGPPublicKey;
+import org.multibit.hd.brit.crypto.PGPUtils;
+import org.multibit.hd.brit.services.BRITServices;
+import org.multibit.hd.brit.utils.HttpsUtils;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.logging.LogbackFactory;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.security.NoSuchProviderException;
 
 /**
  * <p>Exception handler to provide the following to application:</p>
@@ -188,14 +199,98 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
 
   /**
    * @param userNotes The additional user notes to upload
+   * @param errorReportingUrl The error reporting URL to use
+   *
+   * @return The error report result
    */
-  public static void handleErrorReportUpload(String userNotes) {
+  public static ErrorReportResult handleErrorReportUpload(String userNotes, URL errorReportingUrl) {
 
-    Optional<File> currentLoggingFile = LogbackFactory.getCurrentLoggingFile();
-
-    if (currentLoggingFile.isPresent()) {
-      // Read and encrypt it as ASCII Armor
+    final PGPPublicKey multibitPublicKey;
+    try {
+      multibitPublicKey = BRITServices.getMatcherPublicKey();
+    } catch (IOException | PGPException e) {
+      log.error("Failed to load MultiBit public key", e);
+      return ErrorReportResult.UPLOAD_FAILED;
     }
+
+    // Attempt to load the current logging file
+    Optional<File> currentLoggingFile = LogbackFactory.getCurrentLoggingFile();
+    if (!currentLoggingFile.isPresent()) {
+      log.error("No current logging file.");
+      return ErrorReportResult.UPLOAD_FAILED;
+    }
+
+    // Have a chance of getting a result
+
+    // Create a formatted payload for the server
+    String errorReport = "----- BEGIN USER NOTES -----\n" + userNotes + "\n----- BEGIN LOG -----\n" + readCurrentLogfile() + "----- END LOG -----\n";
+
+    // Write this to the disk (it's already known to the system)
+    final File errorReportFile = new File(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/logs/error-report.txt");
+    try {
+      log.debug("Writing error report file to\n'{}'", errorReportFile.getAbsolutePath());
+      Files.write(errorReport.getBytes(Charsets.UTF_8), errorReportFile);
+    } catch (IOException e) {
+      log.error("Failed to write error-report.txt", e);
+      return ErrorReportResult.UPLOAD_FAILED;
+    }
+
+    // Prepare the ASCII Armor output stream
+    final FileOutputStream armoredErrorReportFOS;
+    try {
+      log.debug("Preparing armored error report file");
+      armoredErrorReportFOS = new FileOutputStream(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/logs/error-report.txt.asc");
+    } catch (FileNotFoundException e) {
+      log.error("Failed to prepare error-report.txt.asc", e);
+      return ErrorReportResult.UPLOAD_FAILED;
+    }
+
+    // Encrypt with the MultiBit public key
+    try {
+      log.debug("Writing armored error report file");
+      PGPUtils.encryptFile(armoredErrorReportFOS, errorReportFile, multibitPublicKey);
+    } catch (IOException | NoSuchProviderException | PGPException e) {
+      log.error("Failed to write error-report.txt.asc", e);
+      return ErrorReportResult.UPLOAD_FAILED;
+    }
+
+    // Delete the plain text report
+    try {
+      log.debug("Deleting error report file");
+      SecureFiles.secureDelete(errorReportFile);
+    } catch (IOException e) {
+      log.error("Failed to delete error-report.txt", e);
+      return ErrorReportResult.UPLOAD_FAILED;
+    }
+
+    // Load the armored payload
+    final byte[] armoredErrorReport;
+    try {
+      log.debug("Reading armored error report file");
+      File armoredErrorReportFile = new File(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/logs/error-report.txt.asc");
+      armoredErrorReport = Files.toByteArray(armoredErrorReportFile);
+    } catch (IOException e) {
+      log.error("Failed to read error-report.txt.asc", e);
+      return ErrorReportResult.UPLOAD_FAILED;
+    }
+
+    final byte[] response;
+    try {
+      log.debug("POSTing armored error report file to '{}'", errorReportingUrl);
+      response = HttpsUtils.doPost(errorReportingUrl, armoredErrorReport);
+    } catch (IOException e) {
+      log.error("Failed to POST error-report.txt.asc", e);
+      return ErrorReportResult.UPLOAD_FAILED;
+    }
+
+    // At the moment all responses are "unknown" unless empty
+    if (response == null || response.length == 0) {
+      log.error("Empty response from '{}'", errorReportingUrl);
+      return ErrorReportResult.UPLOAD_FAILED;
+    }
+
+    // Must be OK to be here
+    return ErrorReportResult.UPLOAD_OK_UNKNOWN;
 
   }
 }

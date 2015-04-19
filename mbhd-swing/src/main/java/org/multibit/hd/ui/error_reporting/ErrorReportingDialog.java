@@ -1,20 +1,30 @@
 package org.multibit.hd.ui.error_reporting;
 
 import com.google.common.base.Strings;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.error_reporting.ErrorReportResult;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.hardware.core.concurrent.SafeExecutors;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.borders.TextBubbleBorder;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.Callable;
 
 /**
  * <p>Swing dialog to provide the following to application:</p>
@@ -34,6 +44,8 @@ import java.awt.event.WindowAdapter;
  *  
  */
 public class ErrorReportingDialog extends JFrame {
+
+  private static final Logger log = LoggerFactory.getLogger(ErrorReportingDialog.class);
 
   private JTextArea userMessage;
 
@@ -201,11 +213,45 @@ public class ErrorReportingDialog extends JFrame {
           truncatedMessage = truncatedMessage.substring(0, 1000);
         }
 
-        // Upload error report
-        ExceptionHandler.handleErrorReportUpload(truncatedMessage);
+        // Build the upload URL (do it first to fail fast)
+        final URL liveErrorReportingUrl;
+        try {
+          liveErrorReportingUrl = new URL(ExceptionHandler.LIVE_ERROR_REPORTING_URL);
+        } catch (MalformedURLException e1) {
+          log.error("Failed to create the live URL", e1);
+          handleClose();
+          return;
+        }
 
         // Prevent further upload attempts
         ((JButton) e.getSource()).setEnabled(false);
+
+        final String finalTruncatedMessage = truncatedMessage;
+
+        // Upload off the EDT
+        final ListenableFuture<ErrorReportResult> future = SafeExecutors.newSingleThreadExecutor("error-reporting").submit(
+          new Callable<ErrorReportResult>() {
+            @Override
+            public ErrorReportResult call() throws Exception {
+              // Upload error report
+              return ExceptionHandler.handleErrorReportUpload(
+                finalTruncatedMessage,
+                liveErrorReportingUrl
+              );
+            }
+          });
+        Futures.addCallback(
+          future, new FutureCallback<ErrorReportResult>() {
+            @Override
+            public void onSuccess(ErrorReportResult result) {
+              handleErrorReportResult(result);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+              handleErrorReportResult(ErrorReportResult.UPLOAD_FAILED);
+            }
+          });
 
       }
     };
@@ -232,6 +278,14 @@ public class ErrorReportingDialog extends JFrame {
       // Perform a hard shutdown if we've crashed
       CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
     }
+  }
+
+  /**
+   * Performs final actions on close
+   */
+  private void handleErrorReportResult(ErrorReportResult errorReportResult) {
+
+
   }
 
 }
