@@ -27,6 +27,7 @@ import java.awt.event.WindowAdapter;
  * <p>Notes:</p>
  * <ol>
  * <li>We must extend JFrame to allow for exceptions occurring before the UI has rendered</li>
+ * <li>Lower level modules use Reflection to invoke this dialog to gain i18n capabilities</li>
  * </ol>
  *
  * @since 0.1.0
@@ -57,7 +58,7 @@ public class ErrorReportingDialog extends JFrame {
 
     JPanel contentPanel = Panels.newPanel(
       new MigLayout(
-        Panels.migXLayout() + ",hidemode 1", // Ensure the details do not take up space
+        Panels.migXYDetailLayout() + ",hidemode 1", // Ensure the details do not take up space
         "[][]", // Columns
         "[]10[][][][][shrink][shrink]" // Rows
       ));
