@@ -817,6 +817,18 @@ public class Panels {
   }
 
   /**
+   * New horizontal dashed separator
+   */
+  public static JPanel newHorizontalDashedSeparator() {
+
+    JPanel panel = new JPanel();
+    panel.setMaximumSize(new Dimension(10000, 1));
+    panel.setBorder(BorderFactory.createDashedBorder(Themes.currentTheme.dataEntryBorder(), 5, 5));
+
+    return panel;
+  }
+
+  /**
    * <p>Invalidate a panel so that Swing will later redraw it properly with layout changes (normally as a result of a locale change)</p>
    *
    * @param panel The panel to invalidate
