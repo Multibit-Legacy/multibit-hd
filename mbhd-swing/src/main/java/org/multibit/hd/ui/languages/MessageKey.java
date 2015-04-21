@@ -802,6 +802,9 @@ public enum MessageKey {
 
   VERIFY_NETWORK_NOTE_1("verify_network_note_1"),
   VERIFY_NETWORK_NOTE_2("verify_network_note_2"),
+  VERIFY_NETWORK_NOTE_3("verify_network_note_3"),
+  VERIFY_NETWORK_PEER_COUNT("verify_network_peer_count"),
+  VERIFY_NETWORK_BLOCK_COUNT("verify_network_block_count"),
 
   UNITS_SETTINGS_NOTE_1("units_settings_note_1"),
 

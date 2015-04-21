@@ -824,12 +824,12 @@ public class Labels {
   }
 
   /**
-   * @return A new "Enter new credentials" label
-   */
-  public static JLabel newEnterNewPassword() {
+    * @return A new "Enter new credentials" label
+    */
+   public static JLabel newEnterNewPassword() {
 
-    return newLabel(MessageKey.ENTER_NEW_PASSWORD);
-  }
+     return newLabel(MessageKey.ENTER_NEW_PASSWORD);
+   }
 
   /**
    * @return A new "Retype new credentials" label
@@ -1102,6 +1102,22 @@ public class Labels {
    */
   public static JLabel newBlocksLeft() {
     return newLabel(MessageKey.BLOCKS_LEFT);
+  }
+
+  /**
+   * @return A new "peer count info" label
+   */
+  public static JLabel newPeerCountInfo() {
+
+    return newLabel(MessageKey.VERIFY_NETWORK_PEER_COUNT);
+  }
+
+  /**
+   * @return A new "peer count info" label
+   */
+  public static JLabel newBlockCountInfo() {
+
+    return newLabel(MessageKey.VERIFY_NETWORK_BLOCK_COUNT);
   }
 
   /**
@@ -1574,13 +1590,24 @@ public class Labels {
   }
 
   /**
+    * @return A new "verify network" note
+    */
+   public static JLabel newVerifyNetworkNoteTop() {
+
+     return newNoteLabel(new MessageKey[]{
+             MessageKey.VERIFY_NETWORK_NOTE_1
+     }, new Object[][]{});
+
+   }
+
+  /**
    * @return A new "verify network" note
    */
-  public static JLabel newVerifyNetworkNote() {
+  public static JLabel newVerifyNetworkNoteBottom() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.VERIFY_NETWORK_NOTE_1,
-      MessageKey.VERIFY_NETWORK_NOTE_2
+            MessageKey.VERIFY_NETWORK_NOTE_2,
+            MessageKey.VERIFY_NETWORK_NOTE_3
     }, new Object[][]{});
 
   }

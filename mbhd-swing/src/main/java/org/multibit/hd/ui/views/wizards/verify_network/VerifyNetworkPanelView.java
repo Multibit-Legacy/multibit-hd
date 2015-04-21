@@ -61,11 +61,9 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
 
     contentPanel.setLayout(new MigLayout(
             Panels.migXYLayout(),
-            "[]10[][]", // Column constraints
-            "[]10[]10[]" // Row constraints
+            "[shrink]10[][]", // Column constraints
+            "[][][50][][][50][]" // Row constraints
     ));
-
-    contentPanel.add(Labels.newVerifyNetworkNote(), "span 3," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     int currentPeerCount = CoreServices.getOrCreateBitcoinNetworkService().getNumberOfConnectedPeers();
     peerCountLabel = Labels.newValueLabel(String.valueOf(currentPeerCount));
@@ -75,13 +73,21 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
     blocksLeftLabel = Labels.newValueLabel("");
     blocksLeftStatusLabel = Labels.newBlocksLeft();
 
-    contentPanel.add(peerCountStatusLabel, "");
-    contentPanel.add(peerCountLabel, "");
-    contentPanel.add(Labels.newValueLabel(""), "growx,push,wrap");
+    contentPanel.add(peerCountStatusLabel, "shrink 1000");
+    contentPanel.add(peerCountLabel, "align left");
+    contentPanel.add(Labels.newValueLabel(""), "grow 1000,push,wrap");
+    contentPanel.add(Labels.newPeerCountInfo(), "span 3," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
-    contentPanel.add(blocksLeftStatusLabel, "");
-    contentPanel.add(blocksLeftLabel, "");
-    contentPanel.add(Labels.newValueLabel(""), "growx,push,wrap");
+    contentPanel.add(Panels.newHorizontalDashedSeparator(), "growx, span 3,wrap");
+
+    contentPanel.add(blocksLeftStatusLabel, "shrink 1000");
+    contentPanel.add(blocksLeftLabel, "align left");
+    contentPanel.add(Labels.newValueLabel(""), "grow 1000, push, wrap");
+    contentPanel.add(Labels.newBlockCountInfo(), "span 3," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+
+    contentPanel.add(Panels.newHorizontalDashedSeparator(), "growx, span 3,wrap");
+
+    contentPanel.add(Labels.newVerifyNetworkNoteBottom(), "span 3," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
   }
 
