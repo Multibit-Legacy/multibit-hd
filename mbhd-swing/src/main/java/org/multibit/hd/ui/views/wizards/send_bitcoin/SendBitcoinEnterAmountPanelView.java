@@ -141,10 +141,10 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
    * @return True if the "next" button should be enabled
    */
   private boolean isNextEnabled() {
-    boolean bitcoinAmountOK = !getPanelModel().get()
-      .getEnterAmountModel()
-      .getCoinAmount()
-      .equals(Coin.ZERO);
+    Optional<Coin> coinAmount = getPanelModel().get()
+            .getEnterAmountModel()
+            .getCoinAmount();
+    boolean bitcoinAmountOK = coinAmount.isPresent() && !coinAmount.get().equals(Coin.ZERO);
 
     boolean recipientOK = getPanelModel().get()
       .getEnterRecipientModel()
