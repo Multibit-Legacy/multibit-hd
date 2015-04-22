@@ -81,7 +81,7 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
     contentPanel.setLayout(
       new MigLayout(
         Panels.migXYLayout(),
-        "[]10[][][]", // Column constraints
+        "[]10[][][60:60:60]", // Column constraints
         "[]10[]10[]10[]" // Row constraints
       ));
 
