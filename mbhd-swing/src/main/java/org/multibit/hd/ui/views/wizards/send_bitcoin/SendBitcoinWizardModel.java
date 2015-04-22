@@ -156,12 +156,20 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
         // If there is insufficient money in the wallet a TransactionCreationEvent
         // with the details will be thrown
 
-        if (prepareTransaction()) {
-          state = SEND_CONFIRM_AMOUNT;
+        // Check a recipient has been set
+        if (!enterAmountPanelModel
+                .getEnterRecipientModel()
+                .getRecipient().isPresent()) {
+          state = SEND_ENTER_AMOUNT;
         } else {
-          // Transaction did not prepare correctly
-          state = SEND_REPORT;
+          if (prepareTransaction()) {
+            state = SEND_CONFIRM_AMOUNT;
+          } else {
+            // Transaction did not prepare correctly
+            state = SEND_REPORT;
+          }
         }
+
         break;
       case SEND_CONFIRM_AMOUNT:
 
@@ -396,6 +404,13 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     } else {
       Preconditions.checkNotNull(enterAmountPanelModel);
       Preconditions.checkNotNull(confirmPanelModel);
+
+      // Check a recipient has been set
+      if (!enterAmountPanelModel
+              .getEnterRecipientModel()
+              .getRecipient().isPresent()) {
+        return false;
+      }
 
       // Build the send request summary from the user data
       Coin coin = enterAmountPanelModel.getEnterAmountModel().getCoinAmount().or(Coin.ZERO);

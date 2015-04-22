@@ -184,10 +184,12 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
       case AMBER:
         // Enable on RED or AMBER only if unrestricted (allows FEST tests without a network)
         newEnabled = InstallationManager.unrestricted;
+        networkOk = newEnabled;
         break;
       case GREEN:
-        // Always enable on GREEN
-        newEnabled = true;
+        // Always enable on GREEN if data is valid
+        newEnabled = isNextEnabled();
+        networkOk = true;
         break;
       case PINK:
       case EMPTY:
@@ -202,7 +204,6 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
     if (canChange) {
       final boolean finalNewEnabled = newEnabled;
-      networkOk = finalNewEnabled;
 
       // If button is not enabled and the newEnabled is false don't do anything
       // This cuts down the number of events
