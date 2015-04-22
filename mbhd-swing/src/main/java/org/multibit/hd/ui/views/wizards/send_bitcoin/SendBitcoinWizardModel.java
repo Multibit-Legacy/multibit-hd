@@ -249,7 +249,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   /**
    * @return The Bitcoin amount without symbolic multiplier
    */
-  public Coin getCoinAmount() {
+  public Optional<Coin> getCoinAmount() {
     return enterAmountPanelModel
       .getEnterAmountModel()
       .getCoinAmount();
@@ -398,7 +398,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       Preconditions.checkNotNull(confirmPanelModel);
 
       // Build the send request summary from the user data
-      Coin coin = enterAmountPanelModel.getEnterAmountModel().getCoinAmount();
+      Coin coin = enterAmountPanelModel.getEnterAmountModel().getCoinAmount().or(Coin.ZERO);
       Address bitcoinAddress = enterAmountPanelModel
         .getEnterRecipientModel()
         .getRecipient()

@@ -82,16 +82,16 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
     bitcoinAmountText = TextBoxes.newBitcoinAmount(BitcoinSymbol.maxSymbolicAmount().doubleValue());
     localAmountText = TextBoxes.newLocalAmount(999_999_999_999_999.9999);
 
-    Coin coinAmount = getModel().get().getCoinAmount();
+    Optional<Coin> coinAmount = getModel().get().getCoinAmount();
 
     // Set initial Bitcoin amount from the model (if non-zero)
-    if (!Coin.ZERO.equals(coinAmount)) {
+    if (coinAmount.isPresent() && !Coin.ZERO.equals(coinAmount.get())) {
 
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
       String symbolicAmount = Formats.formatCoinAmount(
-        coinAmount,
+        coinAmount.or(Coin.ZERO),
         languageConfiguration,
         bitcoinConfiguration
       );

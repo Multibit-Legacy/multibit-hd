@@ -206,7 +206,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
 
       noteValue.setText(MBHDPaymentRequestData.getNote());
 
-      Coin amountBTC = MBHDPaymentRequestData.getAmountCoin();
+      Coin amountBTC = MBHDPaymentRequestData.getAmountCoin().or(Coin.ZERO);
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
@@ -265,7 +265,7 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
         MBHDPaymentRequestData MBHDPaymentRequestData = getWizardModel().getMBHDPaymentRequestData();
 
         Address bitcoinAddress = MBHDPaymentRequestData.getAddress();
-        Coin coin = MBHDPaymentRequestData.getAmountCoin();
+        Coin coin = MBHDPaymentRequestData.getAmountCoin().isPresent() ? MBHDPaymentRequestData.getAmountCoin().get() : null;
         String label = MBHDPaymentRequestData.getLabel();
 
         // Form a Bitcoin URI from the contents

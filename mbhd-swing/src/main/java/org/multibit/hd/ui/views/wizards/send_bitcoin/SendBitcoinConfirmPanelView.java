@@ -237,7 +237,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
       } else {
         recipientSummaryLabel = Labels.newValueLabel(paymentRequestData.getIdentityDisplayName());
       }
-      amount = paymentRequestData.getAmountCoin();
+      amount = paymentRequestData.getAmountCoin().or(Coin.ZERO);
 
 
       // TODO check PKI
@@ -251,7 +251,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 //      }
     } else {
       // Regular send with data entered by the user
-      amount = getWizardModel().getCoinAmount();
+      amount = getWizardModel().getCoinAmount().or(Coin.ZERO);
 
       // Update the model and view for the recipient
       recipientSummaryLabel.setText(

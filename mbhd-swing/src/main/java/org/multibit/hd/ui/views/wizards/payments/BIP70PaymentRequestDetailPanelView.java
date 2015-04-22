@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Coin;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
@@ -199,7 +200,7 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
 
     // Update the model and view for the amount
     Configuration configuration = Configurations.currentConfiguration;
-    paymentRequestAmountMaV.getModel().setCoinAmount(paymentRequestData.getAmountCoin());
+    paymentRequestAmountMaV.getModel().setCoinAmount(paymentRequestData.getAmountCoin().or(Coin.ZERO));
     if (paymentRequestData.getAmountFiat().getAmount().isPresent()) {
       paymentRequestAmountMaV.getModel().setLocalAmount(paymentRequestData.getAmountFiat().getAmount().get());
       paymentRequestAmountMaV.getModel().setLocalAmountVisible(true);

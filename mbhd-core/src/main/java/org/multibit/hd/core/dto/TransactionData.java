@@ -24,7 +24,7 @@ public class TransactionData implements PaymentData {
 
   private final String transactionId;
 
-  private final Coin amountBTC;
+  private final Optional<Coin> amountBTC;
 
   private FiatPayment amountFiat;
 
@@ -80,7 +80,7 @@ public class TransactionData implements PaymentData {
     String transactionId,
     DateTime date,
     PaymentStatus statusWithOrdinal,
-    Coin amountBTC,
+    Optional<Coin> amountBTC,
     @Nullable FiatPayment amountFiat,
     Optional<Coin> miningFee,
     Optional<Coin> clientFee,
@@ -217,7 +217,7 @@ public class TransactionData implements PaymentData {
   }
 
   @Override
-  public Coin getAmountCoin() {
+  public Optional<Coin> getAmountCoin() {
     return amountBTC;
   }
 

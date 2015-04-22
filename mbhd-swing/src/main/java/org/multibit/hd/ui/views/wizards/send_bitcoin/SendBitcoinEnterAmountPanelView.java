@@ -87,7 +87,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
       getWizardModel().handleBitcoinURI();
 
       Recipient recipient = getWizardModel().getRecipient();
-      Coin amount = getWizardModel().getCoinAmount();
+      Coin amount = getWizardModel().getCoinAmount().or(Coin.ZERO);
 
       enterRecipientMaV.getModel().setValue(recipient);
       enterAmountMaV.getModel().setCoinAmount(amount);

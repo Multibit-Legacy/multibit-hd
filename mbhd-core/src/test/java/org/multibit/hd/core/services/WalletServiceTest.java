@@ -108,7 +108,7 @@ public class WalletServiceTest {
     MBHDPaymentRequestData mbhdPaymentRequestData = new MBHDPaymentRequestData();
 
     mbhdPaymentRequestData.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
-    mbhdPaymentRequestData.setAmountCoin(Coin.valueOf(245));
+    mbhdPaymentRequestData.setAmountCoin(Optional.of(Coin.valueOf(245)));
     DateTime date1 = new DateTime();
     mbhdPaymentRequestData.setDate(date1);
     mbhdPaymentRequestData.setLabel("label1");
@@ -260,7 +260,7 @@ public class WalletServiceTest {
       // Create a BIP70 PaymentRequestData that the BIP70 protobuf objects will be stored in
     PaymentRequestData paymentRequestData = new PaymentRequestData();
     paymentRequestData.setUuid(UUID.randomUUID());
-    paymentRequestData.setAmountCoin(Coin.MILLICOIN);
+    paymentRequestData.setAmountCoin(Optional.of(Coin.MILLICOIN));
     paymentRequestData.setTrustStatus(PaymentSessionStatus.UNKNOWN);
     paymentRequestData.setTrustErrorMessage("");
 

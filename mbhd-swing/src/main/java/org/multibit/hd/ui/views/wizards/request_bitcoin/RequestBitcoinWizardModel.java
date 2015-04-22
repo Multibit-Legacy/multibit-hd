@@ -38,7 +38,7 @@ public class RequestBitcoinWizardModel extends AbstractWizardModel<RequestBitcoi
   /**
    * @return The Bitcoin amount in coins
    */
-  public Coin getCoinAmount() {
+  public Optional<Coin> getCoinAmount() {
     return enterAmountModel.getCoinAmount();
   }
 

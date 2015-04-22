@@ -65,7 +65,7 @@ public class PaymentRequestData implements PaymentData {
   /**
    * The amount in bitcoin of the payment request
    */
-  private Coin amountCoin;
+  private Optional<Coin> amountCoin;
 
   /**
    * The description of the payment request
@@ -119,7 +119,7 @@ public class PaymentRequestData implements PaymentData {
       setExpirationDate(new DateTime(paymentSession.getExpires()));
     }
 
-    setAmountCoin(paymentSession.getValue());
+    setAmountCoin(Optional.of(paymentSession.getValue()));
     setNote(paymentSession.getMemo());
 
     if (paymentSessionSummary.getPkiVerificationData().isPresent()) {
@@ -201,11 +201,11 @@ public class PaymentRequestData implements PaymentData {
   }
 
   @Override
-  public Coin getAmountCoin() {
+  public Optional<Coin> getAmountCoin() {
     return amountCoin;
   }
 
-  public void setAmountCoin(Coin amountBTC) {
+  public void setAmountCoin(Optional<Coin> amountBTC) {
     this.amountCoin = amountBTC;
   }
 

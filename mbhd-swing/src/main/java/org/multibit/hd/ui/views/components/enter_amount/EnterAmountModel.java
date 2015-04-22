@@ -49,10 +49,10 @@ public class EnterAmountModel implements Model<EnterAmountModel> {
   }
 
   /**
-   * @return The Bitcoin amount (zero if not present) in coins
+   * @return The Bitcoin amount in coins
    */
-  public Coin getCoinAmount() {
-    return coinAmount.or(Coin.ZERO);
+  public Optional<Coin> getCoinAmount() {
+    return coinAmount;
   }
 
   /**

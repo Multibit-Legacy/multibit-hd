@@ -278,12 +278,12 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
         RequestBitcoinEnterDetailsPanelModel model = getPanelModel().get();
 
         String bitcoinAddress = model.getDisplayBitcoinAddressModel().getValue();
-        Coin coin = model.getEnterAmountModel().getCoinAmount();
+        Optional<Coin> coin = model.getEnterAmountModel().getCoinAmount();
 
         // Form a Bitcoin URI from the contents
         String bitcoinUri = BitcoinURI.convertToBitcoinURI(
           bitcoinAddress,
-          coin,
+          coin.isPresent() ? coin.get() : null,
           transactionLabel.getText(),
           null
         );

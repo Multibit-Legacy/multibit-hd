@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.renderers;
 
+import com.google.common.base.Optional;
 import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
@@ -35,20 +36,20 @@ public class AmountBTCTableCellRenderer extends DefaultTableCellRenderer {
     label.setBorder(new EmptyBorder(new Insets(0, TrailingJustifiedDateTableCellRenderer.TABLE_BORDER, 1, TrailingJustifiedDateTableCellRenderer.TABLE_BORDER)));
     label.setFont(label.getFont().deriveFont(MultiBitUI.TABLE_TEXT_FONT_SIZE));
 
-    if (value instanceof Coin) {
+    if (value instanceof Optional) {
 
       // Do the Bitcoin processing
 
-      Coin valueCoin = (Coin) value;
+      Optional<Coin> valueCoin = (Optional<Coin>) value;
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
 
-      String[] balanceArray = Formats.formatCoinAsSymbolic(valueCoin, languageConfiguration, bitcoinConfiguration, true);
+      String[] balanceArray = Formats.formatCoinAsSymbolic(valueCoin.or(Coin.ZERO), languageConfiguration, bitcoinConfiguration, true);
       String balanceString = balanceArray[0] + balanceArray[1];
 
       label.setText(balanceString + TrailingJustifiedDateTableCellRenderer.SPACER);
 
-      if ((valueCoin.compareTo(Coin.ZERO) < 0)) {
+      if ((valueCoin.or(Coin.ZERO).compareTo(Coin.ZERO) < 0)) {
         // Debit
         if (isSelected) {
           label.setForeground(table.getSelectionForeground());

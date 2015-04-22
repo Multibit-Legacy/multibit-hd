@@ -165,7 +165,7 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
       if (paymentData instanceof TransactionData) {
         TransactionData transactionData = (TransactionData) paymentData;
 
-        if (transactionData.getAmountCoin().compareTo(Coin.ZERO) >= 0) {
+        if (transactionData.getAmountCoin().or(Coin.ZERO).compareTo(Coin.ZERO) >= 0) {
           // Received bitcoin
           recipientValue.setText(Languages.safeText(MessageKey.THIS_BITCOIN_WAS_SENT_TO_YOU));
           recipientValue.setRows(1);

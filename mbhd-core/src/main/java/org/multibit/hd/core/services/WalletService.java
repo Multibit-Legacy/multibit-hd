@@ -243,11 +243,13 @@ public class WalletService extends AbstractService {
       }
     }
 
-    // Determine which MBHDPaymentRequests have not been fully funded (these will appear as independent entities in the UI)
+    // Determine which MBHDPaymentRequests have not been fully funded or request zero funds (these will appear as independent entities in the UI)
     Set<MBHDPaymentRequestData> paymentRequestsNotFullyFunded = Sets.newHashSet();
     for (MBHDPaymentRequestData baseMBHDPaymentRequestData : mbhdPaymentRequestDataMap.values()) {
-      if (baseMBHDPaymentRequestData.getPaidAmountCoin().compareTo(baseMBHDPaymentRequestData.getAmountCoin()) < 0) {
-        paymentRequestsNotFullyFunded.add(baseMBHDPaymentRequestData);
+      boolean requestAmountIsZeroOrAbsent = !baseMBHDPaymentRequestData.getAmountCoin().isPresent() || baseMBHDPaymentRequestData.getAmountCoin().get().compareTo(Coin.ZERO) == 0;
+      if ((requestAmountIsZeroOrAbsent && baseMBHDPaymentRequestData.getPaidAmountCoin().compareTo(Coin.ZERO) == 0) ||
+              (!requestAmountIsZeroOrAbsent && baseMBHDPaymentRequestData.getPaidAmountCoin().compareTo(baseMBHDPaymentRequestData.getAmountCoin().or(Coin.ZERO)) < 0)) {
+           paymentRequestsNotFullyFunded.add(baseMBHDPaymentRequestData);
       }
     }
     // Union the transactionData set and paymentData set
@@ -386,10 +388,10 @@ public class WalletService extends AbstractService {
     Date updateTime = transaction.getUpdateTime();
 
     // Amount BTC
-    Coin amountBTC = transaction.getValue(wallet);
+    Optional<Coin> amountBTC = Optional.of(transaction.getValue(wallet));
 
     // Fiat amount
-    FiatPayment amountFiat = calculateFiatPaymentAndAddTransactionInfo(amountBTC, transactionHashAsString);
+    FiatPayment amountFiat = calculateFiatPaymentAndAddTransactionInfo(amountBTC.get(), transactionHashAsString);
 
     TransactionConfidence confidence = transaction.getConfidence();
     TransactionConfidence transactionConfidence = confidence;
@@ -411,7 +413,7 @@ public class WalletService extends AbstractService {
 
 
     // Payment type
-    PaymentType paymentType = calculatePaymentType(amountBTC, depth);
+    PaymentType paymentType = calculatePaymentType(amountBTC.get(), depth);
 
     // Mining fee
     Optional<Coin> miningFee = calculateMiningFee(paymentType, transactionHashAsString);
@@ -423,7 +425,7 @@ public class WalletService extends AbstractService {
     // Ensure that any payment requests that are funded by this transaction know about it
     // (The payment request knows about the transactions that fund it but not the reverse)
 
-    String description = calculateDescriptionAndUpdatePaymentRequests(wallet, transaction, transactionHashAsString, paymentType, amountBTC);
+    String description = calculateDescriptionAndUpdatePaymentRequests(wallet, transaction, transactionHashAsString, paymentType, amountBTC.get());
     // Also works out outputAddresses
 
     // Include the raw serialized form of the transaction for lowest level viewing
@@ -1054,7 +1056,7 @@ public class WalletService extends AbstractService {
    */
   public void addPaymentRequestData(PaymentRequestData paymentRequestData) {
     if (!paymentRequestData.getAmountFiat().hasData()) {
-      paymentRequestData.setAmountFiat(calculateFiatPaymentEquivalent(paymentRequestData.getAmountCoin()));
+      paymentRequestData.setAmountFiat(calculateFiatPaymentEquivalent(paymentRequestData.getAmountCoin().or(Coin.ZERO)));
     }
 
     bip70PaymentRequestDataMap.put(paymentRequestData.getUuid(), paymentRequestData);
@@ -1523,7 +1525,7 @@ public class WalletService extends AbstractService {
       if (dateSort != 0) {
         return dateSort;
       } else {
-        return o1.getAmountCoin().compareTo(o2.getAmountCoin());
+        return o1.getAmountCoin().or(Coin.ZERO).compareTo(o2.getAmountCoin().or(Coin.ZERO));
       }
     }
   }

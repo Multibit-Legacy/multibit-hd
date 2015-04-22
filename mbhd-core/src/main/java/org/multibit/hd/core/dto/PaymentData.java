@@ -1,5 +1,6 @@
 package org.multibit.hd.core.dto;
 
+import com.google.common.base.Optional;
 import org.bitcoinj.core.Coin;
 import org.joda.time.DateTime;
 
@@ -30,7 +31,7 @@ public interface PaymentData {
   /**
    * @return The amount requested in Bitcoin
    */
-  public Coin getAmountCoin();
+  public Optional<Coin> getAmountCoin();
 
   /**
    * @return The amount request in fiat
