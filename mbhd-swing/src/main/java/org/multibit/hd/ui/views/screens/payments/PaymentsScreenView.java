@@ -343,12 +343,12 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
   private PaymentData getPaymentDataForSelectedTableRow() {
     int selectedTableRow = paymentsTable.getSelectedRow();
-    if (selectedTableRow == -1 || selectedTableRow >= paymentsTable.getRowCount() || selectedTableRow >= paymentsTable.getModel().getRowCount()) {
-      // No row selected
+    if (selectedTableRow == -1 || selectedTableRow >= paymentsTable.getRowCount() || selectedTableRow >=  ((PaymentTableModel) paymentsTable.getModel()).getPaymentDataList().size()) {
+      // No row selected or out of bounds due to last payment request delete
       return null;
     }
     int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
-           log.debug("getExportAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow);
+    log.debug("selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow);
 
     return ((PaymentTableModel) paymentsTable.getModel()).getPaymentDataList().get(selectedModelRow);
   }
