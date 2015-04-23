@@ -96,7 +96,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   private final Random random = new Random();
   private final boolean restoringSoftWallet;
-  private final WelcomeWizardMode mode;
+  private WelcomeWizardMode mode;
 
   private String actualSeedTimestamp;
   // Backup summaries for restoring a wallet
@@ -141,13 +141,21 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   @Override
   public void showNext() {
 
-    Optional<HardwareWalletService> hardwareWalletService = Optional.absent();
+    Optional<HardwareWalletService> hardwareWalletService;
 
     switch (state) {
       case WELCOME_LICENCE:
         state = WELCOME_SELECT_LANGUAGE;
         break;
       case WELCOME_SELECT_LANGUAGE:
+        hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+        if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
+          // Trezor mode
+          mode = WelcomeWizardMode.TREZOR;
+        } else {
+          // Standard mode
+          mode = WelcomeWizardMode.STANDARD;
+        }
         state = WELCOME_SELECT_WALLET;
         break;
       case WELCOME_SELECT_WALLET:

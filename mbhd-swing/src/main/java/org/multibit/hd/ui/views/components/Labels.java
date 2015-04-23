@@ -1191,17 +1191,26 @@ public class Labels {
   }
 
   /**
-   * @return A new "welcome" note
+   * @return A new "welcome upper" note
    */
-  public static JLabel newWelcomeNote() {
+  public static JLabel newSecureEnviromentNote() {
 
     return newNoteLabel(
       new MessageKey[]{
         MessageKey.WELCOME_NOTE_1,
-        MessageKey.WELCOME_NOTE_2,
-        MessageKey.WELCOME_NOTE_3
       }, new Object[][]{});
   }
+  /**
+     * @return A new "welcome lower" note
+     */
+    public static JLabel newWelcomeNote() {
+
+      return newNoteLabel(
+        new MessageKey[]{
+          MessageKey.WELCOME_NOTE_2,
+          MessageKey.WELCOME_NOTE_3
+        }, new Object[][]{});
+    }
 
   /**
    * @return A new "about" note
