@@ -270,7 +270,23 @@ public class EncryptedFileReaderWriter {
   }
 
 
-  private static File encryptAndDeleteOriginal(File fileToEncrypt, File encryptedFilename, KeyParameter keyParameter) throws EncryptedFileReaderWriterException {
+  /**
+   * Encrypt a file and delete the original
+   * @param fileToEncrypt the file to encrypt
+   * @param encryptedFilename the encrypted filename
+   * @param keyParameter the KeyParameter used to encrypt the file
+   * @return the encrypted file - will be null if no encryption was done
+   * @throws EncryptedFileReaderWriterException
+   */
+  private static synchronized File encryptAndDeleteOriginal(File fileToEncrypt, File encryptedFilename, KeyParameter keyParameter) throws EncryptedFileReaderWriterException {
+    Preconditions.checkNotNull(encryptedFilename);
+    Preconditions.checkNotNull(keyParameter);
+    if (fileToEncrypt == null || !fileToEncrypt.exists()) {
+      log.debug("Not encrypting file {} as it does not exist", fileToEncrypt == null ? "null" : fileToEncrypt.getAbsolutePath());
+      // Nothing to do
+      return null;
+    }
+    
     FileOutputStream encryptedWalletOutputStream = null;
     try {
       // Read in the file

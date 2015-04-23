@@ -1819,8 +1819,11 @@ public enum WalletManager implements WalletEventListener {
         walletSummary.getWallet().saveToFile(currentWalletFile);
 
         File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(currentWalletFile, walletSummary.getWalletPassword().getPassword());
-        log.debug("Created AES encrypted wallet as file:\n'{}'\nSize: {} bytes", encryptedAESCopy.getAbsolutePath(), encryptedAESCopy.length());
-
+        if (encryptedAESCopy == null) {
+          log.debug("Did not create AES encrypted wallet");
+        } else {
+          log.debug("Created AES encrypted wallet as file:\n'{}'\nSize: {} bytes", encryptedAESCopy.getAbsolutePath(), encryptedAESCopy.length());
+        }
         BackupService backupService = CoreServices.getOrCreateBackupService();
         backupService.rememberWalletSummaryAndPasswordForRollingBackup(walletSummary, walletSummary.getWalletPassword().getPassword());
         backupService.rememberWalletIdAndPasswordForLocalZipBackup(walletSummary.getWalletId(), walletSummary.getWalletPassword().getPassword());

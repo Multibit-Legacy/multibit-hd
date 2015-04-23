@@ -287,7 +287,7 @@ public enum BackupManager {
     log.debug("Created rolling-backup successfully. Size = {}", walletBackupFile.length());
 
     File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletBackupFile, password);
-    log.debug("Created rolling-backup AES copy successfully as file:\n'{}'", encryptedAESCopy.getAbsolutePath());
+    log.debug("Created rolling-backup AES copy successfully as file:\n'{}'", encryptedAESCopy == null ? "" : encryptedAESCopy.getAbsolutePath());
 
     List<File> rollingBackups = getRollingBackups(walletSummary.getWalletId());
 
