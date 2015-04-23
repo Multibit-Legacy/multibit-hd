@@ -21,7 +21,7 @@ Support for external hardware wallets (such as the Trezor) is [available through
 * [Java HID API](https://code.google.com/p/javahidapi/) - Java library providing USB Human Interface Device (HID) native interface
 * [Google Protocol Buffers](https://code.google.com/p/protobuf/) (protobuf) - For use with serialization and hardware communications
 * [Font Awesome](http://fortawesome.github.io/Font-Awesome/) - for iconography
-* [JWrapper](http://www.jwrapper.com/) - for a smooth installation and update process
+* [Install4j](https://www.ej-technologies.com/download/install4j/files) - for a smooth installation and update process
 
 ### Getting started
 
