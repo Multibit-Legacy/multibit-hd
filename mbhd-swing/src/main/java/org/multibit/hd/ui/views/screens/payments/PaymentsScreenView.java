@@ -348,7 +348,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       return null;
     }
     int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
-    log.debug("selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow);
 
     return ((PaymentTableModel) paymentsTable.getModel()).getPaymentDataList().get(selectedModelRow);
   }
