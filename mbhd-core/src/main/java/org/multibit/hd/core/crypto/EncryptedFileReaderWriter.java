@@ -286,7 +286,7 @@ public class EncryptedFileReaderWriter {
       // Nothing to do
       return null;
     }
-    
+
     FileOutputStream encryptedWalletOutputStream = null;
     try {
       // Read in the file
