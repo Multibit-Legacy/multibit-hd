@@ -27,6 +27,9 @@ public class AcceptLicenceUseCase extends AbstractFestUseCase {
 
     assertLabelText(MessageKey.WELCOME_TITLE);
 
+    // Verify that the English welcome note is showing
+    assertLabelText(MessageKey.LICENCE_NOTE_1);
+
     // Verify that disagree licence is selected by default
     window
       .radioButton(MessageKey.REJECT_LICENCE.getKey())

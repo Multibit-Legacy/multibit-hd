@@ -73,7 +73,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
 
     contentPanel.add(Labels.newSelectLanguageLabel(), "shrink");
     contentPanel.add(languagesComboBox, "growx," + MultiBitUI.COMBO_BOX_WIDTH_MIG + ",push,wrap");
-    contentPanel.add(Labels.newWelcomeNote(), "grow,push,span 2,wrap");
+
   }
 
   @Override

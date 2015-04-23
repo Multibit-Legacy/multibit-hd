@@ -33,9 +33,6 @@ public class WelcomeSelectLanguage_en_US_UseCase extends AbstractFestUseCase {
       .comboBox(MessageKey.SELECT_LANGUAGE.getKey())
       .requireSelection(LanguageKey.EN_US.ordinal());
 
-    // Verify that the English welcome note is showing
-    assertLabelText(MessageKey.WELCOME_NOTE_1);
-
     window
       .button(MessageKey.NEXT.getKey())
       .click();

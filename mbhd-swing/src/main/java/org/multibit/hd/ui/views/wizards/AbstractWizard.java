@@ -190,7 +190,16 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
       log.debug("Showing wizard panel: {}", panelName);
       cardLayout.show(wizardScreenHolder, panelName);
 
-      wizardPanelView.afterShow();
+      // We must ensure that all other EDT processing has completed before
+      // calling afterShow() to guarantee visibility of components
+      // Failure to do this causes problems with popovers during startup
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            wizardPanelView.afterShow();
+          }
+        });
     }
 
   }

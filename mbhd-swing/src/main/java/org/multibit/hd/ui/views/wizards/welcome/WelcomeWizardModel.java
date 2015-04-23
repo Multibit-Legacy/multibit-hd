@@ -148,6 +148,9 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         state = WELCOME_SELECT_LANGUAGE;
         break;
       case WELCOME_SELECT_LANGUAGE:
+        state = WELCOME_ATTACH_HARDWARE_WALLET;
+        break;
+      case WELCOME_ATTACH_HARDWARE_WALLET:
         hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
         if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
           // Trezor mode
@@ -271,8 +274,11 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
       case WELCOME_SELECT_LANGUAGE:
         state = WELCOME_LICENCE;
         break;
-      case WELCOME_SELECT_WALLET:
+      case WELCOME_ATTACH_HARDWARE_WALLET:
         state = WELCOME_SELECT_LANGUAGE;
+        break;
+      case WELCOME_SELECT_WALLET:
+        state = WELCOME_ATTACH_HARDWARE_WALLET;
         break;
       case CREATE_WALLET_PREPARATION:
         state = WELCOME_SELECT_WALLET;
@@ -527,6 +533,11 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
+
+    if (!event.getMessage().isPresent()) {
+      // This could be due to a detach
+      return;
+    }
 
     Failure failure = (Failure) event.getMessage().get();
 

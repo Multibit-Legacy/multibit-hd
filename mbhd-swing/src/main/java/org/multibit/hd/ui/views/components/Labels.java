@@ -1197,7 +1197,7 @@ public class Labels {
 
     return newNoteLabel(
       new MessageKey[]{
-        MessageKey.WELCOME_NOTE_1,
+        MessageKey.LICENCE_NOTE_1,
       }, new Object[][]{});
   }
   /**

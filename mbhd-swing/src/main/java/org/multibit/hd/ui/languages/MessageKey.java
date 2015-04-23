@@ -393,6 +393,7 @@ public enum MessageKey {
 
   WELCOME_TITLE("welcome_title"),
   SELECT_LANGUAGE_TITLE("select_language_title"),
+  ATTACH_HARDWARE_WALLET_TITLE("attach_hardware_wallet_title"),
   SELECT_WALLET_TITLE("select_wallet_title"),
 
   CREATE_WALLET_PREPARATION_TITLE("create_wallet_preparation_title"),
@@ -723,7 +724,7 @@ public enum MessageKey {
 
   // Notes (can contain HTML),
 
-  WELCOME_NOTE_1("welcome_note_1"),
+  LICENCE_NOTE_1("licence_note_1"),
   WELCOME_NOTE_2("welcome_note_2"),
   WELCOME_NOTE_3("welcome_note_3"),
 
@@ -734,6 +735,10 @@ public enum MessageKey {
   SELECT_BACKUP_NOTE_1("select_backup_note_1"),
   SELECT_BACKUP_NOTE_1_TOOLTIP("select_backup_note_1_tooltip"),
   SELECT_BACKUP_NOTE_2("select_backup_note_2"),
+
+  ATTACH_HARDWARE_WALLET_NOTE_1("attach_hardware_wallet_note_1"),
+  ATTACH_HARDWARE_WALLET_NOTE_2("attach_hardware_wallet_note_2"),
+  ATTACH_HARDWARE_WALLET_NOTE_3("attach_hardware_wallet_note_3"),
 
   PREPARATION_NOTE_1("preparation_note_1"),
   PREPARATION_NOTE_2("preparation_note_2"),

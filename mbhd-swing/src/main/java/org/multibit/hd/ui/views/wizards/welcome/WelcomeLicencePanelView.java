@@ -131,7 +131,8 @@ public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWiza
   @Override
   public void afterShow() {
 
-    // This requires a environment popover check
+    // This requires a environment popover check because we will
+    // shortly be revealing wallet words and entering PINs
     checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
 
   }
