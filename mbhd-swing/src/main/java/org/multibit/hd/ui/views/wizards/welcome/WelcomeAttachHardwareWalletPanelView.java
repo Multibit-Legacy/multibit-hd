@@ -6,7 +6,11 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
+import org.multibit.hd.ui.views.components.Popovers;
+import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertModel;
+import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -28,6 +32,9 @@ import java.awt.event.ActionListener;
  */
 
 public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
+
+  // Display environment popovers
+  private ModelAndView<DisplayEnvironmentAlertModel, DisplayEnvironmentAlertView> displayEnvironmentPopoverMaV;
 
   /**
    * Handles periodic increments of rotation
@@ -51,7 +58,8 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
     super(wizard, panelName, MessageKey.ATTACH_HARDWARE_WALLET_TITLE, AwesomeIcon.SHIELD);
 
     // Timer needs to be fairly fast to appear responsive
-    timer = new Timer(500, new ActionListener() {
+    timer = new Timer(
+      500, new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
@@ -66,14 +74,15 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
   @Override
   public void newPanelModel() {
 
-    // No need to bind this to the wizard model
+    displayEnvironmentPopoverMaV = Popovers.newDisplayEnvironmentPopoverMaV(getPanelName());
 
   }
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
 
-    contentPanel.setLayout(new MigLayout(
+    contentPanel.setLayout(
+      new MigLayout(
         Panels.migXYLayout(),
         "[]20[]", // Column constraints
         "10[40]10[40]10[40]10[40]10[40]10[40]10" // Row constraints
@@ -141,14 +150,25 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
         note3Label.setVisible(true);
         break;
       default:
-        timer.stop();
+
+        // Use the timer to continue to check for possible problems
+        // with the hardware wallet
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
+            }
+          });
 
         // Enable the Next button
         ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
 
     }
 
-    timerCount++;
+    if (timerCount < 5) {
+      timerCount++;
+    }
   }
 
   @Override
