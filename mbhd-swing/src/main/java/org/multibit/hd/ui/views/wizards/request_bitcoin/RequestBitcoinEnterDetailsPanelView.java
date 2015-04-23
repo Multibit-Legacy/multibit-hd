@@ -1,16 +1,16 @@
 package org.multibit.hd.ui.views.wizards.request_bitcoin;
 
-import org.bitcoinj.core.Coin;
-import org.bitcoinj.uri.BitcoinURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.uri.BitcoinURI;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.core.dto.WalletSummary;
-import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
+import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -274,25 +274,30 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
 
       @Override
       public void actionPerformed(ActionEvent e) {
+        if (Panels.isLightBoxPopoverShowing()) {
+          // Hide the popover being shown
+          Panels.hideLightBoxPopoverIfPresent();
+        } else {
+          // Show the QR code popover
+          RequestBitcoinEnterDetailsPanelModel model = getPanelModel().get();
 
-        RequestBitcoinEnterDetailsPanelModel model = getPanelModel().get();
+          String bitcoinAddress = model.getDisplayBitcoinAddressModel().getValue();
+          Optional<Coin> coin = model.getEnterAmountModel().getCoinAmount();
 
-        String bitcoinAddress = model.getDisplayBitcoinAddressModel().getValue();
-        Optional<Coin> coin = model.getEnterAmountModel().getCoinAmount();
+          // Form a Bitcoin URI from the contents
+          String bitcoinUri = BitcoinURI.convertToBitcoinURI(
+                  bitcoinAddress,
+                  coin.isPresent() ? coin.get() : null,
+                  transactionLabel.getText(),
+                  null
+          );
 
-        // Form a Bitcoin URI from the contents
-        String bitcoinUri = BitcoinURI.convertToBitcoinURI(
-          bitcoinAddress,
-          coin.isPresent() ? coin.get() : null,
-          transactionLabel.getText(),
-          null
-        );
+          displayQRCodePopoverMaV.getModel().setValue(bitcoinUri);
+          displayQRCodePopoverMaV.getModel().setTransactionLabel(transactionLabel.getText());
 
-        displayQRCodePopoverMaV.getModel().setValue(bitcoinUri);
-        displayQRCodePopoverMaV.getModel().setTransactionLabel(transactionLabel.getText());
-
-        // Show the QR code as a popover
-        Panels.showLightBoxPopover(displayQRCodePopoverMaV.getView().newComponentPanel());
+          // Show the QR code as a popover
+          Panels.showLightBoxPopover(displayQRCodePopoverMaV.getView().newComponentPanel());
+        }
       }
 
     };
