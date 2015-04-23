@@ -252,37 +252,41 @@ public class PaymentRequestDetailPanelView extends AbstractWizardPanelView<Payme
   }
 
   /**
-   * @return A new action for showing the QR code popover
+   * @return A new action for showing or hiding the QR code popover
    */
   private Action getShowQRCodePopoverAction() {
 
     // Show or hide the QR code
     return new AbstractAction() {
-
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        MBHDPaymentRequestData MBHDPaymentRequestData = getWizardModel().getMBHDPaymentRequestData();
+        if (Panels.isLightBoxPopoverShowing()) {
+          // Hide the popover being shown
+          Panels.hideLightBoxPopoverIfPresent();
+        } else {
+          // Show the QR code popover
+          MBHDPaymentRequestData MBHDPaymentRequestData = getWizardModel().getMBHDPaymentRequestData();
 
-        Address bitcoinAddress = MBHDPaymentRequestData.getAddress();
-        Coin coin = MBHDPaymentRequestData.getAmountCoin().isPresent() ? MBHDPaymentRequestData.getAmountCoin().get() : null;
-        String label = MBHDPaymentRequestData.getLabel();
+          Address bitcoinAddress = MBHDPaymentRequestData.getAddress();
+          Coin coin = MBHDPaymentRequestData.getAmountCoin().isPresent() ? MBHDPaymentRequestData.getAmountCoin().get() : null;
+          String label = MBHDPaymentRequestData.getLabel();
 
-        // Form a Bitcoin URI from the contents
-        String bitcoinUri = BitcoinURI.convertToBitcoinURI(
-          bitcoinAddress,
-          coin,
-          label,
-          null
-        );
+          // Form a Bitcoin URI from the contents
+          String bitcoinUri = BitcoinURI.convertToBitcoinURI(
+                  bitcoinAddress,
+                  coin,
+                  label,
+                  null
+          );
 
-        displayQRCodePopoverMaV.getModel().setValue(bitcoinUri);
-        displayQRCodePopoverMaV.getModel().setTransactionLabel(label);
+          displayQRCodePopoverMaV.getModel().setValue(bitcoinUri);
+          displayQRCodePopoverMaV.getModel().setTransactionLabel(label);
 
-        // Show the QR code as a popover
-        Panels.showLightBoxPopover(displayQRCodePopoverMaV.getView().newComponentPanel());
+          // Show the QR code as a popover
+          Panels.showLightBoxPopover(displayQRCodePopoverMaV.getView().newComponentPanel());
+        }
       }
-
     };
   }
 }
