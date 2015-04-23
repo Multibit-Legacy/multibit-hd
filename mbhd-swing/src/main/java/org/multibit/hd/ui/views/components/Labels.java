@@ -1285,8 +1285,7 @@ public class Labels {
   public static JLabel newDebuggerWarningNote() {
 
     JLabel label = newNoteLabel(new CoreMessageKey[]{
-      CoreMessageKey.DEBUGGER_ATTACHED,
-      CoreMessageKey.SECURITY_ADVICE
+      CoreMessageKey.DEBUGGER_ATTACHED
     }, new Object[][]{});
 
     // Allow for danger theme
@@ -1302,8 +1301,7 @@ public class Labels {
   public static JLabel newUnsupportedFirmwareNote() {
 
     JLabel label = newNoteLabel(new CoreMessageKey[]{
-        CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED,
-        CoreMessageKey.SECURITY_ADVICE
+        CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED
       }, new Object[][]{});
 
     // Allow for warning theme
