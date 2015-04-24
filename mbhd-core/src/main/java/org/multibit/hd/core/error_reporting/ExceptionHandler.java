@@ -289,7 +289,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       log.debug("POSTing armored error report file to '{}'", errorReportingUrl);
       response = HttpsUtils.doPost(errorReportingUrl, armoredErrorReport);
     } catch (IOException e) {
-      log.error("Failed to POST error-report.txt.asc", e);
+      log.warn("Failed to POST error-report.txt.asc", e);
       return ErrorReportResult.UPLOAD_FAILED;
     }
 

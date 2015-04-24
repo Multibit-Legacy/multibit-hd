@@ -214,11 +214,11 @@ public class ErrorReportingDialog extends JFrame {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String truncatedMessage = userMessage.getText();
-        if (Strings.isNullOrEmpty(truncatedMessage)) {
-          truncatedMessage = "";
-        } else if (truncatedMessage.length() > 1000) {
-          truncatedMessage = truncatedMessage.substring(0, 1000);
+        String truncatedUserMessage = userMessage.getText();
+        if (Strings.isNullOrEmpty(truncatedUserMessage)) {
+          truncatedUserMessage = "";
+        } else if (truncatedUserMessage.length() > 1000) {
+          truncatedUserMessage = truncatedUserMessage.substring(0, 1000);
         }
 
         // Build the upload URL (do it first to fail fast)
@@ -234,7 +234,10 @@ public class ErrorReportingDialog extends JFrame {
         // Prevent further upload attempts
         ((JButton) e.getSource()).setEnabled(false);
 
-        final String finalTruncatedMessage = truncatedMessage;
+        // Show the upload status (triggers a resize to attract the eye)
+        uploadProgressLabel.setVisible(true);
+
+        final String finalTruncatedMessage = truncatedUserMessage;
 
         // Upload off the EDT
         final ListenableFuture<ErrorReportResult> future = SafeExecutors.newSingleThreadExecutor("error-reporting").submit(
