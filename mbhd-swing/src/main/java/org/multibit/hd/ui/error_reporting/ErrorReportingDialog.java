@@ -53,6 +53,8 @@ public class ErrorReportingDialog extends JFrame {
   private JTextArea currentLog;
   private JScrollPane currentLogScrollPane;
 
+  private JLabel uploadProgressLabel;
+
   private final boolean showApology;
 
   /**
@@ -72,7 +74,7 @@ public class ErrorReportingDialog extends JFrame {
       new MigLayout(
         Panels.migXYDetailLayout() + ",hidemode 1", // Ensure the details do not take up space
         "[][]", // Columns
-        "[]10[][][][][shrink][shrink]" // Rows
+        "[]10[][][][][shrink][shrink][shrink]" // Rows
       ));
 
 
@@ -152,6 +154,10 @@ public class ErrorReportingDialog extends JFrame {
     currentLogLabel.setVisible(false);
     currentLogScrollPane.setVisible(false);
 
+    // Upload progress
+    uploadProgressLabel = Labels.newLabel(MessageKey.ERROR_REPORTING_CONTENTS);
+    uploadProgressLabel.setVisible(false);
+
     // Add them to the panel
     contentPanel.add(preambleLabel, "span 2,push,wrap");
 
@@ -162,6 +168,8 @@ public class ErrorReportingDialog extends JFrame {
 
     contentPanel.add(currentLogLabel, "span 2,wrap");
     contentPanel.add(currentLogScrollPane, "span 2,grow,push,wrap,wmin 10"); // wmin ensures a resize
+
+    contentPanel.add(uploadProgressLabel, "span 2,wrap");
 
     contentPanel.add(Buttons.newCancelButton(getCancelAction()), "align left");
     contentPanel.add(Buttons.newUploadErrorReportButton(getUploadAction()), "align right,wrap");
@@ -206,11 +214,11 @@ public class ErrorReportingDialog extends JFrame {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String truncatedMessage = userMessage.getText();
-        if (Strings.isNullOrEmpty(truncatedMessage)) {
-          truncatedMessage = "";
-        } else if (truncatedMessage.length() > 1000) {
-          truncatedMessage = truncatedMessage.substring(0, 1000);
+        String truncatedUserMessage = userMessage.getText();
+        if (Strings.isNullOrEmpty(truncatedUserMessage)) {
+          truncatedUserMessage = "";
+        } else if (truncatedUserMessage.length() > 1000) {
+          truncatedUserMessage = truncatedUserMessage.substring(0, 1000);
         }
 
         // Build the upload URL (do it first to fail fast)
@@ -226,7 +234,10 @@ public class ErrorReportingDialog extends JFrame {
         // Prevent further upload attempts
         ((JButton) e.getSource()).setEnabled(false);
 
-        final String finalTruncatedMessage = truncatedMessage;
+        final String finalTruncatedMessage = truncatedUserMessage;
+
+        // Indicate that upload is taking place
+        uploadProgressLabel.setVisible(true);
 
         // Upload off the EDT
         final ListenableFuture<ErrorReportResult> future = SafeExecutors.newSingleThreadExecutor("error-reporting").submit(
@@ -285,6 +296,18 @@ public class ErrorReportingDialog extends JFrame {
    */
   private void handleErrorReportResult(ErrorReportResult errorReportResult) {
 
+    // TODO Implement more detailed feedback in Release 0.2
+
+    // Ensure we run on the EDT
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+
+        uploadProgressLabel.setText(Languages.safeText(MessageKey.ERROR_REPORTING_UPLOAD_COMPLETE));
+        uploadProgressLabel.setVisible(true);
+
+      }
+    });
 
   }
 
