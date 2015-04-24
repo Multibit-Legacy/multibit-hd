@@ -235,13 +235,12 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
     // Have a chance of getting a result
 
     // Record basic operating system information for error reporting
-    String systemInfo = String.format(
-      "OS:%s %s (%sbit)\nMultiBit HD Version:%s",
-      OSUtils.getOsName(),
-      OSUtils.getOsVersion(),
-      OSUtils.is64Bit() ? "64" : "32",
-      Configurations.currentConfiguration.getCurrentVersion()
-    );
+    String systemInfo = "OS:"
+      + OSUtils.getOsName()
+      + " " + OSUtils.getOsVersion()
+      + " (" + (OSUtils.is64Bit() ? "64" : "32") + "bit)"
+      + "\nMultiBit HD Version:"
+      + Configurations.currentConfiguration.getCurrentVersion();
 
     // Create a formatted payload for the server
     String errorReport = "-----BEGIN SYSTEM INFO-----\n"
