@@ -294,6 +294,11 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
         if (getWizardModel().isDirty()) {
 
+          if (Panels.isLightBoxPopoverShowing()) {
+            // Ignore this and rely on popover catching the cancel itself
+            return;
+          }
+
           // Check with the user about throwing away their data (handle the outcome with a WizardPopoverHideEvent)
           Panels.showLightBoxPopover(
             Popovers.newDiscardYesNoPopoverMaV(getWizardModel().getPanelName())
