@@ -561,8 +561,7 @@ public class BitcoinNetworkService extends AbstractService {
       if (sendRequestSummary.getSendRequest().isPresent()) {
         // Use the existing SendRequest
         sendRequest = sendRequestSummary.getSendRequest().get();
-        sendRequest.fee = Coin.ZERO;
-        sendRequest.feePerKb = sendRequestSummary.getFeePerKB();
+
       } else {
         // No SendRequest so build one from the information in the summary
         sendRequest = Wallet.SendRequest.to(
@@ -572,14 +571,13 @@ public class BitcoinNetworkService extends AbstractService {
         if (sendRequestSummary.getKeyParameter().isPresent()) {
           sendRequest.aesKey = sendRequestSummary.getKeyParameter().get();
         }
-        sendRequest.fee = Coin.ZERO;
-        sendRequest.feePerKb = sendRequestSummary.getFeePerKB();
         sendRequest.changeAddress = sendRequestSummary.getChangeAddress();
 
         // Require empty wallet to ensure that all funds are included
         sendRequest.emptyWallet = sendRequestSummary.isEmptyWallet();
-
       }
+      sendRequest.fee = Coin.ZERO;
+      sendRequest.feePerKb = sendRequestSummary.getFeePerKB();
 
       // Only include the fee output if not emptying since it interferes
       // with the coin selector
@@ -600,6 +598,7 @@ public class BitcoinNetworkService extends AbstractService {
           log.debug("Not adding client fee as it is smaller than dust : {}", sendRequestSummary.getFeeState().get().getFeeOwed());
           sendRequestSummary.setClientFeeAdded(Optional.<Coin>absent());
         } else {
+          log.debug("Adding client fee output of {} to address {}", sendRequestSummary.getFeeState().get().getFeeOwed(), sendRequestSummary.getFeeState().get().getNextFeeAddress());
           sendRequest.tx.addOutput(
             sendRequestSummary.getFeeState().get().getFeeOwed(),
             sendRequestSummary.getFeeState().get().getNextFeeAddress()
@@ -706,9 +705,13 @@ public class BitcoinNetworkService extends AbstractService {
     // Get the current wallet
     Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
 
-    // Build and append the client fee (if required)
-    if (!workOutIfClientFeeIsRequired(sendRequestSummary, sendRequestSummary.isEmptyWallet())) {
-      return false;
+    // Build and append the client fee (if it is not set already)
+    if (sendRequestSummary.isApplyClientFee()) {
+      log.debug("Apply client fee is already set in sendRequestSummary so no need to work it out");
+    } else {
+      if (!workOutIfClientFeeIsRequired(sendRequestSummary, sendRequestSummary.isEmptyWallet())) {
+        return false;
+      }
     }
 
     if (!sendRequestSummary.isEmptyWallet()) {
@@ -754,16 +757,18 @@ public class BitcoinNetworkService extends AbstractService {
         // Adjust the send request summary accordingly
         recipientAmount = recipientAmount.subtract(clientFeeAmountOptional.get());
         sendRequestSummary.setAmount(recipientAmount);
+
+        // There is a new recipient amount so blank the existing sendRequest (it is reconstructed in the appendSendRequest below)
+        sendRequestSummary.setSendRequest(null);
       } else {
         clientFeeAmountOptional = Optional.absent();
       }
 
       log.debug("Adjusted recipientAmount: {}, clientFeeAmount: {}", recipientAmount.toString(), clientFeeAmountOptional.orNull());
+      sendRequestSummary.setClientFeeAdded(clientFeeAmountOptional);
 
       // Update the SendRequestSummary to ensure it is not an "empty wallet" and has the adjusted recipient amount and client fee
       sendRequestSummary.setEmptyWallet(false);
-
-      sendRequestSummary.setClientFeeAdded(clientFeeAmountOptional);
 
       // Attempt to build and append the send request as if it were standard
       // (This may now add on a client fee transaction output and also adjust the size of the output amounts)
