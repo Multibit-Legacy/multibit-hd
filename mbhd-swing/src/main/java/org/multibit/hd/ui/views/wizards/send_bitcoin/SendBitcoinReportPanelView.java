@@ -130,6 +130,8 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
           transactionConstructionStatusDetail.setText("");
           transactionBroadcastStatusSummary.setText("");
           transactionBroadcastStatusDetail.setText("");
+
+          transactionBroadcastStatusSummary.setIcon(null);
         }
       });
     return true;
