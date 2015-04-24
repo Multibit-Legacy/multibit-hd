@@ -13,11 +13,13 @@ import org.bouncycastle.openpgp.PGPPublicKey;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.services.BRITServices;
 import org.multibit.hd.brit.utils.HttpsUtils;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.logging.LogbackFactory;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -232,8 +234,23 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
 
     // Have a chance of getting a result
 
+    // Record basic operating system information for error reporting
+    String systemInfo = String.format(
+      "OS:%s %s (%sbit)\nMultiBit HD Version:%s",
+      OSUtils.getOsName(),
+      OSUtils.getOsVersion(),
+      OSUtils.is64Bit() ? "64" : "32",
+      Configurations.currentConfiguration.getCurrentVersion()
+    );
+
     // Create a formatted payload for the server
-    String errorReport = "----- BEGIN USER NOTES -----\n" + userNotes + "\n----- BEGIN LOG -----\n" + readTruncatedCurrentLogfile() + "----- END LOG -----\n";
+    String errorReport = "-----BEGIN SYSTEM INFO-----\n"
+      + systemInfo
+      + "\n-----BEGIN USER NOTES-----\n"
+      + userNotes
+      + "\n-----BEGIN LOG-----\n"
+      + readTruncatedCurrentLogfile()
+      + "-----END LOG-----\n";
 
     // Write this to the disk (it's already known to the system)
     final File errorReportFile = new File(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/logs/error-report.txt");
