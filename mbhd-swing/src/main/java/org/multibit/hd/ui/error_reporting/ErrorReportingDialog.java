@@ -53,6 +53,8 @@ public class ErrorReportingDialog extends JFrame {
   private JTextArea currentLog;
   private JScrollPane currentLogScrollPane;
 
+  private JLabel uploadProgressLabel;
+
   private final boolean showApology;
 
   /**
@@ -127,7 +129,7 @@ public class ErrorReportingDialog extends JFrame {
     // Provide space for current log
     currentLogLabel = Labels.newLabel(MessageKey.ERROR_REPORTING_CONTENTS);
     currentLog = TextBoxes.newReadOnlyTextArea(10, 40);
-    currentLog.setText(ExceptionHandler.readCurrentLogfile());
+    currentLog.setText(ExceptionHandler.readTruncatedCurrentLogfile());
 
     // The message is a wall of text so needs scroll bars in many cases
     currentLog.setBorder(null);
@@ -152,6 +154,10 @@ public class ErrorReportingDialog extends JFrame {
     currentLogLabel.setVisible(false);
     currentLogScrollPane.setVisible(false);
 
+    // Upload progress
+    uploadProgressLabel = Labels.newLabel(MessageKey.ERROR_REPORTING_UPLOADING);
+    uploadProgressLabel.setVisible(false);
+
     // Add them to the panel
     contentPanel.add(preambleLabel, "span 2,push,wrap");
 
@@ -162,6 +168,8 @@ public class ErrorReportingDialog extends JFrame {
 
     contentPanel.add(currentLogLabel, "span 2,wrap");
     contentPanel.add(currentLogScrollPane, "span 2,grow,push,wrap,wmin 10"); // wmin ensures a resize
+
+    contentPanel.add(uploadProgressLabel, "span 2,wrap");
 
     contentPanel.add(Buttons.newCancelButton(getCancelAction()), "align left");
     contentPanel.add(Buttons.newUploadErrorReportButton(getUploadAction()), "align right,wrap");
@@ -285,6 +293,16 @@ public class ErrorReportingDialog extends JFrame {
    */
   private void handleErrorReportResult(ErrorReportResult errorReportResult) {
 
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+
+          uploadProgressLabel.setText(Languages.safeText(MessageKey.ERROR_REPORTING_UPLOAD_COMPLETE));
+          uploadProgressLabel.setVisible(true);
+
+        }
+      });
 
   }
 
