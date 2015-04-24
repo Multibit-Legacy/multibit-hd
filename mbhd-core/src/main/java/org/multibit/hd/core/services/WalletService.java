@@ -262,7 +262,7 @@ public class WalletService extends AbstractService {
         bip70PaymentData.add(paymentData);
       }
     }
-    log.debug("Adding in {} BIP70 payment data rows", bip70PaymentData.size());
+    log.trace("Adding in {} BIP70 payment data rows", bip70PaymentData.size());
     lastSeenPaymentDataSet = Sets.union(lastSeenPaymentDataSet, bip70PaymentData);
 
     //log.debug("lastSeenPaymentDataSet:\n" + lastSeenPaymentDataSet.toString());
@@ -271,7 +271,8 @@ public class WalletService extends AbstractService {
 
   public int getPaymentDataSetSize() {
     if (lastSeenPaymentDataSet == null) {
-      getPaymentDataSet();
+      // Self-assignment to keep Findbugs happy
+      lastSeenPaymentDataSet = getPaymentDataSet();
     }
     return lastSeenPaymentDataSet.size();
   }
