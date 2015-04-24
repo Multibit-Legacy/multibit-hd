@@ -324,8 +324,19 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        hide(wizardModel.getPanelName(), false);
+        // We are finishing and this may be a default button
+        // which has non-standard painting behaviour
+        ((JButton) e.getSource()).setEnabled(false);
 
+        // Ensure the button disables before hide giving a cleaner transition
+        // Nimbus paints the text a different colour to the icon otherwise
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              hide(wizardModel.getPanelName(), false);
+            }
+          });
       }
     };
   }
@@ -358,14 +369,27 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        // Ensure the panel updates its model (the button is outside of the panel itself)
-        wizardPanelView.updateFromComponentModels(Optional.absent());
+        // We are moving to the next panel view and this may be a default button
+        // which has non-standard painting behaviour
+        ((JButton) e.getSource()).setEnabled(false);
 
-        // Move to the next state
-        wizardModel.showNext();
+        // Ensure the button disables before hide giving a cleaner transition
+        // Nimbus paints the text a different colour to the icon otherwise
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              // Ensure the panel updates its model (the button is outside of the panel itself)
+              wizardPanelView.updateFromComponentModels(Optional.absent());
 
-        // Show the panel based on the state
-        show(wizardModel.getPanelName());
+              // Move to the next state
+              wizardModel.showNext();
+
+              // Show the panel based on the state
+              show(wizardModel.getPanelName());
+            }
+          });
+
       }
     };
   }
