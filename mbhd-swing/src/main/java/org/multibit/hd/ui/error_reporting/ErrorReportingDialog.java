@@ -129,7 +129,7 @@ public class ErrorReportingDialog extends JFrame {
     // Provide space for current log
     currentLogLabel = Labels.newLabel(MessageKey.ERROR_REPORTING_CONTENTS);
     currentLog = TextBoxes.newReadOnlyTextArea(10, 40);
-    currentLog.setText(ExceptionHandler.readCurrentLogfile());
+    currentLog.setText(ExceptionHandler.readAndTruncateCurrentLogfile());
 
     // The message is a wall of text so needs scroll bars in many cases
     currentLog.setBorder(null);

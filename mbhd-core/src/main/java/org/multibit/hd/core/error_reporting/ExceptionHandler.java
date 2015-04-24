@@ -178,27 +178,33 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
   }
 
   /**
-   * Reads the current logging file (obtained through Logback) as a String
+   * Reads the current logging file (obtained through Logback) and truncates to 200Kb (20+ pages of logs)
+   *
+   * @return The truncated log file (most recent entries remain)
    */
-  public static String readCurrentLogfile() {
+  public static String readAndTruncateCurrentLogfile() {
 
     Optional<File> currentLoggingFile = LogbackFactory.getCurrentLoggingFile();
 
     if (currentLoggingFile.isPresent()) {
-      // Read it
       try {
-        return Files.toString(currentLoggingFile.get(), Charsets.UTF_8);
+        // Read it fully
+        String currentLog = Files.toString(currentLoggingFile.get(), Charsets.UTF_8);
+        // Truncate to a maximum of 200Kb most recent entries
+        int currentLogLength = currentLog.length();
+        return currentLog.substring(Math.max(0, currentLogLength - 204_800));
+
       } catch (IOException e) {
-        return "Current log file not available";
+        return "Current log file could not be read. Error was: " + e.getMessage();
       }
     }
 
-    return "Current log file not available";
+    return "Current log file is not present.";
 
   }
 
   /**
-   * @param userNotes The additional user notes to upload
+   * @param userNotes         The additional user notes to upload
    * @param errorReportingUrl The error reporting URL to use
    *
    * @return The error report result
@@ -223,7 +229,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
     // Have a chance of getting a result
 
     // Create a formatted payload for the server
-    String errorReport = "----- BEGIN USER NOTES -----\n" + userNotes + "\n----- BEGIN LOG -----\n" + readCurrentLogfile() + "----- END LOG -----\n";
+    String errorReport = "-----BEGIN USER NOTES-----\n" + userNotes + "\n-----BEGIN LOG-----\n" + readAndTruncateCurrentLogfile() + "-----END LOG-----\n";
 
     // Write this to the disk (it's already known to the system)
     final File errorReportFile = new File(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/logs/error-report.txt");
