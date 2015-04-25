@@ -73,9 +73,9 @@ public enum CoreMessageKey {
   UNKNOWN("core_unknown"),
   NO_PAYMENT_REQUEST("core_no_payment_request"),
 
-  PAYMENT_SENDING_TO_REQUESTOR("core_payment_sending_to_requestor"),
-  PAYMENT_SENT_TO_REQUESTOR_OK("core_payment_sent_to_requestor_ok"),
-  PAYMENT_SENT_TO_REQUESTOR_FAILED("core_payment_sent_to_requestor_failed"),
+  PAYMENT_SENDING_TO_REQUESTER("core_payment_sending_to_requester"),
+  PAYMENT_SENT_TO_REQUESTER_OK("core_payment_sent_to_requester_ok"),
+  PAYMENT_SENT_TO_REQUESTER_FAILED("core_payment_sent_to_requester_failed"),
 
 
   // These appear to be not used

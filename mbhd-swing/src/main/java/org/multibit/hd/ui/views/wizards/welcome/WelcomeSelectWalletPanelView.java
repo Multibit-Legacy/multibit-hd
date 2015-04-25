@@ -31,6 +31,8 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   // Model
   private WelcomeWizardState currentSelection;
 
+  private JPanel contentPanelCopy = null;
+
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
@@ -60,6 +62,8 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
+
+    contentPanelCopy = contentPanel;
 
     contentPanel.setLayout(
       new MigLayout(
@@ -113,6 +117,11 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
 
   @Override
   public boolean beforeShow() {
+
+    // Clear the content panel and re-initialise
+    contentPanelCopy.removeAll();
+
+    initialiseContent(contentPanelCopy);
 
     return true;
   }

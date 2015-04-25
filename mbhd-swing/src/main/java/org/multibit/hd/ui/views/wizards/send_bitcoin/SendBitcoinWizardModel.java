@@ -860,7 +860,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
                     walletService.writePayments(password);
                   }
 
-                  CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(true, CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_OK, null));
+                  CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(true, CoreMessageKey.PAYMENT_SENT_TO_REQUESTER_OK, null));
                 } else {
                   log.error("No payment and hence cannot save payment or paymentACK");
                 }
@@ -873,7 +873,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
                 CoreEvents.firePaymentSentToRequestorEvent(
                   new PaymentSentToRequestorEvent(
                     false,
-                    CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_FAILED,
+                    CoreMessageKey.PAYMENT_SENT_TO_REQUESTER_FAILED,
                     new String[]{t.getClass().getCanonicalName() + " " + t.getMessage()}));
               }
             });
@@ -885,13 +885,13 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
         CoreEvents.firePaymentSentToRequestorEvent(
           new PaymentSentToRequestorEvent(
             false,
-            CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_FAILED,
+            CoreMessageKey.PAYMENT_SENT_TO_REQUESTER_FAILED,
             new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()}));
       }
     } else {
       String message = "Bitcoin not sent successfully so no payment sent to requestor";
       log.debug(message);
-      CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(false, CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_FAILED, new String[]{message}));
+      CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(false, CoreMessageKey.PAYMENT_SENT_TO_REQUESTER_FAILED, new String[]{message}));
     }
   }
 

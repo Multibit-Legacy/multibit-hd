@@ -619,7 +619,9 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
         @Override
         public void onSuccess(Optional<WalletSummary> result) {
-          log.debug("Result: {}", result);
+          // Hide the wallet summary in production
+          log.trace("Result: {}", result);
+
           // Check the result
           if (!result.isPresent()) {
 

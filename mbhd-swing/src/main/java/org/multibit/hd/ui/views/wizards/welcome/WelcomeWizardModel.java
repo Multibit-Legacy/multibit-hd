@@ -117,6 +117,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   private int trezorWordCount = 0;
   private boolean trezorChecking = false;
+  private WelcomeAttachHardwareWalletPanelView attachHardwareWalletPanelView;
 
   /**
    * @param state The state object
@@ -153,13 +154,20 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
       case WELCOME_ATTACH_HARDWARE_WALLET:
         hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
         if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
-          // Trezor mode
+          // A Trezor is connected
           mode = WelcomeWizardMode.TREZOR;
+          if (hardwareWalletService.get().isWalletPresent()) {
+            // User may want to create or restore since they have an initialised device
+            state = WELCOME_SELECT_WALLET;
+          } else {
+            // User can only create from an uninitialised device
+            state = TREZOR_CREATE_WALLET_PREPARATION;
+          }
         } else {
           // Standard mode
           mode = WelcomeWizardMode.STANDARD;
+          state = WELCOME_SELECT_WALLET;
         }
-        state = WELCOME_SELECT_WALLET;
         break;
       case WELCOME_SELECT_WALLET:
         hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
@@ -267,6 +275,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   @Override
   public void showPrevious() {
 
+    Optional<HardwareWalletService> hardwareWalletService;
+
     switch (state) {
       case WELCOME_LICENCE:
         state = WELCOME_LICENCE;
@@ -296,6 +306,15 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         state = CREATE_WALLET_SEED_PHRASE;
         break;
       case TREZOR_CREATE_WALLET_PREPARATION:
+        hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+        if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
+          // A Trezor is connected
+          mode = WelcomeWizardMode.TREZOR;
+        } else {
+          // Standard mode
+          mode = WelcomeWizardMode.STANDARD;
+        }
+        // Back out to select wallet as the most general solution
         state = WELCOME_SELECT_WALLET;
         break;
       case TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION:
@@ -489,6 +508,35 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
       });
 
+  }
+
+  @Override
+  public void showDeviceDetached(HardwareWalletEvent event) {
+    // Hardware wallet has been attached
+    getAttachHardwareWalletPanelView().setHardwareWalletStatus(
+      Optional.<MessageKey>absent(),
+      false
+    );
+  }
+
+  @Override
+  public void showDeviceReady(HardwareWalletEvent event) {
+
+    // Hardware wallet has been attached
+    getAttachHardwareWalletPanelView().setHardwareWalletStatus(
+      Optional.of(MessageKey.TREZOR_FOUND),
+      true
+    );
+
+  }
+
+  @Override
+  public void showDeviceFailed(HardwareWalletEvent event) {
+    // Hardware wallet has been attached
+    getAttachHardwareWalletPanelView().setHardwareWalletStatus(
+      Optional.of(MessageKey.TREZOR_FAILURE_ALERT),
+      false
+    );
   }
 
   @Override
@@ -997,5 +1045,13 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   public void setTrezorConfirmWordPanelView(CreateTrezorWalletConfirmWordPanelView trezorConfirmWordPanelView) {
     this.trezorConfirmWordPanelView = trezorConfirmWordPanelView;
+  }
+
+  public WelcomeAttachHardwareWalletPanelView getAttachHardwareWalletPanelView() {
+    return attachHardwareWalletPanelView;
+  }
+
+  public void setAttachHardwareWalletPanelView(WelcomeAttachHardwareWalletPanelView attachHardwareWalletPanelView) {
+    this.attachHardwareWalletPanelView = attachHardwareWalletPanelView;
   }
 }
