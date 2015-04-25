@@ -547,9 +547,27 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     switch (state) {
       case TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET:
         switch (buttonRequest.getButtonRequestType()) {
+          case OTHER:
+            break;
+          case FEE_OVER_THRESHOLD:
+            break;
+          case CONFIRM_OUTPUT:
+            break;
+          case RESET_DEVICE:
+            break;
+          case CONFIRM_WORD:
+            break;
           case WIPE_DEVICE:
             // Device requires confirmation to wipe device
             state = TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET;
+            break;
+          case PROTECT_CALL:
+            break;
+          case SIGN_TX:
+            break;
+          case FIRMWARE_CHECK:
+            break;
+          case ADDRESS:
             break;
           default:
             throw new IllegalStateException("Unexpected button: " + buttonRequest.getButtonRequestType().name());
@@ -557,6 +575,14 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         break;
       case TREZOR_CREATE_WALLET_CONFIRM_WORD:
         switch (buttonRequest.getButtonRequestType()) {
+          case OTHER:
+            break;
+          case FEE_OVER_THRESHOLD:
+            break;
+          case CONFIRM_OUTPUT:
+            break;
+          case RESET_DEVICE:
+            break;
           case CONFIRM_WORD:
             trezorWordCount++;
             if (trezorWordCount > trezorSeedPhraseSize.getSize()) {
@@ -568,6 +594,16 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
             // See "operation succeeded" for next state transition
             state = TREZOR_CREATE_WALLET_CONFIRM_WORD;
             trezorConfirmWordPanelView.updateDisplay(trezorWordCount, trezorChecking);
+            break;
+          case WIPE_DEVICE:
+            break;
+          case PROTECT_CALL:
+            break;
+          case SIGN_TX:
+            break;
+          case FIRMWARE_CHECK:
+            break;
+          case ADDRESS:
             break;
           default:
             throw new IllegalStateException("Unexpected button: " + buttonRequest.getButtonRequestType().name());

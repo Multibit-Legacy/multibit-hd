@@ -213,7 +213,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   public void hide(final String panelName, final boolean isExitCancel) {
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "This method should run on the EDT");
+    log.debug("Hide requested for {} with exitCancel {} ", panelName, isExitCancel);
 
     if (!wizardViewMap.containsKey(panelName)) {
       log.error("'{}' is not a valid panel name. Check the panel has been registered in the view map. Registered panels are\n{}", wizardViewMap.keySet());
@@ -516,7 +516,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
         @Override
         public void run() {
 
-          log.debug("Hiding wizard {}", this.getClass().getSimpleName());
+          log.info("Hide and deregister wizard: '{}'", this.getClass().getSimpleName());
 
           // Require some extra time to get the rest of the UI started for credentials wizard
           // There is no chance of the system showing a light box during this time so this

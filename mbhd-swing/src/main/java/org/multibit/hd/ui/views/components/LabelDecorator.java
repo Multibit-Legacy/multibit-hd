@@ -207,6 +207,11 @@ public class LabelDecorator {
    */
   public static void applyReportMessage(JLabel label, Optional<MessageKey> reportMessageKey, boolean reportMessageStatus) {
 
+    // Could an attempt to update an uninitialised wizard label
+    if (label == null) {
+      return;
+    }
+
     if (reportMessageKey.isPresent()) {
       label.setText(Languages.safeText(reportMessageKey.get()));
       AccessibilityDecorator.apply(
