@@ -804,6 +804,19 @@ public class Buttons {
   }
 
   /**
+    * @param action The click action
+    *
+    * @return A new "create" button with icon
+    */
+   public static JButton newCreateButton(Action action) {
+
+     JButton button = newButton(action, MessageKey.CREATE, MessageKey.CREATE_TOOLTIP);
+
+     AwesomeDecorator.applyIcon(AwesomeIcon.PLUS_CIRCLE, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+
+     return button;
+   }
+  /**
    * @param action The click action
    *
    * @return A new "send Bitcoin" wizard button with icon

@@ -63,6 +63,11 @@ public class CredentialsWizard extends AbstractHardwareWalletWizard<CredentialsW
     wizardViewMap.put(
       CredentialsState.CREDENTIALS_RESTORE.name(),
       new CredentialsRestorePanelView(this, CredentialsState.CREDENTIALS_RESTORE.name()));
+
+    // Transition panel that is never shown
+    wizardViewMap.put(
+      CredentialsState.CREDENTIALS_CREATE.name(),
+      new CredentialsCreatePanelView(this, CredentialsState.CREDENTIALS_CREATE.name()));
   }
 
   @Override

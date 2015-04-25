@@ -447,6 +447,28 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     };
   }
 
+  /**
+    * @param wizardView The wizard view (providing a reference to its underlying panel model)
+    *
+    * @return The "create" action based on the model state
+    */
+   public <P> Action getCreateAction(final AbstractWizardPanelView<M, P> wizardView) {
+
+     return new AbstractAction() {
+       @Override
+       public void actionPerformed(ActionEvent e) {
+
+         // The UI will lock up during handover so prevent further events
+         JButton source = (JButton) e.getSource();
+         source.setEnabled(false);
+
+         // Since #17 all create work is done by the welcome wizard
+         // See MainController for the hand over code
+         hide(CredentialsState.CREDENTIALS_CREATE.name(), false);
+
+       }
+     };
+   }
   @Subscribe
   public void onWizardPopoverHideEvent(WizardPopoverHideEvent event) {
 
