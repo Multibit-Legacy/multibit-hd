@@ -371,6 +371,7 @@ public enum MessageKey {
 
   ERROR_REPORTING_UPLOADING("error_reporting_uploading"),
   ERROR_REPORTING_UPLOAD_COMPLETE("error_reporting_upload_complete"),
+  ERROR_REPORTING_UPLOAD_FAILED("error_reporting_upload_failed"),
 
   // Send/request
   REQUEST_BITCOIN_TITLE("request_bitcoin_title"),

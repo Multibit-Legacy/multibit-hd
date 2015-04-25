@@ -169,7 +169,7 @@ public class ErrorReportingDialog extends JFrame {
     contentPanel.add(currentLogLabel, "span 2,wrap");
     contentPanel.add(currentLogScrollPane, "span 2,grow,push,wrap,wmin 10"); // wmin ensures a resize
 
-    contentPanel.add(uploadProgressLabel, "span 2,wrap");
+    contentPanel.add(uploadProgressLabel, "span 2,growx,wrap");
 
     contentPanel.add(Buttons.newCancelButton(getCancelAction()), "align left");
     contentPanel.add(Buttons.newUploadErrorReportButton(getUploadAction()), "align right,wrap");
@@ -294,14 +294,30 @@ public class ErrorReportingDialog extends JFrame {
   /**
    * Performs final actions on close
    */
-  private void handleErrorReportResult(ErrorReportResult errorReportResult) {
+  private void handleErrorReportResult(final ErrorReportResult errorReportResult) {
 
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
         public void run() {
 
-          uploadProgressLabel.setText(Languages.safeText(MessageKey.ERROR_REPORTING_UPLOAD_COMPLETE));
+          final MessageKey uploadProgressKey;
+
+          switch (errorReportResult) {
+            case UPLOAD_OK_KNOWN:
+              uploadProgressKey = MessageKey.ERROR_REPORTING_UPLOAD_COMPLETE;
+              break;
+            case UPLOAD_OK_UNKNOWN:
+              uploadProgressKey = MessageKey.ERROR_REPORTING_UPLOAD_COMPLETE;
+              break;
+            case UPLOAD_FAILED:
+              uploadProgressKey = MessageKey.ERROR_REPORTING_UPLOAD_FAILED;
+              break;
+            default:
+              throw new IllegalStateException("Unknown error report result: " + errorReportResult.name());
+          }
+
+          uploadProgressLabel.setText(Languages.safeText(uploadProgressKey));
           uploadProgressLabel.setVisible(true);
 
         }
