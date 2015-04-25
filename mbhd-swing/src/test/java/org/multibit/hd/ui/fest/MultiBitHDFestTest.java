@@ -363,7 +363,8 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with fresh wallet fixture (cold)</li>
-   * <li>Create a new Trezor hardware wallet</li>
+   * <li>Attach a Trezor when prompted</li>
+   * <li>Create a Trezor hard wallet</li>
    * <li>Unlock the wallet</li>
    * </ul>
    */

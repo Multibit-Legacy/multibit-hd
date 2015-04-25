@@ -5,10 +5,7 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Labels;
-import org.multibit.hd.ui.views.components.ModelAndView;
-import org.multibit.hd.ui.views.components.Panels;
-import org.multibit.hd.ui.views.components.Popovers;
+import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertModel;
 import org.multibit.hd.ui.views.components.display_environment_alert.DisplayEnvironmentAlertView;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -49,6 +46,8 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
   private JLabel note3Icon;
   private JLabel note3Label;
 
+  private JLabel reportStatusLabel;
+
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
@@ -76,6 +75,9 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
 
     displayEnvironmentPopoverMaV = Popovers.newDisplayEnvironmentPopoverMaV(getPanelName());
 
+    // Allow wizard model to make callbacks for hardware wallet status
+    getWizardModel().setAttachHardwareWalletPanelView(this);
+
   }
 
   @Override
@@ -85,7 +87,7 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
       new MigLayout(
         Panels.migXYLayout(),
         "[]20[]", // Column constraints
-        "10[40]10[40]10[40]10[40]10[40]10[40]10" // Row constraints
+        "10[40]10[40]10[40]40[]" // Row constraints
       ));
 
     // Apply the theme
@@ -112,6 +114,12 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
     contentPanel.add(note3Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     note3Icon.setVisible(false);
     note3Label.setVisible(false);
+
+    // Provide an empty status label (populated after show)
+    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.TREZOR_FOUND), null, Optional.<Boolean>absent());
+    reportStatusLabel.setVisible(false);
+
+    contentPanel.add(reportStatusLabel, "span 2,aligny top,wrap");
 
   }
 
@@ -182,4 +190,20 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
 
   }
 
+  /**
+   * @param messageKey The message key (absent implies not visible)
+   * @param status     True for a check mark
+   */
+  public void setHardwareWalletStatus(final Optional<MessageKey> messageKey, final boolean status) {
+
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
+          // Check for report message from hardware wallet
+          LabelDecorator.applyReportMessage(reportStatusLabel, messageKey, status);
+        }
+      });
+
+  }
 }

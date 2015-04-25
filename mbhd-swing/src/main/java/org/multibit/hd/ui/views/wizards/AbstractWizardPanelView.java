@@ -436,8 +436,11 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
           return;
       }
 
-      // Show the popover
-      Panels.showLightBoxPopover(popoverPanel);
+      // Check for an existing lightbox popover
+      if (!Panels.isLightBoxPopoverShowing()) {
+        // Show the popover
+        Panels.showLightBoxPopover(popoverPanel);
+      }
 
       // Discard the environment event now that the user is aware (this prevents multiple showings)
       CoreServices.getApplicationEventService().onEnvironmentEvent(null);
