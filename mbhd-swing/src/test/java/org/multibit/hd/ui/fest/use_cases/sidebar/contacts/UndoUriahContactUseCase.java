@@ -36,6 +36,7 @@ public class UndoUriahContactUseCase extends AbstractFestUseCase {
     // Click on Undo
     window
       .button(MessageKey.UNDO.getKey())
+      .requireEnabled()
       .click();
 
     // Get an updated row count

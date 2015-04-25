@@ -54,12 +54,12 @@ public class
     window
       .button(MessageKey.DELETE_PAYMENT_REQUEST.getKey())
       .requireVisible()
-      .requireEnabled();
+      .requireDisabled();
 
     window
       .button(MessageKey.UNDO.getKey())
       .requireVisible()
-      .requireEnabled();
+      .requireDisabled();
 
     window
       .button(MessageKey.EXPORT.getKey())

@@ -88,9 +88,9 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   @Override
   public JPanel initialiseScreenViewPanel() {
     MigLayout layout = new MigLayout(
-            Panels.migXYDetailLayout(),
-            "[][][][][]push[]", // Column constraints
-            "[shrink][shrink][grow]" // Row constraints
+      Panels.migXYDetailLayout(),
+      "[][][][][]push[]", // Column constraints
+      "[shrink][shrink][grow]" // Row constraints
     );
 
     // Create view components
@@ -160,7 +160,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   @Subscribe
   public void onSlowTransactionSeenEvent(SlowTransactionSeenEvent slowTransactionSeenEvent) {
     log.trace("Received a SlowTransactionSeenEvent.");
-
     update(true);
   }
 
@@ -195,52 +194,64 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     }
   }
 
+  /**
+   * Limit access to the internal update process and ensure it runs off the EDT
+   *
+   * @param refreshData True if the wallet payment data set should be refreshed (expensive)
+   */
   private void update(final boolean refreshData) {
-    executorService.submit(new Runnable() {
-      @Override
-      public void run() {
-        updateInternal(refreshData);
-      }
-    });
+    executorService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          updateInternal(refreshData);
+        }
+      });
   }
 
+  /**
+   * Perform an update of the payment data table off the EDT
+   *
+   * @param refreshData True if the wallet payment data set should be refreshed (expensive)
+   */
   private void updateInternal(final boolean refreshData) {
-    if (paymentsTable != null) {
-      try {
-        // Remember the selected row
-        int selectedTableRow = paymentsTable.getSelectedRow();
+    if (paymentsTable != null && CoreServices.getCurrentWalletService().isPresent()) {
 
-        WalletService walletService = CoreServices.getCurrentWalletService().get();
+      WalletService walletService = CoreServices.getCurrentWalletService().get();
 
-        // Refresh the wallet payment list if asked
-        if (refreshData) {
-          log.debug("Updating the payment data set - expensive");
-          walletService.getPaymentDataSet();
-        }
-        // Check the search MaV model for a query and apply it
-        List<PaymentData> filteredPaymentDataList = walletService.filterPaymentsByContent(enterSearchMaV.getModel().getValue());
+      // Refresh the wallet payment list if asked (may have created/deleted a new PaymentRequest)
+      if (refreshData) {
+        log.debug("Updating the payment data set - expensive");
+        walletService.getPaymentDataSet();
+      }
+      // Check the search MaV model for a query and apply it
+      final List<PaymentData> filteredPaymentDataList = walletService.filterPaymentsByContent(enterSearchMaV.getModel().getValue());
 
-        ((PaymentTableModel) paymentsTable.getModel()).setPaymentData(filteredPaymentDataList, true);
-
-        final int finalSelectedTableRow = selectedTableRow;
-
-        // Update UI
-        SwingUtilities.invokeLater(new Runnable() {
+      // Update the payments table model on the EDT to ensure row selection is correctly maintained for FEST tests
+      SwingUtilities.invokeLater(
+        new Runnable() {
           @Override
           public void run() {
+            // Remember the selected row just before the update
+            int selectedTableRow = paymentsTable.getSelectedRow();
+
+            // Update the table with the new data
+            ((PaymentTableModel) paymentsTable.getModel()).setPaymentData(filteredPaymentDataList, true);
+
             ((PaymentTableModel) paymentsTable.getModel()).fireTableDataChanged();
 
+            log.debug("Selected table row: {}", selectedTableRow);
+
             // Reselect the selected row if possible
-            if (finalSelectedTableRow != -1 && finalSelectedTableRow < paymentsTable.getModel().getRowCount()) {
-              paymentsTable.changeSelection(finalSelectedTableRow, 0, false, false);
+            if (selectedTableRow != -1 && selectedTableRow < paymentsTable.getModel().getRowCount()) {
+              paymentsTable.changeSelection(selectedTableRow, 0, false, false);
             }
             // Update the delete request button
             updateDeleteRequestButton();
           }
         });
-      } catch (IllegalStateException ise) {
-        // No wallet is open - nothing to do
-      }
+    } else {
+      log.warn("Unexpected call to Payments without an open wallet");
     }
   }
 
@@ -264,10 +275,10 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
         // If the payment is a transaction, then fetch the matching payment request data and put them in the model
         if (paymentData instanceof TransactionData) {
           wizard.getWizardModel()
-                  .setMatchingPaymentRequestList(
-                          walletService
-                                  .findPaymentRequestsThisTransactionFunds((TransactionData) paymentData)
-                  );
+            .setMatchingPaymentRequestList(
+              walletService
+                .findPaymentRequestsThisTransactionFunds((TransactionData) paymentData)
+            );
         }
         Panels.showLightBox(wizard.getWizardScreenHolder());
       }
@@ -343,7 +354,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
   private PaymentData getPaymentDataForSelectedTableRow() {
     int selectedTableRow = paymentsTable.getSelectedRow();
-    if (selectedTableRow == -1 || selectedTableRow >= paymentsTable.getRowCount() || selectedTableRow >=  ((PaymentTableModel) paymentsTable.getModel()).getPaymentDataList().size()) {
+    if (selectedTableRow == -1 || selectedTableRow >= paymentsTable.getRowCount() || selectedTableRow >= ((PaymentTableModel) paymentsTable.getModel()).getPaymentDataList().size()) {
       // No row selected or out of bounds due to last payment request delete
       return null;
     }

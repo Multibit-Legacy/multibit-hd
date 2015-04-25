@@ -8,6 +8,7 @@ import org.multibit.hd.ui.fest.use_cases.create_wallet.CreateWalletSelectBackupL
 import org.multibit.hd.ui.fest.use_cases.credentials.UnlockReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.hardware_wallet.*;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
+import org.multibit.hd.ui.fest.use_cases.welcome_select.AttachHardwareWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectCreateTrezorWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
 
@@ -31,6 +32,8 @@ public class CreateTrezorHardwareWalletColdStartRequirements {
     // Work through the licence and language panels
     new AcceptLicenceUseCase(window).execute(parameters);
     new WelcomeSelectLanguage_en_US_UseCase(window).execute(parameters);
+
+    new AttachHardwareWalletUseCase(window).execute(parameters);
 
     // Select create Trezor wallet
     // TODO Remove this
