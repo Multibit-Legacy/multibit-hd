@@ -89,7 +89,7 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
       new MigLayout(
         Panels.migXYLayout(),
         "[]20[]", // Column constraints
-        "10[40]10[40]10[40]40[]" // Row constraints
+        "10[40]10[40]10[40]40[40]10" // Row constraints
       ));
 
     // Apply the theme
