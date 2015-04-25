@@ -48,18 +48,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
   @Override
   public void newPanelModel() {
 
-    // Use the wizard model to determine the mode (don't store the result due to thread safety)
-    if (WelcomeWizardMode.TREZOR.equals(getWizardModel().getMode())) {
-      currentSelection = TREZOR_CREATE_WALLET_PREPARATION;
-    } else {
-      // if there are no soft wallets there willbe an enabled create wallet
-      if (WalletManager.getSoftWalletSummaries(Optional.<Locale>absent()).isEmpty()) {
-        currentSelection = CREATE_WALLET_PREPARATION;
-      } else {
-        // Otherwise use existing wallet will be selected
-        currentSelection = WELCOME_SELECT_WALLET;
-      }
-    }
+    initialiseSelection();
 
     setPanelModel(currentSelection);
 
@@ -98,6 +87,23 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
                       RESTORE_PASSWORD_SEED_PHRASE.name(),
                       RESTORE_WALLET_SEED_PHRASE.name()
               ), "wrap");
+    }
+
+    initialiseSelection();
+  }
+
+  private void initialiseSelection() {
+    // Use the wizard model to determine the mode (don't store the result due to thread safety)
+    if (WelcomeWizardMode.TREZOR.equals(getWizardModel().getMode())) {
+      currentSelection = TREZOR_CREATE_WALLET_PREPARATION;
+    } else {
+      // if there are no soft wallets there willbe an enabled create wallet
+      if (WalletManager.getSoftWalletSummaries(Optional.<Locale>absent()).isEmpty()) {
+        currentSelection = CREATE_WALLET_PREPARATION;
+      } else {
+        // Otherwise use existing wallet will be selected
+        currentSelection = WELCOME_SELECT_WALLET;
+      }
     }
   }
 
