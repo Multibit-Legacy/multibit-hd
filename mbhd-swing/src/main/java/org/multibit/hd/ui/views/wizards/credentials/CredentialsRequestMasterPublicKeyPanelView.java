@@ -69,14 +69,17 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractWizardPa
   @Override
   protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelNext(this, wizard);
+    // If "next" is clicked on this screen we want to trigger a hide
+    // the subsequent event will trigger the handover to the welcome wizard
+    // in MainController
+    PanelDecorator.addExitCancelNextAsFinish(this, wizard);
 
   }
 
   @Override
   public void fireInitialStateViewEvents() {
 
-    // Initialise with "Unlock" disabled to force users to work with Trezor
+    // Initialise with "Next" disabled to force users to work with Trezor
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
       WizardButton.NEXT,
@@ -127,7 +130,7 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractWizardPa
     // No spinner on a failure
     trezorDisplayMaV.getView().setSpinnerVisible(!nextEnabled);
 
-    // Override the earlier button enable setting
+    // Override the earlier button enable setting so we can perform "next as finish"
     ViewEvents.fireWizardButtonEnabledEvent(
       getPanelName(),
       WizardButton.NEXT,

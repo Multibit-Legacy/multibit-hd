@@ -297,7 +297,31 @@ public class PanelDecorator {
    }
 
   /**
-   * <p>Add an exit/cancel, restore, finish button combination</p>
+   * <p>Add an exit/cancel, next button combination. Clicking "next" will trigger the "finish" action.</p>
+   *
+   * @param view   The view containing the panel to decorate
+   * @param wizard The wizard providing the actions
+   * @param <M>    The wizard model type
+   * @param <P>    The wizard panel model type
+   */
+  public static <M extends AbstractWizardModel, P> void addExitCancelNextAsFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+    Preconditions.checkNotNull(view.getWizardScreenPanel(false), "'wizardScreenPanel' must be present");
+
+    // Use the current panel
+    JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
+
+    // Cancel always leads
+    addExitCancel(view, wizard, wizardScreenPanel);
+    addRestore(view, wizard, wizardScreenPanel);
+    addNextAsFinish(view, wizard, wizardScreenPanel);
+
+  }
+
+  /**
+   * <p>Add an exit/cancel, restore, unlock button combination. Clicking "unlock" will trigger the "next" action.</p>
    *
    * @param view   The view containing the panel to decorate
    * @param wizard The wizard providing the actions
@@ -731,7 +755,7 @@ public class PanelDecorator {
   }
 
   /**
-   * <p>Add an "unlock" button as a NExt button into an appropriate cell</p>
+   * <p>Add an "unlock" button that uses the Next button action into an appropriate cell</p>
    *
    * @param view              The view containing the panel to decorate
    * @param wizard            The wizard providing the actions
@@ -747,6 +771,25 @@ public class PanelDecorator {
     view.setNextButton(Buttons.newUnlockButton(wizard.getNextAction(view)));
     wizardScreenPanel.add(view.getNextButton(), "cell 3 2");
   }
+
+  /**
+   * <p>Add a "next" button that uses the Finish button action into an appropriate cell</p>
+   *
+   * @param view              The view containing the panel to decorate
+   * @param wizard            The wizard providing the actions
+   * @param wizardScreenPanel The wizard panel providing the layout
+   * @param <M>               The wizard model type
+   * @param <P>               The wizard panel model type
+   */
+  private static <M extends AbstractWizardModel, P> void addNextAsFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard, JPanel wizardScreenPanel) {
+
+    Preconditions.checkNotNull(view, "'view' must be present");
+    Preconditions.checkNotNull(view, "'wizard' must be present");
+
+    view.setNextButton(Buttons.newNextButton(wizard.getFinishAction(view)));
+    wizardScreenPanel.add(view.getNextButton(), "cell 3 2");
+  }
+
   /**
    * <p>Add an "apply" button into an appropriate cell</p>
    *

@@ -210,11 +210,12 @@ public class LabelDecorator {
    * @param reportMessageStatus The status (true then label has a check mark otherwise a cross)
    */
   public static void applyReportMessage(JLabel label, Optional<MessageKey> reportMessageKey, boolean reportMessageStatus) {
+
+    // Could an attempt to update an uninitialised wizard label
     if (label == null) {
-      // Do nothing
-      log.debug("No label to attach report label to");
       return;
     }
+
     if (reportMessageKey.isPresent()) {
       label.setText(Languages.safeText(reportMessageKey.get()));
       AccessibilityDecorator.apply(
