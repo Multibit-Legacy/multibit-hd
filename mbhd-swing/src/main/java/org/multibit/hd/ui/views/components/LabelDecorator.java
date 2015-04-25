@@ -30,7 +30,7 @@ import java.awt.*;
  * @since 0.0.1
  */
 public class LabelDecorator {
-  
+
   private static final Logger log = LoggerFactory.getLogger(LabelDecorator.class);
 
   /**

@@ -27,7 +27,6 @@ public class CreateTrezorHardwareWalletWarmStartRequirements {
     Map<String, Object> parameters = Maps.newHashMap();
 
     // Select create Trezor wallet
-    // TODO Remove this
     new WelcomeSelectCreateTrezorWalletUseCase(window).execute(parameters);
 
     // Verify the Trezor preparation

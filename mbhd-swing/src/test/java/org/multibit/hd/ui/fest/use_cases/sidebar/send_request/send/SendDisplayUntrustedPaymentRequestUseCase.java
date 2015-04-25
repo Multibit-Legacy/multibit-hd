@@ -37,6 +37,7 @@ public class SendDisplayUntrustedPaymentRequestUseCase extends AbstractFestUseCa
 
     // Wait for the alert to appear
     pauseForComponentReset();
+    pauseForComponentReset();
 
     // Check that an alert message is present
     assertLabelContainsValue("alert_message_label", "Please donate to MultiBit");

@@ -123,24 +123,6 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with fresh application directory</li>
-   * <li>Create a wallet</li>
-   * </ul>
-   */
-  @Test
-  public void verifyCreateWallet_ro_RO_ColdStart() throws Exception {
-
-    // Start with a completely empty random application directory
-    arrangeFresh(Optional.<HardwareWalletFixture>absent());
-
-    // Create a wallet through the welcome wizard
-    WelcomeWizardCreateWallet_ro_RO_Requirements.verifyUsing(window);
-
-  }
-
-  /**
-   * <p>Verify the following:</p>
-   * <ul>
-   * <li>Start with fresh application directory</li>
    * <li>Restore a wallet using the seed phrase and timestamp</li>
    * </ul>
    */
@@ -631,6 +613,24 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
     UnlockTrezorHardwareWalletUnsupportedConfigurationPassphraseRequirements.verifyUsing(window, hardwareWalletFixture);
 
   }
+
+  /**
+    * <p>Verify the following:</p>
+    * <ul>
+    * <li>Start with fresh application directory</li>
+    * <li>Create a wallet</li>
+    * </ul>
+    */
+   @Test
+   public void verifyCreateWallet_ro_RO_ColdStart() throws Exception {
+
+     // Start with a completely empty random application directory
+     arrangeFresh(Optional.<HardwareWalletFixture>absent());
+
+     // Create a wallet through the welcome wizard
+     WelcomeWizardCreateWallet_ro_RO_Requirements.verifyUsing(window);
+
+   }
 
   ////////////////////////////////////////////////////////////////
 

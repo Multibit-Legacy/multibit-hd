@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
@@ -14,6 +15,7 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Locale;
 
 import static org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState.*;
 
@@ -50,7 +52,13 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
     if (WelcomeWizardMode.TREZOR.equals(getWizardModel().getMode())) {
       currentSelection = TREZOR_CREATE_WALLET_PREPARATION;
     } else {
-      currentSelection = WELCOME_SELECT_WALLET;
+      // if there are no soft wallets there willbe an enabled create wallet
+      if (WalletManager.getSoftWalletSummaries(Optional.<Locale>absent()).isEmpty()) {
+        currentSelection = CREATE_WALLET_PREPARATION;
+      } else {
+        // Otherwise use existing wallet will be selected
+        currentSelection = WELCOME_SELECT_WALLET;
+      }
     }
 
     setPanelModel(currentSelection);
@@ -83,12 +91,13 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
         ), "wrap");
     } else {
       contentPanel.add(
-        Panels.newWalletSelector(
-          this,
-          WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
-          RESTORE_PASSWORD_SEED_PHRASE.name(),
-          RESTORE_WALLET_SEED_PHRASE.name()
-        ), "wrap");
+              Panels.newWalletSelector(
+                      this,
+                      CREATE_WALLET_PREPARATION.name(), // Relies on create being default
+                      WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
+                      RESTORE_PASSWORD_SEED_PHRASE.name(),
+                      RESTORE_WALLET_SEED_PHRASE.name()
+              ), "wrap");
     }
   }
 
