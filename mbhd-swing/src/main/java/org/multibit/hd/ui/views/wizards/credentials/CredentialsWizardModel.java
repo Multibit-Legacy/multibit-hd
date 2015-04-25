@@ -169,7 +169,9 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         break;
       case CREDENTIALS_RESTORE:
         break;
-      case CREDENTIALS_LOAD_WALLET_REPORT:
+      case CREDENTIALS_CREATE:
+        break;
+       case CREDENTIALS_LOAD_WALLET_REPORT:
         break;
       default:
         throw new IllegalStateException("Cannot showNext with a state of " + state);

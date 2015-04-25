@@ -67,6 +67,9 @@ public enum MessageKey {
   RESTORE("restore"),
   RESTORE_TOOLTIP("restore_tooltip"),
 
+  CREATE("create"),
+  CREATE_TOOLTIP("create_tooltip"),
+
   SEARCH("search"),
   SEARCH_TOOLTIP("search_tooltip"),
 

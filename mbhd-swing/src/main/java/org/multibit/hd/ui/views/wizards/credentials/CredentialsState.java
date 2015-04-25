@@ -46,13 +46,19 @@ public enum CredentialsState {
    */
   CREDENTIALS_LOAD_WALLET_REPORT,
 
-   /**
+  /**
    * Special case state used by the restore button action to trigger
    * a handover to the welcome wizard
    */
   CREDENTIALS_RESTORE,
 
-  // End of enum
+  /**
+   * Special case state used by the create button action to trigger
+   * a handover to the welcome wizard
+   */
+  CREDENTIALS_CREATE,
+
+   // End of enum
   ;
 
 }

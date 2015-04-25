@@ -96,7 +96,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
   @Override
   protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelRestoreUnlockAsNext(this, wizard);
+    PanelDecorator.addExitCancelCreateRestoreUnlockAsNext(this, wizard);
 
   }
 
