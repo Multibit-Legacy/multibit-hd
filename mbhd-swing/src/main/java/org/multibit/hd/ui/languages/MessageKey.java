@@ -803,6 +803,7 @@ public enum MessageKey {
   SELECT_WALLET_NOTE_1("select_wallet_note_1"),
 
   RESTORE_WALLET_NOTE_1("restore_wallet_note_1"),
+  RESTORE_WALLET_NOTE_2("restore_wallet_note_2"),
 
   CHANGE_PASSWORD_NOTE_1("change_password_note_1"),
   CHANGE_PASSWORD_NOTE_2("change_password_note_2"),

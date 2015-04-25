@@ -1569,7 +1569,8 @@ public class Labels {
   public static JLabel newRestoreWalletNote() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.RESTORE_WALLET_NOTE_1
+      MessageKey.RESTORE_WALLET_NOTE_1,
+      MessageKey.RESTORE_WALLET_NOTE_2
     }, new Object[][]{});
 
   }
