@@ -9,6 +9,7 @@ import org.multibit.hd.core.events.BitcoinSendProgressEvent;
 import org.multibit.hd.core.events.BitcoinSendingEvent;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
+import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -308,9 +309,10 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-
         final boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
         log.debug("Firing event to header viewable to:  {}", viewHeader);
+        ViewEvents.fireBalanceChangedEvent(
+                             WalletManager.INSTANCE.getCurrentWalletBalance().get(), null, Optional.<String>absent());
         ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
       }
     });

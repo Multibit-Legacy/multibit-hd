@@ -102,7 +102,7 @@ public class HeaderView extends AbstractView {
   @Subscribe
   public void onBalanceChangedEvent(final BalanceChangedEvent event) {
 
-    log.trace("Saw an onBalanceChangedEvent: {}", event);
+    log.debug("Saw an onBalanceChangedEvent: {}", event);
 
     // Handle the update
     balanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
