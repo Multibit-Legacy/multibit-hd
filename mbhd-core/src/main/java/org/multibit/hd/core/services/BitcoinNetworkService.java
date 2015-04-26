@@ -754,8 +754,10 @@ public class BitcoinNetworkService extends AbstractService {
       Optional<Coin> clientFeeAmountOptional;
       if (sendRequestSummary.isApplyClientFee()) {
         clientFeeAmountOptional = Optional.of(sendRequestSummary.getFeeState().get().getFeeOwed());
-        // Adjust the send request summary accordingly
-        recipientAmount = recipientAmount.subtract(clientFeeAmountOptional.get());
+        // Adjust the send request summary accordingly (it may be negative if user has donated to multibit.org
+        if (sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(Coin.ZERO) >0) {
+          recipientAmount = recipientAmount.subtract(clientFeeAmountOptional.get());
+        }
         sendRequestSummary.setAmount(recipientAmount);
 
         // There is a new recipient amount so blank the existing sendRequest (it is reconstructed in the appendSendRequest below)
@@ -1176,46 +1178,46 @@ public class BitcoinNetworkService extends AbstractService {
         });
       ListenableFuture<Transaction> broadcastFuture = transactionBroadcast.future();
       Futures.addCallback(
-        broadcastFuture, new FutureCallback<Transaction>() {
-          @Override
-          public void onSuccess(Transaction transaction) {
-            log.info("Future says transaction '{}' has broadcast successfully", transaction.getHashAsString());
+              broadcastFuture, new FutureCallback<Transaction>() {
+                @Override
+                public void onSuccess(Transaction transaction) {
+                  log.info("Future says transaction '{}' has broadcast successfully", transaction.getHashAsString());
 
-            // Declare the send a success
-            CoreEvents.fireBitcoinSentEvent(
-              new BitcoinSentEvent(
-                Optional.of(transaction),
-                sendRequestSummary.getDestinationAddress(),
-                sendRequestSummary.getTotalAmount(),
-                sendRequestSummary.getChangeAddress(),
-                Optional.of(sendRequest.fee),
-                sendRequestSummary.getClientFeeAdded(),
-                true,
-                CoreMessageKey.BITCOIN_SENT_OK,
-                null
-              ));
-          }
+                  // Declare the send a success
+                  CoreEvents.fireBitcoinSentEvent(
+                          new BitcoinSentEvent(
+                                  Optional.of(transaction),
+                                  sendRequestSummary.getDestinationAddress(),
+                                  sendRequestSummary.getTotalAmount(),
+                                  sendRequestSummary.getChangeAddress(),
+                                  Optional.of(sendRequest.fee),
+                                  sendRequestSummary.getClientFeeAdded(),
+                                  true,
+                                  CoreMessageKey.BITCOIN_SENT_OK,
+                                  null
+                          ));
+                }
 
-          @Override
-          public void onFailure(Throwable throwable) {
-            // This can't happen with the current code, but just in case one day that changes ...
-            log.error("Future says transaction has NOT broadcast successfully. Error: '{}'", throwable);
+                @Override
+                public void onFailure(Throwable throwable) {
+                  // This can't happen with the current code, but just in case one day that changes ...
+                  log.error("Future says transaction has NOT broadcast successfully. Error: '{}'", throwable);
 
-            // Declare the send a failure
-            // TODO Add i18n support for "No message" if required
-            CoreEvents.fireBitcoinSentEvent(
-              new BitcoinSentEvent(
-                Optional.<Transaction>absent(), sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
-                sendRequestSummary.getChangeAddress(),
-                Optional.<Coin>absent(),
-                Optional.<Coin>absent(),
-                false,
-                CoreMessageKey.THE_ERROR_WAS,
-                new String[]{throwable == null ? "No message" : throwable.getMessage()}
-              ));
+                  // Declare the send a failure
+                  // TODO Add i18n support for "No message" if required
+                  CoreEvents.fireBitcoinSentEvent(
+                          new BitcoinSentEvent(
+                                  Optional.<Transaction>absent(), sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
+                                  sendRequestSummary.getChangeAddress(),
+                                  Optional.<Coin>absent(),
+                                  Optional.<Coin>absent(),
+                                  false,
+                                  CoreMessageKey.THE_ERROR_WAS,
+                                  new String[]{throwable == null ? "No message" : throwable.getMessage()}
+                          ));
 
-          }
-        });
+                }
+              });
 
       log.debug("Initiated broadcast of transaction: '{}'", Utils.HEX.encode(sendRequest.tx.bitcoinSerialize()));
 

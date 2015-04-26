@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.events.BitcoinSendProgressEvent;
 import org.multibit.hd.core.events.BitcoinSendingEvent;
@@ -12,6 +13,7 @@ import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
@@ -114,7 +116,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
       getCancelButton().setEnabled(true);
       ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
     } else {
-      // Regular send reports have a Finish button, which is initially diabled
+      // Regular send reports have a Finish button, which is initially disabled
       PanelDecorator.addFinish(this, wizard);
       ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
     }
@@ -135,6 +137,11 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
           transactionBroadcastStatusSummary.setIcon(null);
         }
       });
+
+
+    // Ensure the header is switched off whilst the send is in progress
+    ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
+
     return true;
   }
 
@@ -163,6 +170,8 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
                   } else {
                     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
                   }
+                  // Switch header back to regular visibility
+                  switchHeaderOn();
                 } else {
                   // Transaction must be progressing in some manner
                   if (lastTransactionCreationEvent != null) {
@@ -229,6 +238,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
             } else {
                 ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
             }
+            switchHeaderOn();
           }
         }
       });
@@ -334,7 +344,21 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
             LabelDecorator.applyWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
             LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
           }
+
+          switchHeaderOn();
         }
       });
+  }
+
+  private void switchHeaderOn() {
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+
+        final boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
+        log.debug("Firing event to header viewable to:  {}", viewHeader);
+        ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
+      }
+    });
   }
 }

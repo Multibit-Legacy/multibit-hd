@@ -2,12 +2,8 @@ package org.multibit.hd.ui.views;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.events.BitcoinSendingEvent;
-import org.multibit.hd.core.events.BitcoinSentEvent;
-import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
@@ -28,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -55,9 +50,6 @@ public class HeaderView extends AbstractView {
   public HeaderView() {
 
     super();
-
-    // Listenable for transaction events
-    CoreEvents.subscribe(this);
 
     contentPanel = Panels.newPanel(
             new MigLayout(
@@ -92,11 +84,6 @@ public class HeaderView extends AbstractView {
 
     populateAlertPanel();
 
-  }
-
-  public void unregister() {
-    super.unregister();
-    CoreEvents.unsubscribe(this);
   }
 
   /**
@@ -215,42 +202,20 @@ public class HeaderView extends AbstractView {
     if (event.getViewKey().equals(ViewKey.HEADER)) {
       log.trace("Saw a ViewChangedEvent {}", event);
 
-      log.trace("Header now has visibility: {} ", event.isVisible());
-      balanceDisplayMaV.getView().setVisible(event.isVisible());
-      if (alertMessageLabel.getText().length() != 0 && event.isVisible()) {
-        alertPanel.setVisible(event.isVisible());
-      }
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Header now has visibility: {} ", event.isVisible());
+          balanceDisplayMaV.getView().setVisible(event.isVisible());
+          if (alertMessageLabel.getText().length() != 0 && event.isVisible()) {
+            alertPanel.setVisible(event.isVisible());
+          }
 
-      balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
+          balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
+        }
+      });
+
     }
-  }
-
-  @Subscribe
-  public void onBitcoinSendingEvent(final BitcoinSendingEvent bitcoinSendingEvent) {
-    // When a send is in progress hide the balance as it will only show 'available to spend'
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        log.debug("Switching off balance as send has just started");
-        balanceDisplayMaV.getView().setVisible(false);
-      }
-    });
-  }
-
-  @Subscribe
-  public void onBitcoinSentEvent(final BitcoinSentEvent bitcoinSentEvent) {
-    // When a transaction has been successful sent, enable the balance as per the configuration
-
-    // Wait a few milliseconds so that the wallet balance updates to full amount
-    Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        log.debug("Updating balance visibility as send has just completed");
-        balanceDisplayMaV.getView().setVisible(Configurations.currentConfiguration.getAppearance().isShowBalance());
-      }
-
-    });
   }
 
   /**

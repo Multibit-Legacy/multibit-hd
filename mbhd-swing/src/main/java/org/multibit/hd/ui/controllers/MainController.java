@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.*;
+import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
@@ -11,8 +12,8 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
-import org.multibit.hd.core.events.*;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
+import org.multibit.hd.core.events.*;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
@@ -1561,6 +1562,18 @@ public class MainController extends AbstractController implements
                       ControllerEvents.fireAddAlertEvent(alertModel);
                     }
                   });
+
+                // Fire a BitcoinSentEvent failure
+                CoreEvents.fireBitcoinSentEvent(
+                              new BitcoinSentEvent(
+                                Optional.<Transaction>absent(), null, transactionData.getAmountCoin().orNull(),
+                                null,
+                                Optional.<Coin>absent(),
+                                Optional.<Coin>absent(),
+                                false,
+                                CoreMessageKey.THE_ERROR_WAS,
+                                new String[]{Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER)}
+                              ));
               }
             }
           }

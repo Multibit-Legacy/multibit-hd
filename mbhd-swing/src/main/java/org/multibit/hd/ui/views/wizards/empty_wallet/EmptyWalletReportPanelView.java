@@ -3,14 +3,17 @@ package org.multibit.hd.ui.views.wizards.empty_wallet;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.events.BitcoinSendProgressEvent;
 import org.multibit.hd.core.events.BitcoinSendingEvent;
 import org.multibit.hd.core.events.BitcoinSentEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
@@ -18,6 +21,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +75,6 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
-
     contentPanel.setLayout(
       new MigLayout(
         Panels.migXYLayout(),
@@ -112,6 +115,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
   @Override
   protected void initialiseButtons(AbstractWizard<EmptyWalletWizardModel> wizard) {
     PanelDecorator.addFinish(this, wizard);
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
   }
 
   @Override
@@ -120,6 +124,9 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     transactionConstructionStatusDetail.setText("");
     transactionBroadcastStatusSummary.setText("");
     transactionBroadcastStatusDetail.setText("");
+
+    // Ensure the header is switched off whilst the send is in progress
+    ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
 
     return true;
   }
@@ -134,6 +141,11 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
       // Hardware wallet report indicates cancellation
       transactionConstructionStatusSummary.setVisible(false);
       transactionConstructionStatusDetail.setVisible(false);
+
+      ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+
+      // Switch header back to regular visibility
+      switchHeaderOn();
     } else {
       // Transaction must be progressing in some manner
       if (lastTransactionCreationEvent != null) {
@@ -163,7 +175,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
   }
 
   @Subscribe
-  public void onTransactionCreationEvent(TransactionCreationEvent transactionCreationEvent) {
+  public void onTransactionCreationEvent(final TransactionCreationEvent transactionCreationEvent) {
 
     log.debug("Received the TransactionCreationEvent: " + transactionCreationEvent.toString());
 
@@ -174,19 +186,27 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
       return;
     }
 
-    if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
-      LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
-      transactionConstructionStatusDetail.setText("");
-      LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
-    } else {
-      String detailMessage = Languages.safeText(
-        transactionCreationEvent.getTransactionCreationFailureReasonKey(),
-        (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData()
-      );
-      LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
-      LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, detailMessage);
-      LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
-    }
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+          LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
+          transactionConstructionStatusDetail.setText("");
+          LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
+        } else {
+          String detailMessage = Languages.safeText(
+            transactionCreationEvent.getTransactionCreationFailureReasonKey(),
+            (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData()
+          );
+          LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
+          LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, detailMessage);
+          LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
+
+          ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+          switchHeaderOn();
+        }
+      }
+    });
   }
 
   @Subscribe
@@ -265,6 +285,9 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
       new Runnable() {
         @Override
         public void run() {
+          // Enable the finish button once the transaction is sent
+          ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+
           if (bitcoinSentEvent.isSendWasSuccessful()) {
             LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
             LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
@@ -275,7 +298,21 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
             LabelDecorator.applyWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
             LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
           }
+
+          switchHeaderOn();
         }
       });
+  }
+
+  private void switchHeaderOn() {
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+
+        final boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
+        log.debug("Firing event to header viewable to:  {}", viewHeader);
+        ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
+      }
+    });
   }
 }
