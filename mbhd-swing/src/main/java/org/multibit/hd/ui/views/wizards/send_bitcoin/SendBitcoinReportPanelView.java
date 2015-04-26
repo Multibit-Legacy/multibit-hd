@@ -114,8 +114,9 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
       getCancelButton().setEnabled(true);
       ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
     } else {
-      // Regular send reports have a Finish button
+      // Regular send reports have a Finish button, which is initially diabled
       PanelDecorator.addFinish(this, wizard);
+      ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
     }
   }
 
@@ -140,28 +141,34 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   @Override
   public void afterShow() {
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
+            new Runnable() {
+              @Override
+              public void run() {
 
-          if (getWizardModel().isBIP70()) {
-            getNextButton().requestFocusInWindow();
-          } else {
-            getFinishButton().requestFocusInWindow();
-          }
-          // Check for report message from hardware wallet
-          LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
+                if (getWizardModel().isBIP70()) {
+                  getNextButton().requestFocusInWindow();
+                } else {
+                  getFinishButton().requestFocusInWindow();
+                }
+                // Check for report message from hardware wallet
+                LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
 
-          if (getWizardModel().getReportMessageKey().isPresent() && !getWizardModel().getReportMessageStatus()) {
-            // Hardware wallet report indicates cancellation
-            transactionConstructionStatusSummary.setVisible(false);
-            transactionConstructionStatusDetail.setVisible(false);
-          } else {
-            // Transaction must be progressing in some manner
-            if (lastTransactionCreationEvent != null) {
-              onTransactionCreationEvent(lastTransactionCreationEvent);
-              lastTransactionCreationEvent = null;
-            }
+                if (getWizardModel().getReportMessageKey().isPresent() && !getWizardModel().getReportMessageStatus()) {
+                  // Hardware wallet report indicates cancellation
+                  transactionConstructionStatusSummary.setVisible(false);
+                  transactionConstructionStatusDetail.setVisible(false);
+
+                  if (getWizardModel().isBIP70()) {
+                    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+                  } else {
+                    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+                  }
+                } else {
+                  // Transaction must be progressing in some manner
+                  if (lastTransactionCreationEvent != null) {
+                    onTransactionCreationEvent(lastTransactionCreationEvent);
+                    lastTransactionCreationEvent = null;
+                  }
 
                   if (lastBitcoinSendingEvent != null) {
                     onBitcoinSendingEvent(lastBitcoinSendingEvent);
@@ -215,6 +222,13 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
             LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
             LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, detailMessage);
             LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
+
+            // If transaction creation failed enable the Finish/ Next button
+            if (getWizardModel().isBIP70()) {
+                ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+            } else {
+                ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+            }
           }
         }
       });
@@ -301,10 +315,13 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
         @Override
         public void run() {
 
-          // Enable the next button on BIP70 payments once the transaction is sent
           if (getWizardModel().isBIP70()) {
-            getCancelButton().setEnabled(false);
-            ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+              // Enable the next button on BIP70 payments once the transaction is sent
+              getCancelButton().setEnabled(false);
+              ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+          } else {
+              // Enable the finish button once the transaction is sent
+              ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
           }
 
           if (bitcoinSentEvent.isSendWasSuccessful()) {
