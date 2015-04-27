@@ -551,7 +551,7 @@ public enum WalletManager implements WalletEventListener {
       }
 
       // Create a wallet using the root node
-      DeterministicKey rootNodePubOnly = rootNode.getPubOnly();
+      DeterministicKey rootNodePubOnly = rootNode.dropPrivateBytes();
       log.debug("Watching wallet based on: {}", rootNodePubOnly);
 
       rootNodePubOnly.setCreationTimeSeconds(creationTimeInSeconds);
