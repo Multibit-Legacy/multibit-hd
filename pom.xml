@@ -350,7 +350,7 @@
       <artifactId>trezor</artifactId>
     </dependency>
 
-    <!-- All logging is through SLF4J and Logback -->
+    <!-- All logging is through SLF4J and Logback in JSON for Logstash -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jul-to-slf4j</artifactId>
@@ -358,6 +358,11 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.logstash.logback</groupId>
+      <artifactId>logstash-logback-encoder</artifactId>
+      <version>4.2</version>
     </dependency>
 
     <!-- Google Guava for code utilities -->

@@ -13,6 +13,7 @@ import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import ch.qos.logback.core.spi.FilterAttachable;
 import com.google.common.base.Optional;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import net.logstash.logback.encoder.LogstashEncoder;
 import org.multibit.hd.core.config.LoggingConfiguration;
 
 import java.io.File;
@@ -21,6 +22,7 @@ import java.io.File;
  * <p>Factory to provide the following to logging framework:</p>
  * <ul>
  * <li>Creation of various appenders for Logback</li>
+ * <li>Default formats are Human Readable for console and JSON for file to assist Logstash integration</li>
  * </ul>
  *
  * @since 0.0.1
@@ -63,6 +65,11 @@ public class LogbackFactory {
     LoggerContext context,
     String logFormat) {
 
+    // Use Logstash JSON encoding for files
+    final LogstashEncoder encoder = new LogstashEncoder();
+    encoder.start();
+
+    // Provide consistent format
     final LogFormatter formatter = new LogFormatter(context, fileConfiguration.getTimeZone());
 
     if (logFormat != null) {
@@ -79,6 +86,7 @@ public class LogbackFactory {
     appender.setLayout(formatter);
     appender.setFile(fileConfiguration.getCurrentLogFilename());
     appender.setPrudent(false); // We don't expect multiple JVMs
+    appender.setEncoder(encoder);
 
     addThresholdFilter(appender, fileConfiguration.getThreshold());
 
