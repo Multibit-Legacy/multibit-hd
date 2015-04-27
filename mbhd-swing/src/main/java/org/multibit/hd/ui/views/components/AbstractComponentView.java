@@ -5,6 +5,7 @@ import org.multibit.hd.ui.models.Model;
 import org.multibit.hd.ui.views.View;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 
 /**
  * <p>Abstract base class to provide the following to components:</p>
@@ -83,5 +84,15 @@ public abstract class AbstractComponentView<M extends Model> implements View<M> 
    * <p>Implementers should select a primary component to <code>requestFocusInWindow()</code></p>
    */
   public abstract void requestInitialFocus();
+
+  /**
+   * Configure the panel to call an action when ESC is pressed and the panel has focus
+   */
+  protected void useEscToClose(Action closeAction) {
+    // Add support for using ESC to close the panel
+    panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+      .put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "ESCAPE_KEY");
+    panel.getActionMap().put("ESCAPE_KEY", closeAction);
+  }
 
 }

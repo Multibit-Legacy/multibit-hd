@@ -301,11 +301,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
 
       public void mousePressed(MouseEvent e) {
 
-        log.debug("Mouse click");
-
         if (e.getClickCount() == 1) {
-
-          log.debug("Mouse click 1");
 
           // Toggle the check mark
           JTable target = (JTable) e.getSource();
@@ -324,8 +320,6 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
         }
 
         if (e.getClickCount() == 2) {
-
-          log.debug("Mouse click 2");
 
           // Force select the check mark
           JTable target = (JTable) e.getSource();

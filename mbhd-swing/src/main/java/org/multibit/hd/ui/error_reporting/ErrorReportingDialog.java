@@ -74,7 +74,7 @@ public class ErrorReportingDialog extends JFrame {
       new MigLayout(
         Panels.migXYDetailLayout() + ",hidemode 1", // Ensure the details do not take up space
         "[][]", // Columns
-        "[]10[][][][][shrink][shrink][shrink]" // Rows
+        "[]10[][][][][shrink][shrink]" // Rows
       ));
 
 
@@ -129,7 +129,7 @@ public class ErrorReportingDialog extends JFrame {
     // Provide space for current log
     currentLogLabel = Labels.newLabel(MessageKey.ERROR_REPORTING_CONTENTS);
     currentLog = TextBoxes.newReadOnlyTextArea(10, 40);
-    currentLog.setText(ExceptionHandler.readAndTruncateCurrentLogfile());
+    currentLog.setText(ExceptionHandler.readTruncatedCurrentLogfile());
 
     // The message is a wall of text so needs scroll bars in many cases
     currentLog.setBorder(null);
@@ -155,7 +155,7 @@ public class ErrorReportingDialog extends JFrame {
     currentLogScrollPane.setVisible(false);
 
     // Upload progress
-    uploadProgressLabel = Labels.newLabel(MessageKey.ERROR_REPORTING_CONTENTS);
+    uploadProgressLabel = Labels.newLabel(MessageKey.ERROR_REPORTING_UPLOADING);
     uploadProgressLabel.setVisible(false);
 
     // Add them to the panel
@@ -169,7 +169,7 @@ public class ErrorReportingDialog extends JFrame {
     contentPanel.add(currentLogLabel, "span 2,wrap");
     contentPanel.add(currentLogScrollPane, "span 2,grow,push,wrap,wmin 10"); // wmin ensures a resize
 
-    contentPanel.add(uploadProgressLabel, "span 2,wrap");
+    contentPanel.add(uploadProgressLabel, "span 2,growx,wrap");
 
     contentPanel.add(Buttons.newCancelButton(getCancelAction()), "align left");
     contentPanel.add(Buttons.newUploadErrorReportButton(getUploadAction()), "align right,wrap");
@@ -234,10 +234,10 @@ public class ErrorReportingDialog extends JFrame {
         // Prevent further upload attempts
         ((JButton) e.getSource()).setEnabled(false);
 
-        final String finalTruncatedMessage = truncatedUserMessage;
-
-        // Indicate that upload is taking place
+        // Show the upload status (triggers a resize to attract the eye)
         uploadProgressLabel.setVisible(true);
+
+        final String finalTruncatedMessage = truncatedUserMessage;
 
         // Upload off the EDT
         final ListenableFuture<ErrorReportResult> future = SafeExecutors.newSingleThreadExecutor("error-reporting").submit(
@@ -294,20 +294,34 @@ public class ErrorReportingDialog extends JFrame {
   /**
    * Performs final actions on close
    */
-  private void handleErrorReportResult(ErrorReportResult errorReportResult) {
+  private void handleErrorReportResult(final ErrorReportResult errorReportResult) {
 
-    // TODO Implement more detailed feedback in Release 0.2
+    SwingUtilities.invokeLater(
+      new Runnable() {
+        @Override
+        public void run() {
 
-    // Ensure we run on the EDT
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
+          final MessageKey uploadProgressKey;
 
-        uploadProgressLabel.setText(Languages.safeText(MessageKey.ERROR_REPORTING_UPLOAD_COMPLETE));
-        uploadProgressLabel.setVisible(true);
+          switch (errorReportResult) {
+            case UPLOAD_OK_KNOWN:
+              uploadProgressKey = MessageKey.ERROR_REPORTING_UPLOAD_COMPLETE;
+              break;
+            case UPLOAD_OK_UNKNOWN:
+              uploadProgressKey = MessageKey.ERROR_REPORTING_UPLOAD_COMPLETE;
+              break;
+            case UPLOAD_FAILED:
+              uploadProgressKey = MessageKey.ERROR_REPORTING_UPLOAD_FAILED;
+              break;
+            default:
+              throw new IllegalStateException("Unknown error report result: " + errorReportResult.name());
+          }
 
-      }
-    });
+          uploadProgressLabel.setText(Languages.safeText(uploadProgressKey));
+          uploadProgressLabel.setVisible(true);
+
+        }
+      });
 
   }
 

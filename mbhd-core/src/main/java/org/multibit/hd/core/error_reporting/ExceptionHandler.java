@@ -2,6 +2,7 @@ package org.multibit.hd.core.error_reporting;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.google.common.io.Files;
@@ -12,11 +13,13 @@ import org.bouncycastle.openpgp.PGPPublicKey;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.services.BRITServices;
 import org.multibit.hd.brit.utils.HttpsUtils;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.logging.LogbackFactory;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -179,27 +182,30 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
 
   /**
    * Reads the current logging file (obtained through Logback) and truncates to 200Kb (20+ pages of logs)
-   *
-   * @return The truncated log file (most recent entries remain)
    */
-  public static String readAndTruncateCurrentLogfile() {
+  public static String readTruncatedCurrentLogfile() {
 
     Optional<File> currentLoggingFile = LogbackFactory.getCurrentLoggingFile();
 
     if (currentLoggingFile.isPresent()) {
+      // Read it
       try {
-        // Read it fully
+
         String currentLog = Files.toString(currentLoggingFile.get(), Charsets.UTF_8);
-        // Truncate to a maximum of 200Kb most recent entries
+        if (Strings.isNullOrEmpty(currentLog)) {
+          return "Current log file is empty";
+        }
+
+        // Truncate to 200Kb short of the end
         int currentLogLength = currentLog.length();
         return currentLog.substring(Math.max(0, currentLogLength - 204_800));
 
       } catch (IOException e) {
-        return "Current log file could not be read. Error was: " + e.getMessage();
+        return "Current log file could not be read: " + e.getMessage();
       }
     }
 
-    return "Current log file is not present.";
+    return "Current log file is not present";
 
   }
 
@@ -228,8 +234,22 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
 
     // Have a chance of getting a result
 
+    // Record basic operating system information for error reporting
+    String systemInfo = "OS:"
+      + OSUtils.getOsName()
+      + " " + OSUtils.getOsVersion()
+      + " (" + (OSUtils.is64Bit() ? "64" : "32") + "bit)"
+      + "\nMultiBit HD Version:"
+      + Configurations.currentConfiguration.getCurrentVersion();
+
     // Create a formatted payload for the server
-    String errorReport = "-----BEGIN USER NOTES-----\n" + userNotes + "\n-----BEGIN LOG-----\n" + readAndTruncateCurrentLogfile() + "-----END LOG-----\n";
+    String errorReport = "-----BEGIN SYSTEM INFO-----\n"
+      + systemInfo
+      + "\n-----BEGIN USER NOTES-----\n"
+      + userNotes
+      + "\n-----BEGIN LOG-----\n"
+      + readTruncatedCurrentLogfile()
+      + "-----END LOG-----\n";
 
     // Write this to the disk (it's already known to the system)
     final File errorReportFile = new File(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/logs/error-report.txt");
@@ -285,7 +305,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       log.debug("POSTing armored error report file to '{}'", errorReportingUrl);
       response = HttpsUtils.doPost(errorReportingUrl, armoredErrorReport);
     } catch (IOException e) {
-      log.error("Failed to POST error-report.txt.asc", e);
+      log.warn("Failed to POST error-report.txt.asc", e);
       return ErrorReportResult.UPLOAD_FAILED;
     }
 

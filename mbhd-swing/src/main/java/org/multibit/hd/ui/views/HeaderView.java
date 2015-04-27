@@ -52,19 +52,19 @@ public class HeaderView extends AbstractView {
     super();
 
     contentPanel = Panels.newPanel(
-      new MigLayout(
-        Panels.migLayout("fillx,insets 10 10 5 10,hidemode 3"), // Layout insets ensure border is tight to sidebar
-        "[][]", // Columns
-        "[][shrink]" // Rows
-      ));
+            new MigLayout(
+                    Panels.migLayout("fillx,insets 10 10 5 10,hidemode 3"), // Layout insets ensure border is tight to sidebar
+                    "[][]", // Columns
+                    "[][shrink]" // Rows
+            ));
 
     // Create the alert panel
     alertPanel = Panels.newPanel(
-      new MigLayout(
-        Panels.migXLayout(),
-        "[][][][]", // Columns
-        "[]" // Rows
-      ));
+            new MigLayout(
+                    Panels.migXLayout(),
+                    "[][][][]", // Columns
+                    "[]" // Rows
+            ));
 
     // Start off in hiding
     alertPanel.setVisible(false);
@@ -102,7 +102,7 @@ public class HeaderView extends AbstractView {
   @Subscribe
   public void onBalanceChangedEvent(final BalanceChangedEvent event) {
 
-    log.trace("Saw an onBalanceChangedEvent: {}", event);
+    log.debug("Saw an onBalanceChangedEvent: {}", event);
 
     // Handle the update
     balanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
@@ -202,13 +202,19 @@ public class HeaderView extends AbstractView {
     if (event.getViewKey().equals(ViewKey.HEADER)) {
       log.trace("Saw a ViewChangedEvent {}", event);
 
-      log.trace("Header now has visibility: {} ", event.isVisible());
-      balanceDisplayMaV.getView().setVisible(event.isVisible());
-      if (alertMessageLabel.getText().length() != 0 && event.isVisible()) {
-        alertPanel.setVisible(event.isVisible());
-      }
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          log.trace("Header now has visibility: {} ", event.isVisible());
+          balanceDisplayMaV.getView().setVisible(event.isVisible());
+          if (alertMessageLabel.getText().length() != 0 && event.isVisible()) {
+            alertPanel.setVisible(event.isVisible());
+          }
 
-      balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
+          balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
+        }
+      });
+
     }
   }
 
@@ -235,7 +241,7 @@ public class HeaderView extends AbstractView {
 
     // Determine how to add them back into the panel
     if (Languages.isLeftToRight()) {
-      alertPanel.add(alertMessageLabel, "shrink,left,"+MultiBitUI.ALERT_MESSAGE_MAX_WIDTH_MIG);
+      alertPanel.add(alertMessageLabel, "shrink,left," + MultiBitUI.ALERT_MESSAGE_MAX_WIDTH_MIG);
       alertPanel.add(alertRemainingLabel, "push,right");
       alertPanel.add(alertButton, "push,right");
       alertPanel.add(closeButton);
@@ -243,7 +249,7 @@ public class HeaderView extends AbstractView {
       alertPanel.add(closeButton);
       alertPanel.add(alertButton, "shrink,left");
       alertPanel.add(alertRemainingLabel, "shrink,left");
-      alertPanel.add(alertMessageLabel, "shrink,right,"+MultiBitUI.ALERT_MESSAGE_MAX_WIDTH_MIG);
+      alertPanel.add(alertMessageLabel, "shrink,right," + MultiBitUI.ALERT_MESSAGE_MAX_WIDTH_MIG);
     }
 
   }

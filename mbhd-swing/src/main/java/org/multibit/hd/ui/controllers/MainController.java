@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.*;
+import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
@@ -11,8 +12,8 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
-import org.multibit.hd.core.events.*;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
+import org.multibit.hd.core.events.*;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
@@ -212,6 +213,13 @@ public class MainController extends AbstractController implements
         // We are exiting the credentials wizard via the restore button and want the welcome wizard
 
         handoverToWelcomeWizardRestore();
+      }
+
+      if (CredentialsState.CREDENTIALS_CREATE.name().equals(event.getPanelName())) {
+
+         // We are exiting the credentials wizard via the create button and want the welcome wizard
+
+        handoverToWelcomeWizardCreate();
       }
 
       if (CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY.name().equals(event.getPanelName()) ||
@@ -1355,14 +1363,54 @@ public class MainController extends AbstractController implements
 
                 log.debug("Showing exiting welcome wizard after handover");
                 Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
-
               }
             });
-
         }
       });
-
   }
+
+  /**
+    * Credentials wizard needs to perform a create so hand over to the welcome wizard
+    */
+   private void handoverToWelcomeWizardCreate() {
+
+     log.debug("Hand over to welcome wizard (create wallet)");
+
+     // Handover
+     mainView.setShowExitingWelcomeWizard(true);
+     mainView.setShowExitingCredentialsWizard(false);
+
+     // For soft wallets the create goes to the wallet preparation screen
+     final WelcomeWizardState initialState = WelcomeWizardState.CREATE_WALLET_PREPARATION;
+     // Start building the wizard on the EDT to prevent UI updates
+     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
+       initialState, WelcomeWizardMode.STANDARD
+     );
+
+     // Use a new thread to handle the new wizard so that the handover can complete
+     handoverExecutorService.execute(
+       new Runnable() {
+         @Override
+         public void run() {
+
+           // Allow time for the other wizard to finish hiding (200ms is the minimum)
+           Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+
+           // Must execute on the EDT
+           SwingUtilities.invokeLater(
+             new Runnable() {
+               @Override
+               public void run() {
+
+                 Panels.hideLightBoxIfPresent();
+
+                 log.debug("Showing exiting welcome wizard after handover");
+                 Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
+               }
+             });
+         }
+       });
+   }
 
   /**
    * Credentials wizard needs to perform a create new Trezor wallet over to the welcome wizard
@@ -1514,6 +1562,18 @@ public class MainController extends AbstractController implements
                       ControllerEvents.fireAddAlertEvent(alertModel);
                     }
                   });
+
+                // Fire a BitcoinSentEvent failure
+                CoreEvents.fireBitcoinSentEvent(
+                              new BitcoinSentEvent(
+                                Optional.<Transaction>absent(), null, transactionData.getAmountCoin().orNull(),
+                                null,
+                                Optional.<Coin>absent(),
+                                Optional.<Coin>absent(),
+                                false,
+                                CoreMessageKey.THE_ERROR_WAS,
+                                new String[]{Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER)}
+                              ));
               }
             }
           }

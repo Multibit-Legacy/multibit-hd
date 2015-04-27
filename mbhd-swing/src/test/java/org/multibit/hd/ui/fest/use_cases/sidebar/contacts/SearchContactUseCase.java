@@ -39,11 +39,13 @@ public class SearchContactUseCase extends AbstractFestUseCase {
     // Enter some search text
     window
       .textBox(MessageKey.SEARCH.getKey())
+      .focus()
       .enterText("Alice");
 
     // Click search
     window
       .button(MessageKey.SEARCH.getKey())
+      .requireEnabled()
       .click();
 
     // Get an updated row count

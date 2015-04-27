@@ -67,6 +67,9 @@ public enum MessageKey {
   RESTORE("restore"),
   RESTORE_TOOLTIP("restore_tooltip"),
 
+  CREATE("create"),
+  CREATE_TOOLTIP("create_tooltip"),
+
   SEARCH("search"),
   SEARCH_TOOLTIP("search_tooltip"),
 
@@ -370,6 +373,10 @@ public enum MessageKey {
   ERROR_REPORTING_NOTES("error_reporting_notes"),
   ERROR_REPORTING_UPLOADING("error_reporting_uploading"),
   ERROR_REPORTING_UPLOAD_COMPLETE("error_reporting_upload_complete"),
+
+  ERROR_REPORTING_UPLOADING("error_reporting_uploading"),
+  ERROR_REPORTING_UPLOAD_COMPLETE("error_reporting_upload_complete"),
+  ERROR_REPORTING_UPLOAD_FAILED("error_reporting_upload_failed"),
 
   // Send/request
   REQUEST_BITCOIN_TITLE("request_bitcoin_title"),
@@ -798,6 +805,7 @@ public enum MessageKey {
   SELECT_WALLET_NOTE_1("select_wallet_note_1"),
 
   RESTORE_WALLET_NOTE_1("restore_wallet_note_1"),
+  RESTORE_WALLET_NOTE_2("restore_wallet_note_2"),
 
   CHANGE_PASSWORD_NOTE_1("change_password_note_1"),
   CHANGE_PASSWORD_NOTE_2("change_password_note_2"),

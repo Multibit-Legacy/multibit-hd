@@ -248,7 +248,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
       updateSendRequestButtons(changedEvent.get());
     }
 
-    log.debug("Updating the payment data set - expensive");
+    log.trace("Updating the payment data set - expensive");
     final Set<PaymentData> allPayments = walletService.getPaymentDataSet();
 
     // Find the 'Sending' transactions for today

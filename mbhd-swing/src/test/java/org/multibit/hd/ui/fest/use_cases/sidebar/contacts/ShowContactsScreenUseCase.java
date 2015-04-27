@@ -7,7 +7,6 @@ import org.multibit.hd.ui.languages.MessageKey;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.swing.timing.Pause.pause;
 
 /**
  * <p>Use case to provide the following to FEST testing:</p>
@@ -69,7 +68,7 @@ public class ShowContactsScreenUseCase extends AbstractFestUseCase {
     window
       .button(MessageKey.UNDO.getKey())
       .requireVisible()
-      .requireEnabled();
+      .requireDisabled();
 
     window
       .table(MessageKey.CONTACTS.getKey())

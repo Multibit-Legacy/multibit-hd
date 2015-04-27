@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.fest.use_cases.sidebar.payments;
 
+import org.fest.swing.core.MouseButton;
 import org.fest.swing.data.TableCell;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.core.dto.CoreMessageKey;
@@ -51,16 +52,16 @@ public class ShowDetailPaymentsUseCase extends AbstractFestUseCase {
       // See if it is a payment request or a transaction
       boolean isPaymentRequest = Languages.safeText(CoreMessageKey.PAYMENT_REQUESTED_BY_YOU).equals(WhitespaceTrimmer.trim(payments[i][PaymentTableModel.TYPE_COLUMN_INDEX]));
 
-      window.table(MessageKey.PAYMENTS.getKey()).selectCell(TableCell.row(i).column(0));
+      // Click a cell to trigger a row selection
+      window.table(MessageKey.PAYMENTS.getKey()).click(TableCell.row(i).column(0), MouseButton.LEFT_BUTTON);
 
-      pauseForComponentReset();
-
+      // Ensure the correct row is selected
       window.table(MessageKey.PAYMENTS.getKey()).requireSelectedRows(i);
 
       // Show the details
       window
-              .button(MessageKey.DETAILS.getKey())
-              .click();
+        .button(MessageKey.DETAILS.getKey())
+        .click();
 
       pauseForComponentReset();
 

@@ -65,6 +65,9 @@ public class DisplayEnvironmentAlertView extends AbstractComponentView<DisplayEn
     // Set size
     panel.setSize(MultiBitUI.POPOVER_PREF_WIDTH, MultiBitUI.POPOVER_PREF_HEIGHT);
 
+    // Add support for closing with ESC when panel has focus
+    useEscToClose(getClosePopoverAction());
+
     return panel;
 
   }

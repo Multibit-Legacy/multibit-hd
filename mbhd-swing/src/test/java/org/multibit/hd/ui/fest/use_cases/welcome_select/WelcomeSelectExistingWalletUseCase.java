@@ -29,14 +29,8 @@ public class WelcomeSelectExistingWalletUseCase extends AbstractFestUseCase {
     assertLabelText(MessageKey.SELECT_WALLET_TITLE);
 
     window
-      .radioButton(MessageKey.CREATE_WALLET.getKey())
-      .requireSelected()
-      .requireEnabled()
-      .requireVisible();
-
-    window
       .radioButton(MessageKey.USE_EXISTING_WALLET.getKey())
-      .requireNotSelected()
+      .requireSelected()
       .requireVisible();
 
     window

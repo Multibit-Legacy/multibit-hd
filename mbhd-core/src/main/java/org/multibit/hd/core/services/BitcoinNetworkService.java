@@ -561,8 +561,7 @@ public class BitcoinNetworkService extends AbstractService {
       if (sendRequestSummary.getSendRequest().isPresent()) {
         // Use the existing SendRequest
         sendRequest = sendRequestSummary.getSendRequest().get();
-        sendRequest.fee = Coin.ZERO;
-        sendRequest.feePerKb = sendRequestSummary.getFeePerKB();
+
       } else {
         // No SendRequest so build one from the information in the summary
         sendRequest = Wallet.SendRequest.to(
@@ -572,14 +571,13 @@ public class BitcoinNetworkService extends AbstractService {
         if (sendRequestSummary.getKeyParameter().isPresent()) {
           sendRequest.aesKey = sendRequestSummary.getKeyParameter().get();
         }
-        sendRequest.fee = Coin.ZERO;
-        sendRequest.feePerKb = sendRequestSummary.getFeePerKB();
         sendRequest.changeAddress = sendRequestSummary.getChangeAddress();
 
         // Require empty wallet to ensure that all funds are included
         sendRequest.emptyWallet = sendRequestSummary.isEmptyWallet();
-
       }
+      sendRequest.fee = Coin.ZERO;
+      sendRequest.feePerKb = sendRequestSummary.getFeePerKB();
 
       // Only include the fee output if not emptying since it interferes
       // with the coin selector
@@ -600,6 +598,7 @@ public class BitcoinNetworkService extends AbstractService {
           log.debug("Not adding client fee as it is smaller than dust : {}", sendRequestSummary.getFeeState().get().getFeeOwed());
           sendRequestSummary.setClientFeeAdded(Optional.<Coin>absent());
         } else {
+          log.debug("Adding client fee output of {} to address {}", sendRequestSummary.getFeeState().get().getFeeOwed(), sendRequestSummary.getFeeState().get().getNextFeeAddress());
           sendRequest.tx.addOutput(
             sendRequestSummary.getFeeState().get().getFeeOwed(),
             sendRequestSummary.getFeeState().get().getNextFeeAddress()
@@ -706,9 +705,13 @@ public class BitcoinNetworkService extends AbstractService {
     // Get the current wallet
     Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
 
-    // Build and append the client fee (if required)
-    if (!workOutIfClientFeeIsRequired(sendRequestSummary, sendRequestSummary.isEmptyWallet())) {
-      return false;
+    // Build and append the client fee (if it is not set already)
+    if (sendRequestSummary.isApplyClientFee()) {
+      log.debug("Apply client fee is already set in sendRequestSummary so no need to work it out");
+    } else {
+      if (!workOutIfClientFeeIsRequired(sendRequestSummary, sendRequestSummary.isEmptyWallet())) {
+        return false;
+      }
     }
 
     if (!sendRequestSummary.isEmptyWallet()) {
@@ -751,19 +754,23 @@ public class BitcoinNetworkService extends AbstractService {
       Optional<Coin> clientFeeAmountOptional;
       if (sendRequestSummary.isApplyClientFee()) {
         clientFeeAmountOptional = Optional.of(sendRequestSummary.getFeeState().get().getFeeOwed());
-        // Adjust the send request summary accordingly
-        recipientAmount = recipientAmount.subtract(clientFeeAmountOptional.get());
+        // Adjust the send request summary accordingly (it may be negative if user has donated to multibit.org
+        if (sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(Coin.ZERO) >0) {
+          recipientAmount = recipientAmount.subtract(clientFeeAmountOptional.get());
+        }
         sendRequestSummary.setAmount(recipientAmount);
+
+        // There is a new recipient amount so blank the existing sendRequest (it is reconstructed in the appendSendRequest below)
+        sendRequestSummary.setSendRequest(null);
       } else {
         clientFeeAmountOptional = Optional.absent();
       }
 
       log.debug("Adjusted recipientAmount: {}, clientFeeAmount: {}", recipientAmount.toString(), clientFeeAmountOptional.orNull());
+      sendRequestSummary.setClientFeeAdded(clientFeeAmountOptional);
 
       // Update the SendRequestSummary to ensure it is not an "empty wallet" and has the adjusted recipient amount and client fee
       sendRequestSummary.setEmptyWallet(false);
-
-      sendRequestSummary.setClientFeeAdded(clientFeeAmountOptional);
 
       // Attempt to build and append the send request as if it were standard
       // (This may now add on a client fee transaction output and also adjust the size of the output amounts)
@@ -1171,46 +1178,46 @@ public class BitcoinNetworkService extends AbstractService {
         });
       ListenableFuture<Transaction> broadcastFuture = transactionBroadcast.future();
       Futures.addCallback(
-        broadcastFuture, new FutureCallback<Transaction>() {
-          @Override
-          public void onSuccess(Transaction transaction) {
-            log.info("Future says transaction '{}' has broadcast successfully", transaction.getHashAsString());
+              broadcastFuture, new FutureCallback<Transaction>() {
+                @Override
+                public void onSuccess(Transaction transaction) {
+                  log.info("Future says transaction '{}' has broadcast successfully", transaction.getHashAsString());
 
-            // Declare the send a success
-            CoreEvents.fireBitcoinSentEvent(
-              new BitcoinSentEvent(
-                Optional.of(transaction),
-                sendRequestSummary.getDestinationAddress(),
-                sendRequestSummary.getTotalAmount(),
-                sendRequestSummary.getChangeAddress(),
-                Optional.of(sendRequest.fee),
-                sendRequestSummary.getClientFeeAdded(),
-                true,
-                CoreMessageKey.BITCOIN_SENT_OK,
-                null
-              ));
-          }
+                  // Declare the send a success
+                  CoreEvents.fireBitcoinSentEvent(
+                          new BitcoinSentEvent(
+                                  Optional.of(transaction),
+                                  sendRequestSummary.getDestinationAddress(),
+                                  sendRequestSummary.getTotalAmount(),
+                                  sendRequestSummary.getChangeAddress(),
+                                  Optional.of(sendRequest.fee),
+                                  sendRequestSummary.getClientFeeAdded(),
+                                  true,
+                                  CoreMessageKey.BITCOIN_SENT_OK,
+                                  null
+                          ));
+                }
 
-          @Override
-          public void onFailure(Throwable throwable) {
-            // This can't happen with the current code, but just in case one day that changes ...
-            log.error("Future says transaction has NOT broadcast successfully. Error: '{}'", throwable);
+                @Override
+                public void onFailure(Throwable throwable) {
+                  // This can't happen with the current code, but just in case one day that changes ...
+                  log.error("Future says transaction has NOT broadcast successfully. Error: '{}'", throwable);
 
-            // Declare the send a failure
-            // TODO Add i18n support for "No message" if required
-            CoreEvents.fireBitcoinSentEvent(
-              new BitcoinSentEvent(
-                Optional.<Transaction>absent(), sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
-                sendRequestSummary.getChangeAddress(),
-                Optional.<Coin>absent(),
-                Optional.<Coin>absent(),
-                false,
-                CoreMessageKey.THE_ERROR_WAS,
-                new String[]{throwable == null ? "No message" : throwable.getMessage()}
-              ));
+                  // Declare the send a failure
+                  // TODO Add i18n support for "No message" if required
+                  CoreEvents.fireBitcoinSentEvent(
+                          new BitcoinSentEvent(
+                                  Optional.<Transaction>absent(), sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
+                                  sendRequestSummary.getChangeAddress(),
+                                  Optional.<Coin>absent(),
+                                  Optional.<Coin>absent(),
+                                  false,
+                                  CoreMessageKey.THE_ERROR_WAS,
+                                  new String[]{throwable == null ? "No message" : throwable.getMessage()}
+                          ));
 
-          }
-        });
+                }
+              });
 
       log.debug("Initiated broadcast of transaction: '{}'", Utils.HEX.encode(sendRequest.tx.bitcoinSerialize()));
 

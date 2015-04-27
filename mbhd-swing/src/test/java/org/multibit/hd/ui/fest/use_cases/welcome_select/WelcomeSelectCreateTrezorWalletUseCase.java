@@ -45,7 +45,6 @@ public class WelcomeSelectCreateTrezorWalletUseCase extends AbstractFestUseCase 
     window
       .radioButton(MessageKey.RESTORE_WALLET.getKey())
       .requireNotSelected()
-      .requireEnabled()
       .requireVisible();
 
     // OK to proceed
