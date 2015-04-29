@@ -1,4 +1,4 @@
-package org.multibit.hd.core.error_reporting;
+package org.multibit.hd.common.error_reporting;
 
 /**
  * <p>Enum to provide the following to error reporting code:</p>

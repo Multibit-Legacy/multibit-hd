@@ -5,6 +5,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
+import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.text.WordUtils;
@@ -13,7 +14,10 @@ import org.bouncycastle.openpgp.PGPPublicKey;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.services.BRITServices;
 import org.multibit.hd.brit.utils.HttpsUtils;
+import org.multibit.hd.common.error_reporting.ErrorReport;
+import org.multibit.hd.common.error_reporting.ErrorReportResult;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.Json;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.files.SecureFiles;
@@ -25,10 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.security.NoSuchProviderException;
 
@@ -181,31 +182,37 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
   }
 
   /**
-   * Reads the current logging file (obtained through Logback) and truncates to 200Kb (20+ pages of logs)
+   * Reads an input stream and truncates it to 200Kb (20+ pages of logs) respecting a line break
+   *
+   * @param inputStream The input stream to truncate
+   * @param maxLength   The maximum length (204_800) for 200Kb
+   *
+   * @return The truncated stream as a String
    */
-  public static String readTruncatedCurrentLogfile() {
+  public static String readAndTruncateInputStream(InputStream inputStream, int maxLength) {
 
-    Optional<File> currentLoggingFile = LogbackFactory.getCurrentLoggingFile();
-
-    if (currentLoggingFile.isPresent()) {
-      // Read it
-      try {
-
-        String currentLog = Files.toString(currentLoggingFile.get(), Charsets.UTF_8);
-        if (Strings.isNullOrEmpty(currentLog)) {
-          return "Current log file is empty";
-        }
-
-        // Truncate to 200Kb short of the end
-        int currentLogLength = currentLog.length();
-        return currentLog.substring(Math.max(0, currentLogLength - 204_800));
-
-      } catch (IOException e) {
-        return "Current log file could not be read: " + e.getMessage();
+    // Read it
+    try {
+      String contents = CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8));
+      if (Strings.isNullOrEmpty(contents)) {
+        return "Contents are empty";
       }
-    }
 
-    return "Current log file is not present";
+      // Truncate to 200Kb short of the end
+      int offset = Math.max(0, contents.length() - maxLength);
+      if (offset > 0) {
+        // Find first line break to ensure correct parsing
+        int firstLineBreak = contents.substring(offset).indexOf('\n');
+        return contents.substring(offset + firstLineBreak);
+
+      } else {
+        // We're at the start of the log so correct by definition
+        return contents.substring(offset);
+      }
+
+    } catch (IOException e) {
+      return "Contents could not be read: " + e.getMessage();
+    }
 
   }
 
@@ -232,32 +239,33 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       return ErrorReportResult.UPLOAD_FAILED;
     }
 
+    try {
+      readAndTruncateInputStream(new FileInputStream(currentLoggingFile.get()), 204_800);
+    } catch (FileNotFoundException e) {
+      log.error("Failed to read logging file", e);
+      return ErrorReportResult.UPLOAD_FAILED;
+    }
+
     // Have a chance of getting a result
 
-    // Record basic operating system information for error reporting
-    String systemInfo = "OS:"
-      + OSUtils.getOsName()
-      + " " + OSUtils.getOsVersion()
-      + " (" + (OSUtils.is64Bit() ? "64" : "32") + "bit)"
-      + "\nMultiBit HD Version:"
-      + Configurations.currentConfiguration.getCurrentVersion();
-
-    // Create a formatted payload for the server
-    String errorReport = "-----BEGIN SYSTEM INFO-----\n"
-      + systemInfo
-      + "\n-----BEGIN USER NOTES-----\n"
-      + userNotes
-      + "\n-----BEGIN LOG-----\n"
-      + readTruncatedCurrentLogfile()
-      + "-----END LOG-----\n";
+    // Build the error report including basic operating system information
+    ErrorReport errorReport = new ErrorReport();
+    errorReport.setOsName(OSUtils.getOsName());
+    errorReport.setOsVersion(OSUtils.getOsVersion());
+    errorReport.set64Bit(OSUtils.is64Bit());
+    errorReport.setAppVersion(Configurations.currentConfiguration.getCurrentVersion());
+    errorReport.setUserNotes(userNotes);
+    errorReport.setLog("");
 
     // Write this to the disk (it's already known to the system)
-    final File errorReportFile = new File(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/logs/error-report.txt");
+    final File errorReportFile = new File(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/logs/error-report.json");
+    final FileOutputStream errorReportFOS;
     try {
-      log.debug("Writing error report file to\n'{}'", errorReportFile.getAbsolutePath());
-      Files.write(errorReport.getBytes(Charsets.UTF_8), errorReportFile);
+      errorReportFOS = new FileOutputStream(errorReportFile);
+      log.debug("Writing error report file as JSON");
+      Json.writeJson(errorReportFOS, errorReport);
     } catch (IOException e) {
-      log.error("Failed to write error-report.txt", e);
+      log.error("Failed to write error-report.json", e);
       return ErrorReportResult.UPLOAD_FAILED;
     }
 
@@ -265,9 +273,9 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
     final FileOutputStream armoredErrorReportFOS;
     try {
       log.debug("Preparing armored error report file");
-      armoredErrorReportFOS = new FileOutputStream(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/logs/error-report.txt.asc");
+      armoredErrorReportFOS = new FileOutputStream(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/logs/error-report.json.asc");
     } catch (FileNotFoundException e) {
-      log.error("Failed to prepare error-report.txt.asc", e);
+      log.error("Failed to prepare error-report.json.asc", e);
       return ErrorReportResult.UPLOAD_FAILED;
     }
 
@@ -276,7 +284,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       log.debug("Writing armored error report file");
       PGPUtils.encryptFile(armoredErrorReportFOS, errorReportFile, multibitPublicKey);
     } catch (IOException | NoSuchProviderException | PGPException e) {
-      log.error("Failed to write error-report.txt.asc", e);
+      log.error("Failed to write error-report.json.asc", e);
       return ErrorReportResult.UPLOAD_FAILED;
     }
 
@@ -285,7 +293,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       log.debug("Deleting error report file");
       SecureFiles.secureDelete(errorReportFile);
     } catch (IOException e) {
-      log.error("Failed to delete error-report.txt", e);
+      log.error("Failed to delete error-report.json", e);
       return ErrorReportResult.UPLOAD_FAILED;
     }
 
@@ -293,10 +301,10 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
     final byte[] armoredErrorReport;
     try {
       log.debug("Reading armored error report file");
-      File armoredErrorReportFile = new File(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/logs/error-report.txt.asc");
+      File armoredErrorReportFile = new File(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/logs/error-report.json.asc");
       armoredErrorReport = Files.toByteArray(armoredErrorReportFile);
     } catch (IOException e) {
-      log.error("Failed to read error-report.txt.asc", e);
+      log.error("Failed to read error-report.json.asc", e);
       return ErrorReportResult.UPLOAD_FAILED;
     }
 
@@ -305,7 +313,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       log.debug("POSTing armored error report file to '{}'", errorReportingUrl);
       response = HttpsUtils.doPost(errorReportingUrl, armoredErrorReport);
     } catch (IOException e) {
-      log.warn("Failed to POST error-report.txt.asc", e);
+      log.warn("Failed to POST error-report.json.asc", e);
       return ErrorReportResult.UPLOAD_FAILED;
     }
 
