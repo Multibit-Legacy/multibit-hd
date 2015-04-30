@@ -1,14 +1,16 @@
 package org.multibit.hd.ui.error_reporting;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.error_reporting.ErrorReportResult;
+import org.multibit.hd.common.error_reporting.ErrorReportResult;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.logging.LogbackFactory;
 import org.multibit.hd.hardware.core.concurrent.SafeExecutors;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -22,6 +24,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Callable;
@@ -129,7 +134,19 @@ public class ErrorReportingDialog extends JFrame {
     // Provide space for current log
     currentLogLabel = Labels.newLabel(MessageKey.ERROR_REPORTING_CONTENTS);
     currentLog = TextBoxes.newReadOnlyTextArea(10, 40);
-    currentLog.setText(ExceptionHandler.readTruncatedCurrentLogfile());
+
+    Optional<File> currentLoggingFile = LogbackFactory.getCurrentLoggingFile();
+    if (currentLoggingFile.isPresent()) {
+      try {
+        FileInputStream fis = new FileInputStream(currentLoggingFile.get());
+        currentLog.setText(ExceptionHandler.readAndTruncateInputStream(fis, 204_800));
+      } catch (FileNotFoundException e) {
+        log.error("Could not find the current log file", e);
+        currentLog.setText("No log available");
+      }
+    } else {
+      currentLog.setText("No log available");
+    }
 
     // The message is a wall of text so needs scroll bars in many cases
     currentLog.setBorder(null);
