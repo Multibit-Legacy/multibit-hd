@@ -126,7 +126,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
                 }
 
                 // Show the local currency if we have fiat currency information
-                boolean showLocalCurrency = !(paymentData.getAmountCoin().isPresent() && paymentData.getAmountCoin().get().compareTo(Coin.ZERO) == 0) &&
+                boolean showLocalCurrency = paymentData.getAmountCoin().isPresent() && paymentData.getAmountCoin().get().compareTo(Coin.ZERO) != 0 &&
                         paymentData.getAmountFiat() != null && paymentData.getAmountFiat().getCurrency().isPresent();
                 // Don't show the fiat amount if the currency on the fiat payment is different to that in the bitcoin configuration (it's misleading)
                 if (showLocalCurrency && !paymentData.getAmountFiat().getCurrency().get().getCurrencyCode().equals(Configurations.currentConfiguration.getBitcoin().getLocalCurrencyCode())) {
