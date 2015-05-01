@@ -4,6 +4,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.bitcoinj.core.Context;
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.utils.Threading;
 import org.bouncycastle.openpgp.PGPException;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
@@ -118,6 +120,12 @@ public class CoreServices {
    */
   private static volatile ListeningExecutorService coreServices = null;
 
+  private static Context context;
+
+  public static Context getContext() {
+    return context;
+  }
+
   /**
    * Utilities have a private constructor
    */
@@ -151,9 +159,12 @@ public class CoreServices {
       Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
     }
 
+    // Set up the bitcoinj context
+    context = new Context(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+    log.debug("Context identity: {}", System.identityHashCode(context));
+
     // Ensure any errors can be reported
     ExceptionHandler.registerExceptionHandler();
-
    }
 
   /**

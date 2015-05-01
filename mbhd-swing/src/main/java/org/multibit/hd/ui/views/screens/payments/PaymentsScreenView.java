@@ -240,8 +240,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
             ((PaymentTableModel) paymentsTable.getModel()).fireTableDataChanged();
 
-            log.debug("Selected table row: {}", selectedTableRow);
-
             // Reselect the selected row if possible
             if (selectedTableRow != -1 && selectedTableRow < paymentsTable.getModel().getRowCount()) {
               paymentsTable.changeSelection(selectedTableRow, 0, false, false);
@@ -292,7 +290,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        log.debug("getExportAction called");
         Panels.showLightBox(Wizards.newExportPaymentsWizard(ExportPaymentsWizardState.SELECT_EXPORT_LOCATION).getWizardScreenHolder());
       }
     };

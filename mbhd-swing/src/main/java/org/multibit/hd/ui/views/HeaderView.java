@@ -104,11 +104,16 @@ public class HeaderView extends AbstractView {
 
     log.debug("Saw an onBalanceChangedEvent: {}", event);
 
+    // Ignore no change
+    if (event.getCoinBalance().equals(balanceDisplayMaV.getModel().getCoinAmount()) && event.getLocalBalance() == null ) {
+      return;
+    }
+
     // Handle the update
     balanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
     balanceDisplayMaV.getModel().setCoinAmount(event.getCoinBalance());
     balanceDisplayMaV.getModel().setRateProvider(event.getRateProvider());
-    if (event.getRateProvider().isPresent()) {
+    if (event.getRateProvider().isPresent() && event.getLocalBalance() != null) {
       balanceDisplayMaV.getModel().setLocalAmountVisible(true);
     }
 

@@ -18,7 +18,7 @@
   </appender>
 
   <!-- Define logging for third party customisation -->
-  <logger name="org.bitcoinj" level="WARN"/>
+  <logger name="org.bitcoinj" level="DEBUG"/>
 
   <!-- Define logging for organisation applications only -->
   <logger name="org.multibit" level="DEBUG"/>

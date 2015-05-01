@@ -108,7 +108,7 @@ public enum WalletManager implements WalletEventListener {
         Coin value = tx.getValue(wallet);
         CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(tx, value));
       }
-    }
+     }
 
     @Override
     public void onWalletChanged(Wallet wallet) {
@@ -1344,7 +1344,6 @@ public enum WalletManager implements WalletEventListener {
    * currently owed to BRIT
    */
   public Optional<FeeState> calculateBRITFeeState(boolean includeOneExtraFee) {
-
     if (feeService == null) {
       feeService = CoreServices.createFeeService();
     }
@@ -1855,8 +1854,5 @@ public enum WalletManager implements WalletEventListener {
     } else {
       log.info("No current wallet summary to provide wallet");
     }
-
   }
-
-
 }

@@ -10,9 +10,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
+import org.multibit.hd.core.dto.EnvironmentSummary;
 import org.multibit.hd.core.dto.ExchangeSummary;
 import org.multibit.hd.core.dto.HistoryEntry;
-import org.multibit.hd.core.dto.EnvironmentSummary;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -369,7 +369,6 @@ public class CoreEvents {
    * @param bitcoinNetworkSummary The Bitcoin network summary
    */
   public static void fireBitcoinNetworkChangedEvent(final BitcoinNetworkSummary bitcoinNetworkSummary) {
-
     if (log.isTraceEnabled()) {
       if (bitcoinNetworkSummary.getPercent() > 0) {
         log.trace("Firing 'Bitcoin network changed' event: {}%", bitcoinNetworkSummary.getPercent());

@@ -102,7 +102,7 @@ public class MainController extends AbstractController implements
   // Provide a separate executor service for wallet operations
   private static final ListeningExecutorService walletExecutorService = SafeExecutors.newFixedThreadPool(10, "wallet-services");
 
-  private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 10;
+  private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 60;
 
   // Keep track of other controllers for use after a preferences change
   private final HeaderController headerController;
@@ -1539,6 +1539,7 @@ public class MainController extends AbstractController implements
         @Override
         public void run() {
           log.debug("Performing delayed status check on transaction '" + transactionCreationEvent.getTransactionId() + "'");
+
           // Wait for a while to let the Bitcoin network respond to the tx being sent
           Uninterruptibles.sleepUninterruptibly(NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING, TimeUnit.SECONDS);
 
@@ -1562,8 +1563,10 @@ public class MainController extends AbstractController implements
                       ControllerEvents.fireAddAlertEvent(alertModel);
                     }
                   });
+              }
 
-                // Fire a BitcoinSentEvent failure
+              if (!status.getStatus().equals(RAGStatus.GREEN)) {
+                // Ensure that there is a message that the spendable balance is lower - Fire a BitcoinSentEvent failure
                 CoreEvents.fireBitcoinSentEvent(
                               new BitcoinSentEvent(
                                 Optional.<Transaction>absent(), null, transactionData.getAmountCoin().orNull(),

@@ -319,7 +319,6 @@ public class BitcoinNetworkService extends AbstractService {
       new Runnable() {
         @Override
         public void run() {
-
           performSend(sendRequestSummary, paymentRequestDataOptional);
         }
 
@@ -379,7 +378,6 @@ public class BitcoinNetworkService extends AbstractService {
       new Runnable() {
         @Override
         public void run() {
-
           performCommitAndBroadcast(sendRequestSummary, wallet, paymentRequestDataOptional);
         }
 
@@ -568,6 +566,15 @@ public class BitcoinNetworkService extends AbstractService {
           sendRequestSummary.getDestinationAddress(),
           sendRequestSummary.getAmount()
         );
+
+        // Ensure the transactionConfidence is in the Context transaction confidence table
+        TransactionConfidence confidence = sendRequest.tx.getConfidence(CoreServices.getContext());
+        log.debug("Confidence identity: {}",  System.identityHashCode(confidence));
+        log.debug("Transaction with hash {}", sendRequest.tx.getHashAsString());
+        log.debug("CoreServices.getContext(): {}", CoreServices.getContext());
+        log.debug("CoreServices.getContext().getConfidenceTable(): {}", CoreServices.getContext().getConfidenceTable());
+        log.debug("The CoreServices Context confidence has identity: {}", System.identityHashCode(CoreServices.getContext().getConfidenceTable().get(sendRequest.tx.getHash())));
+
         if (sendRequestSummary.getKeyParameter().isPresent()) {
           sendRequest.aesKey = sendRequestSummary.getKeyParameter().get();
         }
@@ -1040,10 +1047,11 @@ public class BitcoinNetworkService extends AbstractService {
       // Ensure the tx source is set to SELF as this is a self generated tx
       // Note that the getConfidence automatically creates one if it is null
       sendRequest.tx.getConfidence().setSource(TransactionConfidence.Source.SELF);
-      log.debug("Marking source as self for tx {}", sendRequest.tx.getHashAsString());
+      log.debug("Marking source as self for tx hash {}, identity {}", sendRequest.tx.getHashAsString(), System.identityHashCode(sendRequest.tx));
 
       // Commit to the wallet (informs the wallet of the transaction)
-      if (wallet.getTransaction(sendRequest.tx.getHash()) != null) {
+      if (wallet.getTransaction(sendRequest.tx.getHash()) == null) {
+        log.debug("Committing transaction with hash {} to wallet",  sendRequest.tx.getHashAsString());
         wallet.commitTx(sendRequest.tx);
       } else {
         log.debug("Not committing tx with hash '{}' because tx is already present in wallet", sendRequest.tx.getHashAsString());
@@ -1065,12 +1073,7 @@ public class BitcoinNetworkService extends AbstractService {
           sendRequestSummary.getNotes(),
           true
         ));
-    } catch (
-      Exception e
-      )
-
-    {
-
+    } catch (Exception e) {
       log.error("Could not commit the transaction", e);
 
       String transactionId = sendRequest.tx != null ? sendRequest.tx.getHashAsString() : "?";
@@ -1108,9 +1111,12 @@ public class BitcoinNetworkService extends AbstractService {
    */
   private boolean broadcast(final SendRequestSummary sendRequestSummary) {
 
-    log.debug("Attempting to broadcast transaction");
+    log.debug("The CoreServices context has identity: {}", System.identityHashCode(CoreServices.getContext()));
+    log.debug("The context has identity: {}", System.identityHashCode(Context.get()));
 
     final Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
+
+    log.debug("Attempting to broadcast transaction with hash {} and identity {}", sendRequest.tx.getHashAsString(), System.identityHashCode(sendRequest.tx));
 
     try {
 
@@ -1163,20 +1169,47 @@ public class BitcoinNetworkService extends AbstractService {
         valueOptional = Optional.absent();
       }
 
+      TransactionConfidence originalConfidence = sendRequest.tx.getConfidence();
+      log.debug("Original confidence has identity: {}", System.identityHashCode(originalConfidence));
+      originalConfidence.addEventListener(new TransactionConfidence.Listener() {
+        @Override
+        public void onConfidenceChanged(TransactionConfidence confidence, ChangeReason reason) {
+          log.debug("Saw original confidence changed to {}", confidence);
+        }
+      });
+
+      log.debug("Transaction with hash {}", sendRequest.tx.getHashAsString());
+      log.debug("CoreServices.getContext(): {}", CoreServices.getContext());
+      log.debug("CoreServices.getContext().getConfidenceTable(): {}", CoreServices.getContext().getConfidenceTable());
+      log.debug("The CoreServices Context original confidence has identity: {}", System.identityHashCode(CoreServices.getContext().getConfidenceTable().get(sendRequest.tx.getHash())));
+
+      log.debug("Creating new confidence ....");
+      TransactionConfidence newConfidence = CoreServices.getContext().getConfidenceTable().getOrCreate(sendRequest.tx.getHash());
+      log.debug("New confidence has identity): {}", System.identityHashCode(newConfidence));
+      newConfidence.addEventListener(new TransactionConfidence.Listener() {
+          @Override
+          public void onConfidenceChanged(TransactionConfidence confidence, ChangeReason reason) {
+            log.debug("Saw new confidence changed to {}", confidence);
+          }
+      });
+
       // Broadcast to network
       final TransactionBroadcast transactionBroadcast = peerGroup.broadcastTransaction(sendRequest.tx);
+
+      log.debug("Attaching progress callbacks to transactionBroadcast {} with tx {}", System.identityHashCode(transactionBroadcast), sendRequest.tx.getHashAsString());
+
       transactionBroadcast.setProgressCallback(
         new TransactionBroadcast.ProgressCallback() {
           @Override
           public void onBroadcastProgress(double progress) {
-            log.debug("Tx {}, progress is now {}", sendRequest.tx.getHashAsString(), progress);
+            log.debug("Tx {}, progress is now {}", sendRequest.tx, progress);
             if (fireTransactionSeen) {
               CoreEvents.fireBitcoinSendProgressEvent(new BitcoinSendProgressEvent(sendRequest.tx, progress));
-              CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(sendRequestSummary.getSendRequest().get().tx, valueOptional.get()));
+              CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(sendRequest.tx, valueOptional.get()));
             }
           }
         });
-      ListenableFuture<Transaction> broadcastFuture = transactionBroadcast.future();
+      ListenableFuture<Transaction> broadcastFuture = transactionBroadcast.broadcast();
       Futures.addCallback(
               broadcastFuture, new FutureCallback<Transaction>() {
                 @Override
