@@ -1455,12 +1455,12 @@ public class BitcoinNetworkService extends AbstractService {
   /**
    * Ping all connected peers to see if there is an active network connection
    *
-   * @return true is one or more peers respond to the ping
+   * @return true is two or more peers respond to the ping
    */
   public boolean pingPeers() {
 
     List<Peer> connectedPeers = peerGroup.getConnectedPeers();
-    boolean atLeastOnePingWorked = false;
+    int numberOfSuccessfulPings = 0;
     if (connectedPeers != null) {
       for (Peer peer : connectedPeers) {
 
@@ -1469,15 +1469,17 @@ public class BitcoinNetworkService extends AbstractService {
         try {
           ListenableFuture<Long> result = peer.ping();
           result.get(4, TimeUnit.SECONDS);
-          atLeastOnePingWorked = true;
-          break;
+          numberOfSuccessfulPings++;
+          if (numberOfSuccessfulPings >= 2) {
+            break;
+          }
         } catch (ProtocolException | InterruptedException | ExecutionException | TimeoutException e) {
           log.warn("Peer '" + peer.getAddress().toString() + "' failed ping test. Message was " + e.getMessage());
         }
       }
     }
 
-    return atLeastOnePingWorked;
+    return numberOfSuccessfulPings >= 2;
   }
 
   /**
