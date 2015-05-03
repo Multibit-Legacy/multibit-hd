@@ -102,8 +102,6 @@ public class HeaderView extends AbstractView {
   @Subscribe
   public void onBalanceChangedEvent(final BalanceChangedEvent event) {
 
-    log.debug("Saw an onBalanceChangedEvent: {}", event);
-
     // Ignore no change
     if (event.getCoinBalance().equals(balanceDisplayMaV.getModel().getCoinAmount()) && event.getLocalBalance() == null ) {
       return;
