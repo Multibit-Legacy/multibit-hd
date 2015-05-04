@@ -1,15 +1,12 @@
 package org.multibit.hd.common.error_reporting;
 
 /**
- * <p>[Pattern] to provide the following to {@link Object}:</p>
+ * <p>Value object to provide the following to error reporting system:</p>
  * <ul>
- * <li></li>
+ * <li>Storage of a log entry as part of an error report</li>
  * </ul>
- * <p>Example:</p>
- * <pre>
- * </pre>
  *
- * @since 0.0.1
+ * @since 0.1.0
  *  
  */
 import com.fasterxml.jackson.annotation.*;

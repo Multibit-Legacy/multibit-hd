@@ -1,5 +1,8 @@
 package org.multibit.hd.common.error_reporting;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -13,15 +16,30 @@ import java.util.List;
  * @since 0.1.0
  *  
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+  "os_name",
+  "os_version",
+  "os_arch",
+  "app_version",
+  "user_notes",
+  "log_entries"
+})
 public class ErrorReport {
 
+  @JsonProperty("os_name")
   private String osName;
+  @JsonProperty("os_version")
   private String osVersion;
-  private boolean a64Bit;
+  @JsonProperty("os_arch")
+  private String osArch;
+  @JsonProperty("app_version")
   private String appVersion;
+  @JsonProperty("user_notes")
   private String userNotes;
 
   // The error report log entries
+  @JsonProperty("log_entries")
   private List<ErrorReportLogEntry> logEntries = Lists.newArrayList();
 
   public void setOsName(String osName) {
@@ -40,16 +58,12 @@ public class ErrorReport {
     return osVersion;
   }
 
-  public void set64Bit(boolean a64Bit) {
-    this.a64Bit = a64Bit;
+  public String getOsArch() {
+    return osArch;
   }
 
-  public boolean isA64Bit() {
-    return a64Bit;
-  }
-
-  public void setA64Bit(boolean a64Bit) {
-    this.a64Bit = a64Bit;
+  public void setOsArch(String osArch) {
+    this.osArch = osArch;
   }
 
   public void setAppVersion(String appVersion) {

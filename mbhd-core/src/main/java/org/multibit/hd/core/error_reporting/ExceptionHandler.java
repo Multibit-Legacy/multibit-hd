@@ -355,7 +355,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
     ErrorReport errorReport = new ErrorReport();
     errorReport.setOsName(OSUtils.getOsName());
     errorReport.setOsVersion(OSUtils.getOsVersion());
-    errorReport.set64Bit(OSUtils.is64Bit());
+    errorReport.setOsArch(OSUtils.is64Bit() ? "64" : "32");
     errorReport.setAppVersion(Configurations.currentConfiguration.getCurrentVersion());
     errorReport.setUserNotes(userNotes);
     errorReport.setLogEntries(errorReportLogEntryList);
