@@ -111,6 +111,7 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
             // Do not traverse to next page
 
             state = EmptyWalletState.EMPTY_WALLET_ENTER_DETAILS;
+            break;
           }
         }
 
