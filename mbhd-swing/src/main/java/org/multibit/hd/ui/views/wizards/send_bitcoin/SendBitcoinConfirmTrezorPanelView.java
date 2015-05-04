@@ -2,7 +2,10 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
@@ -72,6 +75,16 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<S
   @Override
   public void afterShow() {
 
+  }
+
+  @Override
+  public boolean beforeHide(boolean isExitCancel) {
+    if (isExitCancel) {
+      // Ensure Header is enabled
+      final boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
+      ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
+    }
+    return true;
   }
 
   @Override

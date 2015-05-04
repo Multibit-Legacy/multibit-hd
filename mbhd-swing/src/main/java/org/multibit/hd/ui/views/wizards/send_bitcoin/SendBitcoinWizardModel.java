@@ -37,6 +37,7 @@ import org.multibit.hd.hardware.core.utils.TransactionUtils;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
@@ -763,6 +764,9 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
               // Commit and broadcast
               bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet, paymentRequestData);
+
+              // Ensure the header is switched off whilst the send is in progress
+              ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
             } else {
               // The signed transaction is essentially different from what was sent to it - abort send
               sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
