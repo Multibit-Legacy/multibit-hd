@@ -315,7 +315,6 @@ public class PanelDecorator {
 
     // Cancel always leads
     addExitCancel(view, wizard, wizardScreenPanel);
-    addRestore(view, wizard, wizardScreenPanel);
     addNextAsFinish(view, wizard, wizardScreenPanel);
 
   }
