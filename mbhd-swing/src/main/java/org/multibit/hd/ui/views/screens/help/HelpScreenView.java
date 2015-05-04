@@ -13,12 +13,15 @@ import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -69,6 +72,9 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
   private JButton refreshButton;
   private JButton homeButton;
   private JButton launchBrowserButton;
+  private Icon launchBrowserRegularIcon;
+  private Icon launchBrowserHighlitIcon;
+
   private JButton showErrorReportingButton;
 
   /**
@@ -132,6 +138,14 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
       MessageKey.VIEW_IN_EXTERNAL_BROWSER,
       MessageKey.VIEW_IN_EXTERNAL_BROWSER_TOOLTIP
     );
+
+    launchBrowserRegularIcon = launchBrowserButton.getIcon();
+    launchBrowserHighlitIcon = ImageDecorator.toImageIcon(
+      AwesomeDecorator.createIcon(
+              AwesomeIcon.EXTERNAL_LINK,
+              Themes.currentTheme.sidebarSelectedText(),
+              MultiBitUI.NORMAL_ICON_SIZE
+      ));
 
     showErrorReportingButton = Buttons.newShowErrorReportButton(getShowErrorReportingAction());
 
@@ -305,16 +319,17 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
 
                 // Indicate an external link
                 if (launchBrowserButton.isEnabled()) {
-                  launchBrowserButton.setBackground(Themes.currentTheme.infoAlertBackground());
+                  launchBrowserButton.setForeground(Themes.currentTheme.sidebarSelectedText());
+                  launchBrowserButton.setIcon(launchBrowserHighlitIcon);
                 }
-
               }
             }
 
             if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
 
               if (launchBrowserButton.isEnabled()) {
-                launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
+                launchBrowserButton.setForeground(Themes.currentTheme.buttonText());
+                launchBrowserButton.setIcon(launchBrowserRegularIcon);
               }
             }
 
