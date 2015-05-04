@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
@@ -38,9 +37,9 @@ public class Json {
    * @param is    The input stream to use (not closed)
    * @param clazz The expected root class from the JSON
    *
-   * @return The configuration data (<code>Configuration</code>, <code>Wallet Summary</code> etc) if present
+   * @return The object mapped to the JSON if present
    */
-  public static synchronized <T> Optional<T> readJson(InputStream is, Class<T> clazz) {
+  public static synchronized <T> Optional<T> readJson(String is, Class<T> clazz) {
     log.trace("Reading JSON data...");
 
     Optional<T> value;
@@ -82,4 +81,5 @@ public class Json {
       ExceptionHandler.handleThrowable(e);
     }
   }
+
 }

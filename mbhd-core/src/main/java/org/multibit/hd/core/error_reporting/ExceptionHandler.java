@@ -1,8 +1,11 @@
 package org.multibit.hd.core.error_reporting;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
 import com.google.common.io.CharStreams;
@@ -15,6 +18,7 @@ import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.services.BRITServices;
 import org.multibit.hd.brit.utils.HttpsUtils;
 import org.multibit.hd.common.error_reporting.ErrorReport;
+import org.multibit.hd.common.error_reporting.ErrorReportLogEntry;
 import org.multibit.hd.common.error_reporting.ErrorReportResult;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Json;
@@ -45,6 +49,8 @@ import java.security.NoSuchProviderException;
 public class ExceptionHandler extends EventQueue implements Thread.UncaughtExceptionHandler {
 
   private static final Logger log = LoggerFactory.getLogger(ExceptionHandler.class);
+
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
   /**
    * The URL of the live error reporting daemon
@@ -202,7 +208,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       int offset = Math.max(0, contents.length() - maxLength);
       if (offset > 0) {
         // Find first line break to ensure correct parsing
-        int firstLineBreak = contents.substring(offset).indexOf('\n');
+        int firstLineBreak = contents.substring(offset).indexOf('\n') + 1;
         return contents.substring(offset + firstLineBreak);
 
       } else {
@@ -235,27 +241,21 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
     // Attempt to load the current logging file
     Optional<File> currentLoggingFile = LogbackFactory.getCurrentLoggingFile();
     if (!currentLoggingFile.isPresent()) {
-      log.error("No current logging file.");
+      log.error("No current log file.");
       return ErrorReportResult.UPLOAD_FAILED;
     }
 
+    // Truncate the current log file
+    final String truncatedCurrentLog;
     try {
-      readAndTruncateInputStream(new FileInputStream(currentLoggingFile.get()), 204_800);
-    } catch (FileNotFoundException e) {
-      log.error("Failed to read logging file", e);
+      truncatedCurrentLog = readAndTruncateInputStream(new FileInputStream(currentLoggingFile.get()), 204_800);
+    } catch (IOException e) {
+      log.error("Failed to read log file", e);
       return ErrorReportResult.UPLOAD_FAILED;
     }
 
-    // Have a chance of getting a result
-
-    // Build the error report including basic operating system information
-    ErrorReport errorReport = new ErrorReport();
-    errorReport.setOsName(OSUtils.getOsName());
-    errorReport.setOsVersion(OSUtils.getOsVersion());
-    errorReport.set64Bit(OSUtils.is64Bit());
-    errorReport.setAppVersion(Configurations.currentConfiguration.getCurrentVersion());
-    errorReport.setUserNotes(userNotes);
-    errorReport.setLog("");
+    // Parse the current log into an ErrorReport
+    ErrorReport errorReport = buildErrorReport(userNotes, truncatedCurrentLog);
 
     // Write this to the disk (it's already known to the system)
     final File errorReportFile = new File(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/logs/error-report.json");
@@ -326,6 +326,41 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
     // Must be OK to be here
     return ErrorReportResult.UPLOAD_OK_UNKNOWN;
 
+  }
+
+  /**
+   * Parse the truncated log and build an ErrorReport. This approach guarantees that the
+   * server will be able to rapidly process it.
+   *
+   * Reduced visibility to allow testing
+   *
+   * @param userNotes           The user notes
+   * @param truncatedCurrentLog The truncated log
+   *
+   * @return The error report
+   */
+  static ErrorReport buildErrorReport(String userNotes, String truncatedCurrentLog) {
+
+    final Iterable<String> split = Splitter.on('\n').split(truncatedCurrentLog);
+
+    java.util.List<ErrorReportLogEntry> errorReportLogEntryList = Lists.newArrayList();
+    for (String logEntry : split) {
+      Optional<ErrorReportLogEntry> entry = Json.readJson(logEntry, ErrorReportLogEntry.class);
+      if (entry.isPresent()) {
+        errorReportLogEntryList.add(entry.get());
+      }
+    }
+
+    // Build the error report including basic operating system information
+    ErrorReport errorReport = new ErrorReport();
+    errorReport.setOsName(OSUtils.getOsName());
+    errorReport.setOsVersion(OSUtils.getOsVersion());
+    errorReport.set64Bit(OSUtils.is64Bit());
+    errorReport.setAppVersion(Configurations.currentConfiguration.getCurrentVersion());
+    errorReport.setUserNotes(userNotes);
+    errorReport.setLogEntries(errorReportLogEntryList);
+
+    return errorReport;
   }
 }
 
