@@ -102,7 +102,7 @@ public class MainController extends AbstractController implements
   // Provide a separate executor service for wallet operations
   private static final ListeningExecutorService walletExecutorService = SafeExecutors.newFixedThreadPool(10, "wallet-services");
 
-  private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 60;
+  private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 6;
 
   // Keep track of other controllers for use after a preferences change
   private final HeaderController headerController;
@@ -1552,10 +1552,8 @@ public class MainController extends AbstractController implements
             if (transactionData != null) {
               PaymentStatus status = transactionData.getStatus();
               if (status.getStatus().equals(RAGStatus.RED)) {
-                JButton button = Buttons.newAlertPanelButton(getShowHelpAction(), MessageKey.DETAILS, MessageKey.DETAILS_TOOLTIP, AwesomeIcon.QUESTION);
-
                 // The transaction has not been sent correctly, or change is not spendable, throw a warning alert
-                final AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER), RAGStatus.AMBER, button);
+                final AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER_SEE_SEND_REQUEST_SCREEN), RAGStatus.AMBER);
                 SwingUtilities.invokeLater(
                   new Runnable() {
                     @Override
