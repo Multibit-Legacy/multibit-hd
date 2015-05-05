@@ -1,5 +1,6 @@
 package org.multibit.hd.core.error_reporting;
 
+import com.google.common.base.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,7 +8,6 @@ import org.multibit.hd.common.error_reporting.ErrorReport;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Json;
 import org.multibit.hd.core.managers.InstallationManager;
-import org.multibit.hd.core.testing.FixtureAsserts;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -71,7 +71,7 @@ public class ExceptionHandlerTest {
     // Arrange
     InputStream is = ExceptionHandlerTest.class.getResourceAsStream("/fixtures/error_reporting/test-multibit-hd.log");
     String truncatedLog = ExceptionHandler.readAndTruncateInputStream(is, 2000);
-    ErrorReport errorReport = ExceptionHandler.buildErrorReport(
+    ErrorReport fixtureErrorReport = ExceptionHandler.buildErrorReport(
       "Example notes",
       truncatedLog
     );
@@ -79,10 +79,12 @@ public class ExceptionHandlerTest {
     ByteArrayOutputStream testObject = new ByteArrayOutputStream();
 
     // Act
-    Json.writeJson(testObject, errorReport);
+    Json.writeJson(testObject, fixtureErrorReport);
 
     // Assert
-    FixtureAsserts.assertStringMatchesJsonFixture("Error report failed to marshal as JSON", testObject.toString(), "/fixtures/error_reporting/test-error-report.json");
+    Optional<ErrorReport> actualErrorReport = Json.readJson(testObject.toString(), ErrorReport.class);
+
+    assertThat(actualErrorReport.get().getLogEntries().size()).isEqualTo(8);
 
   }
 
