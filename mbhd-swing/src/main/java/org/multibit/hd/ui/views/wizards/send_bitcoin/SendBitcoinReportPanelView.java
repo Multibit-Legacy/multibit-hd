@@ -72,11 +72,11 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   @Override
   public void initialiseContent(JPanel contentPanel) {
     contentPanel.setLayout(
-      new MigLayout(
-        Panels.migXYLayout(),
-        "[][][]", // Column constraints
-        "10[24]10[24]15[24]10[24]15[24]10" // Row constraints
-      ));
+            new MigLayout(
+                    Panels.migXYLayout(),
+                    "[][][]", // Column constraints
+                    "10[24]10[24]15[24]10[24]15[24]10" // Row constraints
+            ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -126,18 +126,18 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
   @Override
   public boolean beforeShow() {
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
+            new Runnable() {
+              @Override
+              public void run() {
 
-          LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
-          transactionConstructionStatusDetail.setText("");
-          transactionBroadcastStatusSummary.setText("");
-          transactionBroadcastStatusDetail.setText("");
+                LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.CHANGE_PASSWORD_WORKING));
+                transactionConstructionStatusDetail.setText("");
+                transactionBroadcastStatusSummary.setText("");
+                transactionBroadcastStatusDetail.setText("");
 
-          transactionBroadcastStatusSummary.setIcon(null);
-        }
-      });
+                transactionBroadcastStatusSummary.setIcon(null);
+              }
+            });
 
 
     // Ensure the header is switched off whilst the send is in progress
@@ -215,34 +215,34 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     }
 
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
+            new Runnable() {
+              @Override
+              public void run() {
 
-          if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
-            LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
-            LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, "");
-            LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
-          } else {
-            String detailMessage = Languages.safeText(
-              transactionCreationEvent.getTransactionCreationFailureReasonKey(),
-              (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData()
-            );
+                if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
+                  LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
+                  LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, "");
+                  LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
+                } else {
+                  String detailMessage = Languages.safeText(
+                          transactionCreationEvent.getTransactionCreationFailureReasonKey(),
+                          (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData()
+                  );
 
-            LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
-            LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, detailMessage);
-            LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
+                  LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
+                  LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, detailMessage);
+                  LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
 
-            // If transaction creation failed enable the Finish/ Next button
-            if (getWizardModel().isBIP70()) {
-                ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
-            } else {
-                ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
-            }
-            switchHeaderOn();
-          }
-        }
-      });
+                  // If transaction creation failed enable the Finish/ Next button
+                  if (getWizardModel().isBIP70()) {
+                    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+                  } else {
+                    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+                  }
+                  switchHeaderOn();
+                }
+              }
+            });
   }
 
   @Subscribe
@@ -257,13 +257,13 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     }
 
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.SENDING_BITCOIN));
-          AwesomeDecorator.bindIcon(AwesomeIcon.BULLHORN, transactionBroadcastStatusSummary, true, MultiBitUI.NORMAL_ICON_SIZE);
-        }
-      });
+            new Runnable() {
+              @Override
+              public void run() {
+                LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.SENDING_BITCOIN));
+                AwesomeDecorator.bindIcon(AwesomeIcon.BULLHORN, transactionBroadcastStatusSummary, true, MultiBitUI.NORMAL_ICON_SIZE);
+              }
+            });
   }
 
   @Subscribe
@@ -322,33 +322,33 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     }
 
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
+            new Runnable() {
+              @Override
+              public void run() {
 
-          if (getWizardModel().isBIP70()) {
-              // Enable the next button on BIP70 payments once the transaction is sent
-              getCancelButton().setEnabled(false);
-              ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
-          } else {
-              // Enable the finish button once the transaction is sent
-              ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
-          }
+                if (getWizardModel().isBIP70()) {
+                  // Enable the next button on BIP70 payments once the transaction is sent
+                  getCancelButton().setEnabled(false);
+                  ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+                } else {
+                  // Enable the finish button once the transaction is sent
+                  ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+                }
 
-          if (bitcoinSentEvent.isSendWasSuccessful()) {
-            LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
-            LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
-          } else {
-            String summaryMessage = Languages.safeText(CoreMessageKey.BITCOIN_SEND_FAILED);
-            String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReason(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
-            LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, summaryMessage);
-            LabelDecorator.applyWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
-            LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
-          }
+                if (bitcoinSentEvent.isSendWasSuccessful()) {
+                  LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
+                  LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
+                } else {
+                  String summaryMessage = Languages.safeText(CoreMessageKey.BITCOIN_SEND_FAILED);
+                  String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReason(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
+                  LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, summaryMessage);
+                  LabelDecorator.applyWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
+                  LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
+                }
 
-          switchHeaderOn();
-        }
-      });
+                switchHeaderOn();
+              }
+            });
   }
 
   private void switchHeaderOn() {
@@ -358,7 +358,10 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
         final boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
         log.debug("Firing event to header viewable to:  {}", viewHeader);
         ViewEvents.fireBalanceChangedEvent(
-                     WalletManager.INSTANCE.getCurrentWalletBalance().get(), null, Optional.<String>absent());
+                WalletManager.INSTANCE.getCurrentWalletBalance().get(),
+                WalletManager.INSTANCE.getCurrentWalletBalanceWithUnconfirmed().get(),
+                null,
+                Optional.<String>absent());
         ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
       }
     });

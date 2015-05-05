@@ -28,7 +28,7 @@ import java.util.Set;
  * </ul>
  * <p>An application event is a high level event with specific semantics. Normally a
  * low level event (such as a mouse click) will initiate it.</p>
- *
+ * <p/>
  * <p>It is expected that ViewEvents will interact with Swing components and as such is
  * expected to execute on the EDT. This cannot be provided directly within the method
  * by wrapping since the semantics of the calling code may require synchronous execution
@@ -135,29 +135,32 @@ public class ViewEvents {
    * @param rateProvider The exchange rate provider (e.g. "Bitstamp")
    */
   public static void fireBalanceChangedEvent(
-    final Coin coinBalance,
-    final BigDecimal localBalance,
-    final Optional<String> rateProvider
+          final Coin coinBalance,
+          final Coin coinWithUnconfirmedBalance,
+          final BigDecimal localBalance,
+          final Optional<String> rateProvider
   ) {
 
     log.trace("Firing 'balance changed' event");
     if (SwingUtilities.isEventDispatchThread()) {
       viewEventBus.post(
-        new BalanceChangedEvent(
-          coinBalance,
-          localBalance,
-          rateProvider
-        ));
+              new BalanceChangedEvent(
+                      coinBalance,
+                      coinWithUnconfirmedBalance,
+                      localBalance,
+                      rateProvider
+              ));
     } else {
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
           viewEventBus.post(
-            new BalanceChangedEvent(
-              coinBalance,
-              localBalance,
-              rateProvider
-            ));
+                  new BalanceChangedEvent(
+                          coinBalance,
+                          coinWithUnconfirmedBalance,
+                          localBalance,
+                          rateProvider
+                  ));
         }
       });
     }
@@ -294,9 +297,9 @@ public class ViewEvents {
    * @param enabled      True if the button should be enabled
    */
   public static void fireWizardButtonEnabledEvent(
-    final String panelName,
-    final WizardButton wizardButton,
-    final boolean enabled
+          final String panelName,
+          final WizardButton wizardButton,
+          final boolean enabled
   ) {
 
     log.trace("Firing 'wizard button enabled {}' event: {}", panelName, enabled);
@@ -320,9 +323,9 @@ public class ViewEvents {
    * @param isExitCancel True if this hide event comes as a result of an exit or cancel
    */
   public static void fireWizardHideEvent(
-    final String panelName,
-    final AbstractWizardModel wizardModel,
-    final boolean isExitCancel
+          final String panelName,
+          final AbstractWizardModel wizardModel,
+          final boolean isExitCancel
   ) {
 
     log.trace("Firing 'wizard hide' event");

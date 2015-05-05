@@ -632,7 +632,7 @@ public class WalletService extends AbstractService {
     return outputAddresses;
   }
 
-  private FiatPayment calculateFiatPaymentEquivalent(Coin amountBTC) {
+  public static FiatPayment calculateFiatPaymentEquivalent(Coin amountBTC) {
     FiatPayment amountFiat = new FiatPayment();
 
     log.debug("Calculating fiat amount of {}", amountBTC);
