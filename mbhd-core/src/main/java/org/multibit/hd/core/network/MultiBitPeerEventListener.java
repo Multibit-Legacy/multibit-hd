@@ -124,6 +124,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
         if (currentWallet != null) {
           try {
             if (currentWallet.isTransactionRelevant(transaction)) {
+              log.debug("Relevant transaction {} has been seen by peer {}", transaction.getHashAsString(), peer.getAddress());
+
               if (!(transaction.isTimeLocked() && transaction.getConfidence().getSource() != TransactionConfidence.Source.SELF)) {
                 Sha256Hash transactionHash = transaction.getHash();
                 if (currentWallet.getTransaction(transactionHash) == null) {
