@@ -117,6 +117,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
       log.debug("CoreServices.getContext(): {}", CoreServices.getContext());
       log.debug("CoreServices.getContext().getConfidenceTable(): {}", CoreServices.getContext().getConfidenceTable());
       log.debug("The CoreServices Context confidence has identity: {}", System.identityHashCode(CoreServices.getContext().getConfidenceTable().get(transaction.getHash())));
+      log.debug("Transaction confidence = {}", transaction.getConfidence());
 
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
       if (currentWalletSummary.isPresent() && currentWalletSummary.get() != null) {
@@ -125,6 +126,12 @@ public class MultiBitPeerEventListener implements PeerEventListener {
           try {
             if (currentWallet.isTransactionRelevant(transaction)) {
               log.debug("Relevant transaction {} has been seen by peer {}", transaction.getHashAsString(), peer.getAddress());
+              transaction.getConfidence().addEventListener(new TransactionConfidence.Listener() {
+                @Override
+                public void onConfidenceChanged(TransactionConfidence confidence, ChangeReason reason) {
+                  log.debug("MultiBitPeerEventListener saw a confidence change: {}", confidence);
+                }
+              });
 
               if (!(transaction.isTimeLocked() && transaction.getConfidence().getSource() != TransactionConfidence.Source.SELF)) {
                 Sha256Hash transactionHash = transaction.getHash();

@@ -1519,6 +1519,7 @@ public class BitcoinNetworkService extends AbstractService {
     if (peerGroup != null) {
       log.debug("Stopping peerGroup service...");
       peerGroup.removeEventListener(peerEventListener);
+      peerEventListener = null;
 
       // Remove the wallet from the peer group
       if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {

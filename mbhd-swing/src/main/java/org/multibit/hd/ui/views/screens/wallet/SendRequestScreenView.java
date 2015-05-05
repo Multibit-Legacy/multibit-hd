@@ -387,10 +387,10 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
     // Add to the panel
     contentPanel.add(lowSpendableLabel1, "shrink, span 3, wrap");
-    contentPanel.add(lowSpendableLabel2, "align right");
+    contentPanel.add(lowSpendableLabel2);
     JPanel returningPanel = returningMaV.getView().newComponentPanel();
     returningPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
-    contentPanel.add(returningPanel, "shrink, span 2, wrap");
+    contentPanel.add(returningPanel, "shrink, wrap");
   }
 
   private void lowSpendableVisible(boolean lowSpendableVisible) {

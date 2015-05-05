@@ -102,7 +102,7 @@ public class MainController extends AbstractController implements
   // Provide a separate executor service for wallet operations
   private static final ListeningExecutorService walletExecutorService = SafeExecutors.newFixedThreadPool(10, "wallet-services");
 
-  private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 30;
+  private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 60;
 
   // Keep track of other controllers for use after a preferences change
   private final HeaderController headerController;
