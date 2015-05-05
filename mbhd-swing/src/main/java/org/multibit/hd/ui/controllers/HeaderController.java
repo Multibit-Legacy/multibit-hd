@@ -51,21 +51,23 @@ public class HeaderController extends AbstractController {
   public void onExchangeRateChangedEvent(final ExchangeRateChangedEvent event) {
 
     // Build the exchange string
-    final Optional<Coin> coin = WalletManager.INSTANCE.getCurrentWalletBalance();
+    final Optional<Coin> availableCoin = WalletManager.INSTANCE.getCurrentWalletBalance();
+    final Optional<Coin> estimatedCoin = WalletManager.INSTANCE.getCurrentWalletBalanceWithUnconfirmed();
 
     final BigDecimal localBalance;
 
     if (event.getRate() != null) {
-      localBalance = Coins.toLocalAmount(coin.or(Coin.ZERO), event.getRate());
+      localBalance = Coins.toLocalAmount(availableCoin.or(Coin.ZERO), event.getRate());
     } else {
       localBalance = null;
     }
 
     // Post the event
     ViewEvents.fireBalanceChangedEvent(
-      coin.or(Coin.ZERO),
-      localBalance,
-      event.getRateProvider()
+            availableCoin.or(Coin.ZERO),
+            estimatedCoin.or(Coin.ZERO),
+            localBalance,
+            event.getRateProvider()
     );
 
   }
@@ -114,7 +116,7 @@ public class HeaderController extends AbstractController {
       // Play a beep on the first alert for RED or AMBER
       RAGStatus severity = event.getAlertModel().getSeverity();
       if (RAGStatus.RED.equals(severity)
-        || RAGStatus.AMBER.equals(severity)) {
+              || RAGStatus.AMBER.equals(severity)) {
         Sounds.playBeep();
       }
 

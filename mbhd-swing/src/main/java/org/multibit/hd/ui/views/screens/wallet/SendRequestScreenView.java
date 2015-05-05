@@ -7,7 +7,9 @@ import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
 import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
+import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.PaymentType;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
@@ -18,6 +20,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.events.view.BalanceChangedEvent;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -38,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -60,6 +64,10 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
   private ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> displaySendingPaymentsMaV;
 
   private ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> displayRequestedPaymentsMaV;
+
+  private JLabel lowSpendableLabel1;
+  private JLabel lowSpendableLabel2;
+  private ModelAndView<DisplayAmountModel, DisplayAmountView> returningMaV;
 
   private WalletService walletService;
 
@@ -88,8 +96,8 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     walletService = CoreServices.getCurrentWalletService().get();
 
     MigLayout layout = new MigLayout(
-            "debug, " + Panels.migXYDetailLayout(),
-            "10[]10[]", // Column constraints
+            Panels.migXYDetailLayout(),
+            "[]10[10]10[]", // Column constraints
             "1[]20[]10[]" // Row constraints
     );
 
@@ -235,6 +243,35 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     update();
   }
 
+  @Subscribe
+  public void onBalanceChangedEvent(BalanceChangedEvent balanceChangedEvent) {
+    log.debug("Saw a balance changed event: {}", balanceChangedEvent);
+
+    // If the unconfirmed is different from the estimated then show the 'low spendable is detected' message
+    if (balanceChangedEvent.getCoinBalance().compareTo(balanceChangedEvent.getCoinWithUnconfirmedBalance()) != 0) {
+      Coin amountCoinReturning = balanceChangedEvent.getCoinWithUnconfirmedBalance().subtract(balanceChangedEvent.getCoinBalance());
+
+      FiatPayment amountFiatReturning = WalletService.calculateFiatPaymentEquivalent(amountCoinReturning);
+
+      log.debug("Amount returning from network. Coin:{}, Fiat:{}", amountCoinReturning, amountFiatReturning);
+      boolean hasFiat = amountFiatReturning.getAmount().isPresent();
+      returningMaV.getModel().setLocalAmountVisible(hasFiat);
+      if (hasFiat) {
+        returningMaV.getModel().setLocalAmount(amountFiatReturning.getAmount().get());
+      }
+      returningMaV.getModel().setCoinAmount(amountCoinReturning);
+      returningMaV.getView().updateViewFromModel();
+      lowSpendableVisible(true);
+    } else {
+      // Switch off visibility
+      returningMaV.getModel().setCoinAmount(Coin.ZERO);
+      returningMaV.getModel().setLocalAmount(BigDecimal.ZERO);
+      lowSpendableVisible(false);
+    }
+
+    returningMaV.getView().updateView(Configurations.currentConfiguration);
+  }
+
   private void update() {
     executorService.submit(new Runnable() {
       @Override
@@ -329,41 +366,36 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
   private void createLowSpendableBalanceLabel(JPanel contentPanel) {
     // Information icon label and text ("Low spendable balance detected.")
-    JLabel lowSpendableLabel1 = Labels.newLabel(MessageKey.SPENDABLE_BALANCE_IS_LOWER, null);
+    lowSpendableLabel1 = Labels.newLabel(MessageKey.SPENDABLE_BALANCE_IS_LOWER, null);
     AwesomeDecorator.bindIcon(AwesomeIcon.INFO_CIRCLE, lowSpendableLabel1, true, MultiBitUI.NORMAL_ICON_SIZE);
 
-    JLabel lowSpendableLabel2 = Labels.newLabel(MessageKey.AMOUNT_RETURNING, null);
-
-    // TODO Create a unique FEST names to ensure accessibility
+    lowSpendableLabel2 = Labels.newLabel(MessageKey.AMOUNT_RETURNING, null);
 
     // Amount MaV (ensure it is accessible)
-    ModelAndView<DisplayAmountModel, DisplayAmountView> returningMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN, false, "AMOUNT_RETURNING");
+    returningMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.PLAIN, false, "AMOUNT_RETURNING");
     if (CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().isPresent()) {
       Optional<String> rateProvider = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent().get().getRateProvider();
       returningMaV.getModel().setRateProvider(rateProvider);
     }
 
-    // Do not show the local currency
-    boolean showLocalCurrency = false;
-    // Don't show the fiat amount if the currency on the fiat payment is different to that in the bitcoin configuration (it's misleading)
-//    if (showLocalCurrency && !paymentData.getAmountFiat().getCurrency().get().getCurrencyCode().equals(Configurations.currentConfiguration.getBitcoin().getLocalCurrencyCode())) {
-//      showLocalCurrency = false;
-//    }
-    returningMaV.getModel().setLocalAmountVisible(showLocalCurrency);
-//
-    returningMaV.getView().setVisible(true);
-    returningMaV.getModel().setCoinAmount(Coin.FIFTY_COINS);
-//    if (paymentData.getAmountFiat() != null && paymentData.getAmountFiat().getAmount().isPresent()) {
-//      returningMaV.getModel().setLocalAmount(paymentData.getAmountFiat().getAmount().get());
-//    } else {
-//      returningMaV.getModel().setLocalAmount(null);
-//    }
+    // Do not show the local currency - not set yet
+    returningMaV.getModel().setLocalAmountVisible(false);
+    returningMaV.getModel().setCoinAmount(Coin.ZERO);
+
+    // Component is initially invisible
+    lowSpendableVisible(false);
 
     // Add to the panel
     contentPanel.add(lowSpendableLabel1, "shrink, span 3, wrap");
-    contentPanel.add(lowSpendableLabel2, "shrink");
+    contentPanel.add(lowSpendableLabel2, "align right");
     JPanel returningPanel = returningMaV.getView().newComponentPanel();
     returningPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
-    contentPanel.add(returningPanel, "shrink, wrap");
+    contentPanel.add(returningPanel, "shrink, span 2, wrap");
+  }
+
+  private void lowSpendableVisible(boolean lowSpendableVisible) {
+    lowSpendableLabel1.setVisible(lowSpendableVisible);
+    lowSpendableLabel2.setVisible(lowSpendableVisible);
+    returningMaV.getView().setVisible(lowSpendableVisible);
   }
 }

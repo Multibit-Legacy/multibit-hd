@@ -33,7 +33,7 @@ import javax.swing.*;
  * <ul>
  * <li>Show empty wallet progress report</li>
  * </ul>
- *
+ * <p/>
  * <p>Much of this code is lifted straight from SendBitcoinReportPanelView</p>
  *
  * @since 0.0.1
@@ -77,11 +77,11 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
   @Override
   public void initialiseContent(JPanel contentPanel) {
     contentPanel.setLayout(
-      new MigLayout(
-        Panels.migXYLayout(),
-        "[][][]", // Column constraints
-        "10[24]10[24]15[24]10[24]15[24]10" // Row constraints
-      ));
+            new MigLayout(
+                    Panels.migXYLayout(),
+                    "[][][]", // Column constraints
+                    "10[24]10[24]15[24]10[24]15[24]10" // Row constraints
+            ));
 
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
@@ -196,8 +196,8 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
           LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
         } else {
           String detailMessage = Languages.safeText(
-            transactionCreationEvent.getTransactionCreationFailureReasonKey(),
-            (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData()
+                  transactionCreationEvent.getTransactionCreationFailureReasonKey(),
+                  (Object[]) transactionCreationEvent.getTransactionCreationFailureReasonData()
           );
           LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
           LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, detailMessage);
@@ -222,13 +222,13 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     }
 
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.SENDING_BITCOIN));
-          AwesomeDecorator.bindIcon(AwesomeIcon.BULLHORN, transactionBroadcastStatusSummary, true, MultiBitUI.NORMAL_ICON_SIZE);
-        }
-      });
+            new Runnable() {
+              @Override
+              public void run() {
+                LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.SENDING_BITCOIN));
+                AwesomeDecorator.bindIcon(AwesomeIcon.BULLHORN, transactionBroadcastStatusSummary, true, MultiBitUI.NORMAL_ICON_SIZE);
+              }
+            });
   }
 
 
@@ -263,7 +263,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
                       // bullhorn-three-quarters
                       Icon icon = Images.newBullhornThreeQuartersIcon();
                       transactionBroadcastStatusSummary.setIcon(icon);
-                   }
+                    }
                   }
                 }
               }
@@ -283,26 +283,26 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     }
 
     SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          // Enable the finish button once the transaction is sent
-          ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
+            new Runnable() {
+              @Override
+              public void run() {
+                // Enable the finish button once the transaction is sent
+                ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
 
-          if (bitcoinSentEvent.isSendWasSuccessful()) {
-            LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
-            LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
-          } else {
-            String summaryMessage = Languages.safeText(CoreMessageKey.BITCOIN_SEND_FAILED);
-            String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReason(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
-            LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, summaryMessage);
-            LabelDecorator.applyWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
-            LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
-          }
+                if (bitcoinSentEvent.isSendWasSuccessful()) {
+                  LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
+                  LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
+                } else {
+                  String summaryMessage = Languages.safeText(CoreMessageKey.BITCOIN_SEND_FAILED);
+                  String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReason(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
+                  LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, summaryMessage);
+                  LabelDecorator.applyWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
+                  LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
+                }
 
-          switchHeaderOn();
-        }
-      });
+                switchHeaderOn();
+              }
+            });
   }
 
   private void switchHeaderOn() {
@@ -312,7 +312,10 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
         final boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
         log.debug("Firing event to header viewable to:  {}", viewHeader);
         ViewEvents.fireBalanceChangedEvent(
-                             WalletManager.INSTANCE.getCurrentWalletBalance().get(), null, Optional.<String>absent());
+                WalletManager.INSTANCE.getCurrentWalletBalance().get(),
+                WalletManager.INSTANCE.getCurrentWalletBalanceWithUnconfirmed().get(),
+                null,
+                Optional.<String>absent());
         ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
       }
     });

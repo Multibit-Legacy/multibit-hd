@@ -1323,7 +1323,7 @@ public enum WalletManager implements WalletEventListener {
 
 
   /**
-   * Get the balance of the current wallet (this does not include a decrement due to the BRIT fees)
+   * Get the spendable balance of the current wallet (this does not include a decrement due to the BRIT fees)
    * This is Optional.absent() if there is no wallet
    */
   public Optional<Coin> getCurrentWalletBalance() {
@@ -1337,6 +1337,20 @@ public enum WalletManager implements WalletEventListener {
     }
   }
 
+  /**
+    * Get the balance of the current wallet including unconfirmed (this does not include a decrement due to the BRIT fees)
+    * This is Optional.absent() if there is no wallet
+    */
+   public Optional<Coin> getCurrentWalletBalanceWithUnconfirmed() {
+     Optional<WalletSummary> currentWalletSummary = getCurrentWalletSummary();
+     if (currentWalletSummary.isPresent()) {
+       // Use the real wallet data
+       return Optional.of(currentWalletSummary.get().getWallet().getBalance(Wallet.BalanceType.ESTIMATED));
+     } else {
+       // Unknown at this time
+       return Optional.absent();
+     }
+   }
   /**
    * @param includeOneExtraFee include an extra fee to include a tx currently being constructed that isn't in the wallet yet
    *

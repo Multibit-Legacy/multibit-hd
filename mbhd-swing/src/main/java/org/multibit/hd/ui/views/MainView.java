@@ -228,7 +228,11 @@ public class MainView extends JFrame {
 
       // Ensure the wallet balance is propagated out
       if (WalletManager.INSTANCE.getCurrentWalletBalance().isPresent()) {
-        ViewEvents.fireBalanceChangedEvent(WalletManager.INSTANCE.getCurrentWalletBalance().get(), null, Optional.<String>absent());
+        ViewEvents.fireBalanceChangedEvent(
+                WalletManager.INSTANCE.getCurrentWalletBalance().get(),
+                WalletManager.INSTANCE.getCurrentWalletBalanceWithUnconfirmed().get(),
+                null,
+                Optional.<String>absent());
       }
 
       // Catch up on recent events

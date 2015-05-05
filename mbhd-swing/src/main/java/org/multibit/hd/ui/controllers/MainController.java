@@ -102,7 +102,7 @@ public class MainController extends AbstractController implements
   // Provide a separate executor service for wallet operations
   private static final ListeningExecutorService walletExecutorService = SafeExecutors.newFixedThreadPool(10, "wallet-services");
 
-  private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 6;
+  private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 30;
 
   // Keep track of other controllers for use after a preferences change
   private final HeaderController headerController;
@@ -1573,7 +1573,7 @@ public class MainController extends AbstractController implements
                                 Optional.<Coin>absent(),
                                 false,
                                 CoreMessageKey.THE_ERROR_WAS,
-                                new String[]{Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER)}
+                                new String[]{Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER_SEE_SEND_REQUEST_SCREEN)}
                               ));
               }
             }
