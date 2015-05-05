@@ -149,7 +149,7 @@ public final class OSUtils {
    */
   public static boolean is64Bit() {
 
-    boolean result = false;
+    boolean result;
     if (System.getProperty("os.name").contains("Windows")) {
       result = (System.getenv("ProgramFiles(x86)") != null);
     } else {

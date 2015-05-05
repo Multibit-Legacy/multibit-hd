@@ -1,0 +1,81 @@
+{
+  "os_name": "Mac OS X",
+  "os_version": "10.9.5",
+  "os_arch": "64",
+  "app_version": "0.1",
+  "user_notes": "Example notes",
+  "log_entries": [
+    {
+      "@timestamp": "2015-04-27T21:11:07.458+01:00",
+      "@version": 1,
+      "message": "New fixed thread pool with 1 threads: 'uri-listener'",
+      "logger_name": "org.multibit.hd.core.concurrent.SafeExecutors",
+      "thread_name": "main",
+      "level": "DEBUG",
+      "level_value": 10000
+    },
+    {
+      "@timestamp": "2015-04-27T21:11:07.975+01:00",
+      "@version": 1,
+      "message": "Listening for MultiBit HD instances on socket: '8330'",
+      "logger_name": "org.multibit.hd.ui.services.ExternalDataListeningService",
+      "thread_name": "main",
+      "level": "INFO",
+      "level_value": 20000
+    },
+    {
+      "@timestamp": "2015-04-27T21:11:07.976+01:00",
+      "@version": 1,
+      "message": "This is the primary instance so showing splash screen.",
+      "logger_name": "org.multibit.hd.ui.MultiBitHD",
+      "thread_name": "main",
+      "level": "INFO",
+      "level_value": 20000
+    },
+    {
+      "@timestamp": "2015-04-27T21:11:09.989+01:00",
+      "@version": 1,
+      "message": "Initialising JVM...",
+      "logger_name": "org.multibit.hd.ui.MultiBitHD",
+      "thread_name": "main",
+      "level": "DEBUG",
+      "level_value": 10000
+    },
+    {
+      "@timestamp": "2015-04-27T21:11:09.990+01:00",
+      "@version": 1,
+      "message": "New fixed thread pool with 1 threads: 'install-cacerts'",
+      "logger_name": "org.multibit.hd.core.concurrent.SafeExecutors",
+      "thread_name": "main",
+      "level": "DEBUG",
+      "level_value": 10000
+    },
+    {
+      "@timestamp": "2015-04-27T21:11:10.167+01:00",
+      "@version": 1,
+      "message": "Initialising Core...",
+      "logger_name": "org.multibit.hd.ui.MultiBitHD",
+      "thread_name": "main",
+      "level": "DEBUG",
+      "level_value": 10000
+    },
+    {
+      "@timestamp": "2015-04-27T21:11:25.478+01:00",
+      "@version": 1,
+      "message": "No forced refresh so reusing the trust store: /Users/example/Library/Application Support/MultiBitHD/mbhd-cacerts",
+      "logger_name": "org.multibit.hd.core.managers.HttpsManager",
+      "thread_name": "safe-fixed-install-cacerts-0",
+      "level": "DEBUG",
+      "level_value": 10000
+    },
+    {
+      "@timestamp": "2015-04-27T21:11:28.310+01:00",
+      "@version": 1,
+      "message": "Service EnvironmentCheckingService@2f097afc starting...",
+      "logger_name": "org.multibit.hd.core.services.AbstractService",
+      "thread_name": "main",
+      "level": "INFO",
+      "level_value": 20000
+    }
+  ]
+}
