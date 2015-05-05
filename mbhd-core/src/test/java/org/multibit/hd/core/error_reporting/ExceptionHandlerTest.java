@@ -82,7 +82,7 @@ public class ExceptionHandlerTest {
     Json.writeJson(testObject, fixtureErrorReport);
 
     // Assert
-    Optional<ErrorReport> actualErrorReport = Json.readJson(testObject.toString(), ErrorReport.class);
+    Optional<ErrorReport> actualErrorReport = Json.readJson(testObject.toByteArray(), ErrorReport.class);
 
     assertThat(actualErrorReport.get().getLogEntries().size()).isEqualTo(8);
 
