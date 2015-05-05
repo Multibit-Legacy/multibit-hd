@@ -34,12 +34,12 @@ public class Json {
   /**
    * <p>Reads the JSON from the given input stream</p>
    *
-   * @param is    The input stream to use (not closed)
-   * @param clazz The expected root class from the JSON
+   * @param payload The JSON
+   * @param clazz   The expected root class from the JSON
    *
    * @return The object mapped to the JSON if present
    */
-  public static synchronized <T> Optional<T> readJson(String is, Class<T> clazz) {
+  public static synchronized <T> Optional<T> readJson(byte[] payload, Class<T> clazz) {
     log.trace("Reading JSON data...");
 
     Optional<T> value;
@@ -50,7 +50,7 @@ public class Json {
     }
 
     try {
-      value = Optional.fromNullable(mapper.readValue(is, clazz));
+      value = Optional.fromNullable(mapper.readValue(payload, clazz));
     } catch (IOException e) {
       log.warn(e.getMessage());
       value = Optional.absent();
