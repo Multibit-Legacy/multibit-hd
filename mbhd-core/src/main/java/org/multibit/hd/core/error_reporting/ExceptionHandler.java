@@ -20,6 +20,7 @@ import org.multibit.hd.brit.utils.HttpsUtils;
 import org.multibit.hd.common.error_reporting.ErrorReport;
 import org.multibit.hd.common.error_reporting.ErrorReportLogEntry;
 import org.multibit.hd.common.error_reporting.ErrorReportResult;
+import org.multibit.hd.common.error_reporting.ErrorReportStatus;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Json;
 import org.multibit.hd.core.events.CoreEvents;
@@ -235,14 +236,14 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       multibitPublicKey = BRITServices.getMatcherPublicKey();
     } catch (IOException | PGPException e) {
       log.error("Failed to load MultiBit public key", e);
-      return ErrorReportResult.UPLOAD_FAILED;
+      return new ErrorReportResult(ErrorReportStatus.UPLOAD_FAILED);
     }
 
     // Attempt to load the current logging file
     Optional<File> currentLoggingFile = LogbackFactory.getCurrentLoggingFile();
     if (!currentLoggingFile.isPresent()) {
       log.error("No current log file.");
-      return ErrorReportResult.UPLOAD_FAILED;
+      return new ErrorReportResult(ErrorReportStatus.UPLOAD_FAILED);
     }
 
     // Truncate the current log file
@@ -251,7 +252,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       truncatedCurrentLog = readAndTruncateInputStream(new FileInputStream(currentLoggingFile.get()), 204_800);
     } catch (IOException e) {
       log.error("Failed to read log file", e);
-      return ErrorReportResult.UPLOAD_FAILED;
+      return new ErrorReportResult(ErrorReportStatus.UPLOAD_FAILED);
     }
 
     // Parse the current log into an ErrorReport
@@ -266,7 +267,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       Json.writeJson(errorReportFOS, errorReport);
     } catch (IOException e) {
       log.error("Failed to write error-report.json", e);
-      return ErrorReportResult.UPLOAD_FAILED;
+      return new ErrorReportResult(ErrorReportStatus.UPLOAD_FAILED);
     }
 
     // Prepare the ASCII Armor output stream
@@ -276,7 +277,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       armoredErrorReportFOS = new FileOutputStream(InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/logs/error-report.json.asc");
     } catch (FileNotFoundException e) {
       log.error("Failed to prepare error-report.json.asc", e);
-      return ErrorReportResult.UPLOAD_FAILED;
+      return new ErrorReportResult(ErrorReportStatus.UPLOAD_FAILED);
     }
 
     // Encrypt with the MultiBit public key
@@ -285,7 +286,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       PGPUtils.encryptFile(armoredErrorReportFOS, errorReportFile, multibitPublicKey);
     } catch (IOException | NoSuchProviderException | PGPException e) {
       log.error("Failed to write error-report.json.asc", e);
-      return ErrorReportResult.UPLOAD_FAILED;
+      return new ErrorReportResult(ErrorReportStatus.UPLOAD_FAILED);
     }
 
     // Delete the plain text report
@@ -294,7 +295,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       SecureFiles.secureDelete(errorReportFile);
     } catch (IOException e) {
       log.error("Failed to delete error-report.json", e);
-      return ErrorReportResult.UPLOAD_FAILED;
+      return new ErrorReportResult(ErrorReportStatus.UPLOAD_FAILED);
     }
 
     // Load the armored payload
@@ -305,7 +306,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       armoredErrorReport = Files.toByteArray(armoredErrorReportFile);
     } catch (IOException e) {
       log.error("Failed to read error-report.json.asc", e);
-      return ErrorReportResult.UPLOAD_FAILED;
+      return new ErrorReportResult(ErrorReportStatus.UPLOAD_FAILED);
     }
 
     final byte[] response;
@@ -314,17 +315,16 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       response = HttpsUtils.doPost(errorReportingUrl, armoredErrorReport);
     } catch (IOException e) {
       log.warn("Failed to POST error-report.json.asc", e);
-      return ErrorReportResult.UPLOAD_FAILED;
+      return new ErrorReportResult(ErrorReportStatus.UPLOAD_FAILED);
     }
 
-    // At the moment all responses are "unknown" unless empty
-    if (response == null || response.length == 0) {
-      log.error("Empty response from '{}'", errorReportingUrl);
-      return ErrorReportResult.UPLOAD_FAILED;
-    }
+    Optional<ErrorReportResult> result = Json.readJson(response, ErrorReportResult.class);
 
-    // Must be OK to be here
-    return ErrorReportResult.UPLOAD_OK_UNKNOWN;
+    if (result.isPresent()) {
+      return result.get();
+    } else {
+      return new ErrorReportResult(ErrorReportStatus.UPLOAD_FAILED);
+    }
 
   }
 
@@ -345,7 +345,10 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
 
     java.util.List<ErrorReportLogEntry> errorReportLogEntryList = Lists.newArrayList();
     for (String logEntry : split) {
-      Optional<ErrorReportLogEntry> entry = Json.readJson(logEntry, ErrorReportLogEntry.class);
+      Optional<ErrorReportLogEntry> entry = Json.readJson(
+        logEntry.getBytes(Charsets.UTF_8),
+        ErrorReportLogEntry.class
+      );
       if (entry.isPresent()) {
         errorReportLogEntryList.add(entry.get());
       }

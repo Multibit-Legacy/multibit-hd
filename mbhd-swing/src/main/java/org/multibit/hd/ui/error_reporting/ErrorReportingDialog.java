@@ -7,6 +7,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.common.error_reporting.ErrorReportResult;
+import org.multibit.hd.common.error_reporting.ErrorReportStatus;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
@@ -277,7 +278,9 @@ public class ErrorReportingDialog extends JFrame {
 
             @Override
             public void onFailure(Throwable t) {
-              handleErrorReportResult(ErrorReportResult.UPLOAD_FAILED);
+              ErrorReportResult result = new ErrorReportResult();
+              result.setErrorReportStatus(ErrorReportStatus.UPLOAD_FAILED);
+              handleErrorReportResult(result);
             }
           });
 
@@ -320,7 +323,7 @@ public class ErrorReportingDialog extends JFrame {
 
           final MessageKey uploadProgressKey;
 
-          switch (errorReportResult) {
+          switch (errorReportResult.getErrorReportStatus()) {
             case UPLOAD_OK_KNOWN:
               uploadProgressKey = MessageKey.ERROR_REPORTING_UPLOAD_COMPLETE;
               break;
@@ -331,7 +334,7 @@ public class ErrorReportingDialog extends JFrame {
               uploadProgressKey = MessageKey.ERROR_REPORTING_UPLOAD_FAILED;
               break;
             default:
-              throw new IllegalStateException("Unknown error report result: " + errorReportResult.name());
+              throw new IllegalStateException("Unknown error report result: " + errorReportResult.getErrorReportStatus().name());
           }
 
           uploadProgressLabel.setText(Languages.safeText(uploadProgressKey));
