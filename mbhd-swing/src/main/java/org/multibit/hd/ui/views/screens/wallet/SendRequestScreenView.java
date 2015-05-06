@@ -253,7 +253,6 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
       FiatPayment amountFiatReturning = WalletService.calculateFiatPaymentEquivalent(amountCoinReturning);
 
-      log.debug("Amount returning from network. Coin:{}, Fiat:{}", amountCoinReturning, amountFiatReturning);
       boolean hasFiat = amountFiatReturning.getAmount().isPresent();
       returningMaV.getModel().setLocalAmountVisible(hasFiat);
       if (hasFiat) {

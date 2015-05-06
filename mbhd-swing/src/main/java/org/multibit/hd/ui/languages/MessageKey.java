@@ -926,6 +926,7 @@ public enum MessageKey {
   SPENDABLE_BALANCE_IS_LOWER("spendable_balance_is_lower"),
   SPENDABLE_BALANCE_IS_LOWER_SEE_SEND_REQUEST_SCREEN("spendable_balance_is_lower_see_send_request_screen"),
   AMOUNT_RETURNING("amount_returning"),
+  PLUS_UNCONFIRMED("plus_unconfirmed"),
 
   // End of enum
   ;

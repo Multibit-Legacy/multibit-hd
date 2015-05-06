@@ -1,9 +1,13 @@
 package org.multibit.hd.ui.views;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.FiatPayment;
+import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.AlertAddedEvent;
@@ -36,7 +40,9 @@ import java.awt.event.ActionEvent;
 public class HeaderView extends AbstractView {
   private static final Logger log = LoggerFactory.getLogger(HeaderView.class);
 
-  private final ModelAndView<DisplayAmountModel, DisplayAmountView> balanceDisplayMaV;
+  private JLabel plusUncomfirmedLabel;
+  private final ModelAndView<DisplayAmountModel, DisplayAmountView> availableBalanceDisplayMaV;
+  private final ModelAndView<DisplayAmountModel, DisplayAmountView> unconfirmedDisplayMaV;
 
   private JLabel alertMessageLabel;
   private JLabel alertRemainingLabel;
@@ -54,7 +60,7 @@ public class HeaderView extends AbstractView {
     contentPanel = Panels.newPanel(
             new MigLayout(
                     Panels.migLayout("fillx,insets 10 10 5 10,hidemode 3"), // Layout insets ensure border is tight to sidebar
-                    "[][]", // Columns
+                    "[][]10[]", // Columns
                     "[][shrink]" // Rows
             ));
 
@@ -73,14 +79,25 @@ public class HeaderView extends AbstractView {
     contentPanel.setBackground(Themes.currentTheme.headerPanelBackground());
     contentPanel.setOpaque(true);
 
-    // Create the balance display not displaying it initially
-    balanceDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER, true, "header.balance");
-    log.trace("header is now visible");
-    balanceDisplayMaV.getView().setVisible(false);
+    // Create the balance display and unconfirmed amount not displaying it initially
+    availableBalanceDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER, true, "header.balance");
+    unconfirmedDisplayMaV = Components.newDisplayAmountMaV(DisplayAmountStyle.HEADER_SMALL, true, "header.unconfirmed");
+
+    plusUncomfirmedLabel = Labels.newPlusUnconfirmed();
+
+    availableBalanceDisplayMaV.getView().setVisible(false);
+    unconfirmedDisplayMaV.getView().setVisible(false);
+    plusUncomfirmedLabel.setVisible(false);
+    plusUncomfirmedLabel.setBorder(BorderFactory.createEmptyBorder(0,0,8,0));
 
     // Provide a fixed height to avoid an annoying "slide down" during unlock
-    contentPanel.add(balanceDisplayMaV.getView().newComponentPanel(), "growx,push,hmin 50,wrap");
-    contentPanel.add(alertPanel, "growx,aligny top,push");
+    contentPanel.add(availableBalanceDisplayMaV.getView().newComponentPanel(), "growx,push,hmin 50, aligny bottom");
+    contentPanel.add(plusUncomfirmedLabel, "shrink, aligny bottom");
+    JPanel unconfirmedViewPanel = unconfirmedDisplayMaV.getView().newComponentPanel();
+    unconfirmedViewPanel.setBorder(BorderFactory.createEmptyBorder(0,0,4,0));
+
+    contentPanel.add(unconfirmedViewPanel, "growx,push, aligny bottom, wrap");
+    contentPanel.add(alertPanel, "growx,aligny top,span 3, push");
 
     populateAlertPanel();
 
@@ -103,21 +120,49 @@ public class HeaderView extends AbstractView {
   public void onBalanceChangedEvent(final BalanceChangedEvent event) {
 
     // Ignore no change
-    if (event.getCoinBalance().equals(balanceDisplayMaV.getModel().getCoinAmount()) && event.getLocalBalance() == null ) {
+    if (event.getCoinBalance().equals(availableBalanceDisplayMaV.getModel().getCoinAmount()) && event.getLocalBalance() == null ) {
       return;
     }
 
     // Handle the update
-    balanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
-    balanceDisplayMaV.getModel().setCoinAmount(event.getCoinBalance());
-    balanceDisplayMaV.getModel().setRateProvider(event.getRateProvider());
-    if (event.getRateProvider().isPresent() && event.getLocalBalance() != null) {
-      balanceDisplayMaV.getModel().setLocalAmountVisible(true);
+    availableBalanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
+    availableBalanceDisplayMaV.getModel().setCoinAmount(event.getCoinBalance());
+    availableBalanceDisplayMaV.getModel().setRateProvider(Optional.<String>absent());
+    if (event.getLocalBalance() != null) {
+      availableBalanceDisplayMaV.getModel().setLocalAmountVisible(true);
     }
 
     // Do not set the visibility here, use the ViewChangedEvent
 
-    balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
+    availableBalanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
+
+    // If the unconfirmed is different from the estimated then show the 'low spendable is detected' message
+    if (event.getCoinBalance().compareTo(event.getCoinWithUnconfirmedBalance()) != 0) {
+      Coin unconfirmedCoin = event.getCoinWithUnconfirmedBalance().subtract(event.getCoinBalance());
+
+      FiatPayment unconfirmedFiat = WalletService.calculateFiatPaymentEquivalent(unconfirmedCoin);
+
+      log.debug("Unconfirmed bitcoin. Coin:{}, Fiat:{}", unconfirmedCoin, unconfirmedFiat);
+      boolean hasFiat = unconfirmedFiat.getAmount().isPresent();
+      unconfirmedDisplayMaV.getModel().setLocalAmountVisible(hasFiat);
+      if (hasFiat) {
+        unconfirmedDisplayMaV.getModel().setLocalAmount(unconfirmedFiat.getAmount().get());
+      }
+      unconfirmedDisplayMaV.getModel().setCoinAmount(unconfirmedCoin);
+      unconfirmedDisplayMaV.getView().updateViewFromModel();
+      //unconfirmedDisplayMaV.getView().setVisible(Configurations.currentConfiguration.getAppearance().isShowBalance());
+      //plusUncomfirmedLabel.setVisible(Configurations.currentConfiguration.getAppearance().isShowBalance());
+    }
+//    else {
+//      // Switch off visibility
+//      unconfirmedDisplayMaV.getModel().setCoinAmount(Coin.ZERO);
+//      unconfirmedDisplayMaV.getModel().setLocalAmount(BigDecimal.ZERO);
+//      //unconfirmedDisplayMaV.getView().setVisible(false);
+//
+//      plusUncomfirmedLabel.setVisible(false);
+//    }
+
+    unconfirmedDisplayMaV.getView().updateView(Configurations.currentConfiguration);
   }
 
   /**
@@ -209,12 +254,14 @@ public class HeaderView extends AbstractView {
         @Override
         public void run() {
           log.trace("Header now has visibility: {} ", event.isVisible());
-          balanceDisplayMaV.getView().setVisible(event.isVisible());
+          availableBalanceDisplayMaV.getView().setVisible(event.isVisible());
           if (alertMessageLabel.getText().length() != 0 && event.isVisible()) {
             alertPanel.setVisible(event.isVisible());
           }
 
-          balanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
+          availableBalanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
+          unconfirmedDisplayMaV.getView().setVisible( event.isVisible());
+          plusUncomfirmedLabel.setVisible( event.isVisible());
         }
       });
 
