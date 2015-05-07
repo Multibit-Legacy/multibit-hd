@@ -616,7 +616,7 @@ public class Labels {
    public static JLabel newPlusUnconfirmed() {
      JLabel label =  Labels.newLabel(MessageKey.PLUS_UNCONFIRMED);
      label.setForeground(Themes.currentTheme.headerPanelText());
-     label.setFont(label.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_NORMAL_FONT_SIZE));
+     label.setFont(label.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_SMALL_FONT_SIZE));
      return label;
    }
 
@@ -680,8 +680,8 @@ public class Labels {
         textColor = Themes.currentTheme.headerPanelText();
         break;
       case HEADER_SMALL:
-        largeFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_NORMAL_FONT_SIZE);
-        normalFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_NORMAL_FONT_SIZE);
+        largeFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_SMALL_FONT_SIZE);
+        normalFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_SMALL_FONT_SIZE);
         textColor = Themes.currentTheme.headerPanelText();
       break;
       case TRANSACTION_DETAIL_AMOUNT:
