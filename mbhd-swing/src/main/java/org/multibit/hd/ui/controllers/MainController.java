@@ -1553,7 +1553,7 @@ public class MainController extends AbstractController implements
               PaymentStatus status = transactionData.getStatus();
               if (status.getStatus().equals(RAGStatus.RED)) {
                 // The transaction has not been sent correctly, or change is not spendable, throw a warning alert
-                final AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER_SEE_SEND_REQUEST_SCREEN), RAGStatus.AMBER);
+                final AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER), RAGStatus.AMBER);
                 SwingUtilities.invokeLater(
                   new Runnable() {
                     @Override
@@ -1573,7 +1573,7 @@ public class MainController extends AbstractController implements
                                 Optional.<Coin>absent(),
                                 false,
                                 CoreMessageKey.THE_ERROR_WAS,
-                                new String[]{Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER_SEE_SEND_REQUEST_SCREEN)}
+                                new String[]{Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER)}
                               ));
               }
             }

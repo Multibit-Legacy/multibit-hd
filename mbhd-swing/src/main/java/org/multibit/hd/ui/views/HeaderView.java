@@ -120,9 +120,9 @@ public class HeaderView extends AbstractView {
   public void onBalanceChangedEvent(final BalanceChangedEvent event) {
 
     // Ignore no change
-    if (event.getCoinBalance().equals(availableBalanceDisplayMaV.getModel().getCoinAmount()) && event.getLocalBalance() == null ) {
-      return;
-    }
+//    if (event.getCoinBalance().equals(availableBalanceDisplayMaV.getModel().getCoinAmount()) && event.getLocalBalance() == null ) {
+//      return;
+//    }
 
     // Handle the update
     availableBalanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
@@ -136,7 +136,7 @@ public class HeaderView extends AbstractView {
 
     availableBalanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
 
-    // If the unconfirmed is different from the estimated then show the 'low spendable is detected' message
+    // If the unconfirmed is different from the estimated then show the unconfirmed
     if (event.getCoinBalance().compareTo(event.getCoinWithUnconfirmedBalance()) != 0) {
       Coin unconfirmedCoin = event.getCoinWithUnconfirmedBalance().subtract(event.getCoinBalance());
 
