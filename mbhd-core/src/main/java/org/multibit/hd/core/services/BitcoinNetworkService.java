@@ -69,6 +69,7 @@ public class BitcoinNetworkService extends AbstractService {
 
   private static int CONNECTION_TIMEOUT = 4000; // milliseconds
 
+  private static int NUMBER_OF_PEERS_TO_PING = 4;
   /**
    * The boundary for when more mining fee is due
    */
@@ -1458,7 +1459,6 @@ public class BitcoinNetworkService extends AbstractService {
    * @return true is two or more peers respond to the ping
    */
   public boolean pingPeers() {
-
     List<Peer> connectedPeers = peerGroup.getConnectedPeers();
     int numberOfSuccessfulPings = 0;
     if (connectedPeers != null) {
@@ -1470,7 +1470,7 @@ public class BitcoinNetworkService extends AbstractService {
           ListenableFuture<Long> result = peer.ping();
           result.get(4, TimeUnit.SECONDS);
           numberOfSuccessfulPings++;
-          if (numberOfSuccessfulPings >= 2) {
+          if (numberOfSuccessfulPings >= NUMBER_OF_PEERS_TO_PING) {
             break;
           }
         } catch (ProtocolException | InterruptedException | ExecutionException | TimeoutException e) {
@@ -1486,7 +1486,6 @@ public class BitcoinNetworkService extends AbstractService {
    * Removes the current wallet from the block chain and closes the block store
    */
   private void closeBlockstore() {
-
     // Remove the wallet from the block chain before closing the blockstore
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() && blockChain != null) {
       log.debug("Removing wallet from blockChain...");

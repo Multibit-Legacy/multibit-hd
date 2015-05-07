@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.math.BigDecimal;
 
 /**
  * <p>View to provide the following to application:</p>
@@ -119,11 +120,6 @@ public class HeaderView extends AbstractView {
   @Subscribe
   public void onBalanceChangedEvent(final BalanceChangedEvent event) {
 
-    // Ignore no change
-//    if (event.getCoinBalance().equals(availableBalanceDisplayMaV.getModel().getCoinAmount()) && event.getLocalBalance() == null ) {
-//      return;
-//    }
-
     // Handle the update
     availableBalanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
     availableBalanceDisplayMaV.getModel().setCoinAmount(event.getCoinBalance());
@@ -132,7 +128,7 @@ public class HeaderView extends AbstractView {
       availableBalanceDisplayMaV.getModel().setLocalAmountVisible(true);
     }
 
-    // Do not set the visibility here, use the ViewChangedEvent
+    // Do not set the visibility on avaialble balance here, use the ViewChangedEvent
 
     availableBalanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
 
@@ -150,6 +146,16 @@ public class HeaderView extends AbstractView {
       }
       unconfirmedDisplayMaV.getModel().setCoinAmount(unconfirmedCoin);
       unconfirmedDisplayMaV.getView().updateViewFromModel();
+      boolean showHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
+      plusUncomfirmedLabel.setVisible(showHeader);
+      unconfirmedDisplayMaV.getView().setVisible(showHeader);
+    } else {
+      // Unconfirmed and estimated is the same - switch off the unconfirmed
+      unconfirmedDisplayMaV.getModel().setCoinAmount(Coin.ZERO);
+      unconfirmedDisplayMaV.getModel().setLocalAmount(BigDecimal.ZERO);
+      unconfirmedDisplayMaV.getView().updateViewFromModel();
+      plusUncomfirmedLabel.setVisible(false);
+      unconfirmedDisplayMaV.getView().setVisible(false);
     }
 
     unconfirmedDisplayMaV.getView().updateView(Configurations.currentConfiguration);
