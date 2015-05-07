@@ -150,17 +150,7 @@ public class HeaderView extends AbstractView {
       }
       unconfirmedDisplayMaV.getModel().setCoinAmount(unconfirmedCoin);
       unconfirmedDisplayMaV.getView().updateViewFromModel();
-      //unconfirmedDisplayMaV.getView().setVisible(Configurations.currentConfiguration.getAppearance().isShowBalance());
-      //plusUncomfirmedLabel.setVisible(Configurations.currentConfiguration.getAppearance().isShowBalance());
     }
-//    else {
-//      // Switch off visibility
-//      unconfirmedDisplayMaV.getModel().setCoinAmount(Coin.ZERO);
-//      unconfirmedDisplayMaV.getModel().setLocalAmount(BigDecimal.ZERO);
-//      //unconfirmedDisplayMaV.getView().setVisible(false);
-//
-//      plusUncomfirmedLabel.setVisible(false);
-//    }
 
     unconfirmedDisplayMaV.getView().updateView(Configurations.currentConfiguration);
   }
@@ -260,8 +250,13 @@ public class HeaderView extends AbstractView {
           }
 
           availableBalanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
-          unconfirmedDisplayMaV.getView().setVisible( event.isVisible());
-          plusUncomfirmedLabel.setVisible( event.isVisible());
+          if (unconfirmedDisplayMaV.getModel().getCoinAmount().compareTo(Coin.ZERO) != 0 && event.isVisible()) {
+            unconfirmedDisplayMaV.getView().setVisible(true);
+            plusUncomfirmedLabel.setVisible(true);
+          } else {
+            unconfirmedDisplayMaV.getView().setVisible(false);
+            plusUncomfirmedLabel.setVisible(false);
+          }
         }
       });
 
