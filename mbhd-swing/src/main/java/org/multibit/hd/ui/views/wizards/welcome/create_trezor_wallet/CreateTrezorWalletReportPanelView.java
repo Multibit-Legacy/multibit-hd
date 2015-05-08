@@ -141,6 +141,7 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
             long now = System.currentTimeMillis();
             Configurations.currentConfiguration.getWallet().setRecentWalletDataValidity(now);
             Configurations.currentConfiguration.getWallet().setRecentWalletLabel(getWizardModel().getTrezorWalletLabel());
+            Configurations.persistCurrentConfiguration();
             log.debug("Saving for wallet with label '{}' the data validity time '{}'", getWizardModel().getTrezorWalletLabel(), now);
           }
         }

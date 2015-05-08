@@ -884,9 +884,12 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           // data validity time as the replay date
           long replayDateInMillis = DateTime.parse(WalletManager.EARLIEST_HD_WALLET_DATE).getMillis();
           String recentWalletLabel = Configurations.currentConfiguration.getWallet().getRecentWalletLabel();
+          log.debug("Label of current Trezor wallet: {}, recentWalletLabel: {}", label, recentWalletLabel);
+
           if (label.equals(recentWalletLabel)) {
             long now = System.currentTimeMillis();
             long dataValidityTime = Configurations.currentConfiguration.getWallet().getRecentWalletDataValidity();
+            log.debug("Now: {}, recentWalletDataValidity: {}", label, dataValidityTime);
             if (now - dataValidityTime <= WalletManager.MAXIMUM_WALLET_CREATION_DELTA) {
               replayDateInMillis = dataValidityTime;
               log.debug("Using a replayDate for brand new Trezor of {}", replayDateInMillis);
