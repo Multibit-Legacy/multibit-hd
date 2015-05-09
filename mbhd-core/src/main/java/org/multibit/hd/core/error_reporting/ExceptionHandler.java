@@ -1,6 +1,5 @@
 package org.multibit.hd.core.error_reporting;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -50,8 +49,6 @@ import java.util.Scanner;
 public class ExceptionHandler extends EventQueue implements Thread.UncaughtExceptionHandler {
 
   private static final Logger log = LoggerFactory.getLogger(ExceptionHandler.class);
-
-  private static final ObjectMapper objectMapper = new ObjectMapper();
 
   /**
    * The URL of the live error reporting daemon
