@@ -137,7 +137,7 @@ public class FeeService {
       EncryptedPayerRequest encryptedPayerRequest = payer.encryptPayerRequest(payerRequest);
 
       // Do the HTTP(S) POST which, if successful, returns an EncryptedMatcherResponse as a byte array
-      byte[] response = HttpsUtils.doPost(matcherURL, encryptedPayerRequest.getPayload());
+      byte[] response = HttpsUtils.doPost(matcherURL, encryptedPayerRequest.getPayload(), "application/octet-stream");
       EncryptedMatcherResponse encryptedMatcherResponse = new EncryptedMatcherResponse(response);
 
       log.debug("Matcher response (encrypted):{} bytes", encryptedMatcherResponse.getPayload().length);

@@ -56,7 +56,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
   /**
    * The URL of the live error reporting daemon
    */
-  public static final String LIVE_ERROR_REPORTING_URL = "https://multibit.org/error-reporting";
+  public static final String LIVE_ERROR_REPORTING_URL = "http://localhost:9191/error-reporting";
 
   /**
    * <p>Set this as the default uncaught exception handler</p>
@@ -312,7 +312,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
     final byte[] response;
     try {
       log.debug("POSTing armored error report file to '{}'", errorReportingUrl);
-      response = HttpsUtils.doPost(errorReportingUrl, armoredErrorReport);
+      response = HttpsUtils.doPost(errorReportingUrl, armoredErrorReport, "text/plain");
     } catch (IOException e) {
       log.warn("Failed to POST error-report.json.asc", e);
       return new ErrorReportResult(ErrorReportStatus.UPLOAD_FAILED);
