@@ -3,7 +3,6 @@ package org.multibit.hd.core.error_reporting;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.SubscriberExceptionContext;
@@ -37,6 +36,7 @@ import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.security.NoSuchProviderException;
+import java.util.Scanner;
 
 /**
  * <p>Exception handler to provide the following to application:</p>
@@ -56,7 +56,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
   /**
    * The URL of the live error reporting daemon
    */
-  public static final String LIVE_ERROR_REPORTING_URL = "https://multibit.org/error";
+  public static final String LIVE_ERROR_REPORTING_URL = "https://multibit.org/error-reporting";
 
   /**
    * <p>Set this as the default uncaught exception handler</p>
@@ -341,10 +341,13 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
    */
   static ErrorReport buildErrorReport(String userNotes, String truncatedCurrentLog) {
 
-    final Iterable<String> split = Splitter.on('\n').split(truncatedCurrentLog);
-
     java.util.List<ErrorReportLogEntry> errorReportLogEntryList = Lists.newArrayList();
-    for (String logEntry : split) {
+
+    // Read in all lines
+    final Scanner scanner = new Scanner(truncatedCurrentLog);
+    while (scanner.hasNextLine()) {
+      String logEntry = scanner.nextLine();
+
       Optional<ErrorReportLogEntry> entry = Json.readJson(
         logEntry.getBytes(Charsets.UTF_8),
         ErrorReportLogEntry.class

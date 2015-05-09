@@ -39,7 +39,7 @@ public class ExceptionHandlerTest {
     InputStream is = ExceptionHandlerTest.class.getResourceAsStream("/fixtures/error_reporting/test-multibit-hd.log");
 
     // Act
-    String result = ExceptionHandler.readAndTruncateInputStream(is, 2000);
+    String result = ExceptionHandler.readAndTruncateInputStream(is, 4096);
 
     // Assert
     assertThat(result).startsWith("{");
@@ -51,7 +51,7 @@ public class ExceptionHandlerTest {
 
     // Arrange
     InputStream is = ExceptionHandlerTest.class.getResourceAsStream("/fixtures/error_reporting/test-multibit-hd.log");
-    String truncatedLog = ExceptionHandler.readAndTruncateInputStream(is, 2000);
+    String truncatedLog = ExceptionHandler.readAndTruncateInputStream(is, 4096);
 
     // Act
     ErrorReport testObject = ExceptionHandler.buildErrorReport(
@@ -61,7 +61,8 @@ public class ExceptionHandlerTest {
 
     // Assert
     assertThat(testObject.getLogEntries()).isNotEmpty();
-    assertThat(testObject.getLogEntries().size()).isEqualTo(8);
+    assertThat(testObject.getLogEntries().size()).isEqualTo(11);
+    assertThat(testObject.getLogEntries().get(8).getStackTrace()).contains("java.io.IOException");
 
   }
 
@@ -70,7 +71,7 @@ public class ExceptionHandlerTest {
 
     // Arrange
     InputStream is = ExceptionHandlerTest.class.getResourceAsStream("/fixtures/error_reporting/test-multibit-hd.log");
-    String truncatedLog = ExceptionHandler.readAndTruncateInputStream(is, 2000);
+    String truncatedLog = ExceptionHandler.readAndTruncateInputStream(is, 4096);
     ErrorReport fixtureErrorReport = ExceptionHandler.buildErrorReport(
       "Example notes",
       truncatedLog
@@ -84,7 +85,7 @@ public class ExceptionHandlerTest {
     // Assert
     Optional<ErrorReport> actualErrorReport = Json.readJson(testObject.toByteArray(), ErrorReport.class);
 
-    assertThat(actualErrorReport.get().getLogEntries().size()).isEqualTo(8);
+    assertThat(actualErrorReport.get().getLogEntries().size()).isEqualTo(11);
 
   }
 

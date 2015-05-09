@@ -17,12 +17,13 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
   "@timestamp",
-  "@version",
-  "message",
-  "logger_name",
-  "thread_name",
   "level",
-  "level_value"
+  "thread_name",
+  "logger_name",
+  "message",
+  "stack_trace",
+  "level_value",
+  "@version"
 })
 public class ErrorReportLogEntry {
 
@@ -32,6 +33,8 @@ public class ErrorReportLogEntry {
   private Integer version;
   @JsonProperty("message")
   private String message;
+  @JsonProperty("stack_trace")
+  private String stackTrace;
   @JsonProperty("logger_name")
   private String loggerName;
   @JsonProperty("thread_name")
@@ -81,6 +84,14 @@ public class ErrorReportLogEntry {
 
   public void setMessage(String message) {
     this.message = message;
+  }
+
+  public String getStackTrace() {
+    return stackTrace;
+  }
+
+  public void setStackTrace(String stackTrace) {
+    this.stackTrace = stackTrace;
   }
 
   public String getThreadName() {
