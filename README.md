@@ -12,6 +12,10 @@ under the covers.
 
 Support for external hardware wallets (such as the Trezor) is [available through the MultiBit Hardware project](https://github.com/bitcoin-solutions/mbhd-hardware).
 
+### Main website
+
+Pre-packaged installers are available from the [MultiBit website](https://beta.multibit.org).
+
 ### Technologies
 
 * Java 7 and Swing
