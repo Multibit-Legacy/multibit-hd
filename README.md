@@ -49,6 +49,7 @@ A sub-directory called `multibit-hd` will be created which is your project root 
 To update a previous clone of MultiBit HD use a pull instead:
 
 ```
+$ cd <project root>
 $ git pull
 ```
 
