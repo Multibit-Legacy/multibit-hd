@@ -129,7 +129,9 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
       // There is no hardware wallet or there is a problem with connection
       // so we provide a Previous button to allow the user to return to either
       // the password screen (soft) or the device unlock (hard) to rectify it
-      PanelDecorator.addExitPreviousFinish(this, wizard);
+      // We also require the Restore button here to force a wallet switch operation
+      // which would not occur simply through Previous
+      PanelDecorator.addExitRestorePreviousFinish(this, wizard);
     }
 
     if (getPreviousButton() != null) {
