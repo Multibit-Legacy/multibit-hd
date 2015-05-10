@@ -43,10 +43,18 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
   private int timerCount = 1;
   private JLabel note1Icon;
   private JLabel note1Label;
+
   private JLabel note2Icon;
   private JLabel note2Label;
+
   private JLabel note3Icon;
   private JLabel note3Label;
+
+  private JLabel note4Icon;
+  private JLabel note4Label;
+
+  private JLabel note5Icon;
+  private JLabel note5Label;
 
   private JLabel reportStatusLabel;
 
@@ -89,7 +97,7 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
       new MigLayout(
         Panels.migXYLayout(),
         "[]20[]", // Column constraints
-        "10[40]10[40]10[40]40[40]10" // Row constraints
+        "10[40]10[40]10[40]10[40]10[40]40[40]10" // Row constraints
       ));
 
     // Apply the theme
@@ -102,7 +110,7 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
     contentPanel.add(note1Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     // Note 2
-    note2Icon = Labels.newIconLabel(AwesomeIcon.PLUG, Optional.<MessageKey>absent(), null);
+    note2Icon = Labels.newIconLabel(AwesomeIcon.PLUS_CIRCLE, Optional.<MessageKey>absent(), null);
     contentPanel.add(note2Icon, "shrink");
     note2Label = Labels.newNoteLabel(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_2, null);
     contentPanel.add(note2Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
@@ -110,12 +118,28 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
     note2Label.setVisible(false);
 
     // Note 3
-    note3Icon = Labels.newIconLabel(AwesomeIcon.EDIT, Optional.<MessageKey>absent(), null);
+    note3Icon = Labels.newIconLabel(AwesomeIcon.EXTERNAL_LINK, Optional.<MessageKey>absent(), null);
     contentPanel.add(note3Icon, "shrink");
     note3Label = Labels.newNoteLabel(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_3, null);
     contentPanel.add(note3Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     note3Icon.setVisible(false);
     note3Label.setVisible(false);
+
+    // Note 4
+    note4Icon = Labels.newIconLabel(AwesomeIcon.PLUG, Optional.<MessageKey>absent(), null);
+    contentPanel.add(note4Icon, "shrink");
+    note4Label = Labels.newNoteLabel(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_4, null);
+    contentPanel.add(note4Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    note4Icon.setVisible(false);
+    note4Label.setVisible(false);
+
+    // Note 5
+    note5Icon = Labels.newIconLabel(AwesomeIcon.PLUS_SQUARE, Optional.<MessageKey>absent(), null);
+    contentPanel.add(note5Icon, "shrink");
+    note5Label = Labels.newNoteLabel(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_5, null);
+    contentPanel.add(note5Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    note5Icon.setVisible(false);
+    note5Label.setVisible(false);
 
     // Provide an empty status label (populated after show)
     reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.TREZOR_FOUND), null, Optional.<Boolean>absent());
@@ -160,6 +184,16 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
         note3Label.setVisible(true);
         break;
       case 3:
+        // Note 4
+        note4Icon.setVisible(true);
+        note4Label.setVisible(true);
+        break;
+      case 4:
+        // Note 5
+        note5Icon.setVisible(true);
+        note5Label.setVisible(true);
+        break;
+      case 5:
         // Configure the initial state (the wizard may not have been created when the DEVICE_READY was issued)
         final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
         if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
@@ -183,7 +217,7 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
 
     }
 
-    if (timerCount < 5) {
+    if (timerCount < 7) {
       timerCount++;
     }
   }

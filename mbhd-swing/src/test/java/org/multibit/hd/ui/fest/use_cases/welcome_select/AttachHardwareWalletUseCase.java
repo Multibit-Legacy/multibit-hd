@@ -49,6 +49,14 @@ public class AttachHardwareWalletUseCase extends AbstractFestUseCase {
       .label(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_3.getKey())
       .requireVisible();
 
+    window
+      .label(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_4.getKey())
+      .requireVisible();
+
+    window
+      .label(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_5.getKey())
+      .requireVisible();
+
     // OK to proceed
     window
       .button(MessageKey.NEXT.getKey())

@@ -119,11 +119,11 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
 
     // Finally check that the firmware is supported
     // The user may try to ignore the popover warnings
-    final boolean enabled = CoreServices
-      .getOrCreateHardwareWalletService().get()
+    final boolean enabled;
+    enabled = CoreServices.getOrCreateHardwareWalletService().isPresent()
+      && CoreServices.getOrCreateHardwareWalletService().get()
       .getContext()
-      .getFeatures().get()
-      .isSupported();
+      .getFeatures().get().isSupported();
 
     enterPinMaV.getView().requestInitialFocus();
     enterPinMaV.getView().setEnabled(enabled);

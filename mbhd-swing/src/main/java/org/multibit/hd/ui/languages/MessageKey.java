@@ -745,6 +745,8 @@ public enum MessageKey {
   ATTACH_HARDWARE_WALLET_NOTE_1("attach_hardware_wallet_note_1"),
   ATTACH_HARDWARE_WALLET_NOTE_2("attach_hardware_wallet_note_2"),
   ATTACH_HARDWARE_WALLET_NOTE_3("attach_hardware_wallet_note_3"),
+  ATTACH_HARDWARE_WALLET_NOTE_4("attach_hardware_wallet_note_4"),
+  ATTACH_HARDWARE_WALLET_NOTE_5("attach_hardware_wallet_note_5"),
 
   PREPARATION_NOTE_1("preparation_note_1"),
   PREPARATION_NOTE_2("preparation_note_2"),
