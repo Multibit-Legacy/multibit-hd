@@ -169,11 +169,15 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
    */
   private boolean isUnlockEnabled() {
 
-    return !Strings.isNullOrEmpty(
+    boolean passwordEntered = !Strings.isNullOrEmpty(
       getPanelModel().get()
         .getEnterPasswordModel()
         .getValue()
     );
+
+    boolean walletsAvailable = !selectWalletMaV.getView().isEmpty();
+
+    return passwordEntered && walletsAvailable;
 
   }
 
