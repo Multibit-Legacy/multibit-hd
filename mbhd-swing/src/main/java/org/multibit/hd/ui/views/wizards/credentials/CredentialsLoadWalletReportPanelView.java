@@ -121,9 +121,11 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
 
     Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
     if (hardwareWalletService.isPresent() && hardwareWalletService.get().getContext().getFeatures().isPresent()) {
-      PanelDecorator.addExitRestoreFinish(this, wizard);
+      // The hardware wallet is connected so we are guaranteed to succeed
+      PanelDecorator.addExitFinish(this, wizard);
     } else {
-      PanelDecorator.addExitRestorePreviousFinish(this, wizard);
+      // There may be an issue so include Previous as an escape
+      PanelDecorator.addExitPreviousFinish(this, wizard);
     }
 
     if (getPreviousButton() != null) {
