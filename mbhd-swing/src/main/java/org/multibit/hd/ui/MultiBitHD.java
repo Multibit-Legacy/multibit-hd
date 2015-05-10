@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.logging.LoggingFactory;
@@ -303,7 +304,7 @@ public class MultiBitHD {
 
     // Give MultiBit Hardware a chance to process any attached hardware wallet
     // and for MainController to subsequently process the events
-    // The delay observed in reality and FEST tests ranges from 1400-2200ms and is
+    // The delay observed in reality and FEST tests ranges from 1400-2200ms and if
     // not included results in wiped hardware wallets being missed on startup
     final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
     log.debug("Starting the clock for hardware wallet initialisation");
@@ -356,29 +357,43 @@ public class MultiBitHD {
     // Check for any pre-existing wallets in the application directory
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
+    List<WalletSummary> softWalletSummaries = WalletManager.getSoftWalletSummaries(Optional.of(Configurations.currentConfiguration.getLocale()));
 
     // Check for fresh install
-    boolean showWelcomeWizard = walletDirectories.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted();
-
-    if (showWelcomeWizard) {
-      log.debug("Wallet directory is empty or no licence accepted");
-    }
+    boolean noWallets = walletDirectories.isEmpty();
+    boolean noSoftWallets = softWalletSummaries.isEmpty();
+    boolean unacceptedLicence = !Configurations.currentConfiguration.isLicenceAccepted();
 
     // HardwareWalletService needs HARDWARE_INITIALISATION_TIME milliseconds to initialise so sleep the rest
     conditionallySleep(hardwareInitialisationTime);
 
-    // Check for fresh hardware wallet
+    boolean deviceAttached=false;
+    boolean deviceWiped=false;
+
+    // Check hardware wallet situation after initialisation
     if (hardwareWalletService.isPresent()) {
-      if (hardwareWalletService.get().isDeviceReady() && !hardwareWalletService.get().isWalletPresent()) {
 
-        log.debug("Wiped hardware wallet detected");
+      if (hardwareWalletService.get().isDeviceReady()) {
 
-        // Must show the welcome wizard in hardware wallet mode
-        // regardless of wallet or licence situation
-        // MainController should have handled the events
-        showWelcomeWizard = true;
+        deviceAttached = true;
+
+        if (!hardwareWalletService.get().isWalletPresent()) {
+
+          log.debug("Wiped hardware wallet detected");
+
+          // Must show the welcome wizard in hardware wallet mode
+          // regardless of wallet or licence situation
+          // MainController should have handled the events
+          deviceWiped = true;
+        }
       }
     }
+
+    // Determine if welcome wizard should show
+    boolean showWelcomeWizard = unacceptedLicence // Always prompt for a licence
+      || (deviceAttached && deviceWiped) // We have a wiped hardware wallet so need to initialise
+      || (noSoftWallets && !deviceAttached) // No soft wallets and no hardware wallet so need to create/restore one
+      || noWallets; // No wallets at all so need to create/restore one (either hard or soft)
 
     if (showWelcomeWizard) {
       log.debug("Showing the welcome wizard");

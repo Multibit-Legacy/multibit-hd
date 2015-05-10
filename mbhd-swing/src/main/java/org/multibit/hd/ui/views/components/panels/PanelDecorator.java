@@ -344,14 +344,14 @@ public class PanelDecorator {
 
   }
   /**
-   * <p>Add an exit/cancel, restore, previous, finish button combination</p>
+   * <p>Add an exit/cancel, Previous and Finish button combination</p>
    *
    * @param view   The view containing the panel to decorate
    * @param wizard The wizard providing the actions
    * @param <M>    The wizard model type
    * @param <P>    The wizard panel model type
    */
-  public static <M extends AbstractWizardModel, P> void addExitRestorePreviousFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+  public static <M extends AbstractWizardModel, P> void addExitPreviousFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
     Preconditions.checkNotNull(view, "'view' must be present");
     Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -362,14 +362,13 @@ public class PanelDecorator {
 
     // Cancel always leads
     addExitCancel(view, wizard, wizardScreenPanel);
-    addRestore(view, wizard, wizardScreenPanel);
     addPrevious(view, wizard, wizardScreenPanel);
     addFinish(view, wizard, wizardScreenPanel);
 
   }
 
   /**
-    * <p>Add a restore and finish button combination</p>
+    * <p>Add an Exit and Finish button combination</p>
     *
     * @param view   The view containing the panel to decorate
     * @param wizard The wizard providing the actions

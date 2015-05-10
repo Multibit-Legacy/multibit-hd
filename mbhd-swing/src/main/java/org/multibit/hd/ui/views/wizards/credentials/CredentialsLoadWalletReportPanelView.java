@@ -120,10 +120,16 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
   protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
 
     Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+
     if (hardwareWalletService.isPresent() && hardwareWalletService.get().getContext().getFeatures().isPresent()) {
+      // The hardware wallet is connected but there may be an issue with the current wallet
+      // so we provide a Restore button to allow the user to choose an earlier backup
       PanelDecorator.addExitRestoreFinish(this, wizard);
     } else {
-      PanelDecorator.addExitRestorePreviousFinish(this, wizard);
+      // There is no hardware wallet or there is a problem with connection
+      // so we provide a Previous button to allow the user to return to either
+      // the password screen (soft) or the device unlock (hard) to rectify it
+      PanelDecorator.addExitPreviousFinish(this, wizard);
     }
 
     if (getPreviousButton() != null) {

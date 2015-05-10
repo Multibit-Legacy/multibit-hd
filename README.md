@@ -12,6 +12,10 @@ under the covers.
 
 Support for external hardware wallets (such as the Trezor) is [available through the MultiBit Hardware project](https://github.com/bitcoin-solutions/mbhd-hardware).
 
+### Main website
+
+Pre-packaged installers are available from the [MultiBit website](https://beta.multibit.org).
+
 ### Technologies
 
 * Java 7 and Swing
@@ -45,6 +49,7 @@ A sub-directory called `multibit-hd` will be created which is your project root 
 To update a previous clone of MultiBit HD use a pull instead:
 
 ```
+$ cd <project root>
 $ git pull
 ```
 
@@ -126,7 +131,7 @@ At the time MBHD was being written (Q4 2013 - Q2 2014) Java 8 was not in product
 Classic and 3x the standard Java 7 packaged footprints). That footprint alone would be sufficient to dramatically increase the cost of serving the application and deter people
 from downloading in countries where bandwidth is less available.
 
-We will revisit this once we have suitable compressed JWrapper JREs available.
+We will revisit this once we have suitable Install4j JREs available. We expect this to occur shortly after [Release 0.1](https://github.com/bitcoin-solutions/multibit-hd/milestones).
 
 #### Why not JavaFX ?
 
@@ -134,8 +139,8 @@ JavaFX was only available as version 2.2 on Java 7 and the move to Java 8 was no
 fixed in Java 8:
 
 * no right to left languages (Hebrew, Farsi, Arabic, etc)
-* no integration with native platform for Bitcoin URI protocol handling
-* no reporting uncaught exceptions
+* no integration with native platform for Bitcoin URI protocol handling (no BIP 21 or 72 support)
+* no reporting uncaught exceptions (no error reporting)
 
 Thus this technology was not suitable for the very wide range of people using MultiBit in all corners of the globe.
 
@@ -147,7 +152,7 @@ pre-date 2009 making it much harder for [dependency chain attacks](http://gary-r
 
 With some effort Swing can be made to look quite modern.
 
-Swing also allows us to smoothly integrate with the native platform which puts it ahead of JavaFX until at least Q4 2014.
+Swing also allows us to smoothly integrate with the native platform which puts it ahead of JavaFX until at least Q3 2015.
 
 #### Why not SwingX ?
 
@@ -168,7 +173,7 @@ Using Nimbus ensures that we don't have this or similar problems.
 
 Installers lag the latest changes by a few weeks. You can find them on the [MultiBit HD website](https://www.multibit.org/releases/multibit-hd).
 
-As new changes are released they will update automatically from 0.0.4 (Private Beta 4) onwards.
+As new changes are released they will update automatically over HTTPS from 0.0.4 (Private Beta 4) onwards.
 
 #### Is there a developer wiki ?
 
