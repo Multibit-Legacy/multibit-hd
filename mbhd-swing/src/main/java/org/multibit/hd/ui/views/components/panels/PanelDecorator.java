@@ -375,7 +375,7 @@ public class PanelDecorator {
     * @param <M>    The wizard model type
     * @param <P>    The wizard panel model type
     */
-   public static <M extends AbstractWizardModel, P> void addExitFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
+   public static <M extends AbstractWizardModel, P> void addExitRestoreFinish(AbstractWizardPanelView<M, P> view, AbstractWizard<M> wizard) {
 
      Preconditions.checkNotNull(view, "'view' must be present");
      Preconditions.checkNotNull(view, "'wizard' must be present");
@@ -385,6 +385,7 @@ public class PanelDecorator {
      JPanel wizardScreenPanel = view.getWizardScreenPanel(false);
 
      addExitCancel(view, wizard, wizardScreenPanel);
+     addRestore(view, wizard, wizardScreenPanel);
      addFinish(view, wizard, wizardScreenPanel);
 
    }
