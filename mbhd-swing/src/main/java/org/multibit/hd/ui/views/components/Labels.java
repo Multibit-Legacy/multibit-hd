@@ -1085,7 +1085,7 @@ public class Labels {
   }
 
   /**
-   * @return a new "select TOR" for lab settings
+   * @return a new "select Tor" for lab settings
    */
   public static JLabel newSelectTor() {
     return newLabel(MessageKey.SELECT_TOR);

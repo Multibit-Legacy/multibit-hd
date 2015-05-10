@@ -79,7 +79,7 @@ public class FooterView extends AbstractView {
     progressBar.setOpaque(false);
     progressBar.setVisible(false);
 
-    // Create a TOR icon - don't use green or amber colouring it is visually confusing
+    // Create a Tor icon - don't use green or amber colouring it is visually confusing
     JLabel torIcon = Labels.newBlankLabel();
     AwesomeDecorator.bindIcon(AwesomeIcon.LOCK, torIcon, false, MultiBitUI.SMALL_ICON_SIZE);
     AccessibilityDecorator.apply(torIcon, MessageKey.SELECT_TOR, MessageKey.SELECT_TOR_TOOLTIP);

@@ -1384,7 +1384,7 @@ public class BitcoinNetworkService extends AbstractService {
   private void createNewPeerGroup(Wallet wallet, boolean useFastCatchup) throws TimeoutException {
 
     if (Configurations.currentConfiguration.isTor()) {
-      log.info("Creating new TOR peer group for '{}'", networkParameters);
+      log.info("Creating new Tor peer group for '{}'", networkParameters);
       InstallationManager.removeCryptographyRestrictions();
       peerGroup = PeerGroup.newWithTor(networkParameters, blockChain, new TorClient());
     } else {
@@ -1541,7 +1541,7 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @throws BlockStoreException                   If the block store fails
    * @throws IOException                           If the network fails
-   * @throws java.util.concurrent.TimeoutException If the TOR connection fails
+   * @throws java.util.concurrent.TimeoutException If the Tor connection fails
    */
   private void restartNetwork(BlockStore blockStore, boolean useFastCatchup) throws BlockStoreException, IOException, TimeoutException {
 
