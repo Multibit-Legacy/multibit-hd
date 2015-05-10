@@ -63,13 +63,13 @@ public class BitcoinNetworkService extends AbstractService {
 
   private static final Logger log = LoggerFactory.getLogger(BitcoinNetworkService.class);
 
-  public static final int MAXIMUM_NUMBER_OF_PEERS = 8;
+  public static final int MAXIMUM_NUMBER_OF_PEERS = 10;
 
   private static final int SIZE_OF_SIGNATURE = 72; // bytes
 
   private static int CONNECTION_TIMEOUT = 4000; // milliseconds
 
-  private static int NUMBER_OF_PEERS_TO_PING = 4;
+  private static int NUMBER_OF_PEERS_TO_PING = 2;
   /**
    * The boundary for when more mining fee is due
    */
@@ -1196,6 +1196,7 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Broadcast to network
       final TransactionBroadcast transactionBroadcast = peerGroup.broadcastTransaction(sendRequest.tx);
+      ListenableFuture<Transaction> transactionFuture = transactionBroadcast.future();
 
       log.debug("Attaching progress callbacks to transactionBroadcast {} with tx {}", System.identityHashCode(transactionBroadcast), sendRequest.tx.getHashAsString());
 
@@ -1210,9 +1211,9 @@ public class BitcoinNetworkService extends AbstractService {
             }
           }
         });
-      ListenableFuture<Transaction> broadcastFuture = transactionBroadcast.broadcast();
+
       Futures.addCallback(
-              broadcastFuture, new FutureCallback<Transaction>() {
+              transactionFuture, new FutureCallback<Transaction>() {
                 @Override
                 public void onSuccess(Transaction transaction) {
                   log.info("Future says transaction '{}' has broadcast successfully", transaction.getHashAsString());
@@ -1230,6 +1231,8 @@ public class BitcoinNetworkService extends AbstractService {
                                   CoreMessageKey.BITCOIN_SENT_OK,
                                   null
                           ));
+
+                  CoreEvents.fireBitcoinSendProgressEvent(new BitcoinSendProgressEvent(sendRequest.tx, 1.0));
                 }
 
                 @Override
@@ -1255,7 +1258,12 @@ public class BitcoinNetworkService extends AbstractService {
 
       log.debug("Initiated broadcast of transaction: '{}'", Utils.HEX.encode(sendRequest.tx.bitcoinSerialize()));
 
-    } catch (RuntimeException e) {
+      transactionFuture.get();
+
+      log.debug("Get of future completed");
+
+
+    } catch (RuntimeException | ExecutionException | InterruptedException e) {
 
       log.error("Could not broadcast the transaction", e);
 
