@@ -1,9 +1,7 @@
 
 Build status: [![Build Status](https://travis-ci.org/bitcoin-solutions/multibit-hd.png?branch=develop)](https://travis-ci.org/bitcoin-solutions/multibit-hd)
 
-Coverage status: [![Coverage Status](https://img.shields.io/coveralls/bitcoin-solutions/multibit-hd.svg)](https://coveralls.io/r/bitcoin-solutions/multibit-hd)
-
-Project status: Private beta. Expect minor bugs and API changes. Not suitable for production, but early adopter developers and early testers should get on board.
+Project status: Pre-release. Expect minor bugs and UI adjustments. Suitable for small scale production.
 
 ### MultiBit HD (MBHD)
 
@@ -25,7 +23,30 @@ Support for external hardware wallets (such as the Trezor) is [available through
 
 ### Getting started
 
-MultiBit HD is a standard Maven build, but currently relies on some snapshot builds of libraries which aren't available in Maven Central.
+MultiBit HD is a standard Maven build from a GitHub repository and currently relies on some snapshot builds of libraries which aren't available in Maven Central.
+
+Below are some basic instructions for developers - there is [more information in the MultiBit HD wiki](https://github.com/bitcoin-solutions/multibit-hd/wiki).
+
+#### Verify you have Git
+
+```
+$ git --version
+```
+
+[Install git](https://help.github.com/articles/set-up-git/) if necessary.
+
+Then, if this is your first time working with MultiBit HD source code, clone the source code repository (over HTTPS) using:
+
+```
+$ git clone https://github.com/bitcoin-solutions/multibit-hd.git
+```
+A sub-directory called `multibit-hd` will be created which is your project root directory.
+
+To update a previous clone of MultiBit HD use a pull instead:
+
+```
+$ git pull
+```
 
 #### Verify you have Maven 3+
 
@@ -38,6 +59,7 @@ To quickly check that you have Maven 3+ installed check on the command line:
 ```
 $ mvn --version
 ```
+Maven uses a file called `pom.xml` present in the MultiBit HD source code project directory to provide all the build information.
 
 #### We currently use a forked version of Bitcoinj
 
@@ -56,6 +78,7 @@ To run the application within an IDE, simply execute `MultiBitHD.main()` in the 
 
 To run the application from the command line, first build from the project root directory (pulling in all sources from upstream):
 ```
+$ cd <project root>
 $ mvn clean dependency:sources install
 ```
 then start the application using the shaded JAR:
