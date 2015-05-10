@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.logging.LoggingFactory;
@@ -34,7 +35,6 @@ import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.text.DefaultEditorKit;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -303,7 +303,7 @@ public class MultiBitHD {
 
     // Give MultiBit Hardware a chance to process any attached hardware wallet
     // and for MainController to subsequently process the events
-    // The delay observed in reality and FEST tests ranges from 1400-2200ms and is
+    // The delay observed in reality and FEST tests ranges from 1400-2200ms and if
     // not included results in wiped hardware wallets being missed on startup
     final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
     log.debug("Starting the clock for hardware wallet initialisation");
@@ -353,12 +353,11 @@ public class MultiBitHD {
 
     log.debug("Checking for pre-existing wallets...");
 
-    // Check for any pre-existing wallets in the application directory
-    File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-    List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
+    // List any soft wallets in the application directory (hard wallets require an attached device)
+    final List<WalletSummary> softWalletSummaries = WalletManager.getSoftWalletSummaries(Optional.of(Configurations.currentConfiguration.getLocale()));
 
-    // Check for fresh install
-    boolean showWelcomeWizard = walletDirectories.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted();
+    // Check for no soft wallets or no accepted licence
+    boolean showWelcomeWizard = softWalletSummaries.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted();
 
     if (showWelcomeWizard) {
       log.debug("Wallet directory is empty or no licence accepted");
