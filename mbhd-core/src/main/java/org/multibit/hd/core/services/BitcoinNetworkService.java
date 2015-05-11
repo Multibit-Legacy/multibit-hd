@@ -70,6 +70,7 @@ public class BitcoinNetworkService extends AbstractService {
   private static int CONNECTION_TIMEOUT = 4000; // milliseconds
 
   private static int NUMBER_OF_PEERS_TO_PING = 2;
+
   /**
    * The boundary for when more mining fee is due
    */
