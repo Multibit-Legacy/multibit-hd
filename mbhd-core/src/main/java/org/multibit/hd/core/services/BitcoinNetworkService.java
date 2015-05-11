@@ -1171,30 +1171,6 @@ public class BitcoinNetworkService extends AbstractService {
         valueOptional = Optional.absent();
       }
 
-      TransactionConfidence originalConfidence = sendRequest.tx.getConfidence();
-      log.debug("Original confidence has identity: {}", System.identityHashCode(originalConfidence));
-      originalConfidence.addEventListener(new TransactionConfidence.Listener() {
-        @Override
-        public void onConfidenceChanged(TransactionConfidence confidence, ChangeReason reason) {
-          log.debug("Saw original confidence changed to {}", confidence);
-        }
-      });
-
-      log.debug("Transaction with hash {}", sendRequest.tx.getHashAsString());
-      log.debug("CoreServices.getContext(): {}", CoreServices.getContext());
-      log.debug("CoreServices.getContext().getConfidenceTable(): {}", CoreServices.getContext().getConfidenceTable());
-      log.debug("The CoreServices Context original confidence has identity: {}", System.identityHashCode(CoreServices.getContext().getConfidenceTable().get(sendRequest.tx.getHash())));
-
-      log.debug("Creating new confidence ....");
-      TransactionConfidence newConfidence = CoreServices.getContext().getConfidenceTable().getOrCreate(sendRequest.tx.getHash());
-      log.debug("New confidence has identity): {}", System.identityHashCode(newConfidence));
-      newConfidence.addEventListener(new TransactionConfidence.Listener() {
-          @Override
-          public void onConfidenceChanged(TransactionConfidence confidence, ChangeReason reason) {
-            log.debug("Saw new confidence changed to {}", confidence);
-          }
-      });
-
       // Broadcast to network
       final TransactionBroadcast transactionBroadcast = peerGroup.broadcastTransaction(sendRequest.tx);
       ListenableFuture<Transaction> transactionFuture = transactionBroadcast.future();
@@ -1262,7 +1238,6 @@ public class BitcoinNetworkService extends AbstractService {
       transactionFuture.get();
 
       log.debug("Get of future completed");
-
 
     } catch (RuntimeException | ExecutionException | InterruptedException e) {
 
