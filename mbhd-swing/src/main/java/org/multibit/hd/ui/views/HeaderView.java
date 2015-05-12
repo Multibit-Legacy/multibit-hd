@@ -128,7 +128,7 @@ public class HeaderView extends AbstractView {
       availableBalanceDisplayMaV.getModel().setLocalAmountVisible(true);
     }
 
-    // Do not set the visibility on avaialble balance here, use the ViewChangedEvent
+    // Do not set the visibility on available balance here, use the ViewChangedEvent
 
     availableBalanceDisplayMaV.getView().updateView(Configurations.currentConfiguration);
 
@@ -146,9 +146,13 @@ public class HeaderView extends AbstractView {
       }
       unconfirmedDisplayMaV.getModel().setCoinAmount(unconfirmedCoin);
       unconfirmedDisplayMaV.getView().updateViewFromModel();
-      boolean showHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
-      plusUncomfirmedLabel.setVisible(showHeader);
-      unconfirmedDisplayMaV.getView().setVisible(showHeader);
+
+      // As long as the main header is visible, show the unconfirmed
+      if (availableBalanceDisplayMaV.getView().isVisible()) {
+        boolean showHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
+        plusUncomfirmedLabel.setVisible(showHeader);
+        unconfirmedDisplayMaV.getView().setVisible(showHeader);
+      }
     } else {
       // Unconfirmed and estimated is the same - switch off the unconfirmed
       unconfirmedDisplayMaV.getModel().setCoinAmount(Coin.ZERO);

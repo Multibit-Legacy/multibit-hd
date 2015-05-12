@@ -198,6 +198,10 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
   }
 
+  public boolean isVisible() {
+    return visible;
+  }
+
   /**
    * @param visible True if all the symbol labels that should be visible will be visible (no exchange rate overrides this)
    */
