@@ -202,6 +202,12 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
         return "Contents are empty";
       }
 
+      // Remove personally identifying information in paths
+      String userName = System.getProperty("user.name");
+      contents = contents
+        .replace("/"+userName+"/", "/*blank*/") // Unix paths
+        .replace("\\"+userName+"\\", "\\*blank*\\"); // Windows paths
+
       // Truncate to 200Kb short of the end
       int offset = Math.max(0, contents.length() - maxLength);
       if (offset > 0) {
