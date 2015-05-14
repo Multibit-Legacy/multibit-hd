@@ -109,7 +109,7 @@ public class SendDisplayTrustedPaymentRequestUseCase extends AbstractFestUseCase
     // There won't be any money to pay the payment request
     assertLabelText(MessageKey.SEND_PROGRESS_TITLE);
 
-    // There should be an enabled Cancel button and a disabled Next button
+    // There should be an enabled Cancel button and a enabled Next button
     window
        .button(MessageKey.CANCEL.getKey())
        .requireVisible()
@@ -118,7 +118,7 @@ public class SendDisplayTrustedPaymentRequestUseCase extends AbstractFestUseCase
     window
         .button(MessageKey.NEXT.getKey())
         .requireVisible()
-        .requireDisabled();
+        .requireEnabled();
 
      // Click the 'Cancel' button to dismiss the 'Send progress' screen
     window
