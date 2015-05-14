@@ -285,7 +285,9 @@ public class Tables {
       @Override
       public int compare(Optional o1, Optional o2) {
         if (o1 == null) {
-          if (o2 != null) {
+          if (o2 == null) {
+            return 0;
+          } else {
             return -1;
           }
         } else {
@@ -316,7 +318,6 @@ public class Tables {
             }
           }
         }
-        return 0;
       }
     };
   }
