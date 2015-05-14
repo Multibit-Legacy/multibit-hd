@@ -300,11 +300,11 @@
     </dependency>
 
     <!-- XChange Cavirtex exchange support -->
-    <!--<dependency>-->
-      <!--<groupId>com.xeiam.xchange</groupId>-->
-      <!--<artifactId>xchange-cavirtex</artifactId>-->
-      <!--<version>${xchange.version}</version>-->
-    <!--</dependency>-->
+    <dependency>
+      <groupId>com.xeiam.xchange</groupId>
+      <artifactId>xchange-cavirtex</artifactId>
+      <version>${xchange.version}</version>
+    </dependency>
 
     <!-- XChange CampBX exchange support -->
     <dependency>
