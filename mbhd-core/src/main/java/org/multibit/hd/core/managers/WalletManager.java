@@ -945,7 +945,8 @@ public enum WalletManager implements WalletEventListener {
     inferWalletType(wallet);
 
     // Writing out a wallet to a clear text file is security risk
-    log.trace("Wallet loaded OK:\n{}\n", wallet);
+    // Do not do it except for debug
+    // log.debug("Wallet loaded OK:\n{}\n", wallet);
 
     return wallet;
   }
@@ -1804,6 +1805,10 @@ public enum WalletManager implements WalletEventListener {
   public void shutdownNow(ShutdownEvent.ShutdownType shutdownType) {
 
     log.debug("Received shutdown: {}", shutdownType.name());
+
+    // Writing out a wallet to a clear text file is security risk
+    // Do not do it except for debug
+    // log.debug("Wallet at shutdown:\n{}\n", getCurrentWalletSummary().isPresent() ? getCurrentWalletSummary().get().getWallet() : "");
     currentWalletSummary = Optional.absent();
 
   }
