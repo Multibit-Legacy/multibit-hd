@@ -635,7 +635,7 @@ public class WalletService extends AbstractService {
   public static FiatPayment calculateFiatPaymentEquivalent(Coin amountBTC) {
     FiatPayment amountFiat = new FiatPayment();
 
-    log.debug("Calculating fiat amount of {}", amountBTC);
+    log.trace("Calculating fiat amount of {}", amountBTC);
 
     // Work it out from the current settings
     amountFiat.setExchangeName(Optional.of(ExchangeKey.current().getExchangeName()));
@@ -663,7 +663,7 @@ public class WalletService extends AbstractService {
       }
     }
 
-    log.debug("Calculated amount was {}", amountFiat);
+    log.trace("Calculated amount was {}", amountFiat);
     return amountFiat;
   }
 

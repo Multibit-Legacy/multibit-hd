@@ -138,7 +138,7 @@ public class HeaderView extends AbstractView {
 
       FiatPayment unconfirmedFiat = WalletService.calculateFiatPaymentEquivalent(unconfirmedCoin);
 
-      log.debug("Unconfirmed bitcoin. Coin:{}, Fiat:{}", unconfirmedCoin, unconfirmedFiat);
+      log.trace("Unconfirmed bitcoin. Coin:{}, Fiat:{}", unconfirmedCoin, unconfirmedFiat);
       boolean hasFiat = unconfirmedFiat.getAmount().isPresent();
       unconfirmedDisplayMaV.getModel().setLocalAmountVisible(hasFiat);
       if (hasFiat) {
