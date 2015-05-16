@@ -189,7 +189,13 @@ public class ErrorReportingDialog extends JFrame {
 
     contentPanel.add(uploadProgressLabel, "span 2,growx,wrap");
 
-    contentPanel.add(Buttons.newCancelButton(getCancelAction()), "align left");
+    if (showApology) {
+      // User must be informed they will be forced to Exit
+      contentPanel.add(Buttons.newExitButton(getCancelAction(), true), "align left");
+    } else {
+      // User has option to continue
+      contentPanel.add(Buttons.newCancelButton(getCancelAction()), "align left");
+    }
     contentPanel.add(Buttons.newUploadErrorReportButton(getUploadAction()), "align right,wrap");
 
     getContentPane().add(contentPanel);
