@@ -221,7 +221,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
       // Refresh the wallet payment list if asked (may have created/deleted a new PaymentRequest)
       if (refreshData) {
-        log.debug("Updating the payment data set - expensive");
+        // Avoid logging here - gets called a lot during Repair and floods the logs
         walletService.getPaymentDataSet();
       }
       // Check the search MaV model for a query and apply it
