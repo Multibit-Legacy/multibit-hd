@@ -262,7 +262,7 @@ public class BitcoinNetworkService extends AbstractService {
    * Sync the current wallet from the date specified. If Optional.absent() is specified no checkpointing is performed
    * The blockstore is deleted and created anew, checkpointed and then the blockchain is downloaded.
    */
-  public void replayWallet(File applicationDataDirectory, Optional<Date> dateToReplayFromOptional, boolean useFastCatchup) {
+  public void replayWallet(File applicationDataDirectory, Optional<Date> dateToReplayFromOptional, boolean useFastCatchup, boolean clearMemPool) {
     Preconditions.checkNotNull(dateToReplayFromOptional);
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent());
     Preconditions.checkState(!SwingUtilities.isEventDispatchThread(), "Replay should not take place on the EDT");
@@ -272,6 +272,12 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Stop the peer group if it is running
       stopPeerGroup();
+
+      // Reset the mem pool - this will ensure transactions will be re-downloaded
+      if (clearMemPool) {
+        TxConfidenceTable memPool = Context.get().getConfidenceTable();
+        memPool.reset();
+      }
 
       // Close the block store if it is present
       closeBlockstore();
@@ -1511,6 +1517,7 @@ public class BitcoinNetworkService extends AbstractService {
 
       peerGroup.stopAsync();
       log.debug("Service peerGroup stopped");
+
     } else {
       log.debug("Peer group was not present");
     }

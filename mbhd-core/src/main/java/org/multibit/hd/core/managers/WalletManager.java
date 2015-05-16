@@ -1114,8 +1114,8 @@ public enum WalletManager implements WalletEventListener {
         public Boolean call() throws Exception {
           log.debug("synchroniseWallet  called with replay date {}", syncDateOptional);
 
-          // Replay wallet - this also bounces the Bitcoin network connection
-          CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), syncDateOptional, true);
+          // Replay wallet
+          CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), syncDateOptional, true, false);
           return true;
 
         }

@@ -7,7 +7,6 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,12 +112,6 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   public void onTransaction(Peer peer, Transaction transaction) {
     // See if the transaction is relevant and adding them as pending if so.
     if (transaction != null) {
-      log.debug("Transaction with hash {}", transaction.getHashAsString());
-      log.debug("CoreServices.getContext(): {}", CoreServices.getContext());
-      log.debug("CoreServices.getContext().getConfidenceTable(): {}", CoreServices.getContext().getConfidenceTable());
-      log.debug("The CoreServices Context confidence has identity: {}", System.identityHashCode(CoreServices.getContext().getConfidenceTable().get(transaction.getHash())));
-      log.debug("Transaction confidence = {}", transaction.getConfidence());
-
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
       if (currentWalletSummary.isPresent() && currentWalletSummary.get() != null) {
         Wallet currentWallet = currentWalletSummary.get().getWallet();
