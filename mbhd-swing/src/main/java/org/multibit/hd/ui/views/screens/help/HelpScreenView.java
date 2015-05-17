@@ -19,6 +19,7 @@ import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.Models;
+import org.multibit.hd.ui.utils.SafeDesktop;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -344,12 +345,14 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
                     public void run() {
                       try {
                         if (launchBrowserButton.isEnabled()) {
-                          Desktop.getDesktop().browse(url.toURI());
+                          if (!SafeDesktop.browse(url.toURI())) {
+                            Sounds.playBeep();
+                          }
                         } else {
                           // No browser available
                           Sounds.playBeep();
                         }
-                      } catch (IOException | URISyntaxException e1) {
+                      } catch (URISyntaxException e1) {
                         Sounds.playBeep();
                       }
                     }
@@ -557,8 +560,10 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
       public void actionPerformed(ActionEvent e) {
 
         try {
-          Desktop.getDesktop().browse(currentPage().toURI());
-        } catch (IOException | URISyntaxException e1) {
+          if (!SafeDesktop.browse(currentPage().toURI())) {
+            Sounds.playBeep();
+          }
+        } catch (URISyntaxException e1) {
           ExceptionHandler.handleThrowable(e1);
         }
 

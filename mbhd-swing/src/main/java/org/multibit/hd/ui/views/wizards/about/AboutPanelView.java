@@ -3,9 +3,10 @@ package org.multibit.hd.ui.views.wizards.about;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.utils.SafeDesktop;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -15,9 +16,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -96,11 +95,10 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        try {
-          Desktop.getDesktop().browse(InstallationManager.MBHD_WEBSITE_URI);
-        } catch (IOException e1) {
-          ExceptionHandler.handleThrowable(e1);
+        if (!SafeDesktop.browse(InstallationManager.MBHD_WEBSITE_URI)) {
+          Sounds.playBeep();
         }
+
       }
     };
   }

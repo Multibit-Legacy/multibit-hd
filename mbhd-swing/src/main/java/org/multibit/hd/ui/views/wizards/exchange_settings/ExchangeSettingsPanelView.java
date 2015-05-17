@@ -14,7 +14,6 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.events.ShutdownEvent;
-import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.ExchangeTickerService;
@@ -23,6 +22,7 @@ import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.utils.SafeDesktop;
 import org.multibit.hd.ui.utils.HtmlUtils;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -36,10 +36,8 @@ import org.multibit.hd.ui.views.wizards.WizardButton;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.net.URI;
 import java.util.Locale;
 import java.util.Map;
@@ -320,19 +318,18 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
           return;
         }
 
-        try {
-          final URI exchangeUri;
-          if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
-            // Ensure MultiBit customers go straight to the free API key page with referral
-            exchangeUri = URI.create("https://openexchangerates.org/signup/free?r=multibit");
-            Desktop.getDesktop().browse(exchangeUri);
-          } else {
-            // All other exchanges go to the main host (not API root)
-            exchangeUri = URI.create("http://" + exchangeKey.getExchange().get().getExchangeSpecification().getHost());
-            Desktop.getDesktop().browse(exchangeUri);
-          }
-        } catch (IOException ex) {
-          ExceptionHandler.handleThrowable(ex);
+        final URI exchangeUri;
+        if (ExchangeKey.OPEN_EXCHANGE_RATES.equals(exchangeKey)) {
+          // Ensure MultiBit customers go straight to the free API key page with referral
+          exchangeUri = URI.create("https://openexchangerates.org/signup/free?r=multibit");
+        } else {
+          // All other exchanges go to the main host (not API root)
+          exchangeUri = URI.create("http://" + exchangeKey.getExchange().get().getExchangeSpecification().getHost());
+        }
+
+        // Attempt to open the URI
+        if (!SafeDesktop.browse(exchangeUri)) {
+          Sounds.playBeep();
         }
 
       }
