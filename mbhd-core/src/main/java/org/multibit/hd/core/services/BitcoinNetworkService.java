@@ -20,6 +20,7 @@ import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.wallet.DeterministicKeyChain;
 import org.bitcoinj.wallet.KeyChain;
+import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.*;
@@ -157,7 +158,7 @@ public class BitcoinNetworkService extends AbstractService {
    * @param replayDateOptional       the date from which to replay the blcock store (hence use the next earliest checkpoint)
    *                                 if not present then no checkpointing is done and te blockstore is simply opened
    */
-  public BlockStore openBlockStore(File applicationDataDirectory, Optional<Date> replayDateOptional) {
+  public BlockStore openBlockStore(File applicationDataDirectory, Optional<DateTime> replayDateOptional) {
 
     BlockStore blockStoreToReturn = null;
     try {
@@ -261,9 +262,16 @@ public class BitcoinNetworkService extends AbstractService {
   /**
    * Sync the current wallet from the date specified. If Optional.absent() is specified no checkpointing is performed
    * The blockstore is deleted and created anew, checkpointed and then the blockchain is downloaded.
+   *
+   * @param applicationDataDirectory To enable location of supporting files
+   * @param replayDateTime Optional date time from which to begin using checkpoints (absent means no checkpoints)
+   * @param useFastCatchup True if only block headers from genesis block is required (fast catch up)
+   * @param clearMemPool True if the memory pool should be cleared (e.g. repair wallet scenario)
+   *
    */
-  public void replayWallet(File applicationDataDirectory, Optional<Date> dateToReplayFromOptional, boolean useFastCatchup, boolean clearMemPool) {
-    Preconditions.checkNotNull(dateToReplayFromOptional);
+  public void replayWallet(File applicationDataDirectory, Optional<DateTime> replayDateTime, boolean useFastCatchup, boolean clearMemPool) {
+
+    Preconditions.checkNotNull(replayDateTime);
     Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent());
     Preconditions.checkState(!SwingUtilities.isEventDispatchThread(), "Replay should not take place on the EDT");
 
@@ -283,11 +291,12 @@ public class BitcoinNetworkService extends AbstractService {
       closeBlockstore();
 
       log.info(
-        "Starting replay of wallet with id '" + WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId()
-          + "' from date " + dateToReplayFromOptional);
+        "Starting replay of wallet with id '{}' from date '{}'",
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId(),
+        replayDateTime.orNull()
+      );
 
-      log.debug("Recreating blockstore with checkpoint date of " + dateToReplayFromOptional + " ...");
-      blockStore = openBlockStore(applicationDataDirectory, dateToReplayFromOptional);
+      blockStore = openBlockStore(applicationDataDirectory, replayDateTime);
       log.debug("Blockstore is '{}'", blockStore);
 
       restartNetwork(blockStore, useFastCatchup);
@@ -1369,7 +1378,7 @@ public class BitcoinNetworkService extends AbstractService {
    * <p>Create a new peer group</p>
    *
    * @param wallet the wallet to add to the peer group after construction
-   * @param useFastCatchup if true then use fast catchup
+   * @param useFastCatchup True if only block headers from genesis block is required
    */
   private void createNewPeerGroup(Wallet wallet, boolean useFastCatchup) throws TimeoutException {
 
@@ -1395,7 +1404,7 @@ public class BitcoinNetworkService extends AbstractService {
       InstallationManager.MBHD_APP_NAME,
       Configurations.currentConfiguration.getCurrentVersion());
     if (useFastCatchup) {
-      peerGroup.setFastCatchupTimeSecs(0); // do fastcatchup starting from the genesis block
+      peerGroup.setFastCatchupTimeSecs(0); // Do fast catch up starting from the genesis block
     }
     peerGroup.setMaxConnections(MAXIMUM_NUMBER_OF_PEERS);
     peerGroup.setUseLocalhostPeerWhenPossible(true);
@@ -1528,7 +1537,8 @@ public class BitcoinNetworkService extends AbstractService {
    * Restart the network, using the given blockstore
    * THe current wallet is hooked up to the blockchain and new peer group
    *
-   * @param blockStore the blockstore to use for the network connection
+   * @param blockStore The blockstore to use for the network connection
+   * @param useFastCatchup True if
    *
    * @throws BlockStoreException                   If the block store fails
    * @throws IOException                           If the network fails

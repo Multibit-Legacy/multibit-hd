@@ -1412,7 +1412,14 @@ public class WalletService extends AbstractService {
       BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
       CoreServices.getCurrentHistoryService();
       CoreServices.getOrCreateContactService(walletId);
-      bitcoinNetworkService.replayWallet(applicationDataDirectory, Optional.<Date>absent(), false, false);
+
+      // Replay the wallet
+      bitcoinNetworkService.replayWallet(
+        applicationDataDirectory,
+        Optional.<DateTime>absent(), // No checkpoints
+        false, // No fast catch up
+        false // Do not clear mempool
+      );
 
       CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(true, CoreMessageKey.CHANGE_PASSWORD_SUCCESS, null));
     } catch (RuntimeException | NoSuchAlgorithmException e) {

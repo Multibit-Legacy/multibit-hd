@@ -1,19 +1,20 @@
 package org.multibit.hd.core.managers;
 
+import com.google.common.base.Preconditions;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.core.CheckpointManager;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.store.SPVBlockStore;
-import com.google.common.base.Preconditions;
+import org.joda.time.DateTime;
+import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * <p>Manager to provide the following to BitcoinNetworkService:</p>
@@ -49,7 +50,7 @@ public class BlockStoreManager {
    * @throws IOException
    */
   @SuppressFBWarnings({"DM_GC"})
-  public BlockStore createOrOpenBlockStore(File blockStoreFile, File checkpointsFile, Date checkpointDate, boolean createNew) throws BlockStoreException, IOException {
+  public BlockStore createOrOpenBlockStore(File blockStoreFile, File checkpointsFile, DateTime checkpointDate, boolean createNew) throws BlockStoreException, IOException {
 
     boolean blockStoreCreatedNew = !blockStoreFile.exists();
 
@@ -112,13 +113,12 @@ public class BlockStoreManager {
 
         if (checkpointDate == null) {
           if (blockStoreCreatedNew) {
-            // Brand new block store - managers from today. This
-            // will go back to the last managers.
-            CheckpointManager.checkpoint(networkParameters, checkpointsInputStream, blockStore, (new Date()).getTime() / 1000);
+            // Brand new block store
+            CheckpointManager.checkpoint(networkParameters, checkpointsInputStream, blockStore, Dates.nowInSeconds());
           }
         } else {
-          // Use managers date (block replay).
-          CheckpointManager.checkpoint(networkParameters, checkpointsInputStream, blockStore, checkpointDate.getTime() / 1000);
+          // Use manager's date (block replay).
+          CheckpointManager.checkpoint(networkParameters, checkpointsInputStream, blockStore, checkpointDate.getMillis() / 1000);
         }
       }
     }

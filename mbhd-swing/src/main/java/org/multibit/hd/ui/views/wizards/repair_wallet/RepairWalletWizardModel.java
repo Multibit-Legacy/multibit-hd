@@ -171,21 +171,26 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       CoreServices.getOrCreateWalletService(currentWalletSummary.getWalletId());
 
       // Start the Bitcoin network synchronization operation
-      ListenableFuture future = walletExecutorService.submit(
+      ListenableFuture<Boolean> future = walletExecutorService.submit(
         new Callable<Boolean>() {
 
           @Override
           public Boolean call() throws Exception {
-            CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()), enableFastCatchup, true);
+            CoreServices.getOrCreateBitcoinNetworkService().replayWallet(
+              InstallationManager.getOrCreateApplicationDataDirectory(),
+              Optional.of(replayDate),
+              enableFastCatchup,
+              true
+            );
             return true;
 
           }
 
         });
       Futures.addCallback(
-        future, new FutureCallback() {
+        future, new FutureCallback<Boolean>() {
           @Override
-          public void onSuccess(@Nullable Object result) {
+          public void onSuccess(@Nullable Boolean result) {
 
             // Do nothing this just means that the block chain download has begun
 

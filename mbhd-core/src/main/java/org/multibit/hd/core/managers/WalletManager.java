@@ -830,7 +830,10 @@ public enum WalletManager implements WalletEventListener {
 
           if (blockStore == null) {
             // Open the blockstore with no checkpointing (this is to get the chain height)
-            blockStore = bitcoinNetworkService.openBlockStore(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.<Date>absent());
+            blockStore = bitcoinNetworkService.openBlockStore(
+              InstallationManager.getOrCreateApplicationDataDirectory(),
+              Optional.<DateTime>absent()
+            );
           }
           log.debug("blockStore = {}", blockStore);
 
@@ -871,32 +874,39 @@ public enum WalletManager implements WalletEventListener {
         }
 
         if (performRegularSync) {
-          synchroniseWallet(Optional.<Date>absent());
+          synchroniseWallet(Optional.<DateTime>absent());
         } else {
-          // Work out the date to sync from from the last block seen, the earliest key creation date and the earliest HD wallet date
-          DateTime syncDate = null;
+          // Work out the replay date based on the last block seen, the earliest key creation date and the earliest HD wallet date
+          DateTime replayDate= null;
 
+          // Start with the last block seen
           if (walletBeingReturned.getLastBlockSeenTime() != null) {
-            syncDate = new DateTime(walletBeingReturned.getLastBlockSeenTime());
+            replayDate =  new DateTime(walletBeingReturned.getLastBlockSeenTime());
           }
+
+          // Override with the earliest key creation date
           if (walletBeingReturned.getEarliestKeyCreationTime() != -1) {
+            // Key creation time is measured in seconds since epoch
             DateTime keyCreationTime = new DateTime(walletBeingReturned.getEarliestKeyCreationTime() * 1000);
-            if (syncDate == null) {
-              syncDate = keyCreationTime;
+            if (replayDate == null) {
+              replayDate = keyCreationTime;
             } else {
-              syncDate = keyCreationTime.isBefore(syncDate) ? syncDate : keyCreationTime;
+              replayDate = keyCreationTime.isBefore(replayDate) ? replayDate : keyCreationTime;
             }
           }
 
           DateTime earliestHDWalletDate = DateTime.parse(EARLIEST_HD_WALLET_DATE);
 
-          if (syncDate == null || syncDate.isBefore(earliestHDWalletDate)) {
-            syncDate = earliestHDWalletDate;
+          // Override with earliest HD wallet date
+          if (replayDate == null || replayDate.isBefore(earliestHDWalletDate)) {
+            replayDate = earliestHDWalletDate;
           }
 
-          log.debug("Syncing wallet from date {}", syncDate);
-          if (syncDate != null) {
-            synchroniseWallet(Optional.of(syncDate.toDate()));
+          log.debug("Syncing wallet from date {}", replayDate);
+          if (replayDate != null) {
+            synchroniseWallet(Optional.of(replayDate));
+          } else {
+            log.error("Replay date could not be determined.");
           }
         }
       }
@@ -1099,7 +1109,10 @@ public enum WalletManager implements WalletEventListener {
     }
   }
 
-  private void synchroniseWallet(final Optional<Date> syncDateOptional) {
+  /**
+   * @param replayDate The date from which to replay the download (absent means no checkpoints)
+   */
+  private void synchroniseWallet(final Optional<DateTime> replayDate) {
 
     if (walletExecutorService == null) {
       walletExecutorService = SafeExecutors.newSingleThreadExecutor("sync-wallet");
@@ -1111,10 +1124,15 @@ public enum WalletManager implements WalletEventListener {
 
         @Override
         public Boolean call() throws Exception {
-          log.debug("Synchronizing wallet with replay date {}", syncDateOptional);
+          log.debug("Synchronizing wallet with replay date {}", replayDate.orNull());
 
-          // Replay wallet
-          CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), syncDateOptional, true, false);
+          // Replay wallet using fast catch up without clearing mempool (not a repair scenario)
+          CoreServices.getOrCreateBitcoinNetworkService().replayWallet(
+            InstallationManager.getOrCreateApplicationDataDirectory(),
+            replayDate,
+            true,
+            false
+          );
           return true;
 
         }
