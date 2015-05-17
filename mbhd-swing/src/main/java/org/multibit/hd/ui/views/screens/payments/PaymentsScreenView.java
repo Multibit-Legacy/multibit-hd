@@ -141,20 +141,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   }
 
   /**
-   * @param transactionSeenEvent The event (very high frequency during synchronisation)
-   */
-  @Subscribe
-  public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
-    if (transactionSeenEvent.isFirstAppearanceInWallet()) {
-      log.debug("Firing an alert for a new transaction");
-      transactionSeenEvent.setFirstAppearanceInWallet(false);
-      Sounds.playPaymentReceived();
-      AlertModel alertModel = Models.newPaymentReceivedAlertModel(transactionSeenEvent);
-      ControllerEvents.fireAddAlertEvent(alertModel);
-    }
-  }
-
-  /**
    * Update the payments when a slowTransactionSeenEvent occurs
    */
   @Subscribe

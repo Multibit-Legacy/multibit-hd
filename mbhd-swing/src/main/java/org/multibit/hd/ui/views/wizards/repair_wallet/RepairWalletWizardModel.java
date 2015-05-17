@@ -11,6 +11,7 @@ import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
@@ -176,12 +177,18 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
 
           @Override
           public Boolean call() throws Exception {
+            // Switch off zero confirmation alerts
+            MainController.setFireTransactionAlerts(false);
+
             CoreServices.getOrCreateBitcoinNetworkService().replayWallet(
-              InstallationManager.getOrCreateApplicationDataDirectory(),
-              Optional.of(replayDate),
-              enableFastCatchup,
-              true
+                      InstallationManager.getOrCreateApplicationDataDirectory(),
+                      Optional.of(replayDate),
+                      enableFastCatchup,
+                      true
             );
+
+            // Zero confirmation alerts enabled on sync completion in MainController
+
             return true;
 
           }

@@ -28,6 +28,7 @@ import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.SwitchWalletEvent;
@@ -125,6 +126,11 @@ public class MainController extends AbstractController implements
    * The last time a Trezor device was wiped (or yesterday as the default)
    */
   private DateTime lastWipedTrezorDateTime = Dates.nowUtc().minusDays(1);
+
+  /**
+   * Whether alerts should be fired when new transactions appear (true = fire alerts, false = suppress alerts)
+   */
+  private static boolean fireTransactionAlerts = true;
 
   /**
    * @param headerController The header controller
@@ -310,16 +316,18 @@ public class MainController extends AbstractController implements
     Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
     Preconditions.checkNotNull(summary.getMessageData(), "'errorData' must be present");
 
-    // Ensure that the header shows the header after a sync (if the configuration permits)
     if (BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus())) {
+      // Enable alerts for new transactions (suppressed on repair wallet for user simplicity)
+      MainController.setFireTransactionAlerts(true);
+
+      // Ensure that the header shows the header after a sync (if the configuration permits)
       final boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
-      log.debug("Firing event to header viewable to:  {}", viewHeader);
       ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
 
       // For Trezor hard wallets, get the date of the earliest transaction and use it to set the
       // earliestKeyCreationDate. This enables future repair wallets to be quicker
       if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() &&
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType() == WalletType.TREZOR_HARD_WALLET) {
+              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType() == WalletType.TREZOR_HARD_WALLET) {
         // See if the synced wallet has transactions
         Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
         java.util.List<Transaction> transactions = wallet.getTransactionsByTime();
@@ -811,6 +819,20 @@ public class MainController extends AbstractController implements
     CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
 
   }
+
+  /**
+    * @param transactionSeenEvent The event (very high frequency during synchronisation)
+    */
+   @Subscribe
+   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
+     if (transactionSeenEvent.isFirstAppearanceInWallet() && isFireTransactionAlerts()) {
+       log.debug("Firing an alert for a new transaction");
+       transactionSeenEvent.setFirstAppearanceInWallet(false);
+       Sounds.playPaymentReceived();
+       AlertModel alertModel = Models.newPaymentReceivedAlertModel(transactionSeenEvent);
+       ControllerEvents.fireAddAlertEvent(alertModel);
+     }
+   }
 
   /**
    * Make sure that when a transaction is successfully created its 'metadata' is stored in a transactionInfo
@@ -1583,10 +1605,11 @@ public class MainController extends AbstractController implements
 
   }
 
-  /**
-   * @return The deferred credentials request type
-   */
-  public CredentialsRequestType getDeferredCredentialsRequestType() {
-    return deferredCredentialsRequestType;
+  public static boolean isFireTransactionAlerts() {
+    return fireTransactionAlerts;
+  }
+
+  public static void setFireTransactionAlerts(boolean fireTransactionAlerts) {
+    MainController.fireTransactionAlerts = fireTransactionAlerts;
   }
 }
