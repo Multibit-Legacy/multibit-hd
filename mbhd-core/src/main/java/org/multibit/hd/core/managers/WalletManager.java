@@ -1100,19 +1100,18 @@ public enum WalletManager implements WalletEventListener {
   }
 
   private void synchroniseWallet(final Optional<Date> syncDateOptional) {
-    log.debug("Synchronise wallet called with syncDate {}", syncDateOptional);
 
     if (walletExecutorService == null) {
       walletExecutorService = SafeExecutors.newSingleThreadExecutor("sync-wallet");
     }
 
     // Start the Bitcoin network synchronization operation
-    ListenableFuture future = walletExecutorService.submit(
+    ListenableFuture<Boolean> future = walletExecutorService.submit(
       new Callable<Boolean>() {
 
         @Override
         public Boolean call() throws Exception {
-          log.debug("synchroniseWallet  called with replay date {}", syncDateOptional);
+          log.debug("Synchronizing wallet with replay date {}", syncDateOptional);
 
           // Replay wallet
           CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), syncDateOptional, true, false);
@@ -1122,9 +1121,9 @@ public enum WalletManager implements WalletEventListener {
 
       });
     Futures.addCallback(
-      future, new FutureCallback() {
+      future, new FutureCallback<Boolean>() {
         @Override
-        public void onSuccess(@Nullable Object result) {
+        public void onSuccess(@Nullable Boolean result) {
           // Do nothing this just means that the block chain download has begun
           log.debug("Sync has begun");
 
