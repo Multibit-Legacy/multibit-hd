@@ -104,7 +104,11 @@ public class WalletServiceTest {
 
   @Test
   public void testCreateMBHDPaymentRequest() throws Exception {
-    // Initially there are no payment requests
+    // Clear the payment requests at start
+    List<MBHDPaymentRequestData> existing = walletService.getMBHDPaymentRequestDataList();
+    for (MBHDPaymentRequestData exist : existing) {
+      walletService.deleteMBHDPaymentRequest(exist);
+    }
     assertThat(walletService.getMBHDPaymentRequestDataList().size()).isEqualTo(0);
 
     // Create a new payment request

@@ -1608,7 +1608,7 @@ public class WalletService extends AbstractService {
     return paymentDatabaseFile;
   }
 
-  class DateAndPayingTx {
+  static class DateAndPayingTx {
     private DateTime date;
     private Set<String> payingTransactionHashes;
 
