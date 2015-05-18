@@ -89,6 +89,11 @@ public class WalletService extends AbstractService {
   public static final String BIP70_PAYMENT_ACK_SUFFIX = ".paymentack.aes";
 
   /**
+   * The BIP44 gap limit (also used for BIP 32 wallets
+   */
+  public static final int GAP_LIMIT = 20;
+
+  /**
    * The Bitcoin network parameters
    */
   private final NetworkParameters networkParameters;
@@ -1111,14 +1116,12 @@ public class WalletService extends AbstractService {
 
   /**
    * Create the next receiving address for the wallet.
-   * This is either the first key's address in the wallet or is
-   * worked out deterministically and uses the lastIndexUsed on the Payments so that each address is unique
+   * This is worked out deterministically
    *
    * @param walletPasswordOptional Either: Optional.absent() = just recycle the first address in the wallet or:  credentials of the wallet to which the new private key is added
    * @return Address the next generated address, as a String. The corresponding private key will be added to the wallet
    */
   public String generateNextReceivingAddress(Optional<CharSequence> walletPasswordOptional) {
-
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     if (!currentWalletSummary.isPresent()) {
       // No wallet is present
@@ -1135,6 +1138,69 @@ public class WalletService extends AbstractService {
         throw new IllegalStateException("No credentials specified");
       }
     }
+  }
+
+  /**
+   * Get the last generated receiving address
+   * @return the last generated receiving address for this wallet, as a string
+   */
+  public String getLastGeneratedReceivingAddress() {
+    if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+      return WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().currentReceiveAddress().toString();
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Work out the current gap in the MBHDpayment requests
+   * This is the number of unpaid payment requests since the last paid payment request (or 0)
+   * The motivation for this function is that BIP44 states that there should be a gap limit of 20
+   * @return gap the number of unpaid payment requests since the last paid payment request
+   */
+  public int getGap() {
+    // Create a list of the payment request dates and paying transaction hashes
+    List<DateAndPayingTx> dateAndPayingTxes = Lists.newArrayList();
+    for (MBHDPaymentRequestData mbhdPaymentRequestData : mbhdPaymentRequestDataMap.values()) {
+      DateAndPayingTx dateAndPayingTx = new DateAndPayingTx(mbhdPaymentRequestData.getDate(), mbhdPaymentRequestData.getPayingTransactionHashes());
+      dateAndPayingTxes.add(dateAndPayingTx);
+    }
+
+    // Sort the dateAndPayingTxes in date order
+    Collections.sort(dateAndPayingTxes, new Comparator<DateAndPayingTx>() {
+      @Override
+      public int compare(DateAndPayingTx o1, DateAndPayingTx o2) {
+        if (o1 == null) {
+          if (o2 == null) {
+            // Both null
+            return 0;
+          } else {
+            return 1;
+          }
+        } else {
+          if (o2 == null) {
+            return -1;
+          } else {
+            // Both non-null
+            return o1.getDate().compareTo(o2.getDate());
+          }
+        }
+      }
+    });
+
+    // Count backwards from the most recent PaymentRequest.
+    // The gap is the number of unpaid payment requests
+    int gap = 0;
+    for (int i = dateAndPayingTxes.size() - 1; i>= 0; i--) {
+      if (dateAndPayingTxes.get(i).getPayingTransactionHashes().isEmpty()) {
+        // the ith payment request has not been paid yet
+        gap++;
+      } else {
+        // the ith payment request has been paid so we've worked out the gap
+        return gap;
+      }
+    }
+    return gap;
   }
 
   /**
@@ -1540,5 +1606,44 @@ public class WalletService extends AbstractService {
 
   public File getPaymentDatabaseFile() {
     return paymentDatabaseFile;
+  }
+
+  class DateAndPayingTx {
+    private DateTime date;
+    private Set<String> payingTransactionHashes;
+
+    public DateAndPayingTx(DateTime date, Set<String> payingTransactionHashes) {
+      this.date = date;
+      this.payingTransactionHashes = payingTransactionHashes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      DateAndPayingTx that = (DateAndPayingTx) o;
+
+      if (date != null ? !date.equals(that.date) : that.date != null) return false;
+      if (payingTransactionHashes != null ? !payingTransactionHashes.equals(that.payingTransactionHashes) : that.payingTransactionHashes != null)
+        return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = date != null ? date.hashCode() : 0;
+      result = 31 * result + (payingTransactionHashes != null ? payingTransactionHashes.hashCode() : 0);
+      return result;
+    }
+
+    public Set<String> getPayingTransactionHashes() {
+      return payingTransactionHashes;
+    }
+
+    public DateTime getDate() {
+      return date;
+    }
   }
 }
