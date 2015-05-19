@@ -1145,12 +1145,17 @@ public class WalletService extends AbstractService {
   }
 
   /**
-   * Get the last generated receiving key
-   * @return the last generated receiving DeterministicKey for this wallet
+   * Get the last generated receiving address
+   * @return the last generated receiving address for this wallet, as a string
    */
-  public DeterministicKey getLastGeneratedReceivingKey() {
+  public String getLastGeneratedReceivingAddress() {
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      return WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().currentReceiveKey();
+      List<ECKey>issuedReceivingKeys = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().getIssuedReceiveKeys();
+      if (issuedReceivingKeys.isEmpty()) {
+        return null;
+      } else {
+        return issuedReceivingKeys.get(issuedReceivingKeys.size() - 1).toAddress(BitcoinNetwork.current().get()).toString();
+      }
     } else {
       return null;
     }
