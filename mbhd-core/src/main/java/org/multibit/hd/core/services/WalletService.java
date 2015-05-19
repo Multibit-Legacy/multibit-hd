@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
@@ -12,6 +13,8 @@ import com.googlecode.jcsv.writer.CSVEntryConverter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.*;
+import org.bitcoinj.crypto.ChildNumber;
+import org.bitcoinj.crypto.DeterministicKey;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -29,6 +32,7 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.Payments;
 import org.multibit.hd.core.store.PaymentsProtobufSerializer;
 import org.multibit.hd.core.store.TransactionInfo;
+import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.utils.Coins;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1141,35 +1145,37 @@ public class WalletService extends AbstractService {
   }
 
   /**
-   * Get the last generated receiving address
-   * @return the last generated receiving address for this wallet, as a string
+   * Get the last generated receiving key
+   * @return the last generated receiving DeterministicKey for this wallet
    */
-  public String getLastGeneratedReceivingAddress() {
+  public DeterministicKey getLastGeneratedReceivingKey() {
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      return WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().currentReceiveAddress().toString();
+      return WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().currentReceiveKey();
     } else {
       return null;
     }
   }
 
   /**
-   * Work out the current gap in the MBHDpayment requests
+   * Work out the current gap in the MBHD payment request datas
    * This is the number of unpaid payment requests since the last paid payment request (or 0)
    * The motivation for this function is that BIP44 states that there should be a gap limit of 20
    * @return gap the number of unpaid payment requests since the last paid payment request
    */
   public int getGap() {
-    // Create a list of the payment request dates and paying transaction hashes
-    List<DateAndPayingTx> dateAndPayingTxes = Lists.newArrayList();
+    // Create a list of the payment request dates and paying transaction hashes - only keep the paid requests
+    List<AddressDateAndPayingTx> paidAddressDateAndPayingTxes = Lists.newArrayList();
     for (MBHDPaymentRequestData mbhdPaymentRequestData : mbhdPaymentRequestDataMap.values()) {
-      DateAndPayingTx dateAndPayingTx = new DateAndPayingTx(mbhdPaymentRequestData.getDate(), mbhdPaymentRequestData.getPayingTransactionHashes());
-      dateAndPayingTxes.add(dateAndPayingTx);
+      if (!mbhdPaymentRequestData.getPayingTransactionHashes().isEmpty()) {
+        AddressDateAndPayingTx addressDateAndPayingTx = new AddressDateAndPayingTx(mbhdPaymentRequestData.getAddress(), mbhdPaymentRequestData.getDate(), mbhdPaymentRequestData.getPayingTransactionHashes());
+        paidAddressDateAndPayingTxes.add(addressDateAndPayingTx);
+      }
     }
 
-    // Sort the dateAndPayingTxes in date order
-    Collections.sort(dateAndPayingTxes, new Comparator<DateAndPayingTx>() {
+    // Sort the paidAddressDateAndPayingTxes in date order - MBHD payment requests are created strictly monotonically in time
+    Collections.sort(paidAddressDateAndPayingTxes, new Comparator<AddressDateAndPayingTx>() {
       @Override
-      public int compare(DateAndPayingTx o1, DateAndPayingTx o2) {
+      public int compare(AddressDateAndPayingTx o1, AddressDateAndPayingTx o2) {
         if (o1 == null) {
           if (o2 == null) {
             // Both null
@@ -1188,19 +1194,61 @@ public class WalletService extends AbstractService {
       }
     });
 
-    // Count backwards from the most recent PaymentRequest.
-    // The gap is the number of unpaid payment requests
-    int gap = 0;
-    for (int i = dateAndPayingTxes.size() - 1; i>= 0; i--) {
-      if (dateAndPayingTxes.get(i).getPayingTransactionHashes().isEmpty()) {
-        // the ith payment request has not been paid yet
-        gap++;
+    // Work backwards from the latest payment request, finding the most recent that has been paid
+    Address mostRecentlyPaidAddress = null;
+    if (!paidAddressDateAndPayingTxes.isEmpty()) {
+      mostRecentlyPaidAddress = paidAddressDateAndPayingTxes.get(paidAddressDateAndPayingTxes.size() - 1).getAddress();
+    }
+
+    if (mostRecentlyPaidAddress == null) {
+      // No payment requests have been paid, hence gap is the number of payment requests
+      return mbhdPaymentRequestDataMap.size();
+    } else {
+      // Find the key in the wallet that matches this address
+      Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
+      if (!currentWalletSummary.isPresent()) {
+        throw new IllegalStateException("No wallet available to work out gap for");
+      }
+      Wallet wallet = currentWalletSummary.get().getWallet();
+      List<ECKey> issuedReceiveKeys = wallet.getIssuedReceiveKeys();
+
+      // Work from the end backwards to save time
+      int lastPaidKeyIndex = -1;
+      for (int i = issuedReceiveKeys.size() - 1; i >= 0; i--) {
+        DeterministicKey loopKey = (DeterministicKey)issuedReceiveKeys.get(i);
+        if (mostRecentlyPaidAddress.equals(loopKey.toAddress(BitcoinNetwork.current().get()))) {
+          // Found it;
+          ImmutableList<ChildNumber> lastPaidKeyPath = loopKey.getPath();
+          lastPaidKeyIndex = lastPaidKeyPath.get(lastPaidKeyPath.size() - 1).num();
+          break;
+        }
+      }
+
+      // Work out the gap from the difference in the last indices of the path
+      int lastReceivingKeyIndex = -1;
+      DeterministicKey lastGeneratedReceivingKey = (DeterministicKey)issuedReceiveKeys.get(issuedReceiveKeys.size() - 1); // assumed issuedReceiveKEys are in order
+      if (lastGeneratedReceivingKey != null) {
+        ImmutableList<ChildNumber> lastReceivingKeyPath = lastGeneratedReceivingKey.getPath();
+        lastReceivingKeyIndex = lastReceivingKeyPath.get(lastReceivingKeyPath.size() - 1).num();
+      }
+
+      if (lastPaidKeyIndex == -1) {
+        // No payment request has been paid
+        if (lastReceivingKeyIndex == -1) {
+          // No receiving keys have been generated
+          return 0;
+        } else {
+          return lastReceivingKeyIndex + 1;
+        }
       } else {
-        // the ith payment request has been paid so we've worked out the gap
-        return gap;
+        // There is a last paid payment request
+        if (lastReceivingKeyIndex == -1) {
+          throw new IllegalStateException("A payment request has been paid but no receiving addresses have been created. This is odd.");
+        } else {
+          return lastReceivingKeyIndex - lastPaidKeyIndex;
+        }
       }
     }
-    return gap;
   }
 
   /**
@@ -1608,11 +1656,13 @@ public class WalletService extends AbstractService {
     return paymentDatabaseFile;
   }
 
-  static class DateAndPayingTx {
+  static class AddressDateAndPayingTx {
+    private Address address;
     private DateTime date;
     private Set<String> payingTransactionHashes;
 
-    public DateAndPayingTx(DateTime date, Set<String> payingTransactionHashes) {
+    public AddressDateAndPayingTx(Address address, DateTime date, Set<String> payingTransactionHashes) {
+      this.address = address;
       this.date = date;
       this.payingTransactionHashes = payingTransactionHashes;
     }
@@ -1622,8 +1672,9 @@ public class WalletService extends AbstractService {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
 
-      DateAndPayingTx that = (DateAndPayingTx) o;
+      AddressDateAndPayingTx that = (AddressDateAndPayingTx) o;
 
+      if (address != null ? !address.equals(that.address) : that.address != null) return false;
       if (date != null ? !date.equals(that.date) : that.date != null) return false;
       if (payingTransactionHashes != null ? !payingTransactionHashes.equals(that.payingTransactionHashes) : that.payingTransactionHashes != null)
         return false;
@@ -1633,9 +1684,14 @@ public class WalletService extends AbstractService {
 
     @Override
     public int hashCode() {
-      int result = date != null ? date.hashCode() : 0;
+      int result = address != null ? address.hashCode() : 0;
+      result = 31 * result + (date != null ? date.hashCode() : 0);
       result = 31 * result + (payingTransactionHashes != null ? payingTransactionHashes.hashCode() : 0);
       return result;
+    }
+
+    public Address getAddress() {
+      return address;
     }
 
     public Set<String> getPayingTransactionHashes() {

@@ -9,7 +9,6 @@ import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.testing.FakeTxBuilder;
 import org.bitcoinj.wallet.DeterministicSeed;
-import org.bitcoinj.wallet.KeyChain;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -345,7 +344,7 @@ public class WalletServiceTest {
 
     // Pay the last payment request - we do this by adding a transaction hash to the paying tx hashes
     // As we paid the last payment request the gap should now be 0
-    Transaction tx = createFakeTx(networkParameters, valueOf(245, 0), walletSummary.getWallet().currentKey(KeyChain.KeyPurpose.RECEIVE_FUNDS));
+    Transaction tx = createFakeTx(networkParameters, valueOf(245, 0), mbhdPaymentRequestData2.getAddress());
     mbhdPaymentRequestData2.getPayingTransactionHashes().add(tx.getHashAsString());
     assertThat(walletService.getGap()).isEqualTo(0);
 
@@ -354,6 +353,12 @@ public class WalletServiceTest {
     walletService.addMBHDPaymentRequestData(mbhdPaymentRequestData3);
     // There is now one unpaid payment request since the last payment and hence the gap is 1
     assertThat(walletService.getGap()).isEqualTo(1);
+
+        // Create a new payment request - gap should go back up to 2
+    MBHDPaymentRequestData mbhdPaymentRequestData4 = createMBHDPaymentRequestData();
+    walletService.addMBHDPaymentRequestData(mbhdPaymentRequestData4);
+    // There is now two unpaid payment requests since the last payment and hence the gap is 2
+    assertThat(walletService.getGap()).isEqualTo(2);
   }
 
   private MBHDPaymentRequestData createMBHDPaymentRequestData() {
