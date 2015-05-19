@@ -1154,7 +1154,18 @@ public class WalletService extends AbstractService {
       if (issuedReceivingKeys.isEmpty()) {
         return null;
       } else {
-        return issuedReceivingKeys.get(issuedReceivingKeys.size() - 1).toAddress(BitcoinNetwork.current().get()).toString();
+        ECKey lastGeneratedReceivingKey = issuedReceivingKeys.get(0);
+        // Find the receiving key with the largest index
+        for (int i = 1; i < issuedReceivingKeys.size(); i++) {
+            ECKey loopKey = issuedReceivingKeys.get(i);
+            ImmutableList<ChildNumber> loopKeyPath = ((DeterministicKey)loopKey).getPath();
+            ImmutableList<ChildNumber> lastGeneratedPath = ((DeterministicKey)lastGeneratedReceivingKey).getPath();
+
+            if (loopKeyPath.get(loopKeyPath.size() - 1).num() > lastGeneratedPath.get(lastGeneratedPath.size() - 1).num() ) {
+              lastGeneratedReceivingKey = loopKey;
+            }
+        }
+        return lastGeneratedReceivingKey.toAddress(BitcoinNetwork.current().get()).toString();
       }
     } else {
       return null;
@@ -1168,47 +1179,27 @@ public class WalletService extends AbstractService {
    * @return gap the number of unpaid payment requests since the last paid payment request
    */
   public int getGap() {
-    // Create a list of the payment request dates and paying transaction hashes - only keep the paid requests
-    List<AddressDateAndPayingTx> paidAddressDateAndPayingTxes = Lists.newArrayList();
+    // Find the most recently paid payment request data
+    MBHDPaymentRequestData mostRecentMBHDPaymentRequestData = null;
+
     for (MBHDPaymentRequestData mbhdPaymentRequestData : mbhdPaymentRequestDataMap.values()) {
       if (!mbhdPaymentRequestData.getPayingTransactionHashes().isEmpty()) {
-        AddressDateAndPayingTx addressDateAndPayingTx = new AddressDateAndPayingTx(mbhdPaymentRequestData.getAddress(), mbhdPaymentRequestData.getDate(), mbhdPaymentRequestData.getPayingTransactionHashes());
-        paidAddressDateAndPayingTxes.add(addressDateAndPayingTx);
-      }
-    }
-
-    // Sort the paidAddressDateAndPayingTxes in date order - MBHD payment requests are created strictly monotonically in time
-    Collections.sort(paidAddressDateAndPayingTxes, new Comparator<AddressDateAndPayingTx>() {
-      @Override
-      public int compare(AddressDateAndPayingTx o1, AddressDateAndPayingTx o2) {
-        if (o1 == null) {
-          if (o2 == null) {
-            // Both null
-            return 0;
-          } else {
-            return 1;
-          }
+        if (mostRecentMBHDPaymentRequestData == null) {
+          mostRecentMBHDPaymentRequestData = mbhdPaymentRequestData;
         } else {
-          if (o2 == null) {
-            return -1;
-          } else {
-            // Both non-null
-            return o1.getDate().compareTo(o2.getDate());
+          if (mbhdPaymentRequestData.getDate().compareTo(mostRecentMBHDPaymentRequestData.getDate()) > 0) {
+            mostRecentMBHDPaymentRequestData = mbhdPaymentRequestData;
           }
         }
       }
-    });
-
-    // Work backwards from the latest payment request, finding the most recent that has been paid
-    Address mostRecentlyPaidAddress = null;
-    if (!paidAddressDateAndPayingTxes.isEmpty()) {
-      mostRecentlyPaidAddress = paidAddressDateAndPayingTxes.get(paidAddressDateAndPayingTxes.size() - 1).getAddress();
     }
 
-    if (mostRecentlyPaidAddress == null) {
+    if (mostRecentMBHDPaymentRequestData == null) {
       // No payment requests have been paid, hence gap is the number of payment requests
       return mbhdPaymentRequestDataMap.size();
     } else {
+      Address mostRecentlyPaidAddress = mostRecentMBHDPaymentRequestData.getAddress();
+
       // Find the key in the wallet that matches this address
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
       if (!currentWalletSummary.isPresent()) {
@@ -1217,13 +1208,11 @@ public class WalletService extends AbstractService {
       Wallet wallet = currentWalletSummary.get().getWallet();
       List<ECKey> issuedReceiveKeys = wallet.getIssuedReceiveKeys();
 
-      // Work from the end backwards to save time
       int lastPaidKeyIndex = -1;
-      for (int i = issuedReceiveKeys.size() - 1; i >= 0; i--) {
-        DeterministicKey loopKey = (DeterministicKey)issuedReceiveKeys.get(i);
+      for (ECKey loopKey : issuedReceiveKeys) {
         if (mostRecentlyPaidAddress.equals(loopKey.toAddress(BitcoinNetwork.current().get()))) {
-          // Found it;
-          ImmutableList<ChildNumber> lastPaidKeyPath = loopKey.getPath();
+          // Found it
+          ImmutableList<ChildNumber> lastPaidKeyPath = ((DeterministicKey)loopKey).getPath();
           lastPaidKeyIndex = lastPaidKeyPath.get(lastPaidKeyPath.size() - 1).num();
           break;
         }
@@ -1231,10 +1220,8 @@ public class WalletService extends AbstractService {
 
       // Work out the gap from the difference in the last indices of the path
       int lastReceivingKeyIndex = -1;
-      DeterministicKey lastGeneratedReceivingKey = (DeterministicKey)issuedReceiveKeys.get(issuedReceiveKeys.size() - 1); // assumed issuedReceiveKEys are in order
-      if (lastGeneratedReceivingKey != null) {
-        ImmutableList<ChildNumber> lastReceivingKeyPath = lastGeneratedReceivingKey.getPath();
-        lastReceivingKeyIndex = lastReceivingKeyPath.get(lastReceivingKeyPath.size() - 1).num();
+      if (!issuedReceiveKeys.isEmpty()) {
+        lastReceivingKeyIndex = issuedReceiveKeys.size() - 1; // assumes all receiving keys issued monotonically without gaps
       }
 
       if (lastPaidKeyIndex == -1) {
@@ -1659,52 +1646,5 @@ public class WalletService extends AbstractService {
 
   public File getPaymentDatabaseFile() {
     return paymentDatabaseFile;
-  }
-
-  static class AddressDateAndPayingTx {
-    private Address address;
-    private DateTime date;
-    private Set<String> payingTransactionHashes;
-
-    public AddressDateAndPayingTx(Address address, DateTime date, Set<String> payingTransactionHashes) {
-      this.address = address;
-      this.date = date;
-      this.payingTransactionHashes = payingTransactionHashes;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-
-      AddressDateAndPayingTx that = (AddressDateAndPayingTx) o;
-
-      if (address != null ? !address.equals(that.address) : that.address != null) return false;
-      if (date != null ? !date.equals(that.date) : that.date != null) return false;
-      if (payingTransactionHashes != null ? !payingTransactionHashes.equals(that.payingTransactionHashes) : that.payingTransactionHashes != null)
-        return false;
-
-      return true;
-    }
-
-    @Override
-    public int hashCode() {
-      int result = address != null ? address.hashCode() : 0;
-      result = 31 * result + (date != null ? date.hashCode() : 0);
-      result = 31 * result + (payingTransactionHashes != null ? payingTransactionHashes.hashCode() : 0);
-      return result;
-    }
-
-    public Address getAddress() {
-      return address;
-    }
-
-    public Set<String> getPayingTransactionHashes() {
-      return payingTransactionHashes;
-    }
-
-    public DateTime getDate() {
-      return date;
-    }
   }
 }
