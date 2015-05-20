@@ -156,6 +156,15 @@ public class SelectWalletView extends AbstractComponentView<SelectWalletModel> i
     this.selectedWalletComboBox.setEnabled(enabled);
   }
 
+  /**
+   *
+   * @return True if the wallet list is empty
+   */
+  public boolean isEmpty() {
+
+    return selectedWalletComboBox.getItemCount() == 0;
+
+  }
 }
 
 

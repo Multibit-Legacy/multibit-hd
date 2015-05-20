@@ -119,6 +119,11 @@ public interface MultiBitUI {
   float BALANCE_HEADER_NORMAL_FONT_SIZE = 20.0f;
 
   /**
+   * Balance header small font
+   */
+  float BALANCE_HEADER_SMALL_FONT_SIZE = 18.0f;
+
+  /**
    * Transaction large font (e.g. send bitcoins)
    */
   float BALANCE_TRANSACTION_LARGE_FONT_SIZE = 18.0f;
@@ -128,18 +133,9 @@ public interface MultiBitUI {
   float BALANCE_TRANSACTION_NORMAL_FONT_SIZE = 14.0f;
 
   /**
-   * Fee large font (e.g. send bitcoins wizard)
-   */
-  float BALANCE_FEE_LARGE_FONT_SIZE = 14.0f;
-  /**
    * Fee normal font (e.g. send bitcoins wizard)
    */
   float BALANCE_FEE_NORMAL_FONT_SIZE = 12.0f;
-
-  /**
-   * Font for the "panel close" button
-   */
-  float PANEL_CLOSE_FONT_SIZE = 28.0f;
 
   /**
    * Font size for table text

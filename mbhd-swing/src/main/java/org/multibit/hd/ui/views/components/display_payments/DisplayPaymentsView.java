@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.services.CoreServices;
@@ -125,7 +126,8 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
                 }
 
                 // Show the local currency if we have fiat currency information
-                boolean showLocalCurrency = paymentData.getAmountFiat() != null && paymentData.getAmountFiat().getCurrency().isPresent();
+                boolean showLocalCurrency = paymentData.getAmountCoin().isPresent() && paymentData.getAmountCoin().get().compareTo(Coin.ZERO) != 0 &&
+                        paymentData.getAmountFiat() != null && paymentData.getAmountFiat().getCurrency().isPresent();
                 // Don't show the fiat amount if the currency on the fiat payment is different to that in the bitcoin configuration (it's misleading)
                 if (showLocalCurrency && !paymentData.getAmountFiat().getCurrency().get().getCurrencyCode().equals(Configurations.currentConfiguration.getBitcoin().getLocalCurrencyCode())) {
                   showLocalCurrency = false;
@@ -133,7 +135,7 @@ public class DisplayPaymentsView extends AbstractComponentView<DisplayPaymentsMo
                 paymentAmountMaV.getModel().setLocalAmountVisible(showLocalCurrency);
 
                 paymentAmountMaV.getView().setVisible(true);
-                paymentAmountMaV.getModel().setCoinAmount(paymentData.getAmountCoin());
+                paymentAmountMaV.getModel().setCoinAmount(paymentData.getAmountCoin().or(Coin.ZERO));
                 if (paymentData.getAmountFiat() != null && paymentData.getAmountFiat().getAmount().isPresent()) {
                   paymentAmountMaV.getModel().setLocalAmount(paymentData.getAmountFiat().getAmount().get());
                 } else {

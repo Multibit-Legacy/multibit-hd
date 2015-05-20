@@ -6,11 +6,12 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.logging.LoggingFactory;
-import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.HttpsManager;
+import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.OSUtils;
@@ -59,12 +60,9 @@ public class MultiBitHD {
     // Hand over to an instance to simplify FEST tests
     final MultiBitHD multiBitHD = new MultiBitHD();
     if (!multiBitHD.start(args)) {
-
       // Failed to start so issue a hard shutdown
       CoreServices.shutdownNow(ShutdownEvent.ShutdownType.HARD);
-
     } else {
-
       // Initialise the UI views in the EDT
       SwingUtilities.invokeLater(
         new Runnable() {
@@ -73,9 +71,7 @@ public class MultiBitHD {
             multiBitHD.initialiseUIViews();
           }
         });
-
     }
-
   }
 
   /**
@@ -88,14 +84,11 @@ public class MultiBitHD {
    * @throws Exception If something goes wrong
    */
   public boolean start(String[] args) throws Exception {
-
     // Start the logging factory (see later for instance) to get console logging up fast
     LoggingFactory.bootstrap();
 
     // Get the configuration fast
     CoreServices.bootstrap();
-
-    log.info("Starting");
 
     // Analyse the command line
     if (args != null && args.length > 0) {
@@ -147,7 +140,6 @@ public class MultiBitHD {
   }
 
   public void stop() {
-
     log.debug("Stopping MultiBit HD");
 
     mainController = null;
@@ -156,7 +148,6 @@ public class MultiBitHD {
     ViewEvents.unsubscribeAll();
     ControllerEvents.unsubscribeAll();
     CoreEvents.unsubscribeAll();
-
   }
 
   /**
@@ -165,7 +156,6 @@ public class MultiBitHD {
    * @return The external data listening service if it could be started successfully, absent implies another instance
    */
   private Optional<ExternalDataListeningService> initialiseListeningService(String[] args) {
-
     // Determine if another instance is running and shutdown if this is the case
     ExternalDataListeningService externalDataListeningService = new ExternalDataListeningService(args);
 
@@ -175,7 +165,6 @@ public class MultiBitHD {
 
     // Must have failed to be here
     return Optional.absent();
-
   }
 
   /**
@@ -231,7 +220,6 @@ public class MultiBitHD {
    * @param externalDataListeningService The external data listening service
    */
   public boolean initialiseUIControllers(ExternalDataListeningService externalDataListeningService) {
-
     if (OSUtils.isWindowsXPOrEarlier()) {
       log.error("Windows XP or earlier detected. Forcing shutdown.");
       JOptionPane.showMessageDialog(
@@ -261,20 +249,17 @@ public class MultiBitHD {
    * @param inputMap The input map
    */
   private void addOSXKeyStrokes(InputMap inputMap) {
-
     // Undo and redo require more complex handling
     inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK), DefaultEditorKit.copyAction);
     inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.META_DOWN_MASK), DefaultEditorKit.cutAction);
     inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.META_DOWN_MASK), DefaultEditorKit.pasteAction);
     inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.META_DOWN_MASK), DefaultEditorKit.selectAllAction);
-
   }
 
   /**
    * <p>Initialise the platform-specific services</p>
    */
   private void initialiseGenericApp() {
-
     GenericApplicationSpecification specification = new GenericApplicationSpecification();
     specification.getOpenURIEventListeners().add(mainController);
     specification.getOpenFilesEventListeners().add(mainController);
@@ -283,7 +268,6 @@ public class MultiBitHD {
     specification.getQuitEventListeners().add(mainController);
 
     GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
-
   }
 
   /**
@@ -292,15 +276,10 @@ public class MultiBitHD {
    * @param args The command line arguments
    */
   private void initialiseCore(String[] args) {
-
     log.debug("Initialising Core...");
 
     // Start the core services
     CoreServices.main(args);
-
-    // Pre-loadContacts sound library
-    Sounds.initialise();
-
   }
 
   /**
@@ -325,11 +304,14 @@ public class MultiBitHD {
 
     // Give MultiBit Hardware a chance to process any attached hardware wallet
     // and for MainController to subsequently process the events
-    // The delay observed in reality and FEST tests ranges from 1400-2200ms and is
+    // The delay observed in reality and FEST tests ranges from 1400-2200ms and if
     // not included results in wiped hardware wallets being missed on startup
     final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
     log.debug("Starting the clock for hardware wallet initialisation");
     long hardwareInitialisationTime = System.currentTimeMillis();
+
+    // Pre-loadContacts sound library
+    Sounds.initialise();
 
     try {
       // Set look and feel (expect ~1000ms to perform this)
@@ -351,7 +333,6 @@ public class MultiBitHD {
     Themes.switchTheme(themeKey.theme());
 
     if (OSUtils.isMac()) {
-
       // Ensure the correct name is displayed in the application menu
       System.setProperty("com.apple.mrj.application.apple.menu.about.name", "multiBit HD");
 
@@ -363,7 +344,6 @@ public class MultiBitHD {
       addOSXKeyStrokes((InputMap) UIManager.get("TextField.focusInputMap"));
       addOSXKeyStrokes((InputMap) UIManager.get("TextPane.focusInputMap"));
       addOSXKeyStrokes((InputMap) UIManager.get("TextArea.focusInputMap"));
-
     }
 
     log.debug("Building MainView...");
@@ -377,29 +357,43 @@ public class MultiBitHD {
     // Check for any pre-existing wallets in the application directory
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
     List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
+    List<WalletSummary> softWalletSummaries = WalletManager.getSoftWalletSummaries(Optional.of(Configurations.currentConfiguration.getLocale()));
 
     // Check for fresh install
-    boolean showWelcomeWizard = walletDirectories.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted();
-
-    if (showWelcomeWizard) {
-      log.debug("Wallet directory is empty or no licence accepted");
-    }
+    boolean noWallets = walletDirectories.isEmpty();
+    boolean noSoftWallets = softWalletSummaries.isEmpty();
+    boolean unacceptedLicence = !Configurations.currentConfiguration.isLicenceAccepted();
 
     // HardwareWalletService needs HARDWARE_INITIALISATION_TIME milliseconds to initialise so sleep the rest
     conditionallySleep(hardwareInitialisationTime);
 
-    // Check for fresh hardware wallet
+    boolean deviceAttached=false;
+    boolean deviceWiped=false;
+
+    // Check hardware wallet situation after initialisation
     if (hardwareWalletService.isPresent()) {
-      if (hardwareWalletService.get().isDeviceReady() && !hardwareWalletService.get().isWalletPresent()) {
 
-        log.debug("Wiped hardware wallet detected");
+      if (hardwareWalletService.get().isDeviceReady()) {
 
-        // Must show the welcome wizard in hardware wallet mode
-        // regardless of wallet or licence situation
-        // MainController should have handled the events
-        showWelcomeWizard = true;
+        deviceAttached = true;
+
+        if (!hardwareWalletService.get().isWalletPresent()) {
+
+          log.debug("Wiped hardware wallet detected");
+
+          // Must show the welcome wizard in hardware wallet mode
+          // regardless of wallet or licence situation
+          // MainController should have handled the events
+          deviceWiped = true;
+        }
       }
     }
+
+    // Determine if welcome wizard should show
+    boolean showWelcomeWizard = unacceptedLicence // Always prompt for a licence
+      || (deviceAttached && deviceWiped) // We have a wiped hardware wallet so need to initialise
+      || (noSoftWallets && !deviceAttached) // No soft wallets and no hardware wallet so need to create/restore one
+      || noWallets; // No wallets at all so need to create/restore one (either hard or soft)
 
     if (showWelcomeWizard) {
       log.debug("Showing the welcome wizard");

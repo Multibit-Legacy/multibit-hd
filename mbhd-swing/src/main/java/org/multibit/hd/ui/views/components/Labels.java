@@ -611,6 +611,16 @@ public class Labels {
   }
 
   /**
+    * @return A new "plus unconfirmed" label
+    */
+   public static JLabel newPlusUnconfirmed() {
+     JLabel label =  Labels.newLabel(MessageKey.PLUS_UNCONFIRMED);
+     label.setForeground(Themes.currentTheme.headerPanelText());
+     label.setFont(label.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_SMALL_FONT_SIZE));
+     return label;
+   }
+
+  /**
    * @return A new "version" label
    */
   public static JLabel newVersion() {
@@ -669,6 +679,11 @@ public class Labels {
         normalFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_NORMAL_FONT_SIZE);
         textColor = Themes.currentTheme.headerPanelText();
         break;
+      case HEADER_SMALL:
+        largeFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_SMALL_FONT_SIZE);
+        normalFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_SMALL_FONT_SIZE);
+        textColor = Themes.currentTheme.headerPanelText();
+      break;
       case TRANSACTION_DETAIL_AMOUNT:
         largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_TRANSACTION_LARGE_FONT_SIZE);
         normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_TRANSACTION_NORMAL_FONT_SIZE);
@@ -824,12 +839,12 @@ public class Labels {
   }
 
   /**
-   * @return A new "Enter new credentials" label
-   */
-  public static JLabel newEnterNewPassword() {
+    * @return A new "Enter new credentials" label
+    */
+   public static JLabel newEnterNewPassword() {
 
-    return newLabel(MessageKey.ENTER_NEW_PASSWORD);
-  }
+     return newLabel(MessageKey.ENTER_NEW_PASSWORD);
+   }
 
   /**
    * @return A new "Retype new credentials" label
@@ -1070,7 +1085,7 @@ public class Labels {
   }
 
   /**
-   * @return a new "select TOR" for lab settings
+   * @return a new "select Tor" for lab settings
    */
   public static JLabel newSelectTor() {
     return newLabel(MessageKey.SELECT_TOR);
@@ -1102,6 +1117,22 @@ public class Labels {
    */
   public static JLabel newBlocksLeft() {
     return newLabel(MessageKey.BLOCKS_LEFT);
+  }
+
+  /**
+   * @return A new "peer count info" label
+   */
+  public static JLabel newPeerCountInfo() {
+
+    return newLabel(MessageKey.VERIFY_NETWORK_PEER_COUNT);
+  }
+
+  /**
+   * @return A new "peer count info" label
+   */
+  public static JLabel newBlockCountInfo() {
+
+    return newLabel(MessageKey.VERIFY_NETWORK_BLOCK_COUNT);
   }
 
   /**
@@ -1175,17 +1206,26 @@ public class Labels {
   }
 
   /**
-   * @return A new "welcome" note
+   * @return A new "welcome upper" note
    */
-  public static JLabel newWelcomeNote() {
+  public static JLabel newSecureEnviromentNote() {
 
     return newNoteLabel(
       new MessageKey[]{
-        MessageKey.WELCOME_NOTE_1,
-        MessageKey.WELCOME_NOTE_2,
-        MessageKey.WELCOME_NOTE_3
+        MessageKey.LICENCE_NOTE_1,
       }, new Object[][]{});
   }
+  /**
+     * @return A new "welcome lower" note
+     */
+    public static JLabel newWelcomeNote() {
+
+      return newNoteLabel(
+        new MessageKey[]{
+          MessageKey.WELCOME_NOTE_2,
+          MessageKey.WELCOME_NOTE_3
+        }, new Object[][]{});
+    }
 
   /**
    * @return A new "about" note
@@ -1260,8 +1300,7 @@ public class Labels {
   public static JLabel newDebuggerWarningNote() {
 
     JLabel label = newNoteLabel(new CoreMessageKey[]{
-      CoreMessageKey.DEBUGGER_ATTACHED,
-      CoreMessageKey.SECURITY_ADVICE
+      CoreMessageKey.DEBUGGER_ATTACHED
     }, new Object[][]{});
 
     // Allow for danger theme
@@ -1277,8 +1316,7 @@ public class Labels {
   public static JLabel newUnsupportedFirmwareNote() {
 
     JLabel label = newNoteLabel(new CoreMessageKey[]{
-        CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED,
-        CoreMessageKey.SECURITY_ADVICE
+        CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED
       }, new Object[][]{});
 
     // Allow for warning theme
@@ -1546,7 +1584,8 @@ public class Labels {
   public static JLabel newRestoreWalletNote() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.RESTORE_WALLET_NOTE_1
+      MessageKey.RESTORE_WALLET_NOTE_1,
+      MessageKey.RESTORE_WALLET_NOTE_2
     }, new Object[][]{});
 
   }
@@ -1574,13 +1613,24 @@ public class Labels {
   }
 
   /**
+    * @return A new "verify network" note
+    */
+   public static JLabel newVerifyNetworkNoteTop() {
+
+     return newNoteLabel(new MessageKey[]{
+             MessageKey.VERIFY_NETWORK_NOTE_1
+     }, new Object[][]{});
+
+   }
+
+  /**
    * @return A new "verify network" note
    */
-  public static JLabel newVerifyNetworkNote() {
+  public static JLabel newVerifyNetworkNoteBottom() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.VERIFY_NETWORK_NOTE_1,
-      MessageKey.VERIFY_NETWORK_NOTE_2
+            MessageKey.VERIFY_NETWORK_NOTE_2,
+            MessageKey.VERIFY_NETWORK_NOTE_3
     }, new Object[][]{});
 
   }

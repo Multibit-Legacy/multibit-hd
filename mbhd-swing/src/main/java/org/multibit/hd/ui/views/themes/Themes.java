@@ -5,7 +5,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.ui.languages.LanguageKey;
 
 import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.util.Enumeration;
@@ -40,11 +39,15 @@ public class Themes {
     // Gets used in combo box borders and provides the basis for a "default button"
     UIManager.put("nimbusBase", currentTheme.readOnlyComboBox());
 
-    // Provides basis for text
+    // Table header background and sidebar separator
     UIManager.put("nimbusBlueGrey", currentTheme.fadedText());
 
+    // Sets the default disabled button text
+    UIManager.put("nimbusDisabledText", currentTheme.buttonFadedText());
+    // Sets the default focused pressed button text
+    UIManager.put("Button[Default+Focused+Pressed].textForeground", currentTheme.buttonText());
+
     UIManager.put("nimbusBorder", currentTheme.text());
-    UIManager.put("nimbusDisabledText", currentTheme.fadedText());
 
     UIManager.put("nimbusLightBackground", currentTheme.sidebarPanelBackground());
 
@@ -62,10 +65,7 @@ public class Themes {
     UIManager.put("ScrollBar.thumbHighlight", scrollBarThumb.darker());
 
     Color scrollBarTrack = currentTheme.detailPanelBackground();
-    UIManager.put("ScrollBar.background", new ColorUIResource(Color.RED));
-    UIManager.put("ScrollBar.foreground", new ColorUIResource(Color.BLUE));
     UIManager.put("ScrollBar.track", scrollBarTrack);
-    UIManager.put("ScrollBar.trackHighlight", new ColorUIResource(Color.YELLOW));
 
     // Ensure the language icons match the colour scheme
     LanguageKey.resetIcons();

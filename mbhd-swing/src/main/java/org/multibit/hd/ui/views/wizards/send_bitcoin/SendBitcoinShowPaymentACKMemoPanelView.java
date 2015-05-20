@@ -65,7 +65,7 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
   @Override
   public void initialiseContent(JPanel contentPanel) {
     paymentSentOKSummary = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
-    AccessibilityDecorator.apply(paymentSentOKSummary, CoreMessageKey.PAYMENT_SENDING_TO_REQUESTOR);
+    AccessibilityDecorator.apply(paymentSentOKSummary, CoreMessageKey.PAYMENT_SENDING_TO_REQUESTER);
 
     // BIP70 PaymentACK memo
     paymentACKMemo = TextBoxes.newReadOnlyTextArea(6, MultiBitUI.PASSWORD_LENGTH);
@@ -106,7 +106,7 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
 
   @Override
   public boolean beforeShow() {
-    paymentSentOKSummary.setText(Languages.safeText(CoreMessageKey.PAYMENT_SENDING_TO_REQUESTOR));
+    paymentSentOKSummary.setText(Languages.safeText(CoreMessageKey.PAYMENT_SENDING_TO_REQUESTER));
     return true;
   }
 
@@ -147,11 +147,11 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
           paymentACKMemo.setText(getPanelModel().get().getPaymentACKMemo());
 
           if (paymentSentToRequestorEvent.isSendWasSuccessful()) {
-            LabelDecorator.applyWrappingLabel(paymentSentOKSummary, Languages.safeText(CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_OK));
+            LabelDecorator.applyWrappingLabel(paymentSentOKSummary, Languages.safeText(CoreMessageKey.PAYMENT_SENT_TO_REQUESTER_OK));
             LabelDecorator.applyStatusLabel(paymentSentOKSummary, Optional.of(Boolean.TRUE));
 
           } else {
-            String summaryMessage = Languages.safeText(CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_FAILED, paymentSentToRequestorEvent.getSendFailureReasonData());
+            String summaryMessage = Languages.safeText(CoreMessageKey.PAYMENT_SENT_TO_REQUESTER_FAILED, paymentSentToRequestorEvent.getSendFailureReasonData());
             LabelDecorator.applyWrappingLabel(paymentSentOKSummary, summaryMessage);
             LabelDecorator.applyStatusLabel(paymentSentOKSummary, Optional.of(Boolean.FALSE));
           }

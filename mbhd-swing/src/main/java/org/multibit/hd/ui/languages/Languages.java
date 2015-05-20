@@ -118,7 +118,7 @@ public class Languages {
 
     ResourceBundle rb = currentResourceBundle();
 
-    final String message;
+    String message;
 
     if (!rb.containsKey(key.getKey())) {
       // If no key is present then use it direct
@@ -127,6 +127,7 @@ public class Languages {
       // Must have the key to be here
       message = rb.getString(key.getKey());
     }
+    message = escapeSingleQuote(message);
 
     return MessageFormat.format(message, values);
   }
@@ -141,7 +142,7 @@ public class Languages {
 
     ResourceBundle rb = currentResourceBundle();
 
-    final String message;
+    String message;
 
     if (!rb.containsKey(key.getKey())) {
       // If no key is present then use it direct
@@ -150,6 +151,7 @@ public class Languages {
       // Must have the key to be here
       message = rb.getString(key.getKey());
     }
+    message = escapeSingleQuote(message);
 
     return MessageFormat.format(message, values);
   }
@@ -164,7 +166,7 @@ public class Languages {
 
     ResourceBundle rb = currentResourceBundle();
 
-    final String message;
+    String message;
 
     if (!rb.containsKey(key)) {
       // If no key is present then use it direct
@@ -173,6 +175,7 @@ public class Languages {
       // Must have the key to be here
       message = rb.getString(key);
     }
+    message = escapeSingleQuote(message);
 
     return MessageFormat.format(message, values);
   }
@@ -257,7 +260,9 @@ public class Languages {
 
   /**
    * Capitalise the first letter of a phrase
-   * @param phrase
+   *
+   * @param phrase The phrase to capitalise
+   *
    * @return the phrase, with the first letter capitalised
    */
 
@@ -272,5 +277,26 @@ public class Languages {
       return phrase.toUpperCase();
     }
     return Character.toString(phrase.charAt(0)).toUpperCase() + phrase.substring(1);
+  }
+
+  /**
+   * <p>Automatically escape single quotes
+   * This is done to avoid confusion with translators having to do this
+   * We check for complex formatting first and avoid auto-escape if present
+   * </p>
+   *
+   * @param message The original message
+   *
+   * @return The escaped message (unchanged if auto-escape is not possible)
+   */
+  public static String escapeSingleQuote(String message) {
+
+    if (!message.contains("'{") && !message.contains("''")) {
+      // OK to auto-escape
+      message = message.replace("'", "''");
+    }
+
+    return message;
+
   }
 }

@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentRequestData;
@@ -186,7 +187,7 @@ public class SendBitcoinDisplayPaymentRequestPanelView extends AbstractWizardPan
     // Update the model and view for the amount
     // (no local in case of different exchange rates causing confusion)
     Configuration configuration = Configurations.currentConfiguration;
-    paymentRequestAmountMaV.getModel().setCoinAmount(paymentRequestData.getAmountCoin());
+    paymentRequestAmountMaV.getModel().setCoinAmount(paymentRequestData.getAmountCoin().or(Coin.ZERO));
     paymentRequestAmountMaV.getModel().setLocalAmount(null);
     paymentRequestAmountMaV.getView().updateView(configuration);
 

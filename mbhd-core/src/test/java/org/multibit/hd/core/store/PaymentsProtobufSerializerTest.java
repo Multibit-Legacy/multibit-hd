@@ -47,7 +47,7 @@ public class PaymentsProtobufSerializerTest {
     MBHDPaymentRequestData mbhdPaymentRequestData1 = new MBHDPaymentRequestData();
 
     mbhdPaymentRequestData1.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
-    mbhdPaymentRequestData1.setAmountCoin(Coin.valueOf(245));
+    mbhdPaymentRequestData1.setAmountCoin(Optional.of(Coin.valueOf(245)));
     DateTime date1 = new DateTime();
     mbhdPaymentRequestData1.setDate(date1);
     mbhdPaymentRequestData1.setLabel("label1");
@@ -62,7 +62,7 @@ public class PaymentsProtobufSerializerTest {
 
     MBHDPaymentRequestData mbhdPaymentRequestData2 = new MBHDPaymentRequestData();
     mbhdPaymentRequestData2.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
-    mbhdPaymentRequestData2.setAmountCoin(Coin.valueOf(789));
+    mbhdPaymentRequestData2.setAmountCoin(Optional.of(Coin.valueOf(789)));
     DateTime date2 = date1.plusDays(7);
     mbhdPaymentRequestData2.setDate(date2);
     mbhdPaymentRequestData2.setLabel("label2");

@@ -5,25 +5,11 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.bitcoinj.core.Address;
-import org.bitcoinj.core.AddressFormatException;
-import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.NetworkParameters;
-import org.bitcoinj.core.ScriptException;
-import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.TransactionOutput;
-import org.bitcoinj.core.Wallet;
-import org.bitcoinj.core.WalletExtension;
+import org.bitcoinj.core.*;
 import org.bitcoinj.params.MainNetParams;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.multibit.hd.brit.crypto.AESUtils;
-import org.multibit.hd.brit.dto.BRITWalletId;
-import org.multibit.hd.brit.dto.EncryptedMatcherResponse;
-import org.multibit.hd.brit.dto.EncryptedPayerRequest;
-import org.multibit.hd.brit.dto.FeeState;
-import org.multibit.hd.brit.dto.MatcherResponse;
-import org.multibit.hd.brit.dto.PayerRequest;
-import org.multibit.hd.brit.dto.SendFeeDto;
+import org.multibit.hd.brit.dto.*;
 import org.multibit.hd.brit.exceptions.MatcherResponseException;
 import org.multibit.hd.brit.exceptions.PayerRequestException;
 import org.multibit.hd.brit.extensions.MatcherResponseWalletExtension;
@@ -31,24 +17,15 @@ import org.multibit.hd.brit.extensions.SendFeeDtoWalletExtension;
 import org.multibit.hd.brit.payer.Payer;
 import org.multibit.hd.brit.payer.PayerConfig;
 import org.multibit.hd.brit.payer.Payers;
+import org.multibit.hd.brit.utils.HttpsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <p>Service to provide the following to Payers:</p>
@@ -159,8 +136,9 @@ public class FeeService {
       // Encrypt the PayerRequest with the Matcher PGP public key.
       EncryptedPayerRequest encryptedPayerRequest = payer.encryptPayerRequest(payerRequest);
 
-      // Do the HTTP(S) post which, if successful, returns an EncryptedMatcherResponse as a byte array
-      EncryptedMatcherResponse encryptedMatcherResponse = new EncryptedMatcherResponse(doPost(matcherURL, encryptedPayerRequest.getPayload()));
+      // Do the HTTP(S) POST which, if successful, returns an EncryptedMatcherResponse as a byte array
+      byte[] response = HttpsUtils.doPost(matcherURL, encryptedPayerRequest.getPayload(), "application/octet-stream");
+      EncryptedMatcherResponse encryptedMatcherResponse = new EncryptedMatcherResponse(response);
 
       log.debug("Matcher response (encrypted):{} bytes", encryptedMatcherResponse.getPayload().length);
 
@@ -461,56 +439,6 @@ public class FeeService {
     return hardwiredFeeAddresses;
   }
 
-  /**
-   * Perform a post of the specified bytes to the specified URL
-   *
-   * @param url     The URL to post to
-   * @param payload the bytes to post
-   */
-  private byte[] doPost(URL url, byte[] payload) throws IOException {
-    // Send the encrypted request to the Matcher
-    log.debug("Attempting to post {} bytes to URL {}", payload.length, url);
-    URLConnection connection;
-
-    // URL connection channel
-    connection = url.openConnection();
-
-    connection.setRequestProperty("Content-Length", String.valueOf(payload.length));
-    // Let the server know that we want input
-    connection.setDoInput(true);
-    // Let the server know that we want to do output
-    connection.setDoOutput(true);
-    // No caching, we want the real thing
-    connection.setUseCaches(false);
-    // Specify the content type
-    connection.setRequestProperty("Content-Type", "application/octet-stream");
-
-    // Try to send the POST output
-    try (DataOutputStream postOutputStream = new DataOutputStream(connection.getOutputStream())) {
-      postOutputStream.write(payload);
-      postOutputStream.flush();
-    }
-
-    // Try to GET the response data
-    try (DataInputStream responseInputStream = new DataInputStream(connection.getInputStream());
-         ByteArrayOutputStream responseOutputStream = new ByteArrayOutputStream(1024)) {
-
-      byte readByte;
-
-      boolean keepGoing = true;
-      while (keepGoing) {
-        try {
-          readByte = responseInputStream.readByte();
-          responseOutputStream.write(readByte);
-        } catch (IOException ioe) {
-          // response is all read (EOFException) or has fallen over
-          keepGoing = false;
-        }
-      }
-      return responseOutputStream.toByteArray();
-    }
-
-  }
 
   /**
    * Calculate the date of the first transaction in the Wallet

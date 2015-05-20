@@ -34,6 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -57,6 +59,10 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   private JTable paymentsTable;
 
   private JButton detailsButton;
+
+  private JButton deleteRequestButton;
+
+  private JButton undoButton;
 
   /**
    * Handles update operations
@@ -82,9 +88,9 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   @Override
   public JPanel initialiseScreenViewPanel() {
     MigLayout layout = new MigLayout(
-            Panels.migXYDetailLayout(),
-            "[][][][][]push[]", // Column constraints
-            "[shrink][shrink][grow]" // Row constraints
+      Panels.migXYDetailLayout(),
+      "[][][][][]push[]", // Column constraints
+      "[shrink][shrink][grow]" // Row constraints
     );
 
     // Create view components
@@ -94,8 +100,13 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     enterSearchMaV = Components.newEnterSearchMaV(getScreen().name());
 
     detailsButton = Buttons.newDetailsButton(getDetailsAction());
-    final JButton deleteRequestButton = Buttons.newDeletePaymentRequestButton(getDeletePaymentRequestAction());
-    JButton undoButton = Buttons.newUndoButton(getUndoAction());
+
+    deleteRequestButton = Buttons.newDeletePaymentRequestButton(getDeletePaymentRequestAction());
+    deleteRequestButton.setEnabled(false);
+
+    undoButton = Buttons.newUndoButton(getUndoAction());
+    undoButton.setEnabled(false);
+
     JButton exportButton = Buttons.newExportButton(getExportAction());
 
     WalletService walletService = CoreServices.getCurrentWalletService().get();
@@ -109,6 +120,9 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
 
     // Detect double clicks on the table
     paymentsTable.addMouseListener(getTableMouseListener());
+
+    // Detect row selection changes
+    paymentsTable.getSelectionModel().addListSelectionListener(new TableRowModelListener());
 
     // Ensure we maintain the overall theme
     ScrollBarUIDecorator.apply(scrollPane, paymentsTable);
@@ -127,26 +141,11 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
   }
 
   /**
-   * @param transactionSeenEvent The event (very high frequency during synchronisation)
-   */
-  @Subscribe
-  public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
-    if (transactionSeenEvent.isFirstAppearanceInWallet()) {
-      log.debug("Firing an alert for a new transaction");
-      transactionSeenEvent.setFirstAppearanceInWallet(false);
-      Sounds.playPaymentReceived();
-      AlertModel alertModel = Models.newPaymentReceivedAlertModel(transactionSeenEvent);
-      ControllerEvents.fireAddAlertEvent(alertModel);
-    }
-  }
-
-  /**
    * Update the payments when a slowTransactionSeenEvent occurs
    */
   @Subscribe
   public void onSlowTransactionSeenEvent(SlowTransactionSeenEvent slowTransactionSeenEvent) {
     log.trace("Received a SlowTransactionSeenEvent.");
-
     update(true);
   }
 
@@ -181,50 +180,62 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     }
   }
 
+  /**
+   * Limit access to the internal update process and ensure it runs off the EDT
+   *
+   * @param refreshData True if the wallet payment data set should be refreshed (expensive)
+   */
   private void update(final boolean refreshData) {
-    executorService.submit(new Runnable() {
-      @Override
-      public void run() {
-        updateInternal(refreshData);
-      }
-    });
+    executorService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          updateInternal(refreshData);
+        }
+      });
   }
 
+  /**
+   * Perform an update of the payment data table off the EDT
+   *
+   * @param refreshData True if the wallet payment data set should be refreshed (expensive)
+   */
   private void updateInternal(final boolean refreshData) {
-    if (paymentsTable != null) {
-      try {
-        // Remember the selected row
-        int selectedTableRow = paymentsTable.getSelectedRow();
+    if (paymentsTable != null && CoreServices.getCurrentWalletService().isPresent()) {
 
-        WalletService walletService = CoreServices.getCurrentWalletService().get();
+      WalletService walletService = CoreServices.getCurrentWalletService().get();
 
-        // Refresh the wallet payment list if asked
-        if (refreshData) {
-          log.debug("Updating the payment data set - expensive");
-          walletService.getPaymentDataSet();
-        }
-        // Check the search MaV model for a query and apply it
-        List<PaymentData> filteredPaymentDataList = walletService.filterPaymentsByContent(enterSearchMaV.getModel().getValue());
+      // Refresh the wallet payment list if asked (may have created/deleted a new PaymentRequest)
+      if (refreshData) {
+        // Avoid logging here - gets called a lot during Repair and floods the logs
+        walletService.getPaymentDataSet();
+      }
+      // Check the search MaV model for a query and apply it
+      final List<PaymentData> filteredPaymentDataList = walletService.filterPaymentsByContent(enterSearchMaV.getModel().getValue());
 
-        ((PaymentTableModel) paymentsTable.getModel()).setPaymentData(filteredPaymentDataList, true);
-
-        final int finalSelectedTableRow = selectedTableRow;
-
-        // Update UI
-        SwingUtilities.invokeLater(new Runnable() {
+      // Update the payments table model on the EDT to ensure row selection is correctly maintained for FEST tests
+      SwingUtilities.invokeLater(
+        new Runnable() {
           @Override
           public void run() {
+            // Remember the selected row just before the update
+            int selectedTableRow = paymentsTable.getSelectedRow();
+
+            // Update the table with the new data
+            ((PaymentTableModel) paymentsTable.getModel()).setPaymentData(filteredPaymentDataList, true);
+
             ((PaymentTableModel) paymentsTable.getModel()).fireTableDataChanged();
 
             // Reselect the selected row if possible
-            if (finalSelectedTableRow != -1 && finalSelectedTableRow < paymentsTable.getModel().getRowCount()) {
-              paymentsTable.changeSelection(finalSelectedTableRow, 0, false, false);
+            if (selectedTableRow != -1 && selectedTableRow < paymentsTable.getModel().getRowCount()) {
+              paymentsTable.changeSelection(selectedTableRow, 0, false, false);
             }
+            // Update the delete request button
+            updateDeleteRequestButton();
           }
         });
-      } catch (IllegalStateException ise) {
-        // No wallet is open - nothing to do
-      }
+    } else {
+      log.warn("Unexpected call to Payments without an open wallet");
     }
   }
 
@@ -236,28 +247,22 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-
         WalletService walletService = CoreServices.getCurrentWalletService().get();
 
-        int selectedTableRow = paymentsTable.getSelectedRow();
+        PaymentData paymentData = getPaymentDataForSelectedTableRow();
 
-        if (selectedTableRow == -1) {
-          // No row selected
+        if (paymentData == null) {
           return;
         }
-        int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
-        PaymentData paymentData = ((PaymentTableModel) paymentsTable.getModel()).getPaymentDataList().get(selectedModelRow);
-        log.debug("getDetailsAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow + ", paymentData = " + paymentData.toString());
 
         PaymentsWizard wizard = Wizards.newPaymentsWizard(paymentData);
         // If the payment is a transaction, then fetch the matching payment request data and put them in the model
         if (paymentData instanceof TransactionData) {
-          wizard
-                  .getWizardModel()
-                  .setMatchingPaymentRequestList(
-                          walletService
-                                  .findPaymentRequestsThisTransactionFunds((TransactionData) paymentData)
-                  );
+          wizard.getWizardModel()
+            .setMatchingPaymentRequestList(
+              walletService
+                .findPaymentRequestsThisTransactionFunds((TransactionData) paymentData)
+            );
         }
         Panels.showLightBox(wizard.getWizardScreenHolder());
       }
@@ -271,7 +276,6 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        log.debug("getExportAction called");
         Panels.showLightBox(Wizards.newExportPaymentsWizard(ExportPaymentsWizardState.SELECT_EXPORT_LOCATION).getWizardScreenHolder());
       }
     };
@@ -285,8 +289,12 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       @Override
       public void actionPerformed(ActionEvent e) {
         CoreServices.getCurrentWalletService().get().undoDeletePaymentData();
-        fireWalletDetailsChanged();
+        undoButton.setEnabled(CoreServices.getCurrentWalletService().get().canUndo());
 
+        // Update the delete request button
+        updateDeleteRequestButton();
+
+        fireWalletDetailsChanged();
       }
     };
   }
@@ -298,27 +306,50 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        int selectedTableRow = paymentsTable.getSelectedRow();
-        if (selectedTableRow == -1) {
-          // No row selected
-          return;
-        }
-        int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
-        log.debug("getExportAction : selectedTableRow = " + selectedTableRow + ", selectedModelRow = " + selectedModelRow);
 
-        PaymentData paymentData = ((PaymentTableModel) paymentsTable.getModel()).getPaymentDataList().get(selectedModelRow);
+        PaymentData paymentData = getPaymentDataForSelectedTableRow();
 
-        if (paymentData instanceof MBHDPaymentRequestData) {
-          // We can delete this
-          CoreServices.getCurrentWalletService().get().deleteMBHDPaymentRequest((MBHDPaymentRequestData) paymentData);
-          fireWalletDetailsChanged();
-        } else if (paymentData instanceof PaymentRequestData) {
-          // We can delete this
-          CoreServices.getCurrentWalletService().get().deletePaymentRequest((PaymentRequestData) paymentData);
-          fireWalletDetailsChanged();
+        if (paymentData != null) {
+          if (paymentData instanceof MBHDPaymentRequestData) {
+            // Enable the undo button
+            undoButton.setEnabled(true);
+
+            // We can delete this
+            CoreServices.getCurrentWalletService().get().deleteMBHDPaymentRequest((MBHDPaymentRequestData) paymentData);
+            fireWalletDetailsChanged();
+          } else if (paymentData instanceof PaymentRequestData) {
+            // Enable the undo button
+            undoButton.setEnabled(true);
+
+            // We can delete this
+            CoreServices.getCurrentWalletService().get().deletePaymentRequest((PaymentRequestData) paymentData);
+            fireWalletDetailsChanged();
+          }
         }
+
+        // Update the delete request button
+        PaymentData paymentData2 = getPaymentDataForSelectedTableRow();
+        boolean enableDeleteRequestButton = paymentData2 != null && (paymentData2 instanceof PaymentRequestData || paymentData2 instanceof MBHDPaymentRequestData);
+        deleteRequestButton.setEnabled(enableDeleteRequestButton);
       }
     };
+  }
+
+  private PaymentData getPaymentDataForSelectedTableRow() {
+    int selectedTableRow = paymentsTable.getSelectedRow();
+    if (selectedTableRow == -1 || selectedTableRow >= paymentsTable.getRowCount() || selectedTableRow >= ((PaymentTableModel) paymentsTable.getModel()).getPaymentDataList().size()) {
+      // No row selected or out of bounds due to last payment request delete
+      return null;
+    }
+    int selectedModelRow = paymentsTable.convertRowIndexToModel(selectedTableRow);
+
+    return ((PaymentTableModel) paymentsTable.getModel()).getPaymentDataList().get(selectedModelRow);
+  }
+
+  private void updateDeleteRequestButton() {
+    PaymentData paymentData = getPaymentDataForSelectedTableRow();
+    boolean enableDeleteRequestButton = paymentData != null && (paymentData instanceof PaymentRequestData || paymentData instanceof MBHDPaymentRequestData);
+    deleteRequestButton.setEnabled(enableDeleteRequestButton);
   }
 
   /**
@@ -328,13 +359,14 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     return new MouseAdapter() {
 
       public void mousePressed(MouseEvent e) {
+        // If user clicks a payment request enable the the delete button, otherwise disable it
+        updateDeleteRequestButton();
 
+        // If user double clicks then show the details
         if (e.getClickCount() == 2) {
-
           detailsButton.doClick();
         }
       }
-
     };
   }
 
@@ -355,6 +387,23 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       walletDetail.setNumberOfPayments(CoreServices.getCurrentWalletService().get().getPaymentDataSetSize());
 
       ViewEvents.fireWalletDetailChangedEvent(walletDetail);
+    }
+  }
+
+  class TableRowModelListener implements ListSelectionListener {
+
+    public TableRowModelListener() {
+    }
+
+    public void valueChanged(ListSelectionEvent e) {
+      if (!e.getValueIsAdjusting()) {
+        ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+
+        if (!lsm.isSelectionEmpty()) {
+          // If user clicks a payment request enable the the delete button, otherwise disable it
+          updateDeleteRequestButton();
+        }
+      }
     }
   }
 }

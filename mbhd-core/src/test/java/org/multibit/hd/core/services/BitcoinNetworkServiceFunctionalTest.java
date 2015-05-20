@@ -291,7 +291,12 @@ public class BitcoinNetworkServiceFunctionalTest {
     // Clear percentage complete
     percentComplete = 0;
 
-    bitcoinNetworkService.replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()), true);
+    bitcoinNetworkService.replayWallet(
+      InstallationManager.getOrCreateApplicationDataDirectory(),
+      Optional.of(replayDate),
+      true, // Use fast catch up
+      false // Do not clear mempool
+    );
 
     int timeout = 0;
     while (timeout < MAX_TIMEOUT && (percentComplete < 100)) {

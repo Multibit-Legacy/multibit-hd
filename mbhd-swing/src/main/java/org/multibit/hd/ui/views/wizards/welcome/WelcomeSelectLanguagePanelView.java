@@ -66,14 +66,13 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
       "[][]", // Column constraints
-      "[][]20[]30" // Row constraints
+      "[][]20[]20" // Row constraints
     ));
 
     languagesComboBox = ComboBoxes.newLanguagesComboBox(this, Languages.currentLocale());
 
     contentPanel.add(Labels.newSelectLanguageLabel(), "shrink");
     contentPanel.add(languagesComboBox, "growx," + MultiBitUI.COMBO_BOX_WIDTH_MIG + ",push,wrap");
-    contentPanel.add(Labels.newWelcomeNote(), "grow,push,span 2,wrap");
 
   }
 

@@ -371,7 +371,7 @@ public class CurrencyUtils {
 
     Preconditions.checkNotNull(currency, "'currency' must be present");
 
-    log.debug("Searching for ISO candidate for '{}'", currency);
+    log.trace("Searching for ISO candidate for '{}'", currency);
 
     if (isoCandidateMap.containsKey(currency)) {
       // The currency is ISO so no searching is required

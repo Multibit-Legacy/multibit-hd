@@ -1,0 +1,593 @@
+[
+  {
+    "@timestamp": "2015-05-05T21:09:21.050+01:00",
+    "@version": 1,
+    "message": "LoggingFactory bootstrap completed.",
+    "logger_name": "org.multibit.hd.core.logging.LoggingFactory",
+    "thread_name": "main",
+    "level": "INFO",
+    "level_value": 20000
+  },
+  {
+    "@timestamp": "2015-05-05T21:09:24.142+01:00",
+    "@version": 1,
+    "message": "Service ConfigurationService@2e47eb19 starting...",
+    "logger_name": "org.multibit.hd.core.services.AbstractService",
+    "thread_name": "main",
+    "level": "INFO",
+    "level_value": 20000
+  },
+  {
+    "@timestamp": "2015-05-05T21:09:24.142+01:00",
+    "@version": 1,
+    "message": "Loading configuration...",
+    "logger_name": "org.multibit.hd.core.services.CoreServices",
+    "thread_name": "main",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:09:29.998+01:00",
+    "@version": 1,
+    "message": "Using current configuration",
+    "logger_name": "org.multibit.hd.core.services.CoreServices",
+    "thread_name": "main",
+    "level": "INFO",
+    "level_value": 20000
+  },
+  {
+    "@timestamp": "2015-05-05T21:09:30.178+01:00",
+    "@version": 1,
+    "message": "Context identity: 2100887083",
+    "logger_name": "org.multibit.hd.core.services.CoreServices",
+    "thread_name": "main",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:09:33.895+01:00",
+    "@version": 1,
+    "message": "Uncaught exception",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "main",
+    "level": "ERROR",
+    "level_value": 40000,
+    "stack_trace": "java.lang.NullPointerException: Example exception\n\tat org.multibit.hd.core.services.CoreServices.bootstrap(CoreServices.java:169) ~[classes/:na]\n\tat org.multibit.hd.ui.MultiBitHD.start(MultiBitHD.java:90) ~[classes/:na]\n\tat org.multibit.hd.ui.MultiBitHD.main(MultiBitHD.java:61) ~[classes/:na]\n"
+  },
+  {
+    "@timestamp": "2015-05-05T21:10:07.407+01:00",
+    "@version": 1,
+    "message": "New fixed thread pool with 1 threads: 'error-reporting'",
+    "logger_name": "org.multibit.hd.hardware.core.concurrent.SafeExecutors",
+    "thread_name": "AWT-EventQueue-1",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:10:07.963+01:00",
+    "@version": 1,
+    "message": "Unrecognized field \"stack_trace\" (class org.multibit.hd.common.error_reporting.ErrorReportLogEntry), not marked as ignorable (7 known properties: \"thread_name\", \"level\", \"@timestamp\", \"level_value\", \"message\", \"@version\", \"logger_name\"])\n at [Source: java.io.StringReader@1290b599; line: 1, column: 233] (through reference chain: org.multibit.hd.common.error_reporting.ErrorReportLogEntry[\"stack_trace\"])",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000
+  },
+  {
+    "@timestamp": "2015-05-05T21:10:07.963+01:00",
+    "@version": 1,
+    "message": "No content to map due to end-of-input\n at [Source: java.io.StringReader@5a825954; line: 1, column: 1]",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000
+  },
+  {
+    "@timestamp": "2015-05-05T21:10:07.989+01:00",
+    "@version": 1,
+    "message": "Writing error report file as JSON",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:10:12.405+01:00",
+    "@version": 1,
+    "message": "Writing JSON data...",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:10:14.348+01:00",
+    "@version": 1,
+    "message": "Preparing armored error report file",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:10:16.779+01:00",
+    "@version": 1,
+    "message": "Writing armored error report file",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:11:25.401+01:00",
+    "@version": 1,
+    "message": "Deleting error report file",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:11:25.540+01:00",
+    "@version": 1,
+    "message": "Result of initial delete was true for:\n'/Users/example/Library/Application Support/MultiBitHD/logs/error-report.json'",
+    "logger_name": "org.multibit.hd.core.files.SecureFiles",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:11:25.541+01:00",
+    "@version": 1,
+    "message": "Reading armored error report file",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:11:25.715+01:00",
+    "@version": 1,
+    "message": "POSTing armored error report file to 'https://multibit.org/error'",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:11:25.751+01:00",
+    "@version": 1,
+    "message": "Attempting to post 1166 bytes to URL https://multibit.org/error",
+    "logger_name": "org.multibit.hd.brit.utils.HttpsUtils",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:11:27.145+01:00",
+    "@version": 1,
+    "message": "Failed to POST error-report.json.asc",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000,
+    "stack_trace": "javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target\n\tat sun.security.ssl.Alerts.getSSLException(Alerts.java:192) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.fatal(SSLSocketImpl.java:1884) ~[na:1.7.0_51]\n\tat sun.security.ssl.Handshaker.fatalSE(Handshaker.java:276) ~[na:1.7.0_51]\n\tat sun.security.ssl.Handshaker.fatalSE(Handshaker.java:270) ~[na:1.7.0_51]\n\tat sun.security.ssl.ClientHandshaker.serverCertificate(ClientHandshaker.java:1341) ~[na:1.7.0_51]\n\tat sun.security.ssl.ClientHandshaker.processMessage(ClientHandshaker.java:153) ~[na:1.7.0_51]\n\tat sun.security.ssl.Handshaker.processLoop(Handshaker.java:868) ~[na:1.7.0_51]\n\tat sun.security.ssl.Handshaker.process_record(Handshaker.java:804) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.readRecord(SSLSocketImpl.java:1016) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.performInitialHandshake(SSLSocketImpl.java:1312) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:1339) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:1323) ~[na:1.7.0_51]\n\tat sun.net.www.protocol.https.HttpsClient.afterConnect(HttpsClient.java:563) ~[na:1.7.0_51]\n\tat sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(AbstractDelegateHttpsURLConnection.java:185) ~[na:1.7.0_51]\n\tat sun.net.www.protocol.http.HttpURLConnection.getOutputStream(HttpURLConnection.java:1091) ~[na:1.7.0_51]\n\tat sun.net.www.protocol.https.HttpsURLConnectionImpl.getOutputStream(HttpsURLConnectionImpl.java:250) ~[na:1.7.0_51]\n\tat org.multibit.hd.brit.utils.HttpsUtils.doPost(HttpsUtils.java:60) ~[classes/:na]\n\tat org.multibit.hd.core.error_reporting.ExceptionHandler.handleErrorReportUpload(ExceptionHandler.java:314) ~[classes/:na]\n\tat org.multibit.hd.ui.error_reporting.ErrorReportingDialog$3$1.call(ErrorReportingDialog.java:265) [classes/:na]\n\tat org.multibit.hd.ui.error_reporting.ErrorReportingDialog$3$1.call(ErrorReportingDialog.java:261) [classes/:na]\n\tat java.util.concurrent.FutureTask.run(FutureTask.java:262) [na:1.7.0_51]\n\tat java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145) [na:1.7.0_51]\n\tat java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615) [na:1.7.0_51]\n\tat java.lang.Thread.run(Thread.java:744) [na:1.7.0_51]\nCaused by: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target\n\tat sun.security.validator.PKIXValidator.doBuild(PKIXValidator.java:385) ~[na:1.7.0_51]\n\tat sun.security.validator.PKIXValidator.engineValidate(PKIXValidator.java:292) ~[na:1.7.0_51]\n\tat sun.security.validator.Validator.validate(Validator.java:260) ~[na:1.7.0_51]\n\tat sun.security.ssl.X509TrustManagerImpl.validate(X509TrustManagerImpl.java:326) ~[na:1.7.0_51]\n\tat sun.security.ssl.X509TrustManagerImpl.checkTrusted(X509TrustManagerImpl.java:231) ~[na:1.7.0_51]\n\tat sun.security.ssl.X509TrustManagerImpl.checkServerTrusted(X509TrustManagerImpl.java:126) ~[na:1.7.0_51]\n\tat sun.security.ssl.ClientHandshaker.serverCertificate(ClientHandshaker.java:1323) ~[na:1.7.0_51]\n\t... 19 common frames omitted\nCaused by: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target\n\tat sun.security.provider.certpath.SunCertPathBuilder.engineBuild(SunCertPathBuilder.java:196) ~[na:1.7.0_51]\n\tat java.security.cert.CertPathBuilder.build(CertPathBuilder.java:268) ~[na:1.7.0_51]\n\tat sun.security.validator.PKIXValidator.doBuild(PKIXValidator.java:380) ~[na:1.7.0_51]\n\t... 25 common frames omitted\n"
+  },
+  {
+    "@timestamp": "2015-05-05T21:11:40.441+01:00",
+    "@version": 1,
+    "message": "LoggingFactory bootstrap completed.",
+    "logger_name": "org.multibit.hd.core.logging.LoggingFactory",
+    "thread_name": "main",
+    "level": "INFO",
+    "level_value": 20000
+  },
+  {
+    "@timestamp": "2015-05-05T21:11:41.762+01:00",
+    "@version": 1,
+    "message": "Service ConfigurationService@49a58c9e starting...",
+    "logger_name": "org.multibit.hd.core.services.AbstractService",
+    "thread_name": "main",
+    "level": "INFO",
+    "level_value": 20000
+  },
+  {
+    "@timestamp": "2015-05-05T21:11:41.762+01:00",
+    "@version": 1,
+    "message": "Loading configuration...",
+    "logger_name": "org.multibit.hd.core.services.CoreServices",
+    "thread_name": "main",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:11:43.598+01:00",
+    "@version": 1,
+    "message": "Using current configuration",
+    "logger_name": "org.multibit.hd.core.services.CoreServices",
+    "thread_name": "main",
+    "level": "INFO",
+    "level_value": 20000
+  },
+  {
+    "@timestamp": "2015-05-05T21:11:43.826+01:00",
+    "@version": 1,
+    "message": "Context identity: 1145289383",
+    "logger_name": "org.multibit.hd.core.services.CoreServices",
+    "thread_name": "main",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:11:44.327+01:00",
+    "@version": 1,
+    "message": "Uncaught exception",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "main",
+    "level": "ERROR",
+    "level_value": 40000,
+    "stack_trace": "java.lang.NullPointerException: Example exception\n\tat org.multibit.hd.core.services.CoreServices.bootstrap(CoreServices.java:169) ~[classes/:na]\n\tat org.multibit.hd.ui.MultiBitHD.start(MultiBitHD.java:90) ~[classes/:na]\n\tat org.multibit.hd.ui.MultiBitHD.main(MultiBitHD.java:61) ~[classes/:na]\n"
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:02.219+01:00",
+    "@version": 1,
+    "message": "New fixed thread pool with 1 threads: 'error-reporting'",
+    "logger_name": "org.multibit.hd.hardware.core.concurrent.SafeExecutors",
+    "thread_name": "AWT-EventQueue-1",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:02.628+01:00",
+    "@version": 1,
+    "message": "Unrecognized field \"stack_trace\" (class org.multibit.hd.common.error_reporting.ErrorReportLogEntry), not marked as ignorable (7 known properties: \"thread_name\", \"level\", \"@timestamp\", \"level_value\", \"message\", \"@version\", \"logger_name\"])\n at [Source: java.io.StringReader@5817a729; line: 1, column: 233] (through reference chain: org.multibit.hd.common.error_reporting.ErrorReportLogEntry[\"stack_trace\"])",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:02.660+01:00",
+    "@version": 1,
+    "message": "Unrecognized field \"stack_trace\" (class org.multibit.hd.common.error_reporting.ErrorReportLogEntry), not marked as ignorable (7 known properties: \"thread_name\", \"level\", \"@timestamp\", \"level_value\", \"message\", \"@version\", \"logger_name\"])\n at [Source: java.io.StringReader@2ac57cf9; line: 1, column: 274] (through reference chain: org.multibit.hd.common.error_reporting.ErrorReportLogEntry[\"stack_trace\"])",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:02.662+01:00",
+    "@version": 1,
+    "message": "Unrecognized field \"stack_trace\" (class org.multibit.hd.common.error_reporting.ErrorReportLogEntry), not marked as ignorable (7 known properties: \"thread_name\", \"level\", \"@timestamp\", \"level_value\", \"message\", \"@version\", \"logger_name\"])\n at [Source: java.io.StringReader@b8fd55f; line: 1, column: 233] (through reference chain: org.multibit.hd.common.error_reporting.ErrorReportLogEntry[\"stack_trace\"])",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:02.662+01:00",
+    "@version": 1,
+    "message": "No content to map due to end-of-input\n at [Source: java.io.StringReader@100155e7; line: 1, column: 1]",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:02.682+01:00",
+    "@version": 1,
+    "message": "Writing error report file as JSON",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:02.682+01:00",
+    "@version": 1,
+    "message": "Writing JSON data...",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:02.726+01:00",
+    "@version": 1,
+    "message": "Preparing armored error report file",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:02.727+01:00",
+    "@version": 1,
+    "message": "Writing armored error report file",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:03.719+01:00",
+    "@version": 1,
+    "message": "Deleting error report file",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:03.778+01:00",
+    "@version": 1,
+    "message": "Result of initial delete was true for:\n'/Users/example/Library/Application Support/MultiBitHD/logs/error-report.json'",
+    "logger_name": "org.multibit.hd.core.files.SecureFiles",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:03.778+01:00",
+    "@version": 1,
+    "message": "Reading armored error report file",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:03.799+01:00",
+    "@version": 1,
+    "message": "POSTing armored error report file to 'https://multibit.org/error'",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:03.811+01:00",
+    "@version": 1,
+    "message": "Attempting to post 2060 bytes to URL https://multibit.org/error",
+    "logger_name": "org.multibit.hd.brit.utils.HttpsUtils",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:04.296+01:00",
+    "@version": 1,
+    "message": "Failed to POST error-report.json.asc",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000,
+    "stack_trace": "javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target\n\tat sun.security.ssl.Alerts.getSSLException(Alerts.java:192) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.fatal(SSLSocketImpl.java:1884) ~[na:1.7.0_51]\n\tat sun.security.ssl.Handshaker.fatalSE(Handshaker.java:276) ~[na:1.7.0_51]\n\tat sun.security.ssl.Handshaker.fatalSE(Handshaker.java:270) ~[na:1.7.0_51]\n\tat sun.security.ssl.ClientHandshaker.serverCertificate(ClientHandshaker.java:1341) ~[na:1.7.0_51]\n\tat sun.security.ssl.ClientHandshaker.processMessage(ClientHandshaker.java:153) ~[na:1.7.0_51]\n\tat sun.security.ssl.Handshaker.processLoop(Handshaker.java:868) ~[na:1.7.0_51]\n\tat sun.security.ssl.Handshaker.process_record(Handshaker.java:804) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.readRecord(SSLSocketImpl.java:1016) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.performInitialHandshake(SSLSocketImpl.java:1312) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:1339) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:1323) ~[na:1.7.0_51]\n\tat sun.net.www.protocol.https.HttpsClient.afterConnect(HttpsClient.java:563) ~[na:1.7.0_51]\n\tat sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(AbstractDelegateHttpsURLConnection.java:185) ~[na:1.7.0_51]\n\tat sun.net.www.protocol.http.HttpURLConnection.getOutputStream(HttpURLConnection.java:1091) ~[na:1.7.0_51]\n\tat sun.net.www.protocol.https.HttpsURLConnectionImpl.getOutputStream(HttpsURLConnectionImpl.java:250) ~[na:1.7.0_51]\n\tat org.multibit.hd.brit.utils.HttpsUtils.doPost(HttpsUtils.java:60) ~[classes/:na]\n\tat org.multibit.hd.core.error_reporting.ExceptionHandler.handleErrorReportUpload(ExceptionHandler.java:314) ~[classes/:na]\n\tat org.multibit.hd.ui.error_reporting.ErrorReportingDialog$3$1.call(ErrorReportingDialog.java:265) [classes/:na]\n\tat org.multibit.hd.ui.error_reporting.ErrorReportingDialog$3$1.call(ErrorReportingDialog.java:261) [classes/:na]\n\tat java.util.concurrent.FutureTask.run(FutureTask.java:262) [na:1.7.0_51]\n\tat java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145) [na:1.7.0_51]\n\tat java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615) [na:1.7.0_51]\n\tat java.lang.Thread.run(Thread.java:744) [na:1.7.0_51]\nCaused by: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target\n\tat sun.security.validator.PKIXValidator.doBuild(PKIXValidator.java:385) ~[na:1.7.0_51]\n\tat sun.security.validator.PKIXValidator.engineValidate(PKIXValidator.java:292) ~[na:1.7.0_51]\n\tat sun.security.validator.Validator.validate(Validator.java:260) ~[na:1.7.0_51]\n\tat sun.security.ssl.X509TrustManagerImpl.validate(X509TrustManagerImpl.java:326) ~[na:1.7.0_51]\n\tat sun.security.ssl.X509TrustManagerImpl.checkTrusted(X509TrustManagerImpl.java:231) ~[na:1.7.0_51]\n\tat sun.security.ssl.X509TrustManagerImpl.checkServerTrusted(X509TrustManagerImpl.java:126) ~[na:1.7.0_51]\n\tat sun.security.ssl.ClientHandshaker.serverCertificate(ClientHandshaker.java:1323) ~[na:1.7.0_51]\n\t... 19 common frames omitted\nCaused by: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target\n\tat sun.security.provider.certpath.SunCertPathBuilder.engineBuild(SunCertPathBuilder.java:196) ~[na:1.7.0_51]\n\tat java.security.cert.CertPathBuilder.build(CertPathBuilder.java:268) ~[na:1.7.0_51]\n\tat sun.security.validator.PKIXValidator.doBuild(PKIXValidator.java:380) ~[na:1.7.0_51]\n\t... 25 common frames omitted\n"
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:13.489+01:00",
+    "@version": 1,
+    "message": "New fixed thread pool with 10 threads: 'core-events'",
+    "logger_name": "org.multibit.hd.core.concurrent.SafeExecutors",
+    "thread_name": "AWT-EventQueue-1",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:13.498+01:00",
+    "@version": 1,
+    "message": "Firing 'shutdown' event: HARD",
+    "logger_name": "org.multibit.hd.core.events.CoreEvents",
+    "thread_name": "safe-fixed-core-events-0",
+    "level": "INFO",
+    "level_value": 20000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:28.513+01:00",
+    "@version": 1,
+    "message": "LoggingFactory bootstrap completed.",
+    "logger_name": "org.multibit.hd.core.logging.LoggingFactory",
+    "thread_name": "main",
+    "level": "INFO",
+    "level_value": 20000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:29.789+01:00",
+    "@version": 1,
+    "message": "Service ConfigurationService@24663187 starting...",
+    "logger_name": "org.multibit.hd.core.services.AbstractService",
+    "thread_name": "main",
+    "level": "INFO",
+    "level_value": 20000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:29.790+01:00",
+    "@version": 1,
+    "message": "Loading configuration...",
+    "logger_name": "org.multibit.hd.core.services.CoreServices",
+    "thread_name": "main",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:31.982+01:00",
+    "@version": 1,
+    "message": "Using current configuration",
+    "logger_name": "org.multibit.hd.core.services.CoreServices",
+    "thread_name": "main",
+    "level": "INFO",
+    "level_value": 20000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:32.092+01:00",
+    "@version": 1,
+    "message": "Context identity: 17348406",
+    "logger_name": "org.multibit.hd.core.services.CoreServices",
+    "thread_name": "main",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:32.350+01:00",
+    "@version": 1,
+    "message": "Uncaught exception",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "main",
+    "level": "ERROR",
+    "level_value": 40000,
+    "stack_trace": "java.lang.NullPointerException: Example exception\n\tat org.multibit.hd.core.services.CoreServices.bootstrap(CoreServices.java:169) ~[classes/:na]\n\tat org.multibit.hd.ui.MultiBitHD.start(MultiBitHD.java:90) ~[classes/:na]\n\tat org.multibit.hd.ui.MultiBitHD.main(MultiBitHD.java:61) ~[classes/:na]\n"
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:43.122+01:00",
+    "@version": 1,
+    "message": "New fixed thread pool with 1 threads: 'error-reporting'",
+    "logger_name": "org.multibit.hd.hardware.core.concurrent.SafeExecutors",
+    "thread_name": "AWT-EventQueue-1",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:43.480+01:00",
+    "@version": 1,
+    "message": "Unrecognized field \"stack_trace\" (class org.multibit.hd.common.error_reporting.ErrorReportLogEntry), not marked as ignorable (7 known properties: \"thread_name\", \"level\", \"@timestamp\", \"level_value\", \"message\", \"@version\", \"logger_name\"])\n at [Source: java.io.StringReader@7ec98afc; line: 1, column: 233] (through reference chain: org.multibit.hd.common.error_reporting.ErrorReportLogEntry[\"stack_trace\"])",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:43.512+01:00",
+    "@version": 1,
+    "message": "Unrecognized field \"stack_trace\" (class org.multibit.hd.common.error_reporting.ErrorReportLogEntry), not marked as ignorable (7 known properties: \"thread_name\", \"level\", \"@timestamp\", \"level_value\", \"message\", \"@version\", \"logger_name\"])\n at [Source: java.io.StringReader@60db07a6; line: 1, column: 274] (through reference chain: org.multibit.hd.common.error_reporting.ErrorReportLogEntry[\"stack_trace\"])",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:43.514+01:00",
+    "@version": 1,
+    "message": "Unrecognized field \"stack_trace\" (class org.multibit.hd.common.error_reporting.ErrorReportLogEntry), not marked as ignorable (7 known properties: \"thread_name\", \"level\", \"@timestamp\", \"level_value\", \"message\", \"@version\", \"logger_name\"])\n at [Source: java.io.StringReader@4bd354f7; line: 1, column: 233] (through reference chain: org.multibit.hd.common.error_reporting.ErrorReportLogEntry[\"stack_trace\"])",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:43.518+01:00",
+    "@version": 1,
+    "message": "Unrecognized field \"stack_trace\" (class org.multibit.hd.common.error_reporting.ErrorReportLogEntry), not marked as ignorable (7 known properties: \"thread_name\", \"level\", \"@timestamp\", \"level_value\", \"message\", \"@version\", \"logger_name\"])\n at [Source: java.io.StringReader@1f6f4b05; line: 1, column: 274] (through reference chain: org.multibit.hd.common.error_reporting.ErrorReportLogEntry[\"stack_trace\"])",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:43.520+01:00",
+    "@version": 1,
+    "message": "Unrecognized field \"stack_trace\" (class org.multibit.hd.common.error_reporting.ErrorReportLogEntry), not marked as ignorable (7 known properties: \"thread_name\", \"level\", \"@timestamp\", \"level_value\", \"message\", \"@version\", \"logger_name\"])\n at [Source: java.io.StringReader@43a64562; line: 1, column: 233] (through reference chain: org.multibit.hd.common.error_reporting.ErrorReportLogEntry[\"stack_trace\"])",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:43.520+01:00",
+    "@version": 1,
+    "message": "No content to map due to end-of-input\n at [Source: java.io.StringReader@591547a0; line: 1, column: 1]",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:43.547+01:00",
+    "@version": 1,
+    "message": "Writing error report file as JSON",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:43.548+01:00",
+    "@version": 1,
+    "message": "Writing JSON data...",
+    "logger_name": "org.multibit.hd.core.config.Json",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:12:43.588+01:00",
+    "@version": 1,
+    "message": "Preparing armored error report file",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:15:17.154+01:00",
+    "@version": 1,
+    "message": "Writing armored error report file",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:16:19.141+01:00",
+    "@version": 1,
+    "message": "Deleting error report file",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:16:19.415+01:00",
+    "@version": 1,
+    "message": "Result of initial delete was true for:\n'/Users/example/Library/Application Support/MultiBitHD/logs/error-report.json'",
+    "logger_name": "org.multibit.hd.core.files.SecureFiles",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:16:19.416+01:00",
+    "@version": 1,
+    "message": "Reading armored error report file",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:16:19.521+01:00",
+    "@version": 1,
+    "message": "POSTing armored error report file to 'https://multibit.org/error'",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:16:19.537+01:00",
+    "@version": 1,
+    "message": "Attempting to post 2474 bytes to URL https://multibit.org/error",
+    "logger_name": "org.multibit.hd.brit.utils.HttpsUtils",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "DEBUG",
+    "level_value": 10000
+  },
+  {
+    "@timestamp": "2015-05-05T21:16:20.550+01:00",
+    "@version": 1,
+    "message": "Failed to POST error-report.json.asc",
+    "logger_name": "org.multibit.hd.core.error_reporting.ExceptionHandler",
+    "thread_name": "safe-fixed-error-reporting-0",
+    "level": "WARN",
+    "level_value": 30000,
+    "stack_trace": "javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target\n\tat sun.security.ssl.Alerts.getSSLException(Alerts.java:192) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.fatal(SSLSocketImpl.java:1884) ~[na:1.7.0_51]\n\tat sun.security.ssl.Handshaker.fatalSE(Handshaker.java:276) ~[na:1.7.0_51]\n\tat sun.security.ssl.Handshaker.fatalSE(Handshaker.java:270) ~[na:1.7.0_51]\n\tat sun.security.ssl.ClientHandshaker.serverCertificate(ClientHandshaker.java:1341) ~[na:1.7.0_51]\n\tat sun.security.ssl.ClientHandshaker.processMessage(ClientHandshaker.java:153) ~[na:1.7.0_51]\n\tat sun.security.ssl.Handshaker.processLoop(Handshaker.java:868) ~[na:1.7.0_51]\n\tat sun.security.ssl.Handshaker.process_record(Handshaker.java:804) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.readRecord(SSLSocketImpl.java:1016) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.performInitialHandshake(SSLSocketImpl.java:1312) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:1339) ~[na:1.7.0_51]\n\tat sun.security.ssl.SSLSocketImpl.startHandshake(SSLSocketImpl.java:1323) ~[na:1.7.0_51]\n\tat sun.net.www.protocol.https.HttpsClient.afterConnect(HttpsClient.java:563) ~[na:1.7.0_51]\n\tat sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(AbstractDelegateHttpsURLConnection.java:185) ~[na:1.7.0_51]\n\tat sun.net.www.protocol.http.HttpURLConnection.getOutputStream(HttpURLConnection.java:1091) ~[na:1.7.0_51]\n\tat sun.net.www.protocol.https.HttpsURLConnectionImpl.getOutputStream(HttpsURLConnectionImpl.java:250) ~[na:1.7.0_51]\n\tat org.multibit.hd.brit.utils.HttpsUtils.doPost(HttpsUtils.java:60) ~[classes/:na]\n\tat org.multibit.hd.core.error_reporting.ExceptionHandler.handleErrorReportUpload(ExceptionHandler.java:314) ~[classes/:na]\n\tat org.multibit.hd.ui.error_reporting.ErrorReportingDialog$3$1.call(ErrorReportingDialog.java:265) [classes/:na]\n\tat org.multibit.hd.ui.error_reporting.ErrorReportingDialog$3$1.call(ErrorReportingDialog.java:261) [classes/:na]\n\tat java.util.concurrent.FutureTask.run(FutureTask.java:262) [na:1.7.0_51]\n\tat java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145) [na:1.7.0_51]\n\tat java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615) [na:1.7.0_51]\n\tat java.lang.Thread.run(Thread.java:744) [na:1.7.0_51]\nCaused by: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target\n\tat sun.security.validator.PKIXValidator.doBuild(PKIXValidator.java:385) ~[na:1.7.0_51]\n\tat sun.security.validator.PKIXValidator.engineValidate(PKIXValidator.java:292) ~[na:1.7.0_51]\n\tat sun.security.validator.Validator.validate(Validator.java:260) ~[na:1.7.0_51]\n\tat sun.security.ssl.X509TrustManagerImpl.validate(X509TrustManagerImpl.java:326) ~[na:1.7.0_51]\n\tat sun.security.ssl.X509TrustManagerImpl.checkTrusted(X509TrustManagerImpl.java:231) ~[na:1.7.0_51]\n\tat sun.security.ssl.X509TrustManagerImpl.checkServerTrusted(X509TrustManagerImpl.java:126) ~[na:1.7.0_51]\n\tat sun.security.ssl.ClientHandshaker.serverCertificate(ClientHandshaker.java:1323) ~[na:1.7.0_51]\n\t... 19 common frames omitted\nCaused by: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target\n\tat sun.security.provider.certpath.SunCertPathBuilder.engineBuild(SunCertPathBuilder.java:196) ~[na:1.7.0_51]\n\tat java.security.cert.CertPathBuilder.build(CertPathBuilder.java:268) ~[na:1.7.0_51]\n\tat sun.security.validator.PKIXValidator.doBuild(PKIXValidator.java:380) ~[na:1.7.0_51]\n\t... 25 common frames omitted\n"
+  }
+]

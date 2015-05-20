@@ -96,7 +96,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   private final Random random = new Random();
   private final boolean restoringSoftWallet;
-  private final WelcomeWizardMode mode;
+  private WelcomeWizardMode mode;
 
   private String actualSeedTimestamp;
   // Backup summaries for restoring a wallet
@@ -117,6 +117,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   private int trezorWordCount = 0;
   private boolean trezorChecking = false;
+  private WelcomeAttachHardwareWalletPanelView attachHardwareWalletPanelView;
 
   /**
    * @param state The state object
@@ -141,14 +142,32 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   @Override
   public void showNext() {
 
-    Optional<HardwareWalletService> hardwareWalletService = Optional.absent();
+    Optional<HardwareWalletService> hardwareWalletService;
 
     switch (state) {
       case WELCOME_LICENCE:
         state = WELCOME_SELECT_LANGUAGE;
         break;
       case WELCOME_SELECT_LANGUAGE:
-        state = WELCOME_SELECT_WALLET;
+        state = WELCOME_ATTACH_HARDWARE_WALLET;
+        break;
+      case WELCOME_ATTACH_HARDWARE_WALLET:
+        hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+        if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
+          // A Trezor is connected
+          mode = WelcomeWizardMode.TREZOR;
+          if (hardwareWalletService.get().isWalletPresent()) {
+            // User may want to create or restore since they have an initialised device
+            state = WELCOME_SELECT_WALLET;
+          } else {
+            // User can only create from an uninitialised device
+            state = TREZOR_CREATE_WALLET_PREPARATION;
+          }
+        } else {
+          // Standard mode
+          mode = WelcomeWizardMode.STANDARD;
+          state = WELCOME_SELECT_WALLET;
+        }
         break;
       case WELCOME_SELECT_WALLET:
         hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
@@ -256,6 +275,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   @Override
   public void showPrevious() {
 
+    Optional<HardwareWalletService> hardwareWalletService;
+
     switch (state) {
       case WELCOME_LICENCE:
         state = WELCOME_LICENCE;
@@ -263,8 +284,11 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
       case WELCOME_SELECT_LANGUAGE:
         state = WELCOME_LICENCE;
         break;
-      case WELCOME_SELECT_WALLET:
+      case WELCOME_ATTACH_HARDWARE_WALLET:
         state = WELCOME_SELECT_LANGUAGE;
+        break;
+      case WELCOME_SELECT_WALLET:
+        state = WELCOME_ATTACH_HARDWARE_WALLET;
         break;
       case CREATE_WALLET_PREPARATION:
         state = WELCOME_SELECT_WALLET;
@@ -282,6 +306,15 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         state = CREATE_WALLET_SEED_PHRASE;
         break;
       case TREZOR_CREATE_WALLET_PREPARATION:
+        hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+        if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
+          // A Trezor is connected
+          mode = WelcomeWizardMode.TREZOR;
+        } else {
+          // Standard mode
+          mode = WelcomeWizardMode.STANDARD;
+        }
+        // Back out to select wallet as the most general solution
         state = WELCOME_SELECT_WALLET;
         break;
       case TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION:
@@ -478,6 +511,35 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   }
 
   @Override
+  public void showDeviceDetached(HardwareWalletEvent event) {
+    // Hardware wallet has been attached
+    getAttachHardwareWalletPanelView().setHardwareWalletStatus(
+      Optional.<MessageKey>absent(),
+      false
+    );
+  }
+
+  @Override
+  public void showDeviceReady(HardwareWalletEvent event) {
+
+    // Hardware wallet has been attached
+    getAttachHardwareWalletPanelView().setHardwareWalletStatus(
+      Optional.of(MessageKey.TREZOR_FOUND),
+      true
+    );
+
+  }
+
+  @Override
+  public void showDeviceFailed(HardwareWalletEvent event) {
+    // Hardware wallet has been attached
+    getAttachHardwareWalletPanelView().setHardwareWalletStatus(
+      Optional.of(MessageKey.TREZOR_FAILURE_ALERT),
+      false
+    );
+  }
+
+  @Override
   public void showButtonPress(HardwareWalletEvent event) {
 
     ButtonRequest buttonRequest = (ButtonRequest) event.getMessage().get();
@@ -485,9 +547,27 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     switch (state) {
       case TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET:
         switch (buttonRequest.getButtonRequestType()) {
+          case OTHER:
+            break;
+          case FEE_OVER_THRESHOLD:
+            break;
+          case CONFIRM_OUTPUT:
+            break;
+          case RESET_DEVICE:
+            break;
+          case CONFIRM_WORD:
+            break;
           case WIPE_DEVICE:
             // Device requires confirmation to wipe device
             state = TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET;
+            break;
+          case PROTECT_CALL:
+            break;
+          case SIGN_TX:
+            break;
+          case FIRMWARE_CHECK:
+            break;
+          case ADDRESS:
             break;
           default:
             throw new IllegalStateException("Unexpected button: " + buttonRequest.getButtonRequestType().name());
@@ -495,6 +575,14 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         break;
       case TREZOR_CREATE_WALLET_CONFIRM_WORD:
         switch (buttonRequest.getButtonRequestType()) {
+          case OTHER:
+            break;
+          case FEE_OVER_THRESHOLD:
+            break;
+          case CONFIRM_OUTPUT:
+            break;
+          case RESET_DEVICE:
+            break;
           case CONFIRM_WORD:
             trezorWordCount++;
             if (trezorWordCount > trezorSeedPhraseSize.getSize()) {
@@ -506,6 +594,16 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
             // See "operation succeeded" for next state transition
             state = TREZOR_CREATE_WALLET_CONFIRM_WORD;
             trezorConfirmWordPanelView.updateDisplay(trezorWordCount, trezorChecking);
+            break;
+          case WIPE_DEVICE:
+            break;
+          case PROTECT_CALL:
+            break;
+          case SIGN_TX:
+            break;
+          case FIRMWARE_CHECK:
+            break;
+          case ADDRESS:
             break;
           default:
             throw new IllegalStateException("Unexpected button: " + buttonRequest.getButtonRequestType().name());
@@ -519,6 +617,11 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
+
+    if (!event.getMessage().isPresent()) {
+      // This could be due to a detach
+      return;
+    }
 
     Failure failure = (Failure) event.getMessage().get();
 
@@ -978,5 +1081,13 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   public void setTrezorConfirmWordPanelView(CreateTrezorWalletConfirmWordPanelView trezorConfirmWordPanelView) {
     this.trezorConfirmWordPanelView = trezorConfirmWordPanelView;
+  }
+
+  public WelcomeAttachHardwareWalletPanelView getAttachHardwareWalletPanelView() {
+    return attachHardwareWalletPanelView;
+  }
+
+  public void setAttachHardwareWalletPanelView(WelcomeAttachHardwareWalletPanelView attachHardwareWalletPanelView) {
+    this.attachHardwareWalletPanelView = attachHardwareWalletPanelView;
   }
 }

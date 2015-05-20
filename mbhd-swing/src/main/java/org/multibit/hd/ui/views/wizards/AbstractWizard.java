@@ -190,7 +190,16 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
       log.debug("Showing wizard panel: {}", panelName);
       cardLayout.show(wizardScreenHolder, panelName);
 
-      wizardPanelView.afterShow();
+      // We must ensure that all other EDT processing has completed before
+      // calling afterShow() to guarantee visibility of components
+      // Failure to do this causes problems with popovers during startup
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            wizardPanelView.afterShow();
+          }
+        });
     }
 
   }
@@ -204,7 +213,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    */
   public void hide(final String panelName, final boolean isExitCancel) {
 
-    Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "This method should run on the EDT");
+    log.debug("Hide requested for {} with exitCancel {} ", panelName, isExitCancel);
 
     if (!wizardViewMap.containsKey(panelName)) {
       log.error("'{}' is not a valid panel name. Check the panel has been registered in the view map. Registered panels are\n{}", wizardViewMap.keySet());
@@ -285,6 +294,11 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
 
         if (getWizardModel().isDirty()) {
 
+          if (Panels.isLightBoxPopoverShowing()) {
+            // Ignore this and rely on popover catching the cancel itself
+            return;
+          }
+
           // Check with the user about throwing away their data (handle the outcome with a WizardPopoverHideEvent)
           Panels.showLightBoxPopover(
             Popovers.newDiscardYesNoPopoverMaV(getWizardModel().getPanelName())
@@ -315,8 +329,19 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        hide(wizardModel.getPanelName(), false);
+        // We are finishing and this may be a default button
+        // which has non-standard painting behaviour
+        ((JButton) e.getSource()).setEnabled(false);
 
+        // Ensure the button disables before hide giving a cleaner transition
+        // Nimbus paints the text a different colour to the icon otherwise
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              hide(wizardModel.getPanelName(), false);
+            }
+          });
       }
     };
   }
@@ -349,14 +374,27 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        // Ensure the panel updates its model (the button is outside of the panel itself)
-        wizardPanelView.updateFromComponentModels(Optional.absent());
+        // We are moving to the next panel view and this may be a default button
+        // which has non-standard painting behaviour
+        ((JButton) e.getSource()).setEnabled(false);
 
-        // Move to the next state
-        wizardModel.showNext();
+        // Ensure the button disables before hide giving a cleaner transition
+        // Nimbus paints the text a different colour to the icon otherwise
+        SwingUtilities.invokeLater(
+          new Runnable() {
+            @Override
+            public void run() {
+              // Ensure the panel updates its model (the button is outside of the panel itself)
+              wizardPanelView.updateFromComponentModels(Optional.absent());
 
-        // Show the panel based on the state
-        show(wizardModel.getPanelName());
+              // Move to the next state
+              wizardModel.showNext();
+
+              // Show the panel based on the state
+              show(wizardModel.getPanelName());
+            }
+          });
+
       }
     };
   }
@@ -409,6 +447,28 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     };
   }
 
+  /**
+    * @param wizardView The wizard view (providing a reference to its underlying panel model)
+    *
+    * @return The "create" action based on the model state
+    */
+   public <P> Action getCreateAction(final AbstractWizardPanelView<M, P> wizardView) {
+
+     return new AbstractAction() {
+       @Override
+       public void actionPerformed(ActionEvent e) {
+
+         // The UI will lock up during handover so prevent further events
+         JButton source = (JButton) e.getSource();
+         source.setEnabled(false);
+
+         // Since #17 all create work is done by the welcome wizard
+         // See MainController for the hand over code
+         hide(CredentialsState.CREDENTIALS_CREATE.name(), false);
+
+       }
+     };
+   }
   @Subscribe
   public void onWizardPopoverHideEvent(WizardPopoverHideEvent event) {
 
@@ -478,7 +538,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
         @Override
         public void run() {
 
-          log.debug("Hiding wizard {}", this.getClass().getSimpleName());
+          log.info("Hide and deregister wizard: '{}'", this.getClass().getSimpleName());
 
           // Require some extra time to get the rest of the UI started for credentials wizard
           // There is no chance of the system showing a light box during this time so this

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://opensource.org/licenses/mit-license.php
+ * http://opensource.org/licenses/mit-license.php
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -62,7 +62,9 @@ public final class OSUtils {
       return "solaris";
     } else if (osName.startsWith("mac") || osName.startsWith("darwin")) {
       return "mac";
-    } else return "generic";
+    } else {
+      return "generic";
+    }
   }
 
   /**
@@ -140,5 +142,22 @@ public final class OSUtils {
     return ManagementFactory.getRuntimeMXBean().
       getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
   }
+
+
+  /**
+   * @return True if the underlying platform is 64-bit (i.e. correctly detects a 32-bit JRE on a 64-bit Windows install as 64-bit)
+   */
+  public static boolean is64Bit() {
+
+    boolean result;
+    if (System.getProperty("os.name").contains("Windows")) {
+      result = (System.getenv("ProgramFiles(x86)") != null);
+    } else {
+      result = (System.getProperty("os.arch").contains("64"));
+    }
+
+    return result;
+  }
+
 
 }

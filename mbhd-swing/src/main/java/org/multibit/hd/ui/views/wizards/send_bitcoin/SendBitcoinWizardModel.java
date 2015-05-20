@@ -37,6 +37,7 @@ import org.multibit.hd.hardware.core.utils.TransactionUtils;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Formats;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 import org.slf4j.Logger;
@@ -156,12 +157,20 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
         // If there is insufficient money in the wallet a TransactionCreationEvent
         // with the details will be thrown
 
-        if (prepareTransaction()) {
-          state = SEND_CONFIRM_AMOUNT;
+        // Check a recipient has been set
+        if (!enterAmountPanelModel
+                .getEnterRecipientModel()
+                .getRecipient().isPresent()) {
+          state = SEND_ENTER_AMOUNT;
         } else {
-          // Transaction did not prepare correctly
-          state = SEND_REPORT;
+          if (prepareTransaction()) {
+            state = SEND_CONFIRM_AMOUNT;
+          } else {
+            // Transaction did not prepare correctly
+            state = SEND_REPORT;
+          }
         }
+
         break;
       case SEND_CONFIRM_AMOUNT:
 
@@ -249,7 +258,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   /**
    * @return The Bitcoin amount without symbolic multiplier
    */
-  public Coin getCoinAmount() {
+  public Optional<Coin> getCoinAmount() {
     return enterAmountPanelModel
       .getEnterAmountModel()
       .getCoinAmount();
@@ -397,8 +406,15 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       Preconditions.checkNotNull(enterAmountPanelModel);
       Preconditions.checkNotNull(confirmPanelModel);
 
+      // Check a recipient has been set
+      if (!enterAmountPanelModel
+              .getEnterRecipientModel()
+              .getRecipient().isPresent()) {
+        return false;
+      }
+
       // Build the send request summary from the user data
-      Coin coin = enterAmountPanelModel.getEnterAmountModel().getCoinAmount();
+      Coin coin = enterAmountPanelModel.getEnterAmountModel().getCoinAmount().or(Coin.ZERO);
       Address bitcoinAddress = enterAmountPanelModel
         .getEnterRecipientModel()
         .getRecipient()
@@ -748,6 +764,9 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
               // Commit and broadcast
               bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet, paymentRequestData);
+
+              // Ensure the header is switched off whilst the send is in progress
+              ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
             } else {
               // The signed transaction is essentially different from what was sent to it - abort send
               sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
@@ -795,28 +814,24 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     if (lastBitcoinSentEvent != null && lastBitcoinSentEvent.isSendWasSuccessful()) {
       Preconditions.checkNotNull(getPaymentRequestData());
       Preconditions.checkState(getPaymentRequestData().isPresent());
-      ;
       Preconditions.checkNotNull(getPaymentRequestData().get().getPaymentSessionSummary());
       Preconditions.checkState(getPaymentRequestData().get().getPaymentSessionSummary().isPresent());
-      Preconditions.checkState(getPaymentRequestData().get().getPaymentSessionSummary().get().getPaymentSession().isPresent());
+      Preconditions.checkState(getPaymentRequestData().get().getPaymentSessionSummary().get().hasPaymentSession());
 
-      PaymentSession paymentSession = getPaymentRequestData().get()
-        .getPaymentSessionSummary().get()
-        .getPaymentSession().get();
+      PaymentSessionSummary paymentSessionSummary = getPaymentRequestData().get().getPaymentSessionSummary().get();
 
       // Send the Payment message to the merchant
       try {
         final List<Transaction> transactionsSent = Lists.newArrayList(lastBitcoinSentEvent.getTransaction().get());
         final PaymentRequestData finalPaymentRequestData = getPaymentRequestData().get();
 
-        log.debug("Sending payment details to requestor at URL {}", paymentSession.getPaymentUrl());
-        final Protos.Payment finalPayment = paymentSession.getPayment(transactionsSent,
-                  lastBitcoinSentEvent.getChangeAddress(),
-                  getSendBitcoinEnterPaymentMemoPanelModel().getPaymentMemo());
-        final ListenableFuture<PaymentProtocol.Ack> future = paymentSession.sendPayment(
-          transactionsSent,
-          lastBitcoinSentEvent.getChangeAddress(),
-          getSendBitcoinEnterPaymentMemoPanelModel().getPaymentMemo());
+        final Optional<PaymentSessionSummary.PaymentProtocolResponseDto> dto = paymentSessionSummary.sendPaymentSessionPayment(
+            transactionsSent,
+            lastBitcoinSentEvent.getChangeAddress(),
+            getSendBitcoinEnterPaymentMemoPanelModel().getPaymentMemo());
+
+        final Protos.Payment finalPayment = dto.get().getFinalPayment();
+        final ListenableFuture<PaymentProtocol.Ack> future = dto.get().getFuture();
 
         if (future != null) {
           Futures.addCallback(
@@ -845,7 +860,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
                     walletService.writePayments(password);
                   }
 
-                  CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(true, CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_OK, null));
+                  CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(true, CoreMessageKey.PAYMENT_SENT_TO_REQUESTER_OK, null));
                 } else {
                   log.error("No payment and hence cannot save payment or paymentACK");
                 }
@@ -858,7 +873,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
                 CoreEvents.firePaymentSentToRequestorEvent(
                   new PaymentSentToRequestorEvent(
                     false,
-                    CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_FAILED,
+                    CoreMessageKey.PAYMENT_SENT_TO_REQUESTER_FAILED,
                     new String[]{t.getClass().getCanonicalName() + " " + t.getMessage()}));
               }
             });
@@ -870,13 +885,13 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
         CoreEvents.firePaymentSentToRequestorEvent(
           new PaymentSentToRequestorEvent(
             false,
-            CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_FAILED,
+            CoreMessageKey.PAYMENT_SENT_TO_REQUESTER_FAILED,
             new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()}));
       }
     } else {
       String message = "Bitcoin not sent successfully so no payment sent to requestor";
       log.debug(message);
-      CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(false, CoreMessageKey.PAYMENT_SENT_TO_REQUESTOR_FAILED, new String[]{message}));
+      CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(false, CoreMessageKey.PAYMENT_SENT_TO_REQUESTER_FAILED, new String[]{message}));
     }
   }
 

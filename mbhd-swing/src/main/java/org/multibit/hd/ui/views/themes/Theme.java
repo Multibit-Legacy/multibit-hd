@@ -99,9 +99,24 @@ public interface Theme {
   Color invalidDataEntryBackground();
 
   /**
-   * @return The background colour for a button to match the overall theme (needs to contrast with the detail panel backgrond)
+   * @return The background colour for a button to match the overall theme (needs to contrast with the detail panel background)
    */
   Color buttonBackground();
+
+  /**
+   * @return The background colour for a default button to match the overall theme (needs to contrast with the detail panel background)
+   */
+  Color buttonDefaultBackground();
+
+  /**
+   * @return The font colour for a button to match the overall theme
+   */
+  Color buttonText();
+
+  /**
+   * @return The font colour for a disabled button to match the overall theme
+   */
+  Color buttonFadedText();
 
   /**
    * @return The normal font colour for the theme
@@ -122,11 +137,6 @@ public interface Theme {
    * @return A faded version of the inverse font colour for the theme (to avoid clashing with panel backgrounds)
    */
   Color inverseFadedText();
-
-  /**
-   * @return The font colour for a button to match the overall theme
-   */
-  Color buttonText();
 
   /**
    * @return The background colour of a danger alert
@@ -247,4 +257,5 @@ public interface Theme {
    * Is the theme invert (predominantly dark)
    */
   boolean isInvert();
+
 }

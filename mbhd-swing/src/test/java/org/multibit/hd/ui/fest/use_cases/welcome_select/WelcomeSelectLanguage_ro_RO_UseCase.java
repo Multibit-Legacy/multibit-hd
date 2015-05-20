@@ -34,9 +34,6 @@ public class WelcomeSelectLanguage_ro_RO_UseCase extends AbstractFestUseCase {
       .comboBox(MessageKey.SELECT_LANGUAGE.getKey())
       .requireSelection(LanguageKey.EN_US.ordinal());
 
-    // Verify that the English welcome note is showing
-    assertLabelText(MessageKey.WELCOME_NOTE_1);
-
     // Switch to Romanian
     window
       .comboBox(MessageKey.SELECT_LANGUAGE.getKey())
@@ -46,9 +43,6 @@ public class WelcomeSelectLanguage_ro_RO_UseCase extends AbstractFestUseCase {
 
     // Clear any environment popover
     new CloseDebugEnvironmentPopoverUseCase(window).execute(parameters);
-
-    // Verify that the Romanian welcome note is showing
-    assertLabelText(MessageKey.WELCOME_NOTE_1);
 
     window
       .button(MessageKey.NEXT.getKey())

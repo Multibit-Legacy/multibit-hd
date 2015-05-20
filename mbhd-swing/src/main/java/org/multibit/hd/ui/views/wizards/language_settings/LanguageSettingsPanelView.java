@@ -6,12 +6,13 @@ import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.LanguageKey;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.utils.SafeDesktop;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.ComboBoxes;
 import org.multibit.hd.ui.views.components.Labels;
@@ -23,10 +24,8 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.Locale;
 
 /**
@@ -36,7 +35,6 @@ import java.util.Locale;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 
 public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageSettingsWizardModel, LanguageSettingsPanelModel> implements ActionListener {
@@ -58,19 +56,21 @@ public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageS
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
     // Configure the panel model
-    setPanelModel(new LanguageSettingsPanelModel(
-      getPanelName(),
-      configuration
-    ));
+    setPanelModel(
+      new LanguageSettingsPanelModel(
+        getPanelName(),
+        configuration
+      ));
   }
 
   @Override
   public void initialiseContent(JPanel contentPanel) {
-    contentPanel.setLayout(new MigLayout(
-      Panels.migXYLayout(),
-      "[][]", // Column constraints
-      "[][][]" // Row constraints
-    ));
+    contentPanel.setLayout(
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[][]", // Column constraints
+        "[][][]" // Row constraints
+      ));
 
     LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage().deepCopy();
     Locale locale = languageConfiguration.getLocale();
@@ -146,19 +146,18 @@ public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageS
   }
 
   /**
-    * @return The "launch browser" action
-    */
-   private Action getLaunchBrowserAction() {
-     return new AbstractAction() {
-       @Override
-       public void actionPerformed(ActionEvent e) {
+   * @return The "launch browser" action
+   */
+  private Action getLaunchBrowserAction() {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
 
-         try {
-           Desktop.getDesktop().browse(Languages.MBHD_TRANSLATION_WEBSITE_URI);
-         } catch (IOException e1) {
-           ExceptionHandler.handleThrowable(e1);
-         }
-       }
-     };
-   }
+        if (!SafeDesktop.browse(Languages.MBHD_TRANSLATION_WEBSITE_URI)) {
+          Sounds.playBeep();
+        }
+
+      }
+    };
+  }
 }

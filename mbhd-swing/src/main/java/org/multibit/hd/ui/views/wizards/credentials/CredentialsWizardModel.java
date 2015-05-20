@@ -156,13 +156,9 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         break;
       case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
       case CREDENTIALS_REQUEST_CIPHER_KEY:
+        // User may detach their Trezor at this point
         if (switchToPassword) {
           state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
-        }
-        // createNewTrezorWallet dealt with in MainController as it is in WelcomeWizard
-        if (createNewTrezorWallet) {
-          final CredentialsWizardModel finalThis = this;
-          ViewEvents.fireWizardHideEvent(getPanelName(), finalThis, false);
         }
         break;
       case CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY:
@@ -173,7 +169,9 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         break;
       case CREDENTIALS_RESTORE:
         break;
-      case CREDENTIALS_LOAD_WALLET_REPORT:
+      case CREDENTIALS_CREATE:
+        break;
+       case CREDENTIALS_LOAD_WALLET_REPORT:
         break;
       default:
         throw new IllegalStateException("Cannot showNext with a state of " + state);
@@ -192,9 +190,25 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             // Device requires confirmation to provide master public key
             state = CredentialsState.CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK;
             break;
+          case FEE_OVER_THRESHOLD:
+            break;
+          case CONFIRM_OUTPUT:
+            break;
+          case RESET_DEVICE:
+            break;
+          case CONFIRM_WORD:
+            break;
+          case WIPE_DEVICE:
+            break;
           case PROTECT_CALL:
             // Device requires PIN before providing master public key
             state = CredentialsState.CREDENTIALS_ENTER_PIN_FROM_MASTER_PUBLIC_KEY;
+            break;
+          case SIGN_TX:
+            break;
+          case FIRMWARE_CHECK:
+            break;
+          case ADDRESS:
             break;
           default:
             throw new IllegalStateException("Unexpected button: " + buttonRequest.getButtonRequestType().name());
@@ -210,9 +224,25 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             // Device requires confirmation to provide cipher key
             state = CredentialsState.CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK;
             break;
+          case FEE_OVER_THRESHOLD:
+            break;
+          case CONFIRM_OUTPUT:
+            break;
+          case RESET_DEVICE:
+            break;
+          case CONFIRM_WORD:
+            break;
+          case WIPE_DEVICE:
+            break;
           case PROTECT_CALL:
             // Device requires PIN before providing cipher key
             state = CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY;
+            break;
+          case SIGN_TX:
+            break;
+          case FIRMWARE_CHECK:
+            break;
+          case ADDRESS:
             break;
           default:
             throw new IllegalStateException("Unexpected button: " + buttonRequest.getButtonRequestType().name());
@@ -232,13 +262,25 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   public void showPINEntry(HardwareWalletEvent event) {
 
     switch (state) {
+      case CREDENTIALS_ENTER_PASSWORD:
+        break;
       case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
         log.debug("Master public key is PIN protected");
         state = CredentialsState.CREDENTIALS_ENTER_PIN_FROM_MASTER_PUBLIC_KEY;
         break;
+      case CREDENTIALS_ENTER_PIN_FROM_MASTER_PUBLIC_KEY:
+        break;
       case CREDENTIALS_REQUEST_CIPHER_KEY:
         log.debug("Cipher key is PIN protected");
         state = CredentialsState.CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY;
+        break;
+      case CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY:
+        break;
+      case CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK:
+        break;
+      case CREDENTIALS_LOAD_WALLET_REPORT:
+        break;
+      case CREDENTIALS_RESTORE:
         break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
@@ -617,7 +659,9 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
         @Override
         public void onSuccess(Optional<WalletSummary> result) {
-          log.debug("Result: {}", result);
+          // Hide the wallet summary in production
+          log.trace("Result: {}", result);
+
           // Check the result
           if (!result.isPresent()) {
 
@@ -840,9 +884,12 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           // data validity time as the replay date
           long replayDateInMillis = DateTime.parse(WalletManager.EARLIEST_HD_WALLET_DATE).getMillis();
           String recentWalletLabel = Configurations.currentConfiguration.getWallet().getRecentWalletLabel();
+          log.debug("Label of current Trezor wallet: {}, recentWalletLabel: {}", label, recentWalletLabel);
+
           if (label.equals(recentWalletLabel)) {
             long now = System.currentTimeMillis();
             long dataValidityTime = Configurations.currentConfiguration.getWallet().getRecentWalletDataValidity();
+            log.debug("Now: {}, recentWalletDataValidity: {}", label, dataValidityTime);
             if (now - dataValidityTime <= WalletManager.MAXIMUM_WALLET_CREATION_DELTA) {
               replayDateInMillis = dataValidityTime;
               log.debug("Using a replayDate for brand new Trezor of {}", replayDateInMillis);

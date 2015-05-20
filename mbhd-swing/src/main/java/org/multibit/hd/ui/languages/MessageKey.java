@@ -67,6 +67,9 @@ public enum MessageKey {
   RESTORE("restore"),
   RESTORE_TOOLTIP("restore_tooltip"),
 
+  CREATE("create"),
+  CREATE_TOOLTIP("create_tooltip"),
+
   SEARCH("search"),
   SEARCH_TOOLTIP("search_tooltip"),
 
@@ -102,6 +105,9 @@ public enum MessageKey {
 
   VERIFY_MESSAGE("verify_message"),
   VERIFY_MESSAGE_TOOLTIP("verify_message_tooltip"),
+
+  UPLOAD_ERROR_REPORT("upload_error_report"),
+  UPLOAD_ERROR_REPORT_TOOLTIP("upload_error_report_tooltip"),
 
   // Nouns
 
@@ -158,6 +164,7 @@ public enum MessageKey {
   CONTACT_IMAGE("contact_image"),
 
   ONE_OF_YOUR_ADDRESSES("one_of_your_addresses"),
+  AT_GAP_LIMIT("at_gap_limit"),
   THIS_BITCOIN_WAS_SENT_TO_YOU("this_bitcoin_was_sent_to_you"),
 
   SELECT_FOLDER("select_folder"),
@@ -354,6 +361,21 @@ public enum MessageKey {
 
   MULTIBIT_HD_TITLE("multibit_hd_title"),
 
+  ERROR_REPORTING_TITLE("error_reporting_title"),
+
+  ERROR_REPORTING_APOLOGY_NOTE_1("error_reporting_apology_note_1"),
+  ERROR_REPORTING_APOLOGY_NOTE_2("error_reporting_apology_note_2"),
+  ERROR_REPORTING_APOLOGY_NOTE_3("error_reporting_apology_note_3"),
+
+  ERROR_REPORTING_MANUAL_NOTE_1("error_reporting_manual_note_1"),
+  ERROR_REPORTING_MANUAL_NOTE_2("error_reporting_manual_note_2"),
+
+  ERROR_REPORTING_CONTENTS("error_reporting_contents"),
+  ERROR_REPORTING_NOTES("error_reporting_notes"),
+  ERROR_REPORTING_UPLOADING("error_reporting_uploading"),
+  ERROR_REPORTING_UPLOAD_COMPLETE("error_reporting_upload_complete"),
+  ERROR_REPORTING_UPLOAD_FAILED("error_reporting_upload_failed"),
+
   // Send/request
   REQUEST_BITCOIN_TITLE("request_bitcoin_title"),
 
@@ -378,6 +400,7 @@ public enum MessageKey {
 
   WELCOME_TITLE("welcome_title"),
   SELECT_LANGUAGE_TITLE("select_language_title"),
+  ATTACH_HARDWARE_WALLET_TITLE("attach_hardware_wallet_title"),
   SELECT_WALLET_TITLE("select_wallet_title"),
 
   CREATE_WALLET_PREPARATION_TITLE("create_wallet_preparation_title"),
@@ -688,6 +711,9 @@ public enum MessageKey {
   SHOW_ALERT("show_alert"),
   HIDE_ALERT("hide_alert"),
 
+  SHOW_ERROR_REPORTING("show_error_reporting"),
+  SHOW_ERROR_REPORTING_TOOLTIP("show_error_reporting_tooltip"),
+
   // Radio buttons
   CREATE_WALLET("create_wallet"),
   RESTORE_PASSWORD("restore_password"),
@@ -705,7 +731,7 @@ public enum MessageKey {
 
   // Notes (can contain HTML),
 
-  WELCOME_NOTE_1("welcome_note_1"),
+  LICENCE_NOTE_1("licence_note_1"),
   WELCOME_NOTE_2("welcome_note_2"),
   WELCOME_NOTE_3("welcome_note_3"),
 
@@ -716,6 +742,12 @@ public enum MessageKey {
   SELECT_BACKUP_NOTE_1("select_backup_note_1"),
   SELECT_BACKUP_NOTE_1_TOOLTIP("select_backup_note_1_tooltip"),
   SELECT_BACKUP_NOTE_2("select_backup_note_2"),
+
+  ATTACH_HARDWARE_WALLET_NOTE_1("attach_hardware_wallet_note_1"),
+  ATTACH_HARDWARE_WALLET_NOTE_2("attach_hardware_wallet_note_2"),
+  ATTACH_HARDWARE_WALLET_NOTE_3("attach_hardware_wallet_note_3"),
+  ATTACH_HARDWARE_WALLET_NOTE_4("attach_hardware_wallet_note_4"),
+  ATTACH_HARDWARE_WALLET_NOTE_5("attach_hardware_wallet_note_5"),
 
   PREPARATION_NOTE_1("preparation_note_1"),
   PREPARATION_NOTE_2("preparation_note_2"),
@@ -740,7 +772,6 @@ public enum MessageKey {
   SEED_WARNING_NOTE_2("seed_warning_note_2"),
   SEED_WARNING_NOTE_3("seed_warning_note_3"),
   SEED_WARNING_NOTE_4("seed_warning_note_4"),
-  SEED_WARNING_NOTE_5("seed_warning_note_5"),
 
   CONFIRM_SEED_PHRASE_NOTE_1("confirm_seed_phrase_note_1"),
   CONFIRM_SEED_PHRASE_NOTE_2("confirm_seed_phrase_note_2"),
@@ -774,6 +805,7 @@ public enum MessageKey {
   SELECT_WALLET_NOTE_1("select_wallet_note_1"),
 
   RESTORE_WALLET_NOTE_1("restore_wallet_note_1"),
+  RESTORE_WALLET_NOTE_2("restore_wallet_note_2"),
 
   CHANGE_PASSWORD_NOTE_1("change_password_note_1"),
   CHANGE_PASSWORD_NOTE_2("change_password_note_2"),
@@ -785,6 +817,9 @@ public enum MessageKey {
 
   VERIFY_NETWORK_NOTE_1("verify_network_note_1"),
   VERIFY_NETWORK_NOTE_2("verify_network_note_2"),
+  VERIFY_NETWORK_NOTE_3("verify_network_note_3"),
+  VERIFY_NETWORK_PEER_COUNT("verify_network_peer_count"),
+  VERIFY_NETWORK_BLOCK_COUNT("verify_network_block_count"),
 
   UNITS_SETTINGS_NOTE_1("units_settings_note_1"),
 
@@ -892,6 +927,7 @@ public enum MessageKey {
   REPAIR_WALLET_NOTE_3("repair_wallet_note_3"),
 
   SPENDABLE_BALANCE_IS_LOWER("spendable_balance_is_lower"),
+  PLUS_UNCONFIRMED("plus_unconfirmed"),
 
   // End of enum
   ;

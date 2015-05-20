@@ -42,7 +42,6 @@ public class WelcomeSelectCreateWalletUseCase extends AbstractFestUseCase {
     window
       .radioButton(MessageKey.RESTORE_PASSWORD.getKey())
       .requireNotSelected()
-      .requireEnabled()
       .requireVisible();
 
     window

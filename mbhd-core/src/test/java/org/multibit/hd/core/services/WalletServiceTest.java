@@ -38,6 +38,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.*;
 
+import static org.bitcoinj.core.Coin.valueOf;
+import static org.bitcoinj.testing.FakeTxBuilder.createFakeTx;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class WalletServiceTest {
@@ -101,14 +103,18 @@ public class WalletServiceTest {
 
   @Test
   public void testCreateMBHDPaymentRequest() throws Exception {
-    // Initially there are no payment requests
+    // Clear the payment requests at start
+    List<MBHDPaymentRequestData> existing = walletService.getMBHDPaymentRequestDataList();
+    for (MBHDPaymentRequestData exist : existing) {
+      walletService.deleteMBHDPaymentRequest(exist);
+    }
     assertThat(walletService.getMBHDPaymentRequestDataList().size()).isEqualTo(0);
 
     // Create a new payment request
     MBHDPaymentRequestData mbhdPaymentRequestData = new MBHDPaymentRequestData();
 
     mbhdPaymentRequestData.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
-    mbhdPaymentRequestData.setAmountCoin(Coin.valueOf(245));
+    mbhdPaymentRequestData.setAmountCoin(Optional.of(Coin.valueOf(245)));
     DateTime date1 = new DateTime();
     mbhdPaymentRequestData.setDate(date1);
     mbhdPaymentRequestData.setLabel("label1");
@@ -260,7 +266,7 @@ public class WalletServiceTest {
       // Create a BIP70 PaymentRequestData that the BIP70 protobuf objects will be stored in
     PaymentRequestData paymentRequestData = new PaymentRequestData();
     paymentRequestData.setUuid(UUID.randomUUID());
-    paymentRequestData.setAmountCoin(Coin.MILLICOIN);
+    paymentRequestData.setAmountCoin(Optional.of(Coin.MILLICOIN));
     paymentRequestData.setTrustStatus(PaymentSessionStatus.UNKNOWN);
     paymentRequestData.setTrustErrorMessage("");
 
@@ -316,6 +322,64 @@ public class WalletServiceTest {
     paymentRequestData.setPaymentACK(paymentACK);
 
     return paymentRequestData;
+  }
+
+  @Test
+  public void testGap() throws Exception {
+    // Initially there are no payment requests and the gap is zero
+    assertThat(walletService.getMBHDPaymentRequestDataList().size()).isEqualTo(0);
+    assertThat(walletService.getGap()).isEqualTo(0);
+
+    // Create a new payment request
+    MBHDPaymentRequestData mbhdPaymentRequestData1 = createMBHDPaymentRequestData();
+    walletService.addMBHDPaymentRequestData(mbhdPaymentRequestData1);
+    // There is now one unpaid payment request and hence the gap is 1
+    assertThat(walletService.getGap()).isEqualTo(1);
+
+   // Create another new payment request
+    MBHDPaymentRequestData mbhdPaymentRequestData2 = createMBHDPaymentRequestData();
+    walletService.addMBHDPaymentRequestData(mbhdPaymentRequestData2);
+    // There is now two unpaid payment requests and hence the gap is 2
+    assertThat(walletService.getGap()).isEqualTo(2);
+
+    // Pay the last payment request - we do this by adding a transaction hash to the paying tx hashes
+    // As we paid the last payment request the gap should now be 0
+    Transaction tx = createFakeTx(networkParameters, valueOf(245, 0), mbhdPaymentRequestData2.getAddress());
+    mbhdPaymentRequestData2.getPayingTransactionHashes().add(tx.getHashAsString());
+    assertThat(walletService.getGap()).isEqualTo(0);
+
+    // Create a new payment request - gap should go back up to 1
+    MBHDPaymentRequestData mbhdPaymentRequestData3 = createMBHDPaymentRequestData();
+    walletService.addMBHDPaymentRequestData(mbhdPaymentRequestData3);
+    // There is now one unpaid payment request since the last payment and hence the gap is 1
+    assertThat(walletService.getGap()).isEqualTo(1);
+
+        // Create a new payment request - gap should go back up to 2
+    MBHDPaymentRequestData mbhdPaymentRequestData4 = createMBHDPaymentRequestData();
+    walletService.addMBHDPaymentRequestData(mbhdPaymentRequestData4);
+    // There is now two unpaid payment requests since the last payment and hence the gap is 2
+    assertThat(walletService.getGap()).isEqualTo(2);
+  }
+
+  private MBHDPaymentRequestData createMBHDPaymentRequestData() {
+    String address = walletService.generateNextReceivingAddress(Optional.<CharSequence>of(PASSWORD));
+    MBHDPaymentRequestData mbhdPaymentRequestData = new MBHDPaymentRequestData();
+
+    mbhdPaymentRequestData.setAddress(Addresses.parse(address).get());
+    mbhdPaymentRequestData.setAmountCoin(Optional.of(Coin.valueOf(245)));
+    DateTime date1 = new DateTime();
+    mbhdPaymentRequestData.setDate(date1);
+    mbhdPaymentRequestData.setLabel("label1");
+    mbhdPaymentRequestData.setNote("note1");
+
+    FiatPayment fiatPayment1 = new FiatPayment();
+    mbhdPaymentRequestData.setAmountFiat(fiatPayment1);
+    fiatPayment1.setAmount(Optional.of(new BigDecimal("12345.6")));
+    fiatPayment1.setCurrency(Optional.of(Currency.getInstance("USD")));
+    fiatPayment1.setRate(Optional.of("10.0"));
+    fiatPayment1.setExchangeName(Optional.of("Bitstamp"));
+
+    return mbhdPaymentRequestData;
   }
 
   @Test

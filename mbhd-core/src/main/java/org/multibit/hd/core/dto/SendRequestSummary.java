@@ -194,7 +194,7 @@ public class SendRequestSummary {
   }
 
   public void setSendRequest(Wallet.SendRequest sendRequest) {
-    this.sendRequest = Optional.of(sendRequest);
+    this.sendRequest = Optional.fromNullable(sendRequest);
   }
 
   public void setNotes(Optional<String> notes) {

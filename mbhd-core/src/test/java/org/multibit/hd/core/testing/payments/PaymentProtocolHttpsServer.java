@@ -45,6 +45,43 @@ public class PaymentProtocolHttpsServer {
   private static ListeningExecutorService executorService = SafeExecutors.newSingleThreadExecutor("bip70-server");
 
   /**
+   * Start an https Payment Protocol server which can respond to a MultiBit HD instance
+   * Start MBHD with the commandline parameter "project dir"/fixtures/payments/localhost-signed-1milli.bitcoinpaymentrequest
+   * @param args No args are needed
+   */
+  public static void main(String[] args) {
+    InstallationManager.unrestricted = true;
+    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
+
+    PaymentProtocolHttpsServer server = new PaymentProtocolHttpsServer();
+
+    log.debug("Result of server.start() was {}", server.start());
+
+    // Add some responses - we consume one here (a PaymentRequest fixture) and then add three PaymentACKCallable responses
+    server.addFixture("/fixtures/payments/localhost-signed-1milli.bitcoinpaymentrequest");
+    server.addPaymentACKCallable();
+    server.addPaymentACKCallable();
+    server.addPaymentACKCallable();
+
+    // Probe it once to see if it is up
+    PaymentProtocolService paymentProtocolService = new PaymentProtocolService(MainNetParams.get());
+    paymentProtocolService.start();
+
+    final URI uri = URI.create(PaymentProtocolServiceTest.PAYMENT_REQUEST_BIP72_SINGLE);
+
+    // Wait until the HTTPS server is up before setting the trust store loader
+    TrustStoreLoader trustStoreLoader = new TrustStoreLoader.DefaultTrustStoreLoader();
+    final PaymentSessionSummary paymentSessionSummary = paymentProtocolService.probeForPaymentSession(uri, false, trustStoreLoader);
+    log.debug(paymentSessionSummary.toString());
+
+    // Runs forever
+    while (true) {
+      Uninterruptibles.sleepUninterruptibly(20, TimeUnit.SECONDS);
+      log.debug("Still running...");
+    }
+  }
+
+  /**
    * @return True if the server started OK
    */
   public boolean start() {
@@ -179,42 +216,4 @@ public class PaymentProtocolHttpsServer {
 
   }
 
-  /**
-   * Start an https Payment Protocol server which can respond to a MultiBit HD instance
-   * Start MBHD with the commandline parameter "project dir"/fixtures/payments/test-net-faucet.bitcoinpaymentrequest
-   * @param args No args are needed
-   */
-  public static void main(String[] args) {
-    InstallationManager.unrestricted = true;
-    Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
-
-    PaymentProtocolHttpsServer server = new PaymentProtocolHttpsServer();
-
-    log.debug("Result of server.start() was {}", server.start());
-
-    // Add some responses - we consume one here (a PaymentRequest fixture) and then add three PaymentACKCallable responses
-    server.addFixture("/fixtures/payments/localhost-signed.bitcoinpaymentrequest");
-    server.addPaymentACKCallable();
-    server.addPaymentACKCallable();
-    server.addPaymentACKCallable();
-
-
-    // Probe it once to see if it is up
-    PaymentProtocolService paymentProtocolService = new PaymentProtocolService(MainNetParams.get());
-    paymentProtocolService.start();
-
-    final URI uri = URI.create(PaymentProtocolServiceTest.PAYMENT_REQUEST_BIP72_SINGLE);
-
-
-    // Wait until the HTTPS server is up before setting the trust store loader
-    TrustStoreLoader trustStoreLoader = new TrustStoreLoader.DefaultTrustStoreLoader();
-    final PaymentSessionSummary paymentSessionSummary = paymentProtocolService.probeForPaymentSession(uri, false, trustStoreLoader);
-    log.debug(paymentSessionSummary.toString());
-
-    // Runs forever
-    while (true) {
-      Uninterruptibles.sleepUninterruptibly(20, TimeUnit.SECONDS);
-      log.debug("Still running...");
-    }
-  }
 }

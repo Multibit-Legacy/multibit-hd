@@ -9,11 +9,13 @@ import org.multibit.hd.core.dto.PaymentData;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.dto.TransactionData;
 import org.multibit.hd.ui.MultiBitUI;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
+import org.multibit.hd.ui.utils.SafeDesktop;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
@@ -159,7 +161,7 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        URI lookupURL = null;
+        URI lookupUri = null;
         try {
           PaymentData paymentData = getWizardModel().getPaymentData();
           if (paymentData != null && paymentData instanceof TransactionData) {
@@ -170,12 +172,15 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
 
             MessageFormat formatter = blockExplorer.getTransactionLookupMessageFormat();
             String lookupString = formatter.format(new String[]{transactionData.getTransactionId()});
-            lookupURL = URI.create(lookupString);
-            Desktop.getDesktop().browse(lookupURL);
+            lookupUri = URI.create(lookupString);
+            // Attempt to open the URI
+            if (!SafeDesktop.browse(lookupUri)) {
+              Sounds.playBeep();
+            }
           }
         } catch (Exception ex) {
           // Log the error but carry on (no need to shut down for this type of error - just show an alert)
-          log.error("Failed to open URL " + lookupURL, ex);
+          log.error("Failed to open URL " + lookupUri, ex);
           String message = ex.toString();
           if (message.length() > MAXIMUM_ERROR_LENGTH) {
             message = message.substring(0, MAXIMUM_ERROR_LENGTH) + ELLIPSIS;

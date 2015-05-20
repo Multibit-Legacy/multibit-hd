@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.*;
+import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
@@ -11,8 +12,8 @@ import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.events.*;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.BackupManager;
@@ -27,6 +28,7 @@ import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.SwitchWalletEvent;
@@ -101,7 +103,7 @@ public class MainController extends AbstractController implements
   // Provide a separate executor service for wallet operations
   private static final ListeningExecutorService walletExecutorService = SafeExecutors.newFixedThreadPool(10, "wallet-services");
 
-  private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 10;
+  private static final int NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING = 60;
 
   // Keep track of other controllers for use after a preferences change
   private final HeaderController headerController;
@@ -124,6 +126,11 @@ public class MainController extends AbstractController implements
    * The last time a Trezor device was wiped (or yesterday as the default)
    */
   private DateTime lastWipedTrezorDateTime = Dates.nowUtc().minusDays(1);
+
+  /**
+   * Whether alerts should be fired when new transactions appear (true = fire alerts, false = suppress alerts)
+   */
+  private static boolean fireTransactionAlerts = true;
 
   /**
    * @param headerController The header controller
@@ -214,6 +221,13 @@ public class MainController extends AbstractController implements
         handoverToWelcomeWizardRestore();
       }
 
+      if (CredentialsState.CREDENTIALS_CREATE.name().equals(event.getPanelName())) {
+
+         // We are exiting the credentials wizard via the create button and want the welcome wizard
+
+        handoverToWelcomeWizardCreate();
+      }
+
       if (CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY.name().equals(event.getPanelName()) ||
         CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY.name().equals(event.getPanelName())) {
 
@@ -302,16 +316,18 @@ public class MainController extends AbstractController implements
     Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
     Preconditions.checkNotNull(summary.getMessageData(), "'errorData' must be present");
 
-    // Ensure that the header shows the header after a sync (if the configuration permits)
     if (BitcoinNetworkStatus.SYNCHRONIZED.equals(event.getSummary().getStatus())) {
+      // Enable alerts for new transactions (suppressed on repair wallet for user simplicity)
+      MainController.setFireTransactionAlerts(true);
+
+      // Ensure that the header shows the header after a sync (if the configuration permits)
       final boolean viewHeader = Configurations.currentConfiguration.getAppearance().isShowBalance();
-      log.debug("Firing event to header viewable to:  {}", viewHeader);
       ViewEvents.fireViewChangedEvent(ViewKey.HEADER, viewHeader);
 
       // For Trezor hard wallets, get the date of the earliest transaction and use it to set the
       // earliestKeyCreationDate. This enables future repair wallets to be quicker
       if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() &&
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType() == WalletType.TREZOR_HARD_WALLET) {
+              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType() == WalletType.TREZOR_HARD_WALLET) {
         // See if the synced wallet has transactions
         Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
         java.util.List<Transaction> transactions = wallet.getTransactionsByTime();
@@ -803,6 +819,20 @@ public class MainController extends AbstractController implements
     CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
 
   }
+
+  /**
+    * @param transactionSeenEvent The event (very high frequency during synchronisation)
+    */
+   @Subscribe
+   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
+     if (transactionSeenEvent.isFirstAppearanceInWallet() && isFireTransactionAlerts()) {
+       log.debug("Firing an alert for a new transaction");
+       transactionSeenEvent.setFirstAppearanceInWallet(false);
+       Sounds.playPaymentReceived();
+       AlertModel alertModel = Models.newPaymentReceivedAlertModel(transactionSeenEvent);
+       ControllerEvents.fireAddAlertEvent(alertModel);
+     }
+   }
 
   /**
    * Make sure that when a transaction is successfully created its 'metadata' is stored in a transactionInfo
@@ -1355,14 +1385,54 @@ public class MainController extends AbstractController implements
 
                 log.debug("Showing exiting welcome wizard after handover");
                 Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
-
               }
             });
-
         }
       });
-
   }
+
+  /**
+    * Credentials wizard needs to perform a create so hand over to the welcome wizard
+    */
+   private void handoverToWelcomeWizardCreate() {
+
+     log.debug("Hand over to welcome wizard (create wallet)");
+
+     // Handover
+     mainView.setShowExitingWelcomeWizard(true);
+     mainView.setShowExitingCredentialsWizard(false);
+
+     // For soft wallets the create goes to the wallet preparation screen
+     final WelcomeWizardState initialState = WelcomeWizardState.CREATE_WALLET_PREPARATION;
+     // Start building the wizard on the EDT to prevent UI updates
+     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
+       initialState, WelcomeWizardMode.STANDARD
+     );
+
+     // Use a new thread to handle the new wizard so that the handover can complete
+     handoverExecutorService.execute(
+       new Runnable() {
+         @Override
+         public void run() {
+
+           // Allow time for the other wizard to finish hiding (200ms is the minimum)
+           Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+
+           // Must execute on the EDT
+           SwingUtilities.invokeLater(
+             new Runnable() {
+               @Override
+               public void run() {
+
+                 Panels.hideLightBoxIfPresent();
+
+                 log.debug("Showing exiting welcome wizard after handover");
+                 Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
+               }
+             });
+         }
+       });
+   }
 
   /**
    * Credentials wizard needs to perform a create new Trezor wallet over to the welcome wizard
@@ -1491,6 +1561,7 @@ public class MainController extends AbstractController implements
         @Override
         public void run() {
           log.debug("Performing delayed status check on transaction '" + transactionCreationEvent.getTransactionId() + "'");
+
           // Wait for a while to let the Bitcoin network respond to the tx being sent
           Uninterruptibles.sleepUninterruptibly(NUMBER_OF_SECONDS_TO_WAIT_BEFORE_TRANSACTION_CHECKING, TimeUnit.SECONDS);
 
@@ -1503,10 +1574,8 @@ public class MainController extends AbstractController implements
             if (transactionData != null) {
               PaymentStatus status = transactionData.getStatus();
               if (status.getStatus().equals(RAGStatus.RED)) {
-                JButton button = Buttons.newAlertPanelButton(getShowHelpAction(), MessageKey.DETAILS, MessageKey.DETAILS_TOOLTIP, AwesomeIcon.QUESTION);
-
                 // The transaction has not been sent correctly, or change is not spendable, throw a warning alert
-                final AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER), RAGStatus.AMBER, button);
+                final AlertModel alertModel = Models.newAlertModel(Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER), RAGStatus.AMBER);
                 SwingUtilities.invokeLater(
                   new Runnable() {
                     @Override
@@ -1515,6 +1584,20 @@ public class MainController extends AbstractController implements
                     }
                   });
               }
+
+              if (!status.getStatus().equals(RAGStatus.GREEN)) {
+                // Ensure that there is a message that the spendable balance is lower - Fire a BitcoinSentEvent failure
+                CoreEvents.fireBitcoinSentEvent(
+                              new BitcoinSentEvent(
+                                Optional.<Transaction>absent(), null, transactionData.getAmountCoin().orNull(),
+                                null,
+                                Optional.<Coin>absent(),
+                                Optional.<Coin>absent(),
+                                false,
+                                CoreMessageKey.THE_ERROR_WAS,
+                                new String[]{Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER)}
+                              ));
+              }
             }
           }
         }
@@ -1522,10 +1605,11 @@ public class MainController extends AbstractController implements
 
   }
 
-  /**
-   * @return The deferred credentials request type
-   */
-  public CredentialsRequestType getDeferredCredentialsRequestType() {
-    return deferredCredentialsRequestType;
+  public static boolean isFireTransactionAlerts() {
+    return fireTransactionAlerts;
+  }
+
+  public static void setFireTransactionAlerts(boolean fireTransactionAlerts) {
+    MainController.fireTransactionAlerts = fireTransactionAlerts;
   }
 }

@@ -10,6 +10,7 @@ import org.multibit.hd.ui.fest.use_cases.environment.CloseDebugEnvironmentPopove
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.ShowManageWalletScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.edit_wallet.ShowThenCancelEditWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
+import org.multibit.hd.ui.fest.use_cases.welcome_select.AttachHardwareWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectCreateWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
 
@@ -36,6 +37,8 @@ public class WelcomeWizardCreateWallet_en_US_Requirements {
 
     // Use the en_US language
     new WelcomeSelectLanguage_en_US_UseCase(window).execute(parameters);
+
+    new AttachHardwareWalletUseCase(window).execute(parameters);
 
     new WelcomeSelectCreateWalletUseCase(window).execute(parameters);
 

@@ -10,15 +10,19 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.RAGStatus;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.InstallationManager;
+import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.Models;
+import org.multibit.hd.ui.utils.SafeDesktop;
 import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
+import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.screens.AbstractScreenView;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -69,13 +73,15 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
   private JButton refreshButton;
   private JButton homeButton;
   private JButton launchBrowserButton;
+  private Icon launchBrowserRegularIcon;
+  private Icon launchBrowserHighlitIcon;
+
+  private JButton showErrorReportingButton;
 
   /**
    * True if relative and MultiBit URLs should be modified to point to the internal help
    */
   private boolean useInternalHelp = false;
-
-  private boolean expectingPropertyChange = false;
 
   /**
    * Handles the loading of the internal images (lazy initialisation to avoid delays on start)
@@ -114,9 +120,9 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
   public JPanel initialiseScreenViewPanel() {
 
     MigLayout layout = new MigLayout(
-            Panels.migXYDetailLayout(),
-            "[][][][][]push[]", // Column constraints
-            "[shrink]10[grow]" // Row constraints
+      Panels.migXYDetailLayout(),
+      "[][][][][][]push[]", // Column constraints
+      "[shrink]10[grow]" // Row constraints
     );
 
     // Create the content panel
@@ -128,7 +134,21 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
     refreshButton = Buttons.newRefreshButton(getRefreshAction());
     homeButton = Buttons.newHomeButton(getHomeAction());
 
-    launchBrowserButton = Buttons.newLaunchBrowserButton(getLaunchBrowserAction(), MessageKey.VIEW_IN_EXTERNAL_BROWSER, MessageKey.VIEW_IN_EXTERNAL_BROWSER_TOOLTIP);
+    launchBrowserButton = Buttons.newLaunchBrowserButton(
+      getLaunchBrowserAction(),
+      MessageKey.VIEW_IN_EXTERNAL_BROWSER,
+      MessageKey.VIEW_IN_EXTERNAL_BROWSER_TOOLTIP
+    );
+
+    launchBrowserRegularIcon = launchBrowserButton.getIcon();
+    launchBrowserHighlitIcon = ImageDecorator.toImageIcon(
+      AwesomeDecorator.createIcon(
+              AwesomeIcon.EXTERNAL_LINK,
+              Themes.currentTheme.sidebarSelectedText(),
+              MultiBitUI.NORMAL_ICON_SIZE
+      ));
+
+    showErrorReportingButton = Buttons.newShowErrorReportButton(getShowErrorReportingAction());
 
     // Control visibility and availability
     launchBrowserButton.setEnabled(Desktop.isDesktopSupported());
@@ -158,8 +178,9 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
     contentPanel.add(refreshButton, "shrink");
     contentPanel.add(homeButton, "shrink");
     contentPanel.add(launchBrowserButton, "shrink");
+    contentPanel.add(showErrorReportingButton, "shrink");
     contentPanel.add(Labels.newBlankLabel(), "grow,push,wrap"); // Empty label to pack buttons
-    contentPanel.add(scrollPane, "span 6,grow,push");
+    contentPanel.add(scrollPane, "span 7,grow,push");
 
     return contentPanel;
   }
@@ -168,17 +189,17 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
   public void afterShow() {
 
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
-                // Load the current page in the history
-                try {
-                  editorPane.setPage(currentPage());
-                } catch (IOException e) {
-                  log.warn("Unable to load current page ", e);
-                }
-              }
-            });
+      new Runnable() {
+        @Override
+        public void run() {
+          // Load the current page in the history
+          try {
+            editorPane.setPage(currentPage());
+          } catch (IOException e) {
+            log.warn("Unable to load current page ", e);
+          }
+        }
+      });
 
   }
 
@@ -280,73 +301,76 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
     editorPane.setDocument(htmlDocument);
 
     editorPane.addHyperlinkListener(
-            new HyperlinkListener() {
+      new HyperlinkListener() {
 
-              @SuppressFBWarnings({"ITU_INAPPROPRIATE_TOSTRING_USE", "S508C_SET_COMP_COLOR", "S508C_SET_COMP_COLOR"})
-              @Override
-              public void hyperlinkUpdate(HyperlinkEvent e) {
+        @SuppressFBWarnings({"ITU_INAPPROPRIATE_TOSTRING_USE", "S508C_SET_COMP_COLOR", "S508C_SET_COMP_COLOR"})
+        @Override
+        public void hyperlinkUpdate(HyperlinkEvent e) {
 
-                final URL url = e.getURL();
+          final URL url = e.getURL();
 
-                if (url != null) {
-                  boolean multiBitHelp = url.toString().startsWith(InstallationManager.MBHD_WEBSITE_HELP_DOMAIN)
-                          && url.toString().contains("/hd")
-                          && url.toString().endsWith(".html");
+          if (url != null) {
+            boolean multiBitHelp = url.toString().startsWith(InstallationManager.MBHD_WEBSITE_HELP_DOMAIN)
+              && url.toString().contains("/hd")
+              && url.toString().endsWith(".html");
 
-                  if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
+            if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
 
-                    if (!multiBitHelp) {
+              if (!multiBitHelp) {
 
-                      // Indicate an external link
-                      if (launchBrowserButton.isEnabled()) {
-                        launchBrowserButton.setBackground(Themes.currentTheme.infoAlertBackground());
-                      }
-
-                    }
-                  }
-
-                  if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
-
-                    if (launchBrowserButton.isEnabled()) {
-                      launchBrowserButton.setBackground(Themes.currentTheme.buttonBackground());
-                    }
-                  }
-
-                  if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-
-                    // Force the main browser if not MultiBit HD help (i.e. a relative link to the FAQ)
-                    if (!multiBitHelp) {
-
-                      listeningExecutorService.submit(
-                              new Runnable() {
-                                @Override
-                                public void run() {
-                                  try {
-                                    if (launchBrowserButton.isEnabled()) {
-                                      Desktop.getDesktop().browse(url.toURI());
-                                    } else {
-                                      // No browser available
-                                      Sounds.playBeep();
-                                    }
-                                  } catch (IOException | URISyntaxException e1) {
-                                    Sounds.playBeep();
-                                  }
-                                }
-                              });
-
-                    } else {
-
-                      // User has clicked on the link so treat as a new page
-                      addPage(e.getURL());
-
-                      // We are allowed to browse to this page
-                      browse(currentPage());
-                    }
-                  }
+                // Indicate an external link
+                if (launchBrowserButton.isEnabled()) {
+                  launchBrowserButton.setForeground(Themes.currentTheme.sidebarSelectedText());
+                  launchBrowserButton.setIcon(launchBrowserHighlitIcon);
                 }
-
               }
-            });
+            }
+
+            if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
+
+              if (launchBrowserButton.isEnabled()) {
+                launchBrowserButton.setForeground(Themes.currentTheme.buttonText());
+                launchBrowserButton.setIcon(launchBrowserRegularIcon);
+              }
+            }
+
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+
+              // Force the main browser if not MultiBit HD help (i.e. a relative link to the FAQ)
+              if (!multiBitHelp) {
+
+                listeningExecutorService.submit(
+                  new Runnable() {
+                    @Override
+                    public void run() {
+                      try {
+                        if (launchBrowserButton.isEnabled()) {
+                          if (!SafeDesktop.browse(url.toURI())) {
+                            Sounds.playBeep();
+                          }
+                        } else {
+                          // No browser available
+                          Sounds.playBeep();
+                        }
+                      } catch (URISyntaxException e1) {
+                        Sounds.playBeep();
+                      }
+                    }
+                  });
+
+              } else {
+
+                // User has clicked on the link so treat as a new page
+                addPage(e.getURL());
+
+                // We are allowed to browse to this page
+                browse(currentPage());
+              }
+            }
+          }
+
+        }
+      });
 
     // Keep track of loading events
     editorPane.addPropertyChangeListener(this);
@@ -360,30 +384,32 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
   }
 
   private void refreshCertsInBackground() {
-    ListenableFuture cacertsFuture = cacertsExecutorService.submit(new Runnable() {
-      @Override
-      public void run() {
-        log.debug("Starting refresh of SSL certs...");
-        HttpsManager.INSTANCE.installCACertificates(
-          InstallationManager.getOrCreateApplicationDataDirectory(),
-          InstallationManager.CA_CERTS_NAME,
-          null, // Use default host list
-          true // Force loading
-        );
+    ListenableFuture cacertsFuture = cacertsExecutorService.submit(
+      new Runnable() {
+        @Override
+        public void run() {
+          log.debug("Starting refresh of SSL certs...");
+          HttpsManager.INSTANCE.installCACertificates(
+            InstallationManager.getOrCreateApplicationDataDirectory(),
+            InstallationManager.CA_CERTS_NAME,
+            null, // Use default host list
+            true // Force loading
+          );
 
-      }
-    });
-    Futures.addCallback(cacertsFuture, new FutureCallback() {
-      @Override
-      public void onSuccess(@Nullable Object result) {
-        log.debug("SSL certs have been updated.");
-      }
+        }
+      });
+    Futures.addCallback(
+      cacertsFuture, new FutureCallback() {
+        @Override
+        public void onSuccess(@Nullable Object result) {
+          log.debug("SSL certs have been updated.");
+        }
 
-      @Override
-      public void onFailure(Throwable t) {
-        log.error("SSL certs update FAILED - error was {}", t);
-      }
-    });
+        @Override
+        public void onFailure(Throwable t) {
+          log.error("SSL certs update FAILED - error was {}", t);
+        }
+      });
   }
 
   /**
@@ -409,7 +435,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
     styleSheet.addRule("body{font-family:\"Helvetica Neue\",\"Liberation Sans\",Arial,sans-serif;margin:0;padding:0;}");
     styleSheet.addRule("h1,h2{font-family:\"Helvetica Neue\",\"Liberation Sans\",Arial,sans-serif;font-weight:normal;}");
     Color headingHexColor = Themes.currentTheme.text();
-    String headingHexColorString =  String.format("#%02x%02x%02x", headingHexColor.getRed(), headingHexColor.getGreen(), headingHexColor.getBlue());
+    String headingHexColorString = String.format("#%02x%02x%02x", headingHexColor.getRed(), headingHexColor.getGreen(), headingHexColor.getBlue());
     styleSheet.addRule("h1{color:" + headingHexColorString + ";font-size:200%;}");
     styleSheet.addRule("h2{color:" + headingHexColorString + ";font-size:180%;}");
     styleSheet.addRule("h3{color:" + headingHexColorString + ";font-size:150%;}");
@@ -534,10 +560,27 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
       public void actionPerformed(ActionEvent e) {
 
         try {
-          Desktop.getDesktop().browse(currentPage().toURI());
-        } catch (IOException | URISyntaxException e1) {
+          if (!SafeDesktop.browse(currentPage().toURI())) {
+            Sounds.playBeep();
+          }
+        } catch (URISyntaxException e1) {
           ExceptionHandler.handleThrowable(e1);
         }
+
+      }
+    };
+  }
+
+  /**
+   * @return The "show error reporting dialog" action
+   */
+  private Action getShowErrorReportingAction() {
+
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+
+        ExceptionHandler.handleManualErrorReport();
 
       }
     };

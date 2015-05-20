@@ -4,11 +4,13 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.bitcoinj.core.Context;
+import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.utils.Threading;
-import org.bouncycastle.openpgp.PGPPublicKey;
-import org.multibit.hd.brit.crypto.PGPUtils;
+import org.bouncycastle.openpgp.PGPException;
 import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.brit.services.BRITServices;
 import org.multibit.hd.brit.services.FeeService;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
@@ -19,10 +21,10 @@ import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletPassword;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.CoreException;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -40,7 +42,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 /**
  * <p>Factory to provide the following to application API:</p>
@@ -53,16 +54,6 @@ import java.net.URL;
 public class CoreServices {
 
   private static final Logger log = LoggerFactory.getLogger(CoreServices.class);
-
-  /**
-   * The URL of the live matcher daemon
-   */
-  public static final String LIVE_MATCHER_URL = "https://multibit.org/brit";
-
-  /**
-   * The live matcher PGP public key file
-   */
-  public static final String LIVE_MATCHER_PUBLIC_KEY_FILE = "multibit-org-matcher-key.asc";
 
   /**
    * Keep track of selected application events (e.g. exchange rate changes, environment alerts etc)
@@ -127,7 +118,13 @@ public class CoreServices {
   /**
    * Manages CoreService startup and shutdown operations
    */
-  private static ListeningExecutorService coreServices = SafeExecutors.newFixedThreadPool(10, "core-services");
+  private static volatile ListeningExecutorService coreServices = null;
+
+  private static Context context;
+
+  public static Context getContext() {
+    return context;
+  }
 
   /**
    * Utilities have a private constructor
@@ -162,7 +159,13 @@ public class CoreServices {
       Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
     }
 
-  }
+    // Set up the bitcoinj context
+    context = new Context(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+    log.debug("Context identity: {}", System.identityHashCode(context));
+
+    // Ensure any errors can be reported
+    ExceptionHandler.registerExceptionHandler();
+   }
 
   /**
    * <p>Initialises the core services, and can act as an independent starting point for headless operations</p>
@@ -471,6 +474,9 @@ public class CoreServices {
    * <p>This occurs on the CoreServices task thread</p>
    */
   public static synchronized void stopBitcoinNetworkService() {
+    if (coreServices == null) {
+      coreServices = SafeExecutors.newFixedThreadPool(10, "core-services");
+    }
 
     log.debug("Stop Bitcoin network service");
     coreServices.submit(
@@ -483,7 +489,6 @@ public class CoreServices {
           }
         }
       });
-
   }
 
   /**
@@ -620,19 +625,15 @@ public class CoreServices {
    * @return A BRIT fee service pointing to the live Matcher machine
    */
   public static FeeService createFeeService() throws CoreException {
+
     log.debug("Create fee service");
 
-    ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-    InputStream pgpPublicKeyInputStream = classloader.getResourceAsStream(LIVE_MATCHER_PUBLIC_KEY_FILE);
-
     try {
-      PGPPublicKey matcherPublicKey = PGPUtils.readPublicKey(pgpPublicKeyInputStream);
-      URL matcherURL = new URL(LIVE_MATCHER_URL);
-
-      // Return the existing or new fee service
-      return new FeeService(matcherPublicKey, matcherURL);
-    } catch (Exception e) {
-      throw new CoreException(e);
+      return BRITServices.newFeeService();
+    } catch (IOException | PGPException e) {
+      log.error("Failed to create the FeeService", e);
+      // Throw as ISE to trigger ExceptionHandler
+      throw new IllegalStateException("Failed to create the FeeService");
     }
   }
 }

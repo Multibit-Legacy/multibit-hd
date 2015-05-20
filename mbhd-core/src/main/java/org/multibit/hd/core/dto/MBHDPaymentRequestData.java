@@ -1,9 +1,10 @@
 package org.multibit.hd.core.dto;
 
-import org.bitcoinj.core.Address;
-import org.bitcoinj.core.Coin;
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import org.bitcoinj.core.Address;
+import org.bitcoinj.core.Coin;
 import org.joda.time.DateTime;
 
 import java.util.Set;
@@ -19,7 +20,7 @@ public class MBHDPaymentRequestData implements PaymentData {
 
   private Address address;
   private String label;
-  private Coin amountCoin;
+  private Optional<Coin> amountCoin;
   private FiatPayment amountFiat;
   private String note;
   private DateTime date;
@@ -77,11 +78,11 @@ public class MBHDPaymentRequestData implements PaymentData {
   }
 
   @Override
-  public Coin getAmountCoin() {
+  public Optional<Coin> getAmountCoin() {
     return amountCoin;
   }
 
-  public void setAmountCoin(Coin amountBTC) {
+  public void setAmountCoin(Optional<Coin> amountBTC) {
     this.amountCoin = amountBTC;
   }
 
@@ -153,7 +154,7 @@ public class MBHDPaymentRequestData implements PaymentData {
     if (paidAmountCoin != null && amountCoin != null) {
       if (paidAmountCoin.compareTo(Coin.ZERO) > 0) {
         // bitcoin has been paid to this payment request
-        if (paidAmountCoin.compareTo(amountCoin) >= 0) {
+        if (!amountCoin.isPresent() || paidAmountCoin.compareTo(amountCoin.get()) >= 0) {
           // fully paid
           type = PaymentType.PAID;
         } else {
@@ -174,7 +175,7 @@ public class MBHDPaymentRequestData implements PaymentData {
     if (paidAmountCoin != null && amountCoin != null) {
       if (paidAmountCoin.compareTo(Coin.ZERO) > 0) {
         // Bitcoin has been paid to this payment request
-        if (paidAmountCoin.compareTo(amountCoin) >= 0) {
+        if (!amountCoin.isPresent() || paidAmountCoin.compareTo(amountCoin.get()) >= 0) {
           // Fully paid (or overpaid)
           return new PaymentStatus(RAGStatus.GREEN, CoreMessageKey.PAYMENT_PAID);
         } else {

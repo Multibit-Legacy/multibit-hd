@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.fonts;
 
 import org.multibit.hd.ui.views.components.ImageDecorator;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
@@ -83,7 +84,7 @@ public class AwesomeSwingIcon implements Icon, PropertyChangeListener {
     setText(String.valueOf(text));
 
     if (!enabled) {
-      setForeground(UIManager.getColor("textInactiveText"));
+      setForeground(Themes.currentTheme.buttonFadedText());
     }
 
     component.addPropertyChangeListener("font", this);
@@ -172,10 +173,12 @@ public class AwesomeSwingIcon implements Icon, PropertyChangeListener {
 
   @Override
   public void propertyChange(PropertyChangeEvent e) {
-    //  Handle font change when using the default font
 
-    if (font == null)
+    //  Handle font change when using the default font
+    if (font == null) {
       calculateIconDimensions();
+    }
+
   }
 }
 

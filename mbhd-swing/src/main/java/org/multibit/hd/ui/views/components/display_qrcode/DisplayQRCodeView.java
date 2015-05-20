@@ -87,6 +87,8 @@ public class DisplayQRCodeView extends AbstractComponentView<DisplayQRCodeModel>
     // Set minimum size
     panel.setSize(MultiBitUI.POPOVER_MAX_WIDTH, MultiBitUI.POPOVER_MAX_HEIGHT);
 
+    // Using ESC to close the panel does not work here due to Finish holding default button status
+
     return panel;
 
   }

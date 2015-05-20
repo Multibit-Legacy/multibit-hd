@@ -102,6 +102,7 @@ public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWiza
     // Ensure we maintain the overall theme (no vertical since we're using rounded border)
     ScrollBarUIDecorator.apply(scrollPane, false);
 
+    contentPanel.add(Labels.newSecureEnviromentNote(), "grow,push,span 2,wrap");
     contentPanel.add(scrollPane, "grow,push,span 2," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     contentPanel.add(Panels.newLicenceSelector(
@@ -130,7 +131,8 @@ public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWiza
   @Override
   public void afterShow() {
 
-    // This requires a environment popover check
+    // This requires a environment popover check because we will
+    // shortly be revealing wallet words and entering PINs
     checkForEnvironmentEventPopover(displayEnvironmentPopoverMaV);
 
   }

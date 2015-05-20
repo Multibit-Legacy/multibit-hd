@@ -87,7 +87,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
       getWizardModel().handleBitcoinURI();
 
       Recipient recipient = getWizardModel().getRecipient();
-      Coin amount = getWizardModel().getCoinAmount();
+      Coin amount = getWizardModel().getCoinAmount().or(Coin.ZERO);
 
       enterRecipientMaV.getModel().setValue(recipient);
       enterAmountMaV.getModel().setCoinAmount(amount);
@@ -141,10 +141,10 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
    * @return True if the "next" button should be enabled
    */
   private boolean isNextEnabled() {
-    boolean bitcoinAmountOK = !getPanelModel().get()
-      .getEnterAmountModel()
-      .getCoinAmount()
-      .equals(Coin.ZERO);
+    Optional<Coin> coinAmount = getPanelModel().get()
+            .getEnterAmountModel()
+            .getCoinAmount();
+    boolean bitcoinAmountOK = coinAmount.isPresent() && !coinAmount.get().equals(Coin.ZERO);
 
     boolean recipientOK = getPanelModel().get()
       .getEnterRecipientModel()
@@ -184,10 +184,12 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
       case AMBER:
         // Enable on RED or AMBER only if unrestricted (allows FEST tests without a network)
         newEnabled = InstallationManager.unrestricted;
+        networkOk = newEnabled;
         break;
       case GREEN:
-        // Always enable on GREEN
-        newEnabled = true;
+        // Always enable on GREEN if data is valid
+        newEnabled = isNextEnabled();
+        networkOk = true;
         break;
       case PINK:
       case EMPTY:
@@ -202,7 +204,6 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
 
     if (canChange) {
       final boolean finalNewEnabled = newEnabled;
-      networkOk = finalNewEnabled;
 
       // If button is not enabled and the newEnabled is false don't do anything
       // This cuts down the number of events

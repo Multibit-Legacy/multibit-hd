@@ -81,6 +81,7 @@ public class UseTrezorSelectPanelView extends AbstractWizardPanelView<UseTrezorW
 
   @Override
   public boolean beforeShow() {
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT,true);
 
     return true;
   }

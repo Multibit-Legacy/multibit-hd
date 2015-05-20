@@ -149,8 +149,8 @@ public class CreateWalletPreparationPanelView extends AbstractWizardPanelView<We
   @Override
   public void fireInitialStateViewEvents() {
 
-    // Disable the finish button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
+    // Disable the Next button
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
 
   }
 
@@ -190,6 +190,10 @@ public class CreateWalletPreparationPanelView extends AbstractWizardPanelView<We
         break;
       default:
         timer.stop();
+
+        // Enable the Next button
+        ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+
     }
 
     timerCount++;

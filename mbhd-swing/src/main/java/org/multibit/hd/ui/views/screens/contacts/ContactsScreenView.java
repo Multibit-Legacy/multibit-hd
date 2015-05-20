@@ -49,6 +49,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
   private ContactTableModel contactsTableModel;
 
   private JButton editButton;
+  private JButton undoButton;
 
   /**
    * @param panelModel The model backing this panel view
@@ -81,7 +82,9 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
     JButton addButton = Buttons.newAddButton(getAddAction());
     editButton = Buttons.newEditButton(getEditAction());
     JButton deleteButton = Buttons.newDeleteButton(getDeleteAction());
-    JButton undoButton = Buttons.newUndoButton(getUndoAction());
+
+    undoButton = Buttons.newUndoButton(getUndoAction());
+    undoButton.setEnabled(false);
 
     // Populate the model
     contactsTable = Tables.newContactsTable(getScreenModel().getContacts(), editButton);
@@ -250,6 +253,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
         // Remove them from the screen model
         getScreenModel().removeAll(selectedContacts);
 
+        undoButton.setEnabled(getScreenModel().canUndo());
       }
     };
 
@@ -273,6 +277,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
         // Repopulate
         contactsTableModel.setContacts(contacts, true);
 
+        undoButton.setEnabled(getScreenModel().canUndo());
       }
     };
   }
@@ -296,11 +301,7 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
 
       public void mousePressed(MouseEvent e) {
 
-        log.debug("Mouse click");
-
         if (e.getClickCount() == 1) {
-
-          log.debug("Mouse click 1");
 
           // Toggle the check mark
           JTable target = (JTable) e.getSource();
@@ -319,8 +320,6 @@ public class ContactsScreenView extends AbstractScreenView<ContactsScreenModel> 
         }
 
         if (e.getClickCount() == 2) {
-
-          log.debug("Mouse click 2");
 
           // Force select the check mark
           JTable target = (JTable) e.getSource();

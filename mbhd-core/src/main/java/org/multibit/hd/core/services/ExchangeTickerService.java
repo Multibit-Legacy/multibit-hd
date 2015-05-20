@@ -60,7 +60,7 @@ public class ExchangeTickerService extends AbstractService {
   /**
    * The executor service for managing one off dynamic "all currency" lookups against exchanges
    */
-  final ListeningExecutorService allCurrenciesExecutorService = SafeExecutors.newSingleThreadExecutor("all-currencies");
+  private volatile ListeningExecutorService allCurrenciesExecutorService = null;
   private ListeningExecutorService latestTickerExecutorService = SafeExecutors.newSingleThreadExecutor("latest-ticker");
 
   /**
@@ -198,7 +198,9 @@ public class ExchangeTickerService extends AbstractService {
 
       case HARD:
       case SOFT:
-        allCurrenciesExecutorService.shutdownNow();
+        if (allCurrenciesExecutorService != null) {
+          allCurrenciesExecutorService.shutdownNow();
+        }
         latestTickerExecutorService.shutdownNow();
 
         // Allow ongoing cleanup
@@ -217,8 +219,6 @@ public class ExchangeTickerService extends AbstractService {
    * @return The future ticker for wrapping with <code>Futures.addCallback</code>
    */
   public ListenableFuture<Ticker> latestTicker() {
-
-
     // Apply any exchange quirks to the counter code (e.g. ISO "RUB" -> legacy "RUR")
     final String exchangeCounterCode = ExchangeKey.exchangeCode(localCurrency.getCurrencyCode(), exchangeKey);
     final String exchangeBaseCode = ExchangeKey.exchangeCode("XBT", exchangeKey);
@@ -314,6 +314,9 @@ public class ExchangeTickerService extends AbstractService {
    * @return All the currencies supported by the exchange
    */
   public ListenableFuture<String[]> allCurrencies() {
+    if (allCurrenciesExecutorService == null) {
+      allCurrenciesExecutorService = SafeExecutors.newSingleThreadExecutor("all-currencies");
+    }
 
     return allCurrenciesExecutorService.submit(
       new Callable<String[]>() {

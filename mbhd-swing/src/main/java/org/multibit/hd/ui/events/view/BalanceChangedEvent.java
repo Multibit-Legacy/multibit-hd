@@ -16,32 +16,49 @@ import java.math.BigDecimal;
  */
 public class BalanceChangedEvent implements ViewEvent {
 
+  /**
+   * Spendable balance
+   */
   private final Coin coinBalance;
+
+  /**
+   * Total balance included unconfirmed
+   */
+  private final Coin coinWithUnconfirmedBalance;
   private final BigDecimal localBalance;
   private final Optional<String> rateProvider;
 
   /**
-   * @param coinBalance  The current balance in coins
-   * @param localBalance The current balance in local currency
+   * @param coinBalance  The current spendable balance in coins
+   * @param coinWithUnconfirmedBalance The current balance including unconfirmed
+   * @param localBalance The current spendable balance in local currency
    * @param rateProvider The exchange rate provider (e.g. "Bitstamp" or absent if no network)
    */
-  public BalanceChangedEvent(Coin coinBalance, BigDecimal localBalance, Optional<String> rateProvider) {
+  public BalanceChangedEvent(Coin coinBalance, Coin coinWithUnconfirmedBalance, BigDecimal localBalance, Optional<String> rateProvider) {
 
     this.coinBalance = coinBalance;
+    this.coinWithUnconfirmedBalance = coinWithUnconfirmedBalance;
     this.localBalance = localBalance;
     this.rateProvider = rateProvider;
 
   }
 
   /**
-   * @return The Bitcoin balance in coins
+   * @return The Bitcoin spendable balance in coins
    */
   public Coin getCoinBalance() {
     return coinBalance;
   }
 
   /**
-   * @return The local currency balance
+   * @return The Bitcoin balance including unconfirmed in coins
+   */
+  public Coin getCoinWithUnconfirmedBalance() {
+    return coinWithUnconfirmedBalance;
+  }
+
+  /**
+   * @return The local spendable currency balance
    */
   public BigDecimal getLocalBalance() {
     return localBalance;
@@ -58,6 +75,7 @@ public class BalanceChangedEvent implements ViewEvent {
   public String toString() {
     return "BalanceChangedEvent{" +
             "coinBalance=" + coinBalance +
+            "coinWithUnconfirmedBalance=" + coinWithUnconfirmedBalance +
             ", localBalance=" + localBalance +
             ", rateProvider=" + rateProvider +
             '}';

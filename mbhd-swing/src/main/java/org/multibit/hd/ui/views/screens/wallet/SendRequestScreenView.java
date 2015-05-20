@@ -83,7 +83,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
     MigLayout layout = new MigLayout(
             Panels.migXYDetailLayout(),
-            "10[]10[]", // Column constraints
+            "[]10[10]10[]", // Column constraints
             "1[]20[]10[]" // Row constraints
     );
 
@@ -248,7 +248,7 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
       updateSendRequestButtons(changedEvent.get());
     }
 
-    log.debug("Updating the payment data set - expensive");
+    log.trace("Updating the payment data set - expensive");
     final Set<PaymentData> allPayments = walletService.getPaymentDataSet();
 
     // Find the 'Sending' transactions for today

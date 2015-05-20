@@ -142,15 +142,15 @@ public class CreateTrezorWalletPreparationPanelView extends AbstractWizardPanelV
   @Override
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelNext(this, wizard);
+    PanelDecorator.addExitCancelPreviousNext(this, wizard);
 
   }
 
   @Override
   public void fireInitialStateViewEvents() {
 
-    // Disable the finish button
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
+    // Disable the Next button
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);
 
   }
 
@@ -190,6 +190,10 @@ public class CreateTrezorWalletPreparationPanelView extends AbstractWizardPanelV
         break;
       default:
         timer.stop();
+
+        // Enable the Next button
+        ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
+
     }
 
     timerCount++;

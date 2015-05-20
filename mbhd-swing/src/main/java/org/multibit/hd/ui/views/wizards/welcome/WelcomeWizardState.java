@@ -20,6 +20,11 @@ public enum WelcomeWizardState {
    */
   WELCOME_SELECT_LANGUAGE,
   /**
+   * Inform the user that they should attach their hardware wallet now if they
+   * plan to use it
+   */
+  WELCOME_ATTACH_HARDWARE_WALLET,
+  /**
    * Select how the wallet will be referenced (created, restored, hardware, switch etc)
    * Depending on the mode (standard, Trezor etc) different options will be presented
    */

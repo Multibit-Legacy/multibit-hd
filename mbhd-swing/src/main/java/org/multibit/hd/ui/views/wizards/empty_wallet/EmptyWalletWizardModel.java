@@ -111,6 +111,7 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
             // Do not traverse to next page
 
             state = EmptyWalletState.EMPTY_WALLET_ENTER_DETAILS;
+            break;
           }
         }
 
@@ -223,7 +224,6 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
    * Prepare the transaction for sending - this does everything but sign the tx
    */
   private boolean prepareTransaction() {
-
     // Prepare the transaction for sending
     Preconditions.checkNotNull(enterDetailsPanelModel);
 
@@ -242,6 +242,7 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
     String password = enterDetailsPanelModel.getEnterPasswordModel().getValue();
 
     Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState(true);
+    log.debug("FeeState after initial calculation: {}", feeState);
 
     // Create the fiat payment - note that the fiat amount is not populated, only the exchange rate data.
     // This is because the client and transaction fee is only worked out at point of sending, and the fiat equivalent is computed from that
@@ -269,10 +270,15 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
       feeState,
       true);
 
+    // Make sure client fees are applied
+    sendRequestSummary.setApplyClientFee(true);
+
+    // Set a tx description of 'Empty Wallet' localised
     sendRequestSummary.setNotes(Optional.of(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE)));
 
     log.debug("Just about to prepare empty wallet transaction for sendRequestSummary: {}", sendRequestSummary);
     boolean preparedOk = bitcoinNetworkService.prepareTransaction(sendRequestSummary);
+    log.debug("sendRequestSummary after prepareTransaction: {}", sendRequestSummary);
 
     // The amount to pay is now corrected for fees
     log.debug("Correcting amount to pay to cater for fees from {} to {}", coinAmount, sendRequestSummary.getAmount());
@@ -284,7 +290,6 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
    * Actually send the transaction
    */
   private void emptyWallet() {
-
     log.debug("Emptying wallet with: {}", sendRequestSummary);
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
     bitcoinNetworkService.send(sendRequestSummary);

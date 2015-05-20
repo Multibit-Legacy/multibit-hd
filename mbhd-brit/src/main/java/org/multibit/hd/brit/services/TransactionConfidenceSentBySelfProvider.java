@@ -1,9 +1,6 @@
 package org.multibit.hd.brit.services;
 
-import org.bitcoinj.core.Coin;
-import org.bitcoinj.core.Transaction;
-import org.bitcoinj.core.TransactionConfidence;
-import org.bitcoinj.core.Wallet;
+import org.bitcoinj.core.*;
 
 /**
  * <p>Class to provide the following to FeeService:<br>

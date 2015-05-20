@@ -40,7 +40,7 @@ public class Dates {
   /**
    * Provides asynchronous NTP lookup
    */
-  private static final ListeningExecutorService systemTimeDriftExecutorService = SafeExecutors.newSingleThreadExecutor("system-time-drift");
+  private volatile static ListeningExecutorService systemTimeDriftExecutorService = null;
 
   /**
    * Utilities have private constructor
@@ -592,6 +592,9 @@ public class Dates {
    * @return The number of milliseconds of drift from a SNTP timeserver time. Add this figure to local time to become correct. Thus -ve means local clock is ahead of server.
    */
   public static ListenableFuture<Integer> calculateDriftInMillis(final String sntpHost) {
+    if ( systemTimeDriftExecutorService == null) {
+      systemTimeDriftExecutorService = SafeExecutors.newSingleThreadExecutor("system-time-drift");
+    }
 
     return systemTimeDriftExecutorService.submit(
       new Callable<Integer>() {

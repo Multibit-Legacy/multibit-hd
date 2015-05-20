@@ -51,6 +51,11 @@ public class LightTheme extends BaseTheme {
   }
 
   @Override
+  public Color buttonDefaultBackground() {
+    return new Color(0,151,50);
+  }
+
+  @Override
   public Color readOnlyBackground() {
     return new Color(193, 226, 248);
   }
@@ -116,6 +121,11 @@ public class LightTheme extends BaseTheme {
   }
 
   @Override
+  public Color buttonFadedText() {
+    return new Color(187, 187, 187);
+  }
+
+  @Override
   public Color successAlertText() {
     return inverseText();
   }
@@ -134,7 +144,7 @@ public class LightTheme extends BaseTheme {
     );
 
     // Any of 28, 30, 31, 32
-    return painter.color31;
+    return painter.alertFadedBackground;
   }
 
 
@@ -187,7 +197,7 @@ public class LightTheme extends BaseTheme {
     );
 
     // Any of 28, 30, 31, 32
-    return painter.color31;
+    return painter.alertFadedBackground;
   }
 
   @Override
@@ -213,7 +223,7 @@ public class LightTheme extends BaseTheme {
     );
 
     // Any of 28, 30, 31, 32
-    return painter.color31;
+    return painter.alertFadedBackground;
   }
 
   @Override

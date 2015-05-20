@@ -16,6 +16,10 @@ rmdir ./multibit-hd/af/
 mv -f ./multibit-hd/ar/language.properties ../languages/language_ar_AR.properties
 rmdir ./multibit-hd/ar/
 
+# Bulgarian
+mv -f ./multibit-hd/bg/language.properties ../languages/language_bg_BG.properties
+rmdir ./multibit-hd/bg/
+
 # Catalan
 mv -f ./multibit-hd/ca/language.properties ../languages/language_ca_ES.properties
 rmdir ./multibit-hd/ca/

@@ -162,8 +162,8 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     contentPanel.setLayout(
             new MigLayout(
                     Panels.migXYLayout(),
-                    "[]10[250]10[120]10[120]10[]", // Column constraints
-                    "[]10[]10[][][][][]10[][]" // Row constraints
+                    "[]10[]4[]0[200]10[120]10[][]", // Column constraints
+                    "[]10[]10[][][][][][]10[][]" // Row constraints
             ));
 
     clientFeeInfoLabel = Labels.newBlankLabel();
@@ -171,33 +171,36 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
     runningTotalClientFeeInfoLabel = Labels.newClientFeeRunningTotal();
 
-    contentPanel.add(Labels.newConfirmSendAmount(), "span 5,push,wrap");
+    contentPanel.add(Labels.newConfirmSendAmount(), "span 7,push,wrap");
 
     contentPanel.add(Labels.newRecipient());
-    contentPanel.add(recipientSummaryLabel, "span 4,wrap");
+    contentPanel.add(recipientSummaryLabel, "span 6,wrap");
 
     contentPanel.add(Labels.newAmount(), "baseline");
-    contentPanel.add(transactionDisplayAmountMaV.getView().newComponentPanel(), "span 4,wrap");
+    contentPanel.add(transactionDisplayAmountMaV.getView().newComponentPanel(), "span 6,wrap");
 
     contentPanel.add(Labels.newTransactionFee(), "top");
-    contentPanel.add(transactionFeeDisplayAmountMaV.getView().newComponentPanel(), "span 4,wrap");
+    contentPanel.add(transactionFeeDisplayAmountMaV.getView().newComponentPanel(), "span 6,wrap");
+
+    contentPanel.add(Labels.newBlankLabel(), "top");
+    contentPanel.add(Panels.newHorizontalDashedSeparator(), "push, growx, span 6,wrap");
 
     contentPanel.add(Labels.newClientFee(), "top");
-    contentPanel.add(clientFeeDisplayAmountMaV.getView().newComponentPanel(), "top");
-    contentPanel.add(clientFeeInfoLabel, "top, span 2");
-    contentPanel.add(Labels.newBlankLabel(), "top, growx, push,wrap");
+    contentPanel.add(clientFeeDisplayAmountMaV.getView().newComponentPanel(), "top, shrink");
 
-    contentPanel.add(Labels.newBlankLabel(), "top");
-    contentPanel.add(Labels.newBlankLabel(), "top");
-    contentPanel.add(runningTotalClientFeeInfoLabel, "top");
-    contentPanel.add(runningTotalClientFeeDisplayAmountMaV.getView().newComponentPanel(), "top");
-    contentPanel.add(Labels.newBlankLabel(), "top, growx, push,wrap");
+    contentPanel.add(Labels.newBlankLabel(), "top, growx, span 2, push");
+    contentPanel.add(clientFeeInfoLabel, "top, span 3, wrap");
+
+    contentPanel.add(Labels.newBlankLabel(), "top, span 4");
+    contentPanel.add(runningTotalClientFeeInfoLabel, "top, shrink");
+    contentPanel.add(runningTotalClientFeeDisplayAmountMaV.getView().newComponentPanel(), "top, shrink, align left");
+    contentPanel.add(Labels.newBlankLabel(), "top, growx, push, wrap");
 
     contentPanel.add(Labels.newNotes());
-    contentPanel.add(notesTextArea, "span 4,growx,push,wrap");
+    contentPanel.add(notesTextArea, "span 6,growx,push,wrap");
 
     if (!isTrezorWallet()) {
-      contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 5,align right,wrap");
+      contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 7,align right,wrap");
     }
 
     // Register components
@@ -234,7 +237,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
       } else {
         recipientSummaryLabel = Labels.newValueLabel(paymentRequestData.getIdentityDisplayName());
       }
-      amount = paymentRequestData.getAmountCoin();
+      amount = paymentRequestData.getAmountCoin().or(Coin.ZERO);
 
 
       // TODO check PKI
@@ -248,7 +251,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 //      }
     } else {
       // Regular send with data entered by the user
-      amount = getWizardModel().getCoinAmount();
+      amount = getWizardModel().getCoinAmount().or(Coin.ZERO);
 
       // Update the model and view for the recipient
       recipientSummaryLabel.setText(

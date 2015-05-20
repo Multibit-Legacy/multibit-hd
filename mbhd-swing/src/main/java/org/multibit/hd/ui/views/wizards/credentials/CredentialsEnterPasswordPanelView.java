@@ -96,7 +96,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
   @Override
   protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
 
-    PanelDecorator.addExitCancelRestoreUnlockAsNext(this, wizard);
+    PanelDecorator.addExitCancelCreateRestoreUnlockAsNext(this, wizard);
 
   }
 
@@ -169,11 +169,15 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
    */
   private boolean isUnlockEnabled() {
 
-    return !Strings.isNullOrEmpty(
+    boolean passwordEntered = !Strings.isNullOrEmpty(
       getPanelModel().get()
         .getEnterPasswordModel()
         .getValue()
     );
+
+    boolean walletsAvailable = !selectWalletMaV.getView().isEmpty();
+
+    return passwordEntered && walletsAvailable;
 
   }
 

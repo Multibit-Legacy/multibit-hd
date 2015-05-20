@@ -52,7 +52,6 @@ public class FooterView extends AbstractView {
 
   private final ListeningScheduledExecutorService scheduledExecutorService = SafeExecutors.newScheduledThreadPool(3, "hide-progress");
   private final List<Future> hideProgressFutures = Lists.newArrayList();
-  private final JLabel hardwareWalletIcon;
 
   public FooterView() {
 
@@ -80,14 +79,14 @@ public class FooterView extends AbstractView {
     progressBar.setOpaque(false);
     progressBar.setVisible(false);
 
-    // Create a TOR icon - don't use green or amber colouring it is visually confusing
+    // Create a Tor icon - don't use green or amber colouring it is visually confusing
     JLabel torIcon = Labels.newBlankLabel();
     AwesomeDecorator.bindIcon(AwesomeIcon.LOCK, torIcon, false, MultiBitUI.SMALL_ICON_SIZE);
     AccessibilityDecorator.apply(torIcon, MessageKey.SELECT_TOR, MessageKey.SELECT_TOR_TOOLTIP);
     torIcon.setVisible(Configurations.currentConfiguration.isTor());
 
     // Hardware wallet icon
-    hardwareWalletIcon = Labels.newBlankLabel();
+    JLabel hardwareWalletIcon = Labels.newBlankLabel();
     AwesomeDecorator.bindIcon(AwesomeIcon.SHIELD, hardwareWalletIcon, false, MultiBitUI.SMALL_ICON_SIZE);
     AccessibilityDecorator.apply(hardwareWalletIcon, MessageKey.SELECT_TREZOR, MessageKey.SELECT_TREZOR_TOOLTIP);
 
@@ -111,7 +110,6 @@ public class FooterView extends AbstractView {
     contentPanel.add(spacerLabel, "grow,push");
     contentPanel.add(statusLabel, "shrink,right");
     contentPanel.add(statusIcon, "right");
-
   }
 
   /**
@@ -173,7 +171,6 @@ public class FooterView extends AbstractView {
 
         }
       });
-
   }
 
   /**
@@ -193,20 +190,10 @@ public class FooterView extends AbstractView {
 
           // Provide some ranges to allow different colouring
           // If you get a compilation error here you need to be using guava 16.0.1 or above !
-          Range<Integer> hidden = Range.lessThan(0);
           Range<Integer> amber = Range.closed(0, 99);
           Range<Integer> green = Range.greaterThan(99);
 
-          if (hidden.contains(event.getPercent())) {
-            if (hideProgressFutures.isEmpty()) {
-              // No earlier activity so hide immediately
-              progressBar.setVisible(false);
-            }
-            return;
-          }
-
           if (amber.contains(event.getPercent())) {
-
             // Make the progress bar amber
             NimbusDecorator.applyThemeColor(Themes.currentTheme.statusAmber(), progressBar);
             progressBar.setValue(event.getPercent());
@@ -215,7 +202,6 @@ public class FooterView extends AbstractView {
           }
 
           if (green.contains(event.getPercent())) {
-
             // Cancel all existing hide operations
             cancelPendingHideProgressFutures();
 
@@ -227,10 +213,8 @@ public class FooterView extends AbstractView {
             // Schedule the new hide
             hideProgressFutures.add(scheduleHideProgressBar());
           }
-
         }
       });
-
   }
 
   /**
@@ -242,7 +226,6 @@ public class FooterView extends AbstractView {
       future.cancel(true);
     }
     hideProgressFutures.clear();
-
   }
 
   /**
@@ -269,7 +252,5 @@ public class FooterView extends AbstractView {
 
         }
       }, 4, TimeUnit.SECONDS);
-
   }
-
 }

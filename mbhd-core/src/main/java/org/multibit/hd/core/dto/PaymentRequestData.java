@@ -65,7 +65,7 @@ public class PaymentRequestData implements PaymentData {
   /**
    * The amount in bitcoin of the payment request
    */
-  private Coin amountCoin;
+  private Optional<Coin> amountCoin;
 
   /**
    * The description of the payment request
@@ -105,22 +105,21 @@ public class PaymentRequestData implements PaymentData {
    */
   public PaymentRequestData(PaymentSessionSummary paymentSessionSummary) {
 
-    this(Optional.of(paymentSessionSummary.getPaymentSession().get().getPaymentRequest()), Optional.<Sha256Hash>absent());
+    this(paymentSessionSummary.getPaymentSessionPaymentRequest(), Optional.<Sha256Hash>absent());
 
     this.paymentSessionSummary = Optional.of(paymentSessionSummary);
 
-    PaymentSession paymentSession = paymentSessionSummary.getPaymentSession().get();
-
-    setDate(new DateTime(paymentSession.getDate()));
-    if (paymentSession.getExpires() == null) {
-      // Expire a long way into the future
-      setExpirationDate(Dates.thenUtc(2199, 12,31, 23, 59 ,59));
+    setDate(paymentSessionSummary.getPaymentSessionDate().orNull());
+    Optional<DateTime> expires = paymentSessionSummary.getPaymentSessionExpires();
+    if (expires.isPresent()) {
+      setExpirationDate(expires.get());
     } else {
-      setExpirationDate(new DateTime(paymentSession.getExpires()));
+      // Expire a long way into the future
+      setExpirationDate(Dates.thenUtc(2199, 12, 31, 23, 59, 59));
     }
 
-    setAmountCoin(paymentSession.getValue());
-    setNote(paymentSession.getMemo());
+    setAmountCoin(paymentSessionSummary.getPaymentSessionValue());
+    setNote(paymentSessionSummary.getPaymentSessionMemo().orNull());
 
     if (paymentSessionSummary.getPkiVerificationData().isPresent()) {
       setIdentityDisplayName(paymentSessionSummary.getPkiVerificationData().get().displayName);
@@ -201,11 +200,11 @@ public class PaymentRequestData implements PaymentData {
   }
 
   @Override
-  public Coin getAmountCoin() {
+  public Optional<Coin> getAmountCoin() {
     return amountCoin;
   }
 
-  public void setAmountCoin(Coin amountBTC) {
+  public void setAmountCoin(Optional<Coin> amountBTC) {
     this.amountCoin = amountBTC;
   }
 

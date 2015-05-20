@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.bitcoinj.core.Coin;
 import org.joda.time.DateTime;
@@ -166,8 +167,8 @@ public class Tables {
     rowSorter.setComparator(PaymentTableModel.TYPE_COLUMN_INDEX, comparatorPaymentType);
 
     // Comparator for amount BTC
-    Comparator<Coin> comparatorCoin = newCoinComparator();
-    rowSorter.setComparator(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX, comparatorCoin);
+    Comparator<Optional> comparatorCoinOptional = newOptionalCoinComparator();
+    rowSorter.setComparator(PaymentTableModel.AMOUNT_BTC_COLUMN_INDEX, comparatorCoinOptional);
 
     // Comparator for amount fiat
     Comparator<FiatPayment> comparatorFiatPayment = newFiatPaymentComparator();
@@ -214,6 +215,7 @@ public class Tables {
     // Notes column
     TableColumn notesTableColumn = table.getColumnModel().getColumn(HistoryTableModel.NOTES_COLUMN_INDEX);
     notesTableColumn.setCellRenderer(Renderers.newLeadingJustifiedStringRenderer());
+    resizeColumn(table, HistoryTableModel.NOTES_COLUMN_INDEX, HUGE_ICON_SIZE + TABLE_SPACER);
 
     // Row sorter for date
     TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(table.getModel());
@@ -274,21 +276,48 @@ public class Tables {
   }
 
   /**
-   * @return A new Coin comparator for use with a TableRowSorter
+   * @return A new Optional-of-Coin comparator for use with a TableRowSorter
    */
-  private static Comparator<Coin> newCoinComparator() {
+  private static Comparator<Optional> newOptionalCoinComparator() {
 
-    return new Comparator<Coin>() {
+    return new Comparator<Optional>() {
 
       @Override
-      public int compare(Coin o1, Coin o2) {
+      public int compare(Optional o1, Optional o2) {
+        if (o1 == null) {
+          if (o2 == null) {
+            return 0;
+          } else {
+            return -1;
+          }
+        } else {
+          if (o2 == null) {
+            return 1;
+          }
 
-        if (o1 != null && o2 == null) {
-          return 1;
+          // Both not null
+          boolean present1 = o1.isPresent();
+          boolean present2 = o2.isPresent();
+
+          if (present1) {
+            if (present2) {
+              // Both present
+              if (o1.get() instanceof Coin && o2.get() instanceof Coin) {
+                return ((Coin) o1.get()).compareTo((Coin) o2.get());
+              } else {
+                return 0; // All none Coins are equal
+              }
+            } else {
+              return 1;
+            }
+          } else {
+            if (present2) {
+              return -1;
+            } else {
+              return 0;
+            }
+          }
         }
-
-        return o1 != null ? o1.compareTo(o2) : 0;
-
       }
     };
   }
@@ -354,9 +383,8 @@ public class Tables {
    * @param preferredWidth The preferred width
    */
   private static void resizeColumn(StripedTable table, int columnIndex, int preferredWidth) {
-
-    resizeColumn(table, columnIndex, preferredWidth, preferredWidth);
-
+    String id = table.getColumnName(columnIndex);
+    table.getColumn(id).setPreferredWidth(preferredWidth);
   }
 
   /**
@@ -368,10 +396,8 @@ public class Tables {
    * @param maxWidth       The maximum width
    */
   private static void resizeColumn(StripedTable table, int columnIndex, int preferredWidth, int maxWidth) {
-
     String id = table.getColumnName(columnIndex);
     table.getColumn(id).setPreferredWidth(preferredWidth);
     table.getColumn(id).setMaxWidth(maxWidth);
-
   }
 }

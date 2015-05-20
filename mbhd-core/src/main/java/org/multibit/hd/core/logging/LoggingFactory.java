@@ -21,6 +21,8 @@ import java.util.TimeZone;
  */
 public class LoggingFactory {
 
+  private static final org.slf4j.Logger log = LoggerFactory.getLogger(LoggingFactory.class);
+
   public static void bootstrap() {
 
     // Initially configure for DEBUG console logging
@@ -38,6 +40,10 @@ public class LoggingFactory {
 
     final LoggingConfiguration.FileConfiguration file = new LoggingConfiguration.FileConfiguration();
     root.addAppender(LogbackFactory.buildFileAppender(file, root.getLoggerContext(), null));
+
+    // Add this to indicate that logging has bootstrapped with synchronous default settings
+    log.info("LoggingFactory bootstrap completed.");
+
   }
 
   private final LoggingConfiguration config;

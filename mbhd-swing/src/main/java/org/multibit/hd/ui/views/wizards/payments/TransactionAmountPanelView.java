@@ -179,7 +179,7 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
         // Client fee
         updateClientFee(languageConfiguration, bitcoinConfiguration, transactionData);
 
-        if (transactionData.getAmountCoin().compareTo(Coin.ZERO) >= 0) {
+        if (transactionData.getAmountCoin().or(Coin.ZERO).compareTo(Coin.ZERO) >= 0) {
 
           // Received bitcoin
           // Client and mining fee is not applicable
@@ -243,7 +243,7 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
   }
 
   private void updateAmountCoin(PaymentData paymentData, LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration) {
-    Coin amountCoin = paymentData.getAmountCoin();
+    Coin amountCoin = paymentData.getAmountCoin().or(Coin.ZERO);
 
     MessageKey messageKey = getMessageKeyForAmount(paymentData);
 
@@ -275,7 +275,7 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
   }
 
   private MessageKey getMessageKeyForAmount(PaymentData paymentData) {
-    Coin amountCoin = paymentData.getAmountCoin();
+    Coin amountCoin = paymentData.getAmountCoin().or(Coin.ZERO);
 
     if (amountCoin.compareTo(Coin.ZERO) >= 0) {
       // Receive

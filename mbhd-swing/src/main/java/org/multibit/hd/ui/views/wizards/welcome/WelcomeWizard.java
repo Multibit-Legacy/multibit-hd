@@ -43,6 +43,10 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
       new WelcomeSelectLanguagePanelView(this, WELCOME_SELECT_LANGUAGE.name()));
 
     wizardViewMap.put(
+      WELCOME_ATTACH_HARDWARE_WALLET.name(),
+      new WelcomeAttachHardwareWalletPanelView(this, WELCOME_ATTACH_HARDWARE_WALLET.name()));
+
+    wizardViewMap.put(
       WELCOME_SELECT_WALLET.name(),
       new WelcomeSelectWalletPanelView(this, WELCOME_SELECT_WALLET.name()));
 
@@ -148,18 +152,16 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
         // Ensure the panel updates its model (the button is outside of the panel itself)
         wizardPanelView.updateFromComponentModels(Optional.absent());
 
-
-
         switch (getWizardModel().getState()) {
 
-          case WELCOME_SELECT_LANGUAGE:
+          case WELCOME_ATTACH_HARDWARE_WALLET:
             // Check for initialised hardware wallet on cold start
             Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
             if (hardwareWalletService.isPresent()
               && hardwareWalletService.get().isDeviceReady()
               && hardwareWalletService.get().isWalletPresent()) {
               // Initialised hardware wallet is attached so move directly to credentials
-              // We cannot move from WELCOME_SELECT_LANGUAGE due to complications
+              // We cannot move from WELCOME_ATTACH_HARDWARE_WALLET due to complications
               // with language changes in soft wallets, so a state progress is made first
               // followed by a hide
               getWizardModel().showNext();

@@ -172,7 +172,7 @@ public class PaymentsProtobufSerializer {
           MBHDPaymentRequestData.setDate(new DateTime(mbhdPaymentRequestProto.getDate()));
         }
         if (mbhdPaymentRequestProto.hasAmountBTC()) {
-          MBHDPaymentRequestData.setAmountCoin(Coin.valueOf(mbhdPaymentRequestProto.getAmountBTC()));
+          MBHDPaymentRequestData.setAmountCoin(Optional.of(Coin.valueOf(mbhdPaymentRequestProto.getAmountBTC())));
         }
 
         if (mbhdPaymentRequestProto.hasAmountFiat()) {
@@ -245,7 +245,7 @@ public class PaymentsProtobufSerializer {
         paymentRequestData.setDate(new DateTime(paymentRequestProto.getDate()));
       }
       if (paymentRequestProto.hasAmountBTC()) {
-        paymentRequestData.setAmountCoin(Coin.valueOf(paymentRequestProto.getAmountBTC()));
+        paymentRequestData.setAmountCoin(Optional.of(Coin.valueOf(paymentRequestProto.getAmountBTC())));
       }
       if (paymentRequestProto.hasIdentityDisplayName()) {
         paymentRequestData.setIdentityDisplayName(paymentRequestProto.getIdentityDisplayName());
@@ -422,7 +422,7 @@ public class PaymentsProtobufSerializer {
 
       paymentRequestBuilder.setAddress(MBHDPaymentRequestData.getAddress() == null ? "" : MBHDPaymentRequestData.getAddress().toString());
       paymentRequestBuilder.setNote(MBHDPaymentRequestData.getNote() == null ? "" : MBHDPaymentRequestData.getNote());
-      paymentRequestBuilder.setAmountBTC(MBHDPaymentRequestData.getAmountCoin() == null ? 0 : MBHDPaymentRequestData.getAmountCoin().longValue());
+      paymentRequestBuilder.setAmountBTC(MBHDPaymentRequestData.getAmountCoin() == null || !MBHDPaymentRequestData.getAmountCoin().isPresent() ? 0 : MBHDPaymentRequestData.getAmountCoin().get().longValue());
 
       if (MBHDPaymentRequestData.getDate() != null) {
         paymentRequestBuilder.setDate(MBHDPaymentRequestData.getDate().getMillis());
@@ -470,7 +470,7 @@ public class PaymentsProtobufSerializer {
       paymentRequestBuilder.setUuid(paymentRequestData.getUuid().toString());
       paymentRequestBuilder.setHash(paymentRequestData.getTransactionHash().isPresent() ? paymentRequestData.getTransactionHash().get().toString() : "");
       paymentRequestBuilder.setNote(paymentRequestData.getNote() == null ? "" : paymentRequestData.getNote());
-      paymentRequestBuilder.setAmountBTC(paymentRequestData.getAmountCoin() == null ? 0 : paymentRequestData.getAmountCoin().longValue());
+      paymentRequestBuilder.setAmountBTC(paymentRequestData.getAmountCoin() == null || !paymentRequestData.getAmountCoin().isPresent() ? 0 : paymentRequestData.getAmountCoin().or(Coin.ZERO).longValue());
       paymentRequestBuilder.setIdentityDisplayName(paymentRequestData.getIdentityDisplayName() == null ? "" : paymentRequestData.getIdentityDisplayName());
       paymentRequestBuilder.setTrustErrorMessage(paymentRequestData.getTrustErrorMessage() == null ? "" : paymentRequestData.getTrustErrorMessage());
 

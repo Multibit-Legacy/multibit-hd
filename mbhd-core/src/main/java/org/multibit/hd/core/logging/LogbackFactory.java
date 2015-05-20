@@ -11,19 +11,29 @@ import ch.qos.logback.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import ch.qos.logback.core.spi.FilterAttachable;
+import com.google.common.base.Optional;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import net.logstash.logback.encoder.LogstashEncoder;
 import org.multibit.hd.core.config.LoggingConfiguration;
+
+import java.io.File;
 
 /**
  * <p>Factory to provide the following to logging framework:</p>
  * <ul>
  * <li>Creation of various appenders for Logback</li>
+ * <li>Default formats are Human Readable for console and JSON for file to assist Logstash integration</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
 public class LogbackFactory {
+
+  /**
+   * The current file appender
+   */
+  private static FileAppender<ILoggingEvent> currentFileAppender = null;
 
   private LogbackFactory() { /* singleton */ }
 
@@ -51,30 +61,36 @@ public class LogbackFactory {
   // There are restricted possibilities for the rolling file appender
   @SuppressFBWarnings({"BC_UNCONFIRMED_CAST"})
   public static FileAppender<ILoggingEvent> buildFileAppender(
-    LoggingConfiguration.FileConfiguration file,
+    LoggingConfiguration.FileConfiguration fileConfiguration,
     LoggerContext context,
     String logFormat) {
 
-    final LogFormatter formatter = new LogFormatter(context, file.getTimeZone());
+    // Use Logstash JSON encoding for files
+    final LogstashEncoder encoder = new LogstashEncoder();
+    encoder.start();
+
+    // Provide consistent format
+    final LogFormatter formatter = new LogFormatter(context, fileConfiguration.getTimeZone());
 
     if (logFormat != null) {
       formatter.setPattern(logFormat);
     }
     formatter.start();
 
-    final FileAppender<ILoggingEvent> appender = file.isArchive() ?
+    final FileAppender<ILoggingEvent> appender = fileConfiguration.isArchive() ?
       new RollingFileAppender<ILoggingEvent>() :
       new FileAppender<ILoggingEvent>();
 
     appender.setAppend(true);
     appender.setContext(context);
     appender.setLayout(formatter);
-    appender.setFile(file.getCurrentLogFilename());
+    appender.setFile(fileConfiguration.getCurrentLogFilename());
     appender.setPrudent(false); // We don't expect multiple JVMs
+    appender.setEncoder(encoder);
 
-    addThresholdFilter(appender, file.getThreshold());
+    addThresholdFilter(appender, fileConfiguration.getThreshold());
 
-    if (file.isArchive()) {
+    if (fileConfiguration.isArchive()) {
 
       final DefaultTimeBasedFileNamingAndTriggeringPolicy<ILoggingEvent> triggeringPolicy =
         new DefaultTimeBasedFileNamingAndTriggeringPolicy<>();
@@ -82,10 +98,10 @@ public class LogbackFactory {
 
       final TimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = new TimeBasedRollingPolicy<>();
       rollingPolicy.setContext(context);
-      rollingPolicy.setFileNamePattern(file.getArchivedLogFilenamePattern());
+      rollingPolicy.setFileNamePattern(fileConfiguration.getArchivedLogFilenamePattern());
       rollingPolicy.setTimeBasedFileNamingAndTriggeringPolicy(triggeringPolicy);
       triggeringPolicy.setTimeBasedRollingPolicy(rollingPolicy);
-      rollingPolicy.setMaxHistory(file.getArchivedFileCount());
+      rollingPolicy.setMaxHistory(fileConfiguration.getArchivedFileCount());
 
       ((RollingFileAppender<ILoggingEvent>) appender).setRollingPolicy(rollingPolicy);
       ((RollingFileAppender<ILoggingEvent>) appender).setTriggeringPolicy(triggeringPolicy);
@@ -96,6 +112,8 @@ public class LogbackFactory {
 
     appender.stop();
     appender.start();
+
+    currentFileAppender = appender;
 
     return appender;
   }
@@ -117,6 +135,19 @@ public class LogbackFactory {
     appender.start();
 
     return appender;
+  }
+
+  /**
+   * @return The current file appender logging file (useful for error reporting)
+   */
+  public static Optional<File> getCurrentLoggingFile() {
+
+    if (currentFileAppender != null) {
+      return Optional.of(new File(currentFileAppender.getFile()));
+    }
+
+    return Optional.absent();
+
   }
 
   private static void addThresholdFilter(FilterAttachable<ILoggingEvent> appender, Level threshold) {

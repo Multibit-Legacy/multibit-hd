@@ -11,6 +11,7 @@ import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.ui.controllers.MainController;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
@@ -171,22 +172,32 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       CoreServices.getOrCreateWalletService(currentWalletSummary.getWalletId());
 
       // Start the Bitcoin network synchronization operation
-      ListenableFuture future = walletExecutorService.submit(
+      ListenableFuture<Boolean> future = walletExecutorService.submit(
         new Callable<Boolean>() {
 
           @Override
           public Boolean call() throws Exception {
+            // Switch off zero confirmation alerts
+            MainController.setFireTransactionAlerts(false);
 
-            CoreServices.getOrCreateBitcoinNetworkService().replayWallet(InstallationManager.getOrCreateApplicationDataDirectory(), Optional.of(replayDate.toDate()), enableFastCatchup);
+            CoreServices.getOrCreateBitcoinNetworkService().replayWallet(
+                      InstallationManager.getOrCreateApplicationDataDirectory(),
+                      Optional.of(replayDate),
+                      enableFastCatchup,
+                      true
+            );
+
+            // Zero confirmation alerts enabled on sync completion in MainController
+
             return true;
 
           }
 
         });
       Futures.addCallback(
-        future, new FutureCallback() {
+        future, new FutureCallback<Boolean>() {
           @Override
-          public void onSuccess(@Nullable Object result) {
+          public void onSuccess(@Nullable Boolean result) {
 
             // Do nothing this just means that the block chain download has begun
 

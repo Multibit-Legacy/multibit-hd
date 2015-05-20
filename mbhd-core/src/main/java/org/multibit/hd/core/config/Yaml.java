@@ -3,7 +3,7 @@ package org.multibit.hd.core.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.Optional;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class Yaml {
    * @return The configuration data (<code>Configuration</code>, <code>Wallet Summary</code> etc) if present
    */
   public static synchronized <T> Optional<T> readYaml(InputStream is, Class<T> clazz) {
-    log.debug("Reading YAML data...");
+    log.trace("Reading YAML data...");
 
     Optional<T> value;
 

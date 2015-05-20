@@ -117,7 +117,7 @@ public class MessageEventFixtures {
     features.setVersion("1.3.3");
     features.setBootloaderMode(false);
     features.setDeviceId("5DE10270051613895EEB68ED");
-    features.setInitialized(false);
+    features.setInitialized(true);
     features.setPinProtection(true);
     features.setLanguage("english");
     features.setLabel(STANDARD_LABEL);

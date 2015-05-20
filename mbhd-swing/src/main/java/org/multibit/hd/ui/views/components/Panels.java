@@ -5,6 +5,8 @@ import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -399,10 +401,9 @@ public class Panels {
   }
 
   /**
-   * <p>A standard "wallet selector" panel provides a means of choosing how a wallet is to be created/accessed</p>
+   * <p>A standard "wallet selector" panel provides a means of choosing how a wallet is to be restored</p>
    *
    * @param listener               The action listener
-   * @param createCommand          The create command name
    * @param existingWalletCommand  The existing wallet command name
    * @param restorePasswordCommand The restore credentials command name
    * @param restoreWalletCommand   The restore wallet command name
@@ -419,34 +420,50 @@ public class Panels {
 
     JPanel panel = Panels.newPanel();
 
-    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.CREATE_WALLET);
-    radio1.setSelected(true);
-    radio1.setActionCommand(createCommand);
+    boolean noSoftWallets = WalletManager.getSoftWalletSummaries(Optional.<Locale>absent()).isEmpty();
+
+    boolean addCreate = noSoftWallets;               // There are no soft wallets - hard start
+    boolean enableUseExisting = !noSoftWallets;      // There are some wallets to use
+    boolean enableRestorePassword = !noSoftWallets;  // If there are no soft wallets you cannot restore a password
+
+    JRadioButton radio1 = null;
+    if (addCreate) {
+      radio1 = RadioButtons.newRadioButton(listener, MessageKey.CREATE_WALLET);
+      radio1.setSelected(true);
+      radio1.setActionCommand(createCommand);
+    }
 
     JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.USE_EXISTING_WALLET);
     radio2.setActionCommand(existingWalletCommand);
+    radio2.setSelected(!addCreate);
+    radio2.setEnabled(enableUseExisting);
+    if (!enableUseExisting) {
+      radio2.setForeground(UIManager.getColor("RadioButton.disabledText"));
+    }
 
     JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_PASSWORD);
     radio3.setActionCommand(restorePasswordCommand);
+    radio3.setEnabled(enableRestorePassword);
+    if (!enableRestorePassword) {
+      radio3.setForeground(UIManager.getColor("RadioButton.disabledText"));
+    }
 
     JRadioButton radio4 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_WALLET);
     radio4.setActionCommand(restoreWalletCommand);
 
-    // Check for existing wallets
-    if (WalletManager.getSoftWalletSummaries(Optional.<Locale>absent()).isEmpty()) {
-      radio2.setEnabled(false);
-      radio2.setForeground(UIManager.getColor("RadioButton.disabledText"));
-    }
-
     // Wallet selection is mutually exclusive
     ButtonGroup group = new ButtonGroup();
-    group.add(radio1);
+    if (addCreate) {
+      group.add(radio1);
+    }
     group.add(radio2);
     group.add(radio3);
     group.add(radio4);
 
     // Add to the panel
-    panel.add(radio1, "wrap");
+    if (addCreate) {
+      panel.add(radio1, "wrap");
+    }
     panel.add(radio2, "wrap");
     panel.add(radio3, "wrap");
     panel.add(radio4, "wrap");
@@ -473,20 +490,30 @@ public class Panels {
 
     JPanel panel = Panels.newPanel();
 
+    boolean enableUseExisting = !WalletManager.getWalletSummaries().isEmpty();
+
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+
+    boolean enableRestore = hardwareWalletService.isPresent()
+                    && hardwareWalletService.get().isDeviceReady()
+                    && hardwareWalletService.get().isWalletPresent();
+
     JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.TREZOR_CREATE_WALLET);
     radio1.setSelected(true);
     radio1.setActionCommand(createCommand);
 
     JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.USE_EXISTING_WALLET);
     radio2.setActionCommand(existingWalletCommand);
+    radio2.setEnabled(enableUseExisting);
+    if (!enableUseExisting) {
+      radio2.setForeground(UIManager.getColor("RadioButton.disabledText"));
+    }
 
     JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.RESTORE_WALLET);
     radio3.setActionCommand(restoreWalletCommand);
-
-    // Check for existing wallets
-    if (WalletManager.getWalletSummaries().isEmpty()) {
-      radio2.setEnabled(false);
-      radio2.setForeground(UIManager.getColor("RadioButton.disabledText"));
+    radio3.setEnabled(enableRestore);
+    if (!enableRestore) {
+      radio3.setForeground(UIManager.getColor("RadioButton.disabledText"));
     }
 
     // Wallet selection is mutually exclusive
@@ -812,6 +839,18 @@ public class Panels {
     JPanel panel = new JPanel();
     panel.setMaximumSize(new Dimension(1, 10000));
     panel.setBorder(BorderFactory.createDashedBorder(Themes.currentTheme.headerPanelBackground(), 5, 5));
+
+    return panel;
+  }
+
+  /**
+   * New horizontal dashed separator
+   */
+  public static JPanel newHorizontalDashedSeparator() {
+
+    JPanel panel = new JPanel();
+    panel.setMaximumSize(new Dimension(10000, 1));
+    panel.setBorder(BorderFactory.createDashedBorder(Themes.currentTheme.dataEntryBorder(), 5, 5));
 
     return panel;
   }

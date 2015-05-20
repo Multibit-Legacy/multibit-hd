@@ -19,7 +19,7 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.WalletLoadEvent;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.files.ZipFiles;
@@ -287,7 +287,7 @@ public enum BackupManager {
     log.debug("Created rolling-backup successfully. Size = {}", walletBackupFile.length());
 
     File encryptedAESCopy = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(walletBackupFile, password);
-    log.debug("Created rolling-backup AES copy successfully as file:\n'{}'", encryptedAESCopy.getAbsolutePath());
+    log.debug("Created rolling-backup AES copy successfully as file:\n'{}'", encryptedAESCopy == null ? "" : encryptedAESCopy.getAbsolutePath());
 
     List<File> rollingBackups = getRollingBackups(walletSummary.getWalletId());
 

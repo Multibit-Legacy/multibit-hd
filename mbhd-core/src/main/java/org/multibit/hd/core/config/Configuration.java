@@ -44,7 +44,7 @@ public class Configuration {
   //////////////// Labs properties are added to the top configuration before being allocated to a sub-section ///////////////////////
 
   /**
-   * True if TOR should be used for Bitcoin connections
+   * True if Tor should be used for Bitcoin connections
    */
   private boolean tor = false;
 
@@ -200,7 +200,7 @@ public class Configuration {
   /**
    * TODO Move out of "labs" in Release 0.1
    *
-   * @return True if TOR should be used for communications
+   * @return True if Tor should be used for communications
    */
   public boolean isTor() {
     return tor;

@@ -22,6 +22,7 @@ import com.xeiam.xchange.kraken.KrakenExchange;
 import com.xeiam.xchange.lakebtc.LakeBTCExchange;
 import com.xeiam.xchange.oer.OERExchange;
 import com.xeiam.xchange.okcoin.OkCoinExchange;
+import com.xeiam.xchange.virtex.v2.VirtExExchange;
 import org.multibit.hd.core.config.Configurations;
 
 /**
@@ -61,7 +62,7 @@ public enum ExchangeKey {
   BTC_E(BTCEExchange.class.getName()),
   BTC_TRADE(BTCTradeExchange.class.getName()),
   BTER(BTERExchange.class.getName()),
-  // CA_VIRTEX(VirtExExchange.class.getName()), // Out of business
+  CA_VIRTEX(VirtExExchange.class.getName()),
   CEXIO(CexIOExchange.class.getName()), // Weird GHS/NMC combo
   COINBASE(CoinbaseExchange.class.getName()), // No dynamic currency pair lookup
   // COINSETTER(CoinSetterExchange.class.getName()),// No 2.1.0 release

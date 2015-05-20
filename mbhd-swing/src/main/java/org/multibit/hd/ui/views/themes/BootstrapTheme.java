@@ -47,7 +47,12 @@ public class BootstrapTheme extends BaseTheme {
 
   @Override
   public Color buttonBackground() {
-    return new Color(200, 200, 200);
+    return new Color(240, 240, 240);
+  }
+
+  @Override
+  public Color buttonDefaultBackground() {
+    return new Color(0,151,50);
   }
 
   @Override
@@ -116,6 +121,11 @@ public class BootstrapTheme extends BaseTheme {
   }
 
   @Override
+  public Color buttonFadedText() {
+    return new Color(187, 187, 187);
+  }
+
+  @Override
   public Color successAlertText() {
     return text();
   }
@@ -134,7 +144,7 @@ public class BootstrapTheme extends BaseTheme {
     );
 
     // Any of 28, 30, 31, 32
-    return painter.color31;
+    return painter.alertFadedBackground;
   }
 
 
@@ -187,7 +197,7 @@ public class BootstrapTheme extends BaseTheme {
     );
 
     // Any of 28, 30, 31, 32
-    return painter.color31;
+    return painter.alertFadedBackground;
   }
 
   @Override
@@ -213,7 +223,7 @@ public class BootstrapTheme extends BaseTheme {
     );
 
     // Any of 28, 30, 31, 32
-    return painter.color31;
+    return painter.alertFadedBackground;
   }
 
   @Override

@@ -37,6 +37,7 @@ public class SendDisplayUntrustedPaymentRequestUseCase extends AbstractFestUseCa
 
     // Wait for the alert to appear
     pauseForComponentReset();
+    pauseForComponentReset();
 
     // Check that an alert message is present
     assertLabelContainsValue("alert_message_label", "Please donate to MultiBit");
@@ -109,7 +110,7 @@ public class SendDisplayUntrustedPaymentRequestUseCase extends AbstractFestUseCa
     // There won't be any money to pay the payment request
     assertLabelText(MessageKey.SEND_PROGRESS_TITLE);
 
-    // There should be an enabled Cancel button and a disabled Next button
+    // There should be an enabled Cancel button and a enabled Next button
     window
        .button(MessageKey.CANCEL.getKey())
        .requireVisible()
@@ -118,7 +119,7 @@ public class SendDisplayUntrustedPaymentRequestUseCase extends AbstractFestUseCa
     window
         .button(MessageKey.NEXT.getKey())
         .requireVisible()
-        .requireDisabled();
+        .requireEnabled();
 
      // Click the 'Cancel' button to dismiss the 'Send progress' screen
     window

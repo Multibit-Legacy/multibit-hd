@@ -2,9 +2,10 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.exceptions.ExceptionHandler;
+import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.utils.SafeDesktop;
 import org.multibit.hd.ui.views.components.Buttons;
 import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
@@ -15,12 +16,9 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -33,10 +31,7 @@ import java.net.URISyntaxException;
 
 public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorState> implements ActionListener {
 
-  /**
-   * TODO replace with affiliate link
-   */
-  private static String BUY_TREZOR_URL = "https://www.buytrezor.com";
+  private static String BUY_TREZOR_URL = "https://buytrezor.com?a=4fbc03c60545";
 
   /**
    * @param wizard    The wizard managing the states
@@ -112,10 +107,9 @@ public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrez
        @Override
        public void actionPerformed(ActionEvent e) {
 
-         try {
-           Desktop.getDesktop().browse(new URI(BUY_TREZOR_URL));
-         } catch (IOException | URISyntaxException e1) {
-           ExceptionHandler.handleThrowable(e1);
+         // Attempt to open the URI
+         if (!SafeDesktop.browse(URI.create(BUY_TREZOR_URL))) {
+           Sounds.playBeep();
          }
 
        }

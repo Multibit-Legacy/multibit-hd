@@ -15,6 +15,12 @@ public enum DisplayAmountStyle {
    * Iconography and fonts for the main header
    */
   HEADER,
+
+  /**
+    * Iconography and fonts for the small header
+    */
+   HEADER_SMALL,
+
   /**
    * Iconography and fonts for a transaction detail (e.g. confirm or detail screen)
    */
