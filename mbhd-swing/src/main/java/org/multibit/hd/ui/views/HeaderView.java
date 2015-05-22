@@ -124,9 +124,7 @@ public class HeaderView extends AbstractView {
     availableBalanceDisplayMaV.getModel().setLocalAmount(event.getLocalBalance());
     availableBalanceDisplayMaV.getModel().setCoinAmount(event.getCoinBalance());
     availableBalanceDisplayMaV.getModel().setRateProvider(Optional.<String>absent());
-    if (event.getLocalBalance() != null) {
-      availableBalanceDisplayMaV.getModel().setLocalAmountVisible(true);
-    }
+    availableBalanceDisplayMaV.getModel().setLocalAmountVisible(event.getLocalBalance() != null);
 
     // Do not set the visibility on available balance here, use the ViewChangedEvent
 
