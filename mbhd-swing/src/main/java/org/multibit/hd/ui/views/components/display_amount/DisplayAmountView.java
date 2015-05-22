@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components.display_amount;
 
+import com.google.common.base.Strings;
 import org.bitcoinj.core.Coin;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
@@ -170,7 +171,8 @@ public class DisplayAmountView extends AbstractComponentView<DisplayAmountModel>
 
       // Exchange label text is complex
       handleExchangeLabelText(bitcoinConfiguration, localSymbol, localDisplay);
-      if (visible) {
+      if (visible && !Strings.isNullOrEmpty(localDisplay)) {
+        // Definitely have content to show
         exchangeLabel.setVisible(true);
       }
 
