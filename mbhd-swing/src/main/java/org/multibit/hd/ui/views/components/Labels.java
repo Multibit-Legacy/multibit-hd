@@ -1713,4 +1713,20 @@ public class Labels {
     }, new Object[][]{});
 
   }
+
+  /*
+
+   */
+
+  /**
+   * @return A new "create wallet report" note (makes transition to credentials less jarring)
+   */
+  public static JLabel newCreateWalletReportNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.CREATE_WALLET_REPORT_NOTE_1,
+    }, new Object[][]{});
+
+  }
+
 }

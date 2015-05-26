@@ -64,6 +64,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
   private JLabel backupLocationStatusLabel;
   private JLabel walletCreatedStatusLabel;
   private JLabel cacertsInstalledStatusLabel;
+  private JLabel createWalletNoteLabel;
 
   private ListeningExecutorService createWalletExecutorService;
 
@@ -109,18 +110,23 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
     cacertsInstalledStatusLabel = Labels.newCACertsInstalledStatus(false);
     walletCreatedStatusLabel = Labels.newWalletCreatedStatus(false);
 
+    // Provide a helpful note
+    createWalletNoteLabel = Labels.newCreateWalletReportNote();
+
     // Make all labels invisible initially
     seedPhraseCreatedStatusLabel.setVisible(false);
     walletPasswordCreatedStatusLabel.setVisible(false);
     backupLocationStatusLabel.setVisible(false);
     cacertsInstalledStatusLabel.setVisible(false);
     walletCreatedStatusLabel.setVisible(false);
+    createWalletNoteLabel.setVisible(false);
 
     contentPanel.add(seedPhraseCreatedStatusLabel, "wrap");
     contentPanel.add(walletPasswordCreatedStatusLabel, "wrap");
     contentPanel.add(backupLocationStatusLabel, "wrap");
     contentPanel.add(cacertsInstalledStatusLabel, "wrap");
     contentPanel.add(walletCreatedStatusLabel, "wrap");
+    contentPanel.add(createWalletNoteLabel, "wrap");
 
   }
 
@@ -346,6 +352,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
         new Runnable() {
           @Override
           public void run() {
+            createWalletNoteLabel.setVisible(true);
             // Enable the finish button on the report page
             ViewEvents.fireWizardButtonEnabledEvent(WelcomeWizardState.CREATE_WALLET_REPORT.name(), WizardButton.FINISH, true);
           }
