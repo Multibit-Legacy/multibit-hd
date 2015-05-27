@@ -810,6 +810,8 @@ public enum MessageKey {
   CHANGE_PASSWORD_NOTE_1("change_password_note_1"),
   CHANGE_PASSWORD_NOTE_2("change_password_note_2"),
 
+  CREATE_WALLET_REPORT_NOTE_1("create_wallet_report_note_1"),
+
   ENTER_CURRENT_PIN("enter_current_pin"),
   ENTER_NEW_PIN("enter_new_pin"),
   CONFIRM_NEW_PIN("confirm_new_pin"),
