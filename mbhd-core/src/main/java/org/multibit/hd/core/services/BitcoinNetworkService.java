@@ -1564,18 +1564,16 @@ public class BitcoinNetworkService extends AbstractService {
       return;
     }
 
+    // Clear the mempool
+    TxConfidenceTable mempool = Context.get().getConfidenceTable();
+    mempool.reset();
+
     blockChain.addWallet(wallet);
     log.debug("Created block chain '{}' with height '{}'", blockChain, blockChain.getBestChainHeight());
 
     log.debug("Creating peer group with useFastCatchup: {} ...", useFastCatchup);
     createNewPeerGroup(wallet, useFastCatchup);
     log.debug("Created peer group '{}'", peerGroup);
-
-    // Replay any tx confidences known by the mempool to the wallet
-    // (so that it can hear about missed tx)
-    TxConfidenceTable memPool = Context.get().getConfidenceTable();
-    log.debug("Replaying transaction confidences to the wallet ...");
-    memPool.replaySeen();
 
     log.debug("Starting peer group ...");
     peerGroup.startAsync();
