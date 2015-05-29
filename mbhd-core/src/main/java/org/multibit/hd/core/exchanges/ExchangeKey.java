@@ -16,7 +16,6 @@ import com.xeiam.xchange.campbx.CampBXExchange;
 import com.xeiam.xchange.cexio.CexIOExchange;
 import com.xeiam.xchange.coinbase.CoinbaseExchange;
 import com.xeiam.xchange.cryptonit.v2.CryptonitExchange;
-import com.xeiam.xchange.cryptotrade.CryptoTradeExchange;
 import com.xeiam.xchange.hitbtc.HitbtcExchange;
 import com.xeiam.xchange.kraken.KrakenExchange;
 import com.xeiam.xchange.lakebtc.LakeBTCExchange;
@@ -68,7 +67,7 @@ public enum ExchangeKey {
   // COINSETTER(CoinSetterExchange.class.getName()),// No 2.1.0 release
   // COINFLOOR(CoinfloorExchange.class.getName()), // Requires non-trivial registration
   CRYPTONIT(CryptonitExchange.class.getName()),
-  CRYPTO_TRADE(CryptoTradeExchange.class.getName()),
+  // CRYPTO_TRADE(CryptoTradeExchange.class.getName()), // Out of business
   //CRYPTSY(CryptsyExchange.class.getName()),// Several broken currencies
   HITBTC(HitbtcExchange.class.getName()),// GBP feed broken, EUR and USD OK
   // IT_BIT(ItBitExchange.class.getName()),// No working feed
