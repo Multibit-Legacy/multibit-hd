@@ -190,7 +190,7 @@ public class SecureFiles {
    */
   public static File verifyOrCreateDirectory(File directory) {
 
-    log.debug("Verify or create directory:\n'{}'", directory.getAbsolutePath());
+    log.trace("Verify or create directory:\n'{}'", directory.getAbsolutePath());
 
     if (!directory.exists()) {
       Preconditions.checkState(directory.mkdirs(), "Could not create directory: '" + directory + "'");
@@ -211,7 +211,7 @@ public class SecureFiles {
 
     File directory = new File(parentDirectory, childDirectory);
 
-    log.debug("Verify or create directory:\n'{}'", directory.getAbsolutePath());
+    log.trace("Verify or create directory:\n'{}'", directory.getAbsolutePath());
 
     if (!parentDirectory.exists()) {
       Preconditions.checkState(parentDirectory.mkdir(), "Could not create parentDirectory: '" + parentDirectory + "'");
@@ -242,7 +242,7 @@ public class SecureFiles {
 
     File file = new File(parentDirectory.getAbsolutePath() + File.separator + filename);
 
-    log.debug("Verify or create file:\n'{}'", file.getAbsolutePath());
+    log.trace("Verify or create file:\n'{}'", file.getAbsolutePath());
 
     if (!file.exists()) {
       try {
