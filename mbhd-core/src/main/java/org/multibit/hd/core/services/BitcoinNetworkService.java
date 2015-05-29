@@ -241,7 +241,8 @@ public class BitcoinNetworkService extends AbstractService {
             if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
               Wallet currentWallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
               if (currentWallet != null) {
-                log.debug("Wallet has {} transactions and the balance is {}", currentWallet.getTransactions(true).size(), currentWallet.getBalance());
+                // Do not reveal balance in logs
+                log.trace("Wallet has {} transactions", currentWallet.getTransactions(true).size());
               } else {
                 log.debug("There is no current wallet");
               }
