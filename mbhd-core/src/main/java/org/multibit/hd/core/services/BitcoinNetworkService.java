@@ -901,6 +901,11 @@ public class BitcoinNetworkService extends AbstractService {
 
       String transactionId = sendRequest.tx != null ? sendRequest.tx.getHashAsString() : "?";
 
+      String message = e.getMessage();
+      if (message == null) {
+        message = "Transaction cannot be completed at this time - unconfirmed?";
+      }
+
       // Fire a failed transaction creation event
       CoreEvents.fireTransactionCreationEvent(
         new TransactionCreationEvent(
@@ -913,7 +918,7 @@ public class BitcoinNetworkService extends AbstractService {
           sendRequestSummary.getChangeAddress(),
           false,
           CoreMessageKey.THE_ERROR_WAS.getKey(),
-          new String[]{e.getMessage()},
+          new String[]{message},
           sendRequestSummary.getNotes(),
           false));
 
