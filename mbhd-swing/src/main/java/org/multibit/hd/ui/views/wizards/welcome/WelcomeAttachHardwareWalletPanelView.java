@@ -233,6 +233,15 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
 
   }
 
+  @Override
+  public boolean beforeHide(boolean isExitCancel) {
+
+    // Prevent popovers triggering continuously when finished
+    timer.stop();
+
+    return true;
+  }
+
   /**
    * @param messageKey The message key (absent implies not visible)
    * @param status     True for a check mark
