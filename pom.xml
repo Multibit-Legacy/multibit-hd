@@ -235,6 +235,137 @@
         </configuration>
       </plugin>
 
+      <!-- Use the Enforcer to verify build integrity -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>1.2</version>
+        <executions>
+          <execution>
+            <id>enforce</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <digestRule implementation="uk.co.froot.maven.enforcer.DigestRule">
+
+                  <!-- Create a snapshot to build the list of URNs below -->
+                  <buildSnapshot>false</buildSnapshot>
+
+                  <!-- List of required hashes -->
+                  <!-- Format is URN of groupId:artifactId:version:type:classifier:scope:hash -->
+                  <!-- classifier is "null" if not present -->
+                  <urns>
+                    <urn>ch.qos.logback:logback-classic:1.0.13:jar:null:compile:6b56ec752b42ccfa1415c0361fb54b1ed7ca3db6</urn>
+                    <urn>ch.qos.logback:logback-core:1.0.13:jar:null:compile:dc6e6ce937347bd4d990fc89f4ceb469db53e45e</urn>
+                    <urn>com.fasterxml.jackson.core:jackson-annotations:2.4.0:jar:null:compile:d6a66c7a5f01cf500377bd669507a08cfeba882a</urn>
+                    <urn>com.fasterxml.jackson.core:jackson-core:2.3.2:jar:null:compile:559b70ac8a0d5cad611da4223137a920147201ba</urn>
+                    <urn>com.fasterxml.jackson.core:jackson-databind:2.4.0:jar:null:compile:473e063d6396a1ff6e4b9c7943e604291ce18b07</urn>
+                    <urn>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.3.2:jar:null:compile:038610b020b028895f116d63ce2f6f31170b693b</urn>
+                    <urn>com.github.mmazi:rescu:1.7.1:jar:null:compile:f2de84a17ca92c09fd0ff442e83bbe2276c4565f</urn>
+                    <urn>com.github.nkzawa:engine.io-client:0.3.0:jar:null:compile:99f0d892cd9ea53f92753a26bb2a4954069f2885</urn>
+                    <urn>com.github.nkzawa:socket.io-client:0.2.0:jar:null:compile:f029ff46728ecd0828d311fa64a2621f8a60aafe</urn>
+                    <urn>com.google.code.findbugs:annotations:2.0.1:jar:null:compile:9ef6656259841cebfb9fb0697bb122ada4485498</urn>
+                    <urn>com.google.code.findbugs:jsr305:2.0.1:jar:null:compile:516c03b21d50a644d538de0f0369c620989cd8f0</urn>
+                    <urn>com.google.code.gson:gson:2.2.2:jar:null:compile:1f96456ca233dec780aa224bff076d8e8bca3908</urn>
+                    <urn>com.google.guava:guava:16.0.1:jar:null:compile:5fa98cd1a63c99a44dd8d3b77e4762b066a5d0c5</urn>
+                    <urn>com.google.protobuf:protobuf-java:2.5.0:jar:null:compile:a10732c76bfacdbd633a7eb0f7968b1059a65dfa</urn>
+                    <urn>com.google.zxing:core:1.7:jar:null:compile:888814a387fc7570d50c4fbf4d20555d4fdd7646</urn>
+                    <urn>com.googlecode.jcsv:jcsv:1.4.0:jar:null:compile:3b2dfd1ff251cdcf4745a7643a966f14d10e2532</urn>
+                    <urn>com.googlecode.soundlibs:jlayer:1.0.1-1:jar:null:compile:173a17a780aa0e6fa42fc011b42a5555b7da834e</urn>
+                    <urn>com.lambdaworks:scrypt:1.4.0:jar:null:compile:906506b74f30c8c20bccd9ed4a11112d8941fe87</urn>
+                    <urn>com.madgag.spongycastle:core:1.51.0.0:jar:null:compile:0f642963312ea0e615ad65f28adc5a5b3a2a0862</urn>
+                    <urn>com.miglayout:miglayout-core:4.2:jar:null:compile:70f2bfa2a077ee1632cc8229deffa1d942825c78</urn>
+                    <urn>com.miglayout:miglayout-swing:4.2:jar:null:compile:ca85067488e79a2078ba4eb8e2617653e9172388</urn>
+                    <urn>com.pusher:pusher-java-client:0.3.1:jar:null:compile:c713c7c861b85ccb5df20a044d5fdb53b098a08b</urn>
+                    <urn>com.squareup.okhttp:okhttp:2.2.0:jar:null:compile:959c454243581fdf730abfd4f4745441724bcf2c</urn>
+                    <urn>com.squareup.okio:okio:1.2.0:jar:null:compile:c0b52915a48fa91b1b94a28d4a2997bac5f524df</urn>
+                    <urn>com.xeiam.xchange:xchange-bitbay:2.1.0:jar:null:compile:97b04796cfd944104d03d7fbb3f8fc61dab420d2</urn>
+                    <urn>com.xeiam.xchange:xchange-bitcurex:2.1.0:jar:null:compile:3f0e9c5bdd0b24756fc5ac44864758f427ca549b</urn>
+                    <urn>com.xeiam.xchange:xchange-bitfinex:2.1.0:jar:null:compile:944bf29ab3d85be79cbbeadcdb6277583c034aaf</urn>
+                    <urn>com.xeiam.xchange:xchange-bitmarket:2.1.0:jar:null:compile:88f17aa5f4c560e4db817c74151d5c7a5222cc0d</urn>
+                    <urn>com.xeiam.xchange:xchange-bitstamp:2.1.0:jar:null:compile:8c4a1bd50588b475e86ea7763e0addfd42654ea5</urn>
+                    <urn>com.xeiam.xchange:xchange-btcchina:2.1.0:jar:null:compile:88495c4c3ad68f683e12dbc4292e4685fcb6926a</urn>
+                    <urn>com.xeiam.xchange:xchange-btce:2.1.0:jar:null:compile:0e52cd4c207069eddd1a739eb6a3e94938309735</urn>
+                    <urn>com.xeiam.xchange:xchange-btctrade:2.1.0:jar:null:compile:f59ec09da5a2f2289ce525b1331abf60a524aa08</urn>
+                    <urn>com.xeiam.xchange:xchange-bter:2.1.0:jar:null:compile:d8345e110eb086530d08e21bc7a27c0866a2a5fd</urn>
+                    <urn>com.xeiam.xchange:xchange-campbx:2.1.0:jar:null:compile:0d321c18e95a5a2b11b1a49c76780a161e3e2cee</urn>
+                    <urn>com.xeiam.xchange:xchange-cavirtex:2.1.0:jar:null:compile:3d02f863c2be158ed76aaa376f77517ece02a3ad</urn>
+                    <urn>com.xeiam.xchange:xchange-cexio:2.1.0:jar:null:compile:72801737e0d99b3f254f6e3da45a3b0e3a90b11e</urn>
+                    <urn>com.xeiam.xchange:xchange-coinbase:2.1.0:jar:null:compile:d850d3cf735ea74c8a53c3b27c61d3afbbd7288d</urn>
+                    <urn>com.xeiam.xchange:xchange-core:2.1.0:jar:null:compile:587ca751bf251feaa3138803620a7f0682473f15</urn>
+                    <urn>com.xeiam.xchange:xchange-cryptonit:2.1.0:jar:null:compile:8ba7fbadbb6d8a7291fdc84b07896cd389903dee</urn>
+                    <urn>com.xeiam.xchange:xchange-cryptotrade:2.1.0:jar:null:compile:0cf0c3d413de227e06618bf6ed422d9b99561e94</urn>
+                    <urn>com.xeiam.xchange:xchange-hitbtc:2.1.0:jar:null:compile:6c7380018a6e512fd7d4824d988bd05112f2fecf</urn>
+                    <urn>com.xeiam.xchange:xchange-kraken:2.1.0:jar:null:compile:8632acc052ab17f7c2885e21d9e267bc0e86f694</urn>
+                    <urn>com.xeiam.xchange:xchange-lakebtc:2.1.0:jar:null:compile:b1d1b3a79858fa13f8f352dae92ee7484e11c839</urn>
+                    <urn>com.xeiam.xchange:xchange-okcoin:2.1.0:jar:null:compile:ccb2ac27447df6df9931d96314bf873dbb374d7e</urn>
+                    <urn>com.xeiam.xchange:xchange-openexchangerates:2.1.0:jar:null:compile:3218b0896940c15f3328ccc92111bc5b7fa9201d</urn>
+                    <urn>javax.ws.rs:jsr311-api:1.1.1:jar:null:compile:59033da2a1afd56af1ac576750a8d0b1830d59e6</urn>
+                    <urn>joda-time:joda-time:2.2:jar:null:compile:a5f29a7acaddea3f4af307e8cf2d0cc82645fd7d</urn>
+                    <urn>junit:junit:4.11:jar:null:test:4e031bb61df09069aeb2bffb4019e7a5034a4ee0</urn>
+                    <urn>net.java.dev.jna:jna:4.1.0:jar:null:compile:1c12d070e602efd8021891cdd7fd18bc129372d4</urn>
+                    <urn>net.jcip:jcip-annotations:1.0:jar:null:compile:afba4942caaeaf46aab0b976afd57cc7c181467e</urn>
+                    <urn>net.logstash.logback:logstash-logback-encoder:4.2:jar:null:compile:71ea0efb1251138d0db33850450170f77cb3d939</urn>
+                    <urn>org.apache.commons:commons-lang3:3.1:jar:null:compile:905075e6c80f206bbe6cf1e809d2caa69f420c76</urn>
+                    <urn>org.apache.maven.plugins:maven-antrun-plugin:1.7:maven-plugin:null:runtime:8aad3e2863cabf472db1baadea7aff553b0d40ba</urn>
+                    <urn>org.apache.maven.plugins:maven-assembly-plugin:2.3:maven-plugin:null:runtime:1eb3d8136f090179bbaa1c0a3c926e29fafa5b79</urn>
+                    <urn>org.apache.maven.plugins:maven-clean-plugin:2.4.1:maven-plugin:null:runtime:c3ad1d9e5ee3daeac15f8e18e987a214bbaa343a</urn>
+                    <urn>org.apache.maven.plugins:maven-compiler-plugin:3.1:maven-plugin:null:runtime:9977a8d04e75609cf01badc4eb6a9c7198c4c5ea</urn>
+                    <urn>org.apache.maven.plugins:maven-deploy-plugin:2.7:maven-plugin:null:runtime:6dadfb75679ca010b41286794f737088ebfe12fd</urn>
+                    <urn>org.apache.maven.plugins:maven-enforcer-plugin:1.2:maven-plugin:null:runtime:6b755a9a0d618f8f57c0b5c4a0737a012e710a46</urn>
+                    <urn>org.apache.maven.plugins:maven-install-plugin:2.3.1:maven-plugin:null:runtime:fe692c15450a75d330510bffe9491264918f58e0</urn>
+                    <urn>org.apache.maven.plugins:maven-jar-plugin:2.3.2:maven-plugin:null:runtime:2e98edb5ec61e210b104bcf78fe4be2295526fc9</urn>
+                    <urn>org.apache.maven.plugins:maven-release-plugin:2.4.1:maven-plugin:null:runtime:983dba8fec0ea4df0788a2828f35eb6d5a870b7d</urn>
+                    <urn>org.apache.maven.plugins:maven-resources-plugin:2.5:maven-plugin:null:runtime:4d0907396ac6a770e05c81f6e8ed6348740f86a0</urn>
+                    <urn>org.apache.maven.plugins:maven-shade-plugin:2.2:maven-plugin:null:runtime:71450816528f4565b853c6ab2e9d4451fc50e130</urn>
+                    <urn>org.apache.maven.plugins:maven-site-plugin:3.0:maven-plugin:null:runtime:39e1d8d4dae56f948e0028890c426c2002331e8c</urn>
+                    <urn>org.apache.maven.plugins:maven-source-plugin:2.4:maven-plugin:null:runtime:46f0d7f7823d729ba300d3f8929900c7e9cb5ac0</urn>
+                    <urn>org.apache.maven.plugins:maven-surefire-plugin:2.16:maven-plugin:null:runtime:60928a9538863bc6377898a69a5240b5b1798207</urn>
+                    <urn>org.bitcoinj:bitcoinj-core:0.13-SNAPSHOT-alice-0.0.9:jar:null:compile:3aa6023517a558d766a9c01a69c0f8c524f7e6fc</urn>
+                    <urn>org.bitcoinj:orchid:1.1:jar:null:compile:cc54aa849a4c3f5b3bfda90dd4286205b2a60e87</urn>
+                    <urn>org.bouncycastle:bcpg-jdk16:1.46:jar:null:compile:38c2557ffcc8f2a0d4326ccb86116986986775c9</urn>
+                    <urn>org.bouncycastle:bcprov-jdk16:1.46:jar:null:compile:ce091790943599535cbb4de8ede84535b0c1260c</urn>
+                    <urn>org.codehaus.mojo:findbugs-maven-plugin:3.0.0:maven-plugin:null:runtime:2903860ef2477fc4944d5553b17613cfa9f9861c</urn>
+                    <urn>org.easytesting:fest-assert:1.2:jar:null:test:bb0d051e157f921537aa30d6d2c2a6b201edbb1b</urn>
+                    <urn>org.easytesting:fest-reflect:1.2:jar:null:test:4dd614d5490950b4e2c7fe141544a867a0353d66</urn>
+                    <urn>org.easytesting:fest-swing:1.2.1:jar:null:test:7203fa30d833d389176f3c45129975725518d0f7</urn>
+                    <urn>org.easytesting:fest-util:1.1.3:jar:null:test:64a66446468f6ccd5f864e6b027b16cc9853379c</urn>
+                    <urn>org.hamcrest:hamcrest-core:1.3:jar:null:test:42a25dc3219429f0e5d060061f71acb49bf010a0</urn>
+                    <urn>org.hid4java:hid4java:0.3.1:jar:null:compile:ad224fa008f5a2605e8e037c3f79d3c820d4b52c</urn>
+                    <urn>org.java-websocket:Java-WebSocket:1.3.0:jar:null:compile:db2658f013fb163de4a99274c2eb9e17efe535d2</urn>
+                    <urn>org.json:json:20090211:jar:null:compile:c183aa3a2a6250293808bba12262c8920ce5a51c</urn>
+                    <urn>org.mockito:mockito-core:1.8.5:jar:null:test:7904ce54a754031a32ac78ec7103f484f81b56c6</urn>
+                    <urn>org.multibit.hd.hardware:core:0.5.0:jar:null:compile:6077d279eae6b95e6b39308e4b9c763ce9b8d28a</urn>
+                    <urn>org.multibit.hd.hardware:trezor:0.5.0:jar:null:compile:89fb097aefd64f55732e1be84463c54f11fba57c</urn>
+                    <urn>org.objenesis:objenesis:1.0:jar:null:test:9b473564e792c2bdf1449da1f0b1b5bff9805704</urn>
+                    <urn>org.slf4j:jul-to-slf4j:1.7.2:jar:null:compile:2ee8f3304632a2025d3c58aa3b63cd8842740f84</urn>
+                    <urn>org.slf4j:slf4j-api:1.7.2:jar:null:compile:0081d61b7f33ebeab314e07de0cc596f8e858d97</urn>
+
+                    <!-- A check for the rules themselves -->
+                    <urn>uk.co.froot.maven.enforcer:digest-enforcer-rules:0.0.1:jar:null:runtime:16a9e04f3fe4bb143c42782d07d5faf65b32106f</urn>
+
+                  </urns>
+
+                </digestRule>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+
+        <!-- Ensure we download the enforcer rules -->
+        <dependencies>
+          <dependency>
+            <groupId>uk.co.froot.maven.enforcer</groupId>
+            <artifactId>digest-enforcer-rules</artifactId>
+            <version>0.0.1</version>
+          </dependency>
+        </dependencies>
+
+      </plugin>
+
     </plugins>
 
   </build>
