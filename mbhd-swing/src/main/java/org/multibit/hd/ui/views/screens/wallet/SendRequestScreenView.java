@@ -55,8 +55,6 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
   private ModelAndView<DisplayPaymentsModel, DisplayPaymentsView> displayRequestedPaymentsMaV;
 
-  private WalletService walletService;
-
   /**
    * Handles update operations
    */
@@ -78,8 +76,6 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
 
   @Override
   public JPanel initialiseScreenViewPanel() {
-
-    walletService = CoreServices.getCurrentWalletService().get();
 
     MigLayout layout = new MigLayout(
             Panels.migXYDetailLayout(),
@@ -247,6 +243,11 @@ public class SendRequestScreenView extends AbstractScreenView<SendRequestScreenM
     if (changedEvent.isPresent()) {
       updateSendRequestButtons(changedEvent.get());
     }
+
+    if (!CoreServices.getCurrentWalletService().isPresent()) {
+      throw new IllegalStateException("SendRequestScreenView is showing without a current wallet service");
+    }
+    WalletService walletService = CoreServices.getCurrentWalletService().get();
 
     log.trace("Updating the payment data set - expensive");
     final Set<PaymentData> allPayments = walletService.getPaymentDataSet();
