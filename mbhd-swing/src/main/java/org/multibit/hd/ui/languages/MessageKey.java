@@ -135,6 +135,9 @@ public enum MessageKey {
   LEADING("leading"),
   TRAILING("trailing"),
 
+  // Adverbs
+  WORKING("working"),
+
   // Field labels
 
   RECIPIENT("recipient"),
