@@ -47,6 +47,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
 
   private static final Logger log = LoggerFactory.getLogger(RestorePasswordReportPanelView.class);
 
+  private JLabel working;
   private JLabel passwordRecoveryStatus;
 
   private ListeningExecutorService listeningExecutorService;
@@ -72,7 +73,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
 
     contentPanel.setLayout(
       new MigLayout(
-        Panels.migXYLayout(),
+        Panels.migXYLayout()+",hidemode 3", // Ensure result is on same line as working
         "[][][]", // Column constraints
         "[]10[]10[]" // Row constraints
       ));
@@ -80,8 +81,12 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
+    working = Labels.newWorking();
+    AwesomeDecorator.applyIcon(AwesomeIcon.REFRESH, working, true, MultiBitUI.NORMAL_ICON_SIZE);
+
     passwordRecoveryStatus = Labels.newStatusLabel(Optional.<MessageKey>absent(), null, Optional.<Boolean>absent());
 
+    contentPanel.add(working, "wrap");
     contentPanel.add(passwordRecoveryStatus, "wrap");
 
     listeningExecutorService = SafeExecutors.newSingleThreadExecutor("restore-password");
@@ -127,12 +132,14 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
     // Work out the seed, wallet id and wallet directory
+    log.debug("Converting seed phrase to seed...");
     List<String> seedPhrase = model.getRestorePasswordEnterSeedPhraseModel().getSeedPhrase();
     SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
     byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
 
     // Trezor soft wallets use a different salt in creating wallet ids
-    boolean restoreAsTrezor = model.getRestorePasswordEnterSeedPhraseModel().isRestoreAsTrezor();
+    boolean restoreAsTrezor = model.getRestorePasswordEnterSeedPhraseModel().isRestoreAsTrezorSoftWallet();
+    log.debug("Restoring password for Trezor soft wallet: {}", restoreAsTrezor);
     WalletId walletId;
     if (restoreAsTrezor) {
       walletId = new WalletId(seed, WalletId.getWalletIdSaltUsedInScryptForTrezorSoftWallets());
@@ -147,14 +154,17 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     if (walletDirectory.isDirectory()) {
       walletSummary = WalletManager.getOrCreateWalletSummary(walletDirectory, walletId);
     } else {
+      log.debug("Restore password failed (no wallet summary directory)");
       SwingUtilities.invokeLater(
         new Runnable() {
           @Override
           public void run() {
             // Failed
+            working.setVisible(false);
             passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
             AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
             AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+            passwordRecoveryStatus.setVisible(true);
           }
         });
       return;
@@ -165,15 +175,17 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
     try {
       backupAESKey = AESUtils.createAESKey(seed, WalletManager.scryptSalt());
     } catch (final NoSuchAlgorithmException e) {
+      log.error("Restore password failed (no such algorithm)", e);
       SwingUtilities.invokeLater(
         new Runnable() {
           @Override
           public void run() {
             // Failed
-            log.error(e.getMessage(), e);
+            working.setVisible(false);
             passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
             AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
             AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+            passwordRecoveryStatus.setVisible(true);
           }
         });
       return;
@@ -190,38 +202,46 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
       final byte[] decryptedWalletPasswordBytes = WalletManager.unpadPasswordBytes(decryptedPaddedWalletPasswordBytes);
 
       // Check the result
-      if (decryptedWalletPasswordBytes == null || decryptedWalletPasswordBytes.length == 0) {
+      if (decryptedWalletPasswordBytes.length == 0) {
+        log.debug("Restore password failed (decrypt)");
         SwingUtilities.invokeLater(
           new Runnable() {
             @Override
             public void run() {
               // Failed
+              working.setVisible(false);
               passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
               AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
               AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+              passwordRecoveryStatus.setVisible(true);
             }
           });
         return;
       }
 
       // Must be OK to be here
+      log.debug("Restore password succeeded");
       SwingUtilities.invokeLater(
         new Runnable() {
           @Override
           public void run() {
+            working.setVisible(false);
             String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, Charsets.UTF_8);
             passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, decryptedWalletPassword));
             AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS);
             AwesomeDecorator.applyIcon(AwesomeIcon.CHECK, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
+            passwordRecoveryStatus.setVisible(true);
           }
         });
 
     } catch (IllegalStateException ise) {
       // Probably the unpad failed
+      log.debug("Restore password failed (unpad failed)");
       SwingUtilities.invokeLater(
         new Runnable() {
           @Override
           public void run() {
+            working.setVisible(false);
             passwordRecoveryStatus.setText(Languages.safeText(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL));
             AccessibilityDecorator.apply(passwordRecoveryStatus, MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_FAIL);
             AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, passwordRecoveryStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
