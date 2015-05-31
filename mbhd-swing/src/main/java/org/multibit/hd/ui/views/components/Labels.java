@@ -1207,6 +1207,13 @@ public class Labels {
   }
 
   /**
+   * @return A new "Working" label
+   */
+  public static JLabel newWorking() {
+    return newLabel(MessageKey.WORKING);
+  }
+
+  /**
    * @return A new "welcome upper" note
    */
   public static JLabel newSecureEnviromentNote() {

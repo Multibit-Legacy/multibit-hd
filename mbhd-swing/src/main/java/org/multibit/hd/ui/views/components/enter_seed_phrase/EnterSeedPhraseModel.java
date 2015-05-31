@@ -144,8 +144,12 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
     return panelName;
   }
 
-  public boolean isRestoreAsTrezor() {
-    return WalletType.TREZOR_HARD_WALLET == restoreWalletType;
+  /**
+   *
+   * @return True if this restore is for a Trezor soft wallet
+   */
+  public boolean isRestoreAsTrezorSoftWallet() {
+    return WalletType.TREZOR_SOFT_WALLET == restoreWalletType;
   }
 
   public void setRestoreWalletType(WalletType restoreWalletType) {
