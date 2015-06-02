@@ -1,0 +1,18 @@
+<h3>Gap limit explained</h3>
+
+<p>This article explains what the "gap limit" is in MultiBit HD.</p>
+
+<p>If you create lots of payment requests using the "Request" button on the Send/Request
+  screen you sometimes see a message that you have reached the gap limit.</p>
+
+<p>To ensure your wallet can be synchronised correctly on different devices there is a
+  limit on how many unpaid payment requests you can have all in a row. If this limit did
+  not exist all wallets would have to explore forever looking for an address that could have
+  received payment through some other unknown wallet that shared the same wallet words.</p>
+
+<p>To get round this gap limit you can simply pay a small amount of bitcoin to your most
+  recent payment request address. This resets the gap limit and you can then create more
+  payment request addresses until you hit the next gap limit and so on.</p>
+
+<p>For a more technical description of the gap limit please read the
+  <a href="https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#Address_gap_limit" target="_blank">BIP 44 specification.</a></p>

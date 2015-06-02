@@ -6,11 +6,11 @@
 <ol>
   <li>Enter the destination address (e.g <a href="bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.005&label=Please%20donate%20to%20multibit.org">1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty</a> for MultiBit donations)</li>
   <li>Enter a value (e.g. 5mB or 0.005 BTC) in the BTC box.  Make sure you know which <a href="units.html">units</a> you are using. 
-  <li>You can enter an amount denominated in <a href="units.html">whatever bitcoin unit you have chosen</a> in the left entry field or the amount in your <a href="exchange-settings.html">chosen fiat currency</a> in the right entry field. MultiBit will perform a currency conversion using your <a href="exchange-settings.html">choice of exchange</a>.</li>
+  <li>You can enter an amount denominated in <a href="units.html">whatever bitcoin unit you have chosen</a> in the left entry field or the amount in your <a href="exchange-settings.html">chosen fiat currency</a> in the right entry field. MultiBit HD will perform a currency conversion using your <a href="exchange-settings.html">choice of exchange</a>.</li>
   <li>The amount that is sent will always be the amount of bitcoin in the BTC box.  If you want to send this amount of bitcoin, select "Next".  MultiBit will then show a confirmation screen requiring you to enter your wallet password and giving you the chance to back out. If you proceed then your transaction will be submitted to the Bitcoin network and should be considered irreversible.</li>
   <li>If you do want to proceed then:
   <ol>
-    <li>Enter a label (e.g. "My donation to MultiBit") to help you keep track of who you're spending your bitcoin on.</li>
+    <li>Enter a note (e.g. "My donation to MultiBit") to help you keep track of who you're spending your bitcoin on.</li>
     <li>Enter your wallet password, and select "Send".</li>
   </ol>
   </li>
@@ -19,16 +19,16 @@
 <h4>Details</h4>
 <p>The Bitcoin network requires you to specify the destination address. Any of the following will work:</p>
 <ul>
+  <li>Type in the name, or part of a name, of one of your Contacts. Select the contact.</li>
   <li>Type in the destination address directly.</li>
   <li>Copy the destination address to the system clipboard and then click on the Paste button next to the address field to paste it in.</li>
-  <li>Select a previously used destination address from the list shown at the bottom of the panel.</li>
 </ul>
 
-<p>You always get a confirmation screen before your bitcoin are actually sent. Click on the  "Next" button to see this confirmation screen. Then:</p>
-<ol>
-  <li><p>Check the details on the confirmation screen to make sure the address and amount are correct.</p></li>
-  <li><p>Press the Send  button to actually send the bitcoin.</p></li>
-</ol>
-<p>When the bitcoin are sent, you get a message at the bottom of the confirmation screen. Also, the number of peers (other computers on the Bitcoin
-  network) that you are connected to that have seen the transaction is shown. If there is a problem in sending your bitcoin an error
-  message will be shown instead.</p>
+<p>When you press the Send button MultiBit HD shows you the progress of the send as follows:</p>
+<ul>
+  <li>You are told whether the Bitcoin transaction was constructed successfully (for instance, you may not have enough bitcoin in your wallet)</li>
+  <li>The progress of the transaction being sent to the Bitcoin network. The broadcast icon fills up as the transaction send progresses</li>
+</ul>
+<p>Occasionally your transaction does not broadcast cleanly to the Bitcoin network. When this happens you are shown a messages like:
+"Your spendable balance is lower". If this happens you can close down MultiBit HD, check your network connection and restart MultiBit HD. It will then rebroadcast any transactions that have not confirmed.
+Often you simply have to wait for the next couple of blocks (say 30 minutes) and the transactions get confirmed normally and your balance updates automatically.</p>
