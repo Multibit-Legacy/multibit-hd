@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
@@ -99,6 +100,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Factory to provide the following to UI:</p>
@@ -224,6 +226,11 @@ public class Wizards {
     log.debug("New 'Exiting welcome wizard'. Initial state: {}, mode: {}", initialState, mode);
 
     Preconditions.checkNotNull(initialState, "'initialState' must be present");
+
+    // Allow time for any background UI tasks to complete before starting up
+    // This reduces the chance of a language change with keyboard causing a
+    // crash on startup (someone has to be deliberately hammering to trigger a failure)
+    Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
     return new WelcomeWizard(new WelcomeWizardModel(initialState, mode), true);
 

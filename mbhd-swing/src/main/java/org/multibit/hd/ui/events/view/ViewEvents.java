@@ -372,6 +372,8 @@ public class ViewEvents {
    */
   public static void fireWizardDeferredHideEvent(final String panelName, final boolean isExitCancel) {
 
+    // TODO Consider providing a Future so that others have visibility into when the deferred hide completes
+
     log.trace("Firing 'wizard deferred hide' event");
     if (SwingUtilities.isEventDispatchThread()) {
       viewEventBus.post(new WizardDeferredHideEvent(panelName, isExitCancel));
