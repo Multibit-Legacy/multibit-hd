@@ -10,6 +10,7 @@ import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.ui.events.controller.ShowScreenEvent;
 import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.views.ViewKey;
+import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.wallet_detail.WalletDetail;
 import org.multibit.hd.ui.views.screens.Screen;
 import org.multibit.hd.ui.views.wizards.AbstractWizardModel;
@@ -51,11 +52,6 @@ public class ViewEvents {
    * Keep track of the Guava event bus subscribers for a clean shutdown
    */
   private static final Set<Object> viewEventBusSubscribers = Sets.newHashSet();
-
-  /**
-   * A time period used to slow down UI response
-   */
-  public static final int SLOWDOWN_UPDATE_TIME = 4000; // milliseconds
 
   /**
    * Utilities have a private constructor
@@ -372,9 +368,11 @@ public class ViewEvents {
    */
   public static void fireWizardDeferredHideEvent(final String panelName, final boolean isExitCancel) {
 
-    // TODO Consider providing a Future so that others have visibility into when the deferred hide completes
-
     log.trace("Firing 'wizard deferred hide' event");
+
+    // Prevent any light box creation activity ahead of this process
+    Panels.setDeferredHideEventInProgress(true);
+
     if (SwingUtilities.isEventDispatchThread()) {
       viewEventBus.post(new WizardDeferredHideEvent(panelName, isExitCancel));
     } else {

@@ -599,6 +599,9 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
                 // This removes the reference to the wizard allowing for garbage collection
                 Panels.hideLightBoxIfPresent();
 
+                // Clear the deferred hide
+                Panels.setDeferredHideEventInProgress(false);
+
               }
             });
 
