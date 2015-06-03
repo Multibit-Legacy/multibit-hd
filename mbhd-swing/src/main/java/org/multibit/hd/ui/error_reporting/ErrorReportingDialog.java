@@ -56,7 +56,6 @@ public class ErrorReportingDialog extends JFrame {
   private JTextArea userMessage;
 
   private JLabel currentLogLabel;
-  private JTextArea currentLog;
   private JScrollPane currentLogScrollPane;
 
   private JLabel uploadProgressLabel;
@@ -66,12 +65,12 @@ public class ErrorReportingDialog extends JFrame {
   /**
    * A flag tracking whether the ErrorReportingDialog is being shown (to avoid stacking from repeated errors)
    */
-  private static boolean thereIsAnErrorReportingDialogBeingShown = false;
+  private static boolean dialogBeingShown = false;
 
   /**
    * The instance of the ErrorReportingDialog that is actually being shown to the user
    */
-  private static ErrorReportingDialog errorReportingDialogBeingShown = null;
+  private static ErrorReportingDialog currentDialog = null;
 
   /**
    * @param showApology True if the apology message should be displayed
@@ -88,30 +87,30 @@ public class ErrorReportingDialog extends JFrame {
     setTitle(Languages.safeText(MessageKey.ERROR_REPORTING_TITLE));
 
     JPanel contentPanel = Panels.newPanel(
-            new MigLayout(
-                    Panels.migXYDetailLayout() + ",hidemode 1", // Ensure the details do not take up space
-                    "[][]", // Columns
-                    "[]10[][][][][shrink][shrink]" // Rows
-            ));
+      new MigLayout(
+        Panels.migXYDetailLayout() + ",hidemode 1", // Ensure the details do not take up space
+        "[][]", // Columns
+        "[]10[][][][][shrink][shrink]" // Rows
+      ));
 
 
     JLabel preambleLabel;
     if (showApology) {
       preambleLabel = Labels.newNoteLabel(
-              new MessageKey[]{
-                      MessageKey.ERROR_REPORTING_APOLOGY_NOTE_1,
-                      MessageKey.ERROR_REPORTING_APOLOGY_NOTE_2,
-                      MessageKey.ERROR_REPORTING_APOLOGY_NOTE_3
-              },
-              new Object[][]{}
+        new MessageKey[]{
+          MessageKey.ERROR_REPORTING_APOLOGY_NOTE_1,
+          MessageKey.ERROR_REPORTING_APOLOGY_NOTE_2,
+          MessageKey.ERROR_REPORTING_APOLOGY_NOTE_3
+        },
+        new Object[][]{}
       );
     } else {
       preambleLabel = Labels.newNoteLabel(
-              new MessageKey[]{
-                      MessageKey.ERROR_REPORTING_MANUAL_NOTE_1,
-                      MessageKey.ERROR_REPORTING_MANUAL_NOTE_2
-              },
-              new Object[][]{}
+        new MessageKey[]{
+          MessageKey.ERROR_REPORTING_MANUAL_NOTE_1,
+          MessageKey.ERROR_REPORTING_MANUAL_NOTE_2
+        },
+        new Object[][]{}
       );
     }
 
@@ -145,7 +144,7 @@ public class ErrorReportingDialog extends JFrame {
 
     // Provide space for current log
     currentLogLabel = Labels.newLabel(MessageKey.ERROR_REPORTING_CONTENTS);
-    currentLog = TextBoxes.newReadOnlyTextArea(10, 40);
+    final JTextArea currentLog = TextBoxes.newReadOnlyTextArea(10, 40);
 
     Optional<File> currentLoggingFile = LogbackFactory.getCurrentLoggingFile();
     if (currentLoggingFile.isPresent()) {
@@ -211,24 +210,24 @@ public class ErrorReportingDialog extends JFrame {
 
     getContentPane().add(contentPanel);
 
-    if (thereIsAnErrorReportingDialogBeingShown) {
+    if (dialogBeingShown) {
       log.debug("There is already an error being shown so not displaying another one");
-      if (errorReportingDialogBeingShown != null) {
-        errorReportingDialogBeingShown.toFront();
+      if (currentDialog != null) {
+        currentDialog.toFront();
       }
     } else {
-      errorReportingDialogBeingShown = this;
-      thereIsAnErrorReportingDialogBeingShown = true;
+      currentDialog = this;
+      dialogBeingShown = true;
 
       addWindowListener(
-              new WindowAdapter() {
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent e) {
-                  handleClose();
-                }
+        new WindowAdapter() {
+          @Override
+          public void windowClosing(java.awt.event.WindowEvent e) {
+            handleClose();
+          }
 
 
-              });
+        });
 
       setMinimumSize(new Dimension(400, 200));
 
@@ -236,6 +235,19 @@ public class ErrorReportingDialog extends JFrame {
 
       pack();
       setVisible(true);
+
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+
+            // Ensure the user is locked out of any activity
+            Panels.getApplicationFrame().setEnabled(false);
+
+            // Ensure the error dialog gets to the front (even if the frame shows up later)
+            currentDialog.toFront();
+          }
+        });
     }
   }
 
@@ -285,30 +297,30 @@ public class ErrorReportingDialog extends JFrame {
 
         // Upload off the EDT
         final ListenableFuture<ErrorReportResult> future = SafeExecutors.newSingleThreadExecutor("error-reporting").submit(
-                new Callable<ErrorReportResult>() {
-                  @Override
-                  public ErrorReportResult call() throws Exception {
-                    // Upload error report
-                    return ExceptionHandler.handleErrorReportUpload(
-                            finalTruncatedMessage,
-                            liveErrorReportingUrl
-                    );
-                  }
-                });
+          new Callable<ErrorReportResult>() {
+            @Override
+            public ErrorReportResult call() throws Exception {
+              // Upload error report
+              return ExceptionHandler.handleErrorReportUpload(
+                finalTruncatedMessage,
+                liveErrorReportingUrl
+              );
+            }
+          });
         Futures.addCallback(
-                future, new FutureCallback<ErrorReportResult>() {
-                  @Override
-                  public void onSuccess(ErrorReportResult result) {
-                    handleErrorReportResult(result);
-                  }
+          future, new FutureCallback<ErrorReportResult>() {
+            @Override
+            public void onSuccess(ErrorReportResult result) {
+              handleErrorReportResult(result);
+            }
 
-                  @Override
-                  public void onFailure(Throwable t) {
-                    ErrorReportResult result = new ErrorReportResult();
-                    result.setErrorReportStatus(ErrorReportStatus.UPLOAD_FAILED);
-                    handleErrorReportResult(result);
-                  }
-                });
+            @Override
+            public void onFailure(Throwable t) {
+              ErrorReportResult result = new ErrorReportResult();
+              result.setErrorReportStatus(ErrorReportStatus.UPLOAD_FAILED);
+              handleErrorReportResult(result);
+            }
+          });
 
       }
     };
@@ -330,8 +342,8 @@ public class ErrorReportingDialog extends JFrame {
    * Performs final actions on close
    */
   private void handleClose() {
-    errorReportingDialogBeingShown = null;
-    thereIsAnErrorReportingDialogBeingShown = false;
+    currentDialog = null;
+    dialogBeingShown = false;
     dispose();
     if (showApology) {
       // Perform a hard shutdown if we've crashed
@@ -345,30 +357,30 @@ public class ErrorReportingDialog extends JFrame {
   private void handleErrorReportResult(final ErrorReportResult errorReportResult) {
 
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
+      new Runnable() {
+        @Override
+        public void run() {
 
-                final MessageKey uploadProgressKey;
+          final MessageKey uploadProgressKey;
 
-                switch (errorReportResult.getErrorReportStatus()) {
-                  case UPLOAD_OK_KNOWN:
-                    uploadProgressKey = MessageKey.ERROR_REPORTING_UPLOAD_COMPLETE;
-                    break;
-                  case UPLOAD_OK_UNKNOWN:
-                    uploadProgressKey = MessageKey.ERROR_REPORTING_UPLOAD_COMPLETE;
-                    break;
-                  case UPLOAD_FAILED:
-                    uploadProgressKey = MessageKey.ERROR_REPORTING_UPLOAD_FAILED;
-                    break;
-                  default:
-                    throw new IllegalStateException("Unknown error report result: " + errorReportResult.getErrorReportStatus().name());
-                }
+          switch (errorReportResult.getErrorReportStatus()) {
+            case UPLOAD_OK_KNOWN:
+              uploadProgressKey = MessageKey.ERROR_REPORTING_UPLOAD_COMPLETE;
+              break;
+            case UPLOAD_OK_UNKNOWN:
+              uploadProgressKey = MessageKey.ERROR_REPORTING_UPLOAD_COMPLETE;
+              break;
+            case UPLOAD_FAILED:
+              uploadProgressKey = MessageKey.ERROR_REPORTING_UPLOAD_FAILED;
+              break;
+            default:
+              throw new IllegalStateException("Unknown error report result: " + errorReportResult.getErrorReportStatus().name());
+          }
 
-                uploadProgressLabel.setText(Languages.safeText(uploadProgressKey));
-                uploadProgressLabel.setVisible(true);
+          uploadProgressLabel.setText(Languages.safeText(uploadProgressKey));
+          uploadProgressLabel.setVisible(true);
 
-              }
-            });
+        }
+      });
   }
 }
