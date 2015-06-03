@@ -241,8 +241,10 @@ public class ErrorReportingDialog extends JFrame {
           @Override
           public void run() {
 
-            // Ensure the user is locked out of any activity
-            Panels.getApplicationFrame().setEnabled(false);
+            if (showApology) {
+              // Ensure the user is locked out of any activity since we're going to crash
+              Panels.getApplicationFrame().setEnabled(false);
+            }
 
             // Ensure the error dialog gets to the front (even if the frame shows up later)
             currentDialog.toFront();
