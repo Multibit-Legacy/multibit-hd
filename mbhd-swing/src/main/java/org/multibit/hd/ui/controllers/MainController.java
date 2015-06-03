@@ -760,7 +760,9 @@ public class MainController extends AbstractController implements
           Panels.getApplicationFrame().invalidate();
 
           // Rebuild the detail views and alert panels
-          mainView.refresh(true);
+          if (mainView != null) {
+            mainView.refresh(true);
+          }
 
         }
       });
