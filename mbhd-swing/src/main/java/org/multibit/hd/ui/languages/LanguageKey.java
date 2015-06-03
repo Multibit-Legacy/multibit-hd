@@ -38,7 +38,7 @@ public enum LanguageKey {
   /**
    * Bulgarian
    */
-  BG_BG("bg_BG", CORBEN_REGULAR),
+  BG_BG("bg_BG", OPENSANS_SEMIBOLD),
   /**
    * Czech
    */
