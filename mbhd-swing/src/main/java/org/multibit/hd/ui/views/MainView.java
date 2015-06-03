@@ -28,7 +28,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -83,11 +89,11 @@ public class MainView extends JFrame {
     // Add a glass pane which dims the whole screen - used for switch (MainController#handleSwitchWallet)
     // It also absorbs keystrokes and mouse events
     JComponent glassPane = new JComponent() {
-            public void paintComponent(Graphics g) {
-                g.setColor(new Color(0, 0, 0, 50));
-                g.fillRect(0, 0, getWidth(), getHeight());
-                super.paintComponent(g);
-            }
+      public void paintComponent(Graphics g) {
+        g.setColor(new Color(0, 0, 0, 50));
+        g.fillRect(0, 0, getWidth(), getHeight());
+        super.paintComponent(g);
+      }
     };
     glassPane.addKeyListener(new KeyListener() {
       @Override
@@ -173,26 +179,30 @@ public class MainView extends JFrame {
 
   /**
    * <p>Rebuild the contents of the main view based on the current configuration and theme</p>
+   *
+   * @param isLanguageChange True if this refresh is because of a language change
    */
-  public void refresh() {
+  public void refresh(final boolean isLanguageChange) {
     if (SwingUtilities.isEventDispatchThread()) {
-      refreshOnEventThread();
+      refreshOnEventThread(isLanguageChange);
     } else {
       // Start the main view refresh on the EDT
       SwingUtilities.invokeLater(
-              new Runnable() {
-                @Override
-                public void run() {
-                  refreshOnEventThread();
-                }
-              });
+        new Runnable() {
+          @Override
+          public void run() {
+            refreshOnEventThread(isLanguageChange);
+          }
+        });
     }
   }
 
   /**
    * <p>Rebuild the contents of the main view based on the current configuration and theme on the Swing Event thread</p>
+   *
+   * @param isLanguageChange True if this refresh is because of a language change
    */
-  private void refreshOnEventThread() {
+  private void refreshOnEventThread(boolean isLanguageChange) {
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be in the EDT. Check MainController.");
 
@@ -229,10 +239,10 @@ public class MainView extends JFrame {
       // Ensure the wallet balance is propagated out
       if (WalletManager.INSTANCE.getCurrentWalletBalance().isPresent()) {
         ViewEvents.fireBalanceChangedEvent(
-                WalletManager.INSTANCE.getCurrentWalletBalance().get(),
-                WalletManager.INSTANCE.getCurrentWalletBalanceWithUnconfirmed().get(),
-                null,
-                Optional.<String>absent());
+          WalletManager.INSTANCE.getCurrentWalletBalance().get(),
+          WalletManager.INSTANCE.getCurrentWalletBalanceWithUnconfirmed().get(),
+          null,
+          Optional.<String>absent());
       }
 
       // Catch up on recent events
@@ -245,13 +255,13 @@ public class MainView extends JFrame {
       // This section must come after a deferred hide has completed
 
       // Determine if we are in Trezor mode for the welcome wizard
-      WelcomeWizardMode mode = CredentialsRequestType.TREZOR.equals(credentialsRequestType) ? WelcomeWizardMode.TREZOR: WelcomeWizardMode.STANDARD;
+      WelcomeWizardMode mode = CredentialsRequestType.TREZOR.equals(credentialsRequestType) ? WelcomeWizardMode.TREZOR : WelcomeWizardMode.STANDARD;
 
       // Determine the appropriate starting screen for the welcome wizard
       if (Configurations.currentConfiguration.isLicenceAccepted()) {
 
         // Must have run before so perform some additional checks
-        if (WelcomeWizardMode.TREZOR.equals(mode)) {
+        if (WelcomeWizardMode.TREZOR.equals(mode) && !isLanguageChange) {
           // Starting with an uninitialised Trezor
           log.debug("Showing exiting welcome wizard (select wallet)");
           Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET, mode).getWizardScreenHolder());
