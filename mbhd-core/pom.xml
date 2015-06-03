@@ -351,11 +351,12 @@
     </dependency>
 
     <!-- XChange Cryptotrade exchange support -->
-    <dependency>
-      <groupId>com.xeiam.xchange</groupId>
-      <artifactId>xchange-cryptotrade</artifactId>
-      <version>${xchange.version}</version>
-    </dependency>
+    <!-- Out of business -->
+    <!--<dependency>-->
+      <!--<groupId>com.xeiam.xchange</groupId>-->
+      <!--<artifactId>xchange-cryptotrade</artifactId>-->
+      <!--<version>${xchange.version}</version>-->
+    <!--</dependency>-->
 
     <!-- XChange Cryptsy exchange support -->
     <!-- Several broken feeds at 2.1.0 -->

@@ -20,14 +20,15 @@ Pre-packaged installers are available from the [MultiBit website](https://beta.m
 
 * Java 7 and Swing
 * [Bitcoinj](https://github.com/bitcoinj/bitcoinj) - Providing various Bitcoin protocol utilities (GitHub is the reference)
-* [Java HID API](https://code.google.com/p/javahidapi/) - Java library providing USB Human Interface Device (HID) native interface
+* [hid4java](https://github.com/gary-rowe/hid4java) - Java library providing USB Human Interface Device (HID) native interface
+* [MultiBit Hardware](https://github.com/bitcoin-solutions/multibit-hardware) - Java library providing Trezor support
 * [Google Protocol Buffers](https://code.google.com/p/protobuf/) (protobuf) - For use with serialization and hardware communications
 * [Font Awesome](http://fortawesome.github.io/Font-Awesome/) - for iconography
 * [Install4j](https://www.ej-technologies.com/download/install4j/files) - for a smooth installation and update process
 
 ### Getting started
 
-MultiBit HD is a standard Maven build from a GitHub repository and currently relies on some snapshot builds of libraries which aren't available in Maven Central.
+MultiBit HD is a standard Maven build from a GitHub repository and currently relies on some builds of libraries which aren't available in Maven Central.
 
 Below are some basic instructions for developers - there is [more information in the MultiBit HD wiki](https://github.com/bitcoin-solutions/multibit-hd/wiki).
 
@@ -68,12 +69,20 @@ Maven uses a file called `pom.xml` present in the MultiBit HD source code projec
 
 #### We currently use a forked version of Bitcoinj
 
-The [MultiBit Staging repository](https://github.com/bitcoin-solutions/mbhd-maven) contains a `bitcoinj-0.13-alice-develop-SNAPSHOT`
-and supporting Orchid JAR for Tor that is aligned with the MultiBit HD `develop` branch. This should be used for 
+The [MultiBit Staging repository](https://github.com/bitcoin-solutions/mbhd-maven) contains a fork of the bitcoinj library
+and its supporting Orchid JAR for Tor that is aligned with the MultiBit HD `develop` branch. This should be used for
 development builds and is suitable for production. As we make changes to our fork we update the staging repository. 
 
-Wherever possible we will introduce our forked changes as a pull request into the upstream bitcoinj so that other 
-projects can benefit but we must use a fork to ensure rapid updates are possible during development.
+Our release cycle is different to that of bitcoinj and our version reflects as accurately as we can the state of play
+when the bitcoinj fork code was frozen. For example `bitcoinj-0.13-SNAPSHOT-alice-0.0.9` should be interpreted as
+"a snapshot of upstream bitcoinj 0.13 that has additional code (alice) that is released under version 0.0.9".
+
+Deeper analysis of the actual git upstream can be seen through the tagging of the `master` branch.
+
+Wherever possible, and time permitting, we will introduce our forked changes as a pull request into the upstream bitcoinj
+so that other projects can benefit but we must use a fork to ensure rapid updates are possible during development.
+
+Anyone wishing to handle this part of the process is very welcome to offer up their assistance!
 
 #### Start the application (from an IDE)
 

@@ -54,7 +54,7 @@ public class SelectGettingStartedUseCase extends AbstractFestUseCase {
     // Click the "Getting Started" link
     window
       .robot
-      .click(editorPane, new Point(100, 190));
+      .click(editorPane, new Point(100, 220));
 
     // Ensure we are on the correct page
     helpContents = window
