@@ -132,11 +132,6 @@ public class MainController extends AbstractController implements
    */
   private static boolean fireTransactionAlerts = true;
 
-  private static final int LANGUAGE_DELAY_TIME = 100; // milliseconds
-  private static final int MINIMUM_LANGUAGE_REFRESH_TIME = 400; // milliseconds
-  private static long lastLanguageRefresh = 0;
-
-
   /**
    * @param headerController The header controller
    */
@@ -296,14 +291,6 @@ public class MainController extends AbstractController implements
     if (mainView.isShowExitingWelcomeWizard()) {
 
       // Restarting the main view from a language change
-      long now = System.currentTimeMillis();
-      boolean tooQuickly = now - lastLanguageRefresh < MINIMUM_LANGUAGE_REFRESH_TIME;
-      lastLanguageRefresh = now;
-      if (tooQuickly) {
-        // Ensure configuration events are not processed too quickly
-        Uninterruptibles.sleepUninterruptibly(MINIMUM_LANGUAGE_REFRESH_TIME, TimeUnit.MILLISECONDS);
-      }
-      Uninterruptibles.sleepUninterruptibly(LANGUAGE_DELAY_TIME, TimeUnit.MILLISECONDS);
       handleBasicMainViewRefresh();
     } else {
 
