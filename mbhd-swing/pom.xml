@@ -136,7 +136,7 @@
                     <urn>org.apache.maven.plugins:maven-site-plugin:3.0:maven-plugin:null:runtime:39e1d8d4dae56f948e0028890c426c2002331e8c</urn>
                     <urn>org.apache.maven.plugins:maven-source-plugin:2.4:maven-plugin:null:runtime:46f0d7f7823d729ba300d3f8929900c7e9cb5ac0</urn>
                     <urn>org.apache.maven.plugins:maven-surefire-plugin:2.16:maven-plugin:null:runtime:60928a9538863bc6377898a69a5240b5b1798207</urn>
-                    <urn>org.bitcoinj:bitcoinj-core:0.13-SNAPSHOT-alice-0.1.0:jar:null:compile:80d2275c4c36fc36130ca3bbbff9b17dc8184e7b</urn>
+                    <!-- <urn>org.bitcoinj:bitcoinj-core:0.13-SNAPSHOT-alice-0.1.0:jar:null:compile:80d2275c4c36fc36130ca3bbbff9b17dc8184e7b</urn> -->
                     <urn>org.bitcoinj:orchid:1.1:jar:null:compile:cc54aa849a4c3f5b3bfda90dd4286205b2a60e87</urn>
                     <urn>org.codehaus.mojo:findbugs-maven-plugin:3.0.0:maven-plugin:null:runtime:2903860ef2477fc4944d5553b17613cfa9f9861c</urn>
                     <urn>org.easytesting:fest-assert:1.2:jar:null:test:bb0d051e157f921537aa30d6d2c2a6b201edbb1b</urn>
