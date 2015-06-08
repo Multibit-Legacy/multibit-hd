@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.bitcoinj.core.*;
 import org.bitcoinj.params.MainNetParams;
-import org.bouncycastle.openpgp.PGPPublicKey;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.dto.*;
 import org.multibit.hd.brit.exceptions.MatcherResponseException;
@@ -20,6 +19,7 @@ import org.multibit.hd.brit.payer.Payers;
 import org.multibit.hd.brit.utils.HttpsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.openpgp.PGPPublicKey;
 
 import java.io.IOException;
 import java.io.Serializable;

@@ -1,6 +1,6 @@
 package org.multibit.hd.brit.payer;
 
-import org.bouncycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPPublicKey;
 
 /**
  * <p>Value object to provide the following to BRIT API:</p>

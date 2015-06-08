@@ -88,11 +88,10 @@
 
   <dependencies>
 
-    <!-- Bouncy Castle for PGP support -->
+    <!-- Spongy Castle for PGP support -->
     <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcpg-jdk16</artifactId>
-      <version>1.46</version>
+      <groupId>com.madgag.spongycastle</groupId>
+      <artifactId>pg</artifactId>
     </dependency>
 
   </dependencies>

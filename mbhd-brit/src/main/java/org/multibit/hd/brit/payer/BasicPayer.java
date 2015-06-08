@@ -3,15 +3,13 @@ package org.multibit.hd.brit.payer;
 import com.google.common.base.Optional;
 import com.google.common.io.ByteStreams;
 import org.bitcoinj.crypto.KeyCrypterException;
-import org.bouncycastle.openpgp.PGPException;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.dto.*;
 import org.multibit.hd.brit.exceptions.MatcherResponseException;
 import org.multibit.hd.brit.exceptions.PayerRequestException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
+import org.spongycastle.openpgp.PGPException;
 
 import java.io.*;
 import java.security.MessageDigest;
@@ -29,8 +27,6 @@ import java.util.Date;
  * @since 0.0.1
  */
 public class BasicPayer implements Payer {
-
-  private static final Logger log = LoggerFactory.getLogger(BasicPayer.class);
 
   private PayerConfig payerConfig;
 

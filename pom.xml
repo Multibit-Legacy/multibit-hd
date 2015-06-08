@@ -285,10 +285,10 @@
     <version>2.0.1</version>
   </dependency>
 
-  <!-- Crypto -->
+  <!-- Crypto to match Bitcoinj -->
   <dependency>
     <groupId>com.madgag.spongycastle</groupId>
-    <artifactId>core</artifactId>
+    <artifactId>pg</artifactId>
     <version>1.51.0.0</version>
   </dependency>
 

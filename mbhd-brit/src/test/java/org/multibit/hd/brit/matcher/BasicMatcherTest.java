@@ -23,7 +23,6 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.params.MainNetParams;
-import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -38,6 +37,7 @@ import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.openpgp.PGPPublicKey;
 
 import java.io.File;
 import java.io.FileInputStream;
