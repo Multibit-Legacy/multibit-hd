@@ -197,13 +197,14 @@
         </executions>
       </plugin>
 
-      <!-- Filter out functional and FEST UI tests by Maven (an IDE will run all tests including functional) -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.16</version>
         <configuration>
+          <!-- Provide extra memory to reduce excessive threads being allocated during testing -->
           <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+          <!-- Filter out functional and FEST UI tests by Maven (an IDE will run all tests including functional) -->
           <excludes>
             <exclude>**/*FunctionalTest.java</exclude>
             <exclude>**/*MultiBitHDFestTest.java</exclude>
