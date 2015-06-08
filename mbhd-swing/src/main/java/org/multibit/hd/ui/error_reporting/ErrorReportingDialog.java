@@ -39,7 +39,7 @@ import java.util.concurrent.Callable;
  * <li>Gathering of extra information from user</li>
  * <li>Uploading of encrypted logs to ELK stack</li>
  * </ul>
- *
+ * <p/>
  * <p>Notes:</p>
  * <ol>
  * <li>We must extend JFrame to allow for exceptions occurring before the UI has rendered</li>
@@ -56,7 +56,6 @@ public class ErrorReportingDialog extends JFrame {
   private JTextArea userMessage;
 
   private JLabel currentLogLabel;
-  private JTextArea currentLog;
   private JScrollPane currentLogScrollPane;
 
   private JLabel uploadProgressLabel;
@@ -64,10 +63,21 @@ public class ErrorReportingDialog extends JFrame {
   private final boolean showApology;
 
   /**
+   * A flag tracking whether the ErrorReportingDialog is being shown (to avoid stacking from repeated errors)
+   */
+  private static boolean dialogBeingShown = false;
+
+  /**
+   * The instance of the ErrorReportingDialog that is actually being shown to the user
+   */
+  private static ErrorReportingDialog currentDialog = null;
+
+  /**
    * @param showApology True if the apology message should be displayed
    */
   public ErrorReportingDialog(boolean showApology) {
     this.showApology = showApology;
+
     initComponents();
   }
 
@@ -134,7 +144,7 @@ public class ErrorReportingDialog extends JFrame {
 
     // Provide space for current log
     currentLogLabel = Labels.newLabel(MessageKey.ERROR_REPORTING_CONTENTS);
-    currentLog = TextBoxes.newReadOnlyTextArea(10, 40);
+    final JTextArea currentLog = TextBoxes.newReadOnlyTextArea(10, 40);
 
     Optional<File> currentLoggingFile = LogbackFactory.getCurrentLoggingFile();
     if (currentLoggingFile.isPresent()) {
@@ -200,23 +210,47 @@ public class ErrorReportingDialog extends JFrame {
 
     getContentPane().add(contentPanel);
 
-    addWindowListener(
-      new WindowAdapter() {
-        @Override
-        public void windowClosing(java.awt.event.WindowEvent e) {
-          handleClose();
-        }
+    if (dialogBeingShown) {
+      log.debug("There is already an error being shown so not displaying another one");
+      if (currentDialog != null) {
+        currentDialog.toFront();
+      }
+    } else {
+      currentDialog = this;
+      dialogBeingShown = true;
+
+      addWindowListener(
+        new WindowAdapter() {
+          @Override
+          public void windowClosing(java.awt.event.WindowEvent e) {
+            handleClose();
+          }
 
 
-      });
+        });
 
-    setMinimumSize(new Dimension(400, 200));
+      setMinimumSize(new Dimension(400, 200));
 
-    setLocationRelativeTo(null);
+      setLocationRelativeTo(null);
 
-    pack();
-    setVisible(true);
+      pack();
+      setVisible(true);
 
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+
+            if (showApology) {
+              // Ensure the user is locked out of any activity since we're going to crash
+              Panels.getApplicationFrame().setEnabled(false);
+            }
+
+            // Ensure the error dialog gets to the front (even if the frame shows up later)
+            currentDialog.toFront();
+          }
+        });
+    }
   }
 
   private Action getDetailsAction() {
@@ -310,6 +344,8 @@ public class ErrorReportingDialog extends JFrame {
    * Performs final actions on close
    */
   private void handleClose() {
+    currentDialog = null;
+    dialogBeingShown = false;
     dispose();
     if (showApology) {
       // Perform a hard shutdown if we've crashed
@@ -348,7 +384,5 @@ public class ErrorReportingDialog extends JFrame {
 
         }
       });
-
   }
-
 }

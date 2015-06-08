@@ -105,9 +105,9 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
 
     String nextAddressToShow;
 
-    int gap = walletService.getGap();
-    atGapLimit = gap >= WalletService.GAP_LIMIT;
+    Optional<Integer> gap = walletService.getGap();
     log.debug("current gap: {}", gap);
+    atGapLimit = gap.isPresent() && gap.get() >= WalletService.GAP_LIMIT;
 
     if (atGapLimit) {
       nextAddressToShow = walletService.getLastGeneratedReceivingAddress();

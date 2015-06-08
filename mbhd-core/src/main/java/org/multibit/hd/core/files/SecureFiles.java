@@ -119,7 +119,7 @@ public class SecureFiles {
           }
         }
         boolean deleteSuccess = file.delete();
-        log.debug("Result of delete of file '" + file.getAbsolutePath() + "' was " + deleteSuccess);
+        log.trace("Result of delete of file '" + file.getAbsolutePath() + "' was " + deleteSuccess);
       }
     }
 
@@ -172,7 +172,7 @@ public class SecureFiles {
       // * relies on native code
       // * works on Windows
       boolean deleteSuccess = Files.deleteIfExists(file.toPath());
-      log.debug("Result of initial delete was {} for:\n'{}'", deleteSuccess, file.getAbsolutePath());
+      log.trace("Result of initial delete was {} for:\n'{}'", deleteSuccess, file.getAbsolutePath());
 
       if (Utils.isWindows()) {
         // Work around an issue on Windows whereby files are not deleted
@@ -190,7 +190,7 @@ public class SecureFiles {
    */
   public static File verifyOrCreateDirectory(File directory) {
 
-    log.debug("Verify or create directory:\n'{}'", directory.getAbsolutePath());
+    log.trace("Verify or create directory:\n'{}'", directory.getAbsolutePath());
 
     if (!directory.exists()) {
       Preconditions.checkState(directory.mkdirs(), "Could not create directory: '" + directory + "'");
@@ -211,7 +211,7 @@ public class SecureFiles {
 
     File directory = new File(parentDirectory, childDirectory);
 
-    log.debug("Verify or create directory:\n'{}'", directory.getAbsolutePath());
+    log.trace("Verify or create directory:\n'{}'", directory.getAbsolutePath());
 
     if (!parentDirectory.exists()) {
       Preconditions.checkState(parentDirectory.mkdir(), "Could not create parentDirectory: '" + parentDirectory + "'");
@@ -242,7 +242,7 @@ public class SecureFiles {
 
     File file = new File(parentDirectory.getAbsolutePath() + File.separator + filename);
 
-    log.debug("Verify or create file:\n'{}'", file.getAbsolutePath());
+    log.trace("Verify or create file:\n'{}'", file.getAbsolutePath());
 
     if (!file.exists()) {
       try {
@@ -273,7 +273,7 @@ public class SecureFiles {
 
     // Add a random number to the topLevelTemporaryDirectory
     String temporaryDirectoryName = topLevelTemporaryDirectory.getAbsolutePath() + File.separator + secureRandom.nextInt(Integer.MAX_VALUE);
-    log.debug("Temporary directory name:\n'{}'", temporaryDirectoryName);
+    log.trace("Temporary directory name:\n'{}'", temporaryDirectoryName);
     File temporaryDirectory = new File(temporaryDirectoryName);
     temporaryDirectory.deleteOnExit();
 

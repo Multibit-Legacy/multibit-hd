@@ -72,12 +72,12 @@
     <!-- Use https://rawgithub.com to provide a consistent result -->
     <repository>
       <id>mbhd-maven-release</id>
-      <url>https://rawgithub.com/bitcoin-solutions/mbhd-maven/master/releases</url>
+      <url>https://raw.github.com/bitcoin-solutions/mbhd-maven/master/releases</url>
       <releases/>
     </repository>
     <repository>
       <id>mbhd-maven-snapshot</id>
-      <url>https://rawgithub.com/bitcoin-solutions/mbhd-maven/master/snapshots</url>
+      <url>https://raw.github.com/bitcoin-solutions/mbhd-maven/master/snapshots</url>
       <!-- These artifacts change frequently during development iterations -->
       <snapshots>
         <updatePolicy>always</updatePolicy>
@@ -235,172 +235,172 @@
         </configuration>
       </plugin>
 
-    </plugins>
+  </plugins>
 
-  </build>
+</build>
 
   <!-- Provide defaults for all modules to use -->
-  <dependencyManagement>
-    <dependencies>
+<dependencyManagement>
+<dependencies>
 
-      <!-- MultiBit Hardware for Trezor integration -->
-      <!-- This also brings in the corresponding bitcoinj-alice artifact transitively -->
-      <dependency>
-        <groupId>org.multibit.hd.hardware</groupId>
-        <artifactId>trezor</artifactId>
-        <version>0.5.0</version>
-      </dependency>
+  <!-- MultiBit Hardware for Trezor integration -->
+  <!-- This also brings in the corresponding bitcoinj-alice artifact transitively -->
+  <dependency>
+    <groupId>org.multibit.hd.hardware</groupId>
+    <artifactId>trezor</artifactId>
+    <version>0.5.2</version>
+  </dependency>
 
-      <!-- Logging is through SLF4J and Logback -->
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jul-to-slf4j</artifactId>
-        <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>1.0.13</version>
-      </dependency>
+  <!-- Logging is through SLF4J and Logback -->
+  <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>${slf4j.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>jul-to-slf4j</artifactId>
+    <version>${slf4j.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-classic</artifactId>
+    <version>1.0.13</version>
+  </dependency>
 
-      <!-- Google Guava for code utilities -->
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <!-- Require v16.0.1+ for full JDK1.7.0_51+ compliance -->
-        <version>16.0.1</version>
-      </dependency>
+  <!-- Google Guava for code utilities -->
+  <dependency>
+    <groupId>com.google.guava</groupId>
+    <artifactId>guava</artifactId>
+    <!-- Require v16.0.1+ for full JDK1.7.0_51+ compliance -->
+    <version>16.0.1</version>
+  </dependency>
 
-      <!-- Findbugs annotations -->
-      <dependency>
-        <groupId>com.google.code.findbugs</groupId>
-        <artifactId>annotations</artifactId>
-        <version>2.0.1</version>
-      </dependency>
+  <!-- Findbugs annotations -->
+  <dependency>
+    <groupId>com.google.code.findbugs</groupId>
+    <artifactId>annotations</artifactId>
+    <version>2.0.1</version>
+  </dependency>
 
-      <!-- Crypto -->
-      <dependency>
-        <groupId>com.madgag.spongycastle</groupId>
-        <artifactId>core</artifactId>
-        <version>1.51.0.0</version>
-      </dependency>
+  <!-- Crypto -->
+  <dependency>
+    <groupId>com.madgag.spongycastle</groupId>
+    <artifactId>core</artifactId>
+    <version>1.51.0.0</version>
+  </dependency>
 
-      <!-- Joda time for timestamps -->
-      <dependency>
-        <groupId>joda-time</groupId>
-        <artifactId>joda-time</artifactId>
-        <version>2.2</version>
-      </dependency>
+  <!-- Joda time for timestamps -->
+  <dependency>
+    <groupId>joda-time</groupId>
+    <artifactId>joda-time</artifactId>
+    <version>2.2</version>
+  </dependency>
 
-      <!-- Jersey client for upstream requests -->
-      <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-client</artifactId>
-        <version>1.17.1</version>
-      </dependency>
+  <!-- Jersey client for upstream requests -->
+  <dependency>
+    <groupId>com.sun.jersey</groupId>
+    <artifactId>jersey-client</artifactId>
+    <version>1.17.1</version>
+  </dependency>
 
-      <!-- Testing -->
+  <!-- Testing -->
 
-      <!-- JUnit for testing -->
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.11</version>
-        <scope>test</scope>
-      </dependency>
+  <!-- JUnit for testing -->
+  <dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.11</version>
+    <scope>test</scope>
+  </dependency>
 
-      <!-- FEST for fluent test assertions -->
-      <dependency>
-        <groupId>org.easytesting</groupId>
-        <artifactId>fest-assert-core</artifactId>
-        <version>${fest.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <!-- FEST for Swing UI testing -->
-      <dependency>
-        <groupId>org.easytesting</groupId>
-        <artifactId>fest-swing</artifactId>
-        <version>${fest.version}</version>
-        <scope>test</scope>
-      </dependency>
+  <!-- FEST for fluent test assertions -->
+  <dependency>
+    <groupId>org.easytesting</groupId>
+    <artifactId>fest-assert-core</artifactId>
+    <version>${fest.version}</version>
+    <scope>test</scope>
+  </dependency>
+  <!-- FEST for Swing UI testing -->
+  <dependency>
+    <groupId>org.easytesting</groupId>
+    <artifactId>fest-swing</artifactId>
+    <version>${fest.version}</version>
+    <scope>test</scope>
+  </dependency>
 
-      <!-- Mockito for mocking -->
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>1.8.5</version>
-        <scope>test</scope>
-      </dependency>
+  <!-- Mockito for mocking -->
+  <dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-core</artifactId>
+    <version>1.8.5</version>
+    <scope>test</scope>
+  </dependency>
 
-    </dependencies>
-  </dependencyManagement>
+</dependencies>
+</dependencyManagement>
 
   <!-- All modules will have these dependencies -->
-  <dependencies>
+<dependencies>
 
-    <!-- MultiBit Hardware for Trezor integration -->
-    <!-- This also brings in the corresponding bitcoinj-alice artifact transitively -->
-    <dependency>
-      <groupId>org.multibit.hd.hardware</groupId>
-      <artifactId>trezor</artifactId>
-    </dependency>
+<!-- MultiBit Hardware for Trezor integration -->
+<!-- This also brings in the corresponding bitcoinj-alice artifact transitively -->
+<dependency>
+  <groupId>org.multibit.hd.hardware</groupId>
+  <artifactId>trezor</artifactId>
+</dependency>
 
-    <!-- All logging is through SLF4J and Logback in JSON for Logstash -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jul-to-slf4j</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.logstash.logback</groupId>
-      <artifactId>logstash-logback-encoder</artifactId>
-      <version>4.2</version>
-    </dependency>
+<!-- All logging is through SLF4J and Logback in JSON for Logstash -->
+<dependency>
+  <groupId>org.slf4j</groupId>
+  <artifactId>jul-to-slf4j</artifactId>
+</dependency>
+<dependency>
+  <groupId>ch.qos.logback</groupId>
+  <artifactId>logback-classic</artifactId>
+</dependency>
+<dependency>
+  <groupId>net.logstash.logback</groupId>
+  <artifactId>logstash-logback-encoder</artifactId>
+  <version>4.2</version>
+</dependency>
 
-    <!-- Google Guava for code utilities -->
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
+<!-- Google Guava for code utilities -->
+<dependency>
+  <groupId>com.google.guava</groupId>
+  <artifactId>guava</artifactId>
+</dependency>
 
-    <!-- Findbugs annotations -->
-    <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>annotations</artifactId>
-    </dependency>
+<!-- Findbugs annotations -->
+<dependency>
+  <groupId>com.google.code.findbugs</groupId>
+  <artifactId>annotations</artifactId>
+</dependency>
 
-    <!-- Joda time for timestamps -->
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
+<!-- Joda time for timestamps -->
+<dependency>
+  <groupId>joda-time</groupId>
+  <artifactId>joda-time</artifactId>
+</dependency>
 
-    <!-- Testing -->
+<!-- Testing -->
 
-    <!-- JUnit for testing -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
+<!-- JUnit for testing -->
+<dependency>
+  <groupId>junit</groupId>
+  <artifactId>junit</artifactId>
+</dependency>
 
-    <!-- FEST for fluent test assertions -->
-    <dependency>
-      <groupId>org.easytesting</groupId>
-      <artifactId>fest-swing</artifactId>
-    </dependency>
+<!-- FEST for fluent test assertions -->
+<dependency>
+  <groupId>org.easytesting</groupId>
+  <artifactId>fest-swing</artifactId>
+</dependency>
 
-    <!-- Mockito for mocking -->
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-    </dependency>
-  </dependencies>
-</project>
+<!-- Mockito for mocking -->
+<dependency>
+  <groupId>org.mockito</groupId>
+  <artifactId>mockito-core</artifactId>
+</dependency>
+</dependencies>
+  </project>

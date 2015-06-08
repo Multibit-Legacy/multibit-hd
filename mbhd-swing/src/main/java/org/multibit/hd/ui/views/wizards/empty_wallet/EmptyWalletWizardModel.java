@@ -422,7 +422,13 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
 
               String[] transactionOutputAmount = Formats.formatCoinAsSymbolic(output.getValue(), languageConfiguration, bitcoinConfiguration);
 
+              // P2PKH are the most common addresses so try that first
               Address transactionOutputAddress = output.getAddressFromP2PKHScript(MainNetParams.get());
+              if (transactionOutputAddress == null) {
+                  // Fall back to P2SH
+                  transactionOutputAddress = output.getAddressFromP2SH(MainNetParams.get());
+              }
+
               key = MessageKey.TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY;
               values = new String[]{
                 transactionOutputAmount[0] + transactionOutputAmount[1] + " " + bitcoinSymbolText,

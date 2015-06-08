@@ -328,37 +328,37 @@ public class WalletServiceTest {
   public void testGap() throws Exception {
     // Initially there are no payment requests and the gap is zero
     assertThat(walletService.getMBHDPaymentRequestDataList().size()).isEqualTo(0);
-    assertThat(walletService.getGap()).isEqualTo(0);
+    assertThat(walletService.getGap()).isEqualTo(Optional.of(0));
 
     // Create a new payment request
     MBHDPaymentRequestData mbhdPaymentRequestData1 = createMBHDPaymentRequestData();
     walletService.addMBHDPaymentRequestData(mbhdPaymentRequestData1);
     // There is now one unpaid payment request and hence the gap is 1
-    assertThat(walletService.getGap()).isEqualTo(1);
+    assertThat(walletService.getGap()).isEqualTo(Optional.of(1));
 
    // Create another new payment request
     MBHDPaymentRequestData mbhdPaymentRequestData2 = createMBHDPaymentRequestData();
     walletService.addMBHDPaymentRequestData(mbhdPaymentRequestData2);
     // There is now two unpaid payment requests and hence the gap is 2
-    assertThat(walletService.getGap()).isEqualTo(2);
+    assertThat(walletService.getGap()).isEqualTo(Optional.of(2));
 
     // Pay the last payment request - we do this by adding a transaction hash to the paying tx hashes
     // As we paid the last payment request the gap should now be 0
     Transaction tx = createFakeTx(networkParameters, valueOf(245, 0), mbhdPaymentRequestData2.getAddress());
     mbhdPaymentRequestData2.getPayingTransactionHashes().add(tx.getHashAsString());
-    assertThat(walletService.getGap()).isEqualTo(0);
+    assertThat(walletService.getGap()).isEqualTo(Optional.of(0));
 
     // Create a new payment request - gap should go back up to 1
     MBHDPaymentRequestData mbhdPaymentRequestData3 = createMBHDPaymentRequestData();
     walletService.addMBHDPaymentRequestData(mbhdPaymentRequestData3);
     // There is now one unpaid payment request since the last payment and hence the gap is 1
-    assertThat(walletService.getGap()).isEqualTo(1);
+    assertThat(walletService.getGap()).isEqualTo(Optional.of(1));
 
         // Create a new payment request - gap should go back up to 2
     MBHDPaymentRequestData mbhdPaymentRequestData4 = createMBHDPaymentRequestData();
     walletService.addMBHDPaymentRequestData(mbhdPaymentRequestData4);
     // There is now two unpaid payment requests since the last payment and hence the gap is 2
-    assertThat(walletService.getGap()).isEqualTo(2);
+    assertThat(walletService.getGap()).isEqualTo(Optional.of(2));
   }
 
   private MBHDPaymentRequestData createMBHDPaymentRequestData() {

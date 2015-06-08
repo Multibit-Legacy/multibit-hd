@@ -1,6 +1,8 @@
 <h2 class="text-center">Thank you for choosing MultiBit HD</h2>
 
-<p>Please take a look at our <a href="getting-started.html" target="_blank">Getting Started guide</a> so you can be up and running with Bitcoin quickly and safely.</p>
+<h4>How to get started</h4>
+
+<p>We have a <a href="getting-started.html" target="_blank">Getting Started guide</a> so you can be up and running with Bitcoin quickly and safely.</p>
 
 <p><a href="https://www.ej-technologies.com" target="_blank">Install4j by EJ Technologies GmBH</a> was used to create our installers.
   If you're a Java developer needing an installer solution you should check them out.</p>
@@ -25,7 +27,7 @@ cd multibit-hd
 ./multibit-hd &
 </pre>
 
-<p>After running the installer you may need to run some scripts to further integrate MultiBit HD into your environment. In particular the Trezor support requires certain
+<p>After running the installer you may need to run some scripts to further integrate MultiBit HD into your environment. In particular the <a href="https://buytrezor.com/?a=4fbc03c60545" target="_blank">Trezor</a> support requires certain
   <code>udev</code> rules to be in place. The following sections provide these scripts. If you have a distro that is not included and have a script you'd like to share please let
   us know through the website issue link at the foot of the page.</p>
 
@@ -80,6 +82,11 @@ sudo ./post-install.sh
 cd ~/multibit-hd
 java -jar multibit-hd.jar
 </pre>
+
+<h4>My external browser does not launch</h4>
+
+<p>MultiBit HD will first attempt to launch a browser using GNOME libraries and will fall back to <code>xdg-open</code> if that fails. It may be that your
+system does not have a default browser available in which case you may need to add one manually.</p>
 
 <h4>I'm seeing a SIGSEV (0xb)</h4>
 <p>Some people have had issues using MultiBit HD with OpenJDK on Arch Linux, CentOS and OpenSuse distributions. The error manifests when trying to add a password to a wallet and occurs deep

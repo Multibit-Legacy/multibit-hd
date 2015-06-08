@@ -1,18 +1,91 @@
 <h3>File descriptions</h3>
+
+<p>This is a technical article aimed at people with working knowledge of navigating files on their computer.</p>
+
 <p>When MultiBit HD runs, it creates various files on your computer. This help section describes what each of these files is for.</p>
 
-<p>Here is a list of the files stored with your wallet:</p>
+<h4>Installation directory</h4>
+
+<p>The installation directory is where you installed MultiBit HD. No configuration files or wallets are stored there normally.</p>
+
+<p>If you chose the default installation options, you will find the MultiBit HD application in one of the following locations:</p>
+
 <ul>
-  <li><p>mbhd.wallet.aes&nbsp;&nbsp;=&nbsp;&nbsp;This is the main wallet file containing your private keys and transactions.</p></li>
-  <li><p>mbhd.yaml&nbsp;&nbsp;=&nbsp;&nbsp;This file contains wallet configuration information.</p></li>
-  <li><p>mbhd.checkpoints&nbsp;&nbsp;=&nbsp;&nbsp;A Bitcoin checkpoints file, used in syncing your wallet.</p></li>
-  <li><p>mbhd.spvchain&nbsp;&nbsp;=&nbsp;&nbsp;A Bitcoin blockstore, used in syncing your wallet</li></p>
+  <li>Windows (7,8) - <code>C:\Program Files\MultiBit HD</code></li>
+  <li>OS X - <code>/Applications/MultiBit HD</code></li>
 </ul>
 
-<p><b>Contacts</b>. In the ‘contacts’ directory is stored a file ‘contacts.aes’. This contains your contacts information.</p>
-<p><b>Payments</b>. In the ‘payments’ directory is stored a file ‘payments.aes’. This contains your payments information.</p>
-<p><b>History</b>. In the ‘history’ directory is stored a file ‘history.aes’. This contains your history information.</p>
-<p><b>Rolling backups</b>. In your rolling backup directory you will see files with the name ‘mbhd-YYYYMMDDHHMMSS.wallet.aes’. These are rolling wallet backup files. Every time the wallet writes to disk, the existing wallet is kept as a backup. The main purpose of this file is to recover from any sudden loss of power that prevents a clean wallet save. The last four rolling backups are kept.</p>
-<p><b>Local zip backups</b>. In the directory ‘zip-backup’ are stored encrypted zip copies of all the files in your wallet directory.</p>
-<p><b>Cloud backups</b>. If you have a cloud backup directory set for your wallet, the local zip backups are regularly copied to your cloud backup directory.</p>
-</br>
+<h4>Application directory</h4>
+
+<p>The application directory is where MultiBit HD will store your configuration and wallets. This allows you to safely upgrade
+  MultiBit HD without worrying about deleting important data.</p>
+
+<p>In the following section <code>[EXAMPLE]</code> is used to indicate an environment variable called "EXAMPLE". Environment variables
+  are used to provide common starting points for directories. If you have an unusual set up you may need to refer to these to locate
+  where MultiBit HD has placed its application directory. Open a "command prompt" or "Terminal" and type "set" or "export" to see a
+  list of them.</p>
+
+<p>Before exploring environment variables, try one of the following locations.<strong>You may need to enable hidden directories</strong>.</p>
+<h4>Windows</h4>
+<ul>
+  <li><code>[APPDATA]/MultiBitHD</code>. Windows (7,8): <code>C:\Documents and Settings\example\AppData\Roaming\MultiBitHD</code>
+  <li><code>[APPDATA]/MultiBitHD</code>. Windows (XP and below): <code>C:\Documents and Settings\example\Application Data\MultiBitHD</code>
+</ul>
+
+<h4>OS X</h4>
+<p>In OS X the user Library directory is normally hidden. Follow the <a href="http://osxdaily.com/2009/02/25/show-hidden-files-in-os-x/">show hidden files</a>
+  instructions to reveal it in the Finder.</p>
+<ul>
+  <li><code>[user.home]/Library/Application Support/MultiBitHD</code>. OS X 10.5+: <code>/Users/example/Library/Application Support/MultiBitHD</code>
+</ul>
+
+<h4>Linux</h4>
+<p>In Linux the user home directory is normally hidden due to the leading ".".</p>
+<ul>
+  <li><code>[user.home]/.MultiBitHD</code>. Ubuntu/Debian: <code>/home/example/.MultiBitHD</code>
+</ul>
+
+<h4>Explanation of file and directories</h4>
+
+<p>Here is a list of the files that MultiBit HD uses:</p>
+
+<ul>
+  <li><code>mbhd.yaml</code> - Contains general preferences and configuration information (theme, exchange etc).</li>
+  <li><code>mbhd.checkpoints</code> - A Bitcoin checkpoints file, used when syncing your wallet.</li>
+  <li><code>mbhd.spvchain</code> - A Bitcoin block store, used when syncing your wallet</li>
+</ul>
+
+<p>All wallets are stored encrypted in directories organised as follows:</p>
+<ul>
+  <li><code>mbhd.wallet.aes</code> - This is the main wallet file containing your private keys and transactions.</li>
+  <li><code>contacts.aes</code>. In the ‘contacts’ directory is stored a file ‘contacts.aes’. This contains your contacts information.</li>
+  <li><code>payments.aes</code>. In the ‘payments’ directory is stored a file ‘payments.aes’. This contains your payments information.</li>
+  <li><code>history.aes</code>. In the ‘history’ directory is stored a file ‘history.aes’. This contains your history information.</li>
+  <li><code>rolling-backup</code>. In your rolling backup directory you will see files with the name ‘mbhd-YYYYMMDDHHMMSS.wallet.aes’. These are rolling wallet backup files. Every
+    time the wallet writes to disk, the existing wallet is kept as a backup. The main purpose of this file is to recover from any sudden loss of power that prevents a clean wallet
+    save. The last four rolling backups are kept.
+  </li>
+  <li><code>zip-backup</code>. In the directory ‘zip-backup’ are stored encrypted zip copies of all the files in your wallet directory.</li>
+</ul>
+
+<p>If you have a cloud backup directory set for your wallet, the local zip backups are <a href="backups.html">regularly copied to your cloud backup directory</a>.</p>
+
+<h4>I've accidentally deleted something!</h4>
+
+<p>Don't worry. So long as you have your wallet words you can recover your bitcoins. See <a href="restore-wallet.html">"Restoring a wallet"</a>
+  for step by step instructions to recover.</p>
+
+<p>Deleting different files will have different impacts:</p>
+<ul>
+  <li><code>mbhd.yaml</code> - You'll need to work through the welcome wizard but you can select "Use an existing wallet" when prompted</li>
+  <li><code>mbhd.checkpoints</code> - Synchronization will take a very long time, it is best to re-install MultiBit HD</li>
+  <li><code>mbhd.spvchain</code> - Synchronization will take a long time based on how old your wallet is</li>
+</ul>
+
+<h4>Related articles</h4>
+
+<ul>
+  <li><a href="restore-password.html">Restore a password</a></li>
+  <li><a href="restore-wallet.html">Restore a wallet</a></li>
+  <li><a href="backups.html">Wallet backups</a></li>
+</ul>

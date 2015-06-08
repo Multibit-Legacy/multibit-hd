@@ -1174,11 +1174,14 @@ public class WalletService extends AbstractService {
 
   /**
    * Work out the current gap in the MBHD payment request datas
-   * This is the number of unpaid payment requests since the last paid payment request (or 0)
+   * This is the number of unpaid payment requests since the last paid payment request
    * The motivation for this function is that BIP44 states that there should be a gap limit of 20
-   * @return gap the number of unpaid payment requests since the last paid payment request
+   *
+   * The returned variable is an Optional because sometimes the KeyChain information does not give a straightforward
+   * answer to what the gap is.
+   * @return gap the number of unpaid payment requests since the last paid payment request, or absent if this is not available
    */
-  public int getGap() {
+  public Optional<Integer> getGap() {
     // Find the most recently paid payment request data
     MBHDPaymentRequestData mostRecentMBHDPaymentRequestData = null;
 
@@ -1196,48 +1199,66 @@ public class WalletService extends AbstractService {
 
     if (mostRecentMBHDPaymentRequestData == null) {
       // No payment requests have been paid, hence gap is the number of payment requests
-      return mbhdPaymentRequestDataMap.size();
+      return Optional.of(mbhdPaymentRequestDataMap.size());
     } else {
       Address mostRecentlyPaidAddress = mostRecentMBHDPaymentRequestData.getAddress();
 
       // Find the key in the wallet that matches this address
+      // and also find last receiving key index
       Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
       if (!currentWalletSummary.isPresent()) {
         throw new IllegalStateException("No wallet available to work out gap for");
       }
       Wallet wallet = currentWalletSummary.get().getWallet();
+      int numberOfIssuedExternalAddresses = wallet.getActiveKeychain().getIssuedExternalKeys();
+      int numberOfIssuedInternalAddresses = wallet.getActiveKeychain().getIssuedInternalKeys();
       List<ECKey> issuedReceiveKeys = wallet.getIssuedReceiveKeys();
 
+      boolean foundLastPaidKeyIndex = false;
       int lastPaidKeyIndex = -1;
+      int lastReceivingKeyIndex = -1;
+
       for (ECKey loopKey : issuedReceiveKeys) {
-        if (mostRecentlyPaidAddress.equals(loopKey.toAddress(BitcoinNetwork.current().get()))) {
-          // Found it
-          ImmutableList<ChildNumber> lastPaidKeyPath = ((DeterministicKey)loopKey).getPath();
-          lastPaidKeyIndex = lastPaidKeyPath.get(lastPaidKeyPath.size() - 1).num();
-          break;
+        // Look for the lastPaidKeyIndex
+        if (!foundLastPaidKeyIndex) {
+          if (mostRecentlyPaidAddress.equals(loopKey.toAddress(BitcoinNetwork.current().get()))) {
+            // Found it
+            ImmutableList<ChildNumber> lastPaidKeyPath = ((DeterministicKey) loopKey).getPath();
+            lastPaidKeyIndex = lastPaidKeyPath.get(lastPaidKeyPath.size() - 1).num();
+            // Skip calculating the addresses from now on as that is a non trivial op
+            foundLastPaidKeyIndex = true;
+          }
         }
+
+        ImmutableList<ChildNumber> loopKeyPath = ((DeterministicKey) loopKey).getPath();
+        int loopKeyIndex = loopKeyPath.get(loopKeyPath.size() - 1).num();
+        lastReceivingKeyIndex = Math.max(lastReceivingKeyIndex, loopKeyIndex);
+      }
+
+      log.debug("lastPaidKeyIndex: {}, lastReceivingKeyIndex: {}, numberOfIssuedExternalAddresses: {}, numberOfIssuedInternalAddresses: {}", lastPaidKeyIndex, lastReceivingKeyIndex, numberOfIssuedExternalAddresses, numberOfIssuedInternalAddresses);
+
+      // If the lastReceivingKeyIndex is not one less than the numberOfIssuedExternalAddresses then the following
+      // algorithm will not calculate the gap correctly so return absent
+      // (JB - not sure why this happens at the moment - the number of issued change addresses can be higher than the internal addresses)
+      if (lastReceivingKeyIndex + 1 != numberOfIssuedExternalAddresses) {
+        return Optional.absent();
       }
 
       // Work out the gap from the difference in the last indices of the path
-      int lastReceivingKeyIndex = -1;
-      if (!issuedReceiveKeys.isEmpty()) {
-        lastReceivingKeyIndex = issuedReceiveKeys.size() - 1; // assumes all receiving keys issued monotonically without gaps
-      }
-
       if (lastPaidKeyIndex == -1) {
         // No payment request has been paid
         if (lastReceivingKeyIndex == -1) {
           // No receiving keys have been generated
-          return 0;
+          return Optional.of(0);
         } else {
-          return lastReceivingKeyIndex + 1;
+          return Optional.of(lastReceivingKeyIndex + 1);
         }
       } else {
         // There is a last paid payment request
         if (lastReceivingKeyIndex == -1) {
           throw new IllegalStateException("A payment request has been paid but no receiving addresses have been created. This is odd.");
         } else {
-          return lastReceivingKeyIndex - lastPaidKeyIndex;
+          return Optional.of(lastReceivingKeyIndex - lastPaidKeyIndex);
         }
       }
     }

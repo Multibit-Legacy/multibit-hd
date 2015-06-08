@@ -39,7 +39,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -242,7 +241,8 @@ public class BitcoinNetworkService extends AbstractService {
             if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
               Wallet currentWallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
               if (currentWallet != null) {
-                log.debug("Wallet has {} transactions and the balance is {}", currentWallet.getTransactions(true).size(), currentWallet.getBalance());
+                // Do not reveal balance in logs
+                log.trace("Wallet has {} transactions", currentWallet.getTransactions(true).size());
               } else {
                 log.debug("There is no current wallet");
               }
@@ -901,6 +901,11 @@ public class BitcoinNetworkService extends AbstractService {
 
       String transactionId = sendRequest.tx != null ? sendRequest.tx.getHashAsString() : "?";
 
+      String message = e.getMessage();
+      if (message == null) {
+        message = "Transaction cannot be completed at this time - unconfirmed?";
+      }
+
       // Fire a failed transaction creation event
       CoreEvents.fireTransactionCreationEvent(
         new TransactionCreationEvent(
@@ -913,7 +918,7 @@ public class BitcoinNetworkService extends AbstractService {
           sendRequestSummary.getChangeAddress(),
           false,
           CoreMessageKey.THE_ERROR_WAS.getKey(),
-          new String[]{e.getMessage()},
+          new String[]{message},
           sendRequestSummary.getNotes(),
           false));
 
@@ -1564,6 +1569,10 @@ public class BitcoinNetworkService extends AbstractService {
       log.error("No wallet is present to allow restart to occur");
       return;
     }
+
+    // Clear the mempool
+    TxConfidenceTable mempool = Context.get().getConfidenceTable();
+    mempool.reset();
 
     blockChain.addWallet(wallet);
     log.debug("Created block chain '{}' with height '{}'", blockChain, blockChain.getBestChainHeight());

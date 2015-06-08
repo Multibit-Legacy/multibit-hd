@@ -292,7 +292,6 @@ public class MainController extends AbstractController implements
 
       // Restarting the main view from a language change
       handleBasicMainViewRefresh();
-
     } else {
 
       // Restarting the main view from a configuration change
@@ -591,7 +590,7 @@ public class MainController extends AbstractController implements
               public void run() {
                 // Switch off the background dimming and trigger the showing of the wizard
                 Panels.getApplicationFrame().getRootPane().getGlassPane().setVisible(false);
-                mainView.refresh();
+                mainView.refresh(false);
                 mainView.setRepeatLatestEvents(true);
               }
             });
@@ -718,7 +717,7 @@ public class MainController extends AbstractController implements
           Panels.getApplicationFrame().invalidate();
 
           // Rebuild the detail views and alert panels
-          mainView.refresh();
+          mainView.refresh(false);
 
           // Show the current detail screen
           Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
@@ -761,7 +760,9 @@ public class MainController extends AbstractController implements
           Panels.getApplicationFrame().invalidate();
 
           // Rebuild the detail views and alert panels
-          mainView.refresh();
+          if (mainView != null) {
+            mainView.refresh(true);
+          }
 
         }
       });
@@ -1492,7 +1493,7 @@ public class MainController extends AbstractController implements
     Optional<HardwareWalletEvent> lastHardwareWalletEvent = CoreServices.getApplicationEventService().getLatestHardwareWalletEvent();
 
     // Refresh the main view
-    mainView.refresh();
+    mainView.refresh(false);
 
     if (lastHardwareWalletEvent.isPresent()
       && lastHardwareWalletEvent.get().getEventType() == HardwareWalletEventType.SHOW_DEVICE_READY) {

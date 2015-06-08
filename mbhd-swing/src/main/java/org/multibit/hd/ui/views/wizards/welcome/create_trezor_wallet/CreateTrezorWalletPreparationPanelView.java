@@ -210,4 +210,13 @@ public class CreateTrezorWalletPreparationPanelView extends AbstractWizardPanelV
 
   }
 
+  @Override
+  public boolean beforeHide(boolean isExitCancel) {
+
+    // Prevent popovers triggering continuously when finished
+    timer.stop();
+
+    return true;
+  }
+
 }

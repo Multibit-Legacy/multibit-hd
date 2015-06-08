@@ -94,6 +94,8 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
             // Instantiate through newInstance() and supply constructor arguments to indicate an apology is required
             // Dialog will show and handle all further requirements including hard shutdown
             nativeApplicationClass.getDeclaredConstructor(boolean.class).newInstance(true);
+          } catch(IllegalStateException ise) {
+            log.error("Unable to create dialog as one is already being shown");
           } catch (Throwable t1) {
             log.error("Unable to use standard error reporting dialog.", t1);
             try {
@@ -134,6 +136,8 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
             // Instantiate through newInstance() and supply constructor arguments to thank the user for their feedback
             // Dialog will show and handle all further requirements
             nativeApplicationClass.getDeclaredConstructor(boolean.class).newInstance(false);
+          } catch(IllegalStateException ise) {
+            log.error("Unable to create dialog as one is already being shown");
           } catch (Throwable t1) {
             log.error("Unable to use standard error reporting dialog.", t1);
             try {

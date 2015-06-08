@@ -406,7 +406,7 @@ public class MultiBitHD {
     }
 
     // Provide a backdrop to the user and trigger the showing of the wizard
-    mainView.refresh();
+    mainView.refresh(false);
 
     log.debug("MainView is ready - hide the splash screen");
     if (splashScreen != null) {

@@ -1124,7 +1124,8 @@ public class Labels {
    */
   public static JLabel newPeerCountInfo() {
 
-    return newLabel(MessageKey.VERIFY_NETWORK_PEER_COUNT);
+    // Provide the number of peers required to be "healthy"
+    return newLabel(MessageKey.VERIFY_NETWORK_PEER_COUNT, 10);
   }
 
   /**
@@ -1203,6 +1204,13 @@ public class Labels {
    */
   public static JLabel newDisplayNameLabel() {
     return newLabel(MessageKey.NAME);
+  }
+
+  /**
+   * @return A new "Working" label
+   */
+  public static JLabel newWorking() {
+    return newLabel(MessageKey.WORKING);
   }
 
   /**
@@ -1713,4 +1721,20 @@ public class Labels {
     }, new Object[][]{});
 
   }
+
+  /*
+
+   */
+
+  /**
+   * @return A new "create wallet report" note (makes transition to credentials less jarring)
+   */
+  public static JLabel newCreateWalletReportNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.CREATE_WALLET_REPORT_NOTE_1,
+    }, new Object[][]{});
+
+  }
+
 }

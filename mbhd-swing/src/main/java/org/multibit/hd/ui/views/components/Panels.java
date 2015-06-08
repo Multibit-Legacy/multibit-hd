@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.managers.WalletManager;
@@ -25,6 +26,7 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Factory to provide the following to views:</p>
@@ -48,6 +50,11 @@ public class Panels {
 
   private static Optional<LightBoxPanel> lightBoxPopoverPanel = Optional.absent();
 
+  /**
+   * True if a deferred hide event has been triggered (this will block light box creation)
+   */
+  private static boolean deferredHideEventInProgress = false;
+
   public static void setApplicationFrame(JFrame applicationFrame) {
     Panels.applicationFrame = applicationFrame;
   }
@@ -55,6 +62,7 @@ public class Panels {
   public static JFrame getApplicationFrame() {
     return applicationFrame;
   }
+
 
   /**
    * <p>A default MiG layout constraint with:</p>
@@ -237,15 +245,66 @@ public class Panels {
   }
 
   /**
+   * @return True if a deferred hide is in progress
+   */
+  public synchronized static boolean isDeferredHideEventInProgress() {
+
+    return deferredHideEventInProgress;
+
+  }
+
+  /**
+   * @param value True if a deferred hide is in progress (see ViewEvents)
+   */
+  public synchronized static void setDeferredHideEventInProgress(boolean value) {
+
+    deferredHideEventInProgress = value;
+
+  }
+
+  /**
    * <p>Show a light box</p>
    *
    * @param panel The panel to act as the focus of the light box
    */
-  public synchronized static void showLightBox(JPanel panel) {
+  public synchronized static void showLightBox(final JPanel panel) {
 
     log.debug("Show light box");
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "LightBox requires the EDT");
+
+    if (isDeferredHideEventInProgress()) {
+      // Delay execution until the deferred hide has completed
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+
+          // We're running in deferred hide mode so allow a little extra time for other threads
+          // to complete
+          Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
+
+          // If we're still awaiting a deferred hide to complete then it's taken too long
+          Preconditions.checkState(!isDeferredHideEventInProgress(), "Deferred hide has taken too long to complete");
+
+          // Do not override this to replace the existing light box
+          // The problem is that the new light box is tripping up due to a race condition in the code
+          // which needs to be dealt with rather than masked behind deferred clean up
+          Preconditions.checkState(!lightBoxPanel.isPresent(), "Light box should never be called twice ");
+
+          // Prevent focus
+          allowFocus(Panels.getApplicationFrame(), false);
+
+          // Add the light box panel
+          lightBoxPanel = Optional.of(new LightBoxPanel(panel, JLayeredPane.MODAL_LAYER));
+
+        }
+      });
+
+      // Immediately return
+      return;
+    }
+
+    // Must in normal mode to be here
 
     // Do not override this to replace the existing light box
     // The problem is that the new light box is tripping up due to a race condition in the code
@@ -495,8 +554,8 @@ public class Panels {
     Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
 
     boolean enableRestore = hardwareWalletService.isPresent()
-                    && hardwareWalletService.get().isDeviceReady()
-                    && hardwareWalletService.get().isWalletPresent();
+      && hardwareWalletService.get().isDeviceReady()
+      && hardwareWalletService.get().isWalletPresent();
 
     JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.TREZOR_CREATE_WALLET);
     radio1.setSelected(true);
