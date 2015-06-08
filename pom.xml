@@ -203,6 +203,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.16</version>
         <configuration>
+          <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
           <excludes>
             <exclude>**/*FunctionalTest.java</exclude>
             <exclude>**/*MultiBitHDFestTest.java</exclude>
