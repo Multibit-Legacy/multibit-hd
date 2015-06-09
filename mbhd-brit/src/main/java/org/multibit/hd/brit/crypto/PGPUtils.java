@@ -77,9 +77,9 @@ public class PGPUtils {
    *
    * @return The PGPPrivate key matching the keyID
    *
-   * @throws IOException
-   * @throws PGPException
-   * @throws NoSuchProviderException
+   * @throws IOException If the input stream has a problem
+   * @throws PGPException If the data format is incorrect
+   * @throws NoSuchProviderException If the digest provider is not available
    */
   public static PGPPrivateKey findPrivateKey(InputStream keyIn, long keyID, char[] pass)
     throws IOException, PGPException, NoSuchProviderException {
@@ -104,11 +104,17 @@ public class PGPUtils {
    * @param keyInputStream        The key input stream
    * @param password              The credentials
    *
-   * @throws Exception TODO This is too general (many exceptions wrapped up into one)
+   * @throws IOException If the input stream has a problem
+   * @throws PGPException If the data format is incorrect
+   * @throws NoSuchProviderException If the digest provider is not available
    */
   @SuppressWarnings("unchecked")
-  public static void decryptFile(InputStream encryptedInputStream, OutputStream decryptedOutputStream, InputStream keyInputStream, char[] password)
-    throws Exception {
+  public static void decryptFile(
+    InputStream encryptedInputStream,
+    OutputStream decryptedOutputStream,
+    InputStream keyInputStream,
+    char[] password
+  ) throws IOException, PGPException, NoSuchProviderException {
 
     Security.addProvider(new BouncyCastleProvider());
 
