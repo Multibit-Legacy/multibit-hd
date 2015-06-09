@@ -1,10 +1,10 @@
 package org.multibit.hd.brit.services;
 
-import org.bouncycastle.openpgp.PGPException;
-import org.bouncycastle.openpgp.PGPPublicKey;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPPublicKey;
 
 import java.io.IOException;
 import java.io.InputStream;

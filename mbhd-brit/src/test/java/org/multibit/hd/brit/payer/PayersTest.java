@@ -16,13 +16,13 @@ package org.multibit.hd.brit.payer;
  * limitations under the License.
  */
 
-import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.crypto.PGPUtilsTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.openpgp.PGPPublicKey;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -10,8 +10,6 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.text.WordUtils;
-import org.bouncycastle.openpgp.PGPException;
-import org.bouncycastle.openpgp.PGPPublicKey;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.services.BRITServices;
 import org.multibit.hd.brit.utils.HttpsUtils;
@@ -29,6 +27,8 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPPublicKey;
 
 import javax.swing.*;
 import java.awt.*;
