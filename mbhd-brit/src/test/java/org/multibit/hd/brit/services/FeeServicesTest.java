@@ -26,7 +26,6 @@ import org.bitcoinj.store.MemoryBlockStore;
 import org.bitcoinj.utils.Threading;
 import org.bitcoinj.wallet.DeterministicSeed;
 import org.bitcoinj.wallet.KeyChainGroup;
-import org.bouncycastle.openpgp.PGPPublicKey;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +39,7 @@ import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
+import org.spongycastle.openpgp.PGPPublicKey;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,7 +62,6 @@ public class FeeServicesTest {
    */
   private static final NetworkParameters NETWORK_PARAMETERS = MainNetParams.get();
 
-  private final String WALLET_PASSWORD = "horatio nelson 123";
   private Wallet wallet1;
 
   /**

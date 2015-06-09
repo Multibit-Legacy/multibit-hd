@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.bitcoinj.core.*;
 import org.bitcoinj.params.MainNetParams;
-import org.bouncycastle.openpgp.PGPPublicKey;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.dto.*;
 import org.multibit.hd.brit.exceptions.MatcherResponseException;
@@ -20,6 +19,7 @@ import org.multibit.hd.brit.payer.Payers;
 import org.multibit.hd.brit.utils.HttpsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.spongycastle.openpgp.PGPPublicKey;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -129,12 +129,15 @@ public class FeeService {
     // Ask the payer to create an EncryptedPayerRequest containing a BRITWalletId, a session id and a firstTransactionDate
     PayerRequest payerRequest = payer.newPayerRequest(britWalletId, sessionId, firstTransactionDateOptional);
 
-    log.debug("Payer request:\n{}\n", new String(payerRequest.serialise(), Charsets.UTF_8));
+    // Avoid leaking information into the logs
+    log.trace("Payer request:\n{}\n", new String(payerRequest.serialise(), Charsets.UTF_8));
 
     MatcherResponse matcherResponse;
     try {
       // Encrypt the PayerRequest with the Matcher PGP public key.
       EncryptedPayerRequest encryptedPayerRequest = payer.encryptPayerRequest(payerRequest);
+
+      log.debug("Sending encrypted Payer request to Matcher");
 
       // Do the HTTP(S) POST which, if successful, returns an EncryptedMatcherResponse as a byte array
       byte[] response = HttpsUtils.doPost(matcherURL, encryptedPayerRequest.getPayload(), "application/octet-stream");
@@ -145,16 +148,20 @@ public class FeeService {
       // Decrypt the MatcherResponse - the payer does this as it knows how it was AES encrypted (by construction)
       matcherResponse = payer.decryptMatcherResponse(encryptedMatcherResponse);
 
-      log.debug("Matcher response (decrypted):\n{}\n", new String(matcherResponse.serialise(), Charsets.UTF_8));
+      log.debug("Matcher response decrypted OK");
+
+      // Avoid leaking information into the logs
+      log.trace("Matcher response (decrypted):\n{}\n", new String(matcherResponse.serialise(), Charsets.UTF_8));
 
     } catch (IOException | PayerRequestException | MatcherResponseException e) {
       // The exchange with the matcher failed
-      log.debug("The exchange with the matcher failed. The error was {}", e.getClass().getCanonicalName() + e.getMessage());
+      log.warn("The exchange with the Matcher failed. The error was {}", e.getClass().getCanonicalName() + e.getMessage());
 
       // Fall back to the list of hardwired addresses
-      log.debug("Using hardwired addresses");
+      log.warn("Using hardwired addresses");
       matcherResponse = new MatcherResponse(Optional.<Date>absent(), getHardwiredFeeAddresses());
     }
+
     // Add the MatcherResponse as a wallet extension so that on the next wallet write it will be persisted
     wallet.addOrUpdateExtension(new MatcherResponseWalletExtension(matcherResponse));
   }

@@ -138,8 +138,6 @@
                     <urn>org.apache.maven.plugins:maven-surefire-plugin:2.16:maven-plugin:null:runtime:60928a9538863bc6377898a69a5240b5b1798207</urn>
                     <urn>org.bitcoinj:bitcoinj-core:0.13-SNAPSHOT-alice-0.1.0:jar:null:compile:a35cb1d6cf50a68b8b56b1a7847fc1fe6622e391</urn>
                     <urn>org.bitcoinj:orchid:1.1:jar:null:compile:cc54aa849a4c3f5b3bfda90dd4286205b2a60e87</urn>
-                    <urn>org.bouncycastle:bcpg-jdk16:1.46:jar:null:compile:38c2557ffcc8f2a0d4326ccb86116986986775c9</urn>
-                    <urn>org.bouncycastle:bcprov-jdk16:1.46:jar:null:compile:ce091790943599535cbb4de8ede84535b0c1260c</urn>
                     <urn>org.codehaus.mojo:findbugs-maven-plugin:3.0.0:maven-plugin:null:runtime:2903860ef2477fc4944d5553b17613cfa9f9861c</urn>
                     <urn>org.easytesting:fest-assert:1.2:jar:null:test:bb0d051e157f921537aa30d6d2c2a6b201edbb1b</urn>
                     <urn>org.easytesting:fest-reflect:1.2:jar:null:test:4dd614d5490950b4e2c7fe141544a867a0353d66</urn>
@@ -207,10 +205,15 @@
             <configuration>
               <artifactSet>
                 <excludes>
+                  <!-- No JUnit should be present (fail safe for test classpath) -->
                   <exclude>junit:junit</exclude>
                   <exclude>jmock:*</exclude>
+                  <!-- No legacy Bitcoinj should be present (fail safe for older code) -->
                   <exclude>com.google:bitcoinj:*</exclude>
+                  <!-- No non-Bitcoinj Orchid should be present (Bitcoinj provides it) -->
                   <exclude>com.subgraph:orchid:*</exclude>
+                  <!-- No BouncyCastle should be present (JCA requires external bcprov JAR) -->
+                  <exclude>org.bouncycastle:*</exclude>
                 </excludes>
               </artifactSet>
               <transformers>

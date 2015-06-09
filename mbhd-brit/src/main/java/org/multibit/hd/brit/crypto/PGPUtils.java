@@ -1,12 +1,17 @@
 package org.multibit.hd.brit.crypto;
 
-import org.bouncycastle.bcpg.ArmoredOutputStream;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openpgp.*;
+import org.spongycastle.bcpg.ArmoredOutputStream;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.openpgp.*;
+import org.spongycastle.openpgp.PGPUtil;
+import org.spongycastle.openpgp.bc.BcPGPObjectFactory;
+import org.spongycastle.openpgp.bc.BcPGPPublicKeyRingCollection;
+import org.spongycastle.openpgp.bc.BcPGPSecretKeyRingCollection;
+import org.spongycastle.openpgp.operator.*;
+import org.spongycastle.openpgp.operator.bc.*;
 
 import java.io.*;
 import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Iterator;
 
@@ -35,9 +40,10 @@ public class PGPUtils {
   @SuppressWarnings("unchecked")
   public static PGPPublicKey readPublicKey(InputStream in) throws IOException, PGPException {
 
-    in = org.bouncycastle.openpgp.PGPUtil.getDecoderStream(in);
+    in = PGPUtil.getDecoderStream(in);
 
-    PGPPublicKeyRingCollection pgpPub = new PGPPublicKeyRingCollection(in);
+    // Use BC public key ring collection for backwards compatibility
+    PGPPublicKeyRingCollection pgpPub = new BcPGPPublicKeyRingCollection(in);
 
     // Loop through the collection until we find a key suitable for encryption
     // (in the real world you would probably want to be a bit smarter about this)
@@ -77,23 +83,30 @@ public class PGPUtils {
    *
    * @return The PGPPrivate key matching the keyID
    *
-   * @throws IOException
-   * @throws PGPException
-   * @throws NoSuchProviderException
+   * @throws IOException If the input stream has a problem
+   * @throws PGPException If the data format is incorrect
+   * @throws NoSuchProviderException If the digest provider is not available
    */
   public static PGPPrivateKey findPrivateKey(InputStream keyIn, long keyID, char[] pass)
     throws IOException, PGPException, NoSuchProviderException {
 
-    PGPSecretKeyRingCollection pgpSec = new PGPSecretKeyRingCollection(
-      org.bouncycastle.openpgp.PGPUtil.getDecoderStream(keyIn));
+    // Open the PGP secret key ring
+    PGPSecretKeyRingCollection pgpSec = new BcPGPSecretKeyRingCollection(
+      PGPUtil.getDecoderStream(keyIn)
+    );
 
+    // Load the required PGP secret key
     PGPSecretKey pgpSecKey = pgpSec.getSecretKey(keyID);
 
-    if (pgpSecKey == null) {
-      return null;
-    }
+    // Use the BC digest calculator for backwards compatibility
+    PGPDigestCalculatorProvider calcProvider = new BcPGPDigestCalculatorProvider();
 
-    return pgpSecKey.extractPrivateKey(pass, "BC");
+    // Use the BC secret key decryptor for backwards compatibility
+    PBESecretKeyDecryptor decryptor = new BcPBESecretKeyDecryptorBuilder(calcProvider)
+      .build(pass);
+
+    return pgpSecKey.extractPrivateKey(decryptor);
+
   }
 
   /**
@@ -104,17 +117,24 @@ public class PGPUtils {
    * @param keyInputStream        The key input stream
    * @param password              The credentials
    *
-   * @throws Exception TODO This is too general (many exceptions wrapped up into one)
+   * @throws IOException If the input stream has a problem
+   * @throws PGPException If the data format is incorrect
+   * @throws NoSuchProviderException If the digest provider is not available
    */
   @SuppressWarnings("unchecked")
-  public static void decryptFile(InputStream encryptedInputStream, OutputStream decryptedOutputStream, InputStream keyInputStream, char[] password)
-    throws Exception {
+  public static void decryptFile(
+    InputStream encryptedInputStream,
+    OutputStream decryptedOutputStream,
+    InputStream keyInputStream,
+    char[] password
+  ) throws IOException, PGPException, NoSuchProviderException {
 
     Security.addProvider(new BouncyCastleProvider());
 
     encryptedInputStream = PGPUtil.getDecoderStream(encryptedInputStream);
 
-    final PGPObjectFactory pgpFactory = new PGPObjectFactory(encryptedInputStream);
+    // Use the BC PGP Object factory for backwards compatibility
+    final PGPObjectFactory pgpFactory = new BcPGPObjectFactory(encryptedInputStream);
 
     final PGPEncryptedDataList enc;
 
@@ -142,15 +162,17 @@ public class PGPUtils {
       throw new IllegalArgumentException("Secret key for message not found.");
     }
 
-    final InputStream clear = pbe.getDataStream(privateKey, "BC");
+    // Use a BC public key data decryptor factory for backwards compatibility
+    PublicKeyDataDecryptorFactory dataDecryptorFactory = new BcPublicKeyDataDecryptorFactory(privateKey);
+    final InputStream clear = pbe.getDataStream(dataDecryptorFactory);
 
-    final PGPObjectFactory plainFact = new PGPObjectFactory(clear);
+    final PGPObjectFactory plainFactory = new BcPGPObjectFactory(clear);
 
-    Object message = plainFact.nextObject();
+    Object message = plainFactory.nextObject();
 
     if (message instanceof PGPCompressedData) {
       PGPCompressedData cData = (PGPCompressedData) message;
-      PGPObjectFactory pgpFact = new PGPObjectFactory(cData.getDataStream());
+      PGPObjectFactory pgpFact = new BcPGPObjectFactory(cData.getDataStream());
 
       message = pgpFact.nextObject();
     }
@@ -188,9 +210,11 @@ public class PGPUtils {
    * @throws NoSuchProviderException
    * @throws PGPException
    */
-  public static void encryptFile(OutputStream armoredOut,
-                                 File inputFile,
-                                 PGPPublicKey encKey)
+
+  public static void encryptFile(
+    OutputStream armoredOut,
+    File inputFile,
+    PGPPublicKey encKey)
     throws IOException, NoSuchProviderException, PGPException {
 
     Security.addProvider(new BouncyCastleProvider());
@@ -210,15 +234,13 @@ public class PGPUtils {
 
     comData.close();
 
-    final PGPEncryptedDataGenerator encryptedDataGenerator = new PGPEncryptedDataGenerator(
-      PGPEncryptedData.CAST5,
-      // Always perform an integrity check
-      true,
-      new SecureRandom(),
-      "BC"
-    );
+    PGPDataEncryptorBuilder builder = new BcPGPDataEncryptorBuilder(PGPEncryptedData.CAST5);
+    final PGPEncryptedDataGenerator encryptedDataGenerator = new PGPEncryptedDataGenerator(builder);
 
-    encryptedDataGenerator.addMethod(encKey);
+
+    // Add method
+    PGPKeyEncryptionMethodGenerator method = new BcPublicKeyKeyEncryptionMethodGenerator(encKey);
+    encryptedDataGenerator.addMethod(method);
 
     byte[] bytes = baos.toByteArray();
 
