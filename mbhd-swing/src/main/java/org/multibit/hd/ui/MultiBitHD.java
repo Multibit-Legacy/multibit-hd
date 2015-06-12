@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.text.DefaultEditorKit;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.List;
@@ -316,7 +317,18 @@ public class MultiBitHD {
     try {
       // Set look and feel (expect ~1000ms to perform this)
       log.debug("Loading Nimbus LaF...");
-      UIManager.setLookAndFeel(new NimbusLookAndFeel());
+      UIManager.setLookAndFeel(new NimbusLookAndFeel() {
+
+        // Require configurable error feedback through beeps
+        @Override
+        public void provideErrorFeedback(Component component) {
+
+          if (Configurations.currentConfiguration.getSound().isAlertSound()) {
+            super.provideErrorFeedback(component);
+          }
+
+        }
+      });
     } catch (UnsupportedLookAndFeelException e) {
       try {
         log.warn("Falling back to cross platform LaF...");
