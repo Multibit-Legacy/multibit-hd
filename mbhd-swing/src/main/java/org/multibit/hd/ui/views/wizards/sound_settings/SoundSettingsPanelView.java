@@ -37,6 +37,8 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
   private JComboBox<String> alertSoundYesNoComboBox;
   private JComboBox<String> receiveSoundYesNoComboBox;
   private Configuration viewConfiguration;
+  private JButton playBeepButton;
+  private JButton playPaymentReceivedButton;
 
   /**
    * @param wizard    The wizard managing the states
@@ -74,19 +76,20 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
     alertSoundYesNoComboBox = ComboBoxes.newAlertSoundYesNoComboBox(this, viewConfiguration.getSound().isAlertSound());
     receiveSoundYesNoComboBox = ComboBoxes.newReceiveSoundYesNoComboBox(this, viewConfiguration.getSound().isReceiveSound());
 
-    JButton playBeep = Buttons.newPlaySoundButton(getPlayBeepAction(), MessageKey.PLAY_SOUND, MessageKey.PLAY_SOUND_TOOLTIP);
-    JButton playPaymentReceived = Buttons.newPlaySoundButton(getPlayPaymentReceivedAction(), MessageKey.PLAY_SOUND, MessageKey.PLAY_SOUND_TOOLTIP);
+    playBeepButton = Buttons.newPlaySoundButton(getPlayBeepAction(), MessageKey.PLAY_SOUND, MessageKey.PLAY_SOUND_TOOLTIP);
+    playPaymentReceivedButton = Buttons.newPlaySoundButton(getPlayPaymentReceivedAction(), MessageKey.PLAY_SOUND, MessageKey.PLAY_SOUND_TOOLTIP);
 
     contentPanel.add(Labels.newSoundChangeNote(), "growx,span 3,wrap");
 
     contentPanel.add(Labels.newSelectAlertSound(), "shrink");
     contentPanel.add(alertSoundYesNoComboBox, "growx");
-    contentPanel.add(playBeep, "shrink,wrap");
+    contentPanel.add(playBeepButton, "shrink,wrap");
 
     contentPanel.add(Labels.newSelectReceiveSound(), "shrink");
     contentPanel.add(receiveSoundYesNoComboBox, "growx");
-    contentPanel.add(playPaymentReceived, "shrink,wrap");
+    contentPanel.add(playPaymentReceivedButton, "shrink,wrap");
 
+    updateFromComponentModels(Optional.absent());
   }
 
   private Action getPlayPaymentReceivedAction() {
@@ -94,7 +97,7 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Sounds.playPaymentReceived();
+        Sounds.playPaymentReceived(viewConfiguration.getSound());
 
       }
     };
@@ -105,7 +108,7 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        Sounds.playBeep();
+        Sounds.playBeep(viewConfiguration.getSound());
 
       }
     };
@@ -151,6 +154,13 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
+    // Update the model
+
+    getWizardModel().setConfiguration(viewConfiguration);
+
+    // Update the play buttons to reflect current status
+    playBeepButton.setEnabled(viewConfiguration.getSound().isAlertSound());
+    playPaymentReceivedButton.setEnabled(viewConfiguration.getSound().isReceiveSound());
 
   }
 
@@ -172,9 +182,7 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
       viewConfiguration.getSound().setReceiveSound(source.getSelectedIndex() == 0);
     }
 
-    // Update the model
-
-    getWizardModel().setConfiguration(viewConfiguration);
+    updateFromComponentModels(Optional.absent());
 
   }
 

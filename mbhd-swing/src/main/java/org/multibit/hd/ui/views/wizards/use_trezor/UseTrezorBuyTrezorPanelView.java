@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -109,7 +110,7 @@ public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrez
 
          // Attempt to open the URI
          if (!SafeDesktop.browse(URI.create(BUY_TREZOR_URL))) {
-           Sounds.playBeep();
+           Sounds.playBeep(Configurations.currentConfiguration.getSound());
          }
 
        }

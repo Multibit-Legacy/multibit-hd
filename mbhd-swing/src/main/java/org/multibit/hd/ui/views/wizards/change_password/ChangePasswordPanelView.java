@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.google.common.util.concurrent.*;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletPassword;
 import org.multibit.hd.core.dto.WalletSummary;
@@ -197,7 +198,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
             Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
 
             // Failed
-            Sounds.playBeep();
+            Sounds.playBeep(Configurations.currentConfiguration.getSound());
 
             // Ensure the view hides the spinner and enables components
             SwingUtilities.invokeLater(new Runnable() {

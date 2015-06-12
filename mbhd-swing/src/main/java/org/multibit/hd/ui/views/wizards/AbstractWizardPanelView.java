@@ -487,6 +487,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    * <li>Update the wizard model if the panel model data is valid</li>
    * </ol>
    *
+   * <p>This method is guaranteed to run on the EDT</p>
+   *
    * @param componentModel The component model (
    */
   public abstract void updateFromComponentModels(Optional componentModel);

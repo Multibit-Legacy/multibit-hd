@@ -96,7 +96,7 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
       public void actionPerformed(ActionEvent e) {
 
         if (!SafeDesktop.browse(InstallationManager.MBHD_WEBSITE_URI)) {
-          Sounds.playBeep();
+          Sounds.playBeep(Configurations.currentConfiguration.getSound());
         }
 
       }

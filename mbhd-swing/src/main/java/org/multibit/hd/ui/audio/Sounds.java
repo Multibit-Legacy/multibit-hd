@@ -5,7 +5,7 @@ import com.google.common.collect.Maps;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.config.SoundConfiguration;
 import org.spongycastle.util.io.Streams;
 
 import java.awt.*;
@@ -50,20 +50,22 @@ public class Sounds {
 
   /**
    * Make a standard beep sound (useful for audio feedback of failure)
+   * @param sound The Sound configuration to use
    */
-  public static void playBeep() {
+  public static void playBeep(SoundConfiguration sound) {
 
-    if (Configurations.currentConfiguration.getSound().isAlertSound()) {
+    if (sound.isAlertSound()) {
       Toolkit.getDefaultToolkit().beep();
     }
   }
 
   /**
    * Plays the "payment received" sound in a new thread
+   * @param sound The Sound configuration to use
    */
-  public static void playPaymentReceived() {
+  public static void playPaymentReceived(SoundConfiguration sound) {
 
-    if (Configurations.currentConfiguration.getSound().isReceiveSound()) {
+    if (sound.isReceiveSound()) {
 
       executorService.submit(new Runnable() {
         @Override

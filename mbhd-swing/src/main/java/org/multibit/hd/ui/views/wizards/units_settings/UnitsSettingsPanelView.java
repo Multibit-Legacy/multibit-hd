@@ -219,7 +219,7 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
 
     // Validate the combination
     if (grouping.equals(getWizardModel().getConfiguration().getBitcoin().getDecimalSeparator())) {
-      Sounds.playBeep();
+      Sounds.playBeep(Configurations.currentConfiguration.getSound());
       decimalErrorStatus.setVisible(false);
       groupingErrorStatus.setVisible(true);
       ViewEvents.fireWizardButtonEnabledEvent(
@@ -256,7 +256,7 @@ public class UnitsSettingsPanelView extends AbstractWizardPanelView<UnitsWizardM
 
     // Validate the combination
     if (decimal.equals(getWizardModel().getConfiguration().getBitcoin().getGroupingSeparator())) {
-      Sounds.playBeep();
+      Sounds.playBeep(Configurations.currentConfiguration.getSound());
       groupingErrorStatus.setVisible(false);
       decimalErrorStatus.setVisible(true);
       ViewEvents.fireWizardButtonEnabledEvent(

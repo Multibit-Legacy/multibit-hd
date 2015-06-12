@@ -154,7 +154,7 @@ public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageS
       public void actionPerformed(ActionEvent e) {
 
         if (!SafeDesktop.browse(Languages.MBHD_TRANSLATION_WEBSITE_URI)) {
-          Sounds.playBeep();
+          Sounds.playBeep(Configurations.currentConfiguration.getSound());
         }
 
       }

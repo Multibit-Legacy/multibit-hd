@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.languages.Languages;
@@ -192,7 +193,7 @@ public class EnterPinView extends AbstractComponentView<EnterPinModel> {
     } else {
       if (visible) {
         // Failure rather than default hide
-        Sounds.playBeep();
+        Sounds.playBeep(Configurations.currentConfiguration.getSound());
       }
       pinStatus.setText(Languages.safeText(MessageKey.PIN_FAILURE));
       AwesomeDecorator.applyIcon(AwesomeIcon.TIMES, pinStatus, true, MultiBitUI.NORMAL_ICON_SIZE);
