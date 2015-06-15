@@ -23,7 +23,7 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilters;
-import org.multibit.hd.ui.views.components.display_amount.BitcoinSymbolListCellRenderer;
+import org.multibit.hd.ui.views.components.renderers.BitcoinSymbolListCellRenderer;
 import org.multibit.hd.ui.views.components.renderers.BackupSummaryListCellRenderer;
 import org.multibit.hd.ui.views.components.renderers.LanguageListCellRenderer;
 import org.multibit.hd.ui.views.components.renderers.WalletSummaryListCellRenderer;

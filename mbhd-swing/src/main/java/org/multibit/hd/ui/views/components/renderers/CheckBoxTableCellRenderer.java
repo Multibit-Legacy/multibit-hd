@@ -21,13 +21,13 @@ public class CheckBoxTableCellRenderer extends DefaultTableCellRenderer {
     checkBox.setHorizontalAlignment(SwingConstants.CENTER);
 
     if (isSelected) {
-      setForeground(table.getSelectionForeground());
-      super.setBackground(table.getSelectionBackground());
+      setBackground(Themes.currentTheme.tableRowSelectedBackground());
+      setForeground(Themes.currentTheme.inverseText());
+    } else {
+      setBackground(Themes.currentTheme.detailPanelBackground());
+      setForeground(Themes.currentTheme.text());
     }
-    else {
-      setForeground(table.getForeground());
-      setBackground(table.getBackground());
-    }
+
     checkBox.setSelected((value != null && (Boolean) value));
 
     if (hasFocus) {

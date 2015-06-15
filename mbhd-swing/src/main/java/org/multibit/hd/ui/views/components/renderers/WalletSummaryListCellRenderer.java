@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components.renderers;
 import com.google.common.collect.Lists;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.ui.languages.Languages;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,11 +36,11 @@ public class WalletSummaryListCellRenderer extends JLabel implements ListCellRen
   ) {
 
     if (isSelected) {
-      setBackground(list.getSelectionBackground());
-      setForeground(list.getSelectionForeground());
+      setBackground(Themes.currentTheme.tableRowSelectedBackground());
+      setForeground(Themes.currentTheme.inverseText());
     } else {
-      setBackground(list.getBackground());
-      setForeground(list.getForeground());
+      setBackground(Themes.currentTheme.dataEntryBackground());
+      setForeground(Themes.currentTheme.text());
     }
 
     if (value != null && value.getName() != null) {

@@ -24,12 +24,11 @@ public class ImageIconTableCellRenderer extends DefaultTableCellRenderer {
     label.setHorizontalAlignment(SwingConstants.CENTER);
 
     if (isSelected) {
-      setForeground(table.getSelectionForeground());
-      super.setBackground(table.getSelectionBackground());
-    }
-    else {
-      setForeground(table.getForeground());
-      setBackground(table.getBackground());
+      setBackground(Themes.currentTheme.tableRowSelectedBackground());
+      setForeground(Themes.currentTheme.inverseText());
+    } else {
+      setBackground(Themes.currentTheme.detailPanelBackground());
+      setForeground(Themes.currentTheme.text());
     }
 
     if (value != null && value instanceof ImageIcon) {
