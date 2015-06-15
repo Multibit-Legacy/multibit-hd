@@ -40,7 +40,7 @@ public class WalletSummaryListCellRenderer extends JLabel implements ListCellRen
       setForeground(Themes.currentTheme.inverseText());
     } else {
       setBackground(Themes.currentTheme.dataEntryBackground());
-      setForeground(Themes.currentTheme.text());
+      setForeground(Themes.currentTheme.dataEntryText());
     }
 
     if (value != null && value.getName() != null) {

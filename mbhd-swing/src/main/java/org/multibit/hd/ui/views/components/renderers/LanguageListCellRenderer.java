@@ -37,7 +37,7 @@ public class LanguageListCellRenderer extends JLabel implements ListCellRenderer
       setForeground(Themes.currentTheme.inverseText());
     } else {
       setBackground(Themes.currentTheme.dataEntryBackground());
-      setForeground(Themes.currentTheme.text());
+      setForeground(Themes.currentTheme.dataEntryText());
     }
 
     if (value != null) {

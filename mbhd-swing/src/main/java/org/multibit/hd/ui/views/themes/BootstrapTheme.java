@@ -86,6 +86,11 @@ public class BootstrapTheme extends BaseTheme {
   }
 
   @Override
+  public Color dataEntryText() {
+    return text();
+  }
+
+  @Override
   public Color dataEntryBorder() {
     return new Color(200, 200, 200);
   }

@@ -84,9 +84,14 @@ public interface Theme {
   Color sidebarSelectedText();
 
   /**
-   * @return The background colour for data handling elements (like text areas, tree views etc)
+   * @return The background colour for data handling elements (like text areas, drop down lists etc)
    */
   Color dataEntryBackground();
+
+  /**
+   * @return The text for data handling elements (like text areas, drop down lists (unselected) etc)
+   */
+  Color dataEntryText();
 
   /**
    * @return The border colour for data handling elements (like text areas, tree views etc)

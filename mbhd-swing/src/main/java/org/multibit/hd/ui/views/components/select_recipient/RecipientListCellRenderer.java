@@ -47,7 +47,7 @@ public class RecipientListCellRenderer extends JLabel implements ListCellRendere
       setForeground(Themes.currentTheme.inverseText());
     } else {
       setBackground(Themes.currentTheme.dataEntryBackground());
-      setForeground(Themes.currentTheme.text());
+      setForeground(Themes.currentTheme.dataEntryText());
     }
 
     String fragment = textField.getText();

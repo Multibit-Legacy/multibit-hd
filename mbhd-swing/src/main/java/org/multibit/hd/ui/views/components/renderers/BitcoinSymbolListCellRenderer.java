@@ -46,7 +46,7 @@ public class BitcoinSymbolListCellRenderer extends JLabel implements ListCellRen
       setForeground(Themes.currentTheme.inverseText());
     } else {
       setBackground(Themes.currentTheme.dataEntryBackground());
-      setForeground(Themes.currentTheme.text());
+      setForeground(Themes.currentTheme.dataEntryText());
     }
 
     // No leading text required
