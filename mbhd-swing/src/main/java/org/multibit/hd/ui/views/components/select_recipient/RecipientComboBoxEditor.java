@@ -80,7 +80,6 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
         // User has either typed or pasted - check the update text on every keystroke for early validation
         try {
           String text = e.getDocument().getText(0, e.getDocument().getLength());
-          log.debug("Saw a handleEvent with item = '" + text + "'");
 
           int currentLength = text.length();
           // If longer than the length of a minimum bitcoin address then verify.
@@ -112,8 +111,6 @@ public class RecipientComboBoxEditor implements ComboBoxEditor {
 
       editor.setText((String) item);
       editor.setRecipient(Optional.<Recipient>absent());
-
-      log.debug("Saw a setItem with item = '" + item + "'");
 
       return;
 
