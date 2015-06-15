@@ -120,7 +120,6 @@ public class Gravatars {
     final URL url;
     try {
       url = new URL(GRAVATAR_URL + emailHash + ".jpg" + PARAMETERS);
-      log.debug("Gravatar lookup: '{}'", url.toString());
     } catch (MalformedURLException e) {
       // This should never happen
       log.error("Gravatar URL malformed", e);
