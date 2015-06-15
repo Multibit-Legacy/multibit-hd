@@ -24,8 +24,8 @@ public class CheckBoxTableCellRenderer extends DefaultTableCellRenderer {
       setBackground(Themes.currentTheme.tableRowSelectedBackground());
       setForeground(Themes.currentTheme.inverseText());
     } else {
-      setBackground(Themes.currentTheme.detailPanelBackground());
-      setForeground(Themes.currentTheme.text());
+      setBackground(Themes.currentTheme.dataEntryBackground());
+      setForeground(Themes.currentTheme.dataEntryText());
     }
 
     checkBox.setSelected((value != null && (Boolean) value));
@@ -37,7 +37,7 @@ public class CheckBoxTableCellRenderer extends DefaultTableCellRenderer {
     }
 
     if (isSelected) {
-      checkBox.setBackground(table.getSelectionBackground());
+      checkBox.setBackground(Themes.currentTheme.tableRowSelectedBackground());
     } else {
       if (row % 2 != 0) {
         checkBox.setBackground(Themes.currentTheme.tableRowAltBackground());
