@@ -38,7 +38,7 @@ public class ImageIconTableCellRenderer extends DefaultTableCellRenderer {
     setBorder(noFocusBorder);
 
     if (isSelected) {
-      label.setBackground(table.getSelectionBackground());
+      label.setBackground(Themes.currentTheme.tableRowSelectedBackground());
     } else {
       if (row % 2 != 0) {
         label.setBackground(Themes.currentTheme.tableRowAltBackground());
