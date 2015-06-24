@@ -32,7 +32,7 @@ import java.net.URI;
 
 public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorState> implements ActionListener {
 
-  private static String BUY_TREZOR_URL = "https://buytrezor.com?a=4fbc03c60545";
+  private static String BUY_TREZOR_URL = "https://buytrezor.com?a=multibit.org";
 
   /**
    * @param wizard    The wizard managing the states
