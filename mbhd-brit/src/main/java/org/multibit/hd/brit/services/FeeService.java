@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.bitcoinj.core.*;
 import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.script.Script;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.dto.*;
 import org.multibit.hd.brit.exceptions.MatcherResponseException;
@@ -46,7 +47,7 @@ public class FeeService {
   public static final Coin MAXIMUM_FEE_PER_KB = Coin.valueOf(10000); // 0.1 mBTC per KB - a long used fee structure
 
   public static final String DONATION_ADDRESS = "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty";
-  public static final String DEFAULT_DONATION_AMOUNT= "0.01"; // in BTC as per BIP21
+  public static final String DEFAULT_DONATION_AMOUNT = "0.01"; // in BTC as per BIP21
 
   /**
    * Always work with MainNet in BRIT (no access to wallet configuration)
@@ -208,15 +209,21 @@ public class FeeService {
       if (sendTransactionOutputList != null) {
         for (TransactionOutput sendTransactionOutput : sendTransactionOutputList) {
           try {
-            Address toAddress = sendTransactionOutput.getScriptPubKey().getToAddress(networkParameters);
-            if (feeAddressesUniverse.contains(toAddress)) {
-              // It pays some fee
-              feePaid = feePaid.add(sendTransactionOutput.getValue());
-              lastFeePayingSendAddressOptional = Optional.of(toAddress.toString());
-              lastFeePayingSendingCountOptional = Optional.of(lastFeePayingSendCount);
+            Script script = sendTransactionOutput.getScriptPubKey();
+            // Calculate a TO address if possible
+            if (script.isSentToAddress() || script.isPayToScriptHash() || script.isSentToRawPubKey()) {
+              Address toAddress = sendTransactionOutput.getScriptPubKey().getToAddress(networkParameters);
+              if (feeAddressesUniverse.contains(toAddress)) {
+                // It pays some fee
+                feePaid = feePaid.add(sendTransactionOutput.getValue());
+                lastFeePayingSendAddressOptional = Optional.of(toAddress.toString());
+                lastFeePayingSendingCountOptional = Optional.of(lastFeePayingSendCount);
+              }
+            } else {
+              log.debug("Cannot generate a To address (because it is not defined) for  sendTransactionOutput {}", sendTransactionOutput);
             }
           } catch (ScriptException se) {
-            log.debug("Cannot cast script to Address for transaction: {}", sendTransaction.getHash().toString());
+            log.debug("Cannot cast script to Address for sendTransactionOutput: {}", sendTransactionOutput.getHash().toString());
           }
         }
       }
@@ -239,7 +246,7 @@ public class FeeService {
     boolean usePersistedData = false;
     if (sendFeeDto != null && sendFeeDto.getSendFeeCount().isPresent()) {
       if ((sendFeeDto.getSendFeeCount().get() >= lastFeePayingSendCount) &&
-        !((lastFeePayingSendingCountOptional.isPresent()) && (lastFeePayingSendingCountOptional.get().equals(sendFeeDto.getSendFeeCount().get())))) {
+              !((lastFeePayingSendingCountOptional.isPresent()) && (lastFeePayingSendingCountOptional.get().equals(sendFeeDto.getSendFeeCount().get())))) {
         usePersistedData = true;
       }
     }
@@ -260,7 +267,7 @@ public class FeeService {
       int numberOfSendCountsPaidFor = (int) feePaid.divide(FEE_PER_SEND);
 
       nextSendFeeCount = numberOfSendCountsPaidFor +
-        +NEXT_SEND_DELTA_LOWER_LIMIT + secureRandom.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT);
+              +NEXT_SEND_DELTA_LOWER_LIMIT + secureRandom.nextInt(NEXT_SEND_DELTA_UPPER_LIMIT - NEXT_SEND_DELTA_LOWER_LIMIT);
 
       // If we already have more sends than that then mark the next send as a fee send ie send a fee ASAP
       if (currentNumberOfSends >= nextSendFeeCount) {
@@ -272,8 +279,8 @@ public class FeeService {
       // Work out the next fee send address - it is random
       Set<Address> candidateSendFeeAddresses;
       if (matcherResponseFromWallet == null
-        || matcherResponseFromWallet.getBitcoinAddresses() == null
-        || matcherResponseFromWallet.getBitcoinAddresses().isEmpty()) {
+              || matcherResponseFromWallet.getBitcoinAddresses() == null
+              || matcherResponseFromWallet.getBitcoinAddresses().isEmpty()) {
         candidateSendFeeAddresses = getHardwiredFeeAddresses();
       } else {
         candidateSendFeeAddresses = matcherResponseFromWallet.getBitcoinAddresses();
@@ -339,6 +346,7 @@ public class FeeService {
 
   /**
    * Normalise the feePerKB so that it is always between the minimum and maximum values
+   *
    * @param rawFeePerKB the raw value of feePerKB, as satoshi
    * @return the normalised feePerKB, as Coin
    */
@@ -364,7 +372,6 @@ public class FeeService {
    * (Sends that originate from another copy of this HD have no client fee attached)
    *
    * @param wallet the wallet to look for sends for
-   *
    * @return List of the transactions in this wallet sent by self
    */
   private List<Transaction> getSentBySelfTransactionList(Wallet wallet) {
@@ -423,12 +430,12 @@ public class FeeService {
 
     String[] rawAddresses = new String[]{
 
-      "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty",
-      "14Ru32Lb4kdLGfAMz1VAtxh3UFku62HaNH",
-      "1KesQEF2yC2FzkJYLLozZJdbBF7zRhrdSC",
-      "1CuWW5fDxuFN6CcrRi51ADWHXAMJPYxY5y",
-      "1NfNX36S8aocBomvWgySaK9fn93pbpEhmY",
-      "1J1nTRJJT3ghsnAEvwd8dMmoTuaAMSLf4V"
+            "1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty",
+            "14Ru32Lb4kdLGfAMz1VAtxh3UFku62HaNH",
+            "1KesQEF2yC2FzkJYLLozZJdbBF7zRhrdSC",
+            "1CuWW5fDxuFN6CcrRi51ADWHXAMJPYxY5y",
+            "1NfNX36S8aocBomvWgySaK9fn93pbpEhmY",
+            "1J1nTRJJT3ghsnAEvwd8dMmoTuaAMSLf4V"
 
     };
 
@@ -451,7 +458,6 @@ public class FeeService {
    * Calculate the date of the first transaction in the Wallet
    *
    * @param wallet The wallet to inspect the transactions of
-   *
    * @return Either the date of the first transaction in the wallet, or Optional.absent() if there are no transactions
    */
   private Optional<Date> calculateFirstTransactionDate(Wallet wallet) {
