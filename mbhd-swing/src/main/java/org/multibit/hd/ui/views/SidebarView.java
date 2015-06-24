@@ -179,7 +179,8 @@ public class SidebarView extends AbstractView {
       startingScreen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
     } catch (IllegalArgumentException e) {
       // Unknown starting screen - possibly an old configuration
-      startingScreen = Screen.HELP;
+      // Default to same as configuration (safest option given network connectivity)
+      startingScreen = Screen.SEND_REQUEST;
     }
     for (int row = 0; row < sidebarTree.getRowCount(); row++) {
       TreePath screenPath = sidebarTree.getPathForRow(row);
