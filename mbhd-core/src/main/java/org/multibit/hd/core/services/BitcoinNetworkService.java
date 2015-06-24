@@ -233,11 +233,11 @@ public class BitcoinNetworkService extends AbstractService {
 
                 log.debug("Downloading block chain...");
 
-                // This method blocks until completed but fires events along the way
                 try {
                   log.debug("Starting blockchain download . . .");
+                  // This method fires events along the way which are dealt with by MultiBitPeerEventListener
                   peerGroup.downloadBlockChain();
-                  log.debug("Blockchain downloaded.");
+                  log.debug("After peerGroup.downloadBlockChain() called.");
                   if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
                     Wallet currentWallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
                     if (currentWallet != null) {
@@ -249,8 +249,12 @@ public class BitcoinNetworkService extends AbstractService {
                   } else {
                     log.debug("There is no wallet in the current WalletSummary");
                   }
-                  CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadCompleted());
-                  CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkPeerCount(peerGroup.numConnectedPeers()));
+                  // As long as the block chain is not being downloaded (perhaps on a Peer with a longer chain)
+                  // then fire that we are finished
+                  if (peerEventListener != null && !peerEventListener.isDownloading()) {
+                    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadCompleted());
+                    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkPeerCount(peerGroup.numConnectedPeers()));
+                  }
                 } catch (RuntimeException re) {
                   log.debug("Blockchain download was interrupted. Error was : '" + re.getMessage() + "'");
                 }
