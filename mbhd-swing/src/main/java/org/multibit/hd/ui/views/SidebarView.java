@@ -174,7 +174,13 @@ public class SidebarView extends AbstractView {
     sidebarTree.expandPath(walletPath);
 
     // Ensure we use the previous selection
-    Screen startingScreen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
+    Screen startingScreen;
+    try {
+      startingScreen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
+    } catch (IllegalArgumentException e) {
+      // Unknown starting screen - possibly an old configuration
+      startingScreen = Screen.HELP;
+    }
     for (int row = 0; row < sidebarTree.getRowCount(); row++) {
       TreePath screenPath = sidebarTree.getPathForRow(row);
       if (screenPath != null) {
