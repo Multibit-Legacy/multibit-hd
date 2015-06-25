@@ -55,8 +55,6 @@ public class WalletDetailModel implements Model<WalletDetail> {
 
     Preconditions.checkNotNull(walletDetail, "Wallet detail must be set");
 
-    WalletService walletService = CoreServices.getCurrentWalletService().get();
-
     // TODO Add this to a wallet service
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
       WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
@@ -70,7 +68,12 @@ public class WalletDetailModel implements Model<WalletDetail> {
       ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
-      walletDetail.setNumberOfPayments(walletService.getPaymentDataSetSize());
+      if (CoreServices.getCurrentWalletService().isPresent()) {
+        WalletService walletService = CoreServices.getCurrentWalletService().get();
+        walletDetail.setNumberOfPayments(walletService.getPaymentDataSetSize());
+      } else {
+        walletDetail.setNumberOfPayments(0);
+      }
     }
   }
 
