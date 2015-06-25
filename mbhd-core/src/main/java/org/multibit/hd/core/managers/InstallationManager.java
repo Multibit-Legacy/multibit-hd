@@ -40,7 +40,7 @@ public class InstallationManager {
   /**
    * The main MultiBit help site (HTTPS to allow secure connection without redirect, with fall back to local help on failure)
    */
-  public static final String MBHD_WEBSITE_HELP_DOMAIN = "https://beta.multibit.org";  // TODO remove beta when release-4.0.0 website pushed to multibit.org
+  public static final String MBHD_WEBSITE_HELP_DOMAIN = "https://multibit.org";
   public static final String MBHD_WEBSITE_HELP_BASE = MBHD_WEBSITE_HELP_DOMAIN + "/hd0.1";
 
   public static final String MBHD_APP_NAME = "MultiBitHD";
