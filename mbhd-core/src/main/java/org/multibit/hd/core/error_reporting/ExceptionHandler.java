@@ -73,7 +73,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
   @SuppressWarnings("unchecked")
   public static void handleThrowable(Throwable t) {
 
-    log.error("Uncaught exception", t);
+    log.error("Uncaught exception. Proceeding to show Error Reporting dialog...", t);
 
     final String message;
     if (t.getLocalizedMessage() == null || t.getLocalizedMessage().length() == 0) {

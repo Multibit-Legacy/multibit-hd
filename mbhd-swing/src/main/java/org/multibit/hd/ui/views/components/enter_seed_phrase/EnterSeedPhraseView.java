@@ -23,6 +23,7 @@ import java.awt.event.ActionListener;
  * <ul>
  * <li>User entry of a seed phrase </li>
  * <li>Support for refresh and reveal operations</li>
+ * <li>Beep if a paste operation is detected</li>
  * </ul>
  *
  * @since 0.0.1
