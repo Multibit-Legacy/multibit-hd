@@ -88,6 +88,9 @@ public class MultiBitHD {
     // Start the logging factory (see later for instance) to get console logging up fast
     LoggingFactory.bootstrap();
 
+    // Get the configuration fast (Bitcoin URI processing relies on it)
+    CoreServices.bootstrap();
+
     // Analyse the command line
     if (args != null && args.length > 0) {
       // Show the command line arguments
@@ -115,9 +118,6 @@ public class MultiBitHD {
           splashScreen = new SplashScreen();
         }
       });
-
-    // Get the configuration fast
-    CoreServices.bootstrap();
 
     // Prepare the JVM (system properties etc)
     initialiseJVM();
@@ -311,7 +311,7 @@ public class MultiBitHD {
     // Prepare platform-specific integration (protocol handlers, quit events etc)
     initialiseGenericApp();
 
-    // Pre-loadContacts sound library
+    // Pre-load sound library
     Sounds.initialise();
 
     try {
