@@ -64,7 +64,7 @@ public class MultiBitHD {
       // Failed to start so issue a hard shutdown
       CoreServices.shutdownNow(ShutdownEvent.ShutdownType.HARD);
     } else {
-      // Initialise the UI views in the EDT
+      // Initialise the UI views in the EDT, Nimbus etc
       SwingUtilities.invokeLater(
         new Runnable() {
           @Override
@@ -87,9 +87,6 @@ public class MultiBitHD {
   public boolean start(String[] args) throws Exception {
     // Start the logging factory (see later for instance) to get console logging up fast
     LoggingFactory.bootstrap();
-
-    // Get the configuration fast
-    CoreServices.bootstrap();
 
     // Analyse the command line
     if (args != null && args.length > 0) {
@@ -119,22 +116,22 @@ public class MultiBitHD {
         }
       });
 
-    // Prepare the JVM (Nimbus, system properties etc)
+    // Get the configuration fast
+    CoreServices.bootstrap();
+
+    // Prepare the JVM (system properties etc)
     initialiseJVM();
 
     // Start core services (logging, environment alerts, configuration, Bitcoin URI handling etc)
     initialiseCore(args);
 
     // Create controllers so that the generic app can access listeners
-    if (!initialiseUIControllers(externalDataListeningService.get())) {
+    if (!initialiseUIControllers()) {
 
       // Required to shut down
       return false;
 
     }
-
-    // Prepare platform-specific integration (protocol handlers, quit events etc)
-    initialiseGenericApp();
 
     // Must be OK to be here
     return true;
@@ -218,9 +215,8 @@ public class MultiBitHD {
    * <li>Bitcoin network service</li>
    * </ul>
    *
-   * @param externalDataListeningService The external data listening service
    */
-  public boolean initialiseUIControllers(ExternalDataListeningService externalDataListeningService) {
+  public boolean initialiseUIControllers() {
     if (OSUtils.isWindowsXPOrEarlier()) {
       log.error("Windows XP or earlier detected. Forcing shutdown.");
       JOptionPane.showMessageDialog(
@@ -310,6 +306,10 @@ public class MultiBitHD {
     final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
     log.debug("Starting the clock for hardware wallet initialisation");
     long hardwareInitialisationTime = System.currentTimeMillis();
+
+    // Perform time consuming tasks to use the hardware initialisation time to best effect
+    // Prepare platform-specific integration (protocol handlers, quit events etc)
+    initialiseGenericApp();
 
     // Pre-loadContacts sound library
     Sounds.initialise();
