@@ -436,6 +436,12 @@ public class MultiBitHD {
    * @param startTime The reference time from which to measure the amount of sleep from
    */
   private void conditionallySleep(long startTime) {
+
+    // Check if Trezor is required
+    if (!Configurations.currentConfiguration.isTrezor()) {
+      return;
+    }
+
     final long HARDWARE_INITIALISATION_TIME = 2000;  // milliseconds
     long currentTime = System.currentTimeMillis();
     long timeSpent = currentTime - startTime;
@@ -448,5 +454,6 @@ public class MultiBitHD {
     } else {
       log.debug("No need for extra sleep time to allow hardwareWalletService to initialise");
     }
+
   }
 }
