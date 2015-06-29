@@ -43,11 +43,11 @@ public class RecipientListCellRenderer extends JLabel implements ListCellRendere
     list.setBorder(BorderFactory.createLineBorder(Themes.currentTheme.dataEntryBorder()));
 
     if (isSelected) {
-      setBackground(list.getSelectionBackground());
-      setForeground(list.getSelectionForeground());
+      setBackground(Themes.currentTheme.tableRowSelectedBackground());
+      setForeground(Themes.currentTheme.inverseText());
     } else {
       setBackground(Themes.currentTheme.dataEntryBackground());
-      setForeground(Themes.currentTheme.buttonText());
+      setForeground(Themes.currentTheme.dataEntryText());
     }
 
     String fragment = textField.getText();

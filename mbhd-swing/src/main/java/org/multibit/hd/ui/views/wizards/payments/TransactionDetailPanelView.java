@@ -175,7 +175,7 @@ public class TransactionDetailPanelView extends AbstractWizardPanelView<Payments
             lookupUri = URI.create(lookupString);
             // Attempt to open the URI
             if (!SafeDesktop.browse(lookupUri)) {
-              Sounds.playBeep();
+              Sounds.playBeep(Configurations.currentConfiguration.getSound());
             }
           }
         } catch (Exception ex) {

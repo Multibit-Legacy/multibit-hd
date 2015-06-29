@@ -460,10 +460,18 @@ public class MainView extends JFrame {
    */
   public void unsubscribe() {
 
-    headerView.unregister();
-    sidebarView.unregister();
-    detailView.unregister();
-    footerView.unregister();
+    if (headerView != null) {
+      headerView.unregister();
+    }
+    if (sidebarView != null) {
+      sidebarView.unregister();
+    }
+    if (detailView != null) {
+      detailView.unregister();
+    }
+    if (footerView != null) {
+      footerView.unregister();
+    }
 
   }
 

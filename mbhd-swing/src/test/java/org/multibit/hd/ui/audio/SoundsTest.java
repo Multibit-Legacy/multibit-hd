@@ -17,7 +17,7 @@ public class SoundsTest {
   @Test
   public void testPlayBeep() throws Exception {
 
-    Sounds.playBeep();
+    Sounds.playBeep(Configurations.currentConfiguration.getSound());
 
   }
 
@@ -25,7 +25,7 @@ public class SoundsTest {
   public void testPlayReceiveBitcoin() throws Exception {
 
     Sounds.initialise();
-    Sounds.playPaymentReceived();
+    Sounds.playPaymentReceived(Configurations.currentConfiguration.getSound());
 
   }
 }

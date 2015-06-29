@@ -43,7 +43,7 @@ public class RAGStatusTableCellRenderer extends DefaultTableCellRenderer {
     }
 
     if (isSelected) {
-      label.setBackground(table.getSelectionBackground());
+      label.setBackground(Themes.currentTheme.tableRowSelectedBackground());
     } else {
       if (row % 2 != 0) {
         label.setBackground(Themes.currentTheme.tableRowAltBackground());

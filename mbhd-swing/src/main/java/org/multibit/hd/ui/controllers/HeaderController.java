@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import org.bitcoinj.core.Coin;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
@@ -117,7 +118,7 @@ public class HeaderController extends AbstractController {
       RAGStatus severity = event.getAlertModel().getSeverity();
       if (RAGStatus.RED.equals(severity)
               || RAGStatus.AMBER.equals(severity)) {
-        Sounds.playBeep();
+        Sounds.playBeep(Configurations.currentConfiguration.getSound());
       }
 
       // Adjust the models to reflect the new M of N values

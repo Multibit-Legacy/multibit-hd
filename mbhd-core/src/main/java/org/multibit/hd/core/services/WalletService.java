@@ -15,6 +15,7 @@ import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
+import org.bitcoinj.script.Script;
 import org.joda.time.DateTime;
 import org.multibit.hd.core.concurrent.SafeExecutors;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -258,7 +259,7 @@ public class WalletService extends AbstractService {
       boolean requestAmountIsZeroOrAbsent = !baseMBHDPaymentRequestData.getAmountCoin().isPresent() || baseMBHDPaymentRequestData.getAmountCoin().get().compareTo(Coin.ZERO) == 0;
       if ((requestAmountIsZeroOrAbsent && baseMBHDPaymentRequestData.getPaidAmountCoin().compareTo(Coin.ZERO) == 0) ||
               (!requestAmountIsZeroOrAbsent && baseMBHDPaymentRequestData.getPaidAmountCoin().compareTo(baseMBHDPaymentRequestData.getAmountCoin().or(Coin.ZERO)) < 0)) {
-           paymentRequestsNotFullyFunded.add(baseMBHDPaymentRequestData);
+        paymentRequestsNotFullyFunded.add(baseMBHDPaymentRequestData);
       }
     }
     // Union the transactionData set and paymentData set
@@ -575,6 +576,7 @@ public class WalletService extends AbstractService {
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
           if (transactionOutput.isMine(wallet)) {
+            // If the output is mine then it is a vanilla isSentToAddress() = true transactionOutput
             Address receivingAddress = transactionOutput.getScriptPubKey().getToAddress(networkParameters);
             addresses = addresses + " " + receivingAddress;
 
@@ -620,9 +622,16 @@ public class WalletService extends AbstractService {
               .append(PREFIX_SEPARATOR);
       if (transaction.getOutputs() != null) {
         for (TransactionOutput transactionOutput : transaction.getOutputs()) {
-          description
-                  .append(" ")
-                  .append(transactionOutput.getScriptPubKey().getToAddress(networkParameters));
+          Script script = transactionOutput.getScriptPubKey();
+          // Calculate a TO address if possible
+          if (script.isSentToAddress() || script.isPayToScriptHash() || script.isSentToRawPubKey()) {
+            description
+                    .append(" ")
+                    .append(transactionOutput.getScriptPubKey().getToAddress(networkParameters));
+          } else {
+            // Not sure what this output sends to but put something neutral
+            description.append(" N/A");
+          }
         }
       }
     }
@@ -634,7 +643,17 @@ public class WalletService extends AbstractService {
 
     if (transaction.getOutputs() != null) {
       for (TransactionOutput transactionOutput : transaction.getOutputs()) {
-        outputAddresses.add(transactionOutput.getScriptPubKey().getToAddress(networkParameters));
+        try {
+          Script script = transactionOutput.getScriptPubKey();
+          // Calculate a TO address if possible
+          if (script.isSentToAddress() || script.isPayToScriptHash() || script.isSentToRawPubKey()) {
+            outputAddresses.add(script.getToAddress(networkParameters));
+          } else {
+            log.debug("Cannot generate a To address (because it is not defined) for  transactionOutput {}", transactionOutput.toString());
+          }
+        } catch (ScriptException se) {
+          log.debug("Could not get a to address for transactionOutput {}", transactionOutput.toString());
+        }
       }
     }
 
@@ -1146,24 +1165,25 @@ public class WalletService extends AbstractService {
 
   /**
    * Get the last generated receiving address
+   *
    * @return the last generated receiving address for this wallet, as a string
    */
   public String getLastGeneratedReceivingAddress() {
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-      List<ECKey>issuedReceivingKeys = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().getIssuedReceiveKeys();
+      List<ECKey> issuedReceivingKeys = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet().getIssuedReceiveKeys();
       if (issuedReceivingKeys.isEmpty()) {
         return null;
       } else {
         ECKey lastGeneratedReceivingKey = issuedReceivingKeys.get(0);
         // Find the receiving key with the largest index
         for (int i = 1; i < issuedReceivingKeys.size(); i++) {
-            ECKey loopKey = issuedReceivingKeys.get(i);
-            ImmutableList<ChildNumber> loopKeyPath = ((DeterministicKey)loopKey).getPath();
-            ImmutableList<ChildNumber> lastGeneratedPath = ((DeterministicKey)lastGeneratedReceivingKey).getPath();
+          ECKey loopKey = issuedReceivingKeys.get(i);
+          ImmutableList<ChildNumber> loopKeyPath = ((DeterministicKey) loopKey).getPath();
+          ImmutableList<ChildNumber> lastGeneratedPath = ((DeterministicKey) lastGeneratedReceivingKey).getPath();
 
-            if (loopKeyPath.get(loopKeyPath.size() - 1).num() > lastGeneratedPath.get(lastGeneratedPath.size() - 1).num() ) {
-              lastGeneratedReceivingKey = loopKey;
-            }
+          if (loopKeyPath.get(loopKeyPath.size() - 1).num() > lastGeneratedPath.get(lastGeneratedPath.size() - 1).num()) {
+            lastGeneratedReceivingKey = loopKey;
+          }
         }
         return lastGeneratedReceivingKey.toAddress(BitcoinNetwork.current().get()).toString();
       }
@@ -1176,9 +1196,10 @@ public class WalletService extends AbstractService {
    * Work out the current gap in the MBHD payment request datas
    * This is the number of unpaid payment requests since the last paid payment request
    * The motivation for this function is that BIP44 states that there should be a gap limit of 20
-   *
+   * <p/>
    * The returned variable is an Optional because sometimes the KeyChain information does not give a straightforward
    * answer to what the gap is.
+   *
    * @return gap the number of unpaid payment requests since the last paid payment request, or absent if this is not available
    */
   public Optional<Integer> getGap() {
@@ -1404,8 +1425,8 @@ public class WalletService extends AbstractService {
    * Change the wallet credentials for the current wallet
    * The result of the operation is emitted as a ChangePasswordResultEvent
    *
-   * @param oldPassword   The old wallet credentials
-   * @param newPassword   The new wallet credentials
+   * @param oldPassword The old wallet credentials
+   * @param newPassword The new wallet credentials
    */
   public static void changeCurrentWalletPassword(final String oldPassword, final String newPassword) {
     if (executorService == null) {
@@ -1425,10 +1446,10 @@ public class WalletService extends AbstractService {
     Optional<WalletSummary> walletSummaryOptional = WalletManager.INSTANCE.getCurrentWalletSummary();
 
     if (walletSummaryOptional == null || !walletSummaryOptional.isPresent() || walletSummaryOptional.get().getWallet() == null) {
-       // No wallet to change the credentials for
-       CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_ERROR, new Object[]{"There is no wallet"}));
-       return;
-     }
+      // No wallet to change the credentials for
+      CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_ERROR, new Object[]{"There is no wallet"}));
+      return;
+    }
 
     WalletSummary walletSummary = walletSummaryOptional.get();
     Wallet wallet = walletSummary.getWallet();
@@ -1542,10 +1563,10 @@ public class WalletService extends AbstractService {
 
       // Replay the wallet
       bitcoinNetworkService.replayWallet(
-        applicationDataDirectory,
-        Optional.<DateTime>absent(), // No checkpoints
-        false, // No fast catch up
-        false // Do not clear mempool
+              applicationDataDirectory,
+              Optional.<DateTime>absent(), // No checkpoints
+              false, // No fast catch up
+              false // Do not clear mempool
       );
 
       CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(true, CoreMessageKey.CHANGE_PASSWORD_SUCCESS, null));

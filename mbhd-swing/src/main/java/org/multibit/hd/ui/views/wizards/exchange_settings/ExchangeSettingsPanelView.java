@@ -329,7 +329,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
 
         // Attempt to open the URI
         if (!SafeDesktop.browse(exchangeUri)) {
-          Sounds.playBeep();
+          Sounds.playBeep(Configurations.currentConfiguration.getSound());
         }
 
       }
@@ -640,7 +640,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
         @Override
         public void run() {
 
-          Sounds.playBeep();
+          Sounds.playBeep(Configurations.currentConfiguration.getSound());
 
           // Ensure we wrap the label
           String failureHtml = HtmlUtils.localiseWithLineBreaks(

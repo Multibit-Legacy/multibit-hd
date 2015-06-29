@@ -1,8 +1,9 @@
-package org.multibit.hd.ui.views.components.display_amount;
+package org.multibit.hd.ui.views.components.renderers;
 
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.utils.BitcoinSymbol;
 import org.multibit.hd.ui.views.components.LabelDecorator;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,11 +42,11 @@ public class BitcoinSymbolListCellRenderer extends JLabel implements ListCellRen
   ) {
 
     if (isSelected) {
-      setBackground(list.getSelectionBackground());
-      setForeground(list.getSelectionForeground());
+      setBackground(Themes.currentTheme.tableRowSelectedBackground());
+      setForeground(Themes.currentTheme.inverseText());
     } else {
-      setBackground(list.getBackground());
-      setForeground(list.getForeground());
+      setBackground(Themes.currentTheme.dataEntryBackground());
+      setForeground(Themes.currentTheme.dataEntryText());
     }
 
     // No leading text required

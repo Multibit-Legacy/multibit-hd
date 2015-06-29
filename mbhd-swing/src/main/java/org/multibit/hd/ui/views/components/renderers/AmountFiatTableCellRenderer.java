@@ -65,14 +65,14 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
           if (amount.signum() == -1) {
             // Debit
             if (isSelected) {
-              label.setForeground(table.getSelectionForeground());
+              label.setForeground(Themes.currentTheme.inverseText());
             } else {
               label.setForeground(Themes.currentTheme.debitText());
             }
           } else {
             // Credit or zero
             if (isSelected) {
-              label.setForeground(table.getSelectionForeground());
+              label.setForeground(Themes.currentTheme.inverseText());
             } else {
               label.setForeground(Themes.currentTheme.creditText());
             }
@@ -90,14 +90,14 @@ public class AmountFiatTableCellRenderer extends DefaultTableCellRenderer {
         );
         label.setText("");
         if (isSelected) {
-          label.setForeground(table.getSelectionForeground());
+          label.setForeground(Themes.currentTheme.inverseText());
         } else {
           label.setForeground(Themes.currentTheme.creditText());
         }
       }
       if (isSelected) {
-        label.setBackground(table.getSelectionBackground());
-        label.setForeground(table.getSelectionForeground());
+        label.setBackground(Themes.currentTheme.tableRowSelectedBackground());
+        label.setForeground(Themes.currentTheme.inverseText());
       } else {
         if (row % 2 != 0) {
           label.setBackground(Themes.currentTheme.tableRowAltBackground());

@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.components.renderers;
 
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.utils.Dates;
+import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,11 +34,11 @@ public class BackupSummaryListCellRenderer extends JLabel implements ListCellRen
   ) {
 
     if (isSelected) {
-      setBackground(list.getSelectionBackground());
-      setForeground(list.getSelectionForeground());
+      setBackground(Themes.currentTheme.tableRowSelectedBackground());
+      setForeground(Themes.currentTheme.inverseText());
     } else {
-      setBackground(list.getBackground());
-      setForeground(list.getForeground());
+      setBackground(Themes.currentTheme.dataEntryBackground());
+      setForeground(Themes.currentTheme.dataEntryText());
     }
 
     if (value != null) {

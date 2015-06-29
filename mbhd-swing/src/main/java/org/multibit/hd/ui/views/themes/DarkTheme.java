@@ -77,12 +77,17 @@ public class DarkTheme extends BaseTheme {
 
   @Override
   public Color sidebarSelectedText() {
-    return new Color(240, 211, 85);
+    return new Color(66,139,202); // Must contrast with dataEntryBackground
   }
 
   @Override
   public Color dataEntryBackground() {
     return new Color(240, 211, 85);
+  }
+
+  @Override
+  public Color dataEntryText() {
+    return inverseText();
   }
 
   @Override

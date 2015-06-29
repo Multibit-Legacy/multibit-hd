@@ -67,6 +67,9 @@ public class Themes {
     Color scrollBarTrack = currentTheme.detailPanelBackground();
     UIManager.put("ScrollBar.track", scrollBarTrack);
 
+    // JComboBox UI
+    UIManager.put("ComboBox.selectionBackground",new javax.swing.plaf.ColorUIResource(Color.RED));
+
     // Ensure the language icons match the colour scheme
     LanguageKey.resetIcons();
 

@@ -9,6 +9,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.managers.HttpsManager;
@@ -346,14 +347,14 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
                       try {
                         if (launchBrowserButton.isEnabled()) {
                           if (!SafeDesktop.browse(url.toURI())) {
-                            Sounds.playBeep();
+                            Sounds.playBeep(Configurations.currentConfiguration.getSound());
                           }
                         } else {
                           // No browser available
-                          Sounds.playBeep();
+                          Sounds.playBeep(Configurations.currentConfiguration.getSound());
                         }
                       } catch (URISyntaxException e1) {
-                        Sounds.playBeep();
+                        Sounds.playBeep(Configurations.currentConfiguration.getSound());
                       }
                     }
                   });
@@ -561,7 +562,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
 
         try {
           if (!SafeDesktop.browse(currentPage().toURI())) {
-            Sounds.playBeep();
+            Sounds.playBeep(Configurations.currentConfiguration.getSound());
           }
         } catch (URISyntaxException e1) {
           ExceptionHandler.handleThrowable(e1);

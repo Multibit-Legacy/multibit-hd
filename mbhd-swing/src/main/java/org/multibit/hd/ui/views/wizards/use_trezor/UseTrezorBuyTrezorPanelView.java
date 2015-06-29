@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -31,7 +32,7 @@ import java.net.URI;
 
 public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorState> implements ActionListener {
 
-  private static String BUY_TREZOR_URL = "https://buytrezor.com?a=4fbc03c60545";
+  private static String BUY_TREZOR_URL = "https://buytrezor.com?a=multibit.org";
 
   /**
    * @param wizard    The wizard managing the states
@@ -109,7 +110,7 @@ public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrez
 
          // Attempt to open the URI
          if (!SafeDesktop.browse(URI.create(BUY_TREZOR_URL))) {
-           Sounds.playBeep();
+           Sounds.playBeep(Configurations.currentConfiguration.getSound());
          }
 
        }

@@ -1,6 +1,5 @@
 package org.multibit.hd.ui.views.components.renderers;
 
-import org.multibit.hd.core.dto.MBHDPaymentRequestData;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;
@@ -9,27 +8,20 @@ import java.awt.*;
 /**
  * <p>List cell renderer to provide the following to combo boxes:</p>
  * <ul>
- * <li>Rendering of paymentRequestData</li>
+ * <li>Consistent rendering of list cells</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.1.1
  *
  */
-public class PaymentRequestDataListCellRenderer extends JLabel implements ListCellRenderer<MBHDPaymentRequestData> {
+public class ThemeAwareListCellRenderer<T> extends JLabel implements ListCellRenderer<T> {
 
-  public PaymentRequestDataListCellRenderer() {
-
+  public ThemeAwareListCellRenderer() {
+    super();
     setOpaque(true);
-    setVerticalAlignment(CENTER);
   }
 
-  public Component getListCellRendererComponent(
-    JList list,
-    MBHDPaymentRequestData value,
-    int index,
-    boolean isSelected,
-    boolean cellHasFocus
-  ) {
+  public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
     if (isSelected) {
       setBackground(Themes.currentTheme.tableRowSelectedBackground());
@@ -41,15 +33,15 @@ public class PaymentRequestDataListCellRenderer extends JLabel implements ListCe
 
     if (value != null) {
 
-      setText(value.getDescription());
+      // Need the language key to locate the icon
+      setText(value.toString());
 
     } else {
-      // No value/ not a paymentRequestData  means no text or icon
+      // No value means no text or icon
       setIcon(null);
       setText("");
     }
 
     return this;
   }
-
 }

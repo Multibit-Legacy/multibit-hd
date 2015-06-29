@@ -23,10 +23,7 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteDecorator;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilter;
 import org.multibit.hd.ui.views.components.auto_complete.AutoCompleteFilters;
-import org.multibit.hd.ui.views.components.display_amount.BitcoinSymbolListCellRenderer;
-import org.multibit.hd.ui.views.components.renderers.BackupSummaryListCellRenderer;
-import org.multibit.hd.ui.views.components.renderers.LanguageListCellRenderer;
-import org.multibit.hd.ui.views.components.renderers.WalletSummaryListCellRenderer;
+import org.multibit.hd.ui.views.components.renderers.*;
 import org.multibit.hd.ui.views.components.select_recipient.RecipientComboBoxEditor;
 import org.multibit.hd.ui.views.components.select_recipient.RecipientListCellRenderer;
 import org.multibit.hd.ui.views.themes.ThemeKey;
@@ -134,6 +131,10 @@ public class ComboBoxes {
   public static <T> JComboBox<T> newComboBox(T[] items) {
 
     JComboBox<T> comboBox = new JComboBox<>(items);
+
+    // Use a list cell renderer to ensure Bitcoin symbols are correctly presented
+    ListCellRenderer<T> renderer = new ThemeAwareListCellRenderer<>();
+    comboBox.setRenderer(renderer);
 
     // Required to match icon button heights
     comboBox.setMinimumSize(new Dimension(25, MultiBitUI.NORMAL_ICON_SIZE + 14));

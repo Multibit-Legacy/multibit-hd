@@ -665,11 +665,11 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           // Check the result
           if (!result.isPresent()) {
 
+            // Provide aural feedback immediately
+            Sounds.playBeep(Configurations.currentConfiguration.getSound());
+
             // Wait just long enough to be annoying (anything below 2 seconds is comfortable)
             Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
-
-            // Failed
-            Sounds.playBeep();
 
             // Ensure the view hides the spinner and enables components
             confirmCipherKeyPanelView.incorrectEntropy();
@@ -720,11 +720,11 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           // Check the result
           if (!result) {
 
+            // Provide aural feedback immediately
+            Sounds.playBeep(Configurations.currentConfiguration.getSound());
+
             // Wait just long enough to be annoying (anything below 2 seconds is comfortable)
             Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
-
-            // Failed
-            Sounds.playBeep();
 
             // Ensure the view hides the spinner and enables components
             SwingUtilities.invokeLater(

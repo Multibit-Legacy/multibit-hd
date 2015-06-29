@@ -73,7 +73,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
   @SuppressWarnings("unchecked")
   public static void handleThrowable(Throwable t) {
 
-    log.error("Uncaught exception", t);
+    log.error("Uncaught exception. Proceeding to show Error Reporting dialog...", t);
 
     final String message;
     if (t.getLocalizedMessage() == null || t.getLocalizedMessage().length() == 0) {
@@ -91,17 +91,23 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
             // Internationalisation and layout issues require a dynamic invocation
             // of a class present in the Swing module
             Class nativeApplicationClass = Class.forName("org.multibit.hd.ui.error_reporting.ErrorReportingDialog");
+            if (nativeApplicationClass == null) {
+              throw new NullPointerException("Could not instantiate ErrorReportingDialog (error)");
+            }
             // Instantiate through newInstance() and supply constructor arguments to indicate an apology is required
             // Dialog will show and handle all further requirements including hard shutdown
             nativeApplicationClass.getDeclaredConstructor(boolean.class).newInstance(true);
-          } catch(IllegalStateException ise) {
+          } catch (IllegalStateException ise) {
             log.error("Unable to create dialog as one is already being shown");
           } catch (Throwable t1) {
             log.error("Unable to use standard error reporting dialog.", t1);
             try {
               // This should never happen due to static binding of the Swing library
-              JOptionPane.showMessageDialog(
-                null, "Oh Snap!\n\nA serious error has occurred with the following message:\n" + WordUtils.wrap(message, 30),
+              JOptionPane.showMessageDialog(null,
+                "Oh Snap!\n\n"
+                  + "A serious error has occurred with the following message:\n"
+                  + WordUtils.wrap(message, 30)
+                  + "\n\nMultiBit HD will exit and you should restart, unlock and select Help | Report error to report this.",
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
               // Fire a hard shutdown after dialog closes with emergency fallback
@@ -133,17 +139,23 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
             // Internationalisation and layout issues require a dynamic invocation
             // of a class present in the Swing module
             Class nativeApplicationClass = Class.forName("org.multibit.hd.ui.error_reporting.ErrorReportingDialog");
+            if (nativeApplicationClass == null) {
+              throw new NullPointerException("Could not instantiate ErrorReportingDialog (manual)");
+            }
             // Instantiate through newInstance() and supply constructor arguments to thank the user for their feedback
             // Dialog will show and handle all further requirements
             nativeApplicationClass.getDeclaredConstructor(boolean.class).newInstance(false);
-          } catch(IllegalStateException ise) {
+          } catch (IllegalStateException ise) {
             log.error("Unable to create dialog as one is already being shown");
           } catch (Throwable t1) {
             log.error("Unable to use standard error reporting dialog.", t1);
             try {
               // This should never happen due to static binding of the Swing library
-              JOptionPane.showMessageDialog(
-                null, "Oh Snap!\n\nA serious error has occurred with the reporting system",
+              JOptionPane.showMessageDialog(null,
+                "Oh Snap!\n\n"
+                  + "The error reporting system has failed with the following message:\n"
+                  + WordUtils.wrap(t1.getMessage(), 30)
+                  + "\n\nMultiBit HD will exit and you should report this error to the MultiBit HD developers.",
                 "Error",
                 JOptionPane.ERROR_MESSAGE);
               // Fire a hard shutdown after dialog closes with emergency fallback
@@ -209,8 +221,8 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       // Remove personally identifying information in paths
       String userName = System.getProperty("user.name");
       contents = contents
-        .replace("/"+userName+"/", "/*blank*/") // Unix paths
-        .replace("\\"+userName+"\\", "\\*blank*\\"); // Windows paths
+        .replace("/" + userName + "/", "/*blank*/") // Unix paths
+        .replace("\\" + userName + "\\", "\\*blank*\\"); // Windows paths
 
       // Truncate to 200Kb short of the end
       int offset = Math.max(0, contents.length() - maxLength);

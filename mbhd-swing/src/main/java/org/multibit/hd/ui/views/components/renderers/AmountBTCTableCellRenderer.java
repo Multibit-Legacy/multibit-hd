@@ -52,21 +52,21 @@ public class AmountBTCTableCellRenderer extends DefaultTableCellRenderer {
       if ((valueCoin.or(Coin.ZERO).compareTo(Coin.ZERO) < 0)) {
         // Debit
         if (isSelected) {
-          label.setForeground(table.getSelectionForeground());
+          label.setForeground(Themes.currentTheme.inverseText());
         } else {
           label.setForeground(Themes.currentTheme.debitText());
         }
       } else {
         // Credit
         if (isSelected) {
-          label.setForeground(table.getSelectionForeground());
+          label.setForeground(Themes.currentTheme.inverseText());
         } else {
           label.setForeground(Themes.currentTheme.creditText());
         }
       }
       if (isSelected) {
-        label.setBackground(table.getSelectionBackground());
-        label.setForeground(table.getSelectionForeground());
+        label.setBackground(Themes.currentTheme.tableRowSelectedBackground());
+        label.setForeground(Themes.currentTheme.inverseText());
       } else {
         if (row % 2 != 0) {
           label.setBackground(Themes.currentTheme.tableRowAltBackground());

@@ -24,6 +24,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
 
   private int numberOfConnectedPeers = 0;
 
+  private boolean isDownloading = false;
+
   public MultiBitPeerEventListener() {
   }
 
@@ -41,8 +43,11 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     //log.debug("Number of blocks left: {}, originalBlocksLeft: {}", blocksLeft, originalBlocksLeft);
 
     if (blocksLeft < 0 || originalBlocksLeft <= 0) {
+      isDownloading = false;
       return;
     }
+
+    isDownloading = blocksLeft > 0;
 
     double pct = 100.0 - (100.0 * (blocksLeft / (double) originalBlocksLeft));
     if ((int) pct != lastPercent) {
@@ -63,6 +68,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
   @Override
   public void onChainDownloadStarted(Peer peer, int blocksLeft) {
     log.trace("Chain download started with number of blocks left = {}", blocksLeft);
+
+    isDownloading = blocksLeft > 0;
 
     startDownload(blocksLeft);
     // Only mark this the first time, because this method can be called more than once during a chain download
@@ -199,6 +206,8 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    * @param blocks the number of blocks to download, estimated
    */
   protected void startDownload(int blocks) {
+    isDownloading = blocks > 0;
+
     log.info("Started download with {} blocks to download", blocks);
     CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadStarted());
 
@@ -209,6 +218,7 @@ public class MultiBitPeerEventListener implements PeerEventListener {
    */
   protected void doneDownload() {
     log.info("Download of block chain complete");
+    isDownloading = false;
 
     // Fire that we have completed the sync
     lastPercent = 100;
@@ -221,7 +231,10 @@ public class MultiBitPeerEventListener implements PeerEventListener {
     // Then fire the number of connected peers
     CoreEvents.fireBitcoinNetworkChangedEvent(
       BitcoinNetworkSummary.newNetworkPeerCount(numberOfConnectedPeers));
+  }
 
+  public boolean isDownloading() {
+    return isDownloading;
   }
 }
 

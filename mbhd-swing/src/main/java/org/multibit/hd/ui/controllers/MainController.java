@@ -829,7 +829,7 @@ public class MainController extends AbstractController implements
      if (transactionSeenEvent.isFirstAppearanceInWallet() && isFireTransactionAlerts()) {
        log.debug("Firing an alert for a new transaction");
        transactionSeenEvent.setFirstAppearanceInWallet(false);
-       Sounds.playPaymentReceived();
+       Sounds.playPaymentReceived(Configurations.currentConfiguration.getSound());
        AlertModel alertModel = Models.newPaymentReceivedAlertModel(transactionSeenEvent);
        ControllerEvents.fireAddAlertEvent(alertModel);
      }

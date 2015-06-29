@@ -86,6 +86,11 @@ public class LightTheme extends BaseTheme {
   }
 
   @Override
+  public Color dataEntryText() {
+    return text();
+  }
+
+  @Override
   public Color dataEntryBorder() {
     return new Color(235, 207, 37);
   }

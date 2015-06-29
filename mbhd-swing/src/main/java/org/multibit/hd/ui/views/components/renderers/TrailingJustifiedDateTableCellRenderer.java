@@ -51,10 +51,10 @@ public class TrailingJustifiedDateTableCellRenderer extends DefaultTableCellRend
     label.setText(formattedDate + SPACER);
 
     if (isSelected) {
-      label.setBackground(table.getSelectionBackground());
-      label.setForeground(table.getSelectionForeground());
+      label.setBackground(Themes.currentTheme.tableRowSelectedBackground());
+      label.setForeground(Themes.currentTheme.inverseText());
     } else {
-      label.setForeground(table.getForeground());
+      label.setForeground(Themes.currentTheme.text());
       if (row % 2 != 0) {
         label.setBackground(Themes.currentTheme.tableRowAltBackground());
       } else {

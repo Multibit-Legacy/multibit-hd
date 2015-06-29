@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.text.DefaultEditorKit;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.List;
@@ -63,7 +64,7 @@ public class MultiBitHD {
       // Failed to start so issue a hard shutdown
       CoreServices.shutdownNow(ShutdownEvent.ShutdownType.HARD);
     } else {
-      // Initialise the UI views in the EDT
+      // Initialise the UI views in the EDT, Nimbus etc
       SwingUtilities.invokeLater(
         new Runnable() {
           @Override
@@ -87,7 +88,7 @@ public class MultiBitHD {
     // Start the logging factory (see later for instance) to get console logging up fast
     LoggingFactory.bootstrap();
 
-    // Get the configuration fast
+    // Get the configuration fast (Bitcoin URI processing relies on it)
     CoreServices.bootstrap();
 
     // Analyse the command line
@@ -118,22 +119,19 @@ public class MultiBitHD {
         }
       });
 
-    // Prepare the JVM (Nimbus, system properties etc)
+    // Prepare the JVM (system properties etc)
     initialiseJVM();
 
     // Start core services (logging, environment alerts, configuration, Bitcoin URI handling etc)
     initialiseCore(args);
 
     // Create controllers so that the generic app can access listeners
-    if (!initialiseUIControllers(externalDataListeningService.get())) {
+    if (!initialiseUIControllers()) {
 
       // Required to shut down
       return false;
 
     }
-
-    // Prepare platform-specific integration (protocol handlers, quit events etc)
-    initialiseGenericApp();
 
     // Must be OK to be here
     return true;
@@ -217,9 +215,8 @@ public class MultiBitHD {
    * <li>Bitcoin network service</li>
    * </ul>
    *
-   * @param externalDataListeningService The external data listening service
    */
-  public boolean initialiseUIControllers(ExternalDataListeningService externalDataListeningService) {
+  public boolean initialiseUIControllers() {
     if (OSUtils.isWindowsXPOrEarlier()) {
       log.error("Windows XP or earlier detected. Forcing shutdown.");
       JOptionPane.showMessageDialog(
@@ -310,13 +307,28 @@ public class MultiBitHD {
     log.debug("Starting the clock for hardware wallet initialisation");
     long hardwareInitialisationTime = System.currentTimeMillis();
 
-    // Pre-loadContacts sound library
+    // Perform time consuming tasks to use the hardware initialisation time to best effect
+    // Prepare platform-specific integration (protocol handlers, quit events etc)
+    initialiseGenericApp();
+
+    // Pre-load sound library
     Sounds.initialise();
 
     try {
       // Set look and feel (expect ~1000ms to perform this)
       log.debug("Loading Nimbus LaF...");
-      UIManager.setLookAndFeel(new NimbusLookAndFeel());
+      UIManager.setLookAndFeel(new NimbusLookAndFeel() {
+
+        // Require configurable error feedback through beeps
+        @Override
+        public void provideErrorFeedback(Component component) {
+
+          if (Configurations.currentConfiguration.getSound().isAlertSound()) {
+            super.provideErrorFeedback(component);
+          }
+
+        }
+      });
     } catch (UnsupportedLookAndFeelException e) {
       try {
         log.warn("Falling back to cross platform LaF...");
@@ -424,6 +436,12 @@ public class MultiBitHD {
    * @param startTime The reference time from which to measure the amount of sleep from
    */
   private void conditionallySleep(long startTime) {
+
+    // Check if Trezor is required
+    if (!Configurations.currentConfiguration.isTrezor()) {
+      return;
+    }
+
     final long HARDWARE_INITIALISATION_TIME = 2000;  // milliseconds
     long currentTime = System.currentTimeMillis();
     long timeSpent = currentTime - startTime;
@@ -436,5 +454,6 @@ public class MultiBitHD {
     } else {
       log.debug("No need for extra sleep time to allow hardwareWalletService to initialise");
     }
+
   }
 }
