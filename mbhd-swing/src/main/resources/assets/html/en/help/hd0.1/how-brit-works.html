@@ -1,0 +1,166 @@
+<h3>FAQ for BRIT (our fee collection mechanism)</h3>
+
+<p>We get a lot of interest about our fee collection mechanism so we have put together this FAQ to help you to learn more about it. This article remains accessible to all users, but does occasionally go into some detail about how BRIT works using broad cryptographic terms.</p>
+
+<h4>I've heard that MultiBit HD isn't free. Is this true ?</h4>
+
+<p>Yes. With MultiBit HD we are introducing a client fee of 1,000&nbsp;satoshi per spend. This compares favourably with the current
+  miner's fee of 3,000&nbsp;satoshi.</p>
+
+<p>At 500 USD per bitcoin this is 0.5 cents for each transaction sent. The <a
+  href="http://online.wsj.com/news/articles/SB10001424127887324048904578319783080709860" target="_blank">price of a latte in a New York Starbucks</a>
+  is about 4 USD which equates to 800 sends through MultiBit HD.</p>
+<p>There is no charge for receiving bitcoin. We bundle up these small amounts so that you pay once every twenty sends or so from your wallet.</p>
+
+<p>The revenue generated will go towards further development of MultiBit HD. We will also use the funds raised to support upstream projects
+  that MultiBit HD relies upon (such as Bitcoinj, XChange etc) that would otherwise never see an income.</p>
+
+<h4>But Bitcoin is free and open source...</h4>
+<p>Bitcoin is not free in all cases. Typically transactions include a miner's fee to ensure that they get
+  mined into a block quickly. The amount paid varies according to the data size of the transaction, the age of
+  the bitcoin outputs involved and some other rules.</p>
+
+<p>MultiBit HD is "free" as in information, not as in "beer".</p>
+
+<h4>Bitcoin doesn't work without the miners but wallets are commonplace</h4>
+<p>That's true to some extent. There are many free and open source Bitcoin wallets available. However to make and distribute
+  a high-quality Bitcoin wallet takes a lot of time and effort. For this to be sustainable in the long run the developers
+  need to be paid.</p>
+
+
+<p>MultiBit has been in the Bitcoin space since 2011. In that time it has seen continuous development and improvement.
+  Back in March 2014 <a href="/blog/2014/03/10/multibit-downloads-reach-1.5m.html">we celebrated 1.5 million downloads</a> and we've been growing ever
+  since.</p>
+<p>Supporting a virtual metropolis of users and writing new features is now a full time job for a team of developers.</p>
+
+<h4>What about funding it through adverts ?</h4>
+<p>Too invasive. In general adverts provided by third parties place tracking cookies and monitor IP addresses. The advertisers themselves often want to
+  have detailed demographic information. We believe very strongly in the privacy of our users so we do not want to expose them to this.</p>
+
+<p>Bear in mind that technical users (including ourselves) tend to have ad-blocking software running and so don't see adverts presented in
+  a browser context and we personally find in-app adverts to be both distracting and intrusive.</p>
+
+<p>By charging a client fee we can avoid intrusive or privacy-breaking alternatives.</p>
+
+<h4>What about paying upfront for it ?</h4>
+
+<p>Possible but then we couldn't be pure Bitcoin. When people download a Bitcoin wallet for the first time they don't usually have any bitcoin to hand.
+  Consequently we would have to ask for payment using a non-Bitcoin mechanism which would defeat the point of having Bitcoin in the first place.</p>
+
+<p>There is also the problem of piracy. Once a signed, paid-for copy of MultiBit HD is out there it wouldn't be long before it is torrented. While we're
+  happy for this to happen (we release under MIT licence after all) it would mean that ongoing income from sales would be limited.</p>
+
+<p>Finally it is important to remember that people from all over the world use MultiBit HD and what is affordable to one group of people is very expensive
+  to others. An upfront fee would restrict access to Bitcoin to only those who could afford it.</p>
+
+<p>We want anyone, anywhere in the world to be able to download MultiBit HD without having to pay for it.</p>
+
+<h4>So what are you proposing instead ?</h4>
+
+<p>We're fortunate to be in this position to contribute to the Bitcoin community, and to enable us to keep paying the bills we designed a way to get income that matched these
+  principles:</p>
+<ul>
+  <li>Must be open source under MIT license</li>
+  <li>Fees must be extremely low</li>
+  <li>No gathering or selling of information to third parties</li>
+  <li>No in-app advertising</li>
+  <li>Zero upfront cost</li>
+  <li>Must be decentralised apart from an anonymous initial contact</li>
+  <li>Must allow income to be allocated to other parties efficiently</li>
+  <li>All communications must rely on encrypted messages to prevent snooping, MITM and replay attacks</li>
+</ul>
+
+<h4>Can you explain why it is decentralised ?</h4>
+
+<p>This is to ensure that the BRIT income could continue even if the MultiBit.org servers were inactive for some reason. There is no denial of service to users should we
+  suffer an outage, perhaps as a result of a denial of service attack.</p>
+
+<p>There is a single, anonymous initial contact required in order to deliver the payment addresses to the user. These are on a per wallet basis.</p>
+
+<h4>How does this anonymous initial contact work ?</h4>
+
+<p>During wallet creation a unique irreversible identifier is created and sent to our site. This is stored and used as follows:</p>
+<ul>
+  <li>to provide a timestamp lookup facility (faster synchronization)</li>
+  <li>to ensure that the same fee payment addresses are supplied for the same wallet words (restored wallet doesn't lose fee info)</li>
+</ul>
+
+<h4>So can you work out my wallet words from this identifier ?</h4>
+
+<p>Absolutely not. The unique identifier:</p>
+<ul>
+  <li><strong>does not</strong> allow us reverse engineer wallet words or any other wallet information</li>
+  <li><strong>does not</strong> allow us to spend or recover bitcoins</li>
+  <li><strong>does not</strong> allow us to identify you as an individual (no IP address is stored for example)</li>
+  <li><strong>does not</strong> allow us to track you</li>
+</ul>
+
+<p>For the technically minded, the algorithm for the unique identifier is essentially this:</p>
+<ul>
+  <li>A large fixed prime was selected as a salt value</li>
+  <li>The salt is used in the Scrypt algorithm using default values</li>
+  <li>A Scrypt private key is generated deterministically</li>
+  <li>From this an EC private key is derived deterministically</li>
+  <li>An EC public key is derived deterministically</li>
+  <li>The EC public key is then subjected to RIPEMD160(SHA256(publicKey)) similar to a Bitcoin address</li>
+  <li>The outcome is then suitable for use as a unique identifier for a particular set of wallet words</li>
+</ul>
+
+<p>The salt value for Scrypt is completely different to that used when storing the MultiBit HD wallet so there is no connection between the name of the wallet on your
+  hard drive and that recorded on the MultiBit.org server.</p>
+
+<h4>Is this unique identifier secure ?</h4>
+
+<p>Yes. It is sent to the MultiBit.org server over HTTPS and the data itself is further encrypted using the BRIT server public key embedded in the MultiBit HD code. This
+  code is part of the digitally signed installer so cannot be tampered with. The response from the server is also encrypted using a key generated by MultiBit HD.</p>
+
+<h4>Are the payments collected for every transaction ?</h4>
+
+<p>No. That would be a significant privacy leak and the values themselves are near the dust limit for Bitcoin transactions anyway.</p>
+
+<h4>So they are bundled up instead ?</h4>
+
+<p>Yes. As you make a payment as part of your normal use of Bitcoin MultiBit HD will keep a count internally of how many times you have created a transaction. When the count reaches between 15 and 25 an additional output will be created of between 15,000 and 25,000 satoshi. The output will be
+  placed at a random position on the normal transaction making it unclear what its purpose is. Once that transaction is sent the payment is made, the count resets and the
+  process begins again.</p>
+
+<h4>Is it the same BRIT address every time ?</h4>
+
+<p>No. When you create a new wallet in MultiBit HD the unique identifier is sent to MultiBit.org. The response contains a set of 50 addresses that can be used to fulfill a fee
+  payment. When the time comes to pay the fees one of these addresses is selected randomly.</p>
+
+<h4>What if the MultiBit.org server is offline when I create my wallet ?</h4>
+
+<p>The BRIT system is designed to be decentralised. Should our server be offline for whatever reason, MultiBit HD has a set of well-known donation addresses built in which it
+  will use instead.</p>
+
+<h4>Could a donation address be used instead of BRIT ?</h4>
+
+<p>Yes. If you make a payment <strong>from your wallet</strong> to a MultiBit.org donation address (such as <a
+  href="bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.01&label=Please%20donate%20to%20multibit.org">
+  1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty</a> then this will count towards your fees.</p>
+
+<h4>So can I donate and avoid the BRIT fees ?</h4>
+
+<p>Yes. BRIT has been designed to allow this to happen. There is a button on the Preferences | Fees screen which allows you to make a donation to MultiBit.org which offsets
+  your BRIT fees to that amount. </p>
+
+<h4>You mentioned income being allocated to other parties. What's that about ?</h4>
+
+<p>The design of BRIT allows addresses to be added to the server. These addresses can be owned by anyone - perhaps developers of the open source libraries on which MultiBit
+  HD depends. By including their addresses (something under the strict control of the MultiBit developers) they are able to directly benefit from the success of MultiBit HD. This
+  creates a virtuous circle which benefits everyone in the Bitcoin ecosystem.</p>
+
+
+<h4>Can I inspect the code ?</h4>
+
+<p>Yes. All the payment code, both client and server side, has been released under the MIT licence for other teams to use freely. The <a
+  href="https://github.com/bitcoin-solutions/brit-service" target="_blank">BRIT Service code and documentation</a> is available for examination
+  on GitHub. The client code is currently within the <a href="https://github.com/bitcoin-solutions/multibit-hd" target="_blank">MultiBit HD repo</a>.</p>
+
+<h3>Related articles</h3>
+<p>Here are some related articles:</p>
+<ul>
+  <li><a href="how-spv-works.html">SPV, Bloom filters and checkpoints</a></li>
+  <li><a href="fees.html">Fees</a></li>
+</ul>
