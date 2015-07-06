@@ -262,7 +262,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
 
     final WalletSummary walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
 
-    ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());
+    ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletPassword());
 
     walletDetail.setApplicationDirectory(applicationDataDirectory.getAbsolutePath());
     walletDetail.setWalletDirectory(walletFile.getParentFile().getName());

@@ -212,7 +212,7 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
    */
   private Optional<Contact> matchContact(Collection<Address> addresses) {
 
-    ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+    ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword());
     List<Contact> allContacts = contactService.allContacts();
 
     Contact matchedContact = null;

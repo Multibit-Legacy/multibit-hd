@@ -315,7 +315,6 @@ public class BackupService extends AbstractService {
         rememberedPasswordForCloudBackup = Optional.absent();
       } catch (IOException ioe) {
         log.error("Failed to perform cloud backup", ioe);
-        CoreServices.logHistory("Failed to perform cloud backup. Message: " + ioe.getMessage());
         CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newBackupFailed());
       }
     } else {

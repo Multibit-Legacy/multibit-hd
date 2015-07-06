@@ -503,7 +503,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
         // Attempt to locate a contact with the address in the Bitcoin URI to reassure user
         List<Contact> contacts = CoreServices
-          .getOrCreateContactService(currentWalletSummary.get().getWalletId())
+          .getOrCreateContactService(currentWalletSummary.get().getWalletPassword())
           .filterContactsByBitcoinAddress(address.get());
 
         if (!contacts.isEmpty()) {

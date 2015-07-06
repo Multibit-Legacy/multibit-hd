@@ -443,9 +443,6 @@ public class WalletServiceTest {
     // Reload contacts db
     CoreServices.getCurrentContactService().loadContacts(password);
 
-    // Reload history db
-    CoreServices.getCurrentHistoryService().loadHistory(password);
-
     // Reload payment db
     CoreServices.getCurrentWalletService().get().readPayments(password);
   }

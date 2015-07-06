@@ -9,15 +9,13 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletPassword;
 import org.multibit.hd.core.dto.WalletSummary;
-import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.confirm_password.ConfirmPasswordModel;
@@ -269,11 +267,6 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
         WalletPassword walletPassword = new WalletPassword(password, walletId);
         WalletSummary walletSummary = currentWalletSummary.get();
         walletSummary.setWalletPassword(walletPassword);
-
-        CoreServices.getOrCreateHistoryService(walletPassword);
-
-        // Must have succeeded to be here
-        CoreServices.logHistory(Languages.safeText(MessageKey.PASSWORD_VERIFIED));
 
         return true;
       }

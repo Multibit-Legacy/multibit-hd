@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.screens;
 
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.services.HistoryService;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.screens.contacts.ContactsScreenModel;
 import org.multibit.hd.ui.views.screens.contacts.ContactsScreenView;
@@ -10,8 +9,6 @@ import org.multibit.hd.ui.views.screens.exit.ExitScreenModel;
 import org.multibit.hd.ui.views.screens.exit.ExitScreenView;
 import org.multibit.hd.ui.views.screens.help.HelpScreenModel;
 import org.multibit.hd.ui.views.screens.help.HelpScreenView;
-import org.multibit.hd.ui.views.screens.history.HistoryScreenModel;
-import org.multibit.hd.ui.views.screens.history.HistoryScreenView;
 import org.multibit.hd.ui.views.screens.manage_wallet.ManageWalletScreenModel;
 import org.multibit.hd.ui.views.screens.manage_wallet.ManageWalletScreenView;
 import org.multibit.hd.ui.views.screens.payments.PaymentsScreenModel;
@@ -64,8 +61,11 @@ public class Screens {
 
     switch (screen) {
 
-      // Sidebar screens
+      // Deprecated screens
+      case HISTORY:
+        // History no longer supported so show a SendRequest screen to get the user started
 
+      // Sidebar screens
       case SEND_REQUEST:
         view = new SendRequestScreenView(new SendRequestScreenModel(screen), screen, MessageKey.SEND_OR_REQUEST);
         break;
@@ -93,13 +93,6 @@ public class Screens {
         view = new ExitScreenView(new ExitScreenModel(screen), screen, MessageKey.EXIT);
         break;
 
-      // Non-sidebar screens
-
-      case HISTORY:
-        // Expect a current history service
-        HistoryService historyService = CoreServices.getCurrentHistoryService();
-        view = new HistoryScreenView(new HistoryScreenModel(historyService, screen), screen, MessageKey.HISTORY);
-        break;
       default:
         throw new IllegalStateException("Unknown screen:" + screen.name());
     }

@@ -18,11 +18,12 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.WalletLoadEvent;
-import org.multibit.hd.core.exceptions.HistoryLoadException;
+import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ApplicationEventService;
+import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -31,7 +32,6 @@ import org.multibit.hd.hardware.core.fsm.HardwareWalletContext;
 import org.multibit.hd.hardware.core.messages.*;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
@@ -773,15 +773,16 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
       Optional<WalletSummary> currentWalletSummary;
       try {
-        // Open the history BEFORE the wallet
+        // Open the contacts BEFORE the wallet
         // This way if the password is a previous password a rolling backup is not loaded
         // Fail fast
 
-        // Create the history service
-        CoreServices.getOrCreateHistoryService(new WalletPassword(password, walletId));
+        // Create the contacts service
+        ContactService contactService = CoreServices.getOrCreateContactService(new WalletPassword(password, walletId));
+        contactService.loadContacts(password);
 
         currentWalletSummary = WalletManager.INSTANCE.openWalletFromWalletId(InstallationManager.getOrCreateApplicationDataDirectory(), walletId, password);
-      } catch (HistoryLoadException | org.bitcoinj.crypto.KeyCrypterException | WalletLoadException wle) {
+      } catch (ContactsLoadException | org.bitcoinj.crypto.KeyCrypterException | WalletLoadException wle) {
         // Mostly this will be from a bad password
         log.error(wle.getMessage());
         // Assume bad credentials
@@ -799,9 +800,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         // Update the wallet data
         WalletSummary walletSummary = currentWalletSummary.get();
         walletSummary.setWalletPassword(new WalletPassword(password, walletId));
-
-        // Must have succeeded to be here
-        CoreServices.logHistory(Languages.safeText(MessageKey.PASSWORD_VERIFIED));
 
         return true;
       }

@@ -8,7 +8,6 @@ import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.ShowManageWalletS
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.change_password.VerifyChangePasswordUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.edit_wallet.ShowThenCancelEditWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.empty_wallet.ShowThenCancelEmptyWalletUseCase;
-import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.history.*;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.payment_settings.ShowThenCancelPaymentSettingsUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.payment_settings.VerifyPaymentSettingsBlockExplorerUseCase;
 import org.multibit.hd.ui.fest.use_cases.sidebar.manage_wallet.repair_wallet.ShowThenCancelRepairWalletUseCase;
@@ -57,30 +56,6 @@ public class ManageWalletScreenRequirements {
     // Change password
     new VerifyChangePasswordUseCase(window).execute(parameters);
 
-    // Verify the "history" screen change
-    verifyHistoryScreen(window, parameters);
   }
 
-  /**
-   * The history screen is a special case of a screen initiated from a button
-   *
-   * @param window     The frame fixture window
-   * @param parameters Any parameters
-   */
-  private static void verifyHistoryScreen(FrameFixture window, Map<String, Object> parameters) {
-
-    new ShowHistoryScreenUseCase(window).execute(parameters);
-
-    // Click Edit and update credentials verified
-    new EditPasswordEntryUseCase(window).execute(parameters);
-
-    // Click Edit and fill in some extra info on credentials but then Cancel
-    new EditThenCancelPasswordEntryUseCase(window).execute(parameters);
-
-    // Select wallet created and credentials then use multi-edit
-    new EditOpenedAndPasswordEntryUseCase(window).execute(parameters);
-
-    // Search for the first entry
-    new SearchHistoryUseCase(window).execute(parameters);
-  }
 }

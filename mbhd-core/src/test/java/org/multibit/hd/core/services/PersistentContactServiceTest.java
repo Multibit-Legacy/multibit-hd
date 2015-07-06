@@ -59,7 +59,7 @@ public class PersistentContactServiceTest {
 
     File contactDbFile = new File(applicationDirectory.getAbsolutePath() + File.separator + ContactService.CONTACTS_DATABASE_NAME);
 
-    contactService = new PersistentContactService(contactDbFile);
+    contactService = new PersistentContactService(contactDbFile, WalletServiceTest.PASSWORD);
     contactService.addDemoContacts();
 
   }
