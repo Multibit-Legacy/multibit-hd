@@ -1,10 +1,10 @@
 package org.multibit.hd.brit.matcher;
 
-import org.bitcoinj.core.Address;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+import org.bitcoinj.core.Address;
 import org.multibit.hd.brit.crypto.AESUtils;
 import org.multibit.hd.brit.crypto.PGPUtils;
 import org.multibit.hd.brit.dto.*;
@@ -12,9 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -43,12 +46,6 @@ public class BasicMatcher implements Matcher {
   private static final int NUMBER_OF_ADDRESSES_PER_DAY = 50;
 
   private SecureRandom secureRandom;
-
-  /**
-   * The last payerRequest received.
-   * (Having a single last payerRequest won't work in a multi-threaded environment)
-   */
-  private PayerRequest lastPayerRequest;
 
   /**
    * The matcher store containing all the bitcoin address information
@@ -89,8 +86,6 @@ public class BasicMatcher implements Matcher {
 
   @Override
   public MatcherResponse process(PayerRequest payerRequest) {
-
-    lastPayerRequest = payerRequest;
 
     WalletToEncounterDateLink previousEncounter = matcherStore.lookupWalletToEncounterDateLink(payerRequest.getBritWalletId());
 
@@ -160,14 +155,20 @@ public class BasicMatcher implements Matcher {
   }
 
   @Override
-  public EncryptedMatcherResponse encryptMatcherResponse(MatcherResponse matcherResponse) throws NoSuchAlgorithmException {
+  public EncryptedMatcherResponse encryptMatcherResponse(MatcherResponse matcherResponse, PayerRequest payerRequest) throws NoSuchAlgorithmException, InvalidKeyException {
     // Stretch the 20 byte britWalletId to 32 bytes (256 bits)
-    byte[] stretchedBritWalletId = MessageDigest.getInstance("SHA-256").digest(lastPayerRequest.getBritWalletId().getBytes());
+    byte[] stretchedBritWalletId = MessageDigest.getInstance("SHA-256").digest(payerRequest.getBritWalletId().getBytes());
 
-    // Create an AES key from the stretchedBritWalletId and the sessionKey and decrypt the payload
-    byte[] encryptedMatcherResponsePayload = AESUtils.encrypt(matcherResponse.serialise(), new KeyParameter(stretchedBritWalletId), lastPayerRequest.getSessionKey());
+    // Create an AES key from the stretchedBritWalletId and the sessionKey and encrypt the payload
+    byte[] encryptedMatcherResponsePayload = AESUtils.encrypt(matcherResponse.serialise(), new KeyParameter(stretchedBritWalletId), payerRequest.getSessionKey());
 
-    return new EncryptedMatcherResponse(encryptedMatcherResponsePayload);
+    // Use the payer session key to create an HMAC of the payload for integrity checking
+    SecretKeySpec hmacKeySpec = new SecretKeySpec(payerRequest.getSessionKey(), "HmacSHA256");
+    Mac mac = Mac.getInstance("HmacSHA1");
+    mac.init(hmacKeySpec);
+    byte[] hmacResponsePayload = mac.doFinal(encryptedMatcherResponsePayload);
+
+    return new EncryptedMatcherResponse(encryptedMatcherResponsePayload, hmacResponsePayload);
   }
 
   @Override

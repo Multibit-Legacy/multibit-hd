@@ -10,5 +10,8 @@ package org.multibit.hd.brit.redeemer;
  */
 public interface Redeemer {
 
-  public RedeemerConfig getConfig();
+  /**
+   * @return The redeemer configuration
+   */
+  RedeemerConfig getConfig();
 }

@@ -5,6 +5,7 @@ import org.multibit.hd.brit.dto.EncryptedPayerRequest;
 import org.multibit.hd.brit.dto.MatcherResponse;
 import org.multibit.hd.brit.dto.PayerRequest;
 
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 /**
@@ -23,7 +24,7 @@ public interface Matcher {
    *
    * @return MatcherConfig the matcher configuration data
    */
-  public MatcherConfig getConfig();
+  MatcherConfig getConfig();
 
   /**
    * Decrypt a PGP encrypted PayerRequest using the PGP private key in the Matcher's MatcherConfig
@@ -34,7 +35,7 @@ public interface Matcher {
    *
    * @throws Exception
    */
-  public PayerRequest decryptPayerRequest(EncryptedPayerRequest encryptedPayerRequest) throws Exception;
+  PayerRequest decryptPayerRequest(EncryptedPayerRequest encryptedPayerRequest) throws Exception;
 
   /**
    * Process the PayerRequest information and produce a MatcherResponse.
@@ -44,23 +45,24 @@ public interface Matcher {
    *
    * @return MatcherResponse the response to the request
    */
-  public MatcherResponse process(PayerRequest payerRequest);
+  MatcherResponse process(PayerRequest payerRequest);
 
   /**
    * Encrypt the matcherResponse with an AES key derived from the Payer's BRITWalletId and sessionId
    *
    * @param matcherResponse The unencrypted Matcher Response
+   * @param payerRequest The payerRequest from the Payer
    *
    * @return The encrypted MatcherResponse
    *
    * @throws NoSuchAlgorithmException
    */
-  public EncryptedMatcherResponse encryptMatcherResponse(MatcherResponse matcherResponse) throws NoSuchAlgorithmException;
+  EncryptedMatcherResponse encryptMatcherResponse(MatcherResponse matcherResponse, PayerRequest payerRequest) throws NoSuchAlgorithmException, InvalidKeyException;
 
 
   /**
    * Get the MatcherStore used to persist the Matcher information
    */
-  public MatcherStore getMatcherStore();
+  MatcherStore getMatcherStore();
 
 }

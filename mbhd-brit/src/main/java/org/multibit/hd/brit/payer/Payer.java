@@ -22,7 +22,7 @@ public interface Payer {
    *
    * @return A Payer configuration
    */
-  public PayerConfig getConfig();
+  PayerConfig getConfig();
 
   /**
    * Create an unencrypted PayerRequest for transmission to the Matcher
@@ -33,7 +33,7 @@ public interface Payer {
    *
    * @return A new Payer request (unencrypted)
    */
-  public PayerRequest newPayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Optional<Date> firstTransactionDate);
+  PayerRequest newPayerRequest(BRITWalletId britWalletId, byte[] sessionKey, Optional<Date> firstTransactionDate);
 
   /**
    * Encrypt the PayerRequest with the Matcher public PGP key
@@ -44,7 +44,7 @@ public interface Payer {
    *
    * @throws org.multibit.hd.brit.exceptions.PayerRequestException
    */
-  public EncryptedPayerRequest encryptPayerRequest(PayerRequest payerRequest) throws PayerRequestException;
+  EncryptedPayerRequest encryptPayerRequest(PayerRequest payerRequest) throws PayerRequestException;
 
   /**
    * Decrypt the encryptedMatcherResponse using an AES key derived from the BRITWalletId and sessionKey
@@ -55,6 +55,6 @@ public interface Payer {
    *
    * @throws org.multibit.hd.brit.exceptions.MatcherResponseException
    */
-  public MatcherResponse decryptMatcherResponse(EncryptedMatcherResponse encryptedMatcherResponse) throws MatcherResponseException;
+  MatcherResponse decryptMatcherResponse(EncryptedMatcherResponse encryptedMatcherResponse) throws MatcherResponseException;
 
 }

@@ -10,15 +10,16 @@ import org.bitcoinj.core.Wallet;
  *  </ul>
  * This is an interface because the Core implementation of it depends on various Core classes that BRIT does not know about
  * </p>
- *
  */
 public interface TransactionSentBySelfProvider {
 
   /**
    * Return whether the transaction is sent by the active wallet (set up in implementation construction)
-   * @param wallet the wallet the 'sent by self' check is to be performed against
+   *
+   * @param wallet      the wallet the 'sent by self' check is to be performed against
    * @param transaction the transaction
+   *
    * @return true if transaction was sent by self, false if not a send or not sent by self
    */
-  public boolean isSentBySelf(Wallet wallet, Transaction transaction);
+  boolean isSentBySelf(Wallet wallet, Transaction transaction);
 }

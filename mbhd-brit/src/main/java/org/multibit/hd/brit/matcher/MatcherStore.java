@@ -24,7 +24,7 @@ public interface MatcherStore {
    *
    * @param walletToEncounterDateLink The wallet to encounter date link object
    */
-  public void storeWalletToEncounterDateLink(WalletToEncounterDateLink walletToEncounterDateLink);
+  void storeWalletToEncounterDateLink(WalletToEncounterDateLink walletToEncounterDateLink);
 
   /**
    * Lookup the Wallet to encounter date that is previously stored, if available
@@ -33,7 +33,7 @@ public interface MatcherStore {
    *
    * @return the WalletToEncounterDateLink for this britWalletId, or null if the britWalletId has never been seen before
    */
-  public WalletToEncounterDateLink lookupWalletToEncounterDateLink(BRITWalletId britWalletId);
+  WalletToEncounterDateLink lookupWalletToEncounterDateLink(BRITWalletId britWalletId);
 
   /**
    * Get the Bitcoin address set being sent back to the Payers for the day specified.
@@ -42,7 +42,7 @@ public interface MatcherStore {
    *
    * @return The Bitcoin address set for this date (empty if none selected yet)
    */
-  public Set<Address> lookupBitcoinAddressListForDate(Date encounterDate);
+  Set<Address> lookupBitcoinAddressListForDate(Date encounterDate);
 
   /**
    * Store the Bitcoin address set as the Bitcoin addresses to send back to the payer for the encounter date
@@ -50,19 +50,19 @@ public interface MatcherStore {
    * @param bitcoinAddresses The Bitcoin addresses to store
    * @param encounterDate    The date to store them against
    */
-  public void storeBitcoinAddressesForDate(Set<Address> bitcoinAddresses, Date encounterDate);
+  void storeBitcoinAddressesForDate(Set<Address> bitcoinAddresses, Date encounterDate);
 
   /**
    * Store the set of Bitcoin addresses as the 'universe' of all possible Bitcoin addresses
    *
    * @param allBitcoinAddresses The set of all possible Bitcoin addresses to store
    */
-  public void storeAllBitcoinAddresses(Set<Address> allBitcoinAddresses);
+  void storeAllBitcoinAddresses(Set<Address> allBitcoinAddresses);
 
   /**
    * Get the set of all possible Bitcoin addresses in this MatcherStore
    *
    * @return The set of all Bitcoin addresses in the store
    */
-  public Set<Address> getAllBitcoinAddresses();
+  Set<Address> getAllBitcoinAddresses();
 }
