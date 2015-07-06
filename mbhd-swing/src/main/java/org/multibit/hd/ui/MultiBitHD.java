@@ -185,6 +185,11 @@ public class MultiBitHD {
       // Fix for version.txt not visible for Java 7
       System.setProperty("jsse.enableSNIExtension", "false");
 
+      // Fix for clipboard failure - https://github.com/bitcoin-solutions/multibit-hd/issues/645
+      // Suggested by https://www.java.net/node/700601
+      System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
+
+
       // Execute the CA certificates download on a separate thread to avoid slowing
       // the startup time
       SafeExecutors.newSingleThreadExecutor("install-cacerts").submit(
