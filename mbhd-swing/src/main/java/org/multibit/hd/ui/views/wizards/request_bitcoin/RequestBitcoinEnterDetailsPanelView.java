@@ -101,7 +101,16 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     }
     // Get the next receiving address to show from the wallet service.
     // This is normally a new receiving address but if the gap limit is reached it is the current one
-    WalletService walletService = CoreServices.getCurrentWalletService().get();
+    WalletService walletService;
+    if (CoreServices.getCurrentWalletService().isPresent()) {
+      walletService = CoreServices.getCurrentWalletService().get();
+    } else {
+      if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+        walletService = CoreServices.getOrCreateWalletService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+      } else {
+        throw new IllegalStateException("Cannot create WalletService to create a new address");
+      }
+    }
 
     String nextAddressToShow;
 
