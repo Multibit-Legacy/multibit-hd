@@ -110,7 +110,15 @@ public class MultiBitHD {
     }
 
     log.info("This is the primary instance so showing splash screen.");
+    // Provide an AWT splash screen to ensure faster initial rendering
     splashScreen = new SplashScreen();
+    // Provide a short thread sleep to allow the AWT time to take over
+    // and fill the Frame with the splash screen image
+    try {
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      // Do nothing
+    }
 
     // Prepare the JVM (system properties etc)
     initialiseJVM();
