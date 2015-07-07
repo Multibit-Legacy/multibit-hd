@@ -110,14 +110,7 @@ public class MultiBitHD {
     }
 
     log.info("This is the primary instance so showing splash screen.");
-    // Require Swing EDT for image load capabilities
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          splashScreen = new SplashScreen();
-        }
-      });
+    splashScreen = new SplashScreen();
 
     // Prepare the JVM (system properties etc)
     initialiseJVM();
