@@ -21,7 +21,7 @@ public class Sliders {
   /**
    * Resolution of a single tick of the slider, in satoshi
    */
-  public static final int RESOLUTION = 250;
+  public static final int RESOLUTION = 200;
 
   /**
    * Utilities have no public constructor
@@ -45,8 +45,8 @@ public class Sliders {
     int currentPosition = (int)FeeService.normaliseRawFeePerKB(initialPosition).longValue()/RESOLUTION;
     JSlider feePerKBSlider = new JSlider(minimumPosition, maximumPosition,
             currentPosition);
+
     feePerKBSlider.setMajorTickSpacing(10);
-    //feePerKBSlider.setMinorTickSpacing(2);
     feePerKBSlider.setPaintTicks(true);
 
     // Create the label table

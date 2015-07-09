@@ -165,10 +165,10 @@ public class FeeServicesTest {
     assertThat(Coin.valueOf(1000).equals(FeeService.MINIMUM_FEE_PER_KB)).isTrue();
 
     // Check default
-    assertThat(Coin.valueOf(3000).equals(FeeService.DEFAULT_FEE_PER_KB)).isTrue();
+    assertThat(Coin.valueOf(10000).equals(FeeService.DEFAULT_FEE_PER_KB)).isTrue();
 
     // Check maximum
-    assertThat(Coin.valueOf(10000).equals(FeeService.MAXIMUM_FEE_PER_KB)).isTrue();
+    assertThat(Coin.valueOf(50000).equals(FeeService.MAXIMUM_FEE_PER_KB)).isTrue();
 
     // Check normalisation logic
 
@@ -180,11 +180,11 @@ public class FeeServicesTest {
     assertThat(FeeService.MINIMUM_FEE_PER_KB.equals(FeeService.normaliseRawFeePerKB(999))).isTrue();
 
     // Just right
-    assertThat(Coin.valueOf(1234).equals(FeeService.normaliseRawFeePerKB(1234))).isTrue();
+    assertThat(Coin.valueOf(12345).equals(FeeService.normaliseRawFeePerKB(12345))).isTrue();
 
     // Too big
-    assertThat(FeeService.MAXIMUM_FEE_PER_KB.equals(FeeService.normaliseRawFeePerKB(10001))).isTrue();
-    assertThat(FeeService.MAXIMUM_FEE_PER_KB.equals(FeeService.normaliseRawFeePerKB(123456))).isTrue();
+    assertThat(FeeService.MAXIMUM_FEE_PER_KB.equals(FeeService.normaliseRawFeePerKB(50001))).isTrue();
+    assertThat(FeeService.MAXIMUM_FEE_PER_KB.equals(FeeService.normaliseRawFeePerKB(1123456))).isTrue();
    }
 
   private void checkFeeState(
