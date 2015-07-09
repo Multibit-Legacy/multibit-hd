@@ -18,7 +18,10 @@ import java.util.Hashtable;
  */
 public class Sliders {
 
-  public static final int RESOLUTION = 100;
+  /**
+   * Resolution of a single tick of the slider, in satoshi
+   */
+  public static final int RESOLUTION = 250;
 
   /**
    * Utilities have no public constructor
@@ -43,7 +46,7 @@ public class Sliders {
     JSlider feePerKBSlider = new JSlider(minimumPosition, maximumPosition,
             currentPosition);
     feePerKBSlider.setMajorTickSpacing(10);
-    feePerKBSlider.setMinorTickSpacing(2);
+    //feePerKBSlider.setMinorTickSpacing(2);
     feePerKBSlider.setPaintTicks(true);
 
     // Create the label table
@@ -56,7 +59,7 @@ public class Sliders {
 
     feePerKBSlider.addChangeListener(changeListener);
 
-        // Ensure it is accessible
+    // Ensure it is accessible
     AccessibilityDecorator.apply(feePerKBSlider, MessageKey.ADJUST_TRANSACTION_FEE);
 
     return feePerKBSlider;
