@@ -12,6 +12,7 @@ import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.utils.HtmlUtils;
 import org.multibit.hd.ui.views.animations.RotatingIcon;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
+import org.multibit.hd.ui.views.components.labels.TitleLabel;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
@@ -118,13 +119,13 @@ public class Labels {
    *
    * @return A new label with appropriate font, theme and alignment for a wizard panel view title
    */
-  public static JLabel newTitleLabel(MessageKey key) {
+  public static TitleLabel newTitleLabel(MessageKey key) {
 
     String[] titleText = new String[]{Languages.safeText(key)};
 
     String htmlText = HtmlUtils.localiseWithCenteredLinedBreaks(titleText);
 
-    JLabel label = new JLabel(htmlText);
+    TitleLabel label = new TitleLabel(htmlText);
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(label, key);
