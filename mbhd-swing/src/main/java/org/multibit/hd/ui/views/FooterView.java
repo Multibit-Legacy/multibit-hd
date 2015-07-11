@@ -5,7 +5,7 @@ import com.google.common.collect.Range;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.managers.WalletManager;

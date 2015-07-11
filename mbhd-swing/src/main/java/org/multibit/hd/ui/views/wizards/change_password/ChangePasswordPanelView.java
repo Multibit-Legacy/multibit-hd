@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.*;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletPassword;

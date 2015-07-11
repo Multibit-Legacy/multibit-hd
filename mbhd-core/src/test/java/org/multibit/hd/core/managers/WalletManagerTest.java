@@ -31,16 +31,16 @@ import org.bitcoinj.wallet.KeyChain;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.commons.files.SecureFiles;
+import org.multibit.commons.utils.Dates;
+import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.extensions.WalletTypeExtension;
-import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -688,9 +688,9 @@ public class WalletManagerTest {
       // This ensures that the existence of short passwords is not leaked from the length of the encrypted credentials
       assertThat(foundEncryptedPaddedPassword.length).isGreaterThanOrEqualTo(48);
 
-      KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, WalletManager.scryptSalt());
+      KeyParameter seedDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(seed, WalletManager.scryptSalt());
       byte[] passwordBytes = passwordToCheck.getBytes(Charsets.UTF_8);
-      byte[] decryptedFoundPaddedPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+      byte[] decryptedFoundPaddedPasswordBytes = org.multibit.commons.crypto.AESUtils.decrypt(
         foundEncryptedPaddedPassword,
         seedDerivedAESKey,
         WalletManager.aesInitialisationVector()
@@ -698,8 +698,8 @@ public class WalletManagerTest {
       byte[] decryptedFoundPasswordBytes = WalletManager.unpadPasswordBytes(decryptedFoundPaddedPasswordBytes);
       assertThat(Arrays.equals(passwordBytes, decryptedFoundPasswordBytes)).isTrue();
 
-      KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(passwordBytes, WalletManager.scryptSalt());
-      byte[] decryptedFoundBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+      KeyParameter walletPasswordDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(passwordBytes, WalletManager.scryptSalt());
+      byte[] decryptedFoundBackupAESKey = org.multibit.commons.crypto.AESUtils.decrypt(
         foundEncryptedBackupKey,
         walletPasswordDerivedAESKey,
         WalletManager.aesInitialisationVector()

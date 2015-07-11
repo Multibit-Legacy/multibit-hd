@@ -59,6 +59,7 @@ import java.util.Random;
  *
  * @author Adam Buckley
  */
+@Deprecated
 public class NtpMessage {
 
   /**

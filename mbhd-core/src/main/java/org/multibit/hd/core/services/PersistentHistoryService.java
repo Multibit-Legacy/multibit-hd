@@ -10,7 +10,7 @@ import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.hd.core.exceptions.HistoryLoadException;
 import org.multibit.hd.core.exceptions.HistorySaveException;
-import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.HistoryProtobufSerializer;

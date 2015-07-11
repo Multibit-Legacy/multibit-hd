@@ -4,10 +4,10 @@ import org.bitcoinj.core.Utils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.brit.exceptions.SeedPhraseException;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.brit.core.exceptions.SeedPhraseException;
+import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.brit.core.seed_phrase.SeedPhraseSize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

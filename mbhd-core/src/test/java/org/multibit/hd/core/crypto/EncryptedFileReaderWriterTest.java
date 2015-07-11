@@ -22,9 +22,9 @@ import org.bitcoinj.utils.BriefLogFormatter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.brit.crypto.AESUtils;
+import org.multibit.commons.crypto.AESUtils;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.managers.InstallationManager;
 
 import java.io.ByteArrayOutputStream;

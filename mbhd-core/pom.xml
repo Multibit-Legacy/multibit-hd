@@ -139,11 +139,11 @@
 
   <dependencies>
 
-    <!-- BRIT for receiving payments -->
+    <!-- Error Reporting for upload error reports -->
     <dependency>
       <groupId>org.multibit.hd</groupId>
-      <artifactId>mbhd-brit</artifactId>
-      <version>${project.parent.version}</version>
+      <artifactId>error-reporting-core</artifactId>
+      <version>develop-SNAPSHOT</version>
     </dependency>
 
     <!-- XChange for accessing Bitcoin exchanges

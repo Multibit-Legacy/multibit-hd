@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases.sidebar.settings.fees;
 
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.brit.services.FeeService;
+import org.multibit.hd.brit.core.services.FeeService;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;

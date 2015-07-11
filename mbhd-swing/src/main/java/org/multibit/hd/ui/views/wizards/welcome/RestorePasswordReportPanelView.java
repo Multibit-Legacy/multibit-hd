@@ -4,10 +4,10 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.concurrent.SafeExecutors;
-import org.multibit.hd.core.crypto.AESUtils;
+import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
+import org.multibit.commons.concurrent.SafeExecutors;
+import org.multibit.commons.crypto.AESUtils;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -191,7 +191,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
       return;
     }
 
-    byte[] decryptedPaddedWalletPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+    byte[] decryptedPaddedWalletPasswordBytes = org.multibit.commons.crypto.AESUtils.decrypt(
       // Get the padded credentials out of the wallet summary. This is put in when a wallet is created.
       walletSummary.getEncryptedPassword(),
       backupAESKey,

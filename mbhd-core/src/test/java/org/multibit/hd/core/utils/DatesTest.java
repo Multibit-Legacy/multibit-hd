@@ -7,6 +7,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.multibit.commons.utils.Dates;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -15,6 +16,7 @@ import java.util.TimeZone;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+@Deprecated
 public class DatesTest {
 
   // Get the current timezone without using Joda time

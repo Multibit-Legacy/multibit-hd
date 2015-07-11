@@ -18,7 +18,8 @@
   </appender>
 
   <!-- Define logging for third party customisation -->
-  <logger name="org.bitcoinj" level="DEBUG"/>
+  <!-- Set Bitcoinj to be WARN by default to avoid flooding the logs -->
+  <logger name="org.bitcoinj" level="WARN"/>
 
   <!-- Define logging for organisation applications only -->
   <logger name="org.multibit" level="DEBUG"/>

@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Wallet;
-import org.multibit.hd.brit.dto.FeeState;
+import org.multibit.hd.brit.core.dto.FeeState;
 import org.spongycastle.crypto.params.KeyParameter;
 
 /**

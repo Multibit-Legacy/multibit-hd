@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.brit.services.FeeService;
+import org.multibit.hd.brit.core.services.FeeService;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import javax.swing.*;

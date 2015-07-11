@@ -1,10 +1,10 @@
 package org.multibit.hd.core.services;
 
 import org.joda.time.DateTime;
+import org.multibit.commons.utils.Dates;
 import org.multibit.hd.core.dto.EnvironmentSummary;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
-import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

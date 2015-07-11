@@ -130,7 +130,7 @@
     "@timestamp": "2015-05-05T21:11:25.540+01:00",
     "@version": 1,
     "message": "Result of initial delete was true for:\n'/Users/example/Library/Application Support/MultiBitHD/logs/error-report.json'",
-    "logger_name": "org.multibit.hd.core.files.SecureFiles",
+    "logger_name": "org.multibit.commons.files.SecureFiles",
     "thread_name": "safe-fixed-error-reporting-0",
     "level": "DEBUG",
     "level_value": 10000
@@ -321,7 +321,7 @@
     "@timestamp": "2015-05-05T21:12:03.778+01:00",
     "@version": 1,
     "message": "Result of initial delete was true for:\n'/Users/example/Library/Application Support/MultiBitHD/logs/error-report.json'",
-    "logger_name": "org.multibit.hd.core.files.SecureFiles",
+    "logger_name": "org.multibit.commons.files.SecureFiles",
     "thread_name": "safe-fixed-error-reporting-0",
     "level": "DEBUG",
     "level_value": 10000
@@ -367,7 +367,7 @@
     "@timestamp": "2015-05-05T21:12:13.489+01:00",
     "@version": 1,
     "message": "New fixed thread pool with 10 threads: 'core-events'",
-    "logger_name": "org.multibit.hd.core.concurrent.SafeExecutors",
+    "logger_name": "org.multibit.commons.concurrent.SafeExecutors",
     "thread_name": "AWT-EventQueue-1",
     "level": "DEBUG",
     "level_value": 10000
@@ -548,7 +548,7 @@
     "@timestamp": "2015-05-05T21:16:19.415+01:00",
     "@version": 1,
     "message": "Result of initial delete was true for:\n'/Users/example/Library/Application Support/MultiBitHD/logs/error-report.json'",
-    "logger_name": "org.multibit.hd.core.files.SecureFiles",
+    "logger_name": "org.multibit.commons.files.SecureFiles",
     "thread_name": "safe-fixed-error-reporting-0",
     "level": "DEBUG",
     "level_value": 10000

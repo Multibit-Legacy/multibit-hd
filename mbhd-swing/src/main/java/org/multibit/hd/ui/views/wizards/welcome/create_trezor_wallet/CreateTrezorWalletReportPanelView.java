@@ -2,9 +2,9 @@ package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.commons.utils.Dates;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.LabelDecorator;
 import org.multibit.hd.ui.views.components.Labels;

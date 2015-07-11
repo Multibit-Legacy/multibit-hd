@@ -18,6 +18,7 @@
   </appender>
 
   <!-- Define logging for third party customisation -->
+  <!-- Set Bitcoinj to be WARN by default to avoid flooding the logs -->
   <logger name="org.bitcoinj" level="WARN"/>
 
   <!-- Define logging for organisation applications only -->

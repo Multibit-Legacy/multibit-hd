@@ -309,6 +309,7 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
    *
    * @param client The mock client
    */
+  @SuppressWarnings("unchecked")
   protected void useDeterministicHierarchyPIN(HardwareWalletClient client) {
     when(client.getDeterministicHierarchy(anyListOf(ChildNumber.class))).thenAnswer(
       new Answer<Optional<Message>>() {
@@ -466,7 +467,7 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
             true,
             0,
             false,
-            new byte[] {}
+            new byte[]{}
           );
 
           // Build the request details type
@@ -474,7 +475,7 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
             false,
             0,
             false,
-            new byte[] {}
+            new byte[]{}
           );
 
           // Skip to the end
@@ -486,7 +487,7 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
 
           final MessageEvent event = new MessageEvent(
             MessageEventType.TX_REQUEST,
-            Optional.<HardwareWalletMessage>of(txRequest),
+            Optional.of(txRequest),
             Optional.<Message>absent()
           );
 

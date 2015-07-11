@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.components.enter_seed_phrase;
 
 import com.google.common.base.*;
 import com.google.common.collect.Lists;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.brit.core.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;

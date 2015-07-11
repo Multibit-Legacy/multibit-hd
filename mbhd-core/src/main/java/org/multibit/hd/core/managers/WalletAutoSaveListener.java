@@ -6,7 +6,7 @@ import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.WalletSaveException;
-import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.services.BackupService;
 import org.multibit.hd.core.services.CoreServices;
 import org.slf4j.Logger;

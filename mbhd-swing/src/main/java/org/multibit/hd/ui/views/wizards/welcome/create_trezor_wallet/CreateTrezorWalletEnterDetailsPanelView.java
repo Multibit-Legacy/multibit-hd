@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseSize;
+import org.multibit.hd.brit.core.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;

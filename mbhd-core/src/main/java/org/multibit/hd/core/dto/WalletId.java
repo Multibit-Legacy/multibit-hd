@@ -2,7 +2,7 @@ package org.multibit.hd.core.dto;
 
 import org.bitcoinj.core.Utils;
 import com.google.common.base.Preconditions;
-import org.multibit.hd.core.crypto.AESUtils;
+import org.multibit.commons.crypto.AESUtils;
 import org.multibit.hd.core.managers.WalletManager;
 
 import java.io.File;

@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Wallet;
-import org.multibit.hd.brit.dto.FeeState;
+import org.multibit.hd.brit.core.dto.FeeState;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.events.view.ViewEvents;

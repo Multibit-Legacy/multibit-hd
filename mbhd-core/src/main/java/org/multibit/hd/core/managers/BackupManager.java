@@ -8,22 +8,22 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
-import org.multibit.hd.brit.crypto.AESUtils;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.commons.crypto.AESUtils;
+import org.multibit.commons.utils.Dates;
+import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletSummary;
+import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.WalletLoadEvent;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
-import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.exceptions.WalletLoadException;
-import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.files.ZipFiles;
-import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -459,7 +459,7 @@ public enum BackupManager {
       SeedPhraseGenerator seedPhraseGenerator = new Bip39SeedPhraseGenerator();
       byte[] seed = seedPhraseGenerator.convertToSeed(seedPhrase);
 
-      KeyParameter seedDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(seed, WalletManager.scryptSalt());
+      KeyParameter seedDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(seed, WalletManager.scryptSalt());
 
       return loadZipBackup(backupFileToLoad, seedDerivedAESKey);
     } catch (Exception e) {

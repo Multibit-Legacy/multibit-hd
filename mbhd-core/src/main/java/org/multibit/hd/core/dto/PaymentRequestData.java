@@ -5,9 +5,8 @@ import com.google.common.base.Preconditions;
 import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Sha256Hash;
-import org.bitcoinj.protocols.payments.PaymentSession;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.utils.Dates;
+import org.multibit.commons.utils.Dates;
 
 import java.util.UUID;
 

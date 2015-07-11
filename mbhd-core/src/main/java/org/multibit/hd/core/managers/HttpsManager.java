@@ -6,7 +6,7 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Resources;
 import org.multibit.hd.core.exchanges.ExchangeKey;
-import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.commons.files.SecureFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
