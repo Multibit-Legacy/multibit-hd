@@ -1542,9 +1542,6 @@ public class MainController extends AbstractController implements
     log.debug("Starting wallet service...");
     CoreServices.getOrCreateWalletService(walletSummary.get().getWalletId());
 
-    // Record this in the history
-    CoreServices.logHistory(Languages.safeText(MessageKey.HISTORY_WALLET_OPENED, walletSummary.get().getName()));
-
     // Show the initial detail screen
     Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());
     ViewEvents.fireShowDetailScreenEvent(screen);

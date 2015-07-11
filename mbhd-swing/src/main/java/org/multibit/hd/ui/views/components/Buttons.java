@@ -1130,26 +1130,6 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "history" button with icon
-   */
-  public static JButton newShowHistoryScreenButton(Action action) {
-
-    JButton button = newLargeButton(action, MessageKey.HISTORY, MessageKey.HISTORY_TOOLTIP);
-
-    AwesomeDecorator.applyIcon(
-      AwesomeIcon.HISTORY,
-      button,
-      true,
-      JLabel.BOTTOM,
-      MultiBitUI.LARGE_ICON_SIZE
-    );
-
-    return button;
-  }
-
-  /**
-   * @param action The click action
-   *
    * @return A new "about" button with icon
    */
   public static JButton newShowAboutButton(Action action) {

@@ -23,6 +23,7 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.utils.CurrencyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import si.mazi.rescu.HttpStatusIOException;
 
 import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
@@ -157,26 +158,40 @@ public class ExchangeTickerService extends AbstractService {
                   // The exchange may have changed their currency offerings
                   log.warn("Exchange '{}' reported a currency error: {}", exchangeKey.getExchangeName(), t.getMessage());
                   CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeError(exchangeKey.getExchangeName(), t.getMessage()));
+                  return;
                 }
 
                 if (t instanceof NotAvailableFromExchangeException) {
                   // The exchange is unable to service this request
                   log.warn("Exchange '{}' reported a 'not available from exchange' error: {}", exchangeKey.getExchangeName(), t.getMessage());
                   CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeError(exchangeKey.getExchangeName(), t.getMessage()));
+                  return;
+                }
+
+
+                if (t instanceof HttpStatusIOException) {
+                   // The exchange did not return an HTTP OK
+                   log.warn("Exchange '{}' reported an HTTP error : {}", exchangeKey.getExchangeName(), t.getMessage());
+                   CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeError(exchangeKey.getExchangeName(), t.getMessage()));
+                   return;
                 }
 
                 if (t instanceof UnknownHostException) {
                   // The exchange is either down or we have no network connection
                   log.warn("Exchange '{}' reported an unknown host error: {}", exchangeKey.getExchangeName(), t.getMessage());
                   CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeDown(exchangeKey.getExchangeName(), t.getMessage()));
+                  return;
                 }
 
                 if (t instanceof SSLHandshakeException) {
                   // The exchange is not presenting a valid SSL certificate - treat as down
                   log.warn("Exchange '{}' reported an SSL error: {}", exchangeKey.getExchangeName(), t.getMessage());
                   CoreEvents.fireExchangeStatusChangedEvent(ExchangeSummary.newExchangeDown(exchangeKey.getExchangeName(), t.getMessage()));
+                  return;
                 }
 
+                // Log the error internally but don't fire an event
+                log.error("Exchange '{}' reported an error: {}", exchangeKey.getExchangeName(), t.getClass().getCanonicalName() + " " + t.getMessage());
               }
             }
           );

@@ -110,14 +110,15 @@ public class MultiBitHD {
     }
 
     log.info("This is the primary instance so showing splash screen.");
-    // Require Swing EDT for image load capabilities
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          splashScreen = new SplashScreen();
-        }
-      });
+    // Provide an AWT splash screen to ensure faster initial rendering
+    splashScreen = new SplashScreen();
+    // Provide a short thread sleep to allow the AWT time to take over
+    // and fill the Frame with the splash screen image
+    try {
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      // Do nothing
+    }
 
     // Prepare the JVM (system properties etc)
     initialiseJVM();
@@ -184,6 +185,11 @@ public class MultiBitHD {
 
       // Fix for version.txt not visible for Java 7
       System.setProperty("jsse.enableSNIExtension", "false");
+
+      // Fix for clipboard failure - https://github.com/bitcoin-solutions/multibit-hd/issues/645
+      // Suggested by https://www.java.net/node/700601
+      System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
+
 
       // Execute the CA certificates download on a separate thread to avoid slowing
       // the startup time

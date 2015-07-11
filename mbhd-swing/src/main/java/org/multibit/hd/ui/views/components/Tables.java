@@ -8,7 +8,6 @@ import org.multibit.hd.core.dto.*;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.renderers.AmountBTCTableHeaderRenderer;
 import org.multibit.hd.ui.views.components.tables.ContactTableModel;
-import org.multibit.hd.ui.views.components.tables.HistoryTableModel;
 import org.multibit.hd.ui.views.components.tables.PaymentTableModel;
 import org.multibit.hd.ui.views.components.tables.StripedTable;
 
@@ -173,61 +172,6 @@ public class Tables {
     // Comparator for amount fiat
     Comparator<FiatPayment> comparatorFiatPayment = newFiatPaymentComparator();
     rowSorter.setComparator(PaymentTableModel.AMOUNT_FIAT_COLUMN_INDEX, comparatorFiatPayment);
-
-    justifyColumnHeaders(table);
-
-    return table;
-  }
-
-  /**
-   * @param historyEntries The history entries to show
-   * @param enterButton The button to be pressed on "Enter" or double click
-   *
-   * @return A new "contacts" striped table
-   */
-  public static StripedTable newHistoryTable(List<HistoryEntry> historyEntries, JButton enterButton) {
-
-    HistoryTableModel model = new HistoryTableModel(historyEntries);
-
-    StripedTable table = new StripedTable(model);
-
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(table, MessageKey.HISTORY);
-
-    TableDecorator.applyScreenTheme(table, enterButton);
-
-    // Checkbox column
-    TableColumn checkBoxTableColumn = table.getColumnModel().getColumn(HistoryTableModel.CHECKBOX_COLUMN_INDEX);
-    checkBoxTableColumn.setCellRenderer(Renderers.newCheckboxRenderer());
-    resizeColumn(table, HistoryTableModel.CHECKBOX_COLUMN_INDEX, NORMAL_ICON_SIZE + TABLE_SPACER);
-
-    // Date column
-    TableColumn dateTableColumn = table.getColumnModel().getColumn(HistoryTableModel.CREATED_COLUMN_INDEX);
-    dateTableColumn.setCellRenderer(Renderers.newTrailingJustifiedDateRenderer());
-    resizeColumn(table, HistoryTableModel.CREATED_COLUMN_INDEX, 150, 200);
-
-    // Description column
-    TableColumn descriptionTableColumn = table.getColumnModel().getColumn(HistoryTableModel.DESCRIPTION_COLUMN_INDEX);
-    descriptionTableColumn.setCellRenderer(Renderers.newLeadingJustifiedStringRenderer());
-
-    resizeColumn(table, HistoryTableModel.DESCRIPTION_COLUMN_INDEX, HUGE_ICON_SIZE + TABLE_SPACER);
-
-    // Notes column
-    TableColumn notesTableColumn = table.getColumnModel().getColumn(HistoryTableModel.NOTES_COLUMN_INDEX);
-    notesTableColumn.setCellRenderer(Renderers.newLeadingJustifiedStringRenderer());
-    resizeColumn(table, HistoryTableModel.NOTES_COLUMN_INDEX, HUGE_ICON_SIZE + TABLE_SPACER);
-
-    // Row sorter for date
-    TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(table.getModel());
-    table.setRowSorter(rowSorter);
-
-    // Sort by date descending
-    List<TableRowSorter.SortKey> sortKeys = Lists.newArrayList();
-    sortKeys.add(new TableRowSorter.SortKey(HistoryTableModel.CREATED_COLUMN_INDEX, SortOrder.DESCENDING));
-    rowSorter.setSortKeys(sortKeys);
-
-    Comparator<DateTime> comparator = newDateTimeComparator();
-    rowSorter.setComparator(HistoryTableModel.CREATED_COLUMN_INDEX, comparator);
 
     justifyColumnHeaders(table);
 

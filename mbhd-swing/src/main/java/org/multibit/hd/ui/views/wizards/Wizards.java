@@ -27,10 +27,6 @@ import org.multibit.hd.ui.views.wizards.edit_contact.EditContactState;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizard;
 import org.multibit.hd.ui.views.wizards.edit_contact.EditContactWizardModel;
 import org.multibit.hd.ui.views.wizards.edit_contact.EnterContactDetailsMode;
-import org.multibit.hd.ui.views.wizards.edit_history.EditHistoryState;
-import org.multibit.hd.ui.views.wizards.edit_history.EditHistoryWizard;
-import org.multibit.hd.ui.views.wizards.edit_history.EditHistoryWizardModel;
-import org.multibit.hd.ui.views.wizards.edit_history.EnterHistoryDetailsMode;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizard;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
@@ -193,26 +189,6 @@ public class Wizards {
 
     return new EditContactWizard(
       new EditContactWizardModel(EditContactState.EDIT_CONTACT_ENTER_DETAILS, contacts),
-      mode
-    );
-
-  }
-
-  /**
-   * @param historyEntries The list of history entries to edit
-   * @param mode           The editing mode
-   *
-   * @return A new "edit history" wizard for history entries
-   */
-  public static EditHistoryWizard newEditHistoryWizard(List<HistoryEntry> historyEntries, EnterHistoryDetailsMode mode) {
-
-    log.debug("New 'Edit history wizard'");
-
-    Preconditions.checkState(!historyEntries.isEmpty(), "'historyEntries' cannot be empty");
-    Preconditions.checkNotNull(mode, "'mode' must be present");
-
-    return new EditHistoryWizard(
-      new EditHistoryWizardModel(EditHistoryState.HISTORY_ENTER_DETAILS, historyEntries),
       mode
     );
 

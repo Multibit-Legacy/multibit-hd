@@ -1559,8 +1559,7 @@ public class WalletService extends AbstractService {
       CoreServices.getOrCreateBackupService();
       CoreServices.getOrCreateWalletService(walletId);
       BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
-      CoreServices.getCurrentHistoryService();
-      CoreServices.getOrCreateContactService(walletId);
+      CoreServices.getOrCreateContactService(new WalletPassword(newPassword, walletId));
 
       // Replay the wallet
       bitcoinNetworkService.replayWallet(
@@ -1585,9 +1584,6 @@ public class WalletService extends AbstractService {
 
     // Create a List of all the non-wallet files that need to have their password changed
     List<File> filesToChangePassword = Lists.newArrayList();
-
-    // History
-    filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + HistoryService.HISTORY_DIRECTORY_NAME + File.separator + HistoryService.HISTORY_DATABASE_NAME));
 
     // Contacts
     filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + ContactService.CONTACTS_DIRECTORY_NAME + File.separator + ContactService.CONTACTS_DATABASE_NAME));

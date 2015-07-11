@@ -308,10 +308,6 @@ public enum MessageKey {
   EXIT_WALLET("exit_wallet"),
   SWITCH_WALLET("switch_wallet"),
 
-  // Tools
-  HISTORY("history"),
-  HISTORY_TOOLTIP("history_tooltip"),
-
   // Placeholders
   APPROXIMATELY("approximately"),
   PARENTHESES("parentheses"),
@@ -437,10 +433,6 @@ public enum MessageKey {
   NEW_CONTACT_TITLE("new_contact_title"),
   EDIT_CONTACT_TITLE("edit_contact_title"),
   EDIT_CONTACTS_TITLE("edit_contacts_title"),
-
-  NEW_HISTORY_ENTRY_TITLE("new_history_entry_title"),
-  EDIT_HISTORY_ENTRY_TITLE("edit_history_entry_title"),
-  EDIT_HISTORY_ENTRIES_TITLE("edit_history_entries_title"),
 
   PASSWORD_TITLE("password_title"),
 
@@ -604,9 +596,6 @@ public enum MessageKey {
   ADDRESS_IS_MINE_STATUS("address_is_mine_status"),
 
   PASSWORD_CHANGED_STATUS("password_changed_status"),
-
-  HISTORY_WALLET_CREATED("history_wallet_created"),
-  HISTORY_WALLET_OPENED("history_wallet_opened"),
 
   ACCEPT_LICENCE("accept_licence"),
   REJECT_LICENCE("reject_licence"),

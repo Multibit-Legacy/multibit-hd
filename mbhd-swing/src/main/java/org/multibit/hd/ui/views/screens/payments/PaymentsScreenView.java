@@ -6,20 +6,15 @@ import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.SlowTransactionSeenEvent;
 import org.multibit.hd.core.events.TransactionCreationEvent;
-import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;
-import org.multibit.hd.ui.audio.Sounds;
-import org.multibit.hd.ui.events.controller.ControllerEvents;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WalletDetailChangedEvent;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.models.AlertModel;
-import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.views.components.*;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchModel;
 import org.multibit.hd.ui.views.components.enter_search.EnterSearchView;
@@ -117,6 +112,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
     // Create the scroll pane and add the table to it.
     JScrollPane scrollPane = new JScrollPane(paymentsTable);
     scrollPane.setViewportBorder(null);
+    scrollPane.getVerticalScrollBar().setUnitIncrement(paymentsTable.getRowHeight());
 
     // Detect double clicks on the table
     paymentsTable.addMouseListener(getTableMouseListener());
@@ -381,7 +377,7 @@ public class PaymentsScreenView extends AbstractScreenView<PaymentsScreenModel> 
       File walletFile = WalletManager.INSTANCE.getCurrentWalletFile(applicationDataDirectory).get();
       walletDetail.setWalletDirectory(walletFile.getParentFile().getName());
 
-      ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletId());
+      ContactService contactService = CoreServices.getOrCreateContactService(walletSummary.getWalletPassword());
       walletDetail.setNumberOfContacts(contactService.allContacts().size());
 
       walletDetail.setNumberOfPayments(CoreServices.getCurrentWalletService().get().getPaymentDataSetSize());

@@ -361,7 +361,7 @@ public class TextBoxes {
   public static JTextArea newDisplayRecipientBitcoinAddresses() {
 
     // 3 rows should be sufficient to cover all transactions from us
-    JTextArea textArea = newReadOnlyTextArea(3, 34);
+    JTextArea textArea = newReadOnlyTextArea(3, 38);
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(textArea, MessageKey.RECIPIENT, MessageKey.RECIPIENT_TOOLTIP);

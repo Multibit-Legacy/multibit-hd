@@ -81,8 +81,8 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
     contentPanel.setLayout(
       new MigLayout(
         Panels.migXYLayout(),
-        "[]10[][][60:60:60]", // Column constraints
-        "[]10[]10[]10[]" // Row constraints
+        "[]10[]10[60:60:60]", // Column constraints
+        "[]10[]10[]10[]10[]" // Row constraints
       ));
 
     // Apply the theme
@@ -111,23 +111,23 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
 
     // Recipient is at the top for visual consistency with other screens
     // Answers first question "Who was this for?"
-    contentPanel.add(recipientLabel, "growx");
-    contentPanel.add(recipientValue, "growx,span 2");
+    contentPanel.add(recipientLabel);
+    contentPanel.add(recipientValue);
     contentPanel.add(recipientImageLabel, "shrink,align center,wrap");
 
     // Status answers "Did it arrive?"
     contentPanel.add(statusLabel);
-    contentPanel.add(statusValue, "span 3,wrap");
+    contentPanel.add(statusValue, "span 2, wrap");
 
     // Date answers "When did it arrive?"
     contentPanel.add(dateLabel);
-    contentPanel.add(dateValue, "wrap");
+    contentPanel.add(dateValue, "span 2, wrap");
 
     contentPanel.add(typeLabel);
-    contentPanel.add(typeValue, "growx,wrap");
+    contentPanel.add(typeValue, "span 2, wrap");
 
     contentPanel.add(descriptionLabel);
-    contentPanel.add(descriptionValue, "growx,span 3,wrap");
+    contentPanel.add(descriptionValue, "span 2,wrap");
   }
 
   @Override
@@ -212,7 +212,7 @@ public class TransactionOverviewPanelView extends AbstractWizardPanelView<Paymen
    */
   private Optional<Contact> matchContact(Collection<Address> addresses) {
 
-    ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId());
+    ContactService contactService = CoreServices.getOrCreateContactService(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword());
     List<Contact> allContacts = contactService.allContacts();
 
     Contact matchedContact = null;

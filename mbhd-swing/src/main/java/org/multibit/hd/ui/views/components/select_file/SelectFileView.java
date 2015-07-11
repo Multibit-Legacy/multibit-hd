@@ -20,7 +20,6 @@ import java.io.File;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class SelectFileView extends AbstractComponentView<SelectFileModel> {
 
@@ -41,9 +40,9 @@ public class SelectFileView extends AbstractComponentView<SelectFileModel> {
     SelectFileModel model = getModel().get();
 
     panel = Panels.newPanel(new MigLayout(
-      "insets 0", // Layout
-      "[][]", // Columns
-      "[]10[]" // Rows
+            "insets 0", // Layout
+            "[][]", // Columns
+            "[]10[]" // Rows
     ));
 
     selectedFileTextField = TextBoxes.newSelectFile();
@@ -100,25 +99,29 @@ public class SelectFileView extends AbstractComponentView<SelectFileModel> {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        SelectFileModel model = getModel().get();
+        final SelectFileModel model = getModel().get();
 
-        // Only require a directory
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            // Only require a directory
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-        int result = fileChooser.showOpenDialog(currentComponentPanel());
+            int result = fileChooser.showOpenDialog(currentComponentPanel());
 
-        if (result == JFileChooser.APPROVE_OPTION) {
-          File file = fileChooser.getSelectedFile();
+            if (result == JFileChooser.APPROVE_OPTION) {
+              File file = fileChooser.getSelectedFile();
 
-          getModel().get().setValue(file.getAbsolutePath());
-          getModel().get().setSelected(true);
+              getModel().get().setValue(file.getAbsolutePath());
+              getModel().get().setSelected(true);
 
-        } else {
-          getModel().get().setSelected(false);
-        }
+            } else {
+              getModel().get().setSelected(false);
+            }
 
-        selectedFileTextField.setText(model.getValue());
-
+            selectedFileTextField.setText(model.getValue());
+          }
+        });
       }
 
     };
