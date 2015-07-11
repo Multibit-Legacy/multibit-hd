@@ -53,7 +53,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
   /**
    * The URL of the live error reporting daemon
    */
-  public static final String LIVE_ERROR_REPORTING_URL = "https://multibit.org/error-reporting";
+  public static final String LIVE_ERROR_REPORTING_URL = "http://localhost:9191/error-reporting";
 
   /**
    * <p>Set this as the default uncaught exception handler</p>
@@ -252,6 +252,8 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
 
     final PGPPublicKey multibitPublicKey;
     try {
+      // To test Error Reporting Service locally with a test key replace this code
+      // with an InputStream targeting a test matcher key under src/main/resources
       multibitPublicKey = BRITServices.getMatcherPublicKey();
     } catch (IOException | PGPException e) {
       log.error("Failed to load MultiBit public key", e);
