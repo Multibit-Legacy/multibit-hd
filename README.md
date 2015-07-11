@@ -5,7 +5,7 @@ Project status: Pre-release. Expect minor bugs and UI adjustments. Suitable for 
 
 ### MultiBit HD (MBHD)
 
-A desktop Hierarchical Deterministic Wallet (HDW) for Bitcoin using the Simplified Payment Verification (SPV) mode to provide very fast blockchain synchronization.
+A desktop Hierarchical Deterministic Wallet (HDW) for Bitcoin using the Simplified Payment Verification (SPV) mode to provide very fast block chain synchronization.
 
 The target audience is "international mainstream" which compels the user interface to remain as simple and consistent as possible while still retaining advanced capabilities
 under the covers.
