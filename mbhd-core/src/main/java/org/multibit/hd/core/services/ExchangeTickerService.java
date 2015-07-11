@@ -191,7 +191,7 @@ public class ExchangeTickerService extends AbstractService {
                 }
 
                 // Log the error internally but don't fire an event
-                log.error("Exchange '{}' reported an error: {}", exchangeKey.getExchangeName(), t.getClass().getCanonicalName() + " " + t.getMessage());
+                log.warn("Exchange '{}' reported an error: {}", exchangeKey.getExchangeName(), t.getClass().getCanonicalName() + " " + t.getMessage());
               }
             }
           );
