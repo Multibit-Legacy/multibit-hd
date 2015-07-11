@@ -45,11 +45,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class MultiBitHD {
 
-  private static final Logger log = LoggerFactory.getLogger(MultiBitHD.class);
+  //////////////////////////// NO STATIC VARIABLES ALLOWED IN THIS CLASS! ////////////////////////
 
+  // See initialiseSystemProperties for explanation
+
+  // Special case logger that is not static
+  private final Logger log = LoggerFactory.getLogger(MultiBitHD.class);
   private MainController mainController;
-
   private SplashScreen splashScreen;
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * <p>Main entry point to the application</p>
