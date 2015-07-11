@@ -53,7 +53,7 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
   /**
    * The URL of the live error reporting daemon
    */
-  public static final String LIVE_ERROR_REPORTING_URL = "http://localhost:9191/error-reporting";
+  public static final String LIVE_ERROR_REPORTING_URL = "https://multibit.org/error-reporting";
 
   /**
    * <p>Set this as the default uncaught exception handler</p>
