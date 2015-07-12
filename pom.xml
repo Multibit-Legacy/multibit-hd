@@ -245,14 +245,14 @@
       <dependency>
         <groupId>org.multibit.hd</groupId>
         <artifactId>brit-core</artifactId>
-        <version>develop-SNAPSHOT</version>
+        <version>0.2.0</version>
       </dependency>
 
       <!-- Error Reporting Core for encrypted error reports -->
       <dependency>
         <groupId>org.multibit.hd</groupId>
         <artifactId>error-reporting-core</artifactId>
-        <version>develop-SNAPSHOT</version>
+        <version>0.2.0</version>
       </dependency>
 
       <!-- MultiBit Hardware for Trezor integration -->

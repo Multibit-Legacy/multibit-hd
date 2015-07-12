@@ -139,13 +139,6 @@
 
   <dependencies>
 
-    <!-- Error Reporting for upload error reports -->
-    <dependency>
-      <groupId>org.multibit.hd</groupId>
-      <artifactId>error-reporting-core</artifactId>
-      <version>develop-SNAPSHOT</version>
-    </dependency>
-
     <!-- XChange for accessing Bitcoin exchanges
          See https://github.com/timmolter/XChange/wiki/Exchange-Support
     -->
