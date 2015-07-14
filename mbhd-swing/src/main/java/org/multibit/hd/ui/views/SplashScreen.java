@@ -2,9 +2,12 @@ package org.multibit.hd.ui.views;
 
 import org.multibit.hd.ui.views.components.Images;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * <p>Java AWT Frame to provide the following to startup sequence:</p>
@@ -24,7 +27,16 @@ public class SplashScreen extends Frame {
     setLayout(new FlowLayout());
     setUndecorated(true);
 
-    image = Images.newSplashScreenIconImage();
+    // Inline the image access to avoid a Swing EDT violation during construction
+    try (InputStream is = Images.class.getResourceAsStream("/assets/images/splash-screen.png")) {
+
+      // Transform the mask color into the current themed text
+      image = ImageIO.read(is);
+
+    } catch (IOException e) {
+      throw new IllegalStateException("The splash screen image is missing");
+    }
+
     setSize(image.getWidth(null), image.getHeight(null));
 
     setLocationRelativeTo(null);
