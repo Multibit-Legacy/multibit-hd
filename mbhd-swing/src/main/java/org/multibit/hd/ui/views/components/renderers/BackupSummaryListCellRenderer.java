@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.views.components.renderers;
 
+import org.multibit.commons.utils.Dates;
 import org.multibit.hd.core.dto.BackupSummary;
-import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.swing.*;

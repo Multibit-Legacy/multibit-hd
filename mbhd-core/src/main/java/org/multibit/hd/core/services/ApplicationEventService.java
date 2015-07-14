@@ -3,9 +3,9 @@ package org.multibit.hd.core.services;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import org.joda.time.DateTime;
+import org.multibit.commons.utils.Dates;
 import org.multibit.hd.core.dto.RAGStatus;
 import org.multibit.hd.core.events.*;
-import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 

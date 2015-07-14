@@ -2,8 +2,8 @@ package org.multibit.hd.core.managers;
 
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.Wallet;
-import org.multibit.hd.brit.services.TransactionConfidenceSentBySelfProvider;
-import org.multibit.hd.brit.services.TransactionSentBySelfProvider;
+import org.multibit.hd.brit.core.services.TransactionConfidenceSentBySelfProvider;
+import org.multibit.hd.brit.core.services.TransactionSentBySelfProvider;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.services.WalletService;

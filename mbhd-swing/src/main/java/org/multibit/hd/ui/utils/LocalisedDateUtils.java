@@ -2,7 +2,7 @@ package org.multibit.hd.ui.utils;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.multibit.hd.core.utils.Dates;
+import org.multibit.commons.utils.Dates;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 

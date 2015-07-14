@@ -58,11 +58,6 @@ public class ShowManageWalletScreenUseCase extends AbstractFestUseCase {
     // Row 2
 
     window
-      .button(MessageKey.HISTORY.getKey())
-      .requireVisible()
-      .requireEnabled();
-
-    window
       .button(MessageKey.SHOW_CHANGE_PASSWORD_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();

@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.multibit.hd.core.dto.FiatPayment;
 import org.multibit.hd.core.dto.MBHDPaymentRequestData;
-import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.services.WalletService;
 import org.multibit.hd.core.utils.Addresses;
 

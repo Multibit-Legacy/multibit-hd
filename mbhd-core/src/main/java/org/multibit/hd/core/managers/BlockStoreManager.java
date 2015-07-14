@@ -8,7 +8,7 @@ import org.bitcoinj.store.BlockStore;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.store.SPVBlockStore;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.utils.Dates;
+import org.multibit.commons.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

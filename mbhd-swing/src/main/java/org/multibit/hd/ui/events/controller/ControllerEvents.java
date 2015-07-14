@@ -4,12 +4,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.managers.WalletManager;
-import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.languages.Languages;
-import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.AlertModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,10 +131,6 @@ public class ControllerEvents {
         public void run() {
           log.trace("Firing 'add alert' event");
           controllerEventBus.post(new AddAlertEvent(alertModel));
-
-          // Log the contents of the alert
-          String message = Languages.safeText(MessageKey.SHOW_ALERT, alertModel.getLocalisedMessage());
-          CoreServices.logHistory(message);
         }
       });
 

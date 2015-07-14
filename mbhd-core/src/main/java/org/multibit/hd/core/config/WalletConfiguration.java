@@ -1,6 +1,6 @@
 package org.multibit.hd.core.config;
 
-import org.multibit.hd.brit.services.FeeService;
+import org.multibit.hd.brit.core.services.FeeService;
 
 /**
  * <p>Configuration to provide the following to application:</p>

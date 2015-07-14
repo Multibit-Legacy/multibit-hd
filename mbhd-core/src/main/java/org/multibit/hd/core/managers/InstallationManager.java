@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.events.ShutdownEvent;
-import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.utils.OSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

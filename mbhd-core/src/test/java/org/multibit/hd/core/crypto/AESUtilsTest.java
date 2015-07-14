@@ -20,8 +20,9 @@ import org.bitcoinj.utils.BriefLogFormatter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.commons.crypto.AESUtils;
+import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -43,7 +44,7 @@ public class AESUtilsTest {
     SecureRandom secureRandom = new SecureRandom();
 
     // Create a random initialisationVector
-    byte[] initialisationVector = new byte[org.multibit.hd.brit.crypto.AESUtils.BLOCK_LENGTH];
+    byte[] initialisationVector = new byte[org.multibit.commons.crypto.AESUtils.BLOCK_LENGTH];
     secureRandom.nextBytes(initialisationVector);
 
     // Create a random key
@@ -68,6 +69,6 @@ public class AESUtilsTest {
 
     assertThat(aesKey1).isNotNull();
     assertThat(aesKey1.getKey()).isNotNull();
-    assertThat(aesKey1.getKey().length).isEqualTo(org.multibit.hd.brit.crypto.AESUtils.KEY_LENGTH);
+    assertThat(aesKey1.getKey().length).isEqualTo(org.multibit.commons.crypto.AESUtils.KEY_LENGTH);
   }
 }

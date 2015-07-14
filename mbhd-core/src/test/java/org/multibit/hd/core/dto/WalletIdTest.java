@@ -19,8 +19,8 @@ package org.multibit.hd.core.dto;
 import org.bitcoinj.core.Utils;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
 
 import java.io.File;
 import java.util.Arrays;

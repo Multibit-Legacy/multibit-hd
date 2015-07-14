@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.multibit.hd</groupId>
     <artifactId>mbhd-parent</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -138,13 +138,6 @@
   </build>
 
   <dependencies>
-
-    <!-- BRIT for receiving payments -->
-    <dependency>
-      <groupId>org.multibit.hd</groupId>
-      <artifactId>mbhd-brit</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>
 
     <!-- XChange for accessing Bitcoin exchanges
          See https://github.com/timmolter/XChange/wiki/Exchange-Support

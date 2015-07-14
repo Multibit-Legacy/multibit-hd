@@ -15,8 +15,9 @@ import org.bitcoinj.protocols.payments.PaymentProtocol;
 import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.uri.BitcoinURI;
-import org.multibit.hd.brit.dto.FeeState;
-import org.multibit.hd.brit.services.FeeService;
+import org.multibit.commons.utils.Dates;
+import org.multibit.hd.brit.core.dto.FeeState;
+import org.multibit.hd.brit.core.services.FeeService;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
@@ -29,7 +30,6 @@ import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.*;
 import org.multibit.hd.core.utils.BitcoinSymbol;
-import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
@@ -503,7 +503,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
         // Attempt to locate a contact with the address in the Bitcoin URI to reassure user
         List<Contact> contacts = CoreServices
-          .getOrCreateContactService(currentWalletSummary.get().getWalletId())
+          .getOrCreateContactService(currentWalletSummary.get().getWalletPassword())
           .filterContactsByBitcoinAddress(address.get());
 
         if (!contacts.isEmpty()) {

@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Uninterruptibles;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.CoreEvents;
@@ -45,11 +45,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class MultiBitHD {
 
-  private static final Logger log = LoggerFactory.getLogger(MultiBitHD.class);
+  //////////////////////////// NO STATIC VARIABLES ALLOWED IN THIS CLASS! ////////////////////////
 
+  // See initialiseSystemProperties for explanation
+
+  // Special case logger that is not static
+  private final Logger log = LoggerFactory.getLogger(MultiBitHD.class);
   private MainController mainController;
-
   private SplashScreen splashScreen;
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * <p>Main entry point to the application</p>
@@ -57,6 +62,10 @@ public class MultiBitHD {
    * @param args None specified
    */
   public static void main(String[] args) throws Exception {
+
+    // These are called at the first line to avoid any other class loading
+    // interfering with them
+    initialiseSystemProperties();
 
     // Hand over to an instance to simplify FEST tests
     final MultiBitHD multiBitHD = new MultiBitHD();
@@ -76,6 +85,23 @@ public class MultiBitHD {
   }
 
   /**
+   * Initialise any system properties that need to be in place before any other
+   * classes are loaded
+   */
+  private static void initialiseSystemProperties() {
+    // Fix for Windows / Java 7 / VPN bug
+    System.setProperty("java.net.preferIPv4Stack", "true");
+
+    // Fix for version.txt not visible for Java 7
+    System.setProperty("jsse.enableSNIExtension", "false");
+
+    // Fix for clipboard failure - https://github.com/bitcoin-solutions/multibit-hd/issues/645
+    // Suggested by https://www.java.net/node/700601
+    // See also http://stackoverflow.com/a/26829874/396747 for more details on ordering at startup
+    System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
+  }
+
+  /**
    * <p>Start this instance of MultiBit HD</p>
    *
    * @param args The command line arguments
@@ -85,6 +111,7 @@ public class MultiBitHD {
    * @throws Exception If something goes wrong
    */
   public boolean start(String[] args) throws Exception {
+
     // Start the logging factory (see later for instance) to get console logging up fast
     LoggingFactory.bootstrap();
 
@@ -110,17 +137,18 @@ public class MultiBitHD {
     }
 
     log.info("This is the primary instance so showing splash screen.");
-    // Require Swing EDT for image load capabilities
-    SwingUtilities.invokeLater(
-      new Runnable() {
-        @Override
-        public void run() {
-          splashScreen = new SplashScreen();
-        }
-      });
+    // Provide an AWT splash screen to ensure faster initial rendering
+    splashScreen = new SplashScreen();
+    // Provide a short thread sleep to allow the AWT time to take over
+    // and fill the Frame with the splash screen image
+    try {
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      // Do nothing
+    }
 
     // Prepare the JVM (system properties etc)
-    initialiseJVM();
+    initialiseCaCerts();
 
     // Start core services (logging, environment alerts, configuration, Bitcoin URI handling etc)
     initialiseCore(args);
@@ -170,20 +198,11 @@ public class MultiBitHD {
    */
   // Calling exit(-1) is required
   @SuppressFBWarnings({"DM_EXIT"})
-  private void initialiseJVM() throws Exception {
+  private void initialiseCaCerts() throws Exception {
 
     log.debug("Initialising JVM...");
 
-    // Although we guarantee the JVM through the packager it is possible that
-    // a power user will use their own
-
-    // Set any bespoke system properties
     try {
-      // Fix for Windows / Java 7 / VPN bug
-      System.setProperty("java.net.preferIPv4Stack", "true");
-
-      // Fix for version.txt not visible for Java 7
-      System.setProperty("jsse.enableSNIExtension", "false");
 
       // Execute the CA certificates download on a separate thread to avoid slowing
       // the startup time
@@ -214,7 +233,6 @@ public class MultiBitHD {
    * <li>Backup service</li>
    * <li>Bitcoin network service</li>
    * </ul>
-   *
    */
   public boolean initialiseUIControllers() {
     if (OSUtils.isWindowsXPOrEarlier()) {
@@ -379,8 +397,8 @@ public class MultiBitHD {
     // HardwareWalletService needs HARDWARE_INITIALISATION_TIME milliseconds to initialise so sleep the rest
     conditionallySleep(hardwareInitialisationTime);
 
-    boolean deviceAttached=false;
-    boolean deviceWiped=false;
+    boolean deviceAttached = false;
+    boolean deviceWiped = false;
 
     // Check hardware wallet situation after initialisation
     if (hardwareWalletService.isPresent()) {

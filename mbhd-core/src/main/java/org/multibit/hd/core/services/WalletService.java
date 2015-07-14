@@ -17,7 +17,8 @@ import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.script.Script;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.commons.crypto.AESUtils;
+import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.*;
@@ -25,7 +26,7 @@ import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
-import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.ExportManager;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -1490,20 +1491,20 @@ public class WalletService extends AbstractService {
       // Decrypt the seedDerivedAESKey using the old credentials and encrypt it with the new one
       byte[] encryptedOldBackupAESKey = walletSummary.getEncryptedBackupKey();
 
-      KeyParameter oldWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(oldPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
-      byte[] decryptedOldBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(
-              encryptedOldBackupAESKey,
-              oldWalletPasswordDerivedAESKey,
-              WalletManager.aesInitialisationVector());
+      KeyParameter oldWalletPasswordDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(oldPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
+      byte[] decryptedOldBackupAESKey = AESUtils.decrypt(
+        encryptedOldBackupAESKey,
+        oldWalletPasswordDerivedAESKey,
+        WalletManager.aesInitialisationVector());
 
-      KeyParameter newWalletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(newPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
-      byte[] encryptedNewBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(
+      KeyParameter newWalletPasswordDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(newPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
+      byte[] encryptedNewBackupAESKey = AESUtils.encrypt(
               decryptedOldBackupAESKey,
               newWalletPasswordDerivedAESKey,
               WalletManager.aesInitialisationVector());
 
       // Check the encryption is reversible
-      byte[] decryptedRebornBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+      byte[] decryptedRebornBackupAESKey = AESUtils.decrypt(
               encryptedNewBackupAESKey,
               newWalletPasswordDerivedAESKey,
               WalletManager.aesInitialisationVector());
@@ -1516,13 +1517,13 @@ public class WalletService extends AbstractService {
       // Pad the new credentials
       byte[] newPasswordBytes = newPassword.getBytes(Charsets.UTF_8);
       byte[] paddedNewPassword = WalletManager.padPasswordBytes(newPasswordBytes);
-      byte[] encryptedPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(
+      byte[] encryptedPaddedNewPassword = AESUtils.encrypt(
               paddedNewPassword,
               new KeyParameter(decryptedOldBackupAESKey),
               WalletManager.aesInitialisationVector());
 
       // Check the encryption is reversible
-      byte[] decryptedRebornPaddedNewPassword = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+      byte[] decryptedRebornPaddedNewPassword = AESUtils.decrypt(
               encryptedPaddedNewPassword,
               new KeyParameter(decryptedOldBackupAESKey),
               WalletManager.aesInitialisationVector());
@@ -1558,8 +1559,7 @@ public class WalletService extends AbstractService {
       CoreServices.getOrCreateBackupService();
       CoreServices.getOrCreateWalletService(walletId);
       BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
-      CoreServices.getCurrentHistoryService();
-      CoreServices.getOrCreateContactService(walletId);
+      CoreServices.getOrCreateContactService(new WalletPassword(newPassword, walletId));
 
       // Replay the wallet
       bitcoinNetworkService.replayWallet(
@@ -1584,9 +1584,6 @@ public class WalletService extends AbstractService {
 
     // Create a List of all the non-wallet files that need to have their password changed
     List<File> filesToChangePassword = Lists.newArrayList();
-
-    // History
-    filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + HistoryService.HISTORY_DIRECTORY_NAME + File.separator + HistoryService.HISTORY_DATABASE_NAME));
 
     // Contacts
     filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + ContactService.CONTACTS_DIRECTORY_NAME + File.separator + ContactService.CONTACTS_DATABASE_NAME));

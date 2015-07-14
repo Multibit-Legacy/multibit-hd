@@ -2,9 +2,9 @@ package org.multibit.hd.core.dto.comparators;
 
 import com.google.common.collect.Lists;
 import org.junit.Test;
+import org.multibit.commons.utils.Dates;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.utils.Dates;
 
 import java.io.File;
 import java.util.Collections;
@@ -18,7 +18,7 @@ public class BackupSummaryDescendingComparatorTest {
   public void testCompare_OneBeforeTwo() throws Exception {
 
     BackupSummary summary1 = newBackupSummary();
-    summary1.setCreated(Dates.thenUtc(2000,1,1,0,0,1));
+    summary1.setCreated(Dates.thenUtc(2000, 1, 1, 0, 0, 1));
 
     BackupSummary summary2 = newBackupSummary();
     summary2.setCreated(Dates.thenUtc(2000,1,1,0,0,0));

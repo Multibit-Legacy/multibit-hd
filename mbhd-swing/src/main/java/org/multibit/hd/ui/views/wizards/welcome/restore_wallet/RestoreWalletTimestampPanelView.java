@@ -2,7 +2,7 @@ package org.multibit.hd.ui.views.wizards.welcome.restore_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.utils.Dates;
+import org.multibit.commons.utils.Dates;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Components;

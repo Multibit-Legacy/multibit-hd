@@ -8,7 +8,8 @@ import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.commons.concurrent.SafeExecutors;
+import org.multibit.commons.utils.Dates;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
@@ -21,7 +22,6 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.*;
 import org.multibit.hd.core.store.TransactionInfo;
-import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEventType;
@@ -1541,9 +1541,6 @@ public class MainController extends AbstractController implements
     // Start the wallet service
     log.debug("Starting wallet service...");
     CoreServices.getOrCreateWalletService(walletSummary.get().getWalletId());
-
-    // Record this in the history
-    CoreServices.logHistory(Languages.safeText(MessageKey.HISTORY_WALLET_OPENED, walletSummary.get().getName()));
 
     // Show the initial detail screen
     Screen screen = Screen.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentScreen());

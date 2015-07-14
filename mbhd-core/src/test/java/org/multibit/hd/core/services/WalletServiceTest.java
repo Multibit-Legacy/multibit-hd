@@ -12,18 +12,18 @@ import org.bitcoinj.wallet.DeterministicSeed;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
+import org.multibit.commons.files.SecureFiles;
+import org.multibit.commons.utils.Dates;
+import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
-import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.utils.Addresses;
 import org.multibit.hd.core.utils.BitcoinNetwork;
-import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -442,9 +442,6 @@ public class WalletServiceTest {
 
     // Reload contacts db
     CoreServices.getCurrentContactService().loadContacts(password);
-
-    // Reload history db
-    CoreServices.getCurrentHistoryService().loadHistory(password);
 
     // Reload payment db
     CoreServices.getCurrentWalletService().get().readPayments(password);

@@ -398,22 +398,6 @@ public class ComboBoxes {
 
   /**
    * @param listener The action listener to alert when the selection is made
-   *
-   * @return A new "history checkbox" combo box (all, none) - kept separate from contacts
-   */
-  public static JComboBox<String> newHistoryCheckboxComboBox(ActionListener listener) {
-
-    JComboBox<String> comboBox = newContactsCheckboxComboBox(listener);
-
-    // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.HISTORY, MessageKey.HISTORY_TOOLTIP);
-
-    return comboBox;
-
-  }
-
-  /**
-   * @param listener The action listener to alert when the selection is made
    * @param locale   The locale to use for initial selection
    *
    * @return A new "language" combo box containing all supported languages and variants

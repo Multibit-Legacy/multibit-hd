@@ -28,12 +28,16 @@ public class TitleFontDecorator {
   /**
    * The Corben Regular font is good for a reduced set of Latin languages (North America, Western Europe)
    * and makes the application look attractive
+   *
+   * Supports Windows anti-aliasing
    */
   public static final Font CORBEN_REGULAR;
 
   /**
    * The OpenSans Regular font is good for all Latin languages (North America, Europe)
    * and is a good fallback from Corben
+   *
+   * Supports Windows anti-aliasing
    */
   public static final Font OPENSANS_SEMIBOLD;
 
@@ -45,7 +49,9 @@ public class TitleFontDecorator {
 
   /**
    * The Impact font is found on Windows, Mac and Linux variants
-   * It is a good fall back position when other fonts are not suitable
+   * It is a good fall back position when other fonts are not suitable (such as Chinese, Tamil etc)
+   *
+   * DOES NOT SUPPORT ANTI-ALIASING ON WINDOWS
    */
   public static final Font IMPACT_REGULAR = Font.decode("Impact").deriveFont(Font.PLAIN);
 

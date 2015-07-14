@@ -10,9 +10,9 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.text.WordUtils;
-import org.multibit.hd.brit.crypto.PGPUtils;
-import org.multibit.hd.brit.services.BRITServices;
-import org.multibit.hd.brit.utils.HttpsUtils;
+import org.multibit.commons.crypto.PGPUtils;
+import org.multibit.hd.brit.core.services.BRITServices;
+import org.multibit.commons.utils.HttpsUtils;
 import org.multibit.hd.common.error_reporting.ErrorReport;
 import org.multibit.hd.common.error_reporting.ErrorReportLogEntry;
 import org.multibit.hd.common.error_reporting.ErrorReportResult;
@@ -21,7 +21,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Json;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
-import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.logging.LogbackFactory;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.utils.OSUtils;
@@ -252,6 +252,8 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
 
     final PGPPublicKey multibitPublicKey;
     try {
+      // To test Error Reporting Service locally with a test key replace this code
+      // with an InputStream targeting a test matcher key under src/main/resources
       multibitPublicKey = BRITServices.getMatcherPublicKey();
     } catch (IOException | PGPException e) {
       log.error("Failed to load MultiBit public key", e);

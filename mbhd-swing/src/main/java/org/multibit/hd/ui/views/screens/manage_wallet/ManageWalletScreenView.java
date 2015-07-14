@@ -83,7 +83,6 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
     contentPanel.add(Buttons.newShowRepairWalletButton(getShowRepairWalletAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
     // Row 2
-    contentPanel.add(Buttons.newShowHistoryScreenButton(getShowHistoryAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     WalletType walletType = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType();
 
     if (WalletType.TREZOR_HARD_WALLET.equals(walletType)) {

@@ -7,21 +7,19 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.core.Context;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.utils.Threading;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.brit.services.BRITServices;
-import org.multibit.hd.brit.services.FeeService;
-import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.brit.core.services.BRITServices;
+import org.multibit.hd.brit.core.services.FeeService;
+import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Yaml;
-import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.dto.WalletId;
 import org.multibit.hd.core.dto.WalletPassword;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
-import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.CoreException;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
@@ -102,12 +100,6 @@ public class CoreServices {
    * Optional service until wallet is unlocked
    */
   private static Optional<WalletService> walletService = Optional.absent();
-
-  /**
-   * Keeps track of the history service for the current wallet
-   * Optional service until wallet is unlocked
-   */
-  private static Optional<PersistentHistoryService> historyService = Optional.absent();
 
   /**
    * Keeps track of the backup service for the current wallet
@@ -256,7 +248,6 @@ public class CoreServices {
 
     // Allow graceful shutdown of managed services in the correct order
     shutdownService(contactService, shutdownType);
-    shutdownService(historyService, shutdownType);
 
     // Close the Bitcoin network service (peer group, save wallet etc)
     shutdownService(bitcoinNetworkService, shutdownType);
@@ -267,7 +258,6 @@ public class CoreServices {
     bitcoinNetworkService = Optional.absent();
     contactService = Optional.absent();
     walletService = Optional.absent();
-    historyService = Optional.absent();
     backupService = Optional.absent();
 
   }
@@ -544,81 +534,31 @@ public class CoreServices {
     Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present. No wallet is present.");
 
     WalletId walletId = currentWalletSummary.get().getWalletId();
+    CharSequence password = currentWalletSummary.get().getWalletPassword().getPassword();
 
-    return getOrCreateContactService(walletId);
+    return getOrCreateContactService(new WalletPassword(password, walletId));
   }
 
   /**
-   * @return The history service for the current wallet
-   */
-  public static HistoryService getCurrentHistoryService() {
-
-    log.debug("Get current history service");
-
-    Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-
-    Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present. No wallet is present.");
-
-    WalletPassword walletPassword = currentWalletSummary.get().getWalletPassword();
-
-    return getOrCreateHistoryService(walletPassword);
-  }
-
-  /**
-   * @return The history service for a wallet (single soft, multiple hard)
-   */
-  public static HistoryService getOrCreateHistoryService(WalletPassword walletPassword) {
-
-    log.debug("Get or create history service");
-
-    Preconditions.checkNotNull(walletPassword, "'walletPassword' must be present");
-
-    if (!historyService.isPresent()) {
-      historyService = Optional.of(new PersistentHistoryService(walletPassword));
-    }
-
-    // Return the existing or new history service
-    return historyService.get();
-
-  }
-
-  /**
-   * @param walletId The wallet ID for the wallet
+   * @param walletPassword The wallet ID for the wallet
    *
    * @return The contact service for a wallet
    */
-  public static ContactService getOrCreateContactService(WalletId walletId) {
+  public static ContactService getOrCreateContactService(WalletPassword walletPassword) {
 
     log.debug("Get or create contact service");
 
-    Preconditions.checkNotNull(walletId, "'walletId' must be present");
+    Preconditions.checkNotNull(walletPassword, "'walletPassword' must be present");
+    Preconditions.checkNotNull(walletPassword.getWalletId(), "'walletId' must be present");
+    Preconditions.checkNotNull(walletPassword.getPassword(), "'walletPassword' must be present");
 
     // Check if the contact service has been created for this wallet ID
     if (!contactService.isPresent()) {
-      contactService = Optional.of(new PersistentContactService(walletId));
+      contactService = Optional.of(new PersistentContactService(walletPassword));
     }
 
     // Return the existing or new contact service
     return contactService.get();
-  }
-
-  /**
-   * <p>Convenience method to log a new history event for the current wallet</p>
-   *
-   * @param localisedDescription The localised description text
-   */
-  public static void logHistory(String localisedDescription) {
-
-    // Get the current history service
-    HistoryService historyService = CoreServices.getCurrentHistoryService();
-
-    // Create the history entry and persist it
-    HistoryEntry historyEntry = historyService.newHistoryEntry(localisedDescription);
-    historyService.writeHistory();
-
-    // OK to let everyone else know
-    CoreEvents.fireHistoryChangedEvent(historyEntry);
-
   }
 
   /**

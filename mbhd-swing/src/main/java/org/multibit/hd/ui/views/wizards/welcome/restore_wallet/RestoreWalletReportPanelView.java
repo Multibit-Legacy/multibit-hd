@@ -10,11 +10,12 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
 import org.bitcoinj.crypto.MnemonicCode;
 import org.joda.time.DateTime;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.commons.concurrent.SafeExecutors;
+import org.multibit.commons.crypto.AESUtils;
+import org.multibit.commons.utils.Dates;
+import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
-import org.multibit.hd.core.crypto.AESUtils;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.BitcoinNetworkChangedEvent;
 import org.multibit.hd.core.managers.BackupManager;
@@ -22,7 +23,6 @@ import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.core.utils.Dates;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -588,7 +588,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       WalletSummary walletSummary = WalletManager.getOrCreateWalletSummary(new File(walletRoot), loadedWalletId);
 
       KeyParameter backupAESKey = AESUtils.createAESKey(seed, WalletManager.scryptSalt());
-      byte[] decryptedPaddedWalletPasswordBytes = org.multibit.hd.brit.crypto.AESUtils.decrypt(
+      byte[] decryptedPaddedWalletPasswordBytes = org.multibit.commons.crypto.AESUtils.decrypt(
         walletSummary.getEncryptedPassword(),
         backupAESKey,
         WalletManager.aesInitialisationVector());

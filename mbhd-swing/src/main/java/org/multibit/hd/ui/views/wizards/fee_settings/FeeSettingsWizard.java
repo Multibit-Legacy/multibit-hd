@@ -3,9 +3,6 @@ package org.multibit.hd.ui.views.wizards.fee_settings;
 import com.google.common.base.Optional;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
-import org.multibit.hd.ui.views.wizards.appearance_settings.AppearanceSettingsPanelView;
-import org.multibit.hd.ui.views.wizards.appearance_settings.AppearanceSettingsState;
-import org.multibit.hd.ui.views.wizards.appearance_settings.AppearanceSettingsWizardModel;
 
 import java.util.Map;
 

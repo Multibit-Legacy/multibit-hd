@@ -11,7 +11,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import static org.multibit.hd.core.files.SecureFiles.verifyOrCreateDirectory;
+import static org.multibit.commons.files.SecureFiles.verifyOrCreateDirectory;
 
 /**
  * <p>Utilties to provide the following to applications:</p>

@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.*;
 import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletType;
 import org.multibit.hd.core.managers.HttpsManager;

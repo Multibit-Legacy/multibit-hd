@@ -22,15 +22,17 @@ import org.bitcoinj.store.WalletProtobufSerializer;
 import org.bitcoinj.wallet.DeterministicSeed;
 import org.bitcoinj.wallet.Protos;
 import org.joda.time.DateTime;
-import org.multibit.hd.brit.crypto.AESUtils;
-import org.multibit.hd.brit.dto.FeeState;
-import org.multibit.hd.brit.extensions.MatcherResponseWalletExtension;
-import org.multibit.hd.brit.extensions.SendFeeDtoWalletExtension;
-import org.multibit.hd.brit.seed_phrase.Bip39SeedPhraseGenerator;
-import org.multibit.hd.brit.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.brit.services.FeeService;
-import org.multibit.hd.brit.services.TransactionSentBySelfProvider;
-import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.commons.crypto.AESUtils;
+import org.multibit.commons.files.SecureFiles;
+import org.multibit.commons.utils.Dates;
+import org.multibit.hd.brit.core.dto.FeeState;
+import org.multibit.hd.brit.core.extensions.MatcherResponseWalletExtension;
+import org.multibit.hd.brit.core.extensions.SendFeeDtoWalletExtension;
+import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
+import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
+import org.multibit.hd.brit.core.services.FeeService;
+import org.multibit.hd.brit.core.services.TransactionSentBySelfProvider;
+import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Yaml;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -44,13 +46,11 @@ import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletSaveException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.extensions.WalletTypeExtension;
-import org.multibit.hd.core.files.SecureFiles;
 import org.multibit.hd.core.services.BackupService;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.utils.Collators;
-import org.multibit.hd.core.utils.Dates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -1572,16 +1572,16 @@ public enum WalletManager implements WalletEventListener {
     Preconditions.checkNotNull(password, "'password' must be present");
 
     // Save the wallet credentials, AES encrypted with a key derived from the wallet secret
-    KeyParameter secretDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(secret, SCRYPT_SALT);
+    KeyParameter secretDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(secret, SCRYPT_SALT);
     byte[] passwordBytes = password.getBytes(Charsets.UTF_8);
 
     byte[] paddedPasswordBytes = padPasswordBytes(passwordBytes);
-    byte[] encryptedPaddedPassword = org.multibit.hd.brit.crypto.AESUtils.encrypt(paddedPasswordBytes, secretDerivedAESKey, AES_INITIALISATION_VECTOR);
+    byte[] encryptedPaddedPassword = AESUtils.encrypt(paddedPasswordBytes, secretDerivedAESKey, AES_INITIALISATION_VECTOR);
     walletSummary.setEncryptedPassword(encryptedPaddedPassword);
 
     // Save the backupAESKey, AES encrypted with a key generated from the wallet password
-    KeyParameter walletPasswordDerivedAESKey = org.multibit.hd.core.crypto.AESUtils.createAESKey(passwordBytes, SCRYPT_SALT);
-    byte[] encryptedBackupAESKey = org.multibit.hd.brit.crypto.AESUtils.encrypt(secretDerivedAESKey.getKey(), walletPasswordDerivedAESKey, AES_INITIALISATION_VECTOR);
+    KeyParameter walletPasswordDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(passwordBytes, SCRYPT_SALT);
+    byte[] encryptedBackupAESKey = AESUtils.encrypt(secretDerivedAESKey.getKey(), walletPasswordDerivedAESKey, AES_INITIALISATION_VECTOR);
     walletSummary.setEncryptedBackupKey(encryptedBackupAESKey);
   }
 

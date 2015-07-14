@@ -7,12 +7,12 @@ import com.google.common.collect.Sets;
 import org.bitcoinj.core.Address;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.Contact;
-import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletPassword;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.exceptions.ContactsSaveException;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
-import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.ContactsProtobufSerializer;
@@ -60,15 +60,15 @@ public class PersistentContactService extends AbstractService implements Contact
    *
    * <p>Reduced visibility constructor to prevent accidental instance creation outside of CoreServices.</p>
    */
-  PersistentContactService(WalletId walletId) {
+  PersistentContactService(WalletPassword walletPassword) {
 
     super();
 
-    Preconditions.checkNotNull(walletId, "'walletId' must be present");
+    Preconditions.checkNotNull(walletPassword, "'walletId' must be present");
 
     // Work out where to writeContacts the contacts for this wallet id.
     File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
-    String walletRoot = WalletManager.createWalletRoot(walletId);
+    String walletRoot = WalletManager.createWalletRoot(walletPassword.getWalletId());
 
     File walletDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, walletRoot);
 
@@ -77,27 +77,27 @@ public class PersistentContactService extends AbstractService implements Contact
 
     this.backingStoreFile = new File(contactsDirectory.getAbsolutePath() + File.separator + CONTACTS_DATABASE_NAME);
 
-    initialise();
+    initialise(walletPassword.getPassword());
   }
 
   /**
    * <p>Create a ContactService with the specified File as the backing writeContacts. (This exists primarily for testing where you just run things in a temporary directory)</p>
    * <p>Reduced visibility constructor to prevent accidental instance creation outside of CoreServices.</p>
    */
-  PersistentContactService(File backingStoreFile) {
+  PersistentContactService(File backingStoreFile, CharSequence password) {
 
     this.backingStoreFile = backingStoreFile;
 
-    initialise();
+    initialise(password);
   }
 
-  private void initialise() {
+  private void initialise(CharSequence password) {
 
     protobufSerializer = new ContactsProtobufSerializer();
 
     // Load the contact data from the backing writeContacts if it exists
     if (backingStoreFile.exists()) {
-      loadContacts(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletPassword().getPassword());
+      loadContacts(password);
     }
 
   }

@@ -8,11 +8,10 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.EnvironmentSummary;
 import org.multibit.hd.core.dto.ExchangeSummary;
-import org.multibit.hd.core.dto.HistoryEntry;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -395,24 +394,6 @@ public class CoreEvents {
         public void run() {
           log.trace("Firing 'environment' event");
           coreEventBus.post(new EnvironmentEvent(environmentSummary));
-        }
-      });
-  }
-
-  /**
-   * <p>Broadcast a new "history changed" event</p>
-   *
-   * @param historyEntry The history entry from the History service
-   */
-  public static void fireHistoryChangedEvent(final HistoryEntry historyEntry) {
-    createEventExecutorIfNecessary();
-
-    eventExecutor.submit(
-      new Runnable() {
-        @Override
-        public void run() {
-          log.trace("Firing 'history changed' event");
-          coreEventBus.post(new HistoryChangedEvent(historyEntry));
         }
       });
   }

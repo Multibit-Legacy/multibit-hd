@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
-import org.multibit.hd.core.concurrent.SafeExecutors;
+import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.SoundConfiguration;
 import org.spongycastle.util.io.Streams;
 

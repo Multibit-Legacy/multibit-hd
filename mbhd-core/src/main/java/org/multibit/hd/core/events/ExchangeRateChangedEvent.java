@@ -2,7 +2,7 @@ package org.multibit.hd.core.events;
 
 import com.google.common.base.Optional;
 import org.joda.time.DateTime;
-import org.multibit.hd.core.utils.Dates;
+import org.multibit.commons.utils.Dates;
 
 import java.math.BigDecimal;
 import java.util.Currency;

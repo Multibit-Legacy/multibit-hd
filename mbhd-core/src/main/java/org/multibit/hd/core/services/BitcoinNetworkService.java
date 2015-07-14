@@ -24,7 +24,7 @@ import org.joda.time.DateTime;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.*;
-import org.multibit.hd.core.files.SecureFiles;
+import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.managers.BlockStoreManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -1504,7 +1504,7 @@ public class BitcoinNetworkService extends AbstractService {
         log.debug("When the blockstore was closed the height was {}", blockStore.getChainHead() == null ? "unknown" : blockStore.getChainHead().getHeight());
         blockStore.close();
       } catch (BlockStoreException e) {
-        log.error("Blockstore not closed cleanly", e);
+        log.warn("Blockstore was already closed or not closed cleanly", e);
       } catch (NullPointerException e) {
         // Internal bug in Bitcoinj
       }
