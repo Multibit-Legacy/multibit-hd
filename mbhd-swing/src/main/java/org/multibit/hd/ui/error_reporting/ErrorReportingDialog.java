@@ -85,6 +85,7 @@ public class ErrorReportingDialog extends JFrame {
   private void initComponents() {
 
     setTitle(Languages.safeText(MessageKey.ERROR_REPORTING_TITLE));
+    setIconImage(Images.newLogoIconImage());
 
     JPanel contentPanel = Panels.newPanel(
       new MigLayout(
