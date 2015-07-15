@@ -108,6 +108,10 @@ rmdir ./multibit-hd/lt/
 mv -f ./multibit-hd/lv/language.properties ../languages/language_lv_LV.properties
 rmdir ./multibit-hd/lv/
 
+# Mongolian
+mv -f ./multibit-hd/mn/language.properties ../languages/language_mn_MN.properties
+rmdir ./multibit-hd/mn/
+
 # Dutch
 mv -f ./multibit-hd/nl/language.properties ../languages/language_nl_NL.properties
 rmdir ./multibit-hd/nl/
