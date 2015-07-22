@@ -2,7 +2,6 @@ package org.multibit.hd.core.config;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.multibit.hd.core.events.CoreEvents;
-import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +110,8 @@ public class Configurations {
       Yaml.writeYaml(fos, Configurations.currentConfiguration);
 
     } catch (IOException e) {
-      ExceptionHandler.handleThrowable(e);
+      // Nothing the user can do here so ignore it (logging for advanced users)
+      log.warn("Could not persist current configuration", e);
     }
   }
 

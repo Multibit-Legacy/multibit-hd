@@ -1,5 +1,6 @@
 package org.multibit.hd.core.services;
 
+import com.fasterxml.jackson.dataformat.yaml.snakeyaml.error.YAMLException;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -7,11 +8,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.core.Context;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.utils.Threading;
+import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.core.services.BRITServices;
 import org.multibit.hd.brit.core.services.FeeService;
-import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
@@ -139,7 +140,7 @@ public class CoreServices {
     try (InputStream is = new FileInputStream(InstallationManager.getConfigurationFile())) {
       // Load configuration (providing a default if none exists)
       configuration = Yaml.readYaml(is, Configuration.class);
-    } catch (IOException e) {
+    } catch (YAMLException | IOException e) {
       configuration = Optional.absent();
     }
 
