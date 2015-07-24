@@ -100,9 +100,7 @@ public class ViewEvents {
         log.warn("Unexpected failure to unregister");
       }
       viewEventBusSubscribers.remove(subscriber);
-    } else {
-      log.warn("Subscriber already unregistered: " + subscriber.getClass().getSimpleName());
-    }
+    } 
 
   }
 
