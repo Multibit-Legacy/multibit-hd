@@ -538,7 +538,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
         @Override
         public void run() {
 
-          log.info("Hide and deregister wizard: '{}'", this.getClass().getSimpleName());
+          log.debug("Hide and deregister wizard: '{}'", this.getClass().getSimpleName());
 
           // Require some extra time to get the rest of the UI started for credentials wizard
           // There is no chance of the system showing a light box during this time so this

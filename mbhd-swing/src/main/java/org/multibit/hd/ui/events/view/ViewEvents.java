@@ -100,7 +100,7 @@ public class ViewEvents {
         log.warn("Unexpected failure to unregister");
       }
       viewEventBusSubscribers.remove(subscriber);
-    } 
+    }
 
   }
 
