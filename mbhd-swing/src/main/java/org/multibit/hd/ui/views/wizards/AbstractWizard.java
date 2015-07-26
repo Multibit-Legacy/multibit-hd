@@ -64,7 +64,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
   /**
    * Maps the panel name to the panel views
    */
-  private Map<String, AbstractWizardPanelView> wizardViewMap = Maps.newHashMap();
+  protected Map<String, AbstractWizardPanelView> wizardViewMap = Maps.newHashMap();
 
   /**
    * Ensures we only have a single thread managing the wizard hide operation
@@ -518,7 +518,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
    * @param isExitCancel    True if this hide operation comes from an exit or cancel
    * @param wizardPanelView The wizard panel view from the wizard view map
    */
-  private void handleHide(final String panelName, final boolean isExitCancel, AbstractWizardPanelView wizardPanelView) {
+  protected void handleHide(final String panelName, final boolean isExitCancel, AbstractWizardPanelView wizardPanelView) {
 
     log.debug("Handle hide starting: '{}' ExitCancel: {}", panelName, isExitCancel);
 
