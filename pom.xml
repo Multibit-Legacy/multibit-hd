@@ -259,7 +259,7 @@
       <dependency>
         <groupId>org.multibit.hd.hardware</groupId>
         <artifactId>trezor</artifactId>
-        <version>0.5.2</version>
+        <version>develop-SNAPSHOT</version>
       </dependency>
 
       <!-- Jersey client for upstream requests -->
