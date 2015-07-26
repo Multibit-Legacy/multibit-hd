@@ -659,6 +659,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         setReportMessageStatus(true);
         break;
       default:
+        // Do nothing - see #603
     }
 
   }
