@@ -88,9 +88,6 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
     // Don't block an exit
     if (isExitCancel) {
 
-      // Ensure we send a Cancel to the device
-      getWizardModel().requestCancel();
-
       return true;
     }
 
