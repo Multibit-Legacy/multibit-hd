@@ -57,6 +57,31 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
     HardwareWalletEvents.unsubscribe(this);
   }
 
+  @Override
+  public void hide(final String panelName, final boolean isExitCancel) {
+
+    log.debug("Hide requested for {} with exitCancel {} ", panelName, isExitCancel);
+
+    if (!wizardViewMap.containsKey(panelName)) {
+      log.error("'{}' is not a valid panel name. Check the panel has been registered in the view map. Registered panels are\n{}", wizardViewMap.keySet());
+      return;
+    }
+
+    final AbstractWizardPanelView wizardPanelView = wizardViewMap.get(panelName);
+
+    // Provide warning that the panel is about to be hidden
+    if (wizardPanelView.beforeHide(isExitCancel)) {
+
+      // Ensure the hardware wallet is reset
+      getWizardModel().requestCancel();
+
+      // No cancellation so go ahead with the hide
+      handleHide(panelName, isExitCancel, wizardPanelView);
+
+    }
+
+  }
+
   /**
    * <p>Inform the wizard model of a "device failed"</p>
    *

@@ -103,10 +103,7 @@ public class CoreEvents {
         log.warn("Unexpected failure to unregister");
       }
       coreEventBusSubscribers.remove(subscriber);
-    } else {
-      log.warn("Subscriber already unregistered: " + subscriber.getClass().getSimpleName());
     }
-
   }
 
   /**
