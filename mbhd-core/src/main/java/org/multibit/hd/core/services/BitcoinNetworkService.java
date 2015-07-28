@@ -868,7 +868,8 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Apply the exchange rate
       BigDecimal localAmount;
-      if (sendRequestSummary.getFiatPayment().isPresent() && sendRequestSummary.getFiatPayment().get().getRate().isPresent()) {
+      if (sendRequestSummary.getFiatPayment().isPresent() && sendRequestSummary.getFiatPayment().get().getRate().isPresent()
+              && sendRequestSummary.getFiatPayment().get().getRate() != null) {
         localAmount = Coins.toLocalAmount(totalAmountIncludingTransactionAndClientFee, new BigDecimal(sendRequestSummary.getFiatPayment().get().getRate().get()));
         sendRequestSummary.getFiatPayment().get().setAmount(Optional.of(localAmount));
       } else {

@@ -366,20 +366,24 @@ public class EnterAmountView extends AbstractComponentView<EnterAmountModel> {
             try {
 
               Coin coin = Coins.fromSymbolicAmount(value.get(), bitcoinSymbol);
-
-              // Apply the exchange rate
-              BigDecimal localAmount = Coins.toLocalAmount(coin, latestExchangeRateChangedEvent.get().getRate());
-
               // Update the model
               getModel().get().setCoinAmount(coin);
-              if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
-                getModel().get().setLocalAmount(Optional.of(localAmount));
-              } else {
+
+              // Apply the exchange rate if present
+              BigDecimal exchangeRate = latestExchangeRateChangedEvent.get().getRate();
+              if (exchangeRate == null) {
                 getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
+              } else {
+                BigDecimal localAmount = Coins.toLocalAmount(coin, exchangeRate);
+                if (localAmount.compareTo(BigDecimal.ZERO) != 0) {
+                  getModel().get().setLocalAmount(Optional.of(localAmount));
+                } else {
+                  getModel().get().setLocalAmount(Optional.<BigDecimal>absent());
+                }
+                // Use setValue for the local amount so that the display formatter
+                // will match the currency requirements
+                localAmountText.setValue(localAmount);
               }
-              // Use setValue for the local amount so that the display formatter
-              // will match the currency requirements
-              localAmountText.setValue(localAmount);
 
               // Give feedback to the user
               bitcoinAmountText.setBackground(Themes.currentTheme.dataEntryBackground());
