@@ -138,6 +138,12 @@
   </build>
 
   <dependencies>
+    <!-- Bitcoinj (Alice for wallet extensions) -->
+    <dependency>
+      <groupId>org.bitcoinj</groupId>
+      <artifactId>bitcoinj-core</artifactId>
+      <version>0.13-alice-develop-SNAPSHOT</version>
+    </dependency>
 
     <!-- XChange for accessing Bitcoin exchanges
          See https://github.com/timmolter/XChange/wiki/Exchange-Support
