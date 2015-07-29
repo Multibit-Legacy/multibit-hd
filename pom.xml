@@ -245,7 +245,7 @@
       <dependency>
         <groupId>org.multibit.hd</groupId>
         <artifactId>brit-core</artifactId>
-        <version>develop-SNAPSHOT</version>
+        <version>0.2.0</version>
         <exclusions>
           <exclusion>
             <groupId>org.multibit.hd</groupId>
@@ -258,20 +258,14 @@
       <dependency>
         <groupId>org.multibit.hd</groupId>
         <artifactId>error-reporting-core</artifactId>
-        <version>develop-SNAPSHOT</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.multibit.hd</groupId>
-            <artifactId>commons</artifactId>
-          </exclusion>
-        </exclusions>
+        <version>0.2.0</version>
       </dependency>
 
       <!-- MultiBit Hardware for Trezor integration -->
       <dependency>
         <groupId>org.multibit.hd.hardware</groupId>
         <artifactId>trezor</artifactId>
-        <version>develop-SNAPSHOT</version>
+        <version>0.5.2</version>
         <exclusions>
           <exclusion>
             <groupId>org.multibit.hd</groupId>
@@ -348,13 +342,6 @@
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-client</artifactId>
-    </dependency>
-
-    <!-- Force use of Bitcoinj Alice (remove when MultiBit Commons is updated) -->
-    <dependency>
-      <groupId>org.bitcoinj</groupId>
-      <artifactId>bitcoinj-core</artifactId>
-      <version>0.13-alice-develop-SNAPSHOT</version>
     </dependency>
 
     <!-- Testing -->
