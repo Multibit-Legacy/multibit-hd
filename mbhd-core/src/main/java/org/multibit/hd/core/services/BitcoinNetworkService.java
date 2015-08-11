@@ -70,6 +70,9 @@ public class BitcoinNetworkService extends AbstractService {
 
   private static int NUMBER_OF_PEERS_TO_PING = 2;
 
+  // The minimum BRIT fee that the multibit developers charge
+  private static Coin MINIMUM_MULTIBIT_DEVELOPER_FEE = Coin.valueOf(5000); // satoshi
+
   /**
    * The boundary for when more mining fee is due
    */
@@ -483,6 +486,7 @@ public class BitcoinNetworkService extends AbstractService {
   /**
    * Work out if a client fee is required to be added.
    * If the client fee is smaller than the dust level then it is never added
+   * If the client fee is smaller than the multibit developer minimum then it is not added
    *
    * @param sendRequestSummary The information required to send bitcoin
    * @return True if no error was encountered
@@ -499,6 +503,11 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Never send a client fee that is dust
       if (isClientFeeRequired && sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) < 0) {
+        isClientFeeRequired = false;
+      }
+
+      // Never send a client fee that is below the minimum multibit developer fee
+      if (isClientFeeRequired && sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(MINIMUM_MULTIBIT_DEVELOPER_FEE) < 0) {
         isClientFeeRequired = false;
       }
 
