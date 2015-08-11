@@ -6,7 +6,6 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.commons.concurrent.SafeExecutors;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
@@ -79,12 +78,6 @@ public class FooterView extends AbstractView {
     progressBar.setOpaque(false);
     progressBar.setVisible(false);
 
-    // Create a Tor icon - don't use green or amber colouring it is visually confusing
-    JLabel torIcon = Labels.newBlankLabel();
-    AwesomeDecorator.bindIcon(AwesomeIcon.LOCK, torIcon, false, MultiBitUI.SMALL_ICON_SIZE);
-    AccessibilityDecorator.apply(torIcon, MessageKey.SELECT_TOR, MessageKey.SELECT_TOR_TOOLTIP);
-    torIcon.setVisible(Configurations.currentConfiguration.isTor());
-
     // Hardware wallet icon
     JLabel hardwareWalletIcon = Labels.newBlankLabel();
     AwesomeDecorator.bindIcon(AwesomeIcon.SHIELD, hardwareWalletIcon, false, MultiBitUI.SMALL_ICON_SIZE);
@@ -104,7 +97,6 @@ public class FooterView extends AbstractView {
     // Start with no knowledge so assume the worst
     statusIcon.setForeground(Themes.currentTheme.dangerAlertBackground());
 
-    contentPanel.add(torIcon, "left");
     contentPanel.add(hardwareWalletIcon, "left");
     contentPanel.add(progressBar, "shrink,left");
     contentPanel.add(spacerLabel, "grow,push");

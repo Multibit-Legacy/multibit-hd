@@ -7,7 +7,6 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.subgraph.orchid.TorClient;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
@@ -21,10 +20,10 @@ import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.wallet.DeterministicKeyChain;
 import org.bitcoinj.wallet.KeyChain;
 import org.joda.time.DateTime;
+import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.*;
-import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.managers.BlockStoreManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -1387,24 +1386,18 @@ public class BitcoinNetworkService extends AbstractService {
    * @param useFastCatchup True if only block headers from genesis block is required
    */
   private void createNewPeerGroup(Wallet wallet, boolean useFastCatchup) throws TimeoutException {
-
-    if (Configurations.currentConfiguration.isTor()) {
-      log.info("Creating new Tor peer group for '{}'", networkParameters);
-      InstallationManager.removeCryptographyRestrictions();
-      peerGroup = PeerGroup.newWithTor(networkParameters, blockChain, new TorClient());
-    } else {
-      String[] dnsSeeds = new String[]{
+    String[] dnsSeeds = new String[]{
                      /* "seed.bitcoin.sipa.be",        // Pieter Wuille - not reachable */
-              "dnsseed.bluematt.me",         // Matt Corallo
-              "dnsseed.bitcoin.dashjr.org",  // Luke Dashjr
-              "seed.bitcoinstats.com",       // Chris Decker
-              "seed.bitnodes.io",            // Addy Yeow
-      };
-      log.info("Creating new DNS peer group for '{}'", networkParameters);
-      peerGroup = new PeerGroup(networkParameters, blockChain);
-      peerGroup.addPeerDiscovery(new DnsDiscovery(dnsSeeds, networkParameters));
-      peerGroup.setConnectTimeoutMillis(CONNECTION_TIMEOUT);
-    }
+            "dnsseed.bluematt.me",         // Matt Corallo
+            "dnsseed.bitcoin.dashjr.org",  // Luke Dashjr
+            "seed.bitcoinstats.com",       // Chris Decker
+            "seed.bitnodes.io",            // Addy Yeow
+    };
+    log.info("Creating new DNS peer group for '{}'", networkParameters);
+    peerGroup = new PeerGroup(networkParameters, blockChain);
+    peerGroup.addPeerDiscovery(new DnsDiscovery(dnsSeeds, networkParameters));
+    peerGroup.setConnectTimeoutMillis(CONNECTION_TIMEOUT);
+
 
     peerGroup.setUserAgent(
             InstallationManager.MBHD_APP_NAME,
@@ -1419,7 +1412,6 @@ public class BitcoinNetworkService extends AbstractService {
     peerGroup.addEventListener(peerEventListener);
 
     addWalletToPeerGroup(wallet);
-
   }
 
   public void addWalletToPeerGroup(Wallet wallet) {

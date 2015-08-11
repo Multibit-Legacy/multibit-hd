@@ -25,7 +25,7 @@ public class ShowThenCancelLabsUseCase extends AbstractFestUseCase {
   @Override
   public void execute(Map<String, Object> parameters) {
 
-    // Click on "exchange"
+    // Click on "Labs"
     window
       .button(MessageKey.SHOW_LABS_WIZARD.getKey())
       .click();

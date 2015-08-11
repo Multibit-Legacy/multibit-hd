@@ -280,9 +280,6 @@ public enum MessageKey {
   PLAY_SOUND("play_sound"),
   PLAY_SOUND_TOOLTIP("play_sound_tooltip"),
 
-  SELECT_TOR("select_tor"),
-  SELECT_TOR_TOOLTIP("select_tor_tooltip"),
-
   SELECT_TREZOR("select_trezor"),
   SELECT_TREZOR_TOOLTIP("select_trezor_tooltip"),
 
