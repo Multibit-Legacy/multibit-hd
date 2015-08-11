@@ -270,9 +270,6 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
       feeState,
       true);
 
-    // Make sure client fees are applied
-    sendRequestSummary.setApplyClientFee(true);
-
     // Set a tx description of 'Empty Wallet' localised
     sendRequestSummary.setNotes(Optional.of(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE)));
 
