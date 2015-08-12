@@ -502,17 +502,17 @@ public class BitcoinNetworkService extends AbstractService {
       isClientFeeRequired = (currentNumberOfSends == nextFeeSendCount) || forceNow;
 
       // Never send a client fee that is dust
-      if (isClientFeeRequired && sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) < 0) {
+      if (isClientFeeRequired && sendRequestSummary.getFeeState().get().getFeeOwed().isLessThan(Transaction.MIN_NONDUST_OUTPUT)) {
         isClientFeeRequired = false;
       }
 
       // Never send a client fee that is below the minimum multibit developer fee
-      if (isClientFeeRequired && sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(MINIMUM_MULTIBIT_DEVELOPER_FEE) < 0) {
+      if (isClientFeeRequired && sendRequestSummary.getFeeState().get().getFeeOwed().isLessThan(MINIMUM_MULTIBIT_DEVELOPER_FEE)) {
         isClientFeeRequired = false;
       }
 
       // Never send a client fee larger than the recipient amount with a wallet empty (as recipient is adjusted down by client fee on empty wallet)
-      if (sendRequestSummary.isEmptyWallet() && sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(sendRequestSummary.getAmount()) > 0) {
+      if (sendRequestSummary.isEmptyWallet() && sendRequestSummary.getFeeState().get().getFeeOwed().isGreaterThan(sendRequestSummary.getAmount())) {
         isClientFeeRequired = false;
       }
 
