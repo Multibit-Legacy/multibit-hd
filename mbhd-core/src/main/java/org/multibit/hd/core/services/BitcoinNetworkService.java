@@ -1506,7 +1506,7 @@ public class BitcoinNetworkService extends AbstractService {
         log.debug("When the blockstore was closed the height was {}", blockStore.getChainHead() == null ? "unknown" : blockStore.getChainHead().getHeight());
         blockStore.close();
       } catch (BlockStoreException e) {
-        log.warn("Blockstore was already closed or not closed cleanly", e);
+        log.warn("BlockStoreException: Blockstore was already closed or not closed cleanly: {}", e.getMessage());
       } catch (NullPointerException e) {
         // Internal bug in Bitcoinj
       }
