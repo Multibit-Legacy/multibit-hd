@@ -320,9 +320,9 @@ public class MultiBitHD {
       }
 
     }
-    UIManager.getDefaults();
     log.debug("LaF loaded OK");
 
+    // This must be performed immediately after the LaF has been set
     if (OSUtils.isMac()) {
       log.debug("Applying OSX key bindings...");
       // Ensure the correct name is displayed in the application menu
@@ -338,8 +338,8 @@ public class MultiBitHD {
       addOSXKeyStrokes((InputMap) UIManager.get("TextArea.focusInputMap"));
     }
 
+    // Ensure that we are using the configured theme (must be after key bindings)
     log.debug("Switching theme...");
-    // Ensure that we are using the configured theme
     ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme());
     Themes.switchTheme(themeKey.theme());
 
