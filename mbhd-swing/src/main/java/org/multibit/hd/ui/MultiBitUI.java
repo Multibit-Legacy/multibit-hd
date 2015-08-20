@@ -18,9 +18,9 @@ public interface MultiBitUI {
    */
   int UI_MIN_WIDTH = 900;
   /**
-   * The minimum height for the application UI (550 is the minimum)
+   * The minimum height for the application UI (600 is the minimum to avoid an occluded status bar on Windows)
    */
-  int UI_MIN_HEIGHT = 550;
+  int UI_MIN_HEIGHT = 600;
 
   /**
    * The minimum width for a wizard panel (600 is about right) allowing for popovers
