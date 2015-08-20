@@ -4,8 +4,6 @@ import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.io.IOException;
@@ -33,37 +31,21 @@ public class ClipboardUtils {
    */
   public static void copyImageToClipboard(Image image) {
 
-    final TransferableImage transferableImage = new TransferableImage(image);
-
-    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
     try {
+
+      final TransferableImage transferableImage = new TransferableImage(image);
+
+      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
       clipboard.setContents(transferableImage, newClipboardOwner());
 
       log.debug("Copied image to clipboard");
 
-    } catch (IllegalStateException e) {
-      log.warn("Could not access system clipboard");
+    } catch (RuntimeException e) {
+      // Ignore problems with clipboard
+      log.warn("Copy image to clipboard failed: {}", e.getMessage());
     }
 
-  }
-
-  /**
-   * @return The image from the clipboard if present
-   */
-  public static Optional<Image> pasteImageFromClipboard() {
-
-    Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
-
-    if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
-      try {
-        return Optional.of((Image) transferable.getTransferData(DataFlavor.imageFlavor));
-      } catch (UnsupportedFlavorException | IOException e) {
-        log.warn("Failed to retrieve clipboard image", e);
-      }
-    }
-    return Optional.absent();
   }
 
   /**
@@ -71,18 +53,18 @@ public class ClipboardUtils {
    */
   public static void copyStringToClipboard(String value) {
 
-    // Copy the string to the clipboard
-    StringSelection stringSelection = new StringSelection(value);
-    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
     try {
+      // Copy the string to the clipboard
+      StringSelection stringSelection = new StringSelection(value);
+      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
       clipboard.setContents(stringSelection, newClipboardOwner());
 
       log.debug("Copied string to clipboard");
 
-    } catch (IllegalStateException e) {
-      log.warn("Could not access system clipboard");
+    } catch (RuntimeException e) {
+      // Ignore problems with clipboard
+      log.warn("Copy string to clipboard failed: {}", e.getMessage());
     }
 
   }
@@ -92,41 +74,22 @@ public class ClipboardUtils {
    */
   public static Optional<String> pasteStringFromClipboard() {
 
-    Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+    try {
+      Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
 
-    if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-      try {
-        return Optional.of((String) transferable.getTransferData(DataFlavor.stringFlavor));
-      } catch (UnsupportedFlavorException | IOException e) {
-        log.warn("Failed to retrieve clipboard text", e);
+      if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+        try {
+          return Optional.of((String) transferable.getTransferData(DataFlavor.stringFlavor));
+        } catch (UnsupportedFlavorException | IOException e) {
+          log.warn("Failed to retrieve clipboard text", e);
+        }
       }
+    } catch (RuntimeException e) {
+      // Ignore problems with clipboard
+      log.warn("Paste string from clipboard failed: {}", e.getMessage());
     }
+
     return Optional.absent();
-
-  }
-
-  /**
-   * <p>Paste a string into the given text compoent using the standard TransferHandler mechanism</p>
-   *
-   * @param component The text component into which this paste is occurring
-   *
-   * @return True if the paste was successful
-   */
-  public static boolean pasteStringFromClipboard(JTextComponent component) {
-
-    Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
-
-    if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-
-      // Add the transferable to the handler using the support
-      TransferHandler.TransferSupport transferSupport = new TransferHandler.TransferSupport(component, transferable);
-
-      // Attempt to import
-      return component.getTransferHandler().importData(transferSupport);
-    }
-
-    // Must have failed to be here
-    return false;
 
   }
 
