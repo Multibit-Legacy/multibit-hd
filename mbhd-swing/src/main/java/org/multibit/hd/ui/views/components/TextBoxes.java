@@ -460,6 +460,19 @@ public class TextBoxes {
 
     passwordField.setOpaque(false);
 
+    // Allow copy/paste into password field
+    //
+    // This is allowed over the default of disabled for these reasons:
+    // 1. It encourages much stronger passwords through a password manager (LastPass, KeyPass etc)
+    // 2. Using the clipboard is as secure as the keyboard (i.e. both are visible to all)
+    // 3. Improved user experience overall
+    //
+    // One attack vector is that a user may place a password into the clipboard and then
+    // leave their computer unattended and therefore vulnerable to Mallory spending on their
+    // behalf. However a user requiring the clipboard to transfer the password would likely
+    // have higher than average security awareness and not put themselves in this position.
+    passwordField.putClientProperty("JPasswordField.cutCopyAllowed", true);
+
     return passwordField;
   }
 
