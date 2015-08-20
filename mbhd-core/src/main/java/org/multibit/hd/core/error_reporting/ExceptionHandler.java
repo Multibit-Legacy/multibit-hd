@@ -438,11 +438,6 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       return false;
     }
 
-//    if (message.contains("Eek")) {
-//      log.warn("Detected Eek! exception. Treat as benign.");
-//      return true;
-//    }
-
     // Check for TimSort contract violation (see Issue #645)
     // This occurs occasionally in clipboard/focus operations and is based in the way
     // the JVM interacts with the underlying OS - there is nothing we can do
