@@ -137,9 +137,6 @@ public class WalletManagerTest {
 
   @Test
   public void testCreateWallet() throws Exception {
-    // Delay a second to ensure unique temporary directory
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-
     // Get the application directory
     File applicationDirectory = SecureFiles.createTemporaryDirectory();
 
@@ -162,7 +159,6 @@ public class WalletManagerTest {
                     "Example",
                     false); // No need to sync
 
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Uncomment this next line if you want a wallet created in your MultiBitHD user data directory.
     //walletManager.createWallet( seed, "credentials");
@@ -183,8 +179,6 @@ public class WalletManagerTest {
                     "Example",
                     "Example",
                     false); // No need to sync
-
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     assertThat(walletSummary2).isNotNull();
 
@@ -213,9 +207,6 @@ public class WalletManagerTest {
    * Test creation of a Trezor (soft) wallet.
    */
   public void testCreateSoftTrezorWallet() throws Exception {
-    // Delay a second to ensure unique temporary directory
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -231,8 +222,6 @@ public class WalletManagerTest {
             "aPassword",
             "Abandon",
             "Abandon", true);
-
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     assertThat(walletSummary).isNotNull();
     assertThat(WalletType.TREZOR_SOFT_WALLET.equals(walletSummary.getWalletType()));
@@ -307,8 +296,6 @@ public class WalletManagerTest {
 
     Wallet rebornWallet2 = WalletManager.INSTANCE.loadWalletFromFile(encryptedWalletFile2, "aPassword2");
 
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-
     // Check the first keys above are in the wallet
     assertThat(rebornWallet2.hasKey(trezorKeyM44H_0H_0H_0_0)).isTrue();
     assertThat(rebornWallet2.hasKey(trezorKeyM44H_0H_0H_1_0)).isTrue();
@@ -320,9 +307,6 @@ public class WalletManagerTest {
    * This replicates the non-BIP32 compliant code we have at the moment
    */
   public void testCreateSkinSeedPhraseWalletInABadWay() throws Exception {
-    // Delay a second to ensure unique temporary directory
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -341,8 +325,6 @@ public class WalletManagerTest {
             "aPassword",
             "Skin",
             "Skin", true);
-
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     assertThat(walletSummary).isNotNull();
     assertThat(WalletType.MBHD_SOFT_WALLET.equals(walletSummary.getWalletType()));
@@ -384,9 +366,6 @@ public class WalletManagerTest {
    * This constructs a BIP32 compliant wallet
    */
   public void testCreateSkinSeedPhraseWalletInAGoodWay() throws Exception {
-    // Delay a second to ensure unique temporary directory
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -407,8 +386,6 @@ public class WalletManagerTest {
             "aPassword",
             "Skin",
             "Skin", true);
-
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     assertThat(walletSummary).isNotNull();
     assertThat(WalletType.MBHD_SOFT_WALLET_BIP32.equals(walletSummary.getWalletType()));
@@ -449,11 +426,7 @@ public class WalletManagerTest {
     skinWallet.saveToFile(temporaryFile);
     File encryptedWalletFile = EncryptedFileReaderWriter.makeAESEncryptedCopyAndDeleteOriginal(temporaryFile, "aPassword");
 
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-
     Wallet rebornWallet = WalletManager.INSTANCE.loadWalletFromFile(encryptedWalletFile, "aPassword");
-
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     log.debug("Reborn skin wallet, number of keys: " + rebornWallet.getActiveKeychain().numKeys());
     log.debug("Reborn skin wallet : {}", rebornWallet.toString());
@@ -502,9 +475,6 @@ public class WalletManagerTest {
   }
 
   private void backwardsCompatibilityCheck(String walletLocation, String password, WalletType expectedWalletType) throws Exception {
-    // Delay a second to ensure unique temporary directory
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -517,8 +487,6 @@ public class WalletManagerTest {
     BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     Wallet wallet = walletManager.loadWalletFromFile(walletFile, password);
-
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     assertThat(wallet).isNotNull();
 
@@ -591,9 +559,6 @@ public class WalletManagerTest {
 
   @Test
   public void testSignAndVerifyMessage() throws Exception {
-    // Delay a second to ensure unique temporary directory
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -691,9 +656,6 @@ public class WalletManagerTest {
 
   @Test
   public void testWriteOfEncryptedPasswordAndSeed() throws Exception {
-    // Delay a second to ensure unique temporary directory
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-
     List<String> passwordList = Lists.newArrayList();
     passwordList.add(SHORT_PASSWORD);
     passwordList.add(MEDIUM_PASSWORD);
