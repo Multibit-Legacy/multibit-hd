@@ -137,6 +137,9 @@ public class WalletManagerTest {
 
   @Test
   public void testCreateWallet() throws Exception {
+    // Delay a second to ensure unique temporary directory
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -210,6 +213,9 @@ public class WalletManagerTest {
    * Test creation of a Trezor (soft) wallet.
    */
   public void testCreateSoftTrezorWallet() throws Exception {
+    // Delay a second to ensure unique temporary directory
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -314,6 +320,9 @@ public class WalletManagerTest {
    * This replicates the non-BIP32 compliant code we have at the moment
    */
   public void testCreateSkinSeedPhraseWalletInABadWay() throws Exception {
+    // Delay a second to ensure unique temporary directory
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -375,6 +384,9 @@ public class WalletManagerTest {
    * This constructs a BIP32 compliant wallet
    */
   public void testCreateSkinSeedPhraseWalletInAGoodWay() throws Exception {
+    // Delay a second to ensure unique temporary directory
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -490,6 +502,9 @@ public class WalletManagerTest {
   }
 
   private void backwardsCompatibilityCheck(String walletLocation, String password, WalletType expectedWalletType) throws Exception {
+    // Delay a second to ensure unique temporary directory
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
@@ -576,6 +591,8 @@ public class WalletManagerTest {
 
   @Test
   public void testSignAndVerifyMessage() throws Exception {
+    // Delay a second to ensure unique temporary directory
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Get the application directory
     File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
@@ -674,6 +691,9 @@ public class WalletManagerTest {
 
   @Test
   public void testWriteOfEncryptedPasswordAndSeed() throws Exception {
+    // Delay a second to ensure unique temporary directory
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
     List<String> passwordList = Lists.newArrayList();
     passwordList.add(SHORT_PASSWORD);
     passwordList.add(MEDIUM_PASSWORD);
