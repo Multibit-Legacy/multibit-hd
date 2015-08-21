@@ -31,7 +31,6 @@ import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.wallet.KeyChain;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.multibit.commons.files.SecureFiles;
 import org.multibit.commons.utils.Dates;
@@ -136,13 +135,13 @@ public class WalletManagerTest {
     WalletManager.INSTANCE.shutdownNow(ShutdownEvent.ShutdownType.HARD);
   }
 
-  @Ignore
+  @Test
   public void testCreateWallet() throws Exception {
     // Delay a second to ensure unique temporary directory
     Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Get the application directory
-    File applicationDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
+    File applicationDirectory = SecureFiles.createTemporaryDirectory();
 
     WalletManager walletManager = WalletManager.INSTANCE;
     BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
