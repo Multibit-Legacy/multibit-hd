@@ -159,6 +159,12 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
     } else {
 
+      // Avoid double events triggering calls
+      Optional<Recipient> currentRecipient = getModel().get().getRecipient();
+      if (currentRecipient.isPresent() && currentRecipient.get().getSummary().equals(editorItem)) {
+        return;
+      }
+
       // Random text is not a recipient
       getModel().get().setValue(null);
       imageLabel.setVisible(false);
