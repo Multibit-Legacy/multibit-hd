@@ -25,10 +25,7 @@ public class EnterSeedPhraseModel implements Model<List<String>> {
 
   private List<String> seedPhrase = Lists.newArrayList();
 
-  /**
-   * Initialise to earliest possible HD wallet seed to provide a default during restore operation
-   */
-  private String seedTimestamp = "1826/80";
+  private String seedTimestamp = "";
 
   // Start with the text displayed
   private boolean asClearText = true;

@@ -1,8 +1,8 @@
 package org.multibit.hd.ui.views.fonts;
 
-import com.google.common.base.Preconditions;
-import org.multibit.hd.ui.exceptions.UIException;
 import org.multibit.hd.ui.languages.LanguageKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,9 +21,10 @@ import java.util.Locale;
  * <p>More fonts can be sourced from Google Fonts and extracted from a ZIP file as a TTF</p>
  *
  * @since 0.0.1
- *
  */
 public class TitleFontDecorator {
+
+  private static final Logger log = LoggerFactory.getLogger(TitleFontDecorator.class);
 
   /**
    * The Corben Regular font is good for a reduced set of Latin languages (North America, Western Europe)
@@ -53,19 +54,35 @@ public class TitleFontDecorator {
    *
    * DOES NOT SUPPORT ANTI-ALIASING ON WINDOWS
    */
-  public static final Font IMPACT_REGULAR = Font.decode("Impact").deriveFont(Font.PLAIN);
+  public static final Font IMPACT_REGULAR;
 
   /**
-   * The currently selected font for the given locale (default is Impact Regular in case of problems)
+   * The currently selected font for the given locale
    */
-  private static Font TITLE_FONT = IMPACT_REGULAR;
+  private static Font TITLE_FONT;
 
   static {
+    Font font;
+    try {
+      // If "Impact" does not exist the "Dialog" font family will be returned
+      font = Font.decode("Impact").deriveFont(Font.PLAIN);
+    } catch (RuntimeException e) {
+      // Something strange is going on so try a different approach
+      log.warn("Could not load 'Impact' font. Using system default as a fallback.", e);
+      // If this call fails with another RTE then the environment is too messed up to function
+      // and we should rightly show an error report
+      font = Font.decode(null);
+    }
+    // Impact regular must be defined first since it is used in assignFont
+    IMPACT_REGULAR = font;
 
+    // Register built-in fonts
     CORBEN_REGULAR = assignFont("Corben-Regular.ttf");
     OPENSANS_SEMIBOLD = assignFont("OpenSans-Semibold.ttf");
     //NOTOSANS_BOLD = assignFont("NotoSans-Bold.ttf");
 
+    // Set default to Impact Regular in case of problems
+    TITLE_FONT = IMPACT_REGULAR;
   }
 
   /**
@@ -77,9 +94,8 @@ public class TitleFontDecorator {
 
     try (InputStream in = TitleFontDecorator.class.getResourceAsStream("/assets/fonts/" + fontName)) {
 
+      // We'll either get a font or a failure
       Font loadedFont = Font.createFont(Font.TRUETYPE_FONT, in);
-
-      Preconditions.checkNotNull(loadedFont, fontName + " not loaded");
 
       // Always stick with plain for best effect
       Font derivedFont = loadedFont.deriveFont(Font.PLAIN);
@@ -92,7 +108,9 @@ public class TitleFontDecorator {
       return derivedFont;
 
     } catch (FontFormatException | IOException e) {
-      throw new UIException(e);
+      log.warn("Failed to load font: '{}'", fontName, e);
+      // Fall back to Impact Regular which is guaranteed to have something set to be here
+      return IMPACT_REGULAR;
     }
 
   }
