@@ -515,7 +515,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         // Use the earliest possible HD wallet birthday
         timestamp = EARLIEST_HD_TIMESTAMP;
       }
-      
+
       DateTime replayDate = Dates.parseSeedTimestamp(timestamp);
 
       // Provide some default text
