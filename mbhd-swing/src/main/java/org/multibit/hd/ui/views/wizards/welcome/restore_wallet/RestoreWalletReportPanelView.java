@@ -1,9 +1,6 @@
 package org.multibit.hd.ui.views.wizards.welcome.restore_wallet;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import com.google.common.base.*;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -76,6 +73,11 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   private JLabel blocksLeftStatusLabel;
 
   private ListeningExecutorService restoreWalletExecutorService;
+
+  /**
+   * The earliest possible HD wallet seed to provide a default during restore operation
+   */
+  public static String EARLIEST_HD_TIMESTAMP = "1826/80";
 
   /**
    * @param wizard    The wizard managing the states
@@ -491,7 +493,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
    * Create a wallet from a seed phrase, timestamp and credentials
    * @param seedPhrase the seed phrase to use in the restore
    * @param walletTypeToRestore the type of wallet to restore (one of the WalletType enum values)
-   * @param timestamp the string format of the timestamp to use in the restore. May be blank.
+   * @param timestamp the string format of the timestamp to use in the restore. May be blank in which case the earliest HD birth date is used
    * @param password the password to use to secure the newly created wallet
    */
   private boolean createWalletFromSeedPhraseAndTimestamp(List<String> seedPhrase, WalletType walletTypeToRestore, String timestamp, String password) {
@@ -509,6 +511,11 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       // Locate the user data directory
       File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
 
+      if (Strings.isNullOrEmpty(timestamp)) {
+        // Use the earliest possible HD wallet birthday
+        timestamp = EARLIEST_HD_TIMESTAMP;
+      }
+      
       DateTime replayDate = Dates.parseSeedTimestamp(timestamp);
 
       // Provide some default text

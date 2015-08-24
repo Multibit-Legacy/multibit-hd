@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views.wizards.welcome.restore_wallet;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.commons.utils.Dates;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -127,7 +128,7 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
     String timestamp = enterSeedPhraseMaV.getModel().getSeedTimestamp();
 
     // Is the timestamp present ? (i.e. some text has been entered)
-    boolean isTimestampPresent = timestamp != null && timestamp.length() > 0;
+    boolean isTimestampPresent = !Strings.isNullOrEmpty(timestamp);
 
     // Work out if timestamp is valid
     boolean isTimestampValid = false;
