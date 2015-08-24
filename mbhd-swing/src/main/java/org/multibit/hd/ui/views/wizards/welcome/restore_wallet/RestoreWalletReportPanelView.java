@@ -77,7 +77,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
   /**
    * The earliest possible HD wallet seed to provide a default during restore operation
    */
-  public static String EARLIEST_HD_TIMESTAMP = "1826/80";
+  public final static String EARLIEST_HD_TIMESTAMP = "1826/80";
 
   /**
    * @param wizard    The wizard managing the states
