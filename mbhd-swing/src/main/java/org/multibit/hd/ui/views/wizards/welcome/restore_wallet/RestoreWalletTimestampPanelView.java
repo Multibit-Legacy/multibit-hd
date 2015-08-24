@@ -117,28 +117,36 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
   }
 
   /**
+   * A blank or empty timestamp is valid for panel navigation but does not show a 'Verified' text
    * @return True if the "next" button should be enabled
    */
   private boolean isNextEnabled() {
 
     boolean isPasswordValid = confirmPasswordMaV.getModel().comparePasswords();
 
+    String timestamp = enterSeedPhraseMaV.getModel().getSeedTimestamp();
+
+    // Is the timestamp present ? (i.e. some text has been entered)
+    boolean isTimestampPresent = timestamp != null && timestamp.length() > 0;
+
+    // Work out if timestamp is valid
     boolean isTimestampValid = false;
     try {
-      Dates.parseSeedTimestamp(enterSeedPhraseMaV.getModel().getSeedTimestamp());
-      isTimestampValid = true;
+      if (timestamp != null) {
+        Dates.parseSeedTimestamp(timestamp);
+        isTimestampValid = true;
+      }
     } catch (IllegalArgumentException e) {
       // Do nothing
     }
 
-    final boolean finalIsTimestampValid = isTimestampValid;
+    final boolean finalIsTimestampPresentAndValid = isTimestampPresent && isTimestampValid;
 
     // Fire the "timestamp verified" event
-    ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".timestamp", finalIsTimestampValid);
+    ViewEvents.fireVerificationStatusChangedEvent(getPanelName() + ".timestamp", finalIsTimestampPresentAndValid);
 
-    // Confirm credentials will fire its own event
-
-    return isTimestampValid && isPasswordValid;
+    // Next is enabled if (the timestamp is missing or is valid) and the password is valid
+    return (!isTimestampPresent || isTimestampValid) && isPasswordValid;
 
   }
 
