@@ -123,7 +123,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with fresh application directory</li>
-   * <li>Restore a wallet using the seed phrase and timestamp</li>
+   * <li>Restore a wallet using the seed phrase and date stamp</li>
    * </ul>
    */
   @Test
@@ -144,7 +144,7 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
    * <p>Verify the following:</p>
    * <ul>
    * <li>Start with fresh application directory</li>
-   * <li>Restore a wallet using the seed phrase and timestamp</li>
+   * <li>Restore a wallet using the seed phrase and date stamp</li>
    * </ul>
    */
   @Test
@@ -158,6 +158,27 @@ public class MultiBitHDFestTest extends FestSwingTestCaseTemplate {
 
     // Restore a wallet through the welcome wizard
     WelcomeWizardRestoreBeta7Wallet_en_US_Requirements.verifyUsing(window);
+
+    // Unlock the wallet
+    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with fresh application directory</li>
+   * <li>Restore a wallet using the seed phrase and no date stamp</li>
+   * </ul>
+   */
+  @Test
+  public void verifyRestoreWalletNoDateStamp_en_US_ColdStart() throws Exception {
+
+    // Start with a completely empty random application directory
+    arrangeFresh(Optional.<HardwareWalletFixture>absent());
+
+    // Restore a wallet through the welcome wizard
+    WelcomeWizardRestoreWalletNoDateStamp_en_US_Requirements.verifyUsing(window);
 
     // Unlock the wallet
     QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);

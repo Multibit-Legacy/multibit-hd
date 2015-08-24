@@ -2,13 +2,12 @@ package org.multibit.hd.ui.fest.requirements;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.commons.utils.Dates;
 import org.multibit.hd.testing.WalletFixtures;
 import org.multibit.hd.ui.fest.use_cases.environment.CloseDebugEnvironmentPopoverUseCase;
 import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletEnterSeedPhraseUseCase;
+import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletNoDateStampUseCase;
 import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletSelectBackupLocationWalletUseCase;
-import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletDateStampUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.AttachHardwareWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
@@ -25,7 +24,7 @@ import java.util.Map;
  *
  * @since 0.0.1
  */
-public class WelcomeWizardRestoreWallet_en_US_Requirements {
+public class WelcomeWizardRestoreWalletNoDateStamp_en_US_Requirements {
 
   public static void verifyUsing(FrameFixture window) {
 
@@ -42,21 +41,17 @@ public class WelcomeWizardRestoreWallet_en_US_Requirements {
 
     new WelcomeSelectRestoreWalletUseCase(window).execute(parameters);
 
-    // Use the empty seed phrase so we can put in a recent timestamp
+    // Use the empty seed phrase
     parameters.put(
       MessageKey.SEED_PHRASE.getKey(),
       WalletFixtures.EMPTY_WALLET_SEED_PHRASE
-    );
-    parameters.put(
-      MessageKey.TIMESTAMP.getKey(),
-      Dates.newSeedTimestamp()
     );
 
     new RestoreWalletEnterSeedPhraseUseCase(window).execute(parameters);
 
     new RestoreWalletSelectBackupLocationWalletUseCase(window).execute(parameters);
 
-    new RestoreWalletDateStampUseCase(window).execute(parameters);
+    new RestoreWalletNoDateStampUseCase(window).execute(parameters);
 
     new RestoreWalletReportUseCase(window).execute(parameters);
 
