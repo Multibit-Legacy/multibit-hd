@@ -911,8 +911,7 @@ public class BitcoinNetworkService extends AbstractService {
       wallet.completeTx(sendRequest);
 
     } catch (Exception e) {
-
-      log.error("Could not complete the transaction without signing", e);
+      log.error("Could not complete the transaction without signing, error: {}", e.getClass().getCanonicalName() + " " + e.getMessage());
 
       String transactionId = sendRequest.tx != null ? sendRequest.tx.getHashAsString() : "?";
 
