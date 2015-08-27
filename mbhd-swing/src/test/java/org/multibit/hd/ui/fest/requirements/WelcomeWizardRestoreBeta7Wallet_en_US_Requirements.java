@@ -8,7 +8,7 @@ import org.multibit.hd.ui.fest.use_cases.environment.CloseDebugEnvironmentPopove
 import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreBeta7WalletEnterSeedPhraseUseCase;
 import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletSelectBackupLocationWalletUseCase;
-import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletTimestampUseCase;
+import org.multibit.hd.ui.fest.use_cases.restore_wallet.RestoreWalletDateStampUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.AcceptLicenceUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.AttachHardwareWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
@@ -56,7 +56,7 @@ public class WelcomeWizardRestoreBeta7Wallet_en_US_Requirements {
 
     new RestoreWalletSelectBackupLocationWalletUseCase(window).execute(parameters);
 
-    new RestoreWalletTimestampUseCase(window).execute(parameters);
+    new RestoreWalletDateStampUseCase(window).execute(parameters);
 
     new RestoreWalletReportUseCase(window).execute(parameters);
 

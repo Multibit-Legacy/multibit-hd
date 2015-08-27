@@ -200,10 +200,8 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
         break;
       default:
-        log.info(
-          "Message:'Operation succeeded'\n{}",
-          event.getMessage().get()
-        );
+        // Do nothing - see #603
+        log.info("Message:'Operation succeeded'\n{}", event.getMessage().get());
     }
   }
 

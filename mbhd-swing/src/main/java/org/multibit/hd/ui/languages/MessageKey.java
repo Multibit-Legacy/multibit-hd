@@ -280,9 +280,6 @@ public enum MessageKey {
   PLAY_SOUND("play_sound"),
   PLAY_SOUND_TOOLTIP("play_sound_tooltip"),
 
-  SELECT_TOR("select_tor"),
-  SELECT_TOR_TOOLTIP("select_tor_tooltip"),
-
   SELECT_TREZOR("select_trezor"),
   SELECT_TREZOR_TOOLTIP("select_trezor_tooltip"),
 
@@ -495,6 +492,7 @@ public enum MessageKey {
   TREZOR_SIGN_CONFIRM_DISPLAY("trezor_sign_confirm_display"),
   TREZOR_SIGN_MESSAGE_CONFIRM_DISPLAY("trezor_sign_message_confirm_display"),
   TREZOR_WIPE_CONFIRM_DISPLAY("trezor_wipe_confirm_display"),
+  TREZOR_HIGH_FEE_CONFIRM_DISPLAY("trezor_high_fee_confirm_display"),
 
   USE_TREZOR_REPORT_TITLE("use_trezor_report_title"),
   USE_TREZOR_REPORT_MESSAGE_SUCCESS("use_trezor_report_message_success"),

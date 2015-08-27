@@ -32,7 +32,6 @@ import java.awt.event.ActionListener;
 public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWizardModel, LabSettingsPanelModel> implements ActionListener {
 
   // Panel specific components
-  private JComboBox<String> torYesNoComboBox;
   private JComboBox<String> trezorYesNoComboBox;
   private JComboBox<String> showRestoreBeta7WalletsYesNoComboBox;
 
@@ -71,14 +70,10 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
 
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
-    torYesNoComboBox = ComboBoxes.newTorYesNoComboBox(this, configuration.isTor());
     trezorYesNoComboBox = ComboBoxes.newTrezorYesNoComboBox(this, configuration.isTrezor());
     showRestoreBeta7WalletsYesNoComboBox = ComboBoxes.newShowRestoreBeta7WalletsYesNoComboBox(this, configuration.isShowRestoreBeta7Wallets());
 
     contentPanel.add(Labels.newLabChangeNote(), "growx,span 2,wrap");
-
-    contentPanel.add(Labels.newSelectTor(), "shrink");
-    contentPanel.add(torYesNoComboBox, "growx,wrap");
 
     contentPanel.add(Labels.newSelectTrezor(), "shrink");
     contentPanel.add(trezorYesNoComboBox, "growx,wrap");
@@ -96,11 +91,6 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
   public void fireInitialStateViewEvents() {
     // Apply button starts off enabled
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.APPLY, true);
-  }
-
-  @Override
-  public void afterShow() {
-    torYesNoComboBox.requestFocusInWindow();
   }
 
   @Override
@@ -134,9 +124,6 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
     JComboBox source = (JComboBox) e.getSource();
-    if (ComboBoxes.TOR_COMMAND.equals(e.getActionCommand())) {
-      configuration.setTor(source.getSelectedIndex() == 0);
-    }
     if (ComboBoxes.TREZOR_COMMAND.equals(e.getActionCommand())) {
       configuration.setTrezor(source.getSelectedIndex() == 0);
     }

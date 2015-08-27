@@ -6,13 +6,13 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.common.error_reporting.ErrorReportResult;
 import org.multibit.hd.common.error_reporting.ErrorReportStatus;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.logging.LogbackFactory;
-import org.multibit.hd.hardware.core.concurrent.SafeExecutors;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -85,6 +85,7 @@ public class ErrorReportingDialog extends JFrame {
   private void initComponents() {
 
     setTitle(Languages.safeText(MessageKey.ERROR_REPORTING_TITLE));
+    setIconImage(Images.newLogoIconImage());
 
     JPanel contentPanel = Panels.newPanel(
       new MigLayout(

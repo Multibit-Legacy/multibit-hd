@@ -1086,13 +1086,6 @@ public class Labels {
   }
 
   /**
-   * @return a new "select Tor" for lab settings
-   */
-  public static JLabel newSelectTor() {
-    return newLabel(MessageKey.SELECT_TOR);
-  }
-
-  /**
    * @return a new "select Trezor" for lab settings
    */
   public static JLabel newSelectTrezor() {

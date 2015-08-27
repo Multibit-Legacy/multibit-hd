@@ -89,16 +89,19 @@ public class MultiBitHD {
    * classes are loaded
    */
   private static void initialiseSystemProperties() {
+
+    // Fix for "TimSort" clipboard failure - https://github.com/bitcoin-solutions/multibit-hd/issues/645
+    // Suggested by https://www.java.net/node/700601
+    // See also http://stackoverflow.com/a/26829874/396747 for more details on ordering at startup
+    // Verified that java.util.Arrays has not been loaded at this stage
+    System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
+
     // Fix for Windows / Java 7 / VPN bug
     System.setProperty("java.net.preferIPv4Stack", "true");
 
     // Fix for version.txt not visible for Java 7
     System.setProperty("jsse.enableSNIExtension", "false");
 
-    // Fix for clipboard failure - https://github.com/bitcoin-solutions/multibit-hd/issues/645
-    // Suggested by https://www.java.net/node/700601
-    // See also http://stackoverflow.com/a/26829874/396747 for more details on ordering at startup
-    System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
   }
 
   /**
@@ -147,7 +150,7 @@ public class MultiBitHD {
       // Do nothing
     }
 
-    // Prepare the JVM (system properties etc)
+    // Prepare the CA certs (run on a separate thread)
     initialiseCaCerts();
 
     // Start core services (logging, environment alerts, configuration, Bitcoin URI handling etc)
@@ -194,13 +197,12 @@ public class MultiBitHD {
   }
 
   /**
-   * <p>Initialise the JVM. This occurs before anything else is called.</p>
+   * <p>Initialise the CA certs</p>
    */
-  // Calling exit(-1) is required
   @SuppressFBWarnings({"DM_EXIT"})
   private void initialiseCaCerts() throws Exception {
 
-    log.debug("Initialising JVM...");
+    log.debug("Initialising CA certs...");
 
     try {
 
@@ -234,7 +236,7 @@ public class MultiBitHD {
    * <li>Bitcoin network service</li>
    * </ul>
    */
-  public boolean initialiseUIControllers() {
+  private boolean initialiseUIControllers() {
     if (OSUtils.isWindowsXPOrEarlier()) {
       log.error("Windows XP or earlier detected. Forcing shutdown.");
       JOptionPane.showMessageDialog(
@@ -256,45 +258,6 @@ public class MultiBitHD {
 
     // Must be OK to be here
     return true;
-  }
-
-  /**
-   * <p>Apply OSX key strokes to input map for consistent UX</p>
-   *
-   * @param inputMap The input map
-   */
-  private void addOSXKeyStrokes(InputMap inputMap) {
-    // Undo and redo require more complex handling
-    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK), DefaultEditorKit.copyAction);
-    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.META_DOWN_MASK), DefaultEditorKit.cutAction);
-    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.META_DOWN_MASK), DefaultEditorKit.pasteAction);
-    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.META_DOWN_MASK), DefaultEditorKit.selectAllAction);
-  }
-
-  /**
-   * <p>Initialise the platform-specific services</p>
-   */
-  private void initialiseGenericApp() {
-    GenericApplicationSpecification specification = new GenericApplicationSpecification();
-    specification.getOpenURIEventListeners().add(mainController);
-    specification.getOpenFilesEventListeners().add(mainController);
-    specification.getPreferencesEventListeners().add(mainController);
-    specification.getAboutEventListeners().add(mainController);
-    specification.getQuitEventListeners().add(mainController);
-
-    GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
-  }
-
-  /**
-   * <p>Initialise the core services</p>
-   *
-   * @param args The command line arguments
-   */
-  private void initialiseCore(String[] args) {
-    log.debug("Initialising Core...");
-
-    // Start the core services
-    CoreServices.main(args);
   }
 
   /**
@@ -355,14 +318,13 @@ public class MultiBitHD {
         log.error("No look and feel available. MultiBit HD requires Java 7 or higher.", e1);
         System.exit(-1);
       }
+
     }
+    log.debug("LaF loaded OK");
 
-    log.debug("LaF loaded. Switching theme...");
-    // Ensure that we are using the configured theme
-    ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme());
-    Themes.switchTheme(themeKey.theme());
-
+    // This must be performed immediately after the LaF has been set
     if (OSUtils.isMac()) {
+      log.debug("Applying OSX key bindings...");
       // Ensure the correct name is displayed in the application menu
       System.setProperty("com.apple.mrj.application.apple.menu.about.name", "multiBit HD");
 
@@ -375,6 +337,11 @@ public class MultiBitHD {
       addOSXKeyStrokes((InputMap) UIManager.get("TextPane.focusInputMap"));
       addOSXKeyStrokes((InputMap) UIManager.get("TextArea.focusInputMap"));
     }
+
+    // Ensure that we are using the configured theme (must be after key bindings)
+    log.debug("Switching theme...");
+    ThemeKey themeKey = ThemeKey.valueOf(Configurations.currentConfiguration.getAppearance().getCurrentTheme());
+    Themes.switchTheme(themeKey.theme());
 
     log.debug("Building MainView...");
 
@@ -446,6 +413,45 @@ public class MultiBitHD {
     // See the MainController wizard hide event for the next stage
 
     return mainView;
+  }
+
+  /**
+   * <p>Initialise the platform-specific services</p>
+   */
+  private void initialiseGenericApp() {
+    GenericApplicationSpecification specification = new GenericApplicationSpecification();
+    specification.getOpenURIEventListeners().add(mainController);
+    specification.getOpenFilesEventListeners().add(mainController);
+    specification.getPreferencesEventListeners().add(mainController);
+    specification.getAboutEventListeners().add(mainController);
+    specification.getQuitEventListeners().add(mainController);
+
+    GenericApplicationFactory.INSTANCE.buildGenericApplication(specification);
+  }
+
+  /**
+   * <p>Initialise the core services</p>
+   *
+   * @param args The command line arguments
+   */
+  private void initialiseCore(String[] args) {
+    log.debug("Initialising Core...");
+
+    // Start the core services
+    CoreServices.main(args);
+  }
+
+  /**
+   * <p>Apply OSX key strokes to input map for consistent UX</p>
+   *
+   * @param inputMap The input map for the Swing component
+   */
+  private void addOSXKeyStrokes(InputMap inputMap) {
+    // Undo and redo require more complex handling
+    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.ALT_DOWN_MASK), DefaultEditorKit.copyAction);
+    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.META_DOWN_MASK), DefaultEditorKit.cutAction);
+    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.META_DOWN_MASK), DefaultEditorKit.pasteAction);
+    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.META_DOWN_MASK), DefaultEditorKit.selectAllAction);
   }
 
   /**

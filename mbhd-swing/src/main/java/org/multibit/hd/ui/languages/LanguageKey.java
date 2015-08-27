@@ -128,6 +128,10 @@ public enum LanguageKey {
    */
   LT_LT("lt_LT", OPENSANS_SEMIBOLD),
   /**
+    * Mongolian
+    */
+  MN_MN("mn_MN", IMPACT_REGULAR),
+  /**
    * Dutch
    */
   NL_NL("nl_NL", CORBEN_REGULAR),

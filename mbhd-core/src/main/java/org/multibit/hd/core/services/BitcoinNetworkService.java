@@ -7,7 +7,6 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.subgraph.orchid.TorClient;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
@@ -21,10 +20,10 @@ import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.wallet.DeterministicKeyChain;
 import org.bitcoinj.wallet.KeyChain;
 import org.joda.time.DateTime;
+import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.*;
-import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.managers.BlockStoreManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -70,6 +69,9 @@ public class BitcoinNetworkService extends AbstractService {
   private static int CONNECTION_TIMEOUT = 4000; // milliseconds
 
   private static int NUMBER_OF_PEERS_TO_PING = 2;
+
+  // The minimum BRIT fee that the multibit developers charge
+  private static Coin MINIMUM_MULTIBIT_DEVELOPER_FEE = Coin.valueOf(5000); // satoshi
 
   /**
    * The boundary for when more mining fee is due
@@ -484,6 +486,7 @@ public class BitcoinNetworkService extends AbstractService {
   /**
    * Work out if a client fee is required to be added.
    * If the client fee is smaller than the dust level then it is never added
+   * If the client fee is smaller than the multibit developer minimum then it is not added
    *
    * @param sendRequestSummary The information required to send bitcoin
    * @return True if no error was encountered
@@ -499,12 +502,17 @@ public class BitcoinNetworkService extends AbstractService {
       isClientFeeRequired = (currentNumberOfSends == nextFeeSendCount) || forceNow;
 
       // Never send a client fee that is dust
-      if (isClientFeeRequired && sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) < 0) {
+      if (isClientFeeRequired && sendRequestSummary.getFeeState().get().getFeeOwed().isLessThan(Transaction.MIN_NONDUST_OUTPUT)) {
+        isClientFeeRequired = false;
+      }
+
+      // Never send a client fee that is below the minimum multibit developer fee
+      if (isClientFeeRequired && sendRequestSummary.getFeeState().get().getFeeOwed().isLessThan(MINIMUM_MULTIBIT_DEVELOPER_FEE)) {
         isClientFeeRequired = false;
       }
 
       // Never send a client fee larger than the recipient amount with a wallet empty (as recipient is adjusted down by client fee on empty wallet)
-      if (sendRequestSummary.isEmptyWallet() && sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(sendRequestSummary.getAmount()) > 0) {
+      if (sendRequestSummary.isEmptyWallet() && sendRequestSummary.getFeeState().get().getFeeOwed().isGreaterThan(sendRequestSummary.getAmount())) {
         isClientFeeRequired = false;
       }
 
@@ -868,7 +876,8 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Apply the exchange rate
       BigDecimal localAmount;
-      if (sendRequestSummary.getFiatPayment().isPresent() && sendRequestSummary.getFiatPayment().get().getRate().isPresent()) {
+      if (sendRequestSummary.getFiatPayment().isPresent() && sendRequestSummary.getFiatPayment().get().getRate().isPresent()
+              && sendRequestSummary.getFiatPayment().get().getRate() != null) {
         localAmount = Coins.toLocalAmount(totalAmountIncludingTransactionAndClientFee, new BigDecimal(sendRequestSummary.getFiatPayment().get().getRate().get()));
         sendRequestSummary.getFiatPayment().get().setAmount(Optional.of(localAmount));
       } else {
@@ -902,8 +911,7 @@ public class BitcoinNetworkService extends AbstractService {
       wallet.completeTx(sendRequest);
 
     } catch (Exception e) {
-
-      log.error("Could not complete the transaction without signing", e);
+      log.error("Could not complete the transaction without signing, error: {}", e.getClass().getCanonicalName() + " " + e.getMessage());
 
       String transactionId = sendRequest.tx != null ? sendRequest.tx.getHashAsString() : "?";
 
@@ -1386,24 +1394,18 @@ public class BitcoinNetworkService extends AbstractService {
    * @param useFastCatchup True if only block headers from genesis block is required
    */
   private void createNewPeerGroup(Wallet wallet, boolean useFastCatchup) throws TimeoutException {
-
-    if (Configurations.currentConfiguration.isTor()) {
-      log.info("Creating new Tor peer group for '{}'", networkParameters);
-      InstallationManager.removeCryptographyRestrictions();
-      peerGroup = PeerGroup.newWithTor(networkParameters, blockChain, new TorClient());
-    } else {
-      String[] dnsSeeds = new String[]{
+    String[] dnsSeeds = new String[]{
                      /* "seed.bitcoin.sipa.be",        // Pieter Wuille - not reachable */
-              "dnsseed.bluematt.me",         // Matt Corallo
-              "dnsseed.bitcoin.dashjr.org",  // Luke Dashjr
-              "seed.bitcoinstats.com",       // Chris Decker
-              "seed.bitnodes.io",            // Addy Yeow
-      };
-      log.info("Creating new DNS peer group for '{}'", networkParameters);
-      peerGroup = new PeerGroup(networkParameters, blockChain);
-      peerGroup.addPeerDiscovery(new DnsDiscovery(dnsSeeds, networkParameters));
-      peerGroup.setConnectTimeoutMillis(CONNECTION_TIMEOUT);
-    }
+            "dnsseed.bluematt.me",         // Matt Corallo
+            "dnsseed.bitcoin.dashjr.org",  // Luke Dashjr
+            "seed.bitcoinstats.com",       // Chris Decker
+            "seed.bitnodes.io",            // Addy Yeow
+    };
+    log.info("Creating new DNS peer group for '{}'", networkParameters);
+    peerGroup = new PeerGroup(networkParameters, blockChain);
+    peerGroup.addPeerDiscovery(new DnsDiscovery(dnsSeeds, networkParameters));
+    peerGroup.setConnectTimeoutMillis(CONNECTION_TIMEOUT);
+
 
     peerGroup.setUserAgent(
             InstallationManager.MBHD_APP_NAME,
@@ -1418,7 +1420,6 @@ public class BitcoinNetworkService extends AbstractService {
     peerGroup.addEventListener(peerEventListener);
 
     addWalletToPeerGroup(wallet);
-
   }
 
   public void addWalletToPeerGroup(Wallet wallet) {
@@ -1504,7 +1505,7 @@ public class BitcoinNetworkService extends AbstractService {
         log.debug("When the blockstore was closed the height was {}", blockStore.getChainHead() == null ? "unknown" : blockStore.getChainHead().getHeight());
         blockStore.close();
       } catch (BlockStoreException e) {
-        log.warn("Blockstore was already closed or not closed cleanly", e);
+        log.warn("BlockStoreException: Blockstore was already closed or not closed cleanly: {}", e.getMessage());
       } catch (NullPointerException e) {
         // Internal bug in Bitcoinj
       }

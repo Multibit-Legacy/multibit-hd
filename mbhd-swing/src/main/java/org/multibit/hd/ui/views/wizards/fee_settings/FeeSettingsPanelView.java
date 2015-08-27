@@ -91,6 +91,7 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
       "transaction.fee.amount");
     JPanel transactionFeeAmountViewPanel = transactionFeeDisplayAmountMaV.getView().newComponentPanel();
     transactionFeeDisplayAmountMaV.getView().setVisible(true);
+    transactionFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
 
     contentPanel.add(Labels.newExplainTransactionFee1(), "span 2, wrap");
     contentPanel.add(Labels.newExplainTransactionFee2(), "span 2, wrap");
@@ -107,7 +108,7 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     contentPanel.add(Labels.newBlankLabel(), "");
     contentPanel.add(Buttons.newDonateNowButton(createDonateNowAction()), "wrap");
     contentPanel.add(Labels.newBlankLabel(), "span 2, push, wrap"); // spacer
-    setChosenFee();
+    setChosenFee(Coin.valueOf(walletConfiguration.getFeePerKB()));
   }
 
   /**
@@ -118,9 +119,11 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
       @Override
       public void actionPerformed(ActionEvent e) {
         try {
-          setChosenFee();
+          Coin feePerKB = Coin.valueOf(feePerKBSlider.getValue() * Sliders.RESOLUTION);
+          setChosenFee(feePerKB);
+
           // Set the new feePerKB
-          Configurations.currentConfiguration.getWallet().setFeePerKB(configuration.getWallet().getFeePerKB());
+          Configurations.currentConfiguration.getWallet().setFeePerKB(feePerKB.getValue());
 
           Panels.hideLightBoxIfPresent();
 
@@ -172,13 +175,13 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
 
   @Override
   public void stateChanged(ChangeEvent e) {
-    setChosenFee();
-    getPanelModel().get().getConfiguration().getWallet().setFeePerKB(feePerKBSlider.getValue() * Sliders.RESOLUTION);
+    Coin feePerKB = Coin.valueOf(feePerKBSlider.getValue() * Sliders.RESOLUTION);
+    setChosenFee(feePerKB);
+    getPanelModel().get().getConfiguration().getWallet().setFeePerKB(feePerKB.getValue());
   }
 
-  private void setChosenFee() {
-    transactionFeeDisplayAmountMaV.getModel().setCoinAmount(Coin.valueOf(feePerKBSlider.getValue() * Sliders.RESOLUTION));
-    transactionFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
+  private void setChosenFee(Coin feePerKB) {
+    transactionFeeDisplayAmountMaV.getModel().setCoinAmount(feePerKB);
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
   }
 }

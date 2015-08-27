@@ -60,8 +60,9 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
    */
   public static void registerExceptionHandler() {
 
+    // The EDT will defer to this handler if it terminates unexpectedly
+    // Since Java 7 there is no need to set the "sun.awt.exception.handler" property as well
     Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
-    System.setProperty("sun.awt.exception.handler", ExceptionHandler.class.getName());
 
   }
 
@@ -80,6 +81,11 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       message = "Fatal: " + t.getClass();
     } else {
       message = t.getLocalizedMessage();
+    }
+
+    // Determine if this error should be reported
+    if (isBenign(t)) {
+      return;
     }
 
     SwingUtilities.invokeLater(
@@ -389,5 +395,70 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
 
     return errorReport;
   }
+
+  /**
+   * <p>Some exceptions are known to be caused by buggy JVM implementations across operating systems
+   * and their effects are confined to data transfer operations (e.g. pasting clipboard or focus
+   * transitions within dialogs).</p>
+   *
+   * <p>If, after  careful study through the error reporting process, there is no known solution
+   * to the problem and <strong>it does not affect ongoing user operations</strong> then it can be
+   * entered here to avoid repetitive logging of a known "cannot fix" problem.</p>
+   *
+   * <p><strong>If in doubt leave it out.</strong> It is better to show the user an error reporting
+   * dialog and exit than it is for them to continue with an application in an unstable state due to
+   * not all necessary code having executed after an exception.</p>
+   *
+   * <p>When evaluating the exception must have a complete stack trace that does not originate from any
+   * non-JDK code. An automated check for this is built in.</p>
+   *
+   * @param t The Throwable to check
+   *
+   * @return True if the Throwable can be considered benign (ongoing operations will be OK)
+   */
+  private static boolean isBenign(Throwable t) {
+
+    // Verify that no application code is involved
+    for (StackTraceElement stackTraceElement : t.getStackTrace()) {
+      if (stackTraceElement.getClassName().startsWith("org.multibit")) {
+        // We can detect this so note this in the error report
+        log.warn("Stack trace contains 'org.multibit'");
+        return false;
+      }
+    }
+
+    // Must be external code to be here
+
+    // Look for simple known exception messages
+    // These tend to be invariant across JVMs and allow for specific cases to be trapped
+    // rather than looking for a particular class in a stack trace
+    String message = t.getMessage();
+    if (message == null) {
+      // No information so assume the worst
+      return false;
+    }
+
+    // Check for TimSort contract violation (see Issue #645)
+    // This occurs occasionally in clipboard/focus operations and is based in the way
+    // the JVM interacts with the underlying OS - there is nothing we can do
+    // The application logic should not be affected
+    if (message.contains("Comparison method violates its general contract!")) {
+      log.warn("Detected TimSort exception. Treat as benign.");
+      return true;
+    }
+
+      // Check for XlibWrapper atom name (see Issue #635)
+      // This also occurs occasionally in clipboard operations and is based in the way
+      // the JVM interacts with the underlying OS - there is nothing we can do
+      // The application logic should not be affected
+    if (message.contains("Failed to retrieve atom name")) {
+      log.warn("Detected XlibWrapper exception. Treat as benign.");
+      return true;
+    }
+
+    // Anything else is a problem
+    return false;
+  }
+
 }
 

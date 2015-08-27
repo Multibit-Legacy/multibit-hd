@@ -659,6 +659,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         setReportMessageStatus(true);
         break;
       default:
+        // Do nothing - see #603
     }
 
   }
@@ -782,6 +783,10 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
       // If no walletid is set (done with Trezor wallets) then work it out from the entered seed
       if (!walletId.isPresent()) {
         EnterSeedPhraseModel restoreWalletEnterSeedPhraseModel = getRestoreWalletEnterSeedPhraseModel();
+        if (restoreWalletEnterSeedPhraseModel == null) {
+          // Avoid possible NPE
+          return false;
+        }
         SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
         byte[] seed = seedGenerator.convertToSeed(restoreWalletEnterSeedPhraseModel.getSeedPhrase());
         walletId = Optional.of(new WalletId(seed));

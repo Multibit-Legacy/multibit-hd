@@ -14,15 +14,15 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the welcome wizard "restore wallet timestamp and credentials" panel view</li>
+ * <li>Verify the welcome wizard "restore wallet date stamp and credentials" panel view</li>
  * </ul>
  *
  * @since 0.0.1
  *
  */
-public class RestoreWalletTimestampUseCase extends AbstractFestUseCase {
+public class RestoreWalletDateStampUseCase extends AbstractFestUseCase {
 
-  public RestoreWalletTimestampUseCase(FrameFixture window) {
+  public RestoreWalletDateStampUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -46,6 +46,7 @@ public class RestoreWalletTimestampUseCase extends AbstractFestUseCase {
         )))
       .requireNotVisible();
 
+    // Enter date stamp
     String timestamp = (String) parameters.get(MessageKey.TIMESTAMP.getKey());
     window
       .textBox(MessageKey.TIMESTAMP.getKey())

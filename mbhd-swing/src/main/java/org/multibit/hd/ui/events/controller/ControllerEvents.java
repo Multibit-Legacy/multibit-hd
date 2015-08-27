@@ -87,8 +87,6 @@ public class ControllerEvents {
       } catch (IllegalArgumentException e) {
         log.warn("Unexpected failure to unregister");
       }
-    } else {
-      log.warn("Subscriber already unregistered: " + subscriber.getClass().getSimpleName());
     }
 
   }

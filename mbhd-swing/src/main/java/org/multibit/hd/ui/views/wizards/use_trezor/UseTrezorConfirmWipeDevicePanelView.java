@@ -87,6 +87,7 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
 
     // Don't block an exit
     if (isExitCancel) {
+
       return true;
     }
 

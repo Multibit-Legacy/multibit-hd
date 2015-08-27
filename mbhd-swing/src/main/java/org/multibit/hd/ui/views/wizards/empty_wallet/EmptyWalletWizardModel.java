@@ -270,9 +270,6 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
       feeState,
       true);
 
-    // Make sure client fees are applied
-    sendRequestSummary.setApplyClientFee(true);
-
     // Set a tx description of 'Empty Wallet' localised
     sendRequestSummary.setNotes(Optional.of(Languages.safeText(MessageKey.EMPTY_WALLET_TITLE)));
 
@@ -398,7 +395,17 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
           bitcoinSymbolText = BitcoinSymbol.MBTC.getSymbol();
         }
 
+        String[] transactionAmountFormatted;
+        String[] feeAmount;
+
         switch (buttonRequest.getButtonRequestType()) {
+          case FEE_OVER_THRESHOLD:
+            // Avoid an accidental high fee by detecting > 10,000 satoshi fee rate
+            feeAmount = Formats.formatCoinAsSymbolic(currentTransaction.getFee(), languageConfiguration, bitcoinConfiguration);
+
+            key = MessageKey.TREZOR_HIGH_FEE_CONFIRM_DISPLAY;
+            values = new String[]{feeAmount[0] + feeAmount[1] + " " + bitcoinSymbolText};
+            break;
           case CONFIRM_OUTPUT:
 
             // Work out which output we're confirming (will be in same order as tx but wallet addresses will be ignored)
@@ -444,8 +451,8 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
             // See #499: Trezor firmware below 1.3.3 displays the sum of all external outputs (including fee) and the fee separately
             // From 1.3.3+ the display is the net amount leaving the wallet with fees shown separately
             Coin transactionAmount = currentTransaction.getValue(wallet).negate();
-            String[] transactionAmountFormatted = Formats.formatCoinAsSymbolic(transactionAmount, languageConfiguration, bitcoinConfiguration);
-            String[] feeAmount = Formats.formatCoinAsSymbolic(currentTransaction.getFee(), languageConfiguration, bitcoinConfiguration);
+            transactionAmountFormatted = Formats.formatCoinAsSymbolic(transactionAmount, languageConfiguration, bitcoinConfiguration);
+            feeAmount = Formats.formatCoinAsSymbolic(currentTransaction.getFee(), languageConfiguration, bitcoinConfiguration);
 
             key = MessageKey.TREZOR_SIGN_CONFIRM_DISPLAY;
             values = new String[]{

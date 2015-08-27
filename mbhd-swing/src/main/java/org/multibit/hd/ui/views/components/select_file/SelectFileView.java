@@ -25,7 +25,6 @@ public class SelectFileView extends AbstractComponentView<SelectFileModel> {
 
   // View components
   private JTextField selectedFileTextField;
-  private JFileChooser fileChooser = new JFileChooser();
 
   /**
    * @param model The model backing this view
@@ -90,7 +89,7 @@ public class SelectFileView extends AbstractComponentView<SelectFileModel> {
   }
 
   /**
-   * @return A new action for toggling the display of the seed phrase
+   * @return A new action for opening a file chooser
    */
   private Action getOpenSelectFileAction() {
     // Show or hide the seed phrase
@@ -105,7 +104,19 @@ public class SelectFileView extends AbstractComponentView<SelectFileModel> {
           @Override
           public void run() {
             // Only require a directory
+            JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+            // Set an initial directory, if already chosen
+            if (getModel().isPresent()) {
+              String selectedFileAsString = getModel().get().getValue();
+              if (selectedFileAsString != null) {
+                File selectedFile = new File(selectedFileAsString);
+                if (selectedFile.exists() && selectedFile.isDirectory()) {
+                  fileChooser.setSelectedFile(selectedFile);
+                }
+              }
+            }
 
             int result = fileChooser.showOpenDialog(currentComponentPanel());
 

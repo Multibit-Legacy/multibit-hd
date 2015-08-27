@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.*;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.crypto.TrustStoreLoader;
 import org.bitcoinj.params.MainNetParams;
+import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.managers.HttpsManager;
@@ -12,7 +13,6 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.PaymentProtocolService;
 import org.multibit.hd.core.services.PaymentProtocolServiceTest;
 import org.multibit.hd.core.testing.payments.FixtureCallable;
-import org.multibit.hd.hardware.core.concurrent.SafeExecutors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

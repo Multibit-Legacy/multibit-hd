@@ -134,7 +134,5 @@ public class RestorePasswordEnterSeedPhraseView extends AbstractWizardPanelView<
     boolean seedPhraseIsValid = generator.isValid(seedPhrase);
 
     return timestampIsValid && seedPhraseIsValid;
-
-
   }
 }
