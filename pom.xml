@@ -255,11 +255,16 @@
         <version>0.3.0</version>
       </dependency>
 
-      <!-- MultiBit Hardware for Trezor integration -->
+      <!-- MultiBit Hardware supported devices -->
       <dependency>
         <groupId>org.multibit.hd.hardware</groupId>
         <artifactId>trezor</artifactId>
-        <version>0.6.0</version>
+        <version>keepkey-develop-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.multibit.hd.hardware</groupId>
+        <artifactId>keepkey</artifactId>
+        <version>keepkey-develop-SNAPSHOT</version>
       </dependency>
 
       <!-- Jersey client for upstream requests -->
@@ -320,10 +325,14 @@
       <artifactId>error-reporting-core</artifactId>
     </dependency>
 
-    <!-- MultiBit Hardware for Trezor integration -->
+    <!-- MultiBit Hardware -->
     <dependency>
       <groupId>org.multibit.hd.hardware</groupId>
       <artifactId>trezor</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.multibit.hd.hardware</groupId>
+      <artifactId>keepkey</artifactId>
     </dependency>
 
     <!-- Jersey client for upstream requests -->
