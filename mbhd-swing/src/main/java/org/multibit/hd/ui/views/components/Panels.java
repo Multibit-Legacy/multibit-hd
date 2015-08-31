@@ -648,10 +648,10 @@ public class Panels {
     radio1.setActionCommand(buyTrezorCommand);
     radio1.setSelected(true);
 
-    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.VERIFY_DEVICE);
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.TREZOR_VERIFY_DEVICE);
     radio2.setActionCommand(verifyDeviceCommand);
 
-    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.WIPE_DEVICE);
+    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.TREZOR_WIPE_DEVICE);
     radio3.setActionCommand(wipeDeviceCommand);
 
     // Action selection is mutually exclusive

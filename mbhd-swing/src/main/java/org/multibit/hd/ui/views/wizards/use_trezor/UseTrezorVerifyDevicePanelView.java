@@ -39,7 +39,7 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
    */
   public UseTrezorVerifyDevicePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.VERIFY_DEVICE_TITLE, AwesomeIcon.MEDKIT);
+    super(wizard, panelName, MessageKey.TREZOR_VERIFY_DEVICE_TITLE, AwesomeIcon.MEDKIT);
 
   }
 

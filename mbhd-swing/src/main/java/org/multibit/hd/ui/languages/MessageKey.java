@@ -431,12 +431,6 @@ public enum MessageKey {
   PIN_FAILURE("pin_failure"),
   PIN_SUCCESS("pin_success"),
 
-
-  VERIFY_DEVICE("verify_device"),
-  VERIFY_DEVICE_TITLE("verify_device_title"),
-  WIPE_DEVICE("wipe_device"),
-  WIPE_DEVICE_TITLE("wipe_device_title"),
-
   // Settings titles
 
   LANGUAGE_SETTINGS_TITLE("language_settings_title"),
@@ -828,6 +822,8 @@ public enum MessageKey {
   SPENDABLE_BALANCE_IS_LOWER("spendable_balance_is_lower"),
   PLUS_UNCONFIRMED("plus_unconfirmed"),
 
+  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
   // Trezor-specific entries
   SELECT_TREZOR("select_trezor"),
   SELECT_TREZOR_TOOLTIP("select_trezor_tooltip"),
@@ -861,6 +857,13 @@ public enum MessageKey {
 
   // Recovery
   TREZOR_FAILURE_RECOVERY("trezor_failure_recovery"),
+  
+  // Buttons
+  TREZOR_VERIFY_DEVICE("trezor_verify_device"),
+  TREZOR_VERIFY_DEVICE_TITLE("trezor_verify_device_title"),
+
+  TREZOR_WIPE_DEVICE("trezor_wipe_device"),
+  TREZOR_WIPE_DEVICE_TITLE("trezor_wipe_device_title"),
 
   // Reports
   // Success
@@ -925,8 +928,112 @@ public enum MessageKey {
   TREZOR_PREPARATION_NOTE_5("trezor_preparation_note_5"),
   TREZOR_PREPARATION_NOTE_6("trezor_preparation_note_6"),
 
+  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // KeepKey-specific entries
+  SELECT_KEEPKEY("select_keepkey"),
+  SELECT_KEEPKEY_TOOLTIP("select_keepkey_tooltip"),
+
+  // Alerts
+  KEEPKEY_ATTACHED_ALERT("keepkey_attached_alert"),
+  KEEPKEY_DETACHED_ALERT("keepkey_detached_alert"),
+  KEEPKEY_STOPPED_ALERT("keepkey_stopped_alert"),
+  KEEPKEY_FAILURE_ALERT("keepkey_failure_alert"),
+
+  CREATE_KEEPKEY_WALLET_PREPARATION_TITLE("create_keepkey_wallet_preparation_title"),
+  CREATE_KEEPKEY_WALLET_ENTER_DETAILS_TITLE("create_keepkey_wallet_enter_details_title"),
+  CREATE_KEEPKEY_WALLET_REQUEST_CREATE_WALLET_TITLE("create_keepkey_wallet_request_create_wallet_title"),
+
+  // Use Keepkey
+  KEEPKEY_CONFIRM_ADD_PIN_TITLE("keepkey_confirm_add_pin_title"),
+  KEEPKEY_CONFIRM_CHANGE_PIN_TITLE("keepkey_confirm_change_pin_title"),
+  KEEPKEY_CONFIRM_REMOVE_PIN_TITLE("keepkey_confirm_remove_pin_title"),
+  KEEPKEY_PRESS_CONFIRM_TITLE("keepkey_press_confirm_title"),
+  KEEPKEY_PRESS_NEXT_TITLE("keepkey_press_next_title"),
+
+  // Operations
+  KEEPKEY_PRESS_CONFIRM_OPERATION("keepkey_press_confirm_operation"),
+  KEEPKEY_PRESS_NEXT_OPERATION("keepkey_press_next_operation"),
+  KEEPKEY_NO_WALLET_OPERATION("keepkey_no_wallet_operation"),
+  KEEPKEY_NO_WALLET_RECOVERY("keepkey_no_wallet_recovery"),
+  KEEPKEY_FAILURE_OPERATION("keepkey_failure_operation"),
+  KEEPKEY_REMOVE_PIN_OPERATION("keepkey_remove_pin_operation"),
+  SEARCHING_FOR_A_CONNECTED_KEEPKEY_OPERATION("searching_for_a_connected_keepkey_operation"),
+  COMMUNICATING_WITH_KEEPKEY_OPERATION("communicating_with_keepkey_operation"),
+
+  // Recovery
+  KEEPKEY_FAILURE_RECOVERY("keepkey_failure_recovery"),
+
+  // Buttons
+  KEEPKEY_VERIFY_DEVICE("keepkey_verify_device"),
+  KEEPKEY_VERIFY_DEVICE_TITLE("keepkey_verify_device_title"),
+
+  KEEPKEY_WIPE_DEVICE("keepkey_wipe_device"),
+  KEEPKEY_WIPE_DEVICE_TITLE("keepkey_wipe_device_title"),
+
+  // Reports
+  // Success
+  KEEPKEY_CHANGE_PIN_SUCCESS("keepkey_change_pin_success"),
+  KEEPKEY_REMOVE_PIN_SUCCESS("keepkey_remove_pin_success"),
+  KEEPKEY_WIPE_DEVICE_SUCCESS("keepkey_wipe_device_success"),
+  USE_KEEPKEY_REPORT_MESSAGE_SUCCESS("use_keepkey_report_message_success"),
+
+  // Failure
+  KEEPKEY_INCORRECT_PIN_FAILURE("keepkey_incorrect_pin_failure"),
+  KEEPKEY_ADD_PIN_FAILURE("keepkey_add_pin_failure"),
+  KEEPKEY_CHANGE_PIN_FAILURE("keepkey_change_pin_failure"),
+  KEEPKEY_WIPE_DEVICE_FAILURE("keepkey_wipe_device_failure"),
+  KEEPKEY_SIGN_FAILURE("keepkey_sign_failure"),
+  USE_KEEPKEY_REPORT_MESSAGE_FAILURE("use_keepkey_report_message_failure"),
+
+  // Keepkey display text
+  KEEPKEY_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY("keepkey_encrypt_multibit_hd_unlock_display"),
+  KEEPKEY_ADD_PIN_DISPLAY("keepkey_add_pin_display"),
+  KEEPKEY_CHANGE_PIN_DISPLAY("keepkey_change_pin_display"),
+  KEEPKEY_REMOVE_PIN_DISPLAY("keepkey_remove_pin_display"),
+  KEEPKEY_WORD_DISPLAY("keepkey_word_display"),
+  KEEPKEY_CHECK_WORD_DISPLAY("keepkey_check_word_display"),
+  KEEPKEY_TRANSACTION_OUTPUT_CONFIRM_DISPLAY("keepkey_transaction_output_confirm_display"),
+  KEEPKEY_SIGN_CONFIRM_DISPLAY("keepkey_sign_confirm_display"),
+  KEEPKEY_SIGN_MESSAGE_CONFIRM_DISPLAY("keepkey_sign_message_confirm_display"),
+  KEEPKEY_WIPE_CONFIRM_DISPLAY("keepkey_wipe_confirm_display"),
+  KEEPKEY_HIGH_FEE_CONFIRM_DISPLAY("keepkey_high_fee_confirm_display"),
+
+  USE_KEEPKEY_REPORT_TITLE("use_keepkey_report_title"),
+
+  USE_KEEPKEY_WALLET("use_keepkey_wallet"),
+
+  // Buy Keepkey
+  BUY_KEEPKEY_TITLE("buy_keepkey_title"),
+  BUY_KEEPKEY_COMMENT("buy_keepkey_comment"),
+  BUY_KEEPKEY("buy_keepkey"),
+  BUY_KEEPKEY_TOOLTIP("buy_keepkey_tooltip"),
+
+  KEEPKEY_FOUND("keepkey_found"),
+  NO_KEEPKEY_FOUND("no_keepkey_found"),
+
+  KEEPKEY_TRANSACTION_CREATED_OPERATION("keepkey_transaction_created"),
+
+  ENTER_KEEPKEY_LABEL("enter_keepkey_label"),
+  ENTER_KEEPKEY_LABEL_TOOLTIP("enter_keepkey_label_tooltip"),
+
+  KEEPKEY_UNLOCK_TITLE("keepkey_unlock_title"),
+  KEEPKEY_UNLOCK_OPERATION("keepkey_unlock_operation"),
+
+  USE_KEEPKEY_TITLE("use_keepkey_title"),
+
+  SHOW_KEEPKEY_TOOLS_WIZARD("show_keepkey_tools_wizard"),
+  SHOW_KEEPKEY_TOOLS_WIZARD_TOOLTIP("show_keepkey_tools_wizard_tooltip"),
+
+  KEEPKEY_CREATE_WALLET("keepkey_create_wallet"),
+
+  KEEPKEY_PREPARATION_NOTE_1("keepkey_preparation_note_1"),
+  KEEPKEY_PREPARATION_NOTE_2("keepkey_preparation_note_2"),
+  KEEPKEY_PREPARATION_NOTE_3("keepkey_preparation_note_3"),
+  KEEPKEY_PREPARATION_NOTE_4("keepkey_preparation_note_4"),
+  KEEPKEY_PREPARATION_NOTE_5("keepkey_preparation_note_5"),
+  KEEPKEY_PREPARATION_NOTE_6("keepkey_preparation_note_6"),
+
 
 
 
