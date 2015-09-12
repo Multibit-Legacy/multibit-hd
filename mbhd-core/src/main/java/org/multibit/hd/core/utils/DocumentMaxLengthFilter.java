@@ -32,6 +32,12 @@ public class DocumentMaxLengthFilter extends DocumentFilter implements Serializa
 
   public void replace(FilterBypass fb, int offs, int length, String str, AttributeSet a) throws BadLocationException {
 
+    // Avoid NPEs
+    if (fb == null || str ==null || a == null) {
+      // Quietly ignore
+      return;
+    }
+
     // Reject if the replacement would be too long
     if ((fb.getDocument().getLength() + str.length() - length) <= maxCharacters) {
       super.replace(fb, offs, length, str, a);
