@@ -203,7 +203,7 @@
           <!-- Filter out functional and FEST UI tests by Maven (an IDE will run all tests including functional) -->
           <excludes>
             <exclude>**/*FunctionalTest.java</exclude>
-            <exclude>**/*MultiBitHDFestTest.java</exclude>
+            <exclude>**/*FestTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>
