@@ -33,7 +33,7 @@ public class DocumentMaxLengthFilter extends DocumentFilter implements Serializa
   public void replace(FilterBypass fb, int offs, int length, String str, AttributeSet a) throws BadLocationException {
 
     // Avoid NPEs
-    if (fb == null || str ==null || a == null) {
+    if (fb == null || str ==null) {
       // Quietly ignore
       return;
     }
