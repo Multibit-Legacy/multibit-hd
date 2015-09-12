@@ -11,7 +11,7 @@ import org.multibit.hd.ui.fest.requirements.standard.*;
  *
  * @since 0.0.1
  */
-public class SoftWalletFestTest extends AbstractFestTest {
+public class StandardFestTest extends AbstractFestTest {
 
   /**
    * <p>Verify the following:</p>

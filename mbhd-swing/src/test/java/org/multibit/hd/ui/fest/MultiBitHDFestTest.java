@@ -4,7 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.multibit.hd.ui.fest.test_cases.AbstractFestTest;
 import org.multibit.hd.ui.fest.test_cases.KeepKeyFestTest;
-import org.multibit.hd.ui.fest.test_cases.SoftWalletFestTest;
+import org.multibit.hd.ui.fest.test_cases.StandardFestTest;
 import org.multibit.hd.ui.fest.test_cases.TrezorFestTest;
 
 /**
@@ -17,7 +17,7 @@ import org.multibit.hd.ui.fest.test_cases.TrezorFestTest;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-  SoftWalletFestTest.class,
+  StandardFestTest.class,
   TrezorFestTest.class,
   KeepKeyFestTest.class
 })
