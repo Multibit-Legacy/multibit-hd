@@ -46,6 +46,7 @@ public class WalletFixtures {
 
   public static final String ABANDON_SEED_PHRASE = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
   public static final String ABANDON_TREZOR_PASSWORD = "ec406a3c796099050400f65ab311363e";
+  public static final String ABANDON_KEEPKEY_PASSWORD = "ec406a3c796099050400f65ab311363e";
 
   /**
    * <p>Create an empty Trezor hard wallet in the current installation directory</p>
@@ -83,6 +84,7 @@ public class WalletFixtures {
             false); // No need to sync
 
   }
+
   /**
    * <p>Create an empty MBHD soft wallet in the current installation directory</p>
    *
@@ -105,14 +107,51 @@ public class WalletFixtures {
     long nowInSeconds = Dates.nowInSeconds();
 
     return walletManager.getOrCreateMBHDSoftWalletSummaryFromEntropy(
-            new File(applicationDirectoryName),
-            entropy,
-            seed,
-            nowInSeconds,
-            STANDARD_PASSWORD,
-            "Example MBHD soft wallet",
-            "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.",
-            false); // No need to sync
+      new File(applicationDirectoryName),
+      entropy,
+      seed,
+      nowInSeconds,
+      STANDARD_PASSWORD,
+      "Example MBHD soft wallet",
+      "Example empty wallet. Password is '" + STANDARD_PASSWORD + "'.",
+      false); // No need to sync
+  }
+
+  /**
+   * <p>Create an empty KeepKey hard wallet in the current installation directory</p>
+   *
+   * @return The wallet summary if successful
+   */
+  public static WalletSummary createEmptyKeepKeyHardWalletFixture() throws IOException {
+
+    String applicationDirectoryName = InstallationManager
+      .getOrCreateApplicationDataDirectory()
+      .getAbsolutePath();
+
+    // Create a wallet from a seed
+    SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
+    byte[] seed = seedGenerator.convertToSeed(Bip39SeedPhraseGenerator.split(ABANDON_SEED_PHRASE));
+
+    DeterministicKey privateMasterKey = HDKeyDerivation.createMasterPrivateKey(seed);
+
+    // Trezor uses BIP-44
+    // BIP-44 starts from M/44h/0h/0h
+    // Create a root node from which all addresses will be generated
+    DeterministicKey trezorRootNode = WalletManager.generateTrezorWalletRootNode(privateMasterKey);
+
+    WalletManager walletManager = WalletManager.INSTANCE;
+
+    long nowInSeconds = Dates.nowInSeconds();
+
+    return walletManager.getOrCreateTrezorHardWalletSummaryFromRootNode(
+      new File(applicationDirectoryName),
+      trezorRootNode,
+      nowInSeconds,
+      ABANDON_KEEPKEY_PASSWORD,
+      "Example KeepKey hard wallet",
+      "Example empty wallet. Password is '" + ABANDON_KEEPKEY_PASSWORD + "'.",
+      false); // No need to sync
+
   }
 
   /**

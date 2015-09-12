@@ -94,6 +94,46 @@ public enum WelcomeWizardState {
    */
   TREZOR_CREATE_WALLET_REPORT,
   /**
+   * KeepKey create wallet: Preparation instructions
+   */
+  KEEPKEY_CREATE_WALLET_PREPARATION,
+  /**
+   * KeepKey create wallet: Select backup location
+   */
+  KEEPKEY_CREATE_WALLET_SELECT_BACKUP_LOCATION,
+  /**
+   * KeepKey create wallet: Enter details (label, seed size)
+   */
+  KEEPKEY_CREATE_WALLET_ENTER_DETAILS,
+  /**
+   * KeepKey create wallet: Request secure create wallet (wipe, PIN and create)
+   */
+  KEEPKEY_CREATE_WALLET_REQUEST_CREATE_WALLET,
+  /**
+   * KeepKey create wallet: Display confirm wipe
+   */
+  KEEPKEY_CREATE_WALLET_CONFIRM_CREATE_WALLET,
+  /**
+   * KeepKey create wallet: Confirm supplied entropy
+   */
+  KEEPKEY_CREATE_WALLET_CONFIRM_ENTROPY,
+  /**
+   * KeepKey create wallet: Enter new PIN
+   */
+  KEEPKEY_CREATE_WALLET_ENTER_NEW_PIN,
+  /**
+   * KeepKey create wallet: Confirm new PIN
+   */
+  KEEPKEY_CREATE_WALLET_CONFIRM_NEW_PIN,
+  /**
+   * KeepKey create wallet: Confirm next word from KeepKey (seed phrase)
+   */
+  KEEPKEY_CREATE_WALLET_CONFIRM_WORD,
+  /**
+   * KeepKey create wallet: Report on the outcome
+   */
+  KEEPKEY_CREATE_WALLET_REPORT,
+  /**
    * Restore credentials: Enter seed phrase to begin the process
    */
   RESTORE_PASSWORD_SEED_PHRASE,
