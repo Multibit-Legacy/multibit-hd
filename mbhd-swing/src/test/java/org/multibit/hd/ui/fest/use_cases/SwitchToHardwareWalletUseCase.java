@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest.use_cases;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.testing.MessageEventFixtures;
+import org.multibit.hd.testing.message_event_fixtures.MessageEventFixtures;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
 import org.multibit.hd.ui.languages.MessageKey;
 

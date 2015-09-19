@@ -58,7 +58,7 @@ import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
 import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorState;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1358,10 +1358,10 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingCredentialsWizard(false);
 
     // Determine if we are in Trezor mode for the welcome wizard
-    WelcomeWizardMode mode = CredentialsRequestType.TREZOR.equals(deferredCredentialsRequestType) ? WelcomeWizardMode.TREZOR : WelcomeWizardMode.STANDARD;
+    WalletMode mode = CredentialsRequestType.TREZOR.equals(deferredCredentialsRequestType) ? WalletMode.TREZOR : WalletMode.STANDARD;
 
     // For soft wallets the restore goes to the select wallet screen, for Trezor hard wallets go directly to the restore
-    final WelcomeWizardState initialState = WelcomeWizardMode.STANDARD.equals(mode) ? WelcomeWizardState.WELCOME_SELECT_WALLET : WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP;
+    final WelcomeWizardState initialState = WalletMode.STANDARD.equals(mode) ? WelcomeWizardState.WELCOME_SELECT_WALLET : WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP;
     // Start building the wizard on the EDT to prevent UI updates
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
       initialState, mode
@@ -1407,7 +1407,7 @@ public class MainController extends AbstractController implements
      final WelcomeWizardState initialState = WelcomeWizardState.CREATE_WALLET_PREPARATION;
      // Start building the wizard on the EDT to prevent UI updates
      final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
-       initialState, WelcomeWizardMode.STANDARD
+       initialState, WalletMode.STANDARD
      );
 
      // Use a new thread to handle the new wizard so that the handover can complete
@@ -1448,7 +1448,7 @@ public class MainController extends AbstractController implements
 
     // Start building the wizard on the EDT to prevent UI updates
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
-      WelcomeWizardState.TREZOR_CREATE_WALLET_PREPARATION, WelcomeWizardMode.TREZOR
+      WelcomeWizardState.TREZOR_CREATE_WALLET_PREPARATION, WalletMode.TREZOR
     );
 
     // Use a new thread to handle the new wizard so that the handover can complete

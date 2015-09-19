@@ -21,7 +21,7 @@ import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -255,13 +255,13 @@ public class MainView extends JFrame {
       // This section must come after a deferred hide has completed
 
       // Determine if we are in Trezor mode for the welcome wizard
-      WelcomeWizardMode mode = CredentialsRequestType.TREZOR.equals(credentialsRequestType) ? WelcomeWizardMode.TREZOR : WelcomeWizardMode.STANDARD;
+      WalletMode mode = CredentialsRequestType.TREZOR.equals(credentialsRequestType) ? WalletMode.TREZOR : WalletMode.STANDARD;
 
       // Determine the appropriate starting screen for the welcome wizard
       if (Configurations.currentConfiguration.isLicenceAccepted()) {
 
         // Must have run before so perform some additional checks
-        if (WelcomeWizardMode.TREZOR.equals(mode) && !isLanguageChange) {
+        if (WalletMode.TREZOR.equals(mode) && !isLanguageChange) {
           // Starting with an uninitialised Trezor
           log.debug("Showing exiting welcome wizard (select wallet)");
           Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET, mode).getWizardScreenHolder());

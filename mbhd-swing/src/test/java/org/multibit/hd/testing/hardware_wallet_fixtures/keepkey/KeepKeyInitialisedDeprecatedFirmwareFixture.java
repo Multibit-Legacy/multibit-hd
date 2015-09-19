@@ -10,8 +10,9 @@ import org.multibit.hd.hardware.core.events.MessageEventType;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
 import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
-import org.multibit.hd.testing.MessageEventFixtures;
+import org.multibit.hd.testing.message_event_fixtures.MessageEventFixtures;
 import org.multibit.hd.testing.hardware_wallet_fixtures.AbstractHardwareWalletFixture;
+import org.multibit.hd.core.dto.WalletMode;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -97,7 +98,7 @@ public class KeepKeyInitialisedDeprecatedFirmwareFixture extends AbstractHardwar
       new Answer<Optional<MessageEvent>>() {
         public Optional<MessageEvent> answer(InvocationOnMock invocation) throws Throwable {
 
-          Features features = MessageEventFixtures.newDeprecatedFirmwareFeatures();
+          Features features = MessageEventFixtures.newDeprecatedFirmwareFeatures(WalletMode.TREZOR);
 
           MessageEvent event = new MessageEvent(
             MessageEventType.FEATURES,

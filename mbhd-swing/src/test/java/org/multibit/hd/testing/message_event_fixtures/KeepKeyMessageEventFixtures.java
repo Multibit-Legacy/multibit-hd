@@ -1,4 +1,4 @@
-package org.multibit.hd.testing;
+package org.multibit.hd.testing.message_event_fixtures;
 
 import com.google.common.collect.Lists;
 import org.bitcoinj.core.Utils;
@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li>Various standard objects to act as payloads for the events</li>
  * </ul>
+ * 
+ * <p>These message event fixtures target the KeepKey device</p>
+ * 
  * <p>These fixtures provide the low level message events that represent spontaneous events
  * associated with the device. In reality these messages would be triggered by the device
  * completing an operation or the user interacting with the device which then issues the
@@ -19,36 +22,31 @@ import org.slf4j.LoggerFactory;
  * <p>By addressing low level events the FSM within MultiBit Hardware will be correctly
  * exercised ensuring that the closest approximation to a real device is maintained.</p>
  *
- * @since 0.0.5
+ * @since 0.1.4
  *  
  */
-public class MessageEventFixtures {
+public class KeepKeyMessageEventFixtures {
 
-  public static final Logger log = LoggerFactory.getLogger(MessageEventFixtures.class);
-
-  /**
-   * The standard label for a hardware wallet
-   */
-  public static final String STANDARD_LABEL = "Example";
+  public static final Logger log = LoggerFactory.getLogger(KeepKeyMessageEventFixtures.class);
 
   /**
    * @return An "initialised" Features for use with FEST testing (abandon wallet)
    */
-  public static Features newStandardFeatures() {
+  public static Features newStandardFeatures(String label) {
 
     Features features = new Features();
-    features.setVendor("bitcointrezor.com");
-    features.setVersion("1.3.3");
+    features.setVendor("keepkey.com");
+    features.setVersion("1.0.0");
     features.setBootloaderMode(false);
-    features.setDeviceId("5DE10270051613895EEB68ED");
+    features.setDeviceId("053A0BAB1466A25F61502BCD");
     features.setPinProtection(true);
     features.setPassphraseProtection(false);
     features.setLanguage("english");
-    features.setLabel(STANDARD_LABEL);
+    features.setLabel(label);
     features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin", "Dogecoin", "Dash"));
     features.setInitialized(true);
-    features.setRevision(Utils.HEX.decode("0cc270e6df3eca352eb8c72b602b7d5a0633b086"));
-    features.setBootloaderHash(Utils.HEX.decode("a03e7e8e9da0b92d3d4b39efff38673512ececc56db602303022e5e87be12261"));
+    features.setRevision(Utils.HEX.decode("053A0BAB1466A25F61502BCD"));
+    features.setBootloaderHash(Utils.HEX.decode("6397c446f6b9002a8b150bf4b9b4e0bb66800ed099b881ca49700139b0559f10"));
     features.setImported(false);
     features.setSupported(true);
 
@@ -59,17 +57,17 @@ public class MessageEventFixtures {
   /**
    * @return A "wiped" Features for use with FEST testing (abandon wallet)
    */
-  public static Features newWipedFeatures() {
+  public static Features newWipedFeatures(String label) {
 
     Features features = new Features();
-    features.setVendor("bitcointrezor.com");
-    features.setVersion("1.3.3");
+    features.setVendor("keepkey.com");
+    features.setVersion("1.0.0");
     features.setBootloaderMode(false);
     features.setDeviceId("5DE10270051613895EEB68ED");
     features.setPinProtection(true);
     features.setPassphraseProtection(false);
     features.setLanguage("english");
-    features.setLabel(STANDARD_LABEL);
+    features.setLabel(label);
     features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin", "Dogecoin", "Dash"));
     features.setRevision(Utils.HEX.decode("0cc270e6df3eca352eb8c72b602b7d5a0633b086"));
     features.setBootloaderHash(Utils.HEX.decode("a03e7e8e9da0b92d3d4b39efff38673512ececc56db602303022e5e87be12261"));
@@ -86,21 +84,21 @@ public class MessageEventFixtures {
   /**
    * @return An "initialised" Features for use with FEST testing (abandon wallet) with unsupported firmware (1.2.0)
    */
-  public static Features newUnsupportedFirmwareFeatures() {
+  public static Features newUnsupportedFirmwareFeatures(String label) {
 
     Features features = new Features();
-    features.setVendor("bitcointrezor.com");
+    features.setVendor("keepkey.com");
     features.setVersion("1.2.1"); // Fails firmware
     features.setBootloaderMode(false);
-    features.setDeviceId("D18894FA25FA90CD589EDE57");
+    features.setDeviceId("5DE10270051613895EEB68ED");
     features.setPinProtection(true);
     features.setPassphraseProtection(false);
     features.setLanguage("english");
-    features.setLabel(STANDARD_LABEL);
+    features.setLabel(label);
     features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin"));
     features.setInitialized(true);
-    features.setRevision(Utils.HEX.decode("524f2a957afb66e6a869384aceaca1cb7f9cba60"));
-    features.setBootloaderHash(Utils.HEX.decode("c4c32539b4a025a8e753a4c46264285911a45fcb14f4718179e711b1ce990524"));
+    features.setRevision(Utils.HEX.decode("0cc270e6df3eca352eb8c72b602b7d5a0633b086"));
+    features.setBootloaderHash(Utils.HEX.decode("a03e7e8e9da0b92d3d4b39efff38673512ececc56db602303022e5e87be12261"));
     features.setImported(false);
 
     return features;
@@ -110,17 +108,17 @@ public class MessageEventFixtures {
   /**
    * @return An "initialised" Features for use with FEST testing (abandon wallet) with unsupported configuration ("passphrase")
    */
-  public static Features newUnsupportedConfigurationPassphraseFeatures() {
+  public static Features newUnsupportedConfigurationPassphraseFeatures(String label) {
 
     Features features = new Features();
-    features.setVendor("bitcointrezor.com");
-    features.setVersion("1.3.3");
+    features.setVendor("keepkey.com");
+    features.setVersion("1.0.0");
     features.setBootloaderMode(false);
     features.setDeviceId("5DE10270051613895EEB68ED");
     features.setInitialized(true);
     features.setPinProtection(true);
     features.setLanguage("english");
-    features.setLabel(STANDARD_LABEL);
+    features.setLabel(label);
     features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin", "Dogecoin", "Dash"));
     features.setRevision(Utils.HEX.decode("0cc270e6df3eca352eb8c72b602b7d5a0633b086"));
     features.setBootloaderHash(Utils.HEX.decode("a03e7e8e9da0b92d3d4b39efff38673512ececc56db602303022e5e87be12261"));
@@ -137,21 +135,21 @@ public class MessageEventFixtures {
   /**
    * @return An "initialised" Features for use with FEST testing (abandon wallet) with deprecated firmware ("1.3.0")
    */
-  public static Features newDeprecatedFirmwareFeatures() {
+  public static Features newDeprecatedFirmwareFeatures(String label) {
 
     Features features = new Features();
-    features.setVendor("bitcointrezor.com");
+    features.setVendor("keepkey.com");
     features.setVersion("1.3.0");
     features.setBootloaderMode(false);
-    features.setDeviceId("D18894FA25FA90CD589EDE57");
+    features.setDeviceId("5DE10270051613895EEB68ED");
     features.setPinProtection(true);
     features.setPassphraseProtection(false);
     features.setLanguage("english");
-    features.setLabel(STANDARD_LABEL);
+    features.setLabel(label);
     features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin"));
     features.setInitialized(true);
-    features.setRevision(Utils.HEX.decode("524f2a957afb66e6a869384aceaca1cb7f9cba60"));
-    features.setBootloaderHash(Utils.HEX.decode("c4c32539b4a025a8e753a4c46264285911a45fcb14f4718179e711b1ce990524"));
+    features.setRevision(Utils.HEX.decode("0cc270e6df3eca352eb8c72b602b7d5a0633b086"));
+    features.setBootloaderHash(Utils.HEX.decode("a03e7e8e9da0b92d3d4b39efff38673512ececc56db602303022e5e87be12261"));
     features.setImported(false);
 
     return features;

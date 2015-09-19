@@ -16,13 +16,14 @@ import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
 import org.multibit.hd.hardware.core.messages.PublicKey;
 import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
 import org.multibit.hd.testing.hardware_wallet_fixtures.AbstractHardwareWalletFixture;
+import org.multibit.hd.core.dto.WalletMode;
 
 import java.util.List;
 
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.multibit.hd.testing.MessageEventFixtures.*;
+import static org.multibit.hd.testing.message_event_fixtures.MessageEventFixtures.*;
 
 /**
  * <p>Hardware wallet fixture to provide the following to FEST requirements:</p>
@@ -146,10 +147,10 @@ public class TrezorWipedFixture extends AbstractHardwareWalletFixture {
           final Features features;
           switch (count) {
             case 0:
-              features = newWipedFeatures();
+              features = newWipedFeatures(WalletMode.TREZOR);
               break;
             default:
-              features = newStandardFeatures();
+              features = newStandardFeatures(WalletMode.TREZOR);
           }
 
           MessageEvent event = new MessageEvent(

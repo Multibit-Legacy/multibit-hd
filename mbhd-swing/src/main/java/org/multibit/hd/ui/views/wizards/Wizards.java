@@ -89,7 +89,7 @@ import org.multibit.hd.ui.views.wizards.wallet_details.WalletDetailsState;
 import org.multibit.hd.ui.views.wizards.wallet_details.WalletDetailsWizard;
 import org.multibit.hd.ui.views.wizards.wallet_details.WalletDetailsWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
@@ -195,11 +195,13 @@ public class Wizards {
   }
 
   /**
+   * @param initialState The initial state
+   * @param walletMode The wallet mode
    * @return A new "welcome" wizard for the initial set up
    */
-  public static WelcomeWizard newExitingWelcomeWizard(WelcomeWizardState initialState, WelcomeWizardMode mode) {
+  public static WelcomeWizard newExitingWelcomeWizard(WelcomeWizardState initialState, WalletMode walletMode) {
 
-    log.debug("New 'Exiting welcome wizard'. Initial state: {}, mode: {}", initialState, mode);
+    log.debug("New 'Exiting welcome wizard'. Initial state: {}, mode: {}", initialState, walletMode);
 
     Preconditions.checkNotNull(initialState, "'initialState' must be present");
 
@@ -208,7 +210,7 @@ public class Wizards {
     // crash on startup (someone has to be deliberately hammering to trigger a failure)
     Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
-    return new WelcomeWizard(new WelcomeWizardModel(initialState, mode), true);
+    return new WelcomeWizard(new WelcomeWizardModel(initialState, walletMode), true);
 
   }
 

@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -70,7 +71,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
       ));
 
     // Use the wizard model to determine the mode (don't store the result due to thread safety)
-    if (WelcomeWizardMode.TREZOR.equals(getWizardModel().getMode())) {
+    if (WalletMode.TREZOR.equals(getWizardModel().getMode())) {
       contentPanel.add(
         Panels.newHardwareWalletSelector(
           this,
@@ -94,7 +95,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
 
   private void initialiseSelection() {
     // Use the wizard model to determine the mode (don't store the result due to thread safety)
-    if (WelcomeWizardMode.TREZOR.equals(getWizardModel().getMode())) {
+    if (WalletMode.TREZOR.equals(getWizardModel().getMode())) {
       currentSelection = TREZOR_CREATE_WALLET_PREPARATION;
     } else {
       // if there are no soft wallets there willbe an enabled create wallet

@@ -15,6 +15,7 @@ import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.core.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
@@ -96,7 +97,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   private final Random random = new Random();
   private final boolean restoringSoftWallet;
-  private WelcomeWizardMode mode;
+  private WalletMode mode;
 
   private String actualSeedTimestamp;
   // Backup summaries for restoring a wallet
@@ -120,17 +121,17 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private WelcomeAttachHardwareWalletPanelView attachHardwareWalletPanelView;
 
   /**
-   * @param state The state object
-   * @param mode  The mode (e.g. standard, Trezor etc)
+   * @param state      The state object
+   * @param walletMode The mode (e.g. standard, Trezor etc)
    */
-  public WelcomeWizardModel(WelcomeWizardState state, WelcomeWizardMode mode) {
+  public WelcomeWizardModel(WelcomeWizardState state, WalletMode walletMode) {
     super(state);
 
-    log.debug("Welcome wizard starting in state '{}' with mode '{}'", state.name(), mode.name());
+    log.debug("Welcome wizard starting in state '{}' with mode '{}'", state.name(), walletMode.name());
 
     this.seedPhraseGenerator = CoreServices.newSeedPhraseGenerator();
     this.restoringSoftWallet = WelcomeWizardState.WELCOME_SELECT_WALLET.equals(state);
-    this.mode = mode;
+    this.mode = walletMode;
 
     // If restoring a Trezor hard wallet, work out the initial screen to show
     if (WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP.equals(state)) {
@@ -155,7 +156,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
         if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
           // A Trezor is connected
-          mode = WelcomeWizardMode.TREZOR;
+          mode = WalletMode.TREZOR;
           if (hardwareWalletService.get().isWalletPresent()) {
             // User may want to create or restore since they have an initialised device
             state = WELCOME_SELECT_WALLET;
@@ -165,7 +166,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
           }
         } else {
           // Standard mode
-          mode = WelcomeWizardMode.STANDARD;
+          mode = WalletMode.STANDARD;
           state = WELCOME_SELECT_WALLET;
         }
         break;
@@ -309,10 +310,10 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
         if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
           // A Trezor is connected
-          mode = WelcomeWizardMode.TREZOR;
+          mode = WalletMode.TREZOR;
         } else {
           // Standard mode
-          mode = WelcomeWizardMode.STANDARD;
+          mode = WalletMode.STANDARD;
         }
         // Back out to select wallet as the most general solution
         state = WELCOME_SELECT_WALLET;
@@ -1043,7 +1044,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   /**
    * @return The welcome wizard mode (e.g. standard, Trezor etc)
    */
-  public WelcomeWizardMode getMode() {
+  public WalletMode getMode() {
     return mode;
   }
 
@@ -1066,7 +1067,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   }
 
   /**
-   *
    * @param seedPhraseSize The seed phrase size
    */
   public void setTrezorSeedPhraseSize(SeedPhraseSize seedPhraseSize) {

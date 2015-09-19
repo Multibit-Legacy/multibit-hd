@@ -2,14 +2,12 @@ package org.multibit.hd.testing.hardware_wallet_fixtures.trezor;
 
 import com.google.common.base.Optional;
 import com.google.protobuf.Message;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.multibit.hd.hardware.core.HardwareWalletClient;
 import org.multibit.hd.hardware.core.events.MessageEvent;
 import org.multibit.hd.hardware.core.events.MessageEventType;
 import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
 import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
-import org.multibit.hd.testing.MessageEventFixtures;
+import org.multibit.hd.testing.message_event_fixtures.MessageEventFixtures;
 import org.multibit.hd.testing.hardware_wallet_fixtures.AbstractHardwareWalletFixture;
 
 import static org.mockito.Mockito.mock;

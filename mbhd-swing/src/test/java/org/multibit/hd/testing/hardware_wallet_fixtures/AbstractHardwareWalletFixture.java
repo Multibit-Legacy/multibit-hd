@@ -17,7 +17,8 @@ import org.multibit.hd.hardware.core.events.MessageEvent;
 import org.multibit.hd.hardware.core.events.MessageEventType;
 import org.multibit.hd.hardware.core.events.MessageEvents;
 import org.multibit.hd.hardware.core.messages.*;
-import org.multibit.hd.testing.MessageEventFixtures;
+import org.multibit.hd.testing.message_event_fixtures.MessageEventFixtures;
+import org.multibit.hd.core.dto.WalletMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -384,7 +385,7 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
       new Answer<Optional<MessageEvent>>() {
         public Optional<MessageEvent> answer(InvocationOnMock invocation) throws Throwable {
 
-          Features features = MessageEventFixtures.newStandardFeatures();
+          Features features = MessageEventFixtures.newStandardFeatures(WalletMode.TREZOR);
 
           MessageEvent event = new MessageEvent(
             MessageEventType.FEATURES,
