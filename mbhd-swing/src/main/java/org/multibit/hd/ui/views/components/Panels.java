@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -551,7 +552,7 @@ public class Panels {
 
     boolean enableUseExisting = !WalletManager.getWalletSummaries().isEmpty();
 
-    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getHardwareWalletService(WalletMode.TREZOR);
 
     boolean enableRestore = hardwareWalletService.isPresent()
       && hardwareWalletService.get().isDeviceReady()

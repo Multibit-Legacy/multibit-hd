@@ -2,6 +2,7 @@ package org.multibit.hd.ui.fest.requirements.trezor;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
 import org.multibit.hd.ui.fest.use_cases.trezor.TrezorConfirmUnlockUseCase;
@@ -44,7 +45,7 @@ public class RestoreTrezorWarmStartRequirements {
 
     hardwareWalletFixture.fireNextEvent("Confirm unlock");
 
-    log.debug("Entropy 0 = {}", CoreServices.getOrCreateHardwareWalletService().get().getContext().getEntropy());
+    log.debug("Entropy 0 = {}", CoreServices.getHardwareWalletService(WalletMode.TREZOR).get().getContext().getEntropy());
 
   }
 }

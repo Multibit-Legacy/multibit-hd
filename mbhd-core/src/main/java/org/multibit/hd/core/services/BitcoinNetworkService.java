@@ -181,18 +181,18 @@ public class BitcoinNetworkService extends AbstractService {
         log.debug("Create new block store - no replay date");
         blockStoreToReturn = new BlockStoreManager(networkParameters).createOrOpenBlockStore(blockStoreFile, checkpointsFile, null, false);
         log.debug(
-                "Success. Blockstore is '{}', height is {}",
-                blockStoreToReturn,
-                blockStoreToReturn.getChainHead() == null ? "Unknown" : blockStoreToReturn.getChainHead().getHeight());
+          "Success. Blockstore is '{}', height is {}",
+          blockStoreToReturn,
+          blockStoreToReturn.getChainHead() == null ? "Unknown" : blockStoreToReturn.getChainHead().getHeight());
       }
     } catch (IOException | BlockStoreException e) {
       log.error("Block store could not be opened", e);
 
       CoreEvents.fireBitcoinNetworkChangedEvent(
-              BitcoinNetworkSummary.newNetworkStartupFailed(
-                      CoreMessageKey.START_NETWORK_CONNECTION_ERROR,
-                      Optional.of(new Object[]{})
-              )
+        BitcoinNetworkSummary.newNetworkStartupFailed(
+          CoreMessageKey.START_NETWORK_CONNECTION_ERROR,
+          Optional.of(new Object[]{})
+        )
       );
     }
 
@@ -224,44 +224,44 @@ public class BitcoinNetworkService extends AbstractService {
   private void downloadBlockChainInBackground() {
 
     getExecutorService().submit(
-            new Runnable() {
-              @Override
-              public void run() {
-                Preconditions.checkNotNull(peerGroup, "'peerGroup' must be present");
+      new Runnable() {
+        @Override
+        public void run() {
+          Preconditions.checkNotNull(peerGroup, "'peerGroup' must be present");
 
-                // Recalculate the bloom filter before every sync
-                log.debug("Recalculating bloom filter ...");
-                recalculateFastCatchupAndFilter();
+          // Recalculate the bloom filter before every sync
+          log.debug("Recalculating bloom filter ...");
+          recalculateFastCatchupAndFilter();
 
-                log.debug("Downloading block chain...");
+          log.debug("Downloading block chain...");
 
-                try {
-                  log.debug("Starting blockchain download . . .");
-                  // This method fires events along the way which are dealt with by MultiBitPeerEventListener
-                  peerGroup.downloadBlockChain();
-                  log.debug("After peerGroup.downloadBlockChain() called.");
-                  if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
-                    Wallet currentWallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
-                    if (currentWallet != null) {
-                      // Do not reveal balance in logs
-                      log.trace("Wallet has {} transactions", currentWallet.getTransactions(true).size());
-                    } else {
-                      log.debug("There is no current wallet");
-                    }
-                  } else {
-                    log.debug("There is no wallet in the current WalletSummary");
-                  }
-                  // As long as the block chain is not being downloaded (perhaps on a Peer with a longer chain)
-                  // then fire that we are finished
-                  if (peerEventListener != null && !peerEventListener.isDownloading()) {
-                    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadCompleted());
-                    CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkPeerCount(peerGroup.numConnectedPeers()));
-                  }
-                } catch (RuntimeException re) {
-                  log.debug("Blockchain download was interrupted. Error was : '" + re.getMessage() + "'");
-                }
+          try {
+            log.debug("Starting blockchain download . . .");
+            // This method fires events along the way which are dealt with by MultiBitPeerEventListener
+            peerGroup.downloadBlockChain();
+            log.debug("After peerGroup.downloadBlockChain() called.");
+            if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
+              Wallet currentWallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
+              if (currentWallet != null) {
+                // Do not reveal balance in logs
+                log.trace("Wallet has {} transactions", currentWallet.getTransactions(true).size());
+              } else {
+                log.debug("There is no current wallet");
               }
-            });
+            } else {
+              log.debug("There is no wallet in the current WalletSummary");
+            }
+            // As long as the block chain is not being downloaded (perhaps on a Peer with a longer chain)
+            // then fire that we are finished
+            if (peerEventListener != null && !peerEventListener.isDownloading()) {
+              CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newChainDownloadCompleted());
+              CoreEvents.fireBitcoinNetworkChangedEvent(BitcoinNetworkSummary.newNetworkPeerCount(peerGroup.numConnectedPeers()));
+            }
+          } catch (RuntimeException re) {
+            log.debug("Blockchain download was interrupted. Error was : '" + re.getMessage() + "'");
+          }
+        }
+      });
 
   }
 
@@ -296,9 +296,9 @@ public class BitcoinNetworkService extends AbstractService {
       closeBlockstore();
 
       log.info(
-              "Starting replay of wallet with id '{}' from date '{}'",
-              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId(),
-              replayDateTime.orNull()
+        "Starting replay of wallet with id '{}' from date '{}'",
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId(),
+        replayDateTime.orNull()
       );
 
       blockStore = openBlockStore(applicationDataDirectory, replayDateTime);
@@ -338,17 +338,18 @@ public class BitcoinNetworkService extends AbstractService {
     lastWalletOptional = Optional.absent();
 
     getExecutorService().submit(
-            new Runnable() {
-              @Override
-              public void run() {
-                performSend(sendRequestSummary, paymentRequestDataOptional);
-              }
+      new Runnable() {
+        @Override
+        public void run() {
+          performSend(sendRequestSummary, paymentRequestDataOptional);
+        }
 
-            });
+      });
   }
 
   /**
    * @param sendRequestSummary The information required to send bitcoin
+   *
    * @return The send request
    */
   private boolean performSend(SendRequestSummary sendRequestSummary, Optional<PaymentRequestData> paymentRequestDataOptional) {
@@ -364,30 +365,47 @@ public class BitcoinNetworkService extends AbstractService {
     WalletSummary currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary().get();
     Wallet wallet = currentWalletSummary.getWallet();
 
-    if (WalletType.TREZOR_HARD_WALLET.equals(currentWalletSummary.getWalletType())) {
-      // Attempt to sign the transaction using the Trezor wallet
-      // This will fire HardwareWalletEvents as the signing progresses which are dealt by the onHardwareWalletEvent method in the SendBitcoinConfirmTrezorPanelView
+    // Check for hard wallet signing
+    switch (currentWalletSummary.getWalletType()) {
 
-      // Remember the last sendRequestSummary and Wallet for callback
-      lastSendRequestSummaryOptional = Optional.of(sendRequestSummary);
-      lastWalletOptional = Optional.of(wallet);
+      case TREZOR_HARD_WALLET:
+        // Attempt to sign the transaction using the Trezor wallet
+        // This will fire HardwareWalletEvents as the signing progresses which are dealt by the onHardwareWalletEvent method in the SendBitcoinConfirmTrezorPanelView
 
-      if (!signUsingTrezor(sendRequestSummary, wallet)) {
-        return false;
-      }
-    } else {
-      // Regular non Trezor signing
-      // Derive and append the key parameter to unlock the wallet
-      if (!appendKeyParameter(sendRequestSummary, wallet)) {
-        return false;
-      }
+        // Remember the last sendRequestSummary and Wallet for callback
+        lastSendRequestSummaryOptional = Optional.of(sendRequestSummary);
+        lastWalletOptional = Optional.of(wallet);
 
-      // Attempt to sign the transaction directly
-      if (!signDirectly(sendRequestSummary, wallet)) {
-        return false;
-      }
+        if (!signUsingHardwareWallet(sendRequestSummary, wallet, WalletMode.TREZOR)) {
+          return false;
+        }
+        break;
+      case KEEP_KEY_HARD_WALLET:
+        // Attempt to sign the transaction using the KeepKey wallet
+        // This will fire HardwareWalletEvents as the signing progresses which are dealt by the onHardwareWalletEvent method in the SendBitcoinConfirmTrezorPanelView
 
-      performCommitAndBroadcast(sendRequestSummary, wallet, paymentRequestDataOptional);
+        // Remember the last sendRequestSummary and Wallet for callback
+        lastSendRequestSummaryOptional = Optional.of(sendRequestSummary);
+        lastWalletOptional = Optional.of(wallet);
+
+        if (!signUsingHardwareWallet(sendRequestSummary, wallet, WalletMode.KEEP_KEY)) {
+          return false;
+        }
+        break;
+      default:
+        // Regular soft wallet signing
+        // Derive and append the key parameter to unlock the wallet
+        if (!appendKeyParameter(sendRequestSummary, wallet)) {
+          return false;
+        }
+
+        // Attempt to sign the transaction directly
+        if (!signDirectly(sendRequestSummary, wallet)) {
+          return false;
+        }
+
+        performCommitAndBroadcast(sendRequestSummary, wallet, paymentRequestDataOptional);
+        break;
     }
 
     return true;
@@ -396,13 +414,13 @@ public class BitcoinNetworkService extends AbstractService {
 
   public void commitAndBroadcast(final SendRequestSummary sendRequestSummary, final Wallet wallet, final Optional<PaymentRequestData> paymentRequestDataOptional) {
     getExecutorService().submit(
-            new Runnable() {
-              @Override
-              public void run() {
-                performCommitAndBroadcast(sendRequestSummary, wallet, paymentRequestDataOptional);
-              }
+      new Runnable() {
+        @Override
+        public void run() {
+          performCommitAndBroadcast(sendRequestSummary, wallet, paymentRequestDataOptional);
+        }
 
-            });
+      });
   }
 
   private boolean performCommitAndBroadcast(SendRequestSummary sendRequestSummary, Wallet wallet, Optional<PaymentRequestData> paymentRequestDataOptional) {
@@ -440,6 +458,7 @@ public class BitcoinNetworkService extends AbstractService {
   /**
    * @param sendRequestSummary The information required to send bitcoin
    * @param wallet             The wallet
+   *
    * @return True if the derivation process was successful
    */
   private boolean appendKeyParameter(SendRequestSummary sendRequestSummary, Wallet wallet) {
@@ -464,19 +483,19 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Declare the transaction creation a failure
       CoreEvents.fireTransactionCreationEvent(
-              new TransactionCreationEvent(
-                      null,
-                      sendRequestSummary.getTotalAmount(),
-                      Optional.<FiatPayment>absent(),
-                      Optional.<Coin>absent(),
-                      Optional.<Coin>absent(),
-                      sendRequestSummary.getDestinationAddress(),
-                      sendRequestSummary.getChangeAddress(),
-                      false,
-                      CoreMessageKey.THE_ERROR_WAS.getKey(),
-                      new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()},
-                      sendRequestSummary.getNotes(),
-                      false));
+        new TransactionCreationEvent(
+          null,
+          sendRequestSummary.getTotalAmount(),
+          Optional.<FiatPayment>absent(),
+          Optional.<Coin>absent(),
+          Optional.<Coin>absent(),
+          sendRequestSummary.getDestinationAddress(),
+          sendRequestSummary.getChangeAddress(),
+          false,
+          CoreMessageKey.THE_ERROR_WAS.getKey(),
+          new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()},
+          sendRequestSummary.getNotes(),
+          false));
     }
 
     // Must have failed to be here
@@ -489,6 +508,7 @@ public class BitcoinNetworkService extends AbstractService {
    * If the client fee is smaller than the multibit developer minimum then it is not added
    *
    * @param sendRequestSummary The information required to send bitcoin
+   *
    * @return True if no error was encountered
    */
   private boolean workOutIfClientFeeIsRequired(SendRequestSummary sendRequestSummary, boolean forceNow) {
@@ -538,6 +558,7 @@ public class BitcoinNetworkService extends AbstractService {
    * Handle missing wallet summary
    *
    * @param sendRequestSummary The information required to send bitcoin
+   *
    * @return True if the wallet summary is present
    */
   private boolean checkWalletSummary(SendRequestSummary sendRequestSummary) {
@@ -545,20 +566,20 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Declare the transaction creation a failure - no wallet
       CoreEvents.fireTransactionCreationEvent(
-              new TransactionCreationEvent(
-                      null,
-                      sendRequestSummary.getTotalAmount(),
-                      Optional.<FiatPayment>absent(),
-                      Optional.<Coin>absent(),
-                      Optional.<Coin>absent(),
-                      sendRequestSummary.getDestinationAddress(),
-                      sendRequestSummary.getChangeAddress(),
-                      false,
-                      CoreMessageKey.NO_ACTIVE_WALLET.getKey(),
-                      new String[]{""},
-                      sendRequestSummary.getNotes(),
-                      false
-              ));
+        new TransactionCreationEvent(
+          null,
+          sendRequestSummary.getTotalAmount(),
+          Optional.<FiatPayment>absent(),
+          Optional.<Coin>absent(),
+          Optional.<Coin>absent(),
+          sendRequestSummary.getDestinationAddress(),
+          sendRequestSummary.getChangeAddress(),
+          false,
+          CoreMessageKey.NO_ACTIVE_WALLET.getKey(),
+          new String[]{""},
+          sendRequestSummary.getNotes(),
+          false
+        ));
 
       // Prevent fall-through to success
       return false;
@@ -587,8 +608,8 @@ public class BitcoinNetworkService extends AbstractService {
       } else {
         // No SendRequest so build one from the information in the summary
         sendRequest = Wallet.SendRequest.to(
-                sendRequestSummary.getDestinationAddress(),
-                sendRequestSummary.getAmount()
+          sendRequestSummary.getDestinationAddress(),
+          sendRequestSummary.getAmount()
         );
 
         // Ensure the transactionConfidence is in the Context transaction confidence table
@@ -631,8 +652,8 @@ public class BitcoinNetworkService extends AbstractService {
         } else {
           log.debug("Adding client fee output of {} to address {}", sendRequestSummary.getFeeState().get().getFeeOwed(), sendRequestSummary.getFeeState().get().getNextFeeAddress());
           sendRequest.tx.addOutput(
-                  sendRequestSummary.getFeeState().get().getFeeOwed(),
-                  sendRequestSummary.getFeeState().get().getNextFeeAddress()
+            sendRequestSummary.getFeeState().get().getFeeOwed(),
+            sendRequestSummary.getFeeState().get().getNextFeeAddress()
           );
           sendRequestSummary.setClientFeeAdded(Optional.of(sendRequestSummary.getFeeState().get().getFeeOwed()));
 
@@ -680,8 +701,8 @@ public class BitcoinNetworkService extends AbstractService {
         }
       } else {
         log.debug(
-                "Not adding client fee output due to !sendRequest.emptyWallet = {} or sendRequestSummary.isApplyClientFee() = {}",
-                sendRequest.emptyWallet, sendRequestSummary.isApplyClientFee());
+          "Not adding client fee output due to !sendRequest.emptyWallet = {} or sendRequestSummary.isApplyClientFee() = {}",
+          sendRequest.emptyWallet, sendRequestSummary.isApplyClientFee());
       }
 
       // Append the Bitcoinj send request to the summary
@@ -693,20 +714,20 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Declare the transaction creation a failure
       CoreEvents.fireTransactionCreationEvent(
-              new TransactionCreationEvent(
-                      null,
-                      sendRequestSummary.getTotalAmount(),
-                      Optional.<FiatPayment>absent(),
-                      Optional.<Coin>absent(),
-                      Optional.<Coin>absent(),
-                      sendRequestSummary.getDestinationAddress(),
-                      sendRequestSummary.getChangeAddress(),
-                      false,
-                      CoreMessageKey.THE_ERROR_WAS.getKey(),
-                      new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()},
-                      sendRequestSummary.getNotes(),
-                      false
-              ));
+        new TransactionCreationEvent(
+          null,
+          sendRequestSummary.getTotalAmount(),
+          Optional.<FiatPayment>absent(),
+          Optional.<Coin>absent(),
+          Optional.<Coin>absent(),
+          sendRequestSummary.getDestinationAddress(),
+          sendRequestSummary.getChangeAddress(),
+          false,
+          CoreMessageKey.THE_ERROR_WAS.getKey(),
+          new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()},
+          sendRequestSummary.getNotes(),
+          false
+        ));
 
       // We cannot proceed to broadcast
       return false;
@@ -721,6 +742,7 @@ public class BitcoinNetworkService extends AbstractService {
   /**
    * @param sendRequestSummary The information required to prepare a transaction for sending (this is everything except the credentials)
    *                           This prepares the transaction but does not sign it
+   *
    * @return True if the operation was successful
    */
   public boolean prepareTransaction(SendRequestSummary sendRequestSummary) {
@@ -831,6 +853,7 @@ public class BitcoinNetworkService extends AbstractService {
    * The exchange rate used is already set into the SendRequestSummary.fiatPayment by the UI models
    *
    * @param sendRequestSummary Send information, including transaction fee, client fee and exchange rate information
+   *
    * @return boolean true if operation was successful, false otherwise
    */
   private boolean setFiatEquivalent(SendRequestSummary sendRequestSummary) {
@@ -877,7 +900,7 @@ public class BitcoinNetworkService extends AbstractService {
       // Apply the exchange rate
       BigDecimal localAmount;
       if (sendRequestSummary.getFiatPayment().isPresent() && sendRequestSummary.getFiatPayment().get().getRate().isPresent()
-              && sendRequestSummary.getFiatPayment().get().getRate() != null) {
+        && sendRequestSummary.getFiatPayment().get().getRate() != null) {
         localAmount = Coins.toLocalAmount(totalAmountIncludingTransactionAndClientFee, new BigDecimal(sendRequestSummary.getFiatPayment().get().getRate().get()));
         sendRequestSummary.getFiatPayment().get().setAmount(Optional.of(localAmount));
       } else {
@@ -896,6 +919,7 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @param sendRequestSummary The information required to send bitcoin
    * @param wallet             The wallet
+   *
    * @return True if the completeWithoutSigning and signDirectly operations were successful
    */
   private boolean completeWithoutSigning(SendRequestSummary sendRequestSummary, Wallet wallet) {
@@ -922,19 +946,19 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Fire a failed transaction creation event
       CoreEvents.fireTransactionCreationEvent(
-              new TransactionCreationEvent(
-                      transactionId,
-                      sendRequestSummary.getTotalAmount(),
-                      Optional.<FiatPayment>absent(),
-                      Optional.<Coin>absent(),
-                      Optional.<Coin>absent(),
-                      sendRequestSummary.getDestinationAddress(),
-                      sendRequestSummary.getChangeAddress(),
-                      false,
-                      CoreMessageKey.THE_ERROR_WAS.getKey(),
-                      new String[]{message},
-                      sendRequestSummary.getNotes(),
-                      false));
+        new TransactionCreationEvent(
+          transactionId,
+          sendRequestSummary.getTotalAmount(),
+          Optional.<FiatPayment>absent(),
+          Optional.<Coin>absent(),
+          Optional.<Coin>absent(),
+          sendRequestSummary.getDestinationAddress(),
+          sendRequestSummary.getChangeAddress(),
+          false,
+          CoreMessageKey.THE_ERROR_WAS.getKey(),
+          new String[]{message},
+          sendRequestSummary.getNotes(),
+          false));
 
       // We cannot proceed to signing
       return false;
@@ -945,21 +969,21 @@ public class BitcoinNetworkService extends AbstractService {
   }
 
   /**
-   * Sign the transaction using a Trezor
-   * <p/>
-   * TODO Refactor out of the BitcoinNetworkService
+   * <p>Sign the transaction using a hardware wallet service call</p>
    *
    * @param sendRequestSummary The information required to send bitcoin
    * @param wallet             The wallet
+   * @param walletMode         The wallet mode
+   *
    * @return True if the signDirectly operation was successful
    */
-  private boolean signUsingTrezor(SendRequestSummary sendRequestSummary, Wallet wallet) {
+  private boolean signUsingHardwareWallet(SendRequestSummary sendRequestSummary, Wallet wallet, WalletMode walletMode) {
 
     log.debug("Signing the send request using a Trezor ...");
 
     Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 
-    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getHardwareWalletService(walletMode);
 
     // Check if there is a wallet present
     if (hardwareWalletService.isPresent()) {
@@ -967,13 +991,13 @@ public class BitcoinNetworkService extends AbstractService {
 
         // Provide a map between the input indices and the HD path of receiving addresses used
         Map<Integer, ImmutableList<ChildNumber>> receivingAddressPathMap = buildReceivingAddressPathMap(
-                sendRequest.tx,
-                wallet
+          sendRequest.tx,
+          wallet
         );
 
         Map<Address, ImmutableList<ChildNumber>> changeAddressPathMap = buildChangeAddressPathMap(
-                sendRequest.tx,
-                wallet
+          sendRequest.tx,
+          wallet
         );
 
         // Shuffle the outputs to obfuscate change and payment addresses
@@ -999,6 +1023,7 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @param sendRequestSummary The information required to send bitcoin
    * @param wallet             The wallet
+   *
    * @return True if the signDirectly operation was successful
    */
   private boolean signDirectly(SendRequestSummary sendRequestSummary, Wallet wallet) {
@@ -1027,10 +1052,10 @@ public class BitcoinNetworkService extends AbstractService {
         byte[] signature = txInput.getScriptSig().getChunks().get(0).data;
         if (signature != null) {
           log.debug(
-                  "Is signature canonical test result '{}' for txInput '{}', signature '{}'",
-                  TransactionSignature.isEncodingCanonical(signature),
-                  txInput.toString(),
-                  Utils.HEX.encode(signature));
+            "Is signature canonical test result '{}' for txInput '{}', signature '{}'",
+            TransactionSignature.isEncodingCanonical(signature),
+            txInput.toString(),
+            Utils.HEX.encode(signature));
         }
       }
     } catch (Exception e) {
@@ -1041,19 +1066,19 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Fire a failed transaction creation event
       CoreEvents.fireTransactionCreationEvent(
-              new TransactionCreationEvent(
-                      transactionId,
-                      sendRequestSummary.getTotalAmount(),
-                      Optional.<FiatPayment>absent(),
-                      Optional.<Coin>absent(),
-                      Optional.<Coin>absent(),
-                      sendRequestSummary.getDestinationAddress(),
-                      sendRequestSummary.getChangeAddress(),
-                      false,
-                      CoreMessageKey.THE_ERROR_WAS.getKey(),
-                      new String[]{e.getMessage()},
-                      sendRequestSummary.getNotes(),
-                      false));
+        new TransactionCreationEvent(
+          transactionId,
+          sendRequestSummary.getTotalAmount(),
+          Optional.<FiatPayment>absent(),
+          Optional.<Coin>absent(),
+          Optional.<Coin>absent(),
+          sendRequestSummary.getDestinationAddress(),
+          sendRequestSummary.getChangeAddress(),
+          false,
+          CoreMessageKey.THE_ERROR_WAS.getKey(),
+          new String[]{e.getMessage()},
+          sendRequestSummary.getNotes(),
+          false));
 
       // We cannot proceed to commit
       return false;
@@ -1068,6 +1093,7 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @param sendRequestSummary The information required to send bitcoin
    * @param wallet             The wallet
+   *
    * @return True if the commit operation was successful
    */
   private boolean commit(SendRequestSummary sendRequestSummary, Wallet wallet) {
@@ -1092,20 +1118,20 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Fire a successful transaction creation event (not yet broadcast)
       CoreEvents.fireTransactionCreationEvent(
-              new TransactionCreationEvent(
-                      sendRequest.tx.getHashAsString(),
-                      sendRequestSummary.getTotalAmount(),
-                      sendRequestSummary.getFiatPayment(),
-                      Optional.of(sendRequest.fee) /* the actual mining fee paid */,
-                      sendRequestSummary.getClientFeeAdded(),
-                      sendRequestSummary.getDestinationAddress(),
-                      sendRequestSummary.getChangeAddress(),
-                      true,
-                      null,
-                      null,
-                      sendRequestSummary.getNotes(),
-                      true
-              ));
+        new TransactionCreationEvent(
+          sendRequest.tx.getHashAsString(),
+          sendRequestSummary.getTotalAmount(),
+          sendRequestSummary.getFiatPayment(),
+          Optional.of(sendRequest.fee) /* the actual mining fee paid */,
+          sendRequestSummary.getClientFeeAdded(),
+          sendRequestSummary.getDestinationAddress(),
+          sendRequestSummary.getChangeAddress(),
+          true,
+          null,
+          null,
+          sendRequestSummary.getNotes(),
+          true
+        ));
     } catch (Exception e) {
       log.error("Could not commit the transaction", e);
 
@@ -1113,19 +1139,19 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Fire a failed transaction creation event
       CoreEvents.fireTransactionCreationEvent(
-              new TransactionCreationEvent(
-                      transactionId,
-                      sendRequestSummary.getTotalAmount(),
-                      Optional.<FiatPayment>absent(),
-                      Optional.<Coin>absent(),
-                      Optional.<Coin>absent(),
-                      sendRequestSummary.getDestinationAddress(),
-                      sendRequestSummary.getChangeAddress(),
-                      false,
-                      CoreMessageKey.THE_ERROR_WAS.getKey(),
-                      new String[]{e.getMessage()},
-                      sendRequestSummary.getNotes(),
-                      false));
+        new TransactionCreationEvent(
+          transactionId,
+          sendRequestSummary.getTotalAmount(),
+          Optional.<FiatPayment>absent(),
+          Optional.<Coin>absent(),
+          Optional.<Coin>absent(),
+          sendRequestSummary.getDestinationAddress(),
+          sendRequestSummary.getChangeAddress(),
+          false,
+          CoreMessageKey.THE_ERROR_WAS.getKey(),
+          new String[]{e.getMessage()},
+          sendRequestSummary.getNotes(),
+          false));
 
       // We cannot proceed to broadcast
       return false;
@@ -1139,6 +1165,7 @@ public class BitcoinNetworkService extends AbstractService {
    * <p>Attempt to broadcast the transaction in the Bitcoinj send request</p>
    *
    * @param sendRequestSummary The information required to send bitcoin
+   *
    * @return True if the broadcast operation was successful
    */
   private boolean broadcast(final SendRequestSummary sendRequestSummary) {
@@ -1156,17 +1183,17 @@ public class BitcoinNetworkService extends AbstractService {
       if (!pingPeers()) {
         // Declare the send a failure
         CoreEvents.fireBitcoinSentEvent(
-                new BitcoinSentEvent(
-                        Optional.<Transaction>absent(),
-                        sendRequestSummary.getDestinationAddress(),
-                        sendRequestSummary.getTotalAmount(),
-                        sendRequestSummary.getChangeAddress(),
-                        Optional.<Coin>absent(),
-                        Optional.<Coin>absent(),
-                        false,
-                        CoreMessageKey.COULD_NOT_CONNECT_TO_BITCOIN_NETWORK,
-                        new String[]{"Could not reach any Bitcoin nodes"}
-                ));
+          new BitcoinSentEvent(
+            Optional.<Transaction>absent(),
+            sendRequestSummary.getDestinationAddress(),
+            sendRequestSummary.getTotalAmount(),
+            sendRequestSummary.getChangeAddress(),
+            Optional.<Coin>absent(),
+            Optional.<Coin>absent(),
+            false,
+            CoreMessageKey.COULD_NOT_CONNECT_TO_BITCOIN_NETWORK,
+            new String[]{"Could not reach any Bitcoin nodes"}
+          ));
 
         // Prevent a fall-through to success
         return false;
@@ -1174,13 +1201,13 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Declare the send broadcast is in progress
       CoreEvents.fireBitcoinSendingEvent(
-              new BitcoinSendingEvent(
-                      sendRequestSummary.getDestinationAddress(),
-                      sendRequestSummary.getTotalAmount(),
-                      sendRequestSummary.getChangeAddress(),
-                      Optional.of(sendRequest.fee),
-                      sendRequestSummary.getClientFeeAdded()
-              ));
+        new BitcoinSendingEvent(
+          sendRequestSummary.getDestinationAddress(),
+          sendRequestSummary.getTotalAmount(),
+          sendRequestSummary.getChangeAddress(),
+          Optional.of(sendRequest.fee),
+          sendRequestSummary.getClientFeeAdded()
+        ));
 
       // Receive it in the wallet
       if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent()) {
@@ -1208,60 +1235,60 @@ public class BitcoinNetworkService extends AbstractService {
       log.debug("Attaching progress callbacks to transactionBroadcast {} with tx {}", System.identityHashCode(transactionBroadcast), sendRequest.tx.getHashAsString());
 
       transactionBroadcast.setProgressCallback(
-              new TransactionBroadcast.ProgressCallback() {
-                @Override
-                public void onBroadcastProgress(double progress) {
-                  log.debug("Tx {}, progress is now {}", sendRequest.tx, progress);
-                  if (fireTransactionSeen) {
-                    CoreEvents.fireBitcoinSendProgressEvent(new BitcoinSendProgressEvent(sendRequest.tx, progress));
-                    CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(sendRequest.tx, valueOptional.get()));
-                  }
-                }
-              });
+        new TransactionBroadcast.ProgressCallback() {
+          @Override
+          public void onBroadcastProgress(double progress) {
+            log.debug("Tx {}, progress is now {}", sendRequest.tx, progress);
+            if (fireTransactionSeen) {
+              CoreEvents.fireBitcoinSendProgressEvent(new BitcoinSendProgressEvent(sendRequest.tx, progress));
+              CoreEvents.fireTransactionSeenEvent(new TransactionSeenEvent(sendRequest.tx, valueOptional.get()));
+            }
+          }
+        });
 
       Futures.addCallback(
-              transactionFuture, new FutureCallback<Transaction>() {
-                @Override
-                public void onSuccess(Transaction transaction) {
-                  log.info("Future says transaction '{}' has broadcast successfully", transaction.getHashAsString());
+        transactionFuture, new FutureCallback<Transaction>() {
+          @Override
+          public void onSuccess(Transaction transaction) {
+            log.info("Future says transaction '{}' has broadcast successfully", transaction.getHashAsString());
 
-                  // Declare the send a success
-                  CoreEvents.fireBitcoinSentEvent(
-                          new BitcoinSentEvent(
-                                  Optional.of(transaction),
-                                  sendRequestSummary.getDestinationAddress(),
-                                  sendRequestSummary.getTotalAmount(),
-                                  sendRequestSummary.getChangeAddress(),
-                                  Optional.of(sendRequest.fee),
-                                  sendRequestSummary.getClientFeeAdded(),
-                                  true,
-                                  CoreMessageKey.BITCOIN_SENT_OK,
-                                  null
-                          ));
+            // Declare the send a success
+            CoreEvents.fireBitcoinSentEvent(
+              new BitcoinSentEvent(
+                Optional.of(transaction),
+                sendRequestSummary.getDestinationAddress(),
+                sendRequestSummary.getTotalAmount(),
+                sendRequestSummary.getChangeAddress(),
+                Optional.of(sendRequest.fee),
+                sendRequestSummary.getClientFeeAdded(),
+                true,
+                CoreMessageKey.BITCOIN_SENT_OK,
+                null
+              ));
 
-                  CoreEvents.fireBitcoinSendProgressEvent(new BitcoinSendProgressEvent(sendRequest.tx, 1.0));
-                }
+            CoreEvents.fireBitcoinSendProgressEvent(new BitcoinSendProgressEvent(sendRequest.tx, 1.0));
+          }
 
-                @Override
-                public void onFailure(Throwable throwable) {
-                  // This can't happen with the current code, but just in case one day that changes ...
-                  log.error("Future says transaction has NOT broadcast successfully. Error: '{}'", throwable);
+          @Override
+          public void onFailure(Throwable throwable) {
+            // This can't happen with the current code, but just in case one day that changes ...
+            log.error("Future says transaction has NOT broadcast successfully. Error: '{}'", throwable);
 
-                  // Declare the send a failure
-                  // TODO Add i18n support for "No message" if required
-                  CoreEvents.fireBitcoinSentEvent(
-                          new BitcoinSentEvent(
-                                  Optional.<Transaction>absent(), sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
-                                  sendRequestSummary.getChangeAddress(),
-                                  Optional.<Coin>absent(),
-                                  Optional.<Coin>absent(),
-                                  false,
-                                  CoreMessageKey.THE_ERROR_WAS,
-                                  new String[]{throwable == null ? "No message" : throwable.getMessage()}
-                          ));
+            // Declare the send a failure
+            // TODO Add i18n support for "No message" if required
+            CoreEvents.fireBitcoinSentEvent(
+              new BitcoinSentEvent(
+                Optional.<Transaction>absent(), sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
+                sendRequestSummary.getChangeAddress(),
+                Optional.<Coin>absent(),
+                Optional.<Coin>absent(),
+                false,
+                CoreMessageKey.THE_ERROR_WAS,
+                new String[]{throwable == null ? "No message" : throwable.getMessage()}
+              ));
 
-                }
-              });
+          }
+        });
 
       log.debug("Initiated broadcast of transaction: '{}'", Utils.HEX.encode(sendRequest.tx.bitcoinSerialize()));
 
@@ -1275,15 +1302,15 @@ public class BitcoinNetworkService extends AbstractService {
 
       // Declare the send a failure
       CoreEvents.fireBitcoinSentEvent(
-              new BitcoinSentEvent(
-                      Optional.<Transaction>absent(), sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
-                      sendRequestSummary.getChangeAddress(),
-                      Optional.<Coin>absent(),
-                      Optional.<Coin>absent(),
-                      false,
-                      CoreMessageKey.THE_ERROR_WAS,
-                      new String[]{e.getMessage()}
-              ));
+        new BitcoinSentEvent(
+          Optional.<Transaction>absent(), sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
+          sendRequestSummary.getChangeAddress(),
+          Optional.<Coin>absent(),
+          Optional.<Coin>absent(),
+          false,
+          CoreMessageKey.THE_ERROR_WAS,
+          new String[]{e.getMessage()}
+        ));
 
       // Prevent a fall-through to success
       return false;
@@ -1297,6 +1324,7 @@ public class BitcoinNetworkService extends AbstractService {
   /**
    * @param unsignedTx The unsigned transaction (expect OP_0 in place of signatures)
    * @param wallet     The wallet
+   *
    * @return The receiving address path map linking the tx input index to a deterministic path
    */
   private Map<Integer, ImmutableList<ChildNumber>> buildReceivingAddressPathMap(Transaction unsignedTx, Wallet wallet) {
@@ -1332,6 +1360,7 @@ public class BitcoinNetworkService extends AbstractService {
   /**
    * @param unsignedTx The unsigned transaction (expect OP_0 in place of signatures)
    * @param wallet     The wallet
+   *
    * @return The receiving address path map linking the tx input index to a deterministic path
    */
   private Map<Address, ImmutableList<ChildNumber>> buildChangeAddressPathMap(Transaction unsignedTx, Wallet wallet) {
@@ -1396,10 +1425,10 @@ public class BitcoinNetworkService extends AbstractService {
   private void createNewPeerGroup(Wallet wallet, boolean useFastCatchup) throws TimeoutException {
     String[] dnsSeeds = new String[]{
                      /* "seed.bitcoin.sipa.be",        // Pieter Wuille - not reachable */
-            "dnsseed.bluematt.me",         // Matt Corallo
-            "dnsseed.bitcoin.dashjr.org",  // Luke Dashjr
-            "seed.bitcoinstats.com",       // Chris Decker
-            "seed.bitnodes.io",            // Addy Yeow
+      "dnsseed.bluematt.me",         // Matt Corallo
+      "dnsseed.bitcoin.dashjr.org",  // Luke Dashjr
+      "seed.bitcoinstats.com",       // Chris Decker
+      "seed.bitnodes.io",            // Addy Yeow
     };
     log.info("Creating new DNS peer group for '{}'", networkParameters);
     peerGroup = new PeerGroup(networkParameters, blockChain);
@@ -1408,8 +1437,8 @@ public class BitcoinNetworkService extends AbstractService {
 
 
     peerGroup.setUserAgent(
-            InstallationManager.MBHD_APP_NAME,
-            Configurations.currentConfiguration.getCurrentVersion());
+      InstallationManager.MBHD_APP_NAME,
+      Configurations.currentConfiguration.getCurrentVersion());
     if (useFastCatchup) {
       peerGroup.setFastCatchupTimeSecs(0); // Do fast catch up starting from the genesis block
     }
@@ -1545,6 +1574,7 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @param blockStore     The blockstore to use for the network connection
    * @param useFastCatchup True if
+   *
    * @throws BlockStoreException                   If the block store fails
    * @throws IOException                           If the network fails
    * @throws java.util.concurrent.TimeoutException If the Tor connection fails
@@ -1592,6 +1622,7 @@ public class BitcoinNetworkService extends AbstractService {
    * Calculate the size of the transaction
    *
    * @param transaction The transaction to calculate the size of
+   *
    * @return size of the transaction
    */
   private int calculateSizeWithSignatures(Transaction transaction) throws IOException {

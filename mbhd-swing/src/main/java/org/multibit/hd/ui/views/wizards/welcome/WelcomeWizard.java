@@ -1,7 +1,6 @@
 package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
@@ -156,7 +155,7 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
 
           case WELCOME_ATTACH_HARDWARE_WALLET:
             // Check for initialised hardware wallet on cold start
-            Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+            Optional<HardwareWalletService> hardwareWalletService = getWizardModel().getCurrentHardwareWalletService();
             if (hardwareWalletService.isPresent()
               && hardwareWalletService.get().isDeviceReady()
               && hardwareWalletService.get().isWalletPresent()) {

@@ -3,7 +3,6 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -111,7 +110,7 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
     registerDefaultButton(getFinishButton());
 
     // Finally check that the firmware is supported (we do not tolerate any absent values at this point)
-    final boolean enabled = CoreServices.getOrCreateHardwareWalletService().get().getContext().getFeatures().get().isSupported();
+    final boolean enabled = getWizardModel().getCurrentHardwareWalletService().get().getContext().getFeatures().get().isSupported();
 
     enterPinMaV.getView().requestInitialFocus();
     enterPinMaV.getView().setEnabled(enabled);

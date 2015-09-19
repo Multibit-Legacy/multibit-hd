@@ -120,7 +120,7 @@ public class MainController extends AbstractController implements
   /**
    * The delay between a wipe and insertion of a new device
    */
-  private static final int TREZOR_WIPE_TIME_THRESHOLD = 4;
+  private static final int HARDWARE_WALLET_WIPE_TIME_THRESHOLD = 4;
 
   /**
    * The last time a Trezor device was wiped (or yesterday as the default)
@@ -1021,7 +1021,7 @@ public class MainController extends AbstractController implements
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
     if (walletSummary.isPresent()) {
-      Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+      Optional<HardwareWalletService> hardwareWalletService = CoreServices.getHardwareWalletService(WalletMode.TREZOR);
 
       boolean showAlert = false;
       if (!WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
@@ -1039,7 +1039,7 @@ public class MainController extends AbstractController implements
       }
       if (this.hardwareWalletService.isPresent()) {
         if (lastWipedTrezorDateTime
-          .plusSeconds(TREZOR_WIPE_TIME_THRESHOLD)
+          .plusSeconds(HARDWARE_WALLET_WIPE_TIME_THRESHOLD)
           .isAfter(Dates.nowUtc())) {
           log.debug("Suppressing the alert due to recent confirmed Trezor wipe operation");
           showAlert = false;
@@ -1213,7 +1213,7 @@ public class MainController extends AbstractController implements
     if (hardwareWalletService.isPresent() && !isServiceAllowed) {
 
       // Stop the service, all listeners and clear the CoreServices reference
-      CoreServices.stopHardwareWalletService();
+      CoreServices.stopHardwareWalletServices();
 
       // Clear our reference
       hardwareWalletService = Optional.absent();
@@ -1225,7 +1225,7 @@ public class MainController extends AbstractController implements
     // If it is present then it is already started
     if (!hardwareWalletService.isPresent()) {
 
-      hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+      hardwareWalletService = CoreServices.getHardwareWalletService(WalletMode.TREZOR);
 
       if (hardwareWalletService.isPresent()) {
 

@@ -638,7 +638,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     try {
       // For Trezor hard wallets the backups are encrypted with the entropy derived password
       String walletPassword = null;
-      Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+      Optional<HardwareWalletService> hardwareWalletService = getWizardModel().getCurrentHardwareWalletService();
       if (hardwareWalletService.isPresent() && hardwareWalletService.get().getContext().getEntropy().isPresent()) {
         walletPassword = Hex.toHexString(hardwareWalletService.get().getContext().getEntropy().get());
       }

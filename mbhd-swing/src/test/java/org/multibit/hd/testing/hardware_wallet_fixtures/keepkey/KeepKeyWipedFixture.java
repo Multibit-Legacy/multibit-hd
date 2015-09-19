@@ -147,10 +147,10 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
           final Features features;
           switch (count) {
             case 0:
-              features = newWipedFeatures(WalletMode.TREZOR);
+              features = newWipedFeatures(WalletMode.KEEP_KEY);
               break;
             default:
-              features = newStandardFeatures(WalletMode.TREZOR);
+              features = newStandardFeatures(WalletMode.KEEP_KEY);
           }
 
           MessageEvent event = new MessageEvent(

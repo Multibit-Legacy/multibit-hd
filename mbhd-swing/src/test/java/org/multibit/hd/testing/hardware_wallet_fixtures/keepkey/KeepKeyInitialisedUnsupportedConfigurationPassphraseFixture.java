@@ -98,7 +98,7 @@ public class KeepKeyInitialisedUnsupportedConfigurationPassphraseFixture extends
       new Answer<Optional<MessageEvent>>() {
         public Optional<MessageEvent> answer(InvocationOnMock invocation) throws Throwable {
 
-          Features features = MessageEventFixtures.newUnsupportedConfigurationPassphraseFeatures(WalletMode.TREZOR);
+          Features features = MessageEventFixtures.newUnsupportedConfigurationPassphraseFeatures(WalletMode.KEEP_KEY);
 
           MessageEvent event = new MessageEvent(
             MessageEventType.FEATURES,

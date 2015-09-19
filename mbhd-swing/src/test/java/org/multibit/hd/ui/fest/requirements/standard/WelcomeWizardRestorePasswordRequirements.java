@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest.requirements.standard;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.testing.WalletFixtures;
+import org.multibit.hd.testing.WalletSummaryFixtures;
 import org.multibit.hd.ui.fest.use_cases.standard.credentials.RestoreButtonUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.environment.CloseDebugEnvironmentPopoverUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.restore_password.RestorePasswordEnterSeedPhraseUseCase;
@@ -37,11 +37,11 @@ public class WelcomeWizardRestorePasswordRequirements {
     // Use the standard seed phrase so we can put in a recent timestamp
     parameters.put(
       MessageKey.SEED_PHRASE.getKey(),
-      WalletFixtures.STANDARD_WALLET_SEED_PHRASE
+      WalletSummaryFixtures.STANDARD_WALLET_SEED_PHRASE
     );
     parameters.put(
       MessageKey.TIMESTAMP.getKey(),
-      WalletFixtures.STANDARD_TIMESTAMP
+      WalletSummaryFixtures.STANDARD_TIMESTAMP
     );
 
     // Enter a suitable seed phrase

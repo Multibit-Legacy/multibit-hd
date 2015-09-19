@@ -153,7 +153,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         state = WELCOME_ATTACH_HARDWARE_WALLET;
         break;
       case WELCOME_ATTACH_HARDWARE_WALLET:
-        hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+        hardwareWalletService = getCurrentHardwareWalletService();
         if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
           // A Trezor is connected
           mode = WalletMode.TREZOR;
@@ -171,7 +171,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         }
         break;
       case WELCOME_SELECT_WALLET:
-        hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+        hardwareWalletService = getCurrentHardwareWalletService();
         if (RESTORE_WALLET_SELECT_BACKUP.equals(selectWalletChoice)) {
           if (hardwareWalletService.isPresent()
             && hardwareWalletService.get().isDeviceReady()
@@ -307,7 +307,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         state = CREATE_WALLET_SEED_PHRASE;
         break;
       case TREZOR_CREATE_WALLET_PREPARATION:
-        hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+        hardwareWalletService = getCurrentHardwareWalletService();
         if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
           // A Trezor is connected
           mode = WalletMode.TREZOR;
@@ -368,7 +368,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
    * Work out which restore method to use, depending on if it is a Trezor wallet or not and what backups there are
    */
   public void calculateRestoreMethod() {
-    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    Optional<HardwareWalletService> hardwareWalletService = getCurrentHardwareWalletService();
     // User has selected restore wallet - see if wallet is hard Trezor wallet
     // If so no need to enter a seed phrase - use the rootNode from the master public key to work out the wallet id
     HardwareWalletContext context = hardwareWalletService.get().getContext();
@@ -412,7 +412,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
           // Provide a short delay to allow UI to update
           Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
-          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletService = getCurrentHardwareWalletService();
 
           // We deliberately ignore the passphrase option to ensure
           // only the seed phrase needs to be secured to protect the wallet
@@ -472,7 +472,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         @Override
         public Boolean call() throws Exception {
 
-          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletService = getCurrentHardwareWalletService();
 
           log.debug("Provide a PIN");
           hardwareWalletService.get().providePIN(pinPositions);
@@ -724,7 +724,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         @Override
         public Boolean call() throws Exception {
 
-          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletService = getCurrentHardwareWalletService();
 
           byte[] entropy = hardwareWalletService.get().generateEntropy();
 

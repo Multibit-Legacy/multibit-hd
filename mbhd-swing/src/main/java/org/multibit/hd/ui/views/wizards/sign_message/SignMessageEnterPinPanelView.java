@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.wizards.sign_message;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.*;
@@ -117,10 +117,11 @@ public class SignMessageEnterPinPanelView extends AbstractWizardPanelView<SignMe
 
     registerDefaultButton(getFinishButton());
 
+    Optional<HardwareWalletService> currentHardwareWalletService = getWizardModel().getCurrentHardwareWalletService();
+
     // Finally check that the firmware is supported
     // The user may try to ignore the popover warnings
-    final boolean enabled = CoreServices
-      .getOrCreateHardwareWalletService().get()
+    final boolean enabled = currentHardwareWalletService.get()
       .getContext()
       .getFeatures().get()
       .isSupported();

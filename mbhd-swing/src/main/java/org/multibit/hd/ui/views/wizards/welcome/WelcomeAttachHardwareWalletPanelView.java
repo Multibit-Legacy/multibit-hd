@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.wizards.welcome;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -195,7 +194,7 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
         break;
       case 5:
         // Configure the initial state (the wizard may not have been created when the DEVICE_READY was issued)
-        final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+        final Optional<HardwareWalletService> hardwareWalletService = getWizardModel().getCurrentHardwareWalletService();
         if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
           setHardwareWalletStatus(Optional.of(MessageKey.TREZOR_FOUND), true);
         }

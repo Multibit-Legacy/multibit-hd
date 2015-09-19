@@ -1,7 +1,7 @@
 package org.multibit.hd.ui.fest.use_cases.standard.restore_password;
 
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.testing.WalletFixtures;
+import org.multibit.hd.testing.WalletSummaryFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.MessageKey;
 
@@ -38,7 +38,7 @@ public class RestorePasswordReportUseCase extends AbstractFestUseCase {
     pauseForWalletPasswordChange();
 
     // Restoring the credentials should be instant
-    assertLabelContainsValue(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, WalletFixtures.STANDARD_PASSWORD);
+    assertLabelContainsValue(MessageKey.RESTORE_PASSWORD_REPORT_MESSAGE_SUCCESS, WalletSummaryFixtures.STANDARD_PASSWORD);
 
     // OK to proceed
     window

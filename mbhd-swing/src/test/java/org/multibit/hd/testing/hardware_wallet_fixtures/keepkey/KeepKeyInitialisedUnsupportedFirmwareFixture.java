@@ -96,7 +96,7 @@ public class KeepKeyInitialisedUnsupportedFirmwareFixture extends AbstractHardwa
       new Answer<Optional<MessageEvent>>() {
         public Optional<MessageEvent> answer(InvocationOnMock invocation) throws Throwable {
 
-          Features features = MessageEventFixtures.newUnsupportedFirmwareFeatures(WalletMode.TREZOR);
+          Features features = MessageEventFixtures.newUnsupportedFirmwareFeatures(WalletMode.KEEP_KEY);
 
           MessageEvent event = new MessageEvent(
             MessageEventType.FEATURES,

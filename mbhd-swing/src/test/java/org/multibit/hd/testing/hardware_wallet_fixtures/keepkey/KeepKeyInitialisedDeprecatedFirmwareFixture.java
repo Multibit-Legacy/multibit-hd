@@ -98,7 +98,7 @@ public class KeepKeyInitialisedDeprecatedFirmwareFixture extends AbstractHardwar
       new Answer<Optional<MessageEvent>>() {
         public Optional<MessageEvent> answer(InvocationOnMock invocation) throws Throwable {
 
-          Features features = MessageEventFixtures.newDeprecatedFirmwareFeatures(WalletMode.TREZOR);
+          Features features = MessageEventFixtures.newDeprecatedFirmwareFeatures(WalletMode.KEEP_KEY);
 
           MessageEvent event = new MessageEvent(
             MessageEventType.FEATURES,

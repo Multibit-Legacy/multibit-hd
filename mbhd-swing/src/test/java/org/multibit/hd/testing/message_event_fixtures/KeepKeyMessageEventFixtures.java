@@ -88,7 +88,7 @@ public class KeepKeyMessageEventFixtures {
 
     Features features = new Features();
     features.setVendor("keepkey.com");
-    features.setVersion("1.2.1"); // Fails firmware
+    features.setVersion("0.9.0"); // Fails firmware
     features.setBootloaderMode(false);
     features.setDeviceId("5DE10270051613895EEB68ED");
     features.setPinProtection(true);
@@ -133,13 +133,13 @@ public class KeepKeyMessageEventFixtures {
   }
 
   /**
-   * @return An "initialised" Features for use with FEST testing (abandon wallet) with deprecated firmware ("1.3.0")
+   * @return An "initialised" Features for use with FEST testing (abandon wallet) with deprecated firmware ("0.9.99")
    */
   public static Features newDeprecatedFirmwareFeatures(String label) {
 
     Features features = new Features();
     features.setVendor("keepkey.com");
-    features.setVersion("1.3.0");
+    features.setVersion("0.9.99");
     features.setBootloaderMode(false);
     features.setDeviceId("5DE10270051613895EEB68ED");
     features.setPinProtection(true);

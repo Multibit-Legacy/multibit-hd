@@ -7,7 +7,7 @@ import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.SignMessageResult;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.utils.BitcoinNetwork;
-import org.multibit.hd.testing.WalletFixtures;
+import org.multibit.hd.testing.WalletSummaryFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -39,7 +39,7 @@ public class ShowThenFinishSignMessageUseCase extends AbstractFestUseCase {
     Address signingAddress = signingKey.toAddress(BitcoinNetwork.current().get());
     String signingAddresString = signingAddress.toString();
 
-    SignMessageResult signMessageResult = WalletManager.INSTANCE.signMessage(signingAddress.toString(), SIGNING_TEXT, WalletFixtures.STANDARD_PASSWORD.toString());
+    SignMessageResult signMessageResult = WalletManager.INSTANCE.signMessage(signingAddress.toString(), SIGNING_TEXT, WalletSummaryFixtures.STANDARD_PASSWORD.toString());
 
     // Click on Sign message
     window
@@ -132,7 +132,7 @@ public class ShowThenFinishSignMessageUseCase extends AbstractFestUseCase {
 
     window
        .textBox(MessageKey.ENTER_PASSWORD.getKey())
-       .enterText(WalletFixtures.STANDARD_PASSWORD);
+       .enterText(WalletSummaryFixtures.STANDARD_PASSWORD);
 
     // Click sign message
     window

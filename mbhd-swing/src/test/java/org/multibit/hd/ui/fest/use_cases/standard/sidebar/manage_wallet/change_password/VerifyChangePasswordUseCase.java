@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest.use_cases.standard.sidebar.manage_wallet.change_
 
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.core.dto.CoreMessageKey;
-import org.multibit.hd.testing.WalletFixtures;
+import org.multibit.hd.testing.WalletSummaryFixtures;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -51,7 +51,7 @@ public class VerifyChangePasswordUseCase extends AbstractFestUseCase {
     // Fill in the original credentials
     window
       .textBox(MessageKey.ENTER_PASSWORD.getKey())
-      .enterText(WalletFixtures.STANDARD_PASSWORD);
+      .enterText(WalletSummaryFixtures.STANDARD_PASSWORD);
 
     // Exercise the confirm credentials component
     // finishing with a valid credentials
@@ -97,7 +97,7 @@ public class VerifyChangePasswordUseCase extends AbstractFestUseCase {
 
     window
       .textBox(MessageKey.RETYPE_NEW_PASSWORD.getKey())
-      .setText(WalletFixtures.ALTERNATIVE_PASSWORD)
+      .setText(WalletSummaryFixtures.ALTERNATIVE_PASSWORD)
         // Trigger the key release action
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);
@@ -114,14 +114,14 @@ public class VerifyChangePasswordUseCase extends AbstractFestUseCase {
     // Almost correct (long)
     window
       .textBox(MessageKey.ENTER_NEW_PASSWORD.getKey())
-      .setText(WalletFixtures.ALTERNATIVE_PASSWORD)
+      .setText(WalletSummaryFixtures.ALTERNATIVE_PASSWORD)
         // Trigger the key release action
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);
 
     window
       .textBox(MessageKey.RETYPE_NEW_PASSWORD.getKey())
-      .setText(WalletFixtures.ALTERNATIVE_PASSWORD+"7")
+      .setText(WalletSummaryFixtures.ALTERNATIVE_PASSWORD+"7")
         // Trigger the key release action
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);
@@ -138,14 +138,14 @@ public class VerifyChangePasswordUseCase extends AbstractFestUseCase {
     // Matching credentials
     window
       .textBox(MessageKey.ENTER_NEW_PASSWORD.getKey())
-      .setText(WalletFixtures.ALTERNATIVE_PASSWORD)
+      .setText(WalletSummaryFixtures.ALTERNATIVE_PASSWORD)
         // Trigger the key release action
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);
 
     window
       .textBox(MessageKey.RETYPE_NEW_PASSWORD.getKey())
-      .setText(WalletFixtures.ALTERNATIVE_PASSWORD)
+      .setText(WalletSummaryFixtures.ALTERNATIVE_PASSWORD)
         // Trigger the key release action
       .pressKey(KeyEvent.VK_SHIFT)
       .releaseKey(KeyEvent.VK_SHIFT);

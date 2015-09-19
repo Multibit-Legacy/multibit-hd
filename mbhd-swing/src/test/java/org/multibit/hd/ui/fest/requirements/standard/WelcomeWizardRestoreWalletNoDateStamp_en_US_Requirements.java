@@ -2,7 +2,7 @@ package org.multibit.hd.ui.fest.requirements.standard;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.testing.WalletFixtures;
+import org.multibit.hd.testing.WalletSummaryFixtures;
 import org.multibit.hd.ui.fest.use_cases.standard.environment.CloseDebugEnvironmentPopoverUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.restore_wallet.RestoreWalletEnterSeedPhraseUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.restore_wallet.RestoreWalletNoDateStampUseCase;
@@ -44,7 +44,7 @@ public class WelcomeWizardRestoreWalletNoDateStamp_en_US_Requirements {
     // Use the empty seed phrase
     parameters.put(
       MessageKey.SEED_PHRASE.getKey(),
-      WalletFixtures.EMPTY_WALLET_SEED_PHRASE
+      WalletSummaryFixtures.EMPTY_WALLET_SEED_PHRASE
     );
 
     new RestoreWalletEnterSeedPhraseUseCase(window).execute(parameters);

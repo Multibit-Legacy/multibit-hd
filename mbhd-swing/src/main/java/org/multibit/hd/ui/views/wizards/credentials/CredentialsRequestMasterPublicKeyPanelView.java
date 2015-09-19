@@ -2,7 +2,6 @@ package org.multibit.hd.ui.views.wizards.credentials;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -92,7 +91,7 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractWizardPa
   public void afterShow() {
 
     // Check if the attached Trezor is initialised (the hardware wallet service must be OK to be here)
-    Optional<Features> features = CoreServices.getOrCreateHardwareWalletService().get().getContext().getFeatures();
+    Optional<Features> features = getWizardModel().getCurrentHardwareWalletService().get().getContext().getFeatures();
 
     final MessageKey operationKey;
     final boolean nextEnabled;

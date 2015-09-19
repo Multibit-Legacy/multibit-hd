@@ -27,7 +27,7 @@ import java.util.List;
  * @since 0.0.5
  *
  */
-public class WalletFixtures {
+public class WalletSummaryFixtures {
 
   /**
    * Always empty - no public transactions so can be set with a recent timestamp
@@ -168,7 +168,7 @@ public class WalletFixtures {
       .getOrCreateApplicationDataDirectory()
       .getAbsolutePath();
 
-    try (InputStream is = WalletFixtures.class.getResourceAsStream("/fixtures/mbhd-" + STANDARD_WALLET_ID + ".zip");
+    try (InputStream is = WalletSummaryFixtures.class.getResourceAsStream("/fixtures/mbhd-" + STANDARD_WALLET_ID + ".zip");
          FileOutputStream fos = new FileOutputStream(zipFileName)) {
 
       // Extract the ZIP of the standard wallet

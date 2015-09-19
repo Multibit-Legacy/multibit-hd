@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.fest.test_cases;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 import com.google.common.util.concurrent.Uninterruptibles;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -15,6 +16,7 @@ import org.junit.BeforeClass;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Yaml;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.events.CoreEvents;
@@ -25,7 +27,7 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletClient;
 import org.multibit.hd.hardware.core.HardwareWalletService;
-import org.multibit.hd.testing.WalletFixtures;
+import org.multibit.hd.testing.WalletSummaryFixtures;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
 import org.multibit.hd.ui.MultiBitHD;
 import org.multibit.hd.ui.views.MainView;
@@ -33,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -71,7 +74,7 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
    */
   public static void createLocalBackup(WalletSummary walletSummary) throws IOException {
     // Create a local backup of the empty wallet so that there is one to load
-    BackupManager.INSTANCE.createLocalBackup(walletSummary.getWalletId(), WalletFixtures.ABANDON_TREZOR_PASSWORD);
+    BackupManager.INSTANCE.createLocalBackup(walletSummary.getWalletId(), WalletSummaryFixtures.ABANDON_TREZOR_PASSWORD);
   }
 
   @SuppressFBWarnings({"ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"})
@@ -124,7 +127,7 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
     log.info("Arranging fresh environment...");
 
     // Continue with the set up
-    setUpAfterArrange(false, hardwareWalletFixture);
+    setUpAfterArrange(false, hardwareWalletFixture, WalletMode.TREZOR);
 
   }
 
@@ -154,13 +157,13 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
     // Add the empty wallet fixture
     WalletSummary walletSummary;
     if (hardwareWalletFixture.isPresent()) {
-      walletSummary = WalletFixtures.createEmptyTrezorHardWalletFixture();
+      walletSummary = WalletSummaryFixtures.createEmptyTrezorHardWalletFixture();
     } else {
-      walletSummary = WalletFixtures.createEmptyMBHDSoftWalletFixture();
+      walletSummary = WalletSummaryFixtures.createEmptyMBHDSoftWalletFixture();
     }
 
     // Continue with the set up
-    setUpAfterArrange(true, hardwareWalletFixture);
+    setUpAfterArrange(true, hardwareWalletFixture, WalletMode.TREZOR);
 
     return walletSummary;
   }
@@ -190,10 +193,10 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
     BackupManager.INSTANCE.initialise(applicationDirectory, Optional.<File>absent());
 
     // Add the restored wallet fixture
-    WalletFixtures.createStandardMBHDSoftWalletFixture();
+    WalletSummaryFixtures.createStandardMBHDSoftWalletFixture();
 
     // Continue with the set up
-    setUpAfterArrange(true, hardwareWalletFixture);
+    setUpAfterArrange(true, hardwareWalletFixture, WalletMode.TREZOR);
 
   }
 
@@ -204,8 +207,8 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
    */
   protected void setUpAfterArrange(
     boolean licenceAccepted,
-    Optional<HardwareWalletFixture> hardwareWalletFixture
-  ) throws Exception {
+    Optional<HardwareWalletFixture> hardwareWalletFixture,
+    WalletMode walletMode) throws Exception {
 
     if (hardwareWalletFixture.isPresent()) {
 
@@ -217,8 +220,20 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
       // Inject it into the hardware wallet service
       HardwareWalletService hardwareWalletService = new HardwareWalletService(mockClient);
 
+      // Create a suitable ordering based on the wallet mode
+      List<Optional<HardwareWalletService>> hardwareWalletServices = Lists.newArrayList();
+      switch (walletMode) {
+        case TREZOR:
+          hardwareWalletServices.add(Optional.of(hardwareWalletService));
+          hardwareWalletServices.add(Optional.<HardwareWalletService>absent());
+          break;
+        case KEEP_KEY:
+          hardwareWalletServices.add(Optional.<HardwareWalletService>absent());
+          hardwareWalletServices.add(Optional.of(hardwareWalletService));
+          break;
+      }
       // Ensure CoreServices uses it instead of creating one
-      CoreServices.setHardwareWalletService(hardwareWalletService);
+      CoreServices.setHardwareWalletServices(hardwareWalletServices);
 
     }
 

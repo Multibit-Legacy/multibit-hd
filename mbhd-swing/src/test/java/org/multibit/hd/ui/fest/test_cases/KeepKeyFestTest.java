@@ -3,8 +3,10 @@ package org.multibit.hd.ui.fest.test_cases;
 import com.google.common.base.Optional;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
+import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixtures;
 import org.multibit.hd.testing.hardware_wallet_fixtures.keepkey.*;
 import org.multibit.hd.ui.fest.requirements.keepkey.*;
 import org.multibit.hd.ui.fest.requirements.standard.PaymentsScreenRequirements;
@@ -30,10 +32,10 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * </ul>
    */
   @Test
-  public void verifyCreateKeepKeyHardwareWallet_ColdStart() throws Exception {
+  public void verifyCreateHardwareWallet_ColdStart() throws Exception {
 
     // Prepare an empty and attached KeepKey device that will be initialised
-    HardwareWalletFixture hardwareWalletFixture = new KeepKeyWipedFixture();
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newWipedFixture(WalletMode.KEEP_KEY);
 
     // Start with a completely empty random application directory
     arrangeFresh(Optional.of(hardwareWalletFixture));
@@ -52,10 +54,10 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * </ul>
    */
   @Test
-  public void verifyCreateKeepKeyHardwareWallet_WarmStart() throws Exception {
+  public void verifyCreateHardwareWallet_WarmStart() throws Exception {
 
     // Prepare an empty and attached KeepKey device that will be initialised
-    HardwareWalletFixture hardwareWalletFixture = new KeepKeyWipedFixture();
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newWipedFixture(WalletMode.KEEP_KEY);
 
     // Start with the empty hardware wallet fixture
     arrangeEmpty(Optional.of(hardwareWalletFixture));
@@ -73,10 +75,10 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * </ul>
    */
   @Test
-  public void verifyUnlockKeepKeyHardwareWallet_WarmStart() throws Exception {
+  public void verifyUnlockHardwareWallet_WarmStart() throws Exception {
 
     // Prepare an initialised and attached KeepKey device that will be unlocked
-    HardwareWalletFixture hardwareWalletFixture = new KeepKeyInitialisedUnlockFixture();
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedUnlockFixture(WalletMode.KEEP_KEY);
 
     // Start with the empty hardware wallet fixture
     arrangeEmpty(Optional.of(hardwareWalletFixture));
@@ -94,10 +96,10 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * </ul>
    */
   @Test
-  public void verifyUnlockKeepKeyHardwareWallet_ColdStart() throws Exception {
+  public void verifyUnlockHardwareWallet_ColdStart() throws Exception {
 
     // Prepare an initialised and attached KeepKey device that will be unlocked
-    HardwareWalletFixture hardwareWalletFixture = new KeepKeyInitialisedUnlockFixture();
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedUnlockFixture(WalletMode.KEEP_KEY);
 
     // Start with a completely empty random application directory
     arrangeFresh(Optional.of(hardwareWalletFixture));
@@ -115,10 +117,10 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * </ul>
    */
   @Test
-  public void verifyReattachKeepKeyHardwareWallet() throws Exception {
+  public void verifyReattachHardwareWallet() throws Exception {
 
     // Prepare an initialised and attached KeepKey device that will be re-attached
-    HardwareWalletFixture hardwareWalletFixture = new KeepKeyInitialisedReattachedFixture();
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedReattachedFixture(WalletMode.KEEP_KEY);
 
     // Start with the empty hardware wallet fixture
     arrangeEmpty(Optional.of(hardwareWalletFixture));
@@ -136,10 +138,10 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * </ul>
    */
   @Test
-  public void verifyRestoreKeepKeyWithLocalBackup() throws Exception {
+  public void verifyRestoreWithLocalBackup() throws Exception {
 
     // Prepare an initialised and attached KeepKey device that will be restored then unlocked
-    HardwareWalletFixture hardwareWalletFixture = new KeepKeyInitialisedRestoreFixture();
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedRestoreFixture(WalletMode.KEEP_KEY);
 
     // Start with the empty hardware wallet fixture
     WalletSummary walletSummary = arrangeEmpty(Optional.of(hardwareWalletFixture));
@@ -166,10 +168,10 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * </ul>
    */
   @Test
-  public void verifySendKeepKeyScreen() throws Exception {
+  public void verifySendScreen() throws Exception {
 
     // Prepare an initialised and attached KeepKey device that will be restored then unlocked
-    HardwareWalletFixture hardwareWalletFixture = new KeepKeyInitialisedUnlockFixture();
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedUnlockFixture(WalletMode.KEEP_KEY);
 
     // Start with the empty hardware wallet fixture
     arrangeStandard(Optional.of(hardwareWalletFixture));
@@ -212,10 +214,10 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * </ul>
    */
   @Test
-  public void verifyUnsupportedKeepKeyFirmware() throws Exception {
+  public void verifyUnsupportedFirmware() throws Exception {
 
     // Prepare an initialised and attached KeepKey device that will be restored then unlocked
-    HardwareWalletFixture hardwareWalletFixture = new KeepKeyInitialisedUnsupportedFirmwareFixture();
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedUnsupportedFirmwareFixture(WalletMode.KEEP_KEY);
 
     // Start with the empty hardware wallet fixture
     arrangeStandard(Optional.of(hardwareWalletFixture));
@@ -235,10 +237,10 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * Currently there are no deprecated firmware versions
    */
   @Ignore
-  public void verifyDeprecatedKeepKeyFirmware() throws Exception {
+  public void verifyDeprecatedFirmware() throws Exception {
 
     // Prepare an initialised and attached KeepKey device that will be restored then unlocked
-    HardwareWalletFixture hardwareWalletFixture = new KeepKeyInitialisedDeprecatedFirmwareFixture();
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedDeprecatedFirmwareFixture(WalletMode.KEEP_KEY);
 
     // Start with the empty hardware wallet fixture
     arrangeStandard(Optional.of(hardwareWalletFixture));
@@ -280,7 +282,7 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * </ul>
    */
   @Test
-  public void verifyUnsupportedKeepKeyConfiguration_Passphrase() throws Exception {
+  public void verifyUnsupportedConfiguration_Passphrase() throws Exception {
 
     // Prepare an initialised and attached KeepKey device that will be attached
     HardwareWalletFixture hardwareWalletFixture = new KeepKeyInitialisedUnsupportedConfigurationPassphraseFixture();

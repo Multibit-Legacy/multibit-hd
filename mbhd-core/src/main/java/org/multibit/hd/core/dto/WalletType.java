@@ -47,6 +47,13 @@ public enum WalletType {
   TREZOR_SOFT_WALLET(CoreMessageKey.WALLET_CAPABILITY_TREZOR_SOFT),
 
   /**
+   * Trezor wallet with no keys
+   * Wallet follows BIP44 account 0 and requires a Trezor to do the signing
+   * m/44'/0'/0'/0/0 is first receiving key
+   */
+  KEEP_KEY_HARD_WALLET(CoreMessageKey.WALLET_CAPABILITY_KEEP_KEY_HARD),
+
+  /**
    * A wallet with unknown capabilities (most likely from the future)
    */
   UNKNOWN(CoreMessageKey.WALLET_CAPABILITY_UNKNOWN)

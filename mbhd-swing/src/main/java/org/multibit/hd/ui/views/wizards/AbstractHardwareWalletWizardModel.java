@@ -7,6 +7,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.commons.utils.Dates;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.services.ApplicationEventService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -277,7 +278,7 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
         public Boolean call() throws Exception {
 
           // See if the attached trezor is initialised - no need to perform a cancel if there is no wallet
-          final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          final Optional<HardwareWalletService> hardwareWalletService = getCurrentHardwareWalletService();
           if (hardwareWalletService.isPresent()) {
 
             // Cancel the current Trezor operation
@@ -317,6 +318,18 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
         }
 
       });
+  }
+
+  /**
+   * @return The current hardware wallet service if present based on the
+   */
+  public Optional<HardwareWalletService> getCurrentHardwareWalletService() {
+
+    // Determine the wallet mode from active and wallet summary
+
+
+    return CoreServices.getHardwareWalletService(WalletMode.TREZOR);
+
   }
 
 }
