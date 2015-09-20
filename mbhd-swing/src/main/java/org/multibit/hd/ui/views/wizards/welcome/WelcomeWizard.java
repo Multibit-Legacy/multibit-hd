@@ -74,40 +74,40 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
       new CreateWalletReportPanelView(this, CREATE_WALLET_REPORT.name()));
 
     wizardViewMap.put(
-      TREZOR_CREATE_WALLET_PREPARATION.name(),
-      new CreateTrezorWalletPreparationPanelView(this, TREZOR_CREATE_WALLET_PREPARATION.name()));
+      HARDWARE_CREATE_WALLET_PREPARATION.name(),
+      new CreateTrezorWalletPreparationPanelView(this, HARDWARE_CREATE_WALLET_PREPARATION.name()));
 
     wizardViewMap.put(
-      TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION.name(),
-      new CreateTrezorWalletSelectBackupLocationPanelView(this, TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION.name()));
+      HARDWARE_CREATE_WALLET_SELECT_BACKUP_LOCATION.name(),
+      new CreateTrezorWalletSelectBackupLocationPanelView(this, HARDWARE_CREATE_WALLET_SELECT_BACKUP_LOCATION.name()));
 
     wizardViewMap.put(
-      TREZOR_CREATE_WALLET_ENTER_DETAILS.name(),
-      new CreateTrezorWalletEnterDetailsPanelView(this, TREZOR_CREATE_WALLET_ENTER_DETAILS.name()));
+      HARDWARE_CREATE_WALLET_ENTER_DETAILS.name(),
+      new CreateTrezorWalletEnterDetailsPanelView(this, HARDWARE_CREATE_WALLET_ENTER_DETAILS.name()));
 
     wizardViewMap.put(
-      TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET.name(),
-      new CreateTrezorWalletRequestCreateWalletPanelView(this, TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET.name()));
+      HARDWARE_CREATE_WALLET_REQUEST_CREATE_WALLET.name(),
+      new CreateTrezorWalletRequestCreateWalletPanelView(this, HARDWARE_CREATE_WALLET_REQUEST_CREATE_WALLET.name()));
 
     wizardViewMap.put(
-      TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET.name(),
-      new CreateTrezorWalletConfirmCreateWalletPanelView(this, TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET.name()));
+      HARDWARE_CREATE_WALLET_CONFIRM_CREATE_WALLET.name(),
+      new CreateTrezorWalletConfirmCreateWalletPanelView(this, HARDWARE_CREATE_WALLET_CONFIRM_CREATE_WALLET.name()));
 
     wizardViewMap.put(
-      TREZOR_CREATE_WALLET_ENTER_NEW_PIN.name(),
-      new CreateTrezorWalletEnterNewPinPanelView(this, TREZOR_CREATE_WALLET_ENTER_NEW_PIN.name()));
+      HARDWARE_CREATE_WALLET_ENTER_NEW_PIN.name(),
+      new CreateTrezorWalletEnterNewPinPanelView(this, HARDWARE_CREATE_WALLET_ENTER_NEW_PIN.name()));
 
     wizardViewMap.put(
-      TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name(),
-      new CreateTrezorWalletConfirmNewPinPanelView(this, TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN.name()));
+      HARDWARE_CREATE_WALLET_CONFIRM_NEW_PIN.name(),
+      new CreateTrezorWalletConfirmNewPinPanelView(this, HARDWARE_CREATE_WALLET_CONFIRM_NEW_PIN.name()));
 
     wizardViewMap.put(
-      TREZOR_CREATE_WALLET_CONFIRM_WORD.name(),
-      new CreateTrezorWalletConfirmWordPanelView(this, TREZOR_CREATE_WALLET_CONFIRM_WORD.name()));
+      HARDWARE_CREATE_WALLET_CONFIRM_WORD.name(),
+      new CreateTrezorWalletConfirmWordPanelView(this, HARDWARE_CREATE_WALLET_CONFIRM_WORD.name()));
 
     wizardViewMap.put(
-      TREZOR_CREATE_WALLET_REPORT.name(),
-      new CreateTrezorWalletReportPanelView(this, TREZOR_CREATE_WALLET_REPORT.name()));
+      HARDWARE_CREATE_WALLET_REPORT.name(),
+      new CreateTrezorWalletReportPanelView(this, HARDWARE_CREATE_WALLET_REPORT.name()));
 
     wizardViewMap.put(
       RESTORE_PASSWORD_SEED_PHRASE.name(),
@@ -183,8 +183,8 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
             }
 
             break;
-          case TREZOR_CREATE_WALLET_ENTER_NEW_PIN:
-          case TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN:
+          case HARDWARE_CREATE_WALLET_ENTER_NEW_PIN:
+          case HARDWARE_CREATE_WALLET_CONFIRM_NEW_PIN:
             // Treat as a PIN entry
             getWizardModel().providePin(getWizardModel().getMostRecentPin());
             break;

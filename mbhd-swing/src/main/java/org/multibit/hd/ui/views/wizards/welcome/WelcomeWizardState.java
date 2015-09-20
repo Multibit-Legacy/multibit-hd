@@ -56,83 +56,43 @@ public enum WelcomeWizardState {
   /**
    * Trezor create wallet: Preparation instructions
    */
-  TREZOR_CREATE_WALLET_PREPARATION,
+  HARDWARE_CREATE_WALLET_PREPARATION,
   /**
    * Trezor create wallet: Select backup location
    */
-  TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION,
+  HARDWARE_CREATE_WALLET_SELECT_BACKUP_LOCATION,
   /**
    * Trezor create wallet: Enter details (label, seed size)
    */
-  TREZOR_CREATE_WALLET_ENTER_DETAILS,
+  HARDWARE_CREATE_WALLET_ENTER_DETAILS,
   /**
    * Trezor create wallet: Request secure create wallet (wipe, PIN and create)
    */
-  TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET,
+  HARDWARE_CREATE_WALLET_REQUEST_CREATE_WALLET,
   /**
    * Trezor create wallet: Display confirm wipe
    */
-  TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET,
+  HARDWARE_CREATE_WALLET_CONFIRM_CREATE_WALLET,
   /**
    * Trezor create wallet: Confirm supplied entropy
    */
-  TREZOR_CREATE_WALLET_CONFIRM_ENTROPY,
+  HARDWARE_CREATE_WALLET_CONFIRM_ENTROPY,
   /**
    * Trezor create wallet: Enter new PIN
    */
-  TREZOR_CREATE_WALLET_ENTER_NEW_PIN,
+  HARDWARE_CREATE_WALLET_ENTER_NEW_PIN,
   /**
    * Trezor create wallet: Confirm new PIN
    */
-  TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN,
+  HARDWARE_CREATE_WALLET_CONFIRM_NEW_PIN,
   /**
    * Trezor create wallet: Confirm next word from Trezor (seed phrase)
    */
-  TREZOR_CREATE_WALLET_CONFIRM_WORD,
+  HARDWARE_CREATE_WALLET_CONFIRM_WORD,
   /**
    * Trezor create wallet: Report on the outcome
    */
-  TREZOR_CREATE_WALLET_REPORT,
-  /**
-   * KeepKey create wallet: Preparation instructions
-   */
-  KEEPKEY_CREATE_WALLET_PREPARATION,
-  /**
-   * KeepKey create wallet: Select backup location
-   */
-  KEEPKEY_CREATE_WALLET_SELECT_BACKUP_LOCATION,
-  /**
-   * KeepKey create wallet: Enter details (label, seed size)
-   */
-  KEEPKEY_CREATE_WALLET_ENTER_DETAILS,
-  /**
-   * KeepKey create wallet: Request secure create wallet (wipe, PIN and create)
-   */
-  KEEPKEY_CREATE_WALLET_REQUEST_CREATE_WALLET,
-  /**
-   * KeepKey create wallet: Display confirm wipe
-   */
-  KEEPKEY_CREATE_WALLET_CONFIRM_CREATE_WALLET,
-  /**
-   * KeepKey create wallet: Confirm supplied entropy
-   */
-  KEEPKEY_CREATE_WALLET_CONFIRM_ENTROPY,
-  /**
-   * KeepKey create wallet: Enter new PIN
-   */
-  KEEPKEY_CREATE_WALLET_ENTER_NEW_PIN,
-  /**
-   * KeepKey create wallet: Confirm new PIN
-   */
-  KEEPKEY_CREATE_WALLET_CONFIRM_NEW_PIN,
-  /**
-   * KeepKey create wallet: Confirm next word from KeepKey (seed phrase)
-   */
-  KEEPKEY_CREATE_WALLET_CONFIRM_WORD,
-  /**
-   * KeepKey create wallet: Report on the outcome
-   */
-  KEEPKEY_CREATE_WALLET_REPORT,
+  HARDWARE_CREATE_WALLET_REPORT,
   /**
    * Restore credentials: Enter seed phrase to begin the process
    */

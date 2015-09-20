@@ -41,7 +41,7 @@ public class KeepKeyConfirmWipeUseCase extends AbstractHardwareWalletFestUseCase
       .requireVisible();
 
     window
-      .textBox(WelcomeWizardState.KEEPKEY_CREATE_WALLET_CONFIRM_CREATE_WALLET.name() + ".keepkey_display")
+      .textBox(WelcomeWizardState.HARDWARE_CREATE_WALLET_CONFIRM_CREATE_WALLET.name() + ".keepkey_display")
       .requireText(Languages.safeText(MessageKey.KEEPKEY_WIPE_CONFIRM_DISPLAY))
       .requireVisible();
 

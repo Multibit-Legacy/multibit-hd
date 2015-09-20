@@ -43,7 +43,7 @@ public class KeepKeyEnterNextWordUseCase extends AbstractHardwareWalletFestUseCa
 
       // Get the display text
       String displayText = window
-        .textBox(WelcomeWizardState.KEEPKEY_CREATE_WALLET_CONFIRM_WORD.name() + ".keepkey_display")
+        .textBox(WelcomeWizardState.HARDWARE_CREATE_WALLET_CONFIRM_WORD.name() + ".keepkey_display")
         .text();
 
       assertThat(displayText.contains(""+i)).isTrue();

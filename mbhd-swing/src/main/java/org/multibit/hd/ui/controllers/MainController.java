@@ -194,7 +194,7 @@ public class MainController extends AbstractController implements
       // Successful wizard interaction
 
       if (WelcomeWizardState.CREATE_WALLET_REPORT.name().equals(event.getPanelName())
-        || WelcomeWizardState.TREZOR_CREATE_WALLET_REPORT.name().equals(event.getPanelName())
+        || WelcomeWizardState.HARDWARE_CREATE_WALLET_REPORT.name().equals(event.getPanelName())
         || WelcomeWizardState.RESTORE_WALLET_REPORT.name().equals(event.getPanelName())
         || WelcomeWizardState.RESTORE_PASSWORD_REPORT.name().equals(event.getPanelName())
         || WelcomeWizardState.WELCOME_SELECT_WALLET.name().equals(event.getPanelName())
@@ -1448,7 +1448,7 @@ public class MainController extends AbstractController implements
 
     // Start building the wizard on the EDT to prevent UI updates
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
-      WelcomeWizardState.TREZOR_CREATE_WALLET_PREPARATION, WalletMode.TREZOR
+      WelcomeWizardState.HARDWARE_CREATE_WALLET_PREPARATION, WalletMode.TREZOR
     );
 
     // Use a new thread to handle the new wizard so that the handover can complete

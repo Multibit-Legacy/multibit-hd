@@ -38,21 +38,21 @@ public class KeepKeyConfirmNewPinUseCase extends AbstractHardwareWalletFestUseCa
 
     // Click some buttons
     window
-      .button(WelcomeWizardState.KEEPKEY_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".button_1")
+      .button(WelcomeWizardState.HARDWARE_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".button_1")
       .click();
     window
-      .button(WelcomeWizardState.KEEPKEY_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".button_2")
+      .button(WelcomeWizardState.HARDWARE_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".button_2")
       .click();
     window
-      .button(WelcomeWizardState.KEEPKEY_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".button_3")
+      .button(WelcomeWizardState.HARDWARE_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".button_3")
       .click();
     window
-      .button(WelcomeWizardState.KEEPKEY_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".button_4")
+      .button(WelcomeWizardState.HARDWARE_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".button_4")
       .click();
 
     // Check that the PIN entry has populated
     window
-      .textBox(WelcomeWizardState.KEEPKEY_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".textbox")
+      .textBox(WelcomeWizardState.HARDWARE_CREATE_WALLET_CONFIRM_NEW_PIN.name()+".textbox")
       .requireText("****");
 
     // Check the 'Next' button is present and click it

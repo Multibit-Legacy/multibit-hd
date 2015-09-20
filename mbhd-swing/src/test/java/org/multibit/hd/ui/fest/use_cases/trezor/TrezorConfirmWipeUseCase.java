@@ -41,7 +41,7 @@ public class TrezorConfirmWipeUseCase extends AbstractHardwareWalletFestUseCase 
       .requireVisible();
 
     window
-      .textBox(WelcomeWizardState.TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET.name() + ".trezor_display")
+      .textBox(WelcomeWizardState.HARDWARE_CREATE_WALLET_CONFIRM_CREATE_WALLET.name() + ".trezor_display")
       .requireText(Languages.safeText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY))
       .requireVisible();
 
