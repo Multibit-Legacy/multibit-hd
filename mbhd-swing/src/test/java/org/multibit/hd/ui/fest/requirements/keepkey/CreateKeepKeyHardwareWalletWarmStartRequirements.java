@@ -6,7 +6,7 @@ import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
 import org.multibit.hd.ui.fest.use_cases.standard.create_wallet.CreateWalletSelectBackupLocationWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.credentials.UnlockReportUseCase;
-import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.WelcomeSelectCreateTrezorWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.WelcomeSelectCreateHardwareWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.trezor.*;
 
 import java.util.Map;
@@ -27,7 +27,7 @@ public class CreateKeepKeyHardwareWalletWarmStartRequirements {
     Map<String, Object> parameters = Maps.newHashMap();
 
     // Select create Trezor wallet
-    new WelcomeSelectCreateTrezorWalletUseCase(window).execute(parameters);
+    new WelcomeSelectCreateHardwareWalletUseCase(window).execute(parameters);
 
     // Verify the Trezor preparation
     new TrezorPreparationUseCase(window, hardwareWalletFixture).execute(parameters);

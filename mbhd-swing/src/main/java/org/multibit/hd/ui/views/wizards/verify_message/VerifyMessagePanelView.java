@@ -47,7 +47,7 @@ public class VerifyMessagePanelView extends AbstractWizardPanelView<VerifyMessag
    */
   public VerifyMessagePanelView(AbstractWizard<VerifyMessageWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.VERIFY_MESSAGE_TITLE, AwesomeIcon.CHECK);
+    super(wizard, panelName, AwesomeIcon.CHECK, MessageKey.VERIFY_MESSAGE_TITLE, null);
 
   }
 

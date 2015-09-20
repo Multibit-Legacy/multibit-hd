@@ -207,9 +207,10 @@ public class LabelDecorator {
    *
    * @param label               The label to decorate
    * @param reportMessageKey    The report message key (if not present then label is not visible)
+   * @param values              The values for the message key
    * @param reportMessageStatus The status (true then label has a check mark otherwise a cross)
    */
-  public static void applyReportMessage(JLabel label, Optional<MessageKey> reportMessageKey, boolean reportMessageStatus) {
+  public static void applyReportMessage(JLabel label, Optional<MessageKey> reportMessageKey, Object[] values, boolean reportMessageStatus) {
 
     // Could an attempt to update an uninitialised wizard label
     if (label == null) {
@@ -217,7 +218,7 @@ public class LabelDecorator {
     }
 
     if (reportMessageKey.isPresent()) {
-      label.setText(Languages.safeText(reportMessageKey.get()));
+      label.setText(Languages.safeText(reportMessageKey.get(), values));
       AccessibilityDecorator.apply(
         label,
         reportMessageKey.get()

@@ -1,5 +1,7 @@
 package org.multibit.hd.core.dto;
 
+import com.google.common.base.Optional;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 
 /**
@@ -51,8 +53,10 @@ public enum WalletMode {
   }
 
   /**
+   * Determine a wallet mode from a hardware event's source
    *
    * @param event The hardware wallet event
+   *
    * @return A matching wallet mode
    */
   public static WalletMode of(HardwareWalletEvent event) {
@@ -64,6 +68,30 @@ public enum WalletMode {
     }
 
     return WalletMode.UNKNOWN;
+
+  }
+
+  /**
+   * Determine a wallet mode from a hardware wallet service
+   *
+   * @param hardwareWalletService The optional hardware wallet service
+   *
+   * @return A matching wallet mode (STANDARD for an absent hardware wallet service)
+   */
+  public static WalletMode of(Optional<HardwareWalletService> hardwareWalletService) {
+
+    if (hardwareWalletService.isPresent()) {
+      String name = hardwareWalletService.get().getContext().getClient().name();
+      try {
+        return WalletMode.valueOf(name.toUpperCase().trim());
+      } catch (IllegalArgumentException e) {
+        return UNKNOWN;
+      }
+
+    }
+
+    // No hardware wallet service so use standard
+    return STANDARD;
 
   }
 }

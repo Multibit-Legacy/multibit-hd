@@ -43,7 +43,7 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
    */
   public AppearanceSettingsPanelView(AbstractWizard<AppearanceSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SHOW_APPEARANCE_WIZARD, AwesomeIcon.DESKTOP);
+    super(wizard, panelName, AwesomeIcon.DESKTOP, MessageKey.SHOW_APPEARANCE_WIZARD, null);
 
   }
 

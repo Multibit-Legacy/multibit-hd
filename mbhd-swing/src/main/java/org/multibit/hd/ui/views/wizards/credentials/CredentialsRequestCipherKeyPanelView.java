@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.credentials;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.view.ViewEvents;
@@ -38,7 +39,7 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
    */
   public CredentialsRequestCipherKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.HARDWARE_UNLOCK_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.HARDWARE_UNLOCK_TITLE, null);
 
   }
 
@@ -91,7 +92,7 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
   public void afterShow() {
 
     // Check if the attached hardware wallet is initialised (the hardware wallet service must be OK to be here)
-    Optional<HardwareWalletService> currentHardwareWalletService = getWizardModel().getCurrentHardwareWalletService();
+    Optional<HardwareWalletService> currentHardwareWalletService = CoreServices.getCurrentHardwareWalletService();
     Optional<Features> features = currentHardwareWalletService.get().getContext().getFeatures();
 
     final MessageKey operationKey;

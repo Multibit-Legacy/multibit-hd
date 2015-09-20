@@ -115,13 +115,14 @@ public class Labels {
   }
 
   /**
-   * @param key The message key
+   * @param key    The message key
+   * @param values The substitution values if applicable
    *
    * @return A new label with appropriate font, theme and alignment for a wizard panel view title
    */
-  public static TitleLabel newTitleLabel(MessageKey key) {
+  public static TitleLabel newTitleLabel(MessageKey key, Object... values) {
 
-    String[] titleText = new String[]{Languages.safeText(key)};
+    String[] titleText = new String[]{Languages.safeText(key, values)};
 
     String htmlText = HtmlUtils.localiseWithCenteredLinedBreaks(titleText);
 

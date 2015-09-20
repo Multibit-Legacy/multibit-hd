@@ -35,7 +35,7 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
    */
   public AboutPanelView(AbstractWizard<AboutWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.ABOUT_TITLE, AwesomeIcon.SMILE_O);
+    super(wizard, panelName, AwesomeIcon.SMILE_O, MessageKey.ABOUT_TITLE, null);
 
   }
 

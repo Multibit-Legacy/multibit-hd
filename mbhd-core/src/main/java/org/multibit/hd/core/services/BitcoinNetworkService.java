@@ -376,7 +376,7 @@ public class BitcoinNetworkService extends AbstractService {
         lastSendRequestSummaryOptional = Optional.of(sendRequestSummary);
         lastWalletOptional = Optional.of(wallet);
 
-        if (!signUsingHardwareWallet(sendRequestSummary, wallet, WalletMode.TREZOR)) {
+        if (!signUsingHardwareWallet(sendRequestSummary, wallet)) {
           return false;
         }
         break;
@@ -388,7 +388,7 @@ public class BitcoinNetworkService extends AbstractService {
         lastSendRequestSummaryOptional = Optional.of(sendRequestSummary);
         lastWalletOptional = Optional.of(wallet);
 
-        if (!signUsingHardwareWallet(sendRequestSummary, wallet, WalletMode.KEEP_KEY)) {
+        if (!signUsingHardwareWallet(sendRequestSummary, wallet)) {
           return false;
         }
         break;
@@ -973,17 +973,16 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @param sendRequestSummary The information required to send bitcoin
    * @param wallet             The wallet
-   * @param walletMode         The wallet mode
    *
    * @return True if the signDirectly operation was successful
    */
-  private boolean signUsingHardwareWallet(SendRequestSummary sendRequestSummary, Wallet wallet, WalletMode walletMode) {
+  private boolean signUsingHardwareWallet(SendRequestSummary sendRequestSummary, Wallet wallet) {
 
-    log.debug("Signing the send request using a Trezor ...");
+    log.debug("Signing the send request using a hardware wallet");
 
     Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 
-    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getHardwareWalletService(walletMode);
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
 
     // Check if there is a wallet present
     if (hardwareWalletService.isPresent()) {

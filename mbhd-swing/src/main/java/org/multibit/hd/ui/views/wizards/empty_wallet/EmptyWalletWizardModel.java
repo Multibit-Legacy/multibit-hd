@@ -315,7 +315,7 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
           // This call to the Trezor will (sometime later) fire a
           // HardwareWalletEvent containing the encrypted text (or a PIN failure)
           // Expect a SHOW_OPERATION_SUCCEEDED or SHOW_OPERATION_FAILED
-          Optional<HardwareWalletService> hardwareWalletService = getCurrentHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
           hardwareWalletService.get().providePIN(pinPositions);
 
           // Must have successfully send the message to be here
@@ -385,7 +385,7 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
 
-      Optional<Transaction> currentTransactionOptional = getCurrentHardwareWalletService().get().getContext().getTransaction();
+      Optional<Transaction> currentTransactionOptional = CoreServices.getCurrentHardwareWalletService().get().getContext().getTransaction();
       if (currentTransactionOptional.isPresent()) {
 
         Transaction currentTransaction = currentTransactionOptional.get();
@@ -495,7 +495,7 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
 
           // The tx is now complete so commit and broadcast it
           // Trezor will provide a signed serialized transaction
-          byte[] deviceTxPayload = getCurrentHardwareWalletService().get().getContext().getSerializedTx().toByteArray();
+          byte[] deviceTxPayload = CoreServices.getCurrentHardwareWalletService().get().getContext().getSerializedTx().toByteArray();
 
           log.info("DeviceTx payload:\n{}", Utils.HEX.encode(deviceTxPayload));
 

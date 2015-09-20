@@ -356,7 +356,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
 
-    Optional<HardwareWalletService> hardwareWalletService = getCurrentHardwareWalletService();
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
 
     final Failure failure = (Failure) event.getMessage().orNull();
     if (failure == null) {
@@ -470,7 +470,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
           // A 'requestCipherKey' is performed in which the user presses the OK button to encrypt a set text
           // (the result of which will be used to decrypt the wallet)
-          Optional<HardwareWalletService> hardwareWalletService = getCurrentHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
 
           // Check if there is a wallet present
           if (hardwareWalletService.get().isWalletPresent()) {
@@ -536,7 +536,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           // This call to the Trezor will (sometime later) fire a
           // HardwareWalletEvent containing the encrypted text (or a PIN failure)
           // Expect a SHOW_OPERATION_SUCCEEDED or SHOW_OPERATION_FAILED
-          Optional<HardwareWalletService> hardwareWalletService = getCurrentHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
           hardwareWalletService.get().providePIN(pinPositions);
 
           // Must have successfully send the message to be here
@@ -578,7 +578,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         @Override
         public Boolean call() throws Exception {
 
-          Optional<HardwareWalletService> hardwareWalletServiceOptional = getCurrentHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getCurrentHardwareWalletService();
 
           if (hardwareWalletServiceOptional.isPresent()) {
 
@@ -819,7 +819,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    */
   private Optional<WalletSummary> getOrCreateTrezorWallet() {
 
-    Optional<HardwareWalletService> hardwareWalletServiceOptional = getCurrentHardwareWalletService();
+    Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getCurrentHardwareWalletService();
     if (hardwareWalletServiceOptional.isPresent()) {
 
       HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();

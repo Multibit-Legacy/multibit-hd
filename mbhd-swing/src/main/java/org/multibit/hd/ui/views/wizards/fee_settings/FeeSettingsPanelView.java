@@ -55,7 +55,7 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
    * @param panelName The panel name
    */
   public FeeSettingsPanelView(AbstractWizard<FeeSettingsWizardModel> wizard, String panelName) {
-    super(wizard, panelName, MessageKey.FEES_SETTINGS_TITLE, AwesomeIcon.TICKET);
+    super(wizard, panelName, AwesomeIcon.TICKET, MessageKey.FEES_SETTINGS_TITLE, null);
   }
 
   @Override

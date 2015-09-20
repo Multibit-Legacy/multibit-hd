@@ -42,7 +42,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
    */
   public WelcomeSelectWalletPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SELECT_WALLET_TITLE, AwesomeIcon.MAGIC);
+    super(wizard, panelName, AwesomeIcon.MAGIC, MessageKey.SELECT_WALLET_TITLE, null);
 
   }
 
@@ -71,23 +71,29 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
       ));
 
     // Use the wizard model to determine the mode (don't store the result due to thread safety)
-    if (WalletMode.TREZOR.equals(getWizardModel().getMode())) {
-      contentPanel.add(
-        Panels.newHardwareWalletSelector(
-          this,
-          HARDWARE_CREATE_WALLET_PREPARATION.name(), // Relies on create being default
-          WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
-          RESTORE_WALLET_SELECT_BACKUP.name(), // Triggers a transition to backups
-          WalletMode.TREZOR), "wrap");
-    } else {
-      contentPanel.add(
-              Panels.newWalletSelector(
-                      this,
-                      CREATE_WALLET_PREPARATION.name(), // Relies on create being default
-                      WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
-                      RESTORE_PASSWORD_SEED_PHRASE.name(),
-                      RESTORE_WALLET_SEED_PHRASE.name()
-              ), "wrap");
+    WalletMode walletMode = getWizardModel().getMode();
+    switch (walletMode) {
+      case KEEP_KEY:
+        // Fall through
+      case TREZOR:
+        contentPanel.add(
+          Panels.newHardwareWalletSelector(
+            this,
+            HARDWARE_CREATE_WALLET_PREPARATION.name(), // Relies on create being default
+            WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
+            RESTORE_WALLET_SELECT_BACKUP.name(), // Triggers a transition to backups
+            walletMode), "wrap");
+        break;
+      default:
+        contentPanel.add(
+          Panels.newWalletSelector(
+            this,
+            CREATE_WALLET_PREPARATION.name(), // Relies on create being default
+            WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
+            RESTORE_PASSWORD_SEED_PHRASE.name(),
+            RESTORE_WALLET_SEED_PHRASE.name()
+          ), "wrap");
+        break;
     }
 
     initialiseSelection();
@@ -98,7 +104,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
     if (WalletMode.TREZOR.equals(getWizardModel().getMode())) {
       currentSelection = HARDWARE_CREATE_WALLET_PREPARATION;
     } else {
-      // if there are no soft wallets there willbe an enabled create wallet
+      // if there are no soft wallets there will be an enabled create wallet
       if (WalletManager.getSoftWalletSummaries(Optional.<Locale>absent()).isEmpty()) {
         currentSelection = CREATE_WALLET_PREPARATION;
       } else {

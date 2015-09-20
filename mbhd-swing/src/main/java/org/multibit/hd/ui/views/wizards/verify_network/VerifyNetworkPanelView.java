@@ -40,7 +40,7 @@ public class VerifyNetworkPanelView extends AbstractWizardPanelView<VerifyNetwor
    */
   public VerifyNetworkPanelView(AbstractWizard<VerifyNetworkWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.VERIFY_NETWORK_TITLE, AwesomeIcon.SITEMAP);
+    super(wizard, panelName, AwesomeIcon.SITEMAP, MessageKey.VERIFY_NETWORK_TITLE, null);
 
   }
 

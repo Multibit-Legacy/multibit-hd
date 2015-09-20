@@ -51,7 +51,7 @@ public class SendBitcoinDisplayPaymentRequestPanelView extends AbstractWizardPan
    */
   public SendBitcoinDisplayPaymentRequestPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.DISPLAY_PAYMENT_REQUEST_TITLE, AwesomeIcon.MONEY);
+    super(wizard, panelName, AwesomeIcon.MONEY, MessageKey.DISPLAY_PAYMENT_REQUEST_TITLE, null);
 
   }
 

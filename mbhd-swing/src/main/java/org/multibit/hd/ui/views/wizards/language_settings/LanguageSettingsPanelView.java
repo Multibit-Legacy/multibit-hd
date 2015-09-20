@@ -47,7 +47,7 @@ public class LanguageSettingsPanelView extends AbstractWizardPanelView<LanguageS
    * @param panelName The panel name
    */
   public LanguageSettingsPanelView(AbstractWizard<LanguageSettingsWizardModel> wizard, String panelName) {
-    super(wizard, panelName, MessageKey.LANGUAGE_SETTINGS_TITLE, AwesomeIcon.GLOBE);
+    super(wizard, panelName, AwesomeIcon.GLOBE, MessageKey.LANGUAGE_SETTINGS_TITLE, null);
   }
 
   @Override

@@ -42,7 +42,7 @@ public class ChangePasswordReportPanelView extends AbstractWizardPanelView<Chang
    */
   public ChangePasswordReportPanelView(AbstractWizard<ChangePasswordWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.CHANGE_PASSWORD_TITLE, AwesomeIcon.FILE_TEXT);
+    super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.CHANGE_PASSWORD_TITLE, null);
 
   }
 

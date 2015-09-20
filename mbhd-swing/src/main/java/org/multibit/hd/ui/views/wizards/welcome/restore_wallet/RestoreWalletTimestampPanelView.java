@@ -44,7 +44,7 @@ public class RestoreWalletTimestampPanelView extends AbstractWizardPanelView<Wel
    */
   public RestoreWalletTimestampPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.RESTORE_WALLET_TIMESTAMP_TITLE, AwesomeIcon.MAGIC);
+    super(wizard, panelName, AwesomeIcon.MAGIC, MessageKey.RESTORE_WALLET_TIMESTAMP_TITLE, null);
 
   }
 

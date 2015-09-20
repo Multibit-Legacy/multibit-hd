@@ -35,7 +35,7 @@ public class UseTrezorSelectPanelView extends AbstractWizardPanelView<UseTrezorW
    */
   public UseTrezorSelectPanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.USE_HARDWARE_TITLE, AwesomeIcon.SHIELD);
+    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.USE_HARDWARE_TITLE, null);
 
   }
 

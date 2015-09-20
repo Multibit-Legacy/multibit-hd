@@ -33,7 +33,7 @@ public class RepairWalletPanelView extends AbstractWizardPanelView<RepairWalletW
    */
   public RepairWalletPanelView(AbstractWizard<RepairWalletWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.REPAIR_WALLET_TITLE, AwesomeIcon.MEDKIT);
+    super(wizard, panelName, AwesomeIcon.MEDKIT, MessageKey.REPAIR_WALLET_TITLE, null);
 
   }
 

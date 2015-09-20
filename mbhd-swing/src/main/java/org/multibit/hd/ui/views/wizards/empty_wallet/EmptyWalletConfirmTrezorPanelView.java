@@ -35,7 +35,7 @@ public class EmptyWalletConfirmTrezorPanelView extends AbstractWizardPanelView<E
    */
   public EmptyWalletConfirmTrezorPanelView(AbstractWizard<EmptyWalletWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE, AwesomeIcon.SHIELD);
+    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE, null);
 
   }
 

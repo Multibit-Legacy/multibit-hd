@@ -953,15 +953,12 @@ public enum MessageKey {
   BUY_KEEP_KEY("buy_keepkey"),
   BUY_KEEP_KEY_TOOLTIP("buy_keepkey_tooltip"),
 
-
-
-
   // End of enum
   ;
 
   private final String key;
 
-  private MessageKey(String key) {
+  MessageKey(String key) {
     this.key = key;
   }
 

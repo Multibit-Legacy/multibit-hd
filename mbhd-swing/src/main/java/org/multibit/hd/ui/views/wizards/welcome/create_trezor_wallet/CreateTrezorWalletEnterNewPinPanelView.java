@@ -40,7 +40,7 @@ public class CreateTrezorWalletEnterNewPinPanelView extends AbstractWizardPanelV
   public CreateTrezorWalletEnterNewPinPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     // Need to use the LOCK icon here because TH is visually confusing
-    super(wizard, panelName, MessageKey.CHANGE_PIN_ENTER_NEW_PIN_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.CHANGE_PIN_ENTER_NEW_PIN_TITLE, null);
 
   }
 

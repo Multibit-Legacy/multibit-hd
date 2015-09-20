@@ -7,6 +7,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.multibit.commons.utils.Dates;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.services.ApplicationEventService;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.messages.ButtonRequest;
@@ -240,7 +241,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
         @Override
         public Boolean call() throws Exception {
 
-          Optional<HardwareWalletService> hardwareWalletServiceOptional = getCurrentHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getCurrentHardwareWalletService();
           if (hardwareWalletServiceOptional.isPresent()) {
             HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
             featuresOptional = hardwareWalletService.getContext().getFeatures();
@@ -290,7 +291,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
         @Override
         public Boolean call() throws Exception {
 
-          Optional<HardwareWalletService> hardwareWalletServiceOptional = getCurrentHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getCurrentHardwareWalletService();
           if (hardwareWalletServiceOptional.isPresent()) {
             HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
             if (hardwareWalletService.isDeviceReady() && hardwareWalletService.isWalletPresent()) {
@@ -355,7 +356,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
           // This call to the Trezor will (sometime later) fire a
           // HardwareWalletEvent containing the encrypted text (or a PIN failure)
           // Expect a SHOW_OPERATION_SUCCEEDED or SHOW_OPERATION_FAILED
-          Optional<HardwareWalletService> hardwareWalletService = getCurrentHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
           hardwareWalletService.get().providePIN(pinPositions);
 
           // Must have successfully send the message to be here

@@ -100,6 +100,11 @@ public class CoreServices {
   private static List<Optional<HardwareWalletService>> hardwareWalletServices = Lists.newArrayList();
 
   /**
+   * Keep track of the current hardware wallet service
+   */
+  private static Optional<HardwareWalletService> currentHardwareWalletService = Optional.absent();
+
+  /**
    * Keeps track of the contact service for the current wallet
    * Optional service until wallet is unlocked
    */
@@ -121,7 +126,6 @@ public class CoreServices {
    * Manages CoreService startup and shutdown operations
    */
   private static volatile ListeningExecutorService coreServices = null;
-
   private static Context context;
 
   public static Context getContext() {
@@ -339,9 +343,9 @@ public class CoreServices {
    */
   public static synchronized List<Optional<HardwareWalletService>> getOrCreateHardwareWalletServices() {
 
-    log.debug("Get hardware wallet service");
-
     if (hardwareWalletServices.isEmpty() && Configurations.currentConfiguration.isTrezor()) {
+
+      log.debug("Attempting to create hardware wallet service entries");
 
       // Attempt Trezor support
       hardwareWalletServices.add(TREZOR_WALLET_SERVICE_INDEX, createTrezorHardwareWalletService());
@@ -353,6 +357,7 @@ public class CoreServices {
 
     // Ensure that we have absent entries if the list is still empty
     if (hardwareWalletServices.isEmpty()) {
+      log.debug("No hardware wallet service enabled");
       hardwareWalletServices.add(TREZOR_WALLET_SERVICE_INDEX, Optional.<HardwareWalletService>absent());
       hardwareWalletServices.add(KEEP_KEY_WALLET_SERVICE_INDEX, Optional.<HardwareWalletService>absent());
     }
@@ -364,7 +369,7 @@ public class CoreServices {
   /**
    * @param walletMode The wallet mode
    *
-   * @return The current active hardware wallet service from the list
+   * @return The hardware wallet for the given mode (may not be present or active) - consider getCurrentHardwareWalletService instead
    */
   public static synchronized Optional<HardwareWalletService> getHardwareWalletService(WalletMode walletMode) {
 
@@ -386,17 +391,49 @@ public class CoreServices {
   }
 
   /**
-   * @return The first hardware wallet in the list that is ready (attached and connected)
+   * <p>The selection rules are as follows:</p>
+   * <ol>
+   *   <li>If a current hardware wallet service is in place then use that (to avoid accidentally switching wallets during a session)</li>
+   *   <li>If no current hardware wallet is present, then check Trezor then KeepKey and so on</li>
+   *   <li>The first hardware wallet service in the "isDeviceReady" state is set as the current hardware wallet service</li>
+   * </ol>
+   *
+   * <p>Use the shutdown and restart hardware wallet methods to force a reset</p>
+   *
+   * @return The current hardware wallet service if present
    */
-  public static Optional<HardwareWalletService> getFirstReadyHardwareWalletService() {
+  public static Optional<HardwareWalletService> useFirstReadyHardwareWalletService() {
 
-    if (hardwareWalletServices.get(TREZOR_WALLET_SERVICE_INDEX).isPresent() && hardwareWalletServices.get(TREZOR_WALLET_SERVICE_INDEX).get().isDeviceReady()) {
-      return hardwareWalletServices.get(TREZOR_WALLET_SERVICE_INDEX);
+    // Always use the current if it is present
+    if (currentHardwareWalletService.isPresent()) {
+      return currentHardwareWalletService;
     }
-    if (hardwareWalletServices.get(KEEP_KEY_WALLET_SERVICE_INDEX).isPresent() && hardwareWalletServices.get(KEEP_KEY_WALLET_SERVICE_INDEX).get().isDeviceReady()) {
-      return hardwareWalletServices.get(KEEP_KEY_WALLET_SERVICE_INDEX);
+
+    Optional<HardwareWalletService> result;
+    if (hardwareWalletServices.get(TREZOR_WALLET_SERVICE_INDEX).isPresent()
+      && hardwareWalletServices.get(TREZOR_WALLET_SERVICE_INDEX).get().isDeviceReady()) {
+      // Trezor is ready
+      result = hardwareWalletServices.get(TREZOR_WALLET_SERVICE_INDEX);
+    } else if (hardwareWalletServices.get(KEEP_KEY_WALLET_SERVICE_INDEX).isPresent()
+      && hardwareWalletServices.get(KEEP_KEY_WALLET_SERVICE_INDEX).get().isDeviceReady()) {
+      // KeepKey is ready
+      result = hardwareWalletServices.get(KEEP_KEY_WALLET_SERVICE_INDEX);
+    } else {
+      // Nothing is ready
+      result = Optional.absent();
     }
-    return Optional.absent();
+
+    // Ensure the current hardware wallet service tracks the first ready if requested
+    currentHardwareWalletService = result;
+
+    return result;
+  }
+
+  /**
+   * @return The current hardware wallet service (set by first ready)
+   */
+  public static Optional<HardwareWalletService> getCurrentHardwareWalletService() {
+    return currentHardwareWalletService;
   }
 
   /**
@@ -620,7 +657,7 @@ public class CoreServices {
   /**
    * @return A hardware wallet service for the Trezor device if present
    */
-  private static Optional<HardwareWalletService> createTrezorHardwareWalletService() {
+  private static synchronized Optional<HardwareWalletService> createTrezorHardwareWalletService() {
     try {
       // Use factory to statically bind a specific hardware wallet
       TrezorV1HidHardwareWallet wallet = HardwareWallets.newUsbInstance(
@@ -644,7 +681,7 @@ public class CoreServices {
   /**
    * @return A hardware wallet service for the KeepKey device if present
    */
-  private static Optional<HardwareWalletService> createKeepKeyHardwareWalletService() {
+  private static synchronized Optional<HardwareWalletService> createKeepKeyHardwareWalletService() {
     try {
       // Use factory to statically bind a specific hardware wallet
       KeepKeyV1HidHardwareWallet wallet = HardwareWallets.newUsbInstance(

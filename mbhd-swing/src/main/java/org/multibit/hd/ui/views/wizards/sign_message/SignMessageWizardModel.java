@@ -14,6 +14,7 @@ import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.SignMessageResult;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ApplicationEventService;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
@@ -133,7 +134,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
           // This call to the Trezor will (sometime later) fire a
           // HardwareWalletEvent containing the encrypted text (or a PIN failure)
           // Expect a MESSAGE_SIGNATURE or SHOW_OPERATION_FAILED
-          Optional<HardwareWalletService> hardwareWalletService = getCurrentHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
           hardwareWalletService.get().signMessage(
             0,
             KeyChain.KeyPurpose.RECEIVE_FUNDS,
@@ -191,7 +192,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
           // This call to the Trezor will (sometime later) fire a
           // HardwareWalletEvent containing the encrypted text (or a PIN failure)
           // Expect a SHOW_OPERATION_SUCCEEDED or SHOW_OPERATION_FAILED
-          Optional<HardwareWalletService> hardwareWalletService = getCurrentHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
           hardwareWalletService.get().providePIN(pinPositions);
 
           // Must have successfully send the message to be here

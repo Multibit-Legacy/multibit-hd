@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.wizards.send_bitcoin;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -43,7 +44,7 @@ public class SendBitcoinEnterPinPanelView extends AbstractWizardPanelView<SendBi
    */
   public SendBitcoinEnterPinPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.PIN_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE, null);
 
   }
 
@@ -117,7 +118,7 @@ public class SendBitcoinEnterPinPanelView extends AbstractWizardPanelView<SendBi
 
     registerDefaultButton(getFinishButton());
 
-    Optional<HardwareWalletService> currentHardwareWalletService = getWizardModel().getCurrentHardwareWalletService();
+    Optional<HardwareWalletService> currentHardwareWalletService = CoreServices.getCurrentHardwareWalletService();
 
     // Finally check that the firmware is supported
     // The user may try to ignore the popover warnings

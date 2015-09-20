@@ -41,7 +41,7 @@ public class ExitSelectPanelView extends AbstractWizardPanelView<ExitWizardModel
    */
   public ExitSelectPanelView(AbstractWizard<ExitWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.EXIT_OR_SWITCH_TITLE, AwesomeIcon.RANDOM);
+    super(wizard, panelName, AwesomeIcon.RANDOM, MessageKey.EXIT_OR_SWITCH_TITLE, null);
 
   }
 

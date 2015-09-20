@@ -38,7 +38,7 @@ public class CreateTrezorWalletSelectBackupLocationPanelView extends AbstractWiz
    */
   public CreateTrezorWalletSelectBackupLocationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SELECT_BACKUP_LOCATION_TITLE, AwesomeIcon.FOLDER_OPEN);
+    super(wizard, panelName, AwesomeIcon.FOLDER_OPEN, MessageKey.SELECT_BACKUP_LOCATION_TITLE, null);
 
   }
 

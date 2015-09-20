@@ -62,7 +62,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
    */
   public EmptyWalletReportPanelView(AbstractWizard<EmptyWalletWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.EMPTY_WALLET_PROGRESS_TITLE, AwesomeIcon.FIRE);
+    super(wizard, panelName, AwesomeIcon.FIRE, MessageKey.EMPTY_WALLET_PROGRESS_TITLE, null);
 
   }
 
@@ -136,7 +136,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
   public void afterShow() {
 
     // Check for report message from hardware wallet
-    LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
+    LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), null, getWizardModel().getReportMessageStatus());
 
     if (getWizardModel().getReportMessageKey().isPresent() && !getWizardModel().getReportMessageStatus()) {
       // Hardware wallet report indicates cancellation

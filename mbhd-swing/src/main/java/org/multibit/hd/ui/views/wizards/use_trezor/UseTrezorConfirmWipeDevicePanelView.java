@@ -26,7 +26,7 @@ import javax.swing.*;
  * @since 0.0.5
  *         
  */
-public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorPressConfirmForEncryptCodePanelModel> {
+public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorConfirmWipeDevicePanelModel> {
 
   private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
 
@@ -36,7 +36,7 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
    */
   public UseTrezorConfirmWipeDevicePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE, AwesomeIcon.ERASER);
+    super(wizard, panelName, AwesomeIcon.ERASER, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE, null);
 
   }
 

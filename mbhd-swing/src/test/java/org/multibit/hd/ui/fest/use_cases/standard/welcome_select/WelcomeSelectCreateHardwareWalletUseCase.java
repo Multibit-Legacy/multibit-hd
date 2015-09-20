@@ -16,9 +16,9 @@ import java.util.Map;
  * @since 0.0.1
  *
  */
-public class WelcomeSelectCreateTrezorWalletUseCase extends AbstractFestUseCase {
+public class WelcomeSelectCreateHardwareWalletUseCase extends AbstractFestUseCase {
 
-  public WelcomeSelectCreateTrezorWalletUseCase(FrameFixture window) {
+  public WelcomeSelectCreateHardwareWalletUseCase(FrameFixture window) {
     super(window);
   }
 

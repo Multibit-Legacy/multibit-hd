@@ -36,7 +36,7 @@ public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<
    */
   public UseTrezorRequestCipherKeyPanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.PIN_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE, null);
 
   }
 

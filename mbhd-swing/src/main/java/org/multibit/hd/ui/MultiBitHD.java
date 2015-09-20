@@ -284,7 +284,6 @@ public class MultiBitHD {
     // and for MainController to subsequently process the events
     // The delay observed in reality and FEST tests ranges from 1400-2200ms and if
     // not included results in wiped hardware wallets being missed on startup
-    CoreServices.getOrCreateHardwareWalletServices();
     log.debug("Starting the clock for hardware wallet initialisation");
     long hardwareInitialisationTime = System.currentTimeMillis();
 
@@ -367,8 +366,8 @@ public class MultiBitHD {
     boolean deviceAttached = false;
     boolean deviceWiped = false;
 
-    // Check hardware wallet situation after initialisation
-    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getFirstReadyHardwareWalletService();
+    // Check hardware wallet situation after first initialisation (may not be present or ready)
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
 
     if (hardwareWalletService.isPresent()) {
       // Hardware wallet must be attached to be present

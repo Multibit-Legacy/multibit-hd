@@ -259,7 +259,7 @@ public class Wizards {
       log.debug("Creating 'Credentials wizard' with credentialsRequestType = " + credentialsRequestType);
       CredentialsWizardModel model;
       switch (credentialsRequestType) {
-        case TREZOR:
+        case HARDWARE:
           model = new CredentialsWizardModel(CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY);
           break;
         case PASSWORD:

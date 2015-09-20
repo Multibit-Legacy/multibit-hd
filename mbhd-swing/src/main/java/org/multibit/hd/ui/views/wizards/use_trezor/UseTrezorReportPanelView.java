@@ -10,6 +10,7 @@ import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
@@ -32,9 +33,9 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public UseTrezorReportPanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
+  public UseTrezorReportPanelView(AbstractHardwareWalletWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.USE_HARDWARE_REPORT_TITLE, AwesomeIcon.FILE_TEXT);
+    super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.USE_HARDWARE_REPORT_TITLE, null);
 
   }
 
@@ -81,7 +82,12 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
     // Check for report message from hardware wallet
-    LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
+    LabelDecorator.applyReportMessage(
+      reportStatusLabel,
+      getWizardModel().getReportMessageKey(),
+      null,
+      getWizardModel().getReportMessageStatus()
+    );
 
     return true;
   }

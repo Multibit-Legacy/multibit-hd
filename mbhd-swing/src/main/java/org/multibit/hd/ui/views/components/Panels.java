@@ -538,7 +538,7 @@ public class Panels {
    * @param createCommand         The create command name
    * @param existingWalletCommand The existing wallet command name
    * @param restoreWalletCommand  The restore wallet command name
-   * @param walletMode            The wallet mode to ensure correct naming
+   * @param walletMode            The wallet mode
    *
    * @return A new "wallet selector" panel
    */
@@ -546,14 +546,14 @@ public class Panels {
     ActionListener listener,
     String createCommand,
     String existingWalletCommand,
-    String restoreWalletCommand,
-    WalletMode walletMode) {
+    String restoreWalletCommand, WalletMode walletMode) {
 
     JPanel panel = Panels.newPanel();
 
     boolean enableUseExisting = !WalletManager.getWalletSummaries().isEmpty();
 
-    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getHardwareWalletService(walletMode);
+    // Use the service associated with the wallet mode
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
 
     boolean enableRestore = hardwareWalletService.isPresent()
       && hardwareWalletService.get().isDeviceReady()

@@ -40,7 +40,7 @@ public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrez
    */
   public UseTrezorBuyTrezorPanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.BUY_TREZOR_TITLE, AwesomeIcon.SHIELD);
+    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.BUY_TREZOR_TITLE, null);
 
   }
 

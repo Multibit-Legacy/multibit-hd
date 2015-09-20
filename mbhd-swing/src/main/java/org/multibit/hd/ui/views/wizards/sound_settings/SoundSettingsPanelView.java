@@ -46,7 +46,7 @@ public class SoundSettingsPanelView extends AbstractWizardPanelView<SoundSetting
    */
   public SoundSettingsPanelView(AbstractWizard<SoundSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SHOW_SOUNDS_WIZARD, AwesomeIcon.MUSIC);
+    super(wizard, panelName, AwesomeIcon.MUSIC, MessageKey.SHOW_SOUNDS_WIZARD, null);
 
   }
 

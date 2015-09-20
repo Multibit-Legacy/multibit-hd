@@ -46,7 +46,7 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
    */
   public CreateTrezorWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.USE_HARDWARE_REPORT_TITLE, AwesomeIcon.FILE_TEXT);
+    super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.USE_HARDWARE_REPORT_TITLE, null);
 
   }
 
@@ -105,7 +105,8 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
   public boolean beforeShow() {
 
     // Check for report message from hardware wallet
-    LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
+    LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), new Object[] { getWizardModel().getMode().brand()}, getWizardModel()
+      .getReportMessageStatus());
 
     // Remember the cloud backup location
     String cloudBackupLocation = getWizardModel().getCloudBackupLocation();
