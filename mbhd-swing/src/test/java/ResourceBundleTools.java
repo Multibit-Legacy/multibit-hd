@@ -19,10 +19,10 @@ import java.util.ResourceBundle;
  * <ul>
  * <li>Ordering keys across all resource bundles</li>
  * <li>Locating similar items</li>
+ * <li>Locating items with placeholders to assist appropriate parameter inclusion (e.g. branding)</li>
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class ResourceBundleTools {
 
@@ -31,6 +31,8 @@ public class ResourceBundleTools {
     Configurations.currentConfiguration = Configurations.newDefaultConfiguration();
 
     //findSimilarEntries();
+
+    //findEntriesWithPlaceholders();
 
     matchBaseOrder();
 
@@ -160,5 +162,25 @@ public class ResourceBundleTools {
 
   }
 
+  /**
+   * <p>Looks for entries outside of the MessageKey collection that are similar to those added.</p>
+   * <p>If possible MessageKey should be updated to absorb the existing translated entry.</p>
+   */
+  public static void findEntriesWithPlaceholders() {
+
+    ResourceBundle baseBundle = ResourceBundle.getBundle(Languages.BASE_NAME);
+
+    // Work through all the MessageKey entries
+    for (MessageKey messageKey : MessageKey.values()) {
+
+      String entry = baseBundle.getString(messageKey.getKey());
+
+      if (entry.contains("{")) {
+        System.out.println(messageKey.name());
+      }
+
+    }
+
+  }
 
 }
