@@ -81,7 +81,7 @@ public class FooterView extends AbstractView {
     // Hardware wallet icon
     JLabel hardwareWalletIcon = Labels.newBlankLabel();
     AwesomeDecorator.bindIcon(AwesomeIcon.SHIELD, hardwareWalletIcon, false, MultiBitUI.SMALL_ICON_SIZE);
-    AccessibilityDecorator.apply(hardwareWalletIcon, MessageKey.SELECT_TREZOR, MessageKey.SELECT_TREZOR_TOOLTIP);
+    AccessibilityDecorator.apply(hardwareWalletIcon, MessageKey.SELECT_HARDWARE_WALLET, MessageKey.SELECT_HARDWARE_WALLET_TOOLTIP);
 
     // The icon is only changed during a soft reset and the FooterView will be rebuilt each time
     hardwareWalletIcon.setVisible(WalletManager.INSTANCE.isUnlockedTrezorHardWallet());

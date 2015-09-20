@@ -37,7 +37,7 @@ public class TrezorConfirmUnlockUseCase extends AbstractHardwareWalletFestUseCas
 
     // Check that the Trezor press confirm to unlock panel view is showing
     window
-      .label(MessageKey.TREZOR_PRESS_CONFIRM_TITLE.getKey())
+      .label(MessageKey.HARDWARE_PRESS_CONFIRM_TITLE.getKey())
       .requireVisible();
 
     window

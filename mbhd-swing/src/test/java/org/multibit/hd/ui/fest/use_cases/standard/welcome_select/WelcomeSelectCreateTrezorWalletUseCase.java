@@ -32,7 +32,7 @@ public class WelcomeSelectCreateTrezorWalletUseCase extends AbstractFestUseCase 
     assertLabelText(MessageKey.SELECT_WALLET_TITLE);
 
     window
-      .radioButton(MessageKey.TREZOR_CREATE_WALLET.getKey())
+      .radioButton(MessageKey.HARDWARE_CREATE_WALLET.getKey())
       .requireSelected()
       .requireEnabled()
       .requireVisible();

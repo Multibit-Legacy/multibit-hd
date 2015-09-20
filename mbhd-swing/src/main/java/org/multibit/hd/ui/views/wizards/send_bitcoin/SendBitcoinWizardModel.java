@@ -770,7 +770,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
               sendRequestSummary.getSendRequest().get().tx = deviceTx;
               log.debug("The transaction fee was {}", sendRequestSummary.getSendRequest().get().fee);
 
-              sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_TRANSACTION_CREATED_OPERATION);
+              sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.HARDWARE_TRANSACTION_CREATED_OPERATION);
               sendBitcoinConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
               sendBitcoinConfirmTrezorPanelView.setDisplayVisible(false);
 
@@ -784,7 +784,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
               ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
             } else {
               // The signed transaction is essentially different from what was sent to it - abort send
-              sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
+              sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.HARDWARE_FAILURE_OPERATION);
               sendBitcoinConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
               sendBitcoinConfirmTrezorPanelView.setDisplayVisible(false);
             }
@@ -804,13 +804,13 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     switch (state) {
       case SEND_ENTER_PIN_FROM_CONFIRM_TREZOR:
         state = SendBitcoinState.SEND_REPORT;
-        setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+        setReportMessageKey(MessageKey.HARDWARE_INCORRECT_PIN_FAILURE);
         setReportMessageStatus(false);
         requestCancel();
         break;
       default:
         state = SendBitcoinState.SEND_REPORT;
-        setReportMessageKey(MessageKey.TREZOR_SIGN_FAILURE);
+        setReportMessageKey(MessageKey.HARDWARE_SIGN_FAILURE);
         setReportMessageStatus(false);
         requestCancel();
         break;

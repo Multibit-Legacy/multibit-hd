@@ -37,7 +37,7 @@ public class TrezorConfirmWipeUseCase extends AbstractHardwareWalletFestUseCase 
 
     // Check that the Trezor press confirm to wipe panel view is showing
     window
-      .label(MessageKey.TREZOR_PRESS_CONFIRM_TITLE.getKey())
+      .label(MessageKey.HARDWARE_PRESS_CONFIRM_TITLE.getKey())
       .requireVisible();
 
     window

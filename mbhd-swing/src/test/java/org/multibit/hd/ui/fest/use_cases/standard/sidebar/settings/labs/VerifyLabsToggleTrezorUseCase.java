@@ -54,7 +54,7 @@ public class VerifyLabsToggleTrezorUseCase extends AbstractFestUseCase {
 
     // Verify Trezor "Yes" is selected (0) then select "No"
     window
-      .comboBox(MessageKey.SELECT_TREZOR.getKey())
+      .comboBox(MessageKey.SELECT_HARDWARE_WALLET.getKey())
       .requireSelection(0)
       .selectItem(Languages.safeText(MessageKey.NO));
 
@@ -84,7 +84,7 @@ public class VerifyLabsToggleTrezorUseCase extends AbstractFestUseCase {
 
     // Verify "No" is selected (1) then select "Yes"
     window
-      .comboBox(MessageKey.SELECT_TREZOR.getKey())
+      .comboBox(MessageKey.SELECT_HARDWARE_WALLET.getKey())
       .requireSelection(1)
       .selectItem(Languages.safeText(MessageKey.YES));
 

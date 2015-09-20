@@ -39,7 +39,7 @@ public class CreateTrezorWalletConfirmCreateWalletPanelView extends AbstractWiza
    */
   public CreateTrezorWalletConfirmCreateWalletPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_PRESS_CONFIRM_TITLE, AwesomeIcon.SHIELD);
+    super(wizard, panelName, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE, AwesomeIcon.SHIELD);
 
   }
 
@@ -79,7 +79,7 @@ public class CreateTrezorWalletConfirmCreateWalletPanelView extends AbstractWiza
   public void afterShow() {
 
     // Set the confirm text
-    trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
+    trezorDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION);
 
     // Show wipe message
     trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);

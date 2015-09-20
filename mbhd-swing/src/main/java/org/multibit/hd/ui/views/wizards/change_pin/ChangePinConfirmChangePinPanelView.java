@@ -36,7 +36,7 @@ public class ChangePinConfirmChangePinPanelView extends AbstractWizardPanelView<
   public ChangePinConfirmChangePinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
     // Need to use the LOCK icon here because TH is visually confusing
-    super(wizard, panelName, MessageKey.TREZOR_CONFIRM_CHANGE_PIN_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, MessageKey.HARDWARE_CONFIRM_CHANGE_PIN_TITLE, AwesomeIcon.LOCK);
 
   }
 
@@ -90,7 +90,7 @@ public class ChangePinConfirmChangePinPanelView extends AbstractWizardPanelView<
   public void afterShow() {
 
     // Show the current Trezor display
-    trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
+    trezorDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION);
     trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_CHANGE_PIN_DISPLAY);
 
   }

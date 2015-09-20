@@ -36,7 +36,7 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
    */
   public CredentialsConfirmCipherKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_PRESS_CONFIRM_TITLE, AwesomeIcon.SHIELD);
+    super(wizard, panelName, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE, AwesomeIcon.SHIELD);
 
   }
 
@@ -78,7 +78,7 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
   public void afterShow() {
 
     // Set the confirm text
-    trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_UNLOCK_OPERATION);
+    trezorDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_UNLOCK_OPERATION);
 
     // Show unlock message
     trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY);

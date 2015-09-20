@@ -538,7 +538,7 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
             bitcoinNetworkService.setLastSendRequestSummaryOptional(Optional.<SendRequestSummary>absent());
             bitcoinNetworkService.setLastWalletOptional(Optional.<Wallet>absent());
 
-            emptyWalletConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_TRANSACTION_CREATED_OPERATION);
+            emptyWalletConfirmTrezorPanelView.setOperationText(MessageKey.HARDWARE_TRANSACTION_CREATED_OPERATION);
             emptyWalletConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
             emptyWalletConfirmTrezorPanelView.setDisplayVisible(false);
 
@@ -558,13 +558,13 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
     switch (state) {
       case EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_TREZOR:
         state = EmptyWalletState.EMPTY_WALLET_REPORT;
-        setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+        setReportMessageKey(MessageKey.HARDWARE_INCORRECT_PIN_FAILURE);
         setReportMessageStatus(false);
         requestCancel();
         break;
       default:
         state = EmptyWalletState.EMPTY_WALLET_REPORT;
-        setReportMessageKey(MessageKey.TREZOR_SIGN_FAILURE);
+        setReportMessageKey(MessageKey.HARDWARE_SIGN_FAILURE);
         setReportMessageStatus(false);
         requestCancel();
         break;

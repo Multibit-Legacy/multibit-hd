@@ -46,7 +46,7 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
    */
   public CreateTrezorWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.USE_TREZOR_REPORT_TITLE, AwesomeIcon.FILE_TEXT);
+    super(wizard, panelName, MessageKey.USE_HARDWARE_REPORT_TITLE, AwesomeIcon.FILE_TEXT);
 
   }
 
@@ -71,7 +71,7 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Provide an empty status label (populated after show)
-    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.TREZOR_FAILURE_OPERATION), null, Optional.<Boolean>absent());
+    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.HARDWARE_FAILURE_OPERATION), null, Optional.<Boolean>absent());
     reportStatusLabel.setVisible(false);
 
     timestampLabel = Labels.newTimestamp();

@@ -35,7 +35,7 @@ public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<
    */
   public ChangePinRequestRemovePinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_CONFIRM_REMOVE_PIN_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, MessageKey.HARDWARE_CONFIRM_REMOVE_PIN_TITLE, AwesomeIcon.LOCK);
 
   }
 
@@ -109,7 +109,7 @@ public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<
 
   public void confirmRemovePin() {
 
-    trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
+    trezorDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION);
     trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_REMOVE_PIN_DISPLAY);
 
   }

@@ -141,7 +141,7 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
     note5Label.setVisible(false);
 
     // Provide an empty status label (populated after show)
-    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.TREZOR_FOUND), null, Optional.<Boolean>absent());
+    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.HARDWARE_FOUND), null, Optional.<Boolean>absent());
     reportStatusLabel.setVisible(false);
 
     contentPanel.add(reportStatusLabel, "span 2,aligny top,wrap");
@@ -196,7 +196,7 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
         // Configure the initial state (the wizard may not have been created when the DEVICE_READY was issued)
         final Optional<HardwareWalletService> hardwareWalletService = getWizardModel().getCurrentHardwareWalletService();
         if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
-          setHardwareWalletStatus(Optional.of(MessageKey.TREZOR_FOUND), true);
+          setHardwareWalletStatus(Optional.of(MessageKey.HARDWARE_FOUND), true);
         }
         break;
       default:

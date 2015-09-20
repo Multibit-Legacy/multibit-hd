@@ -292,9 +292,9 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
 
           } else {
             if (removePin) {
-              requestRemovePinPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
+              requestRemovePinPanelView.setOperationText(MessageKey.HARDWARE_FAILURE_OPERATION);
             } else {
-              requestChangePinPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
+              requestChangePinPanelView.setOperationText(MessageKey.HARDWARE_FAILURE_OPERATION);
             }
           }
 
@@ -359,7 +359,7 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
             case ENTER_NEW_PIN:
             case CONFIRM_NEW_PIN:
               state = ChangePinState.SHOW_REPORT;
-              setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+              setReportMessageKey(MessageKey.HARDWARE_INCORRECT_PIN_FAILURE);
               setReportMessageStatus(false);
               break;
             default:
@@ -381,7 +381,7 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
       case ENTER_CURRENT_PIN:
         if (removePin) {
           state = ChangePinState.SHOW_REPORT;
-          setReportMessageKey(MessageKey.TREZOR_REMOVE_PIN_SUCCESS);
+          setReportMessageKey(MessageKey.HARDWARE_REMOVE_PIN_SUCCESS);
           setReportMessageStatus(true);
         }
         // Update the features for next time
@@ -392,7 +392,7 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
         break;
       case CONFIRM_NEW_PIN:
         state = ChangePinState.SHOW_REPORT;
-        setReportMessageKey(MessageKey.TREZOR_CHANGE_PIN_SUCCESS);
+        setReportMessageKey(MessageKey.HARDWARE_CHANGE_PIN_SUCCESS);
         setReportMessageStatus(true);
         // Update the features for next time
         getCurrentHardwareWalletService().get().getContext().resetToAttached();
@@ -412,12 +412,12 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
 
       case CONFIRM_ADD_PIN:
         state = ChangePinState.SHOW_REPORT;
-        setReportMessageKey(MessageKey.TREZOR_ADD_PIN_FAILURE);
+        setReportMessageKey(MessageKey.HARDWARE_ADD_PIN_FAILURE);
         setReportMessageStatus(false);
         break;
       case CONFIRM_CHANGE_PIN:
         state = ChangePinState.SHOW_REPORT;
-        setReportMessageKey(MessageKey.TREZOR_CHANGE_PIN_FAILURE);
+        setReportMessageKey(MessageKey.HARDWARE_CHANGE_PIN_FAILURE);
         setReportMessageStatus(false);
         break;
       case CONFIRM_REMOVE_PIN:
@@ -427,7 +427,7 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
       case ENTER_NEW_PIN:
       case CONFIRM_NEW_PIN:
         state = ChangePinState.SHOW_REPORT;
-        setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+        setReportMessageKey(MessageKey.HARDWARE_INCORRECT_PIN_FAILURE);
         setReportMessageStatus(false);
         break;
       default:

@@ -28,9 +28,9 @@ public class HardwareWalletFixtures {
 
     switch (walletMode) {
       case TREZOR:
-        return new TrezorWipedFixture();
+        return new TrezorWipedFixture(walletMode.name());
       case KEEP_KEY:
-        return new KeepKeyWipedFixture();
+        return new KeepKeyWipedFixture(walletMode.name());
       default:
         throw new IllegalStateException("Unsupported wallet mode: " + walletMode.name());
     }
@@ -46,9 +46,9 @@ public class HardwareWalletFixtures {
 
     switch (walletMode) {
       case TREZOR:
-        return new TrezorInitialisedUnlockFixture();
+        return new TrezorInitialisedUnlockFixture(walletMode.name());
       case KEEP_KEY:
-        return new KeepKeyInitialisedUnlockFixture();
+        return new KeepKeyInitialisedUnlockFixture(walletMode.name());
       default:
         throw new IllegalStateException("Unsupported wallet mode: " + walletMode.name());
     }
@@ -63,9 +63,9 @@ public class HardwareWalletFixtures {
   public static HardwareWalletFixture newInitialisedReattachedFixture(WalletMode walletMode) {
     switch (walletMode) {
       case TREZOR:
-        return new TrezorInitialisedReattachedFixture();
+        return new TrezorInitialisedReattachedFixture(walletMode.name());
       case KEEP_KEY:
-        return new KeepKeyInitialisedReattachedFixture();
+        return new KeepKeyInitialisedReattachedFixture(walletMode.name());
       default:
         throw new IllegalStateException("Unsupported wallet mode: " + walletMode.name());
     }
@@ -79,9 +79,9 @@ public class HardwareWalletFixtures {
   public static HardwareWalletFixture newInitialisedRestoreFixture(WalletMode walletMode) {
     switch (walletMode) {
       case TREZOR:
-        return new TrezorInitialisedRestoreFixture();
+        return new TrezorInitialisedRestoreFixture(walletMode.name());
       case KEEP_KEY:
-        return new KeepKeyInitialisedRestoreFixture();
+        return new KeepKeyInitialisedRestoreFixture(walletMode.name());
       default:
         throw new IllegalStateException("Unsupported wallet mode: " + walletMode.name());
     }
@@ -95,9 +95,9 @@ public class HardwareWalletFixtures {
   public static HardwareWalletFixture newInitialisedUnsupportedFirmwareFixture(WalletMode walletMode) {
     switch (walletMode) {
       case TREZOR:
-        return new TrezorInitialisedUnsupportedFirmwareFixture();
+        return new TrezorInitialisedUnsupportedFirmwareFixture(walletMode.name());
       case KEEP_KEY:
-        return new KeepKeyInitialisedUnsupportedFirmwareFixture();
+        return new KeepKeyInitialisedUnsupportedFirmwareFixture(walletMode.name());
       default:
         throw new IllegalStateException("Unsupported wallet mode: " + walletMode.name());
     }
@@ -111,9 +111,9 @@ public class HardwareWalletFixtures {
   public static HardwareWalletFixture newInitialisedDeprecatedFirmwareFixture(WalletMode walletMode) {
     switch (walletMode) {
       case TREZOR:
-        return new TrezorInitialisedDeprecatedFirmwareFixture();
+        return new TrezorInitialisedDeprecatedFirmwareFixture(walletMode.name());
       case KEEP_KEY:
-        return new KeepKeyInitialisedDeprecatedFirmwareFixture();
+        return new KeepKeyInitialisedDeprecatedFirmwareFixture(walletMode.name());
       default:
         throw new IllegalStateException("Unsupported wallet mode: " + walletMode.name());
     }
@@ -127,9 +127,9 @@ public class HardwareWalletFixtures {
   public static HardwareWalletFixture newInitialisedUnsupportedConfigurationPassphraseFixture(WalletMode walletMode) {
     switch (walletMode) {
       case TREZOR:
-        return new TrezorInitialisedUnsupportedConfigurationPassphraseFixture();
+        return new TrezorInitialisedUnsupportedConfigurationPassphraseFixture(walletMode.name());
       case KEEP_KEY:
-        return new KeepKeyInitialisedUnsupportedConfigurationPassphraseFixture();
+        return new KeepKeyInitialisedUnsupportedConfigurationPassphraseFixture(walletMode.name());
       default:
         throw new IllegalStateException("Unsupported wallet mode: " + walletMode.name());
     }

@@ -77,8 +77,8 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
           this,
           HARDWARE_CREATE_WALLET_PREPARATION.name(), // Relies on create being default
           WELCOME_SELECT_WALLET.name(), // Triggers a transition to credentials
-          RESTORE_WALLET_SELECT_BACKUP.name() // Triggers a transition to backups
-        ), "wrap");
+          RESTORE_WALLET_SELECT_BACKUP.name(), // Triggers a transition to backups
+          WalletMode.TREZOR), "wrap");
     } else {
       contentPanel.add(
               Panels.newWalletSelector(

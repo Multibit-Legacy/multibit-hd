@@ -27,11 +27,11 @@ public class ShowThenCancelTrezorToolsUseCase extends AbstractFestUseCase {
 
     // Click on "Trezor"
     window
-      .button(MessageKey.SHOW_TREZOR_TOOLS_WIZARD.getKey())
+      .button(MessageKey.SHOW_HARDWARE_TOOLS_WIZARD.getKey())
       .click();
 
     // Verify the "Trezor tools" wizard appears
-    assertLabelText(MessageKey.USE_TREZOR_TITLE);
+    assertLabelText(MessageKey.USE_HARDWARE_TITLE);
 
     // Verify Cancel is present
     window

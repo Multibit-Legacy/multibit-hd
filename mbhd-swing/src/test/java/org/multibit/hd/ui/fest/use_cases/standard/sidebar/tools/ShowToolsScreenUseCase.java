@@ -59,7 +59,7 @@ public class ShowToolsScreenUseCase extends AbstractFestUseCase {
       .requireEnabled();
 
     window
-      .button(MessageKey.SHOW_TREZOR_TOOLS_WIZARD.getKey())
+      .button(MessageKey.SHOW_HARDWARE_TOOLS_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();
 

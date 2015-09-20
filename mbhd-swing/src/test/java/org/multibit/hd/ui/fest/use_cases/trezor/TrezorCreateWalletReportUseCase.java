@@ -32,11 +32,11 @@ public class TrezorCreateWalletReportUseCase extends AbstractHardwareWalletFestU
 
     // Check that the Trezor enter next word view is showing
     window
-      .label(MessageKey.USE_TREZOR_REPORT_TITLE.getKey())
+      .label(MessageKey.USE_HARDWARE_REPORT_TITLE.getKey())
       .requireVisible();
 
     window
-      .label(MessageKey.USE_TREZOR_REPORT_MESSAGE_SUCCESS.getKey())
+      .label(MessageKey.USE_HARDWARE_REPORT_MESSAGE_SUCCESS.getKey())
       .requireVisible();
 
     window

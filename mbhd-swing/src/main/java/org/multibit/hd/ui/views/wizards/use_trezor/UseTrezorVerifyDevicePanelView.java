@@ -39,7 +39,7 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
    */
   public UseTrezorVerifyDevicePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_VERIFY_DEVICE_TITLE, AwesomeIcon.MEDKIT);
+    super(wizard, panelName, MessageKey.HARDWARE_VERIFY_DEVICE_TITLE, AwesomeIcon.MEDKIT);
 
   }
 
@@ -68,10 +68,10 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
 
     // Trezor communications status label
     trezorCommunicationsStatusLabel = Labels.newStatusLabel(
-            Optional.of(MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION),
+            Optional.of(MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION),
             null,
             Optional.<Boolean>absent());
-    AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION);
+    AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION);
 
     contentPanel.add(trezorCommunicationsStatusLabel, "wrap");
     // The Trezor features is a wall of text so needs scroll bars
@@ -135,14 +135,14 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
           Optional<Features> optionalFeatures = getWizardModel().getFeaturesOptional();
           if (optionalFeatures.isPresent()) {
             // Got features ok
-            trezorCommunicationsStatusLabel.setText(Languages.safeText(MessageKey.TREZOR_FOUND));
-            AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.TREZOR_FOUND);
+            trezorCommunicationsStatusLabel.setText(Languages.safeText(MessageKey.HARDWARE_FOUND));
+            AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.HARDWARE_FOUND);
 
             featuresTextArea.setText(optionalFeatures.get().toString());
           } else {
             // No features
-            trezorCommunicationsStatusLabel.setText(Languages.safeText(MessageKey.NO_TREZOR_FOUND));
-            AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.NO_TREZOR_FOUND);
+            trezorCommunicationsStatusLabel.setText(Languages.safeText(MessageKey.NO_HARDWARE_FOUND));
+            AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.NO_HARDWARE_FOUND);
           }
 
         }

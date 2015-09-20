@@ -714,7 +714,7 @@ public class TextBoxes {
     textField.setDocument(doc);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.ENTER_TREZOR_LABEL, MessageKey.ENTER_TREZOR_LABEL_TOOLTIP);
+    AccessibilityDecorator.apply(textField, MessageKey.ENTER_HARDWARE_LABEL, MessageKey.ENTER_HARDWARE_LABEL_TOOLTIP);
 
     return textField;
 

@@ -36,7 +36,7 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
    */
   public UseTrezorConfirmWipeDevicePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_PRESS_CONFIRM_TITLE, AwesomeIcon.ERASER);
+    super(wizard, panelName, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE, AwesomeIcon.ERASER);
 
   }
 
@@ -73,7 +73,7 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
   public void afterShow() {
 
     // Set the confirm text
-    trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
+    trezorDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION);
 
     // Show unlock message
     trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);

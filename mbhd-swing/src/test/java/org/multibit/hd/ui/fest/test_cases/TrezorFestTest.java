@@ -21,6 +21,8 @@ import org.multibit.hd.ui.fest.use_cases.trezor.TrezorSendBitcoinTrezorRequireme
  */
 public class TrezorFestTest extends AbstractFestTest {
 
+  private static final WalletMode walletMode = WalletMode.TREZOR;
+
   /**
    * <p>Verify the following:</p>
    * <ul>
@@ -34,7 +36,7 @@ public class TrezorFestTest extends AbstractFestTest {
   public void verifyCreateHardwareWallet_ColdStart() throws Exception {
 
     // Prepare an empty and attached Trezor device that will be initialised
-    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newWipedFixture(WalletMode.TREZOR);
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newWipedFixture(walletMode);
 
     // Start with a completely empty random application directory
     arrangeFresh(Optional.of(hardwareWalletFixture));
@@ -56,7 +58,7 @@ public class TrezorFestTest extends AbstractFestTest {
   public void verifyCreateHardwareWallet_WarmStart() throws Exception {
 
     // Prepare an empty and attached Trezor device that will be initialised
-    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newWipedFixture(WalletMode.TREZOR);
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newWipedFixture(walletMode);
 
     // Start with the empty hardware wallet fixture
     arrangeEmpty(Optional.of(hardwareWalletFixture));
@@ -77,7 +79,7 @@ public class TrezorFestTest extends AbstractFestTest {
   public void verifyUnlockHardwareWallet_WarmStart() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be unlocked
-    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedUnlockFixture(WalletMode.TREZOR);
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedUnlockFixture(walletMode);
 
     // Start with the empty hardware wallet fixture
     arrangeEmpty(Optional.of(hardwareWalletFixture));
@@ -98,7 +100,7 @@ public class TrezorFestTest extends AbstractFestTest {
   public void verifyUnlockHardwareWallet_ColdStart() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be unlocked
-    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedUnlockFixture(WalletMode.TREZOR);
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedUnlockFixture(walletMode);
 
     // Start with a completely empty random application directory
     arrangeFresh(Optional.of(hardwareWalletFixture));
@@ -119,7 +121,7 @@ public class TrezorFestTest extends AbstractFestTest {
   public void verifyReattachHardwareWallet() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be re-attached
-    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedReattachedFixture(WalletMode.TREZOR);
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedReattachedFixture(walletMode);
 
     // Start with the empty hardware wallet fixture
     arrangeEmpty(Optional.of(hardwareWalletFixture));
@@ -140,7 +142,7 @@ public class TrezorFestTest extends AbstractFestTest {
   public void verifyRestoreWithLocalBackup() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be restored then unlocked
-    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedRestoreFixture(WalletMode.TREZOR);
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedRestoreFixture(walletMode);
 
     // Start with the empty hardware wallet fixture
     WalletSummary walletSummary = arrangeEmpty(Optional.of(hardwareWalletFixture));
@@ -170,7 +172,7 @@ public class TrezorFestTest extends AbstractFestTest {
   public void verifySendScreen() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be restored then unlocked
-    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedUnlockFixture(WalletMode.TREZOR);
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedUnlockFixture(walletMode);
 
     // Start with the empty hardware wallet fixture
     arrangeStandard(Optional.of(hardwareWalletFixture));
@@ -216,7 +218,7 @@ public class TrezorFestTest extends AbstractFestTest {
   public void verifyUnsupportedFirmware() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be restored then unlocked
-    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedUnsupportedFirmwareFixture(WalletMode.TREZOR);
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedUnsupportedFirmwareFixture(walletMode);
 
     // Start with the empty hardware wallet fixture
     arrangeStandard(Optional.of(hardwareWalletFixture));
@@ -239,7 +241,7 @@ public class TrezorFestTest extends AbstractFestTest {
   public void verifyDeprecatedFirmware() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be restored then unlocked
-    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedDeprecatedFirmwareFixture(WalletMode.TREZOR);
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedDeprecatedFirmwareFixture(walletMode);
 
     // Start with the empty hardware wallet fixture
     arrangeStandard(Optional.of(hardwareWalletFixture));
@@ -284,7 +286,7 @@ public class TrezorFestTest extends AbstractFestTest {
   public void verifyUnsupportedConfiguration_Passphrase() throws Exception {
 
     // Prepare an initialised and attached Trezor device that will be attached
-    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedUnsupportedConfigurationPassphraseFixture(WalletMode.TREZOR);
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newInitialisedUnsupportedConfigurationPassphraseFixture(walletMode);
 
     // Start with the standard hardware wallet fixture
     arrangeStandard(Optional.of(hardwareWalletFixture));

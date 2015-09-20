@@ -1,5 +1,7 @@
 package org.multibit.hd.core.dto;
 
+import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
+
 /**
  * <p>Enum to provide the following to various UI models:</p>
  * <ul>
@@ -27,6 +29,11 @@ public enum WalletMode {
    */
   KEEP_KEY("KeepKey"),
 
+  /**
+   * Target an unknown (possibly future) hardware wallet (BIP 44 only)
+   */
+  UNKNOWN("Unknown"),
+
   // End of enum
   ;
 
@@ -41,5 +48,22 @@ public enum WalletMode {
    */
   public String brand() {
     return brand;
+  }
+
+  /**
+   *
+   * @param event The hardware wallet event
+   * @return A matching wallet mode
+   */
+  public static WalletMode of(HardwareWalletEvent event) {
+
+    for (WalletMode walletMode : WalletMode.values()) {
+      if (walletMode.name().equalsIgnoreCase(event.getSource())) {
+        return walletMode;
+      }
+    }
+
+    return WalletMode.UNKNOWN;
+
   }
 }

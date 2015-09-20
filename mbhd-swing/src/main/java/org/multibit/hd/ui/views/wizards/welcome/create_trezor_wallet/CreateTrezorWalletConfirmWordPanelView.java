@@ -39,7 +39,7 @@ public class CreateTrezorWalletConfirmWordPanelView extends AbstractWizardPanelV
    */
   public CreateTrezorWalletConfirmWordPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_PRESS_NEXT_TITLE, AwesomeIcon.EDIT);
+    super(wizard, panelName, MessageKey.HARDWARE_PRESS_NEXT_TITLE, AwesomeIcon.EDIT);
 
   }
 

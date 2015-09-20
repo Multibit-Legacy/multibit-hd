@@ -32,11 +32,11 @@ public class KeepKeyCreateWalletReportUseCase extends AbstractHardwareWalletFest
 
     // Check that the Keepkey enter next word view is showing
     window
-      .label(MessageKey.USE_KEEPKEY_REPORT_TITLE.getKey())
+      .label(MessageKey.USE_HARDWARE_REPORT_TITLE.getKey())
       .requireVisible();
 
     window
-      .label(MessageKey.USE_KEEPKEY_REPORT_MESSAGE_SUCCESS.getKey())
+      .label(MessageKey.USE_HARDWARE_REPORT_MESSAGE_SUCCESS.getKey())
       .requireVisible();
 
     window

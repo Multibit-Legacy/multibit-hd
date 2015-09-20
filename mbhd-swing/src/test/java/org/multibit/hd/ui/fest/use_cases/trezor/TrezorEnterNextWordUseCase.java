@@ -36,7 +36,7 @@ public class TrezorEnterNextWordUseCase extends AbstractHardwareWalletFestUseCas
 
     // Check that the Trezor enter next word view is showing
     window
-      .label(MessageKey.TREZOR_PRESS_NEXT_TITLE.getKey())
+      .label(MessageKey.HARDWARE_PRESS_NEXT_TITLE.getKey())
       .requireVisible();
 
     for (int i=1; i<13; i++) {

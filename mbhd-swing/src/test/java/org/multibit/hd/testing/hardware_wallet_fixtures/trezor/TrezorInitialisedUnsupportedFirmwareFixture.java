@@ -14,6 +14,7 @@ import org.multibit.hd.testing.message_event_fixtures.MessageEventFixtures;
 import org.multibit.hd.testing.hardware_wallet_fixtures.AbstractHardwareWalletFixture;
 import org.multibit.hd.core.dto.WalletMode;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,12 +31,18 @@ import static org.mockito.Mockito.when;
  */
 public class TrezorInitialisedUnsupportedFirmwareFixture extends AbstractHardwareWalletFixture {
 
+  public TrezorInitialisedUnsupportedFirmwareFixture(String name) {
+    super(name);
+  }
+
   @Override
   public void setUpClient() {
 
     client = mock(AbstractTrezorHardwareWalletClient.class);
 
+    when(client.name()).thenReturn(name);
     when(client.attach()).thenReturn(true);
+    when(client.verifyFeatures(any(Features.class))).thenReturn(false);
 
     mockConnect(client);
 
@@ -60,7 +67,8 @@ public class TrezorInitialisedUnsupportedFirmwareFixture extends AbstractHardwar
     final MessageEvent event1 = new MessageEvent(
       MessageEventType.CIPHERED_KEY_VALUE,
       Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCipheredKeyValue()),
-      Optional.<Message>absent()
+      Optional.<Message>absent(),
+      name
     );
 
     messageEvents.add(event1);
@@ -69,7 +77,8 @@ public class TrezorInitialisedUnsupportedFirmwareFixture extends AbstractHardwar
     final MessageEvent event2 = new MessageEvent(
       MessageEventType.CIPHERED_KEY_VALUE,
       Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCipheredKeyValue()),
-      Optional.<Message>absent()
+      Optional.<Message>absent(),
+      name
     );
 
     messageEvents.add(event2);
@@ -101,7 +110,8 @@ public class TrezorInitialisedUnsupportedFirmwareFixture extends AbstractHardwar
           MessageEvent event = new MessageEvent(
             MessageEventType.FEATURES,
             Optional.<HardwareWalletMessage>of(features),
-            Optional.<Message>absent()
+            Optional.<Message>absent(),
+            name
           );
 
           fireMessageEvent("Provide Features", event);

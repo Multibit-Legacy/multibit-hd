@@ -6,6 +6,7 @@ import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.hd.core.dto.PaymentRequestData;
 import org.multibit.hd.core.dto.PaymentSessionSummary;
 import org.multibit.hd.core.dto.RAGStatus;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.events.TransactionSeenEvent;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
@@ -194,6 +195,8 @@ public class Models {
    */
   public static AlertModel newHardwareWalletAlertModel(HardwareWalletEvent event) {
 
+    WalletMode walletMode = WalletMode.of(event);
+
     switch (event.getEventType()) {
       case SHOW_DEVICE_READY:
 
@@ -215,16 +218,13 @@ public class Models {
         );
 
         return Models.newAlertModel(
-          Languages.safeText(MessageKey.TREZOR_ATTACHED_ALERT, label),
+          Languages.safeText(MessageKey.HARDWARE_ATTACHED_ALERT, walletMode.brand(), label),
           RAGStatus.GREEN,
           button
         );
       case SHOW_DEVICE_FAILED:
-        if (event.getMessage().isPresent()) {
-
-        }
         return Models.newAlertModel(
-          Languages.safeText(MessageKey.TREZOR_FAILURE_ALERT),
+          Languages.safeText(MessageKey.HARDWARE_FAILURE_ALERT, walletMode.brand()),
           RAGStatus.RED
         );
       default:

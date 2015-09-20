@@ -51,7 +51,7 @@ public class SwitchToHardwareWalletUseCase extends AbstractHardwareWalletFestUse
     // Verify the "credentials" wizard appears after a switch in Trezor mode
 
     window
-      .label(MessageKey.TREZOR_UNLOCK_TITLE.getKey())
+      .label(MessageKey.HARDWARE_UNLOCK_TITLE.getKey())
       .requireVisible();
 
   }

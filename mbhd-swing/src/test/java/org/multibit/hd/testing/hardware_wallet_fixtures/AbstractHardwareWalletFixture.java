@@ -46,11 +46,18 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
   protected final Queue<MessageEvent> messageEvents = Queues.newArrayBlockingQueue(100);
 
   /**
+   * The hardware wallet name (e.g. "TREZOR", "KEEP_KEY")
+   */
+  protected String name;
+
+  /**
    * The hardware wallet client
    */
   protected HardwareWalletClient client;
 
-  public AbstractHardwareWalletFixture() {
+  public AbstractHardwareWalletFixture(String name) {
+
+    this.name = name;
 
     setUpClient();
 
@@ -105,7 +112,7 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
 
     log.info("'{}' requires event type {}", description, eventType);
 
-    MessageEvents.fireMessageEvent(eventType);
+    MessageEvents.fireMessageEvent(eventType, name);
 
     // Allow time for the event to propagate
     Uninterruptibles.sleepUninterruptibly(500, TimeUnit.MILLISECONDS);
@@ -166,7 +173,8 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
           final MessageEvent event = new MessageEvent(
             MessageEventType.PUBLIC_KEY,
             Optional.<HardwareWalletMessage>of(publicKey),
-            Optional.<Message>absent()
+            Optional.<Message>absent(),
+            name
           );
 
           fireMessageEvent("Provide Public Key", event);
@@ -194,7 +202,8 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
           final MessageEvent event = new MessageEvent(
             MessageEventType.PIN_MATRIX_REQUEST,
             Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCurrentPinMatrix()),
-            Optional.<Message>absent()
+            Optional.<Message>absent(),
+            name
           );
 
           fireMessageEvent("Cipher key protected. Provide PIN.", event);
@@ -226,7 +235,8 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
           MessageEvent event = new MessageEvent(
             MessageEventType.BUTTON_REQUEST,
             Optional.<HardwareWalletMessage>of(MessageEventFixtures.newProtectCallButtonRequest()),
-            Optional.<Message>absent()
+            Optional.<Message>absent(),
+            name
           );
           fireMessageEvent("Correct current PIN. Confirm encrypt.", event);
 
@@ -262,7 +272,8 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
               event = new MessageEvent(
                 MessageEventType.PUBLIC_KEY,
                 Optional.<HardwareWalletMessage>of(MessageEventFixtures.newStandardPublicKey_M()),
-                Optional.<Message>absent()
+                Optional.<Message>absent(),
+                name
               );
               fireMessageEvent("Correct current PIN. Provide public key.", event);
               break;
@@ -294,7 +305,8 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
           final MessageEvent event = new MessageEvent(
             MessageEventType.BUTTON_REQUEST,
             Optional.<HardwareWalletMessage>of(MessageEventFixtures.newOtherButtonRequest()),
-            Optional.<Message>absent()
+            Optional.<Message>absent(),
+            name
           );
 
           fireMessageEvent("Cipher key requires button press", event);
@@ -326,7 +338,8 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
             final MessageEvent event = new MessageEvent(
               MessageEventType.PIN_MATRIX_REQUEST,
               Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCurrentPinMatrix()),
-              Optional.<Message>absent()
+              Optional.<Message>absent(),
+              name
             );
 
             fireMessageEvent("Deterministic hierarchy is protected (1.3.3+ firmware). Provide PIN.", event);
@@ -364,7 +377,8 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
           final MessageEvent event = new MessageEvent(
             MessageEventType.PUBLIC_KEY,
             Optional.<HardwareWalletMessage>of(publicKey),
-            Optional.<Message>absent()
+            Optional.<Message>absent(),
+            name
           );
 
           fireMessageEvent("Provide Public Key", event);
@@ -390,7 +404,8 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
           MessageEvent event = new MessageEvent(
             MessageEventType.FEATURES,
             Optional.<HardwareWalletMessage>of(features),
-            Optional.<Message>absent()
+            Optional.<Message>absent(),
+            name
           );
 
           fireMessageEvent("Provide Features", event);
@@ -438,7 +453,8 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
             final MessageEvent event = new MessageEvent(
               MessageEventType.PIN_MATRIX_REQUEST,
               Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCurrentPinMatrix()),
-              Optional.<Message>absent()
+              Optional.<Message>absent(),
+              name
             );
 
             fireMessageEvent("Deterministic hierarchy is protected (1.3.3+ firmware). Provide PIN.", event);
@@ -489,7 +505,8 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
           final MessageEvent event = new MessageEvent(
             MessageEventType.TX_REQUEST,
             Optional.of(txRequest),
-            Optional.<Message>absent()
+            Optional.<Message>absent(),
+            name
           );
 
           fireMessageEvent("Provide Public Key", event);

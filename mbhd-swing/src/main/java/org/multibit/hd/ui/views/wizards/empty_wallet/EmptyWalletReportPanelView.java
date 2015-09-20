@@ -99,7 +99,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
     AccessibilityDecorator.apply(transactionBroadcastStatusDetail, MessageKey.TRANSACTION_BROADCAST_STATUS_DETAIL);
 
     // Provide an empty status label (populated after show)
-    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.TREZOR_FAILURE_OPERATION), null, Optional.<Boolean>absent());
+    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.HARDWARE_FAILURE_OPERATION), null, Optional.<Boolean>absent());
     reportStatusLabel.setVisible(false);
 
     contentPanel.add(reportStatusLabel, "aligny top,wrap");

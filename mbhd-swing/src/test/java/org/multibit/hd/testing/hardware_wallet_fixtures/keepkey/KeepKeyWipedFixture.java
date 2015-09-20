@@ -20,6 +20,7 @@ import org.multibit.hd.core.dto.WalletMode;
 
 import java.util.List;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,12 +39,18 @@ import static org.multibit.hd.testing.message_event_fixtures.MessageEventFixture
  */
 public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
 
+  public KeepKeyWipedFixture(String name) {
+    super(name);
+  }
+
   @Override
   public void setUpClient() {
 
     client = mock(AbstractKeepKeyHardwareWalletClient.class);
 
+    when(client.name()).thenReturn(name);
     when(client.attach()).thenReturn(true);
+    when(client.verifyFeatures(any(Features.class))).thenReturn(true);
 
     mockConnect(client);
 
@@ -70,7 +77,8 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
     final MessageEvent event1 = new MessageEvent(
       MessageEventType.SUCCESS,
       Optional.<HardwareWalletMessage>of(newDeviceWipedSuccess()),
-      Optional.<Message>absent()
+      Optional.<Message>absent(),
+      name
     );
 
     messageEvents.add(event1);
@@ -79,7 +87,8 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
     final MessageEvent event2 = new MessageEvent(
       MessageEventType.PIN_MATRIX_REQUEST,
       Optional.<HardwareWalletMessage>of(newNewFirstPinMatrix()),
-      Optional.<Message>absent()
+      Optional.<Message>absent(),
+      name
     );
 
     messageEvents.add(event2);
@@ -89,7 +98,8 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
       final MessageEvent event = new MessageEvent(
         MessageEventType.BUTTON_REQUEST,
         Optional.<HardwareWalletMessage>of(newConfirmWordButtonRequest()),
-        Optional.<Message>absent()
+        Optional.<Message>absent(),
+        name
       );
 
       messageEvents.add(event);
@@ -99,7 +109,8 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
     final MessageEvent event3 = new MessageEvent(
       MessageEventType.SUCCESS,
       Optional.<HardwareWalletMessage>of(newDeviceResetSuccess()),
-      Optional.<Message>absent()
+      Optional.<Message>absent(),
+      name
     );
 
     messageEvents.add(event3);
@@ -108,7 +119,8 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
     final MessageEvent event4 = new MessageEvent(
       MessageEventType.CIPHERED_KEY_VALUE,
       Optional.<HardwareWalletMessage>of(newCipheredKeyValue()),
-      Optional.<Message>absent()
+      Optional.<Message>absent(),
+      name
     );
 
     messageEvents.add(event4);
@@ -156,7 +168,8 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
           MessageEvent event = new MessageEvent(
             MessageEventType.FEATURES,
             Optional.<HardwareWalletMessage>of(features),
-            Optional.<Message>absent()
+            Optional.<Message>absent(),
+            name
           );
 
           fireMessageEvent("Features", event);
@@ -184,7 +197,8 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
           MessageEvent event = new MessageEvent(
             MessageEventType.BUTTON_REQUEST,
             Optional.<HardwareWalletMessage>of(newWipeDeviceButtonRequest()),
-            Optional.<Message>absent()
+            Optional.<Message>absent(),
+            name
           );
 
           fireMessageEvent("Confirm wipe", event);
@@ -211,7 +225,8 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
           event = new MessageEvent(
             MessageEventType.BUTTON_REQUEST,
             Optional.<HardwareWalletMessage>of(newConfirmWordButtonRequest()),
-            Optional.<Message>absent()
+            Optional.<Message>absent(),
+            name
           );
 
           fireMessageEvent("Entropy ack, confirm 1st word", event);
@@ -249,7 +264,8 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
               event = new MessageEvent(
                 MessageEventType.PIN_MATRIX_REQUEST,
                 Optional.<HardwareWalletMessage>of(newNewSecondPinMatrix()),
-                Optional.<Message>absent()
+                Optional.<Message>absent(),
+                name
               );
               fireMessageEvent("Correct new PIN, request second", event);
               break;
@@ -258,7 +274,8 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
               event = new MessageEvent(
                 MessageEventType.ENTROPY_REQUEST,
                 Optional.<HardwareWalletMessage>absent(),
-                Optional.<Message>absent()
+                Optional.<Message>absent(),
+                name
               );
               fireMessageEvent("Correct second PIN, request entropy", event);
               break;
@@ -267,7 +284,8 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
               event = new MessageEvent(
                 MessageEventType.BUTTON_REQUEST,
                 Optional.<HardwareWalletMessage>of(newOtherButtonRequest()),
-                Optional.<Message>absent()
+                Optional.<Message>absent(),
+                name
               );
               fireMessageEvent("Correct current PIN, confirm cipher key", event);
               break;
@@ -301,7 +319,8 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
           final MessageEvent event = new MessageEvent(
             MessageEventType.PIN_MATRIX_REQUEST,
             Optional.<HardwareWalletMessage>of(newCurrentPinMatrix()),
-            Optional.<Message>absent()
+            Optional.<Message>absent(),
+            name
           );
 
           fireMessageEvent("Cipher key protected. Provide PIN.", event);
@@ -354,7 +373,8 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
           final MessageEvent event = new MessageEvent(
             MessageEventType.PUBLIC_KEY,
             Optional.<HardwareWalletMessage>of(publicKey),
-            Optional.<Message>absent()
+            Optional.<Message>absent(),
+            name
           );
 
           fireMessageEvent("Provide Public Key", event);

@@ -324,7 +324,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             @Override
             public void run() {
 
-              confirmCipherKeyPanelView.getTrezorDisplayView().setOperationText(MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION);
+              confirmCipherKeyPanelView.getTrezorDisplayView().setOperationText(MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION);
               confirmCipherKeyPanelView.getTrezorDisplayView().setDisplayVisible(false);
               confirmCipherKeyPanelView.getTrezorDisplayView().setSpinnerVisible(true);
 
@@ -513,7 +513,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         public void onFailure(Throwable t) {
 
           // Failed to send the message
-          requestCipherKeyPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
+          requestCipherKeyPanelView.setOperationText(MessageKey.HARDWARE_FAILURE_OPERATION);
         }
       }
     );
@@ -623,7 +623,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         public void onFailure(Throwable t) {
 
           // Failed to send the message
-          requestCipherKeyPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
+          requestCipherKeyPanelView.setOperationText(MessageKey.HARDWARE_FAILURE_OPERATION);
         }
 
       });

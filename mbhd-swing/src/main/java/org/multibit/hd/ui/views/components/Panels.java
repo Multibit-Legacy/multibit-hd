@@ -538,6 +538,7 @@ public class Panels {
    * @param createCommand         The create command name
    * @param existingWalletCommand The existing wallet command name
    * @param restoreWalletCommand  The restore wallet command name
+   * @param walletMode            The wallet mode to ensure correct naming
    *
    * @return A new "wallet selector" panel
    */
@@ -545,20 +546,20 @@ public class Panels {
     ActionListener listener,
     String createCommand,
     String existingWalletCommand,
-    String restoreWalletCommand
-  ) {
+    String restoreWalletCommand,
+    WalletMode walletMode) {
 
     JPanel panel = Panels.newPanel();
 
     boolean enableUseExisting = !WalletManager.getWalletSummaries().isEmpty();
 
-    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getHardwareWalletService(WalletMode.TREZOR);
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getHardwareWalletService(walletMode);
 
     boolean enableRestore = hardwareWalletService.isPresent()
       && hardwareWalletService.get().isDeviceReady()
       && hardwareWalletService.get().isWalletPresent();
 
-    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.TREZOR_CREATE_WALLET);
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_CREATE_WALLET, walletMode.brand());
     radio1.setSelected(true);
     radio1.setActionCommand(createCommand);
 
@@ -649,10 +650,10 @@ public class Panels {
     radio1.setActionCommand(buyTrezorCommand);
     radio1.setSelected(true);
 
-    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.TREZOR_VERIFY_DEVICE);
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_VERIFY_DEVICE);
     radio2.setActionCommand(verifyDeviceCommand);
 
-    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.TREZOR_WIPE_DEVICE);
+    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_WIPE_DEVICE);
     radio3.setActionCommand(wipeDeviceCommand);
 
     // Action selection is mutually exclusive

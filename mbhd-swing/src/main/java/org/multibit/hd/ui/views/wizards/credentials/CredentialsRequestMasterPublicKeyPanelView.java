@@ -37,7 +37,7 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractWizardPa
    */
   public CredentialsRequestMasterPublicKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_UNLOCK_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, MessageKey.HARDWARE_UNLOCK_TITLE, AwesomeIcon.LOCK);
 
   }
 
@@ -97,17 +97,17 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractWizardPa
     final boolean nextEnabled;
     final boolean createNewTrezorWallet;
     if (!features.isPresent()) {
-      operationKey = MessageKey.TREZOR_FAILURE_OPERATION;
+      operationKey = MessageKey.HARDWARE_FAILURE_OPERATION;
       nextEnabled = true;
       createNewTrezorWallet = false;
     } else {
       if (features.get().isInitialized()) {
-        operationKey = MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION;
+        operationKey = MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION;
         // May take some time
         nextEnabled = false;
         createNewTrezorWallet = false;
       } else {
-        operationKey = MessageKey.TREZOR_NO_WALLET_OPERATION;
+        operationKey = MessageKey.HARDWARE_NO_WALLET_OPERATION;
         nextEnabled = true;
 
         // Tell user that there is no wallet on the device and that they can create a wallet by clicking next
@@ -120,9 +120,9 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractWizardPa
 
     if (nextEnabled) {
       if (createNewTrezorWallet) {
-        trezorDisplayMaV.getView().setRecoveryText(MessageKey.TREZOR_NO_WALLET_RECOVERY);
+        trezorDisplayMaV.getView().setRecoveryText(MessageKey.HARDWARE_NO_WALLET_RECOVERY);
       } else {
-        trezorDisplayMaV.getView().setRecoveryText(MessageKey.TREZOR_FAILURE_RECOVERY);
+        trezorDisplayMaV.getView().setRecoveryText(MessageKey.HARDWARE_FAILURE_RECOVERY);
       }
     }
 

@@ -37,12 +37,12 @@ public class KeepKeyConfirmUnlockUseCase extends AbstractHardwareWalletFestUseCa
 
     // Check that the Keepkey press confirm to unlock panel view is showing
     window
-      .label(MessageKey.KEEPKEY_PRESS_CONFIRM_TITLE.getKey())
+      .label(MessageKey.HARDWARE_PRESS_CONFIRM_TITLE.getKey())
       .requireVisible();
 
     window
       .textBox(CredentialsState.CREDENTIALS_PRESS_CONFIRM_FOR_UNLOCK.name() + ".keepkey_display")
-      .requireText(Languages.safeText(MessageKey.KEEPKEY_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY))
+      .requireText(Languages.safeText(MessageKey.KEEP_KEY_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY))
       .requireVisible();
 
   }

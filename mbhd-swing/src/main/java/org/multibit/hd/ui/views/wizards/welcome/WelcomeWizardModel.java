@@ -447,7 +447,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
             case HARDWARE_CREATE_WALLET_ENTER_NEW_PIN:
             case HARDWARE_CREATE_WALLET_CONFIRM_NEW_PIN:
               state = HARDWARE_CREATE_WALLET_REPORT;
-              setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+              setReportMessageKey(MessageKey.HARDWARE_INCORRECT_PIN_FAILURE);
               setReportMessageStatus(false);
               break;
             default:
@@ -499,7 +499,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
           switch (state) {
             case HARDWARE_CREATE_WALLET_CONFIRM_CREATE_WALLET:
               state = HARDWARE_CREATE_WALLET_REPORT;
-              setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+              setReportMessageKey(MessageKey.HARDWARE_INCORRECT_PIN_FAILURE);
               setReportMessageStatus(false);
               break;
             default:
@@ -525,7 +525,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
     // Hardware wallet has been attached
     getAttachHardwareWalletPanelView().setHardwareWalletStatus(
-      Optional.of(MessageKey.TREZOR_FOUND),
+      Optional.of(MessageKey.HARDWARE_FOUND),
       true
     );
 
@@ -533,9 +533,10 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   @Override
   public void showDeviceFailed(HardwareWalletEvent event) {
+
     // Hardware wallet has been attached
     getAttachHardwareWalletPanelView().setHardwareWalletStatus(
-      Optional.of(MessageKey.TREZOR_FAILURE_ALERT),
+      Optional.of(MessageKey.HARDWARE_FAILURE_ALERT),
       false
     );
   }
@@ -656,7 +657,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
       case HARDWARE_CREATE_WALLET_CONFIRM_WORD:
         // User has created a new wallet
         state = HARDWARE_CREATE_WALLET_REPORT;
-        setReportMessageKey(MessageKey.USE_TREZOR_REPORT_MESSAGE_SUCCESS);
+        setReportMessageKey(MessageKey.USE_HARDWARE_REPORT_MESSAGE_SUCCESS);
         setReportMessageStatus(true);
         break;
       default:
@@ -751,7 +752,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
           // Have a failure
           state = HARDWARE_CREATE_WALLET_REPORT;
-          setReportMessageKey(MessageKey.TREZOR_FAILURE_OPERATION);
+          setReportMessageKey(MessageKey.HARDWARE_FAILURE_OPERATION);
           setReportMessageStatus(false);
         }
 

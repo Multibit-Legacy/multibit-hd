@@ -37,12 +37,12 @@ public class KeepKeyConfirmWipeUseCase extends AbstractHardwareWalletFestUseCase
 
     // Check that the Keepkey press confirm to wipe panel view is showing
     window
-      .label(MessageKey.KEEPKEY_PRESS_CONFIRM_TITLE.getKey())
+      .label(MessageKey.HARDWARE_PRESS_CONFIRM_TITLE.getKey())
       .requireVisible();
 
     window
       .textBox(WelcomeWizardState.HARDWARE_CREATE_WALLET_CONFIRM_CREATE_WALLET.name() + ".keepkey_display")
-      .requireText(Languages.safeText(MessageKey.KEEPKEY_WIPE_CONFIRM_DISPLAY))
+      .requireText(Languages.safeText(MessageKey.KEEP_KEY_WIPE_CONFIRM_DISPLAY))
       .requireVisible();
 
   }

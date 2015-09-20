@@ -32,7 +32,7 @@ public class CreateTrezorWalletRequestCreateWalletPanelView extends AbstractWiza
    */
   public CreateTrezorWalletRequestCreateWalletPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.CREATE_TREZOR_WALLET_REQUEST_CREATE_WALLET_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, MessageKey.CREATE_HARDWARE_WALLET_REQUEST_CREATE_WALLET_TITLE, AwesomeIcon.LOCK);
 
   }
 

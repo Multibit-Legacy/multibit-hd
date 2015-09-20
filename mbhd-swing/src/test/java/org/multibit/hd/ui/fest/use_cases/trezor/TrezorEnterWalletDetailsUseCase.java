@@ -35,11 +35,11 @@ public class TrezorEnterWalletDetailsUseCase extends AbstractHardwareWalletFestU
 
     // Check that the Trezor enter wallet details screen is showing
     window
-      .label(MessageKey.CREATE_TREZOR_WALLET_ENTER_DETAILS_TITLE.getKey())
+      .label(MessageKey.CREATE_HARDWARE_WALLET_ENTER_DETAILS_TITLE.getKey())
       .requireVisible();
 
     window
-      .label(MessageKey.ENTER_TREZOR_LABEL.getKey())
+      .label(MessageKey.ENTER_HARDWARE_LABEL.getKey())
       .requireVisible();
 
     window
@@ -47,7 +47,7 @@ public class TrezorEnterWalletDetailsUseCase extends AbstractHardwareWalletFestU
       .requireVisible();
 
     window
-      .textBox(MessageKey.ENTER_TREZOR_LABEL.getKey())
+      .textBox(MessageKey.ENTER_HARDWARE_LABEL.getKey())
       .requireVisible();
 
     window

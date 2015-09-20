@@ -308,7 +308,7 @@ public class ComboBoxes {
     JComboBox<String> comboBox = newYesNoComboBox(listener, useTor);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_TREZOR, MessageKey.SELECT_TREZOR_TOOLTIP);
+    AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_HARDWARE_WALLET, MessageKey.SELECT_HARDWARE_WALLET_TOOLTIP);
 
     comboBox.setActionCommand(TREZOR_COMMAND);
 

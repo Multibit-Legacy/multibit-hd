@@ -5,11 +5,13 @@ import com.google.protobuf.Message;
 import org.multibit.hd.hardware.core.HardwareWalletClient;
 import org.multibit.hd.hardware.core.events.MessageEvent;
 import org.multibit.hd.hardware.core.events.MessageEventType;
+import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
 import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
 import org.multibit.hd.testing.message_event_fixtures.MessageEventFixtures;
 import org.multibit.hd.testing.hardware_wallet_fixtures.AbstractHardwareWalletFixture;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,12 +30,18 @@ import static org.mockito.Mockito.when;
  */
 public class KeepKeyInitialisedSignTransactionFixture extends AbstractHardwareWalletFixture {
 
+  public KeepKeyInitialisedSignTransactionFixture(String name) {
+    super(name);
+  }
+
   @Override
   public void setUpClient() {
 
     client = mock(AbstractTrezorHardwareWalletClient.class);
 
+    when(client.name()).thenReturn(name);
     when(client.attach()).thenReturn(true);
+    when(client.verifyFeatures(any(Features.class))).thenReturn(true);
 
     mockConnect(client);
 
@@ -59,7 +67,8 @@ public class KeepKeyInitialisedSignTransactionFixture extends AbstractHardwareWa
     final MessageEvent event1 = new MessageEvent(
       MessageEventType.CIPHERED_KEY_VALUE,
       Optional.<HardwareWalletMessage>of(MessageEventFixtures.newCipheredKeyValue()),
-      Optional.<Message>absent()
+      Optional.<Message>absent(),
+      name
     );
 
     messageEvents.add(event1);

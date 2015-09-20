@@ -75,7 +75,7 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
 
     contentPanel.add(Labels.newLabChangeNote(), "growx,span 2,wrap");
 
-    contentPanel.add(Labels.newSelectTrezor(), "shrink");
+    contentPanel.add(Labels.newSelectHardware(), "shrink");
     contentPanel.add(trezorYesNoComboBox, "growx,wrap");
 
     contentPanel.add(Labels.newSelectShowRestoreBeta7Wallets(), "shrink");

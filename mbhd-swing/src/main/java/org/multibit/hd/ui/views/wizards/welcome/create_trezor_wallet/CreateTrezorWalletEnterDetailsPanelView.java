@@ -40,7 +40,7 @@ public class CreateTrezorWalletEnterDetailsPanelView extends AbstractWizardPanel
    */
   public CreateTrezorWalletEnterDetailsPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.CREATE_TREZOR_WALLET_ENTER_DETAILS_TITLE, AwesomeIcon.EDIT);
+    super(wizard, panelName, MessageKey.CREATE_HARDWARE_WALLET_ENTER_DETAILS_TITLE, AwesomeIcon.EDIT);
 
   }
 

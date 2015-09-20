@@ -892,7 +892,7 @@ public class Buttons {
      */
     public static JButton newShowUseTrezorWizardButton(Action action) {
 
-      JButton button = newLargeButton(action, MessageKey.SHOW_TREZOR_TOOLS_WIZARD, MessageKey.SHOW_TREZOR_TOOLS_WIZARD_TOOLTIP);
+      JButton button = newLargeButton(action, MessageKey.SHOW_HARDWARE_TOOLS_WIZARD, MessageKey.SHOW_HARDWARE_TOOLS_WIZARD_TOOLTIP);
 
       AwesomeDecorator.applyIcon(
         // Cannot use LOCK even though it is the closest icon to the Trezor logo

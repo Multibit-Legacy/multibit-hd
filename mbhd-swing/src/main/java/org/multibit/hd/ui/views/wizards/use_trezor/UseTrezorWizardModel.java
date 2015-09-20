@@ -185,7 +185,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       case CONFIRM_WIPE_TREZOR:
         // Indicate a successful wipe
         state=UseTrezorState.USE_TREZOR_REPORT_PANEL;
-        setReportMessageKey(MessageKey.TREZOR_WIPE_DEVICE_SUCCESS);
+        setReportMessageKey(MessageKey.HARDWARE_WIPE_DEVICE_SUCCESS);
         setReportMessageStatus(true);
 
         SwingUtilities.invokeLater(
@@ -208,7 +208,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   public void showOperationFailed(HardwareWalletEvent event) {
     // In all cases move to the report panel with a failure message
     state=UseTrezorState.USE_TREZOR_REPORT_PANEL;
-    setReportMessageKey(MessageKey.TREZOR_WIPE_DEVICE_FAILURE);
+    setReportMessageKey(MessageKey.HARDWARE_WIPE_DEVICE_FAILURE);
     setReportMessageStatus(false);
 
     // Ignore device reset messages
@@ -321,7 +321,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
             }
           });
 
-          setReportMessageKey(MessageKey.TREZOR_WIPE_DEVICE_SUCCESS);
+          setReportMessageKey(MessageKey.HARDWARE_WIPE_DEVICE_SUCCESS);
           setReportMessageStatus(true);
         }
 
@@ -331,7 +331,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
           // Have a failure
           log.error("Unexpected failure during request wipe", t);
 
-          setReportMessageKey(MessageKey.TREZOR_WIPE_DEVICE_FAILURE);
+          setReportMessageKey(MessageKey.HARDWARE_WIPE_DEVICE_FAILURE);
           setReportMessageStatus(false);
         }
       });

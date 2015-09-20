@@ -192,7 +192,7 @@ public class TrezorDisplayView extends AbstractComponentView<TrezorDisplayModel>
    */
   public void incorrectEntropy() {
 
-    setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
+    setOperationText(MessageKey.HARDWARE_FAILURE_OPERATION);
 
     setDisplayVisible(false);
     setSpinnerVisible(false);

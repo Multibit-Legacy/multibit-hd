@@ -33,7 +33,7 @@ public class KeepKeyConfirmNextWordUseCase extends AbstractHardwareWalletFestUse
 
     // Check that the Keepkey enter next word view is showing
     window
-      .label(MessageKey.KEEPKEY_PRESS_NEXT_TITLE.getKey())
+      .label(MessageKey.HARDWARE_PRESS_NEXT_TITLE.getKey())
       .requireVisible();
 
     for (int i = 1; i < 13; i++) {

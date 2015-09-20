@@ -36,7 +36,7 @@ public class UseTrezorRequestWipeDevicePanelView extends AbstractWizardPanelView
    */
   public UseTrezorRequestWipeDevicePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_WIPE_DEVICE_TITLE, AwesomeIcon.ERASER);
+    super(wizard, panelName, MessageKey.HARDWARE_WIPE_DEVICE_TITLE, AwesomeIcon.ERASER);
 
   }
 
@@ -94,14 +94,14 @@ public class UseTrezorRequestWipeDevicePanelView extends AbstractWizardPanelView
     final MessageKey operationKey;
     final boolean showReportView;
     if (!features.isPresent()) {
-      operationKey = MessageKey.TREZOR_FAILURE_OPERATION;
+      operationKey = MessageKey.HARDWARE_FAILURE_OPERATION;
       showReportView = true;
     } else {
       if (features.get().isInitialized()) {
-        operationKey = MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION;
+        operationKey = MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION;
         showReportView = false;
       } else {
-        operationKey = MessageKey.TREZOR_NO_WALLET_OPERATION;
+        operationKey = MessageKey.HARDWARE_NO_WALLET_OPERATION;
         showReportView = true;
       }
     }

@@ -194,7 +194,7 @@ public class Labels {
     }
 
     // Wrap in HTML to ensure LTR/RTL and line breaks are respected
-    JLabel label = new JLabel(HtmlUtils.localiseWithLineBreaks(new String[] {line}));
+    JLabel label = new JLabel(HtmlUtils.localiseWithLineBreaks(new String[]{line}));
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(label, key);
@@ -612,14 +612,14 @@ public class Labels {
   }
 
   /**
-    * @return A new "plus unconfirmed" label
-    */
-   public static JLabel newPlusUnconfirmed() {
-     JLabel label =  Labels.newLabel(MessageKey.PLUS_UNCONFIRMED);
-     label.setForeground(Themes.currentTheme.headerPanelText());
-     label.setFont(label.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_SMALL_FONT_SIZE));
-     return label;
-   }
+   * @return A new "plus unconfirmed" label
+   */
+  public static JLabel newPlusUnconfirmed() {
+    JLabel label = Labels.newLabel(MessageKey.PLUS_UNCONFIRMED);
+    label.setForeground(Themes.currentTheme.headerPanelText());
+    label.setFont(label.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_SMALL_FONT_SIZE));
+    return label;
+  }
 
   /**
    * @return A new "version" label
@@ -684,7 +684,7 @@ public class Labels {
         largeFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_SMALL_FONT_SIZE);
         normalFont = primaryBalanceLabel.getFont().deriveFont(MultiBitUI.BALANCE_HEADER_SMALL_FONT_SIZE);
         textColor = Themes.currentTheme.headerPanelText();
-      break;
+        break;
       case TRANSACTION_DETAIL_AMOUNT:
         largeFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_TRANSACTION_LARGE_FONT_SIZE);
         normalFont = primaryBalanceLabel.getFont().deriveFont(Font.BOLD, MultiBitUI.BALANCE_TRANSACTION_NORMAL_FONT_SIZE);
@@ -783,7 +783,7 @@ public class Labels {
    * @return A new "Trezor device label" label
    */
   public static JLabel newEnterTrezorLabel() {
-    return newLabel(MessageKey.ENTER_TREZOR_LABEL);
+    return newLabel(MessageKey.ENTER_HARDWARE_LABEL);
   }
 
   /**
@@ -791,7 +791,7 @@ public class Labels {
    */
   public static JLabel newPressConfirmOnDevice() {
 
-    return newLabel(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
+    return newLabel(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION);
 
   }
 
@@ -840,12 +840,12 @@ public class Labels {
   }
 
   /**
-    * @return A new "Enter new credentials" label
-    */
-   public static JLabel newEnterNewPassword() {
+   * @return A new "Enter new credentials" label
+   */
+  public static JLabel newEnterNewPassword() {
 
-     return newLabel(MessageKey.ENTER_NEW_PASSWORD);
-   }
+    return newLabel(MessageKey.ENTER_NEW_PASSWORD);
+  }
 
   /**
    * @return A new "Retype new credentials" label
@@ -913,18 +913,18 @@ public class Labels {
   }
 
   /**
-    * @return A new "Adjust transaction fee" message
-    */
-   public static JLabel newAdjustTransactionFee() {
-     return newLabel(MessageKey.ADJUST_TRANSACTION_FEE);
-   }
+   * @return A new "Adjust transaction fee" message
+   */
+  public static JLabel newAdjustTransactionFee() {
+    return newLabel(MessageKey.ADJUST_TRANSACTION_FEE);
+  }
 
   /**
-    * @return A new "Explain transaction fee 1" message
-    */
-   public static JLabel newExplainTransactionFee1() {
-     return newNoteLabel(MessageKey.EXPLAIN_TRANSACTION_FEE1, null);
-   }
+   * @return A new "Explain transaction fee 1" message
+   */
+  public static JLabel newExplainTransactionFee1() {
+    return newNoteLabel(MessageKey.EXPLAIN_TRANSACTION_FEE1, null);
+  }
 
   /**
    * @return A new "Explain transaction fee 2" message
@@ -1086,10 +1086,10 @@ public class Labels {
   }
 
   /**
-   * @return a new "select Trezor" for lab settings
+   * @return a new "select hardware wallet" for lab settings
    */
-  public static JLabel newSelectTrezor() {
-    return newLabel(MessageKey.SELECT_TREZOR);
+  public static JLabel newSelectHardware() {
+    return newLabel(MessageKey.SELECT_HARDWARE_WALLET);
   }
 
   /**
@@ -1155,7 +1155,7 @@ public class Labels {
    * @return A new "communicating with Trezor" label
    */
   public static JLabel newCommunicatingWithTrezor() {
-    return newLabel(MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION);
+    return newLabel(MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION);
   }
 
   /**
@@ -1217,17 +1217,18 @@ public class Labels {
         MessageKey.LICENCE_NOTE_1,
       }, new Object[][]{});
   }
-  /**
-     * @return A new "welcome lower" note
-     */
-    public static JLabel newWelcomeNote() {
 
-      return newNoteLabel(
-        new MessageKey[]{
-          MessageKey.WELCOME_NOTE_2,
-          MessageKey.WELCOME_NOTE_3
-        }, new Object[][]{});
-    }
+  /**
+   * @return A new "welcome lower" note
+   */
+  public static JLabel newWelcomeNote() {
+
+    return newNoteLabel(
+      new MessageKey[]{
+        MessageKey.WELCOME_NOTE_2,
+        MessageKey.WELCOME_NOTE_3
+      }, new Object[][]{});
+  }
 
   /**
    * @return A new "about" note
@@ -1242,24 +1243,24 @@ public class Labels {
   }
 
   /**
-    * @return A new "default" note for use on the Fee slider
-    */
-   public static JLabel newDefaultNote() {
-     // Wrap in HTML to ensure LTR/RTL and line breaks are respected
-     String[] lines = new String[2];
-     lines[0] = "\u25B2"; // 25B2 =up black triangle
-     lines[1] = Languages.toCapitalCase(Languages.safeText(MessageKey.DEFAULT));
-     JLabel label = new JLabel(HtmlUtils.localiseCenteredWithLineBreaks(lines));
-     label.setHorizontalAlignment(SwingConstants.CENTER);
+   * @return A new "default" note for use on the Fee slider
+   */
+  public static JLabel newDefaultNote() {
+    // Wrap in HTML to ensure LTR/RTL and line breaks are respected
+    String[] lines = new String[2];
+    lines[0] = "\u25B2"; // 25B2 =up black triangle
+    lines[1] = Languages.toCapitalCase(Languages.safeText(MessageKey.DEFAULT));
+    JLabel label = new JLabel(HtmlUtils.localiseCenteredWithLineBreaks(lines));
+    label.setHorizontalAlignment(SwingConstants.CENTER);
 
-     // Ensure it is accessible
-     AccessibilityDecorator.apply(label, MessageKey.DEFAULT);
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(label, MessageKey.DEFAULT);
 
-     // Theme
-     label.setForeground(Themes.currentTheme.text());
+    // Theme
+    label.setForeground(Themes.currentTheme.text());
 
-     return label;
-   }
+    return label;
+  }
 
   /**
    * @return A new "wallet credentials" note
@@ -1280,7 +1281,7 @@ public class Labels {
   public static JLabel newPressConfirmOnTrezorNoteShort() {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.TREZOR_PRESS_CONFIRM_OPERATION
+      MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION
     }, new Object[][]{});
 
   }
@@ -1318,8 +1319,8 @@ public class Labels {
   public static JLabel newUnsupportedFirmwareNote() {
 
     JLabel label = newNoteLabel(new CoreMessageKey[]{
-        CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED
-      }, new Object[][]{});
+      CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED
+    }, new Object[][]{});
 
     // Allow for warning theme
     label.setForeground(Themes.currentTheme.warningAlertText());
@@ -1334,8 +1335,8 @@ public class Labels {
   public static JLabel newDeprecatedFirmwareNote() {
 
     JLabel label = newNoteLabel(new CoreMessageKey[]{
-        CoreMessageKey.DEPRECATED_FIRMWARE_ATTACHED
-      }, new Object[][]{});
+      CoreMessageKey.DEPRECATED_FIRMWARE_ATTACHED
+    }, new Object[][]{});
 
     // Allow for warning theme
     label.setForeground(Themes.currentTheme.warningAlertText());
@@ -1350,8 +1351,8 @@ public class Labels {
   public static JLabel newUnsupportedConfigurationPassphrase() {
 
     JLabel label = newNoteLabel(new CoreMessageKey[]{
-        CoreMessageKey.UNSUPPORTED_CONFIGURATION_PASSPHRASE
-      }, new Object[][]{});
+      CoreMessageKey.UNSUPPORTED_CONFIGURATION_PASSPHRASE
+    }, new Object[][]{});
 
     // Allow for warning theme
     label.setForeground(Themes.currentTheme.warningAlertText());
@@ -1372,15 +1373,16 @@ public class Labels {
   }
 
   /**
-    * @return A new "MultiBit HD is localised by volunteers" note
-    */
-   public static JLabel newLocalisationByVolunteersNote() {
+   * @return A new "MultiBit HD is localised by volunteers" note
+   */
+  public static JLabel newLocalisationByVolunteersNote() {
 
-     return newNoteLabel(new MessageKey[]{
-       MessageKey.LOCALISATION_IS_BY_VOLUNTEERS
-     }, new Object[][]{});
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.LOCALISATION_IS_BY_VOLUNTEERS
+    }, new Object[][]{});
 
-   }
+  }
+
   /**
    * @return A new "sound change" note
    */
@@ -1456,9 +1458,9 @@ public class Labels {
   public static JLabel newTimestampNote() {
 
     return newNoteLabel(new MessageKey[]{
-        MessageKey.TIMESTAMP_NOTE_1,
-        MessageKey.TIMESTAMP_NOTE_2
-      }, new Object[][]{});
+      MessageKey.TIMESTAMP_NOTE_1,
+      MessageKey.TIMESTAMP_NOTE_2
+    }, new Object[][]{});
   }
 
   /**
@@ -1479,8 +1481,8 @@ public class Labels {
   public static JLabel newRestorePasswordNote() {
 
     return newNoteLabel(new MessageKey[]{
-        MessageKey.RESTORE_PASSWORD_NOTE_1
-      }, new Object[][]{});
+      MessageKey.RESTORE_PASSWORD_NOTE_1
+    }, new Object[][]{});
   }
 
   /**
@@ -1615,15 +1617,15 @@ public class Labels {
   }
 
   /**
-    * @return A new "verify network" note
-    */
-   public static JLabel newVerifyNetworkNoteTop() {
+   * @return A new "verify network" note
+   */
+  public static JLabel newVerifyNetworkNoteTop() {
 
-     return newNoteLabel(new MessageKey[]{
-             MessageKey.VERIFY_NETWORK_NOTE_1
-     }, new Object[][]{});
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.VERIFY_NETWORK_NOTE_1
+    }, new Object[][]{});
 
-   }
+  }
 
   /**
    * @return A new "verify network" note
@@ -1631,8 +1633,8 @@ public class Labels {
   public static JLabel newVerifyNetworkNoteBottom() {
 
     return newNoteLabel(new MessageKey[]{
-            MessageKey.VERIFY_NETWORK_NOTE_2,
-            MessageKey.VERIFY_NETWORK_NOTE_3
+      MessageKey.VERIFY_NETWORK_NOTE_2,
+      MessageKey.VERIFY_NETWORK_NOTE_3
     }, new Object[][]{});
 
   }

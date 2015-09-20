@@ -33,7 +33,7 @@ public class KeepKeyRequestCreateWalletUseCase extends AbstractHardwareWalletFes
 
     // Check that the request panel view is showing
 //    window
-//    .label(MessageKey.CREATE_KEEPKEY_WALLET_REQUEST_CREATE_WALLET_TITLE.getKey())
+//    .label(MessageKey.CREATE_HARDWARE_WALLET_REQUEST_CREATE_WALLET_TITLE.getKey())
 //      .requireVisible();
 
   }

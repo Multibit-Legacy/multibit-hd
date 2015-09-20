@@ -35,31 +35,31 @@ public class KeepKeyPreparationUseCase extends AbstractHardwareWalletFestUseCase
 
     // Check that the Keepkey preparation screen is showing
     window
-      .label(MessageKey.CREATE_KEEPKEY_WALLET_PREPARATION_TITLE.getKey())
+      .label(MessageKey.CREATE_HARDWARE_WALLET_PREPARATION_TITLE.getKey())
       .requireVisible();
 
     window
-      .label(MessageKey.KEEPKEY_PREPARATION_NOTE_1.getKey())
+      .label(MessageKey.HARDWARE_PREPARATION_NOTE_1.getKey())
       .requireVisible();
 
     window
-      .label(MessageKey.KEEPKEY_PREPARATION_NOTE_2.getKey())
+      .label(MessageKey.HARDWARE_PREPARATION_NOTE_2.getKey())
       .requireVisible();
 
     window
-      .label(MessageKey.KEEPKEY_PREPARATION_NOTE_3.getKey())
+      .label(MessageKey.HARDWARE_PREPARATION_NOTE_3.getKey())
       .requireVisible();
 
     window
-      .label(MessageKey.KEEPKEY_PREPARATION_NOTE_4.getKey())
+      .label(MessageKey.HARDWARE_PREPARATION_NOTE_4.getKey())
       .requireVisible();
 
     window
-      .label(MessageKey.KEEPKEY_PREPARATION_NOTE_5.getKey())
+      .label(MessageKey.HARDWARE_PREPARATION_NOTE_5.getKey())
       .requireVisible();
 
     window
-      .label(MessageKey.KEEPKEY_PREPARATION_NOTE_6.getKey())
+      .label(MessageKey.HARDWARE_PREPARATION_NOTE_6.getKey())
       .requireVisible();
 
     // Check the 'Next' button is present and click it
