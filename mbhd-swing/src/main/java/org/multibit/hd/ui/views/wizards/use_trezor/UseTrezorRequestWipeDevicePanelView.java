@@ -6,11 +6,8 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayModel;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardPanelView;
@@ -29,8 +26,6 @@ import javax.swing.*;
  *
  */
 public class UseTrezorRequestWipeDevicePanelView extends AbstractHardwareWalletWizardPanelView<UseTrezorWizardModel, UseTrezorWipeDevicePanelModel> {
-
-  private ModelAndView<TrezorDisplayModel, TrezorDisplayView> hardwareDisplayMaV;
 
   /**
    * @param wizard The wizard managing the states
