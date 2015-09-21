@@ -367,7 +367,7 @@ public class MultiBitHD {
     boolean deviceWiped = false;
 
     // Check hardware wallet situation after first initialisation (may not be present or ready)
-    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.useFirstReadyHardwareWalletService();
 
     if (hardwareWalletService.isPresent()) {
       // Hardware wallet must be attached to be present
@@ -470,11 +470,11 @@ public class MultiBitHD {
 
     if (timeSpent < HARDWARE_INITIALISATION_TIME) {
       long sleepFor = HARDWARE_INITIALISATION_TIME - timeSpent;
-      log.debug("Sleep for an extra {} milliseconds to allow hardwareWalletService to initialise", sleepFor);
+      log.debug("Sleep for an extra {} milliseconds to allow hardware wallets to initialise", sleepFor);
       Uninterruptibles.sleepUninterruptibly(sleepFor, TimeUnit.MILLISECONDS);
       log.debug("Finished sleep");
     } else {
-      log.debug("No need for extra sleep time to allow hardwareWalletService to initialise");
+      log.debug("No need for extra sleep time to allow hardware wallets to initialise");
     }
 
   }
