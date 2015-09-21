@@ -5,15 +5,12 @@ import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayModel;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardPanelView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsConfirmCipherKeyPanelModel;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 
@@ -29,15 +26,13 @@ import javax.swing.*;
  *  
  */
 
-public class CreateTrezorWalletConfirmWordPanelView extends AbstractWizardPanelView<WelcomeWizardModel, CredentialsConfirmCipherKeyPanelModel> {
-
-  private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
+public class CreateTrezorWalletConfirmWordPanelView extends AbstractHardwareWalletWizardPanelView<WelcomeWizardModel, CredentialsConfirmCipherKeyPanelModel> {
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public CreateTrezorWalletConfirmWordPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateTrezorWalletConfirmWordPanelView(AbstractHardwareWalletWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.EDIT, MessageKey.HARDWARE_PRESS_NEXT_TITLE);
 
@@ -60,12 +55,7 @@ public class CreateTrezorWalletConfirmWordPanelView extends AbstractWizardPanelV
       "[]10[]" // Row constraints
     ));
 
-    trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
-
-    contentPanel.add(trezorDisplayMaV.getView().newComponentPanel(), "align center,wrap");
-
-    // Register the components
-    registerComponents(trezorDisplayMaV);
+    addCurrentHardwareDisplay(contentPanel);
 
   }
 
@@ -107,9 +97,9 @@ public class CreateTrezorWalletConfirmWordPanelView extends AbstractWizardPanelV
     String wordCountOrdinal = Languages.getOrdinalFor(wordCount);
 
     if (checking) {
-      trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_CHECK_WORD_DISPLAY, wordCountOrdinal);
+      hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_CHECK_WORD_DISPLAY, wordCountOrdinal);
     } else {
-      trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WORD_DISPLAY, wordCountOrdinal);
+      hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WORD_DISPLAY, wordCountOrdinal);
     }
 
   }

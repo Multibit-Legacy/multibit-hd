@@ -34,7 +34,7 @@ public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinW
    */
   public ChangePinReportPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.CHANGE_PIN_REPORT_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.CHANGE_PIN_REPORT_TITLE);
 
   }
 

@@ -57,7 +57,7 @@ public class SignMessageTrezorPanelView extends AbstractWizardPanelView<SignMess
    */
   public SignMessageTrezorPanelView(AbstractWizard<SignMessageWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.PENCIL, MessageKey.SIGN_MESSAGE_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.PENCIL, MessageKey.SIGN_MESSAGE_TITLE);
 
   }
 

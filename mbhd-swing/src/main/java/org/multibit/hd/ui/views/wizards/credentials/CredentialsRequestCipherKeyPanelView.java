@@ -7,15 +7,12 @@ import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayModel;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardPanelView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
@@ -30,14 +27,12 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelView<CredentialsWizardModel, String> {
-
-  private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
+public class CredentialsRequestCipherKeyPanelView extends AbstractHardwareWalletWizardPanelView<CredentialsWizardModel, String> {
 
   /**
    * @param wizard The wizard managing the states
    */
-  public CredentialsRequestCipherKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
+  public CredentialsRequestCipherKeyPanelView(AbstractHardwareWalletWizard<CredentialsWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.HARDWARE_UNLOCK_TITLE, wizard.getWizardModel().getWalletMode().brand());
 
@@ -61,11 +56,7 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
         "[]" // Row constraints
       ));
 
-    trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
-    contentPanel.add(trezorDisplayMaV.getView().newComponentPanel(), "align center,wrap");
-
-    // Register the components
-    registerComponents(trezorDisplayMaV);
+    addCurrentHardwareDisplay(contentPanel);
 
   }
 
@@ -119,18 +110,18 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
     }
 
     // Set the communication message
-    trezorDisplayMaV.getView().setOperationText(operationKey);
+    hardwareDisplayMaV.getView().setOperationText(operationKey);
 
     if (nextEnabled) {
       if (createNewTrezorWallet) {
-        trezorDisplayMaV.getView().setRecoveryText(MessageKey.HARDWARE_FAILURE_RECOVERY);
+        hardwareDisplayMaV.getView().setRecoveryText(MessageKey.HARDWARE_FAILURE_RECOVERY);
       } else {
-        trezorDisplayMaV.getView().setRecoveryText(MessageKey.HARDWARE_NO_WALLET_RECOVERY);
+        hardwareDisplayMaV.getView().setRecoveryText(MessageKey.HARDWARE_NO_WALLET_RECOVERY);
       }
     }
 
     // No spinner on a failure
-    trezorDisplayMaV.getView().setSpinnerVisible(!nextEnabled);
+    hardwareDisplayMaV.getView().setSpinnerVisible(!nextEnabled);
 
     // Override the earlier button enable setting
     ViewEvents.fireWizardButtonEnabledEvent(
@@ -166,10 +157,10 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
    * @param key The key to the operation text
    */
   public void setOperationText(MessageKey key) {
-    if (trezorDisplayMaV == null) {
+    if (hardwareDisplayMaV == null) {
       return;
     }
-    this.trezorDisplayMaV.getView().setOperationText(key);
+    this.hardwareDisplayMaV.getView().setOperationText(key);
   }
 
 }

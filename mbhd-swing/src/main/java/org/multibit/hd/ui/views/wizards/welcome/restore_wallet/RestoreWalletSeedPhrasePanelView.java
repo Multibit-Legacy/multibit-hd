@@ -45,7 +45,7 @@ public class RestoreWalletSeedPhrasePanelView extends AbstractWizardPanelView<We
    */
   public RestoreWalletSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.KEY, MessageKey.RESTORE_WALLET_SEED_PHRASE_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.KEY, MessageKey.RESTORE_WALLET_SEED_PHRASE_TITLE);
 
   }
 

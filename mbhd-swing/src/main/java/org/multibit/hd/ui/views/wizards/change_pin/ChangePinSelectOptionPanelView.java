@@ -34,7 +34,7 @@ public class ChangePinSelectOptionPanelView extends AbstractWizardPanelView<Chan
    */
   public ChangePinSelectOptionPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.TH, MessageKey.CHANGE_PIN_SELECT_OPTION_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.TH, MessageKey.CHANGE_PIN_SELECT_OPTION_TITLE);
 
   }
 

@@ -6,15 +6,12 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.ViewKey;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayModel;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardPanelView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 
@@ -28,15 +25,13 @@ import javax.swing.*;
  *  
  */
 
-public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<SendBitcoinWizardModel, SendBitcoinConfirmTrezorPanelModel> {
-
-  private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
+public class SendBitcoinConfirmTrezorPanelView extends AbstractHardwareWalletWizardPanelView<SendBitcoinWizardModel, SendBitcoinConfirmTrezorPanelModel> {
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public SendBitcoinConfirmTrezorPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
+  public SendBitcoinConfirmTrezorPanelView(AbstractHardwareWalletWizard<SendBitcoinWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE);
 
@@ -58,11 +53,8 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<S
       "[]" // Row constraints
     ));
 
-    trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
+    addCurrentHardwareDisplay(contentPanel);
 
-    contentPanel.add(trezorDisplayMaV.getView().newComponentPanel(),"align center,wrap");
-
-    registerComponents(trezorDisplayMaV);
   }
 
   @Override
@@ -99,21 +91,21 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<S
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        trezorDisplayMaV.getView().setDisplayText(key, values);
+        hardwareDisplayMaV.getView().setDisplayText(key, values);
       }
     });
 
   }
 
   public void setOperationText(final MessageKey key) {
-        trezorDisplayMaV.getView().setOperationText(key);
+        hardwareDisplayMaV.getView().setOperationText(key);
   }
 
   public void setDisplayVisible(final boolean visible) {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        trezorDisplayMaV.getView().setDisplayVisible(visible);
+        hardwareDisplayMaV.getView().setDisplayVisible(visible);
       }
     });
 
@@ -123,7 +115,7 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractWizardPanelView<S
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        trezorDisplayMaV.getView().setRecoveryText(key);
+        hardwareDisplayMaV.getView().setRecoveryText(key);
       }
     });
 

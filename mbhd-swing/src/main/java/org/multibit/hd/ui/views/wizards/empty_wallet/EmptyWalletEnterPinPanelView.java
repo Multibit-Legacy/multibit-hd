@@ -43,7 +43,7 @@ public class EmptyWalletEnterPinPanelView extends AbstractWizardPanelView<EmptyW
    */
   public EmptyWalletEnterPinPanelView(AbstractWizard<EmptyWalletWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE);
 
   }
 

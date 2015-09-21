@@ -38,7 +38,7 @@ public class CreateWalletSelectBackupLocationPanelView extends AbstractWizardPan
    */
   public CreateWalletSelectBackupLocationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.FOLDER_OPEN, MessageKey.SELECT_BACKUP_LOCATION_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.FOLDER_OPEN, MessageKey.SELECT_BACKUP_LOCATION_TITLE);
 
   }
 

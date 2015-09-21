@@ -49,7 +49,7 @@ public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWiza
    */
   public WelcomeLicencePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.GLOBE, MessageKey.WELCOME_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.GLOBE, MessageKey.WELCOME_TITLE);
 
   }
 

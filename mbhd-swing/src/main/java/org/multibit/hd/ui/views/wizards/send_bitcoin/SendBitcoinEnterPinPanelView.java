@@ -44,7 +44,7 @@ public class SendBitcoinEnterPinPanelView extends AbstractWizardPanelView<SendBi
    */
   public SendBitcoinEnterPinPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE);
 
   }
 

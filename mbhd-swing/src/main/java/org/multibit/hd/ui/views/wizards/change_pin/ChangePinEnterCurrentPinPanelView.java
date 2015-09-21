@@ -39,7 +39,7 @@ public class ChangePinEnterCurrentPinPanelView extends AbstractWizardPanelView<C
   public ChangePinEnterCurrentPinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
     // Need to use the LOCK icon here because TH is visually confusing
-    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.CHANGE_PIN_ENTER_CURRENT_PIN_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.CHANGE_PIN_ENTER_CURRENT_PIN_TITLE);
 
   }
 

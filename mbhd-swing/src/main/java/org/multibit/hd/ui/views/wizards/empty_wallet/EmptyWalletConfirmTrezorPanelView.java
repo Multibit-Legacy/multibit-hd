@@ -3,15 +3,12 @@ package org.multibit.hd.ui.views.wizards.empty_wallet;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayModel;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardPanelView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 
@@ -25,15 +22,13 @@ import javax.swing.*;
  *  
  */
 
-public class EmptyWalletConfirmTrezorPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, EmptyWalletConfirmTrezorPanelModel> {
-
-  private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
+public class EmptyWalletConfirmTrezorPanelView extends AbstractHardwareWalletWizardPanelView<EmptyWalletWizardModel, EmptyWalletConfirmTrezorPanelModel> {
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public EmptyWalletConfirmTrezorPanelView(AbstractWizard<EmptyWalletWizardModel> wizard, String panelName) {
+  public EmptyWalletConfirmTrezorPanelView(AbstractHardwareWalletWizard<EmptyWalletWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE);
 
@@ -56,11 +51,8 @@ public class EmptyWalletConfirmTrezorPanelView extends AbstractWizardPanelView<E
         "[]" // Row constraints
       ));
 
-    trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
+    addCurrentHardwareDisplay(contentPanel);
 
-    contentPanel.add(trezorDisplayMaV.getView().newComponentPanel(), "align center,wrap");
-
-    registerComponents(trezorDisplayMaV);
   }
 
   @Override
@@ -88,23 +80,23 @@ public class EmptyWalletConfirmTrezorPanelView extends AbstractWizardPanelView<E
       new Runnable() {
         @Override
         public void run() {
-          trezorDisplayMaV.getView().setDisplayText(key, values);
+          hardwareDisplayMaV.getView().setDisplayText(key, values);
         }
       });
 
   }
 
   public void setOperationText(final MessageKey key) {
-    trezorDisplayMaV.getView().setOperationText(key);
+    hardwareDisplayMaV.getView().setOperationText(key);
   }
 
   public void setDisplayVisible(final boolean visible) {
-    trezorDisplayMaV.getView().setDisplayVisible(visible);
+    hardwareDisplayMaV.getView().setDisplayVisible(visible);
 
   }
 
   public void setRecoveryText(final MessageKey key) {
-    trezorDisplayMaV.getView().setRecoveryText(key);
+    hardwareDisplayMaV.getView().setRecoveryText(key);
 
   }
 }

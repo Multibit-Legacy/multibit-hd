@@ -12,8 +12,9 @@ import org.multibit.hd.ui.views.components.Labels;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardPanelView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
@@ -30,7 +31,7 @@ import java.net.URI;
  * @since 0.0.1
  */
 
-public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorState> implements ActionListener {
+public class UseTrezorBuyTrezorPanelView extends AbstractHardwareWalletWizardPanelView<UseTrezorWizardModel, UseTrezorState> implements ActionListener {
 
   private static String BUY_TREZOR_URL = "https://buytrezor.com?a=multibit.org";
 
@@ -38,9 +39,9 @@ public class UseTrezorBuyTrezorPanelView extends AbstractWizardPanelView<UseTrez
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public UseTrezorBuyTrezorPanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
+  public UseTrezorBuyTrezorPanelView(AbstractHardwareWalletWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.BUY_TREZOR_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.BUY_TREZOR_TITLE);
 
   }
 

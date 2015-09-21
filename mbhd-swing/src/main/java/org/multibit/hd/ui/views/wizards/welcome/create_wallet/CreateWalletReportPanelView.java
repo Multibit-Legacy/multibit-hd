@@ -74,7 +74,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
    */
   public CreateWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.CREATE_WALLET_REPORT_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.CREATE_WALLET_REPORT_TITLE);
 
   }
 

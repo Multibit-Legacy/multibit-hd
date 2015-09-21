@@ -3,15 +3,12 @@ package org.multibit.hd.ui.views.wizards.sign_message;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayModel;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardPanelView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 
@@ -24,15 +21,13 @@ import javax.swing.*;
  * @since 0.0.8
  *  
  */
-public class SignMessageConfirmSignPanelView extends AbstractWizardPanelView<SignMessageWizardModel, String> {
-
-  private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
+public class SignMessageConfirmSignPanelView extends AbstractHardwareWalletWizardPanelView<SignMessageWizardModel, String> {
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public SignMessageConfirmSignPanelView(AbstractWizard<SignMessageWizardModel> wizard, String panelName) {
+  public SignMessageConfirmSignPanelView(AbstractHardwareWalletWizard<SignMessageWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE);
 
@@ -56,12 +51,7 @@ public class SignMessageConfirmSignPanelView extends AbstractWizardPanelView<Sig
         "[]10[]" // Row constraints
       ));
 
-    trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
-
-    contentPanel.add(trezorDisplayMaV.getView().newComponentPanel(), "align center,wrap");
-
-    // Register the components
-    registerComponents(trezorDisplayMaV);
+    addCurrentHardwareDisplay(contentPanel);
 
   }
 
@@ -78,10 +68,10 @@ public class SignMessageConfirmSignPanelView extends AbstractWizardPanelView<Sig
     String truncatedMessage = getWizardModel().getMessage().substring(0, Math.min(getWizardModel().getMessage().length(), 64));
 
     // Set the confirm text
-    trezorDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION);
+    hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION);
 
     // Show sign message
-    trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_SIGN_MESSAGE_CONFIRM_DISPLAY, truncatedMessage);
+    hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_SIGN_MESSAGE_CONFIRM_DISPLAY, truncatedMessage);
 
     // Reassure users that this is a sign screen but rely on the Trezor buttons to do it
     getNextButton().setEnabled(false);
@@ -105,13 +95,6 @@ public class SignMessageConfirmSignPanelView extends AbstractWizardPanelView<Sig
 
     // No need to update the wizard it has the references
 
-  }
-
-  /**
-   * @return The Trezor display view to avoid method duplication
-   */
-  public TrezorDisplayView getTrezorDisplayView() {
-    return trezorDisplayMaV.getView();
   }
 
 }

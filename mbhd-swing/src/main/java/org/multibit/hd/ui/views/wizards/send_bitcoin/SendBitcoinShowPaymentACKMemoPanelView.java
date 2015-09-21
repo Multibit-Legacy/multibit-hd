@@ -48,7 +48,7 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
    * @param panelName The panel name for filtering component events
    */
   public SendBitcoinShowPaymentACKMemoPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
-    super(wizard, panelName, AwesomeIcon.CLOUD_UPLOAD, MessageKey.SEND_PAYMENT_ACK_MEMO_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.CLOUD_UPLOAD, MessageKey.SEND_PAYMENT_ACK_MEMO_TITLE);
   }
 
   @Override

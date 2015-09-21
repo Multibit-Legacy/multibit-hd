@@ -46,7 +46,7 @@ public class WelcomeSelectLanguagePanelView extends AbstractWizardPanelView<Welc
    */
   public WelcomeSelectLanguagePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.GLOBE, MessageKey.SELECT_LANGUAGE_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.GLOBE, MessageKey.SELECT_LANGUAGE_TITLE);
 
   }
 

@@ -44,7 +44,7 @@ public class CredentialsEnterPinPanelView extends AbstractWizardPanelView<Creden
    */
   public CredentialsEnterPinPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE);
 
   }
 

@@ -324,9 +324,9 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             @Override
             public void run() {
 
-              confirmCipherKeyPanelView.getTrezorDisplayView().setOperationText(MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION);
-              confirmCipherKeyPanelView.getTrezorDisplayView().setDisplayVisible(false);
-              confirmCipherKeyPanelView.getTrezorDisplayView().setSpinnerVisible(true);
+              confirmCipherKeyPanelView.getHardwareDisplayView().setOperationText(MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION);
+              confirmCipherKeyPanelView.getHardwareDisplayView().setDisplayVisible(false);
+              confirmCipherKeyPanelView.getHardwareDisplayView().setSpinnerVisible(true);
 
             }
           });

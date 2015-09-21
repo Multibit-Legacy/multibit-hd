@@ -6,15 +6,15 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Components;
 import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayModel;
 import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardPanelView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
@@ -28,14 +28,14 @@ import javax.swing.*;
  * @since 0.0.5
  *
  */
-public class UseTrezorRequestWipeDevicePanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorWipeDevicePanelModel> {
+public class UseTrezorRequestWipeDevicePanelView extends AbstractHardwareWalletWizardPanelView<UseTrezorWizardModel, UseTrezorWipeDevicePanelModel> {
 
-  private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
+  private ModelAndView<TrezorDisplayModel, TrezorDisplayView> hardwareDisplayMaV;
 
   /**
    * @param wizard The wizard managing the states
    */
-  public UseTrezorRequestWipeDevicePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
+  public UseTrezorRequestWipeDevicePanelView(AbstractHardwareWalletWizard<UseTrezorWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.ERASER, MessageKey.HARDWARE_WIPE_DEVICE_TITLE, wizard.getWizardModel().getWalletMode().brand());
 
@@ -44,8 +44,7 @@ public class UseTrezorRequestWipeDevicePanelView extends AbstractWizardPanelView
   @Override
   public void newPanelModel() {
 
-    // Bind it to the wizard model in case of failure
-    //getWizardModel().setRequestWipeDevicePanelView(this);
+    // Do nothing
 
   }
 
@@ -59,11 +58,7 @@ public class UseTrezorRequestWipeDevicePanelView extends AbstractWizardPanelView
         "[]" // Row constraints
       ));
 
-    trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
-    contentPanel.add(trezorDisplayMaV.getView().newComponentPanel(), "align center,wrap");
-
-    // Register the components
-    registerComponents(trezorDisplayMaV);
+    addCurrentHardwareDisplay(contentPanel);
 
   }
 
@@ -109,14 +104,14 @@ public class UseTrezorRequestWipeDevicePanelView extends AbstractWizardPanelView
     getWizardModel().setReportMessageKey(operationKey);
 
     // Set the communication message
-    trezorDisplayMaV.getView().setOperationText(operationKey);
+    hardwareDisplayMaV.getView().setOperationText(operationKey);
 
     if (showReportView) {
-      trezorDisplayMaV.getView().setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
+      hardwareDisplayMaV.getView().setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
     }
 
     // This could take a while (device may tarpit after failed PINs etc)
-    trezorDisplayMaV.getView().setSpinnerVisible(!showReportView);
+    hardwareDisplayMaV.getView().setSpinnerVisible(!showReportView);
 
     // Override the earlier button enable setting
     ViewEvents.fireWizardButtonEnabledEvent(
@@ -152,7 +147,7 @@ public class UseTrezorRequestWipeDevicePanelView extends AbstractWizardPanelView
    * @param key The key to the operation text
    */
   public void setOperationText(MessageKey key) {
-    this.trezorDisplayMaV.getView().setOperationText(key);
+    this.hardwareDisplayMaV.getView().setOperationText(key);
   }
 
 }

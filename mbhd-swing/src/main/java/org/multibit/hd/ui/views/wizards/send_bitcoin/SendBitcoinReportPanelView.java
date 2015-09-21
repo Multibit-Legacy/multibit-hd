@@ -58,7 +58,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
    * @param wizard The wizard managing the states
    */
   public SendBitcoinReportPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
-    super(wizard, panelName, AwesomeIcon.CLOUD_UPLOAD, MessageKey.SEND_PROGRESS_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.CLOUD_UPLOAD, MessageKey.SEND_PROGRESS_TITLE);
   }
 
   @Override

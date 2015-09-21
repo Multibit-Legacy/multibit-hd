@@ -71,7 +71,7 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
    * @param panelName The panel name
    */
   public BIP70PaymentRequestDetailPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
-    super(wizard, panelName, AwesomeIcon.MONEY, MessageKey.DISPLAY_PAYMENT_REQUEST_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.MONEY, MessageKey.DISPLAY_PAYMENT_REQUEST_TITLE);
   }
 
 

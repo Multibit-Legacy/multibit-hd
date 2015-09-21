@@ -39,7 +39,7 @@ public class CreateWalletCreatePasswordPanelView extends AbstractWizardPanelView
    */
   public CreateWalletCreatePasswordPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.KEY, MessageKey.CREATE_WALLET_PASSWORD_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.KEY, MessageKey.CREATE_WALLET_PASSWORD_TITLE);
 
   }
 

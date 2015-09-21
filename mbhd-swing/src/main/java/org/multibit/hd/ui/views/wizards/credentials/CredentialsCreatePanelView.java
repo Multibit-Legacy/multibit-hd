@@ -26,7 +26,7 @@ public class CredentialsCreatePanelView extends AbstractWizardPanelView<Credenti
    */
   public CredentialsCreatePanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PASSWORD_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PASSWORD_TITLE);
 
   }
 

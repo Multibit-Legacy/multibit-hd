@@ -66,7 +66,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
    * @param panelName The panel name for filtering component events
    */
   public SendBitcoinConfirmPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
-    super(wizard, panelName, AwesomeIcon.CLOUD_UPLOAD, MessageKey.CONFIRM_SEND_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.CLOUD_UPLOAD, MessageKey.CONFIRM_SEND_TITLE);
   }
 
   @Override

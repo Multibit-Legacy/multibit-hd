@@ -44,7 +44,7 @@ public class SignMessageEnterPinPanelView extends AbstractWizardPanelView<SignMe
    */
   public SignMessageEnterPinPanelView(AbstractWizard<SignMessageWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE);
 
   }
 

@@ -41,7 +41,7 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
    */
   public LabSettingsPanelView(AbstractWizard<LabSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.FLASK, MessageKey.LABS_SETTINGS_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.FLASK, MessageKey.LABS_SETTINGS_TITLE);
 
   }
 

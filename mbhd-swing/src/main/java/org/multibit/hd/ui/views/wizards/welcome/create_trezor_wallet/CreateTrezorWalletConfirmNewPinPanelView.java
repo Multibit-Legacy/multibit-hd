@@ -39,7 +39,7 @@ public class CreateTrezorWalletConfirmNewPinPanelView extends AbstractWizardPane
   public CreateTrezorWalletConfirmNewPinPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     // Need to use the LOCK icon here because TH is visually confusing
-    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.CHANGE_PIN_CONFIRM_NEW_PIN_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.CHANGE_PIN_CONFIRM_NEW_PIN_TITLE);
 
   }
 

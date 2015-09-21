@@ -43,7 +43,7 @@ public class ChoosePaymentRequestPanelView extends AbstractWizardPanelView<Payme
    */
   public ChoosePaymentRequestPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.FILE_TEXT_O, MessageKey.CHOOSE_PAYMENT_REQUEST, null);
+    super(wizard, panelName, AwesomeIcon.FILE_TEXT_O, MessageKey.CHOOSE_PAYMENT_REQUEST);
   }
 
   @Override

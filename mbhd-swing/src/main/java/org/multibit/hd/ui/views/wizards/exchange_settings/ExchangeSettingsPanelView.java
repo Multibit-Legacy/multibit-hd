@@ -70,7 +70,7 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
    */
   public ExchangeSettingsPanelView(AbstractWizard<ExchangeSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.DOLLAR, MessageKey.EXCHANGE_SETTINGS_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.DOLLAR, MessageKey.EXCHANGE_SETTINGS_TITLE);
 
   }
 

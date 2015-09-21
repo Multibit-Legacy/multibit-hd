@@ -62,7 +62,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
    */
   public EmptyWalletReportPanelView(AbstractWizard<EmptyWalletWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.FIRE, MessageKey.EMPTY_WALLET_PROGRESS_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.FIRE, MessageKey.EMPTY_WALLET_PROGRESS_TITLE);
 
   }
 

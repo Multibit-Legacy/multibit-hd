@@ -4,15 +4,13 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.ModelAndView;
+import org.multibit.hd.ui.views.components.AbstractHardwareWalletComponentView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayModel;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardPanelView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 
 import javax.swing.*;
 
@@ -26,15 +24,13 @@ import javax.swing.*;
  *  
  */
 
-public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelView<CredentialsWizardModel, CredentialsConfirmCipherKeyPanelModel> {
-
-  private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
+public class CredentialsConfirmCipherKeyPanelView extends AbstractHardwareWalletWizardPanelView<CredentialsWizardModel, CredentialsConfirmCipherKeyPanelModel> {
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public CredentialsConfirmCipherKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
+  public CredentialsConfirmCipherKeyPanelView(AbstractHardwareWalletWizard<CredentialsWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE);
 
@@ -58,12 +54,7 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
         "[]10[]" // Row constraints
       ));
 
-    trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
-
-    contentPanel.add(trezorDisplayMaV.getView().newComponentPanel(), "align center,wrap");
-
-    // Register the components
-    registerComponents(trezorDisplayMaV);
+    addCurrentHardwareDisplay(contentPanel);
 
   }
 
@@ -78,10 +69,10 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
   public void afterShow() {
 
     // Set the confirm text
-    trezorDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_UNLOCK_OPERATION);
+    hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_UNLOCK_OPERATION);
 
     // Show unlock message
-    trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY);
+    hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY);
 
     // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
     getFinishButton().setEnabled(false);
@@ -110,8 +101,8 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
   /**
    * @return The Trezor display view to avoid method duplication
    */
-  public TrezorDisplayView getTrezorDisplayView() {
-    return trezorDisplayMaV.getView();
+  public AbstractHardwareWalletComponentView getHardwareDisplayView() {
+    return hardwareDisplayMaV.getView();
   }
 
   public void enableForFailedUnlock() {
@@ -121,13 +112,13 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractWizardPanelVie
     getFinishButton().setEnabled(false);
     getExitButton().setEnabled(true);
 
-    trezorDisplayMaV.getView().setSpinnerVisible(false);
+    hardwareDisplayMaV.getView().setSpinnerVisible(false);
 
   }
 
   public void incorrectEntropy() {
 
-    trezorDisplayMaV.getView().incorrectEntropy();
+    hardwareDisplayMaV.getView().incorrectEntropy();
 
   }
 }

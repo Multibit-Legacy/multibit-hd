@@ -37,7 +37,7 @@ public class ExportPaymentsLocationPanelView extends AbstractWizardPanelView<Exp
    */
   public ExportPaymentsLocationPanelView(AbstractWizard<ExportPaymentsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.FOLDER_OPEN, MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION, null);
+    super(wizard, panelName, AwesomeIcon.FOLDER_OPEN, MessageKey.SELECT_EXPORT_PAYMENTS_LOCATION);
 
   }
 

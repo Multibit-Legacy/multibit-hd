@@ -46,7 +46,7 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
    */
   public CreateTrezorWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.USE_HARDWARE_REPORT_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.USE_HARDWARE_REPORT_TITLE, wizard.getWizardModel().getWalletMode().brand());
 
   }
 

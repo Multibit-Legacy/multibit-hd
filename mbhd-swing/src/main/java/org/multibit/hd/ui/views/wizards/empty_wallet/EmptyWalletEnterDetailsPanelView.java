@@ -57,7 +57,7 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
    */
   public EmptyWalletEnterDetailsPanelView(AbstractWizard<EmptyWalletWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.FIRE, MessageKey.EMPTY_WALLET_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.FIRE, MessageKey.EMPTY_WALLET_TITLE);
 
     // Work out the wallet type (may not require a password entry)
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();

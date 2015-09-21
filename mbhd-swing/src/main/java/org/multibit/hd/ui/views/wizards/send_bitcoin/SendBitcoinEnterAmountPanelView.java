@@ -49,7 +49,7 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
    * @param panelName The panel name
    */
   public SendBitcoinEnterAmountPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
-    super(wizard, panelName, AwesomeIcon.CLOUD_UPLOAD, MessageKey.SEND_BITCOIN_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.CLOUD_UPLOAD, MessageKey.SEND_BITCOIN_TITLE);
   }
 
   @Override

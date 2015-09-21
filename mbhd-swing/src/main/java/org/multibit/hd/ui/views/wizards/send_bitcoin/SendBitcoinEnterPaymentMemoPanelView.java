@@ -44,7 +44,7 @@ public class SendBitcoinEnterPaymentMemoPanelView extends AbstractWizardPanelVie
    * @param panelName The panel name for filtering component events
    */
   public SendBitcoinEnterPaymentMemoPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
-    super(wizard, panelName, AwesomeIcon.CLOUD_UPLOAD, MessageKey.SEND_PAYMENT_MEMO_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.CLOUD_UPLOAD, MessageKey.SEND_PAYMENT_MEMO_TITLE);
   }
 
   @Override

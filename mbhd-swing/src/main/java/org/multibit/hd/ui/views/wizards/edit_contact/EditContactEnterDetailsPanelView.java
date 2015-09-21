@@ -68,7 +68,7 @@ public class EditContactEnterDetailsPanelView extends AbstractWizardPanelView<Ed
    */
   public EditContactEnterDetailsPanelView(AbstractWizard<EditContactWizardModel> wizard, String panelName, EnterContactDetailsMode mode) {
 
-    super(wizard, panelName, AwesomeIcon.EDIT, mode.getMessageKey(), null);
+    super(wizard, panelName, AwesomeIcon.EDIT, mode.getMessageKey());
 
     this.mode = mode;
   }

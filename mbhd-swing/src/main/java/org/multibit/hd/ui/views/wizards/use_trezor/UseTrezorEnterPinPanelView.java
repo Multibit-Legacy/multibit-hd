@@ -43,7 +43,7 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
    */
   public UseTrezorEnterPinPanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE);
 
   }
 

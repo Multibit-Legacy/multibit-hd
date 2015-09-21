@@ -85,7 +85,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
    */
   public RestoreWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.RESTORE_WALLET_REPORT_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.RESTORE_WALLET_REPORT_TITLE);
 
   }
 

@@ -55,7 +55,7 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
    */
   public TransactionAmountPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.FILE_TEXT_O, MessageKey.TRANSACTION_AMOUNT, null);
+    super(wizard, panelName, AwesomeIcon.FILE_TEXT_O, MessageKey.TRANSACTION_AMOUNT);
 
   }
 

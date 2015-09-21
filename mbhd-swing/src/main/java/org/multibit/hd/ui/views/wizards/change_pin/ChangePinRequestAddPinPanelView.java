@@ -4,15 +4,12 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayModel;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardPanelView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
@@ -26,12 +23,12 @@ import javax.swing.*;
  * @since 0.0.5
  *  
  */
-public class ChangePinRequestAddPinPanelView extends AbstractWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
+public class ChangePinRequestAddPinPanelView extends AbstractHardwareWalletWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
 
   /**
    * @param wizard The wizard managing the states
    */
-  public ChangePinRequestAddPinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
+  public ChangePinRequestAddPinPanelView(AbstractHardwareWalletWizard<ChangePinWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.HARDWARE_CONFIRM_ADD_PIN_TITLE);
 
@@ -53,13 +50,7 @@ public class ChangePinRequestAddPinPanelView extends AbstractWizardPanelView<Cha
       "[]10[]" // Row constraints
     ));
 
-    ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
-
-    // Need some text here in case device fails just as we being the process
-    contentPanel.add(trezorDisplayMaV.getView().newComponentPanel(), "align center,wrap");
-
-    // Ensure we register the components to avoid memory leaks
-    registerComponents(trezorDisplayMaV);
+    addCurrentHardwareDisplay(contentPanel);
 
   }
 
