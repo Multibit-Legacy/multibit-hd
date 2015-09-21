@@ -35,7 +35,7 @@ public class ChangePinRequestChangePinPanelView extends AbstractWizardPanelView<
    */
   public ChangePinRequestChangePinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.HARDWARE_CONFIRM_CHANGE_PIN_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.HARDWARE_CONFIRM_CHANGE_PIN_TITLE);
 
   }
 

@@ -39,7 +39,7 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractWizardPanelVie
    */
   public CredentialsRequestCipherKeyPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.HARDWARE_UNLOCK_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.HARDWARE_UNLOCK_TITLE, wizard.getWizardModel().getWalletMode().brand());
 
   }
 

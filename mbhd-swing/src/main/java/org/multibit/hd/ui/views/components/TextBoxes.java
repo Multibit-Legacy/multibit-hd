@@ -667,12 +667,28 @@ public class TextBoxes {
    */
   public static JTextArea newTrezorV1Display(String panelName) {
 
-    JTextArea trezorDisplay = newReadOnlyTextArea(5, 50);
+    JTextArea deviceDisplay = newReadOnlyTextArea(5, 50);
 
     // Ensure FEST can find it
-    trezorDisplay.setName(panelName + ".trezor_display");
+    deviceDisplay.setName(panelName + ".trezor_display");
 
-    return trezorDisplay;
+    return deviceDisplay;
+
+  }
+
+  /**
+   * @param panelName The panel name used as the basis for the FEST name
+   *
+   * @return A text area with similar dimensions to a V1 KeepKey after MiG resizing
+   */
+  public static JTextArea newKeepKeyV1Display(String panelName) {
+
+    JTextArea deviceDisplay = newReadOnlyTextArea(5, 150);
+
+    // Ensure FEST can find it
+    deviceDisplay.setName(panelName + ".keepkey_display");
+
+    return deviceDisplay;
 
   }
 

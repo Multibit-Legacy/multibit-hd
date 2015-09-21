@@ -36,7 +36,7 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractWizardPanelView
    */
   public UseTrezorConfirmWipeDevicePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.ERASER, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.ERASER, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE);
 
   }
 

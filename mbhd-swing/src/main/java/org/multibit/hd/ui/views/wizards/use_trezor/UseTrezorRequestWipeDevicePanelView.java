@@ -37,7 +37,7 @@ public class UseTrezorRequestWipeDevicePanelView extends AbstractWizardPanelView
    */
   public UseTrezorRequestWipeDevicePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.ERASER, MessageKey.HARDWARE_WIPE_DEVICE_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.ERASER, MessageKey.HARDWARE_WIPE_DEVICE_TITLE, wizard.getWizardModel().getWalletMode().brand());
 
   }
 

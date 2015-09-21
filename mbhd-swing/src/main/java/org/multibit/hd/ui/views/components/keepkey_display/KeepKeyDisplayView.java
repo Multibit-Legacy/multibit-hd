@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.components.trezor_display;
+package org.multibit.hd.ui.views.components.keepkey_display;
 
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.MultiBitUI;
@@ -15,13 +15,13 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Presentation of a read only Trezor device display</li>
+ * <li>Presentation of a read only KeepKey device display</li>
  * <li>Accompanying descriptive operation text</li>
  * </ul>
  *
  * @since 0.0.1
  */
-public class TrezorDisplayView extends AbstractHardwareWalletComponentView<TrezorDisplayModel> {
+public class KeepKeyDisplayView extends AbstractHardwareWalletComponentView<KeepKeyDisplayModel> {
 
   // View components
   private JLabel operationText;
@@ -32,7 +32,7 @@ public class TrezorDisplayView extends AbstractHardwareWalletComponentView<Trezo
   /**
    * @param model The model backing this view
    */
-  public TrezorDisplayView(TrezorDisplayModel model) {
+  public KeepKeyDisplayView(KeepKeyDisplayModel model) {
     super(model);
   }
 
@@ -49,13 +49,13 @@ public class TrezorDisplayView extends AbstractHardwareWalletComponentView<Trezo
     // Initialise the components
     operationText = Labels.newCommunicatingWithHardware();
     recoveryText = Labels.newBlankLabel();
-    deviceDisplayTextArea = TextBoxes.newTrezorV1Display(getModel().get().getPanelName());
+    deviceDisplayTextArea = TextBoxes.newKeepKeyV1Display(getModel().get().getPanelName());
 
     // Provide an invisible tar pit spinner
     spinner = Labels.newSpinner(Themes.currentTheme.fadedText(), MultiBitUI.NORMAL_PLUS_ICON_SIZE);
     spinner.setVisible(false);
 
-    // Start the Trezor display as invisible until text is set
+    // Start the KeepKey display as invisible until text is set
     deviceDisplayTextArea.setVisible(false);
 
     // Add to the panel
@@ -121,7 +121,7 @@ public class TrezorDisplayView extends AbstractHardwareWalletComponentView<Trezo
   /**
    * <p>Update the display with suitable text</p>
    *
-   * @param key    The message key defining the Trezor text
+   * @param key    The message key defining the KeepKey text
    * @param values Any supporting values (such as addresses and values)
    */
   public void setDisplayText(final MessageKey key, final Object... values) {

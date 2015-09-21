@@ -5,7 +5,10 @@ import com.google.common.base.Preconditions;
 import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.Recipient;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.exchanges.ExchangeKey;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -1153,10 +1156,14 @@ public class Labels {
   }
 
   /**
-   * @return A new "communicating with Trezor" label
+   * @return A new "communicating with hardware" operation label
    */
-  public static JLabel newCommunicatingWithTrezor() {
-    return newLabel(MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION);
+  public static JLabel newCommunicatingWithHardware() {
+
+    Optional<HardwareWalletService> currentHardwareWalletService = CoreServices.getCurrentHardwareWalletService();
+    WalletMode walletMode = WalletMode.of(currentHardwareWalletService);
+
+    return newLabel(MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION, walletMode.brand());
   }
 
   /**

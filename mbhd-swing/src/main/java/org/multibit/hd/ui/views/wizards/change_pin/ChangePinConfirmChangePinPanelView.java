@@ -36,7 +36,7 @@ public class ChangePinConfirmChangePinPanelView extends AbstractWizardPanelView<
   public ChangePinConfirmChangePinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
     // Need to use the LOCK icon here because TH is visually confusing
-    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.HARDWARE_CONFIRM_CHANGE_PIN_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.HARDWARE_CONFIRM_CHANGE_PIN_TITLE);
 
   }
 

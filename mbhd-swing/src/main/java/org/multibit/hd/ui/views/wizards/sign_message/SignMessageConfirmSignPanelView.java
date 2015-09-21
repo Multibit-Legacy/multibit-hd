@@ -34,7 +34,7 @@ public class SignMessageConfirmSignPanelView extends AbstractWizardPanelView<Sig
    */
   public SignMessageConfirmSignPanelView(AbstractWizard<SignMessageWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE);
 
   }
 

@@ -29,14 +29,14 @@ public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<
 
   private static final Logger log = LoggerFactory.getLogger(UseTrezorRequestCipherKeyPanelView.class);
 
-  private JLabel message = Labels.newCommunicatingWithTrezor();
+  private JLabel message = Labels.newCommunicatingWithHardware();
 
   /**
    * @param wizard The wizard managing the states
    */
   public UseTrezorRequestCipherKeyPanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE, null);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE);
 
   }
 

@@ -98,18 +98,18 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   private Optional<JButton> applyButton = Optional.absent();
 
   /**
-   * @param wizard             The wizard
-   * @param panelName          The panel name to filter events from components
-   * @param backgroundIcon     The icon for the content section background
-   * @param titleKey           The key for the title section text
-   * @param titleKeyParameters Any parameters to merge into the title section text
+   * @param wizard         The wizard
+   * @param panelName      The panel name to filter events from components
+   * @param backgroundIcon The icon for the content section background
+   * @param titleKey       The key for the title section text
+   * @param values         The values for the title key
    */
   public AbstractWizardPanelView(
     AbstractWizard<M> wizard,
     String panelName,
     AwesomeIcon backgroundIcon,
     MessageKey titleKey,
-    Object[] titleKeyParameters) {
+    Object... values) {
 
     Preconditions.checkNotNull(wizard, "'wizard' must be present");
     Preconditions.checkNotNull(titleKey, "'title' must be present");
@@ -132,7 +132,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
     PanelDecorator.applyWizardTheme(wizardScreenPanel);
 
     // Add the title to the wizard
-    JLabel title = Labels.newTitleLabel(titleKey, titleKeyParameters);
+    JLabel title = Labels.newTitleLabel(titleKey, values);
     wizardScreenPanel.add(title, "span 4," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",gap 0, shrink 200,aligny top,align center,h 90lp!,wrap");
 
     // Provide a basic empty content panel (allows lazy initialisation later)
