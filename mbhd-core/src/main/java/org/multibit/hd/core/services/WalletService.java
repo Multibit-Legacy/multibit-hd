@@ -1120,7 +1120,7 @@ public class WalletService extends AbstractService {
   public TransactionData getTransactionDataByHash(String transactionHashAsString) {
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() && WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet() != null) {
       Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
-      Transaction transaction = wallet.getTransaction(new Sha256Hash(transactionHashAsString));
+      Transaction transaction = wallet.getTransaction(Sha256Hash.wrap(transactionHashAsString));
       return adaptTransaction(wallet, transaction);
     } else {
       // No transaction with that hash in current wallet
