@@ -6,7 +6,6 @@ import org.bitcoinj.core.Coin;
 import org.multibit.hd.core.dto.CoreMessageKey;
 import org.multibit.hd.core.dto.Recipient;
 import org.multibit.hd.core.dto.WalletMode;
-import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.MultiBitUI;
@@ -22,12 +21,9 @@ import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 
 import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * <p>Utility to provide the following to UI:</p>
@@ -356,26 +352,6 @@ public class Labels {
   }
 
   /**
-   * @param walletPath The path to the image resource within the current wallet
-   *
-   * @return A new label with the image or a placeholder if not present
-   */
-  public static JLabel newWalletImageLabel(String walletPath) {
-    final BufferedImage image;
-    try {
-      image = ImageIO.read(new File(walletPath));
-      return new JLabel(new ImageIcon(image));
-    } catch (IOException e) {
-      // Fall back to a default image
-    }
-
-    JLabel label = new JLabel();
-    AwesomeDecorator.applyIcon(AwesomeIcon.USER, label, true, MultiBitUI.LARGE_ICON_SIZE);
-    return label;
-
-  }
-
-  /**
    * @param panelName The panel name (used as the basis of the unique FEST name)
    * @param status    True if the status is "good"
    *
@@ -462,13 +438,6 @@ public class Labels {
    */
   public static JLabel newCACertsInstalledStatus(boolean status) {
     return newStatusLabel(MessageKey.CACERTS_INSTALLED_STATUS, null, status);
-  }
-
-  /**
-   * @return A new "wipe Trezor message" status label
-   */
-  public static JLabel newWipeTrezorLabel() {
-    return newLabel(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
   }
 
   /**
@@ -760,14 +729,6 @@ public class Labels {
   }
 
   /**
-   * @return A new "select file" label
-   */
-  public static JLabel newSelectFile() {
-
-    return newLabel(MessageKey.SELECT_FILE);
-  }
-
-  /**
    * @return A new "select folder" label
    */
   public static JLabel newSelectFolder() {
@@ -776,27 +737,12 @@ public class Labels {
   }
 
   /**
-   * @return A new "select wallet" label
+   * @param values The message key values
+   *
+   * @return A new "enter hardware label" label
    */
-  public static JLabel newSelectWallet() {
-
-    return newLabel(MessageKey.SELECT_WALLET);
-  }
-
-  /**
-   * @return A new "Trezor device label" label
-   */
-  public static JLabel newEnterTrezorLabel() {
-    return newLabel(MessageKey.ENTER_HARDWARE_LABEL);
-  }
-
-  /**
-   * @return A new "Press Confirm on device" label
-   */
-  public static JLabel newPressConfirmOnDevice() {
-
-    return newLabel(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION);
-
+  public static JLabel newEnterHardwareLabel(Object... values) {
+    return newLabel(MessageKey.ENTER_HARDWARE_LABEL, values);
   }
 
   /**
@@ -857,32 +803,6 @@ public class Labels {
   public static JLabel newRetypeNewPassword() {
 
     return newLabel(MessageKey.RETYPE_NEW_PASSWORD);
-  }
-
-  /**
-   * @return A new "Confirm credentials" label
-   */
-  public static JLabel newPasswordVerified() {
-
-    return newLabel(MessageKey.PASSWORD_VERIFIED);
-  }
-
-  /**
-   * @return A new "Password failed" label
-   */
-  public static JLabel newPasswordFailed() {
-
-    return newLabel(MessageKey.PASSWORD_FAILED);
-  }
-
-  /**
-   * @return The current exchange name from the configuration
-   */
-  public static JLabel newCurrentExchangeName() {
-
-    String exchangeName = ExchangeKey.current().getExchangeName();
-
-    return newLabel(MessageKey.EXCHANGE_RATE_PROVIDER, exchangeName);
   }
 
   /**
@@ -952,13 +872,6 @@ public class Labels {
   }
 
   /**
-   * @return A new "Donate now" message
-   */
-  public static JLabel newDonateNow() {
-    return newLabel(MessageKey.DONATE_NOW);
-  }
-
-  /**
    * @return A new "transaction hash" label
    */
   public static JLabel newTransactionHash() {
@@ -966,29 +879,10 @@ public class Labels {
   }
 
   /**
-   * @return A new "size" label
-   */
-  public static JLabel newSize() {
-    return newValueLabel(Languages.safeText(MessageKey.SIZE));
-  }
-
-  /**
    * @return A new "raw transaction" label
    */
   public static JLabel newRawTransaction() {
     return Labels.newValueLabel(Languages.safeText(MessageKey.RAW_TRANSACTION));
-  }
-
-  /**
-   * @return A new "circle" label
-   */
-  public static JLabel newCircle() {
-
-    JLabel label = newBlankLabel();
-
-    AwesomeDecorator.bindIcon(AwesomeIcon.CIRCLE, label, false, MultiBitUI.SMALL_ICON_SIZE);
-
-    return label;
   }
 
   /**
@@ -1024,13 +918,6 @@ public class Labels {
    */
   public static JLabel newSeedPhrase() {
     return newLabel(MessageKey.SEED_PHRASE);
-  }
-
-  /**
-   * @return A new "description" label
-   */
-  public static JLabel newDescription() {
-    return newLabel(MessageKey.DESCRIPTION);
   }
 
   /**
@@ -1174,13 +1061,6 @@ public class Labels {
   }
 
   /**
-   * @return a new "cloud backup location" label
-   */
-  public static JLabel newCloudBackupLocation() {
-    return newLabel(MessageKey.CLOUD_BACKUP_LOCATION);
-  }
-
-  /**
    * @return a new "memo" label (notes)
    */
   public static JLabel newMemoLabel() {
@@ -1216,25 +1096,13 @@ public class Labels {
   }
 
   /**
-   * @return A new "welcome upper" note
+   * @return A new "licence note" note
    */
-  public static JLabel newSecureEnviromentNote() {
+  public static JLabel newLicenceNote() {
 
     return newNoteLabel(
       new MessageKey[]{
         MessageKey.LICENCE_NOTE_1,
-      }, new Object[][]{});
-  }
-
-  /**
-   * @return A new "welcome lower" note
-   */
-  public static JLabel newWelcomeNote() {
-
-    return newNoteLabel(
-      new MessageKey[]{
-        MessageKey.WELCOME_NOTE_2,
-        MessageKey.WELCOME_NOTE_3
       }, new Object[][]{});
   }
 
@@ -1279,17 +1147,6 @@ public class Labels {
       MessageKey.WALLET_PASSWORD_NOTE_1,
       MessageKey.WALLET_PASSWORD_NOTE_2,
       MessageKey.WALLET_PASSWORD_NOTE_3
-    }, new Object[][]{});
-
-  }
-
-  /**
-   * @return A new "press Confirm on Trezor" note
-   */
-  public static JLabel newPressConfirmOnTrezorNoteShort() {
-
-    return newNoteLabel(new MessageKey[]{
-      MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION
     }, new Object[][]{});
 
   }
@@ -1414,29 +1271,6 @@ public class Labels {
   }
 
   /**
-   * @return A new "create wallet preparation" note
-   */
-  public static JLabel newCreateWalletPreparationNote() {
-
-    JLabel label = newNoteLabel(new MessageKey[]{
-      MessageKey.PREPARATION_NOTE_1,
-      MessageKey.PREPARATION_NOTE_2,
-      MessageKey.PREPARATION_NOTE_3,
-      MessageKey.PREPARATION_NOTE_4,
-      MessageKey.PREPARATION_NOTE_5,
-    }, new Object[][]{});
-
-    // Allow FEST to find this
-    label.setName(MessageKey.PREPARATION_NOTE_1.getKey());
-
-    // Allow for danger theme
-    label.setForeground(Themes.currentTheme.dangerAlertText());
-
-    return label;
-
-  }
-
-  /**
    * @return A new "confirm seed phrase" note
    */
   public static JLabel newConfirmSeedPhraseNote() {
@@ -1490,19 +1324,6 @@ public class Labels {
 
     return newNoteLabel(new MessageKey[]{
       MessageKey.RESTORE_PASSWORD_NOTE_1
-    }, new Object[][]{});
-  }
-
-  /**
-   * @return A new "restore method" note
-   */
-  public static JLabel newRestoreSelectMethodNote() {
-
-    return newNoteLabel(new MessageKey[]{
-      MessageKey.RESTORE_METHOD_NOTE_1,
-      MessageKey.RESTORE_METHOD_NOTE_2,
-      MessageKey.RESTORE_METHOD_NOTE_3,
-      MessageKey.RESTORE_METHOD_NOTE_4
     }, new Object[][]{});
   }
 
@@ -1620,17 +1441,6 @@ public class Labels {
 
     return newNoteLabel(new MessageKey[]{
       MessageKey.CHANGE_PASSWORD_NOTE_2
-    }, new Object[][]{});
-
-  }
-
-  /**
-   * @return A new "verify network" note
-   */
-  public static JLabel newVerifyNetworkNoteTop() {
-
-    return newNoteLabel(new MessageKey[]{
-      MessageKey.VERIFY_NETWORK_NOTE_1
     }, new Object[][]{});
 
   }
