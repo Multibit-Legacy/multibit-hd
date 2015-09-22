@@ -72,7 +72,16 @@ public class CreateHardwareWalletConfirmCreateWalletPanelView extends AbstractHa
     hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION, getWizardModel().getWalletMode().brand());
 
     // Show wipe message
-    hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
+    switch (getWizardModel().getWalletMode()) {
+      case TREZOR:
+        hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
+        break;
+      case KEEP_KEY:
+        hardwareDisplayMaV.getView().setDisplayText(MessageKey.KEEP_KEY_WIPE_CONFIRM_DISPLAY);
+        break;
+      default:
+        throw new IllegalStateException("Unknown hardware wallet: " + getWizardModel().getWalletMode().name());
+    }
 
     // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);

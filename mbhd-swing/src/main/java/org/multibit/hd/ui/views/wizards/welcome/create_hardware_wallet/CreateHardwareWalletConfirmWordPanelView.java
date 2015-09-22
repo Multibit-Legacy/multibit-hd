@@ -86,9 +86,8 @@ public class CreateHardwareWalletConfirmWordPanelView extends AbstractHardwareWa
   }
 
   /**
-   *
    * @param wordCount The word count
-   * @param checking True if the checking phrasing should be used
+   * @param checking  True if the checking phrasing should be used
    */
   public void updateDisplay(int wordCount, boolean checking) {
 
@@ -96,11 +95,29 @@ public class CreateHardwareWalletConfirmWordPanelView extends AbstractHardwareWa
 
     String wordCountOrdinal = Languages.getOrdinalFor(wordCount);
 
-    if (checking) {
-      hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_CHECK_WORD_DISPLAY, wordCountOrdinal);
-    } else {
-      hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WORD_DISPLAY, wordCountOrdinal);
+    switch (getWizardModel().getWalletMode()) {
+
+      case TREZOR:
+        if (checking) {
+          hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_CHECK_WORD_DISPLAY, wordCountOrdinal);
+        } else {
+          hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WORD_DISPLAY, wordCountOrdinal);
+        }
+        break;
+      case KEEP_KEY:
+        // 12, 18 and 24 words are split over 2 screens
+        if (wordCount == 1) {
+          hardwareDisplayMaV.getView().setDisplayText(MessageKey.KEEP_KEY_WALLET_WORDS_DISPLAY_1);
+        }
+        // Be defensive in case of unusual display
+        if (wordCount >= 2) {
+          hardwareDisplayMaV.getView().setDisplayText(MessageKey.KEEP_KEY_WALLET_WORDS_DISPLAY_2);
+        }
+        break;
+      default:
+        throw new IllegalStateException("Unknown hardware wallet: " + getWizardModel().getWalletMode().name());
     }
+
 
   }
 }

@@ -56,7 +56,7 @@ import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
-import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorState;
+import org.multibit.hd.ui.views.wizards.use_hardware_wallet.UseHardwareWalletState;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
@@ -490,7 +490,7 @@ public class MainController extends AbstractController implements
   public void onComponentChangedEvent(ComponentChangedEvent event) {
 
     // Check for specific component changes
-    if (UseTrezorState.CONFIRM_WIPE_TREZOR.name().equals(event.getPanelName())) {
+    if (UseHardwareWalletState.CONFIRM_WIPE_DEVICE.name().equals(event.getPanelName())) {
       // The user has successfully completed wiping a Trezor device
       lastWipedTrezorDateTime = (DateTime) event.getComponentModel().get();
     }

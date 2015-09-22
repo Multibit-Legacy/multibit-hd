@@ -69,10 +69,19 @@ public class CredentialsConfirmCipherKeyPanelView extends AbstractHardwareWallet
   public void afterShow() {
 
     // Set the confirm text
-    hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_UNLOCK_OPERATION);
+    hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_UNLOCK_OPERATION, getWizardModel().getWalletMode().brand());
 
     // Show unlock message
-    hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY);
+    switch (getWizardModel().getWalletMode()) {
+      case TREZOR:
+        hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY);
+        break;
+      case KEEP_KEY:
+        hardwareDisplayMaV.getView().setDisplayText(MessageKey.KEEP_KEY_ENCRYPT_MULTIBIT_HD_UNLOCK_DISPLAY);
+        break;
+      default:
+        throw new IllegalStateException("Unknown hardware wallet: " + getWizardModel().getWalletMode().name());
+    }
 
     // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
     getFinishButton().setEnabled(false);

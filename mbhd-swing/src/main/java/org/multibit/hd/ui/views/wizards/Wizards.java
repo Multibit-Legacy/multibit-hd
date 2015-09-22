@@ -76,9 +76,9 @@ import org.multibit.hd.ui.views.wizards.sound_settings.SoundSettingsWizardModel;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsState;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsSettingsWizard;
 import org.multibit.hd.ui.views.wizards.units_settings.UnitsWizardModel;
-import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorState;
-import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorWizard;
-import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorWizardModel;
+import org.multibit.hd.ui.views.wizards.use_hardware_wallet.UseHardwareWalletState;
+import org.multibit.hd.ui.views.wizards.use_hardware_wallet.UseHardwareWalletWizard;
+import org.multibit.hd.ui.views.wizards.use_hardware_wallet.UseHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageState;
 import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageWizard;
 import org.multibit.hd.ui.views.wizards.verify_message.VerifyMessageWizardModel;
@@ -283,9 +283,9 @@ public class Wizards {
   /**
    * @return A new "use trezor" wizard
    */
-  public static UseTrezorWizard newUseTrezorWizard() {
+  public static UseHardwareWalletWizard newUseTrezorWizard() {
 
-    return new UseTrezorWizard(new UseTrezorWizardModel(UseTrezorState.SELECT_TREZOR_ACTION), false);
+    return new UseHardwareWalletWizard(new UseHardwareWalletWizardModel(UseHardwareWalletState.SELECT_HARDWARE_ACTION), false);
   }
 
   /**

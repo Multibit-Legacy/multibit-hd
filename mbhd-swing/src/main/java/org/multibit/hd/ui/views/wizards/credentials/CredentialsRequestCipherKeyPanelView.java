@@ -110,13 +110,13 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractHardwareWallet
     }
 
     // Set the communication message
-    hardwareDisplayMaV.getView().setOperationText(operationKey);
+    hardwareDisplayMaV.getView().setOperationText(operationKey, getWizardModel().getWalletMode().brand());
 
     if (nextEnabled) {
       if (createNewTrezorWallet) {
-        hardwareDisplayMaV.getView().setRecoveryText(MessageKey.HARDWARE_FAILURE_RECOVERY);
+        hardwareDisplayMaV.getView().setRecoveryText(MessageKey.HARDWARE_FAILURE_RECOVERY, getWizardModel().getWalletMode().brand());
       } else {
-        hardwareDisplayMaV.getView().setRecoveryText(MessageKey.HARDWARE_NO_WALLET_RECOVERY);
+        hardwareDisplayMaV.getView().setRecoveryText(MessageKey.HARDWARE_NO_WALLET_RECOVERY, getWizardModel().getWalletMode().brand());
       }
     }
 
@@ -160,7 +160,7 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractHardwareWallet
     if (hardwareDisplayMaV == null) {
       return;
     }
-    this.hardwareDisplayMaV.getView().setOperationText(key);
+    this.hardwareDisplayMaV.getView().setOperationText(key, getWizardModel().getWalletMode().brand());
   }
 
 }

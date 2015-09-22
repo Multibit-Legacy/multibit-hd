@@ -88,7 +88,7 @@ public interface MultiBitUI {
   /**
    * A width constraint to avoid text overflow in wizards showing KeepKey device screens
    */
-  String KEEPKEY_DISPLAY_MAX_WIDTH_MIG = "w 150";
+  String KEEPKEY_DISPLAY_MAX_WIDTH_MIG = "w 300";
 
   /**
    * A width constraint to avoid text overflow in alert bars showing long messages (e.g. Payment Requests)

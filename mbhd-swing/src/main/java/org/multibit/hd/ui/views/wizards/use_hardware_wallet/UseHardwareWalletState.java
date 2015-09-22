@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.use_trezor;
+package org.multibit.hd.ui.views.wizards.use_hardware_wallet;
 
 /**
  * <p>Enum to provide the following to "Use Trezor" wizard model:</p>
@@ -9,12 +9,12 @@ package org.multibit.hd.ui.views.wizards.use_trezor;
  * @since 0.0.1
  *  
  */
-public enum UseTrezorState {
+public enum UseHardwareWalletState {
 
   /**
    * Select the action you want to perform with the Trezor
    */
-  SELECT_TREZOR_ACTION,
+  SELECT_HARDWARE_ACTION,
 
   /**
    * Use the Trezor wallet
@@ -24,22 +24,22 @@ public enum UseTrezorState {
   /**
    * Buy a Trezor
    */
-  BUY_TREZOR,
+  BUY_DEVICE,
 
   /**
    * Verify the Trezor device
    */
-  VERIFY_TREZOR,
+  VERIFY_DEVICE,
 
   /**
    * Request a wipe of the Trezor device
    */
-  REQUEST_WIPE_TREZOR,
+  REQUEST_WIPE_DEVICE,
 
   /**
    * Confirm a wipe of the Trezor device
    */
-  CONFIRM_WIPE_TREZOR,
+  CONFIRM_WIPE_DEVICE,
 
   /**
    * Enter a Trezor PIN
@@ -54,7 +54,7 @@ public enum UseTrezorState {
   /**
    * Report panel
    */
-  USE_TREZOR_REPORT_PANEL
+  USE_HARDWARE_WALLET_REPORT_PANEL
 
   // End of enum
   ;

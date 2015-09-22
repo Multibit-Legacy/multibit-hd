@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.use_trezor;
+package org.multibit.hd.ui.views.wizards.use_hardware_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -23,13 +23,13 @@ import javax.swing.*;
  * @since 0.0.5
  *         
  */
-public class UseTrezorConfirmWipeDevicePanelView extends AbstractHardwareWalletWizardPanelView<UseTrezorWizardModel, UseTrezorConfirmWipeDevicePanelModel> {
+public class UseHardwareWalletConfirmWipeDevicePanelView extends AbstractHardwareWalletWizardPanelView<UseHardwareWalletWizardModel, UseHardwareWalletConfirmWipeDevicePanelModel> {
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public UseTrezorConfirmWipeDevicePanelView(AbstractHardwareWalletWizard<UseTrezorWizardModel> wizard, String panelName) {
+  public UseHardwareWalletConfirmWipeDevicePanelView(AbstractHardwareWalletWizard<UseHardwareWalletWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.ERASER, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE);
 
@@ -53,7 +53,7 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractHardwareWalletW
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<UseHardwareWalletWizardModel> wizard) {
 
     PanelDecorator.addExitCancelNext(this, wizard);
 
@@ -65,8 +65,17 @@ public class UseTrezorConfirmWipeDevicePanelView extends AbstractHardwareWalletW
     // Set the confirm text
     hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION, getWizardModel().getWalletMode().brand());
 
-    // Show unlock message
-    hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
+    // Show confirm wipe message
+    switch (getWizardModel().getWalletMode()) {
+      case TREZOR:
+        hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);
+        break;
+      case KEEP_KEY:
+        hardwareDisplayMaV.getView().setDisplayText(MessageKey.KEEP_KEY_WIPE_CONFIRM_DISPLAY);
+        break;
+      default:
+        throw new IllegalStateException("Unknown hardware wallet: " + getWizardModel().getWalletMode().name());
+    }
 
     // Reassure users that this is an unlock screen but rely on the Trezor buttons to do it
     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, false);

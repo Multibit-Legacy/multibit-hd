@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.use_trezor;
+package org.multibit.hd.ui.views.wizards.use_hardware_wallet;
 
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 
@@ -11,12 +11,12 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
  * @since 0.0.1
  *
  */
-public class UseTrezorVerifyDevicePanelModel extends AbstractWizardPanelModel {
+public class UseHardwareWalletWipeDevicePanelModel extends AbstractWizardPanelModel {
 
   /**
    * @param panelName The panel name
    */
-  public UseTrezorVerifyDevicePanelModel(String panelName) {
+  public UseHardwareWalletWipeDevicePanelModel(String panelName) {
     super(panelName);
   }
 

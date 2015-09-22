@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.use_trezor;
+package org.multibit.hd.ui.views.wizards.use_hardware_wallet;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
@@ -33,14 +33,14 @@ import java.util.concurrent.Callable;
  * @since 0.0.1
  *  
  */
-public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseTrezorState> {
+public class UseHardwareWalletWizardModel extends AbstractHardwareWalletWizardModel<UseHardwareWalletState> {
 
-  private static final Logger log = LoggerFactory.getLogger(UseTrezorWizardModel.class);
+  private static final Logger log = LoggerFactory.getLogger(UseHardwareWalletWizardModel.class);
 
   /**
    * The current selection option as a state
    */
-  private UseTrezorState currentSelection = UseTrezorState.BUY_TREZOR;
+  private UseHardwareWalletState currentSelection = UseHardwareWalletState.BUY_DEVICE;
 
   /**
    * The features of the attached Trezor
@@ -50,14 +50,14 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   /**
    * The "enter pin" panel view
    */
-  private UseTrezorEnterPinPanelView enterPinPanelView;
+  private UseHardwareWalletEnterPinPanelView enterPinPanelView;
 
-  private UseTrezorRequestCipherKeyPanelView requestCipherKeyPanelView;
+  private UseHardwareWalletRequestCipherKeyPanelView requestCipherKeyPanelView;
 
-  private UseTrezorReportPanelView reportPanelView;
+  private UseHardwareWalletReportPanelView reportPanelView;
 
-  public UseTrezorWizardModel(UseTrezorState useTrezorState) {
-    super(useTrezorState);
+  public UseHardwareWalletWizardModel(UseHardwareWalletState useHardwareWalletState) {
+    super(useHardwareWalletState);
   }
 
   @Override
@@ -65,15 +65,15 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
     return state.name();
   }
 
-  public UseTrezorEnterPinPanelView getEnterPinPanelView() {
+  public UseHardwareWalletEnterPinPanelView getEnterPinPanelView() {
     return enterPinPanelView;
   }
 
-  public void setEnterPinPanelView(UseTrezorEnterPinPanelView enterPinPanelView) {
+  public void setEnterPinPanelView(UseHardwareWalletEnterPinPanelView enterPinPanelView) {
     this.enterPinPanelView = enterPinPanelView;
   }
 
-  public void setRequestCipherKeyPanelView(UseTrezorRequestCipherKeyPanelView requestCipherKeyPanelView) {
+  public void setRequestCipherKeyPanelView(UseHardwareWalletRequestCipherKeyPanelView requestCipherKeyPanelView) {
     this.requestCipherKeyPanelView = requestCipherKeyPanelView;
   }
 
@@ -81,37 +81,37 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   public void showNext() {
     log.debug("Current selection : {}", getCurrentSelection());
     switch (state) {
-      case SELECT_TREZOR_ACTION:
+      case SELECT_HARDWARE_ACTION:
         switch (getCurrentSelection()) {
-          case SELECT_TREZOR_ACTION:
+          case SELECT_HARDWARE_ACTION:
             break;
           case USE_TREZOR_WALLET:
             break;
-          case BUY_TREZOR:
-            state = UseTrezorState.BUY_TREZOR;
+          case BUY_DEVICE:
+            state = UseHardwareWalletState.BUY_DEVICE;
             break;
-          case VERIFY_TREZOR:
-            state = UseTrezorState.VERIFY_TREZOR;
+          case VERIFY_DEVICE:
+            state = UseHardwareWalletState.VERIFY_DEVICE;
             break;
-          case REQUEST_WIPE_TREZOR:
-            state = UseTrezorState.REQUEST_WIPE_TREZOR;
+          case REQUEST_WIPE_DEVICE:
+            state = UseHardwareWalletState.REQUEST_WIPE_DEVICE;
             break;
           default:
             throw new IllegalStateException("Cannot showNext with a state of SELECT_TREZOR_ACTION and a selection of " + getCurrentSelection());
         }
         break;
-      case BUY_TREZOR:
-        state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
+      case BUY_DEVICE:
+        state = UseHardwareWalletState.USE_HARDWARE_WALLET_REPORT_PANEL;
         break;
-      case VERIFY_TREZOR:
-        state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
+      case VERIFY_DEVICE:
+        state = UseHardwareWalletState.USE_HARDWARE_WALLET_REPORT_PANEL;
         break;
-      case REQUEST_WIPE_TREZOR:
+      case REQUEST_WIPE_DEVICE:
         // Trezor must have failed and user is clicking through
-        state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
+        state = UseHardwareWalletState.USE_HARDWARE_WALLET_REPORT_PANEL;
         break;
-      case CONFIRM_WIPE_TREZOR:
-        state = UseTrezorState.USE_TREZOR_REPORT_PANEL;
+      case CONFIRM_WIPE_DEVICE:
+        state = UseHardwareWalletState.USE_HARDWARE_WALLET_REPORT_PANEL;
         break;
       case ENTER_PIN:
         break;
@@ -127,8 +127,8 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   public void showPrevious() {
 
     switch (state) {
-      case BUY_TREZOR:
-        state = UseTrezorState.SELECT_TREZOR_ACTION;
+      case BUY_DEVICE:
+        state = UseHardwareWalletState.SELECT_HARDWARE_ACTION;
         break;
 
       default:
@@ -158,20 +158,20 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
       case NO_PIN_REQUIRED:
         // Should be catered for by finish
         break;
-      case REQUEST_WIPE_TREZOR:
+      case REQUEST_WIPE_DEVICE:
         switch (buttonRequest.getButtonRequestType()) {
           case WIPE_DEVICE:
             // Device requires confirmation to wipe
-            state = UseTrezorState.CONFIRM_WIPE_TREZOR;
+            state = UseHardwareWalletState.CONFIRM_WIPE_DEVICE;
             break;
           default:
             throw new IllegalStateException("Unexpected button: " + buttonRequest.getButtonRequestType().name());
         }
         break;
-      case VERIFY_TREZOR:
+      case VERIFY_DEVICE:
         // Should be catered for by finish on Verify Trezor panel
 
-      case USE_TREZOR_REPORT_PANEL:
+      case USE_HARDWARE_WALLET_REPORT_PANEL:
         // Should be catered for by finish on Trezor report panel
 
         break;
@@ -183,9 +183,9 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   @Override
   public void showOperationSucceeded(HardwareWalletEvent event) {
     switch (state) {
-      case CONFIRM_WIPE_TREZOR:
+      case CONFIRM_WIPE_DEVICE:
         // Indicate a successful wipe
-        state=UseTrezorState.USE_TREZOR_REPORT_PANEL;
+        state= UseHardwareWalletState.USE_HARDWARE_WALLET_REPORT_PANEL;
         setReportMessageKey(MessageKey.HARDWARE_WIPE_DEVICE_SUCCESS);
         setReportMessageStatus(true);
 
@@ -194,7 +194,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
             @Override
             public void run() {
               // Let MainController know about this
-              ViewEvents.fireComponentChangedEvent(UseTrezorState.CONFIRM_WIPE_TREZOR.name(), Optional.of(Dates.nowUtc()));
+              ViewEvents.fireComponentChangedEvent(UseHardwareWalletState.CONFIRM_WIPE_DEVICE.name(), Optional.of(Dates.nowUtc()));
             }
           });
 
@@ -208,7 +208,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
     // In all cases move to the report panel with a failure message
-    state=UseTrezorState.USE_TREZOR_REPORT_PANEL;
+    state= UseHardwareWalletState.USE_HARDWARE_WALLET_REPORT_PANEL;
     setReportMessageKey(MessageKey.HARDWARE_WIPE_DEVICE_FAILURE);
     setReportMessageStatus(false);
 
@@ -217,11 +217,11 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
 
   }
 
-  public UseTrezorState getCurrentSelection() {
+  public UseHardwareWalletState getCurrentSelection() {
     return currentSelection;
   }
 
-  public void setCurrentSelection(UseTrezorState currentSelection) {
+  public void setCurrentSelection(UseHardwareWalletState currentSelection) {
     this.currentSelection = currentSelection;
   }
 
@@ -263,7 +263,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
           SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-              ViewEvents.fireComponentChangedEvent(UseTrezorState.VERIFY_TREZOR.name(), Optional.absent());
+              ViewEvents.fireComponentChangedEvent(UseHardwareWalletState.VERIFY_DEVICE.name(), Optional.absent());
             }
           });
 
@@ -318,7 +318,7 @@ public class UseTrezorWizardModel extends AbstractHardwareWalletWizardModel<UseT
           SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-              ViewEvents.fireComponentChangedEvent(UseTrezorState.REQUEST_WIPE_TREZOR.name(), Optional.absent());
+              ViewEvents.fireComponentChangedEvent(UseHardwareWalletState.REQUEST_WIPE_DEVICE.name(), Optional.absent());
             }
           });
 

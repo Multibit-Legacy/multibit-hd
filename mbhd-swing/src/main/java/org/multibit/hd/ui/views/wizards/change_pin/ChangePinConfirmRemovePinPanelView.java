@@ -79,7 +79,17 @@ public class ChangePinConfirmRemovePinPanelView extends AbstractHardwareWalletWi
 
     // Show the current Trezor display
     hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION, getWizardModel().getWalletMode().brand());
-    hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_REMOVE_PIN_DISPLAY);
+
+    switch (getWizardModel().getWalletMode()) {
+      case TREZOR:
+        hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_REMOVE_PIN_DISPLAY);
+        break;
+      case KEEP_KEY:
+        hardwareDisplayMaV.getView().setDisplayText(MessageKey.KEEP_KEY_REMOVE_PIN_DISPLAY);
+        break;
+      default:
+        throw new IllegalStateException("Unknown hardware wallet: " + getWizardModel().getWalletMode().name());
+    }
 
   }
 

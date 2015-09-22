@@ -58,7 +58,7 @@ public class SignMessageConfirmSignPanelView extends AbstractHardwareWalletWizar
   @Override
   protected void initialiseButtons(AbstractWizard<SignMessageWizardModel> wizard) {
 
-    PanelDecorator.addNext(this, wizard);
+    PanelDecorator.addCancelNext(this, wizard);
 
   }
 

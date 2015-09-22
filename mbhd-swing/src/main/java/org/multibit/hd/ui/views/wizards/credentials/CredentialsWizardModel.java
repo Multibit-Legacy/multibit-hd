@@ -324,7 +324,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             @Override
             public void run() {
 
-              confirmCipherKeyPanelView.getHardwareDisplayView().setOperationText(MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION);
+              confirmCipherKeyPanelView.getHardwareDisplayView().setOperationText(MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION, getWalletMode().brand());
               confirmCipherKeyPanelView.getHardwareDisplayView().setDisplayVisible(false);
               confirmCipherKeyPanelView.getHardwareDisplayView().setSpinnerVisible(true);
 
@@ -463,7 +463,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       new Callable<Boolean>() {
         @Override
         public Boolean call() {
-          log.debug("Performing a request cipher key to Trezor");
+          log.debug("Performing a request cipher key to hardware wallet");
 
           // Provide a short delay to allow UI to update
           Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
@@ -476,6 +476,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           if (hardwareWalletService.get().isWalletPresent()) {
 
             // Use this layout to ensure line wrapping occurs on a V1 Trezor
+            // DO NOT CHANGE THIS or client wallets will not unlock
             byte[] key = "MultiBit HD     Unlock".getBytes(Charsets.UTF_8);
             byte[] keyValue = "0123456789abcdef".getBytes(Charsets.UTF_8);
 

@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.use_trezor;
+package org.multibit.hd.ui.views.wizards.use_hardware_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -31,17 +31,18 @@ import java.net.URI;
  * @since 0.0.1
  */
 
-public class UseTrezorBuyTrezorPanelView extends AbstractHardwareWalletWizardPanelView<UseTrezorWizardModel, UseTrezorState> implements ActionListener {
+public class UseHardwareWalletBuyDevicePanelView extends AbstractHardwareWalletWizardPanelView<UseHardwareWalletWizardModel, UseHardwareWalletState> implements ActionListener {
 
   private static String BUY_TREZOR_URL = "https://buytrezor.com?a=multibit.org";
+  private static String BUY_KEEP_KEY_URL = "https://www.keepkey.com?r=multibit.org";
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public UseTrezorBuyTrezorPanelView(AbstractHardwareWalletWizard<UseTrezorWizardModel> wizard, String panelName) {
+  public UseHardwareWalletBuyDevicePanelView(AbstractHardwareWalletWizard<UseHardwareWalletWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.BUY_TREZOR_TITLE);
+    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.BUY_HARDWARE_TITLE, wizard.getWizardModel().getWalletMode().brand());
 
   }
 
@@ -60,20 +61,26 @@ public class UseTrezorBuyTrezorPanelView extends AbstractHardwareWalletWizardPan
         "[]" // Row constraints
       ));
 
-    JButton launchBrowserButton = Buttons.newLaunchBrowserButton(getLaunchBrowserAction(), MessageKey.BUY_TREZOR, MessageKey.BUY_TREZOR_TOOLTIP);
-       contentPanel.add(Labels.newBuyTrezorCommentNote(), "wrap");
-       contentPanel.add(launchBrowserButton, "wrap");
+    JButton launchBrowserButton = Buttons.newLaunchBrowserButton(
+      getLaunchBrowserAction(),
+      MessageKey.BUY_HARDWARE,
+      MessageKey.BUY_HARDWARE_TOOLTIP,
+      getWizardModel().getWalletMode().brand()
+    );
+
+    contentPanel.add(Labels.newBuyHardwareCommentNote(getWizardModel().getWalletMode().brand()), "wrap");
+    contentPanel.add(launchBrowserButton, "wrap");
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<UseHardwareWalletWizardModel> wizard) {
     PanelDecorator.addExitCancelPreviousFinish(this, wizard);
   }
 
   @Override
   public void fireInitialStateViewEvents() {
 
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT,true);
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, true);
 
   }
 
@@ -101,20 +108,32 @@ public class UseTrezorBuyTrezorPanelView extends AbstractHardwareWalletWizardPan
   }
 
   /**
-    * @return The "launch browser" action
-    */
-   private Action getLaunchBrowserAction() {
+   * @return The "launch browser" action
+   */
+  private Action getLaunchBrowserAction() {
 
-     return new AbstractAction() {
-       @Override
-       public void actionPerformed(ActionEvent e) {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
 
-         // Attempt to open the URI
-         if (!SafeDesktop.browse(URI.create(BUY_TREZOR_URL))) {
-           Sounds.playBeep(Configurations.currentConfiguration.getSound());
-         }
+        URI purchaseUri;
+        switch (getWizardModel().getWalletMode()) {
+          case TREZOR:
+            purchaseUri = URI.create(BUY_TREZOR_URL);
+            break;
+          case KEEP_KEY:
+            purchaseUri = URI.create(BUY_KEEP_KEY_URL);
+            break;
+          default:
+            throw new IllegalStateException("Unknown hardware wallet: " + getWizardModel().getWalletMode().name());
+        }
 
-       }
-     };
-   }
+        // Attempt to open the URI
+        if (!SafeDesktop.browse(purchaseUri)) {
+          Sounds.playBeep(Configurations.currentConfiguration.getSound());
+        }
+
+      }
+    };
+  }
 }

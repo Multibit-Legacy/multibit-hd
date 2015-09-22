@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.use_trezor;
+package org.multibit.hd.ui.views.wizards.use_hardware_wallet;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
@@ -28,16 +28,16 @@ import javax.swing.*;
  *
  * @since 0.0.1
  */
-public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorVerifyDevicePanelModel> {
+public class UseHardwareWalletVerifyDevicePanelView extends AbstractWizardPanelView<UseHardwareWalletWizardModel, UseHardwareWalletVerifyDevicePanelModel> {
 
-  private JLabel trezorCommunicationsStatusLabel;
+  private JLabel hardwareCommunicationsStatusLabel;
 
   private JTextArea featuresTextArea;
 
   /**
    * @param wizard The wizard managing the states
    */
-  public UseTrezorVerifyDevicePanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
+  public UseHardwareWalletVerifyDevicePanelView(AbstractWizard<UseHardwareWalletWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.MEDKIT, MessageKey.HARDWARE_VERIFY_DEVICE_TITLE, wizard.getWizardModel().getWalletMode().brand());
 
@@ -47,7 +47,7 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
   public void newPanelModel() {
 
     // Configure the panel model
-    UseTrezorVerifyDevicePanelModel panelModel = new UseTrezorVerifyDevicePanelModel(
+    UseHardwareWalletVerifyDevicePanelModel panelModel = new UseHardwareWalletVerifyDevicePanelModel(
             getPanelName()
     );
     setPanelModel(panelModel);
@@ -66,15 +66,15 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
     // Apply the theme
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
-    // Trezor communications status label
-    trezorCommunicationsStatusLabel = Labels.newStatusLabel(
+    // Hardware communications status label
+    hardwareCommunicationsStatusLabel = Labels.newStatusLabel(
             Optional.of(MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION),
-            null,
+            new Object[] {getWizardModel().getWalletMode().brand()},
             Optional.<Boolean>absent());
-    AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION);
+    AccessibilityDecorator.apply(hardwareCommunicationsStatusLabel, MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION);
+    contentPanel.add(hardwareCommunicationsStatusLabel, "wrap");
 
-    contentPanel.add(trezorCommunicationsStatusLabel, "wrap");
-    // The Trezor features is a wall of text so needs scroll bars
+    // The hardware wallet features is a wall of text so needs scroll bars
     featuresTextArea = TextBoxes.newReadOnlyTextArea(10, 80);
     featuresTextArea.setBorder(null);
     featuresTextArea.setText("");
@@ -100,7 +100,7 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<UseHardwareWalletWizardModel> wizard) {
 
     PanelDecorator.addFinish(this, wizard);
 
@@ -135,14 +135,14 @@ public class UseTrezorVerifyDevicePanelView extends AbstractWizardPanelView<UseT
           Optional<Features> optionalFeatures = getWizardModel().getFeaturesOptional();
           if (optionalFeatures.isPresent()) {
             // Got features ok
-            trezorCommunicationsStatusLabel.setText(Languages.safeText(MessageKey.HARDWARE_FOUND));
-            AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.HARDWARE_FOUND);
+            hardwareCommunicationsStatusLabel.setText(Languages.safeText(MessageKey.HARDWARE_FOUND, getWizardModel().getWalletMode().brand()));
+            AccessibilityDecorator.apply(hardwareCommunicationsStatusLabel, MessageKey.HARDWARE_FOUND);
 
             featuresTextArea.setText(optionalFeatures.get().toString());
           } else {
             // No features
-            trezorCommunicationsStatusLabel.setText(Languages.safeText(MessageKey.NO_HARDWARE_FOUND));
-            AccessibilityDecorator.apply(trezorCommunicationsStatusLabel, MessageKey.NO_HARDWARE_FOUND);
+            hardwareCommunicationsStatusLabel.setText(Languages.safeText(MessageKey.NO_HARDWARE_FOUND, getWizardModel().getWalletMode().brand()));
+            AccessibilityDecorator.apply(hardwareCommunicationsStatusLabel, MessageKey.NO_HARDWARE_FOUND);
           }
 
         }

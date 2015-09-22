@@ -131,7 +131,21 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
       case SELECT_OPTION:
 
         // Read the current features to establish PIN status
-        Features features = CoreServices.getCurrentHardwareWalletService().get().getContext().getFeatures().get();
+        Features features;
+        Optional<HardwareWalletService> currentHardwareWalletService = CoreServices.getCurrentHardwareWalletService();
+        if (currentHardwareWalletService.isPresent()) {
+          if (currentHardwareWalletService.get().getContext().getFeatures().isPresent()) {
+            features = currentHardwareWalletService.get().getContext().getFeatures().get();
+          } else {
+            setReportMessageKey(MessageKey.HARDWARE_FAILURE_OPERATION);
+            state = ChangePinState.SHOW_REPORT;
+            break;
+          }
+        } else {
+          setReportMessageKey(MessageKey.HARDWARE_FAILURE_OPERATION);
+          state = ChangePinState.SHOW_REPORT;
+          break;
+        }
         hasPinProtection = features.hasPinProtection();
 
         if (removePin) {

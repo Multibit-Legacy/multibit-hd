@@ -628,32 +628,33 @@ public class Panels {
   }
 
   /**
-   * <p>A "Trezor tool selector" panel provides a means of choosing which Trezor tool to run</p>
+   * <p>A "Hardware wallet tool selector" panel provides a means of choosing which tool to run</p>
    *
    * @param listener            The action listener
-   * @param buyTrezorCommand    The buy trezor command
+   * @param buyDeviceCommand    The buy device command
    * @param verifyDeviceCommand The verify device command name
    * @param wipeDeviceCommand   The wipe device command name
+   * @param brand               The brand to apply to the message keys
    *
-   * @return A new "use Trezor selector" panel
+   * @return A new "use hardware wallet selector" panel
    */
-  public static JPanel newUseTrezorSelector(
+  public static JPanel newUseHardwareWalletSelector(
     ActionListener listener,
-    String buyTrezorCommand,
+    String buyDeviceCommand,
     String verifyDeviceCommand,
-    String wipeDeviceCommand
-  ) {
+    String wipeDeviceCommand,
+    String brand) {
 
     JPanel panel = Panels.newPanel();
 
-    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.BUY_TREZOR);
-    radio1.setActionCommand(buyTrezorCommand);
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.BUY_HARDWARE, brand);
+    radio1.setActionCommand(buyDeviceCommand);
     radio1.setSelected(true);
 
-    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_VERIFY_DEVICE);
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_VERIFY_DEVICE, brand);
     radio2.setActionCommand(verifyDeviceCommand);
 
-    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_WIPE_DEVICE);
+    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_WIPE_DEVICE, brand);
     radio3.setActionCommand(wipeDeviceCommand);
 
     // Action selection is mutually exclusive

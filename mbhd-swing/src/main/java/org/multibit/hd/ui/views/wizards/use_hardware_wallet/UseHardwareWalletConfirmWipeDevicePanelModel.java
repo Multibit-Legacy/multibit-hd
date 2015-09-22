@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.use_trezor;
+package org.multibit.hd.ui.views.wizards.use_hardware_wallet;
 
 import org.multibit.hd.ui.views.components.enter_pin.EnterPinModel;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
@@ -6,13 +6,13 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
 /**
  * <p>Panel model to provide the following to "use Trezor" wizard:</p>
  * <ul>
- * <li>Storage of state for the "enter pin" panel</li>
+ * <li>Storage of state for the "confirm wipe" panel</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
-public class UseTrezorEnterPinPanelModel extends AbstractWizardPanelModel {
+public class UseHardwareWalletConfirmWipeDevicePanelModel extends AbstractWizardPanelModel {
 
   private final EnterPinModel enterPinModel;
 
@@ -20,9 +20,9 @@ public class UseTrezorEnterPinPanelModel extends AbstractWizardPanelModel {
    * @param panelName          The panel name
    * @param enterPinModel The "enter pin" component model
    */
-  public UseTrezorEnterPinPanelModel(
-          String panelName,
-          EnterPinModel enterPinModel
+  public UseHardwareWalletConfirmWipeDevicePanelModel(
+    String panelName,
+    EnterPinModel enterPinModel
   ) {
     super(panelName);
     this.enterPinModel = enterPinModel;

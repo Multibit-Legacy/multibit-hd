@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.use_trezor;
+package org.multibit.hd.ui.views.wizards.use_hardware_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -25,16 +25,16 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorEnterPinPanelModel> {
+public class UseHardwareWalletRequestCipherKeyPanelView extends AbstractWizardPanelView<UseHardwareWalletWizardModel, UseHardwareWalletEnterPinPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(UseTrezorRequestCipherKeyPanelView.class);
+  private static final Logger log = LoggerFactory.getLogger(UseHardwareWalletRequestCipherKeyPanelView.class);
 
   private JLabel message = Labels.newCommunicatingWithHardware();
 
   /**
    * @param wizard The wizard managing the states
    */
-  public UseTrezorRequestCipherKeyPanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
+  public UseHardwareWalletRequestCipherKeyPanelView(AbstractWizard<UseHardwareWalletWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE);
 
@@ -65,7 +65,7 @@ public class UseTrezorRequestCipherKeyPanelView extends AbstractWizardPanelView<
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<UseHardwareWalletWizardModel> wizard) {
 
     PanelDecorator.addExitCancelUnlock(this, wizard);
 

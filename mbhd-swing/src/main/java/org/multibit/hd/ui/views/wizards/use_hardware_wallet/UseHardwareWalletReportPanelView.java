@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.use_trezor;
+package org.multibit.hd.ui.views.wizards.use_hardware_wallet;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -24,7 +24,7 @@ import javax.swing.*;
  *
  * @since 0.0.1
  */
-public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorWizardModel, Boolean> {
+public class UseHardwareWalletReportPanelView extends AbstractWizardPanelView<UseHardwareWalletWizardModel, Boolean> {
 
   // View
   private JLabel reportStatusLabel;
@@ -33,7 +33,7 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public UseTrezorReportPanelView(AbstractHardwareWalletWizard<UseTrezorWizardModel> wizard, String panelName) {
+  public UseHardwareWalletReportPanelView(AbstractHardwareWalletWizard<UseHardwareWalletWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.USE_HARDWARE_REPORT_TITLE, wizard.getWizardModel().getWalletMode().brand());
 
@@ -67,7 +67,7 @@ public class UseTrezorReportPanelView extends AbstractWizardPanelView<UseTrezorW
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<UseHardwareWalletWizardModel> wizard) {
     PanelDecorator.addFinish(this, wizard);
   }
 

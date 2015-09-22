@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.use_trezor;
+package org.multibit.hd.ui.views.wizards.use_hardware_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -25,12 +25,12 @@ import javax.swing.*;
  * @since 0.0.5
  *
  */
-public class UseTrezorRequestWipeDevicePanelView extends AbstractHardwareWalletWizardPanelView<UseTrezorWizardModel, UseTrezorWipeDevicePanelModel> {
+public class UseHardwareWalletRequestWipeDevicePanelView extends AbstractHardwareWalletWizardPanelView<UseHardwareWalletWizardModel, UseHardwareWalletWipeDevicePanelModel> {
 
   /**
    * @param wizard The wizard managing the states
    */
-  public UseTrezorRequestWipeDevicePanelView(AbstractHardwareWalletWizard<UseTrezorWizardModel> wizard, String panelName) {
+  public UseHardwareWalletRequestWipeDevicePanelView(AbstractHardwareWalletWizard<UseHardwareWalletWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.ERASER, MessageKey.HARDWARE_WIPE_DEVICE_TITLE, wizard.getWizardModel().getWalletMode().brand());
 
@@ -58,7 +58,7 @@ public class UseTrezorRequestWipeDevicePanelView extends AbstractHardwareWalletW
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<UseHardwareWalletWizardModel> wizard) {
 
     PanelDecorator.addExitCancelNext(this, wizard);
 

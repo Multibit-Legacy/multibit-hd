@@ -911,6 +911,12 @@ public enum MessageKey {
   HARDWARE_PREPARATION_NOTE_5("hardware_preparation_note_5"),
   HARDWARE_PREPARATION_NOTE_6("hardware_preparation_note_6"),
 
+  // Buy hardware
+  BUY_HARDWARE_TITLE("buy_hardware_title"),
+  BUY_HARDWARE_COMMENT("buy_hardware_comment"),
+  BUY_HARDWARE("buy_hardware"),
+  BUY_HARDWARE_TOOLTIP("buy_hardware_tooltip"),
+
   // //////////////////////////////////////////////////////////// Trezor /////////////////////////////////////////////////////////////
   
   // Trezor-specific display text
@@ -921,16 +927,10 @@ public enum MessageKey {
   TREZOR_WORD_DISPLAY("trezor_word_display"),
   TREZOR_CHECK_WORD_DISPLAY("trezor_check_word_display"),
   TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY("trezor_transaction_output_confirm_display"),
-  TREZOR_SIGN_CONFIRM_DISPLAY("trezor_sign_confirm_display"),
+  TREZOR_SIGN_CONFIRM_DISPLAY("trezor_send_confirm_display"),
   TREZOR_SIGN_MESSAGE_CONFIRM_DISPLAY("trezor_sign_message_confirm_display"),
   TREZOR_WIPE_CONFIRM_DISPLAY("trezor_wipe_confirm_display"),
   TREZOR_HIGH_FEE_CONFIRM_DISPLAY("trezor_high_fee_confirm_display"),
-
-  // Buy Trezor
-  BUY_TREZOR_TITLE("buy_trezor_title"),
-  BUY_TREZOR_COMMENT("buy_trezor_comment"),
-  BUY_TREZOR("buy_trezor"),
-  BUY_TREZOR_TOOLTIP("buy_trezor_tooltip"),
 
   // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -939,19 +939,13 @@ public enum MessageKey {
   KEEP_KEY_ADD_PIN_DISPLAY("keepkey_add_pin_display"),
   KEEP_KEY_CHANGE_PIN_DISPLAY("keepkey_change_pin_display"),
   KEEP_KEY_REMOVE_PIN_DISPLAY("keepkey_remove_pin_display"),
-  KEEP_KEY_WORD_DISPLAY("keepkey_word_display"),
-  KEEP_KEY_CHECK_WORD_DISPLAY("keepkey_check_word_display"),
+  KEEP_KEY_WALLET_WORDS_DISPLAY_1("keepkey_wallet_words_display_1"),
+  KEEP_KEY_WALLET_WORDS_DISPLAY_2("keepkey_wallet_words_display_2"),
   KEEP_KEY_TRANSACTION_OUTPUT_CONFIRM_DISPLAY("keepkey_transaction_output_confirm_display"),
-  KEEP_KEY_SIGN_CONFIRM_DISPLAY("keepkey_sign_confirm_display"),
+  KEEP_KEY_SIGN_CONFIRM_DISPLAY("keepkey_send_confirm_display"),
   KEEP_KEY_SIGN_MESSAGE_CONFIRM_DISPLAY("keepkey_sign_message_confirm_display"),
   KEEP_KEY_WIPE_CONFIRM_DISPLAY("keepkey_wipe_confirm_display"),
   KEEP_KEY_HIGH_FEE_CONFIRM_DISPLAY("keepkey_high_fee_confirm_display"),
-
-  // Buy KeepKey
-  BUY_KEEP_KEY_TITLE("buy_keepkey_title"),
-  BUY_KEEP_KEY_COMMENT("buy_keepkey_comment"),
-  BUY_KEEP_KEY("buy_keepkey"),
-  BUY_KEEP_KEY_TOOLTIP("buy_keepkey_tooltip"),
 
   // End of enum
   ;

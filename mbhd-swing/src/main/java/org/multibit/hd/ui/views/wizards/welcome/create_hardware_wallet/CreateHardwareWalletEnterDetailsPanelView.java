@@ -70,7 +70,6 @@ public class CreateHardwareWalletEnterDetailsPanelView extends AbstractWizardPan
       case KEEP_KEY:
         hardwareLabel = TextBoxes.newEnterKeepKeyLabel();
         hardwareDisplayMaxWidthMig = MultiBitUI.KEEPKEY_DISPLAY_MAX_WIDTH_MIG;
-        contentPanel.add(Labels.newEnterHardwareLabel(),"shrink");
         break;
       default:
         throw new IllegalStateException("Unknown hardware wallet " + getWizardModel().getWalletMode().name());

@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.use_trezor;
+package org.multibit.hd.ui.views.wizards.use_hardware_wallet;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -30,9 +30,9 @@ import javax.swing.*;
  * @since 0.0.1
  *  
  */
-public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorEnterPinPanelModel> {
+public class UseHardwareWalletEnterPinPanelView extends AbstractWizardPanelView<UseHardwareWalletWizardModel, UseHardwareWalletEnterPinPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(UseTrezorEnterPinPanelView.class);
+  private static final Logger log = LoggerFactory.getLogger(UseHardwareWalletEnterPinPanelView.class);
 
   // Panel specific components
   private ModelAndView<DisplayEnvironmentAlertModel, DisplayEnvironmentAlertView> displayEnvironmentPopoverMaV;
@@ -41,7 +41,7 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
   /**
    * @param wizard The wizard managing the states
    */
-  public UseTrezorEnterPinPanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
+  public UseHardwareWalletEnterPinPanelView(AbstractWizard<UseHardwareWalletWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE);
 
@@ -54,7 +54,7 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
     enterPinMaV = Components.newEnterPinMaV(getPanelName());
 
     // Configure the panel model
-    final UseTrezorEnterPinPanelModel panelModel = new UseTrezorEnterPinPanelModel(
+    final UseHardwareWalletEnterPinPanelModel panelModel = new UseHardwareWalletEnterPinPanelModel(
       getPanelName(),
       enterPinMaV.getModel()
     );
@@ -87,7 +87,7 @@ public class UseTrezorEnterPinPanelView extends AbstractWizardPanelView<UseTrezo
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<UseHardwareWalletWizardModel> wizard) {
 
     PanelDecorator.addExitCancelUnlock(this, wizard);
 

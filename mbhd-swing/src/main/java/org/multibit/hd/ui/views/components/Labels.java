@@ -1152,13 +1152,15 @@ public class Labels {
   }
 
   /**
-   * @return A new "language change" note
+   * @param brand The brand to apply to the message key
+   *
+   * @return A new "buy hardware" note
    */
-  public static JLabel newBuyTrezorCommentNote() {
+  public static JLabel newBuyHardwareCommentNote(String brand) {
 
     return newNoteLabel(new MessageKey[]{
-      MessageKey.BUY_TREZOR_COMMENT
-    }, new Object[][]{});
+      MessageKey.BUY_HARDWARE_COMMENT
+    }, new Object[][]{{brand}});
 
   }
 

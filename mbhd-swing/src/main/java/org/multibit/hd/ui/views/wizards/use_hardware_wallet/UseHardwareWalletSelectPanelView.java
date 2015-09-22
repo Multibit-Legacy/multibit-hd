@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.use_trezor;
+package org.multibit.hd.ui.views.wizards.use_hardware_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -24,16 +24,16 @@ import java.awt.event.ActionListener;
  * @since 0.0.1
  */
 
-public class UseTrezorSelectPanelView extends AbstractWizardPanelView<UseTrezorWizardModel, UseTrezorState> implements ActionListener {
+public class UseHardwareWalletSelectPanelView extends AbstractWizardPanelView<UseHardwareWalletWizardModel, UseHardwareWalletState> implements ActionListener {
 
   // Model
-  private UseTrezorState currentSelection;
+  private UseHardwareWalletState currentSelection;
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public UseTrezorSelectPanelView(AbstractWizard<UseTrezorWizardModel> wizard, String panelName) {
+  public UseHardwareWalletSelectPanelView(AbstractWizard<UseHardwareWalletWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.USE_HARDWARE_TITLE, wizard.getWizardModel().getWalletMode().brand());
 
@@ -42,7 +42,7 @@ public class UseTrezorSelectPanelView extends AbstractWizardPanelView<UseTrezorW
   @Override
   public void newPanelModel() {
 
-    currentSelection = UseTrezorState.BUY_TREZOR;
+    currentSelection = UseHardwareWalletState.BUY_DEVICE;
     setPanelModel(currentSelection);
 
   }
@@ -58,17 +58,18 @@ public class UseTrezorSelectPanelView extends AbstractWizardPanelView<UseTrezorW
       ));
 
     contentPanel.add(
-      Panels.newUseTrezorSelector(
-              this,
-              UseTrezorState.BUY_TREZOR.name(),
-              UseTrezorState.VERIFY_TREZOR.name(),
-              UseTrezorState.REQUEST_WIPE_TREZOR.name()
+      Panels.newUseHardwareWalletSelector(
+        this,
+        UseHardwareWalletState.BUY_DEVICE.name(),
+        UseHardwareWalletState.VERIFY_DEVICE.name(),
+        UseHardwareWalletState.REQUEST_WIPE_DEVICE.name(),
+        getWizardModel().getWalletMode().brand()
       ), "span 2, wrap");
 
   }
 
   @Override
-  protected void initialiseButtons(AbstractWizard<UseTrezorWizardModel> wizard) {
+  protected void initialiseButtons(AbstractWizard<UseHardwareWalletWizardModel> wizard) {
     PanelDecorator.addExitCancelNext(this, wizard);
   }
 
@@ -108,7 +109,7 @@ public class UseTrezorSelectPanelView extends AbstractWizardPanelView<UseTrezorW
 
     JRadioButton source = (JRadioButton) e.getSource();
 
-    currentSelection = UseTrezorState.valueOf(source.getActionCommand());
+    currentSelection = UseHardwareWalletState.valueOf(source.getActionCommand());
 
   }
 

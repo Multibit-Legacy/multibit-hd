@@ -108,13 +108,13 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractHardware
     }
 
     // Set the communication message
-    hardwareDisplayMaV.getView().setOperationText(operationKey);
+    hardwareDisplayMaV.getView().setOperationText(operationKey, getWizardModel().getWalletMode().brand());
 
     if (nextEnabled) {
       if (createNewTrezorWallet) {
-        hardwareDisplayMaV.getView().setRecoveryText(MessageKey.HARDWARE_NO_WALLET_RECOVERY);
+        hardwareDisplayMaV.getView().setRecoveryText(MessageKey.HARDWARE_NO_WALLET_RECOVERY, getWizardModel().getWalletMode().brand());
       } else {
-        hardwareDisplayMaV.getView().setRecoveryText(MessageKey.HARDWARE_FAILURE_RECOVERY);
+        hardwareDisplayMaV.getView().setRecoveryText(MessageKey.HARDWARE_FAILURE_RECOVERY, getWizardModel().getWalletMode().brand());
       }
     }
 
@@ -155,7 +155,7 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractHardware
    * @param key The key to the operation text
    */
   public void setOperationText(MessageKey key) {
-    this.hardwareDisplayMaV.getView().setOperationText(key);
+    this.hardwareDisplayMaV.getView().setOperationText(key, getWizardModel().getWalletMode().brand());
   }
 
 }
