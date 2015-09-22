@@ -77,7 +77,7 @@ public class RestoreWalletSelectBackupPanelView extends AbstractWizardPanelView<
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
     // No previous if restoring a hard wallet
-    if (WalletMode.TREZOR.equals(wizard.getWizardModel().getMode())) {
+    if (WalletMode.TREZOR.equals(wizard.getWizardModel().getWalletMode())) {
       PanelDecorator.addExitCancelNext(this, wizard);
     } else {
       PanelDecorator.addExitCancelPreviousNext(this, wizard);

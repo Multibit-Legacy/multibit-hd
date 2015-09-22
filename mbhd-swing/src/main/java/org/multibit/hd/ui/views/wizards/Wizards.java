@@ -210,7 +210,7 @@ public class Wizards {
     // crash on startup (someone has to be deliberately hammering to trigger a failure)
     Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
-    return new WelcomeWizard(new WelcomeWizardModel(initialState, walletMode), true);
+    return new WelcomeWizard(new WelcomeWizardModel(initialState), true);
 
   }
 

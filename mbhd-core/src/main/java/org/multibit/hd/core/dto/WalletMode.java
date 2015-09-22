@@ -72,7 +72,8 @@ public enum WalletMode {
   }
 
   /**
-   * Determine a wallet mode from a hardware wallet service
+   * Determine a wallet mode from a hardware wallet service. This does not work
+   * out connectivity status, it is purely from the client name.
    *
    * @param hardwareWalletService The optional hardware wallet service
    *

@@ -71,7 +71,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
       ));
 
     // Use the wizard model to determine the mode (don't store the result due to thread safety)
-    WalletMode walletMode = getWizardModel().getMode();
+    WalletMode walletMode = getWizardModel().getWalletMode();
     switch (walletMode) {
       case KEEP_KEY:
         // Fall through
@@ -101,7 +101,7 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
 
   private void initialiseSelection() {
     // Use the wizard model to determine the mode (don't store the result due to thread safety)
-    if (WalletMode.TREZOR.equals(getWizardModel().getMode())) {
+    if (WalletMode.TREZOR.equals(getWizardModel().getWalletMode())) {
       currentSelection = HARDWARE_CREATE_WALLET_PREPARATION;
     } else {
       // if there are no soft wallets there will be an enabled create wallet

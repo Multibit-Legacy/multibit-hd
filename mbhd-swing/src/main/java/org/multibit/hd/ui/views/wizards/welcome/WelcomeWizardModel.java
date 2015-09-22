@@ -15,7 +15,6 @@ import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.core.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.WalletId;
-import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
@@ -97,7 +96,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   private final Random random = new Random();
   private final boolean restoringSoftWallet;
-  private WalletMode mode;
 
   private String actualSeedTimestamp;
   // Backup summaries for restoring a wallet
@@ -121,17 +119,15 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private WelcomeAttachHardwareWalletPanelView attachHardwareWalletPanelView;
 
   /**
-   * @param state      The state object
-   * @param walletMode The mode (e.g. standard, Trezor etc)
+   * @param state The state object
    */
-  public WelcomeWizardModel(WelcomeWizardState state, WalletMode walletMode) {
+  public WelcomeWizardModel(WelcomeWizardState state) {
     super(state);
 
-    log.debug("Welcome wizard starting in state '{}' with mode '{}'", state.name(), walletMode.name());
+    log.debug("Welcome wizard starting in state '{}'", state.name());
 
     this.seedPhraseGenerator = CoreServices.newSeedPhraseGenerator();
     this.restoringSoftWallet = WelcomeWizardState.WELCOME_SELECT_WALLET.equals(state);
-    this.mode = walletMode;
 
     // If restoring a Trezor hard wallet, work out the initial screen to show
     if (WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP.equals(state)) {
@@ -155,8 +151,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
       case WELCOME_ATTACH_HARDWARE_WALLET:
         hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
         if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
-          // A Trezor is connected
-          mode = WalletMode.TREZOR;
+          // A hardware wallet is connected
           if (hardwareWalletService.get().isWalletPresent()) {
             // User may want to create or restore since they have an initialised device
             state = WELCOME_SELECT_WALLET;
@@ -166,7 +161,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
           }
         } else {
           // Standard mode
-          mode = WalletMode.STANDARD;
           state = WELCOME_SELECT_WALLET;
         }
         break;
@@ -307,14 +301,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
         state = CREATE_WALLET_SEED_PHRASE;
         break;
       case HARDWARE_CREATE_WALLET_PREPARATION:
-        hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
-        if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
-          // A Trezor is connected
-          mode = WalletMode.TREZOR;
-        } else {
-          // Standard mode
-          mode = WalletMode.STANDARD;
-        }
         // Back out to select wallet as the most general solution
         state = WELCOME_SELECT_WALLET;
         break;
@@ -516,7 +502,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     // Hardware wallet has been attached
     getAttachHardwareWalletPanelView().setHardwareWalletStatus(
       Optional.<MessageKey>absent(),
-      new Object[] {event.getSource()},
+      new Object[]{event.getSource()},
       false
     );
   }
@@ -527,7 +513,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     // Hardware wallet has been attached
     getAttachHardwareWalletPanelView().setHardwareWalletStatus(
       Optional.of(MessageKey.HARDWARE_FOUND),
-      new Object[] {event.getSource()},
+      new Object[]{event.getSource()},
       true
     );
 
@@ -539,7 +525,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     // Hardware wallet has been attached
     getAttachHardwareWalletPanelView().setHardwareWalletStatus(
       Optional.of(MessageKey.HARDWARE_FAILURE_ALERT),
-      new Object[] {event.getSource()},
+      new Object[]{event.getSource()},
       false
     );
   }
@@ -1043,13 +1029,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
    */
   public boolean isRestoringSoftWallet() {
     return restoringSoftWallet;
-  }
-
-  /**
-   * @return The welcome wizard mode (e.g. standard, Trezor etc)
-   */
-  public WalletMode getMode() {
-    return mode;
   }
 
   /**
