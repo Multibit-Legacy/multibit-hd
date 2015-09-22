@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
+package org.multibit.hd.ui.views.wizards.welcome.create_hardware_wallet;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -23,12 +23,13 @@ import javax.swing.*;
 /**
  * <p>View to provide the following to UI:</p>
  * <ul>
- * <li>Confirm new PIN</li>
+ * <li>Enter new PIN</li>
  * </ul>
  *
  * @since 0.0.5
+ *
  */
-public class CreateTrezorWalletConfirmNewPinPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
+public class CreateHardwareWalletEnterNewPinPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
 
   // Panel specific components
   private ModelAndView<EnterPinModel, EnterPinView> enterPinMaV;
@@ -36,10 +37,10 @@ public class CreateTrezorWalletConfirmNewPinPanelView extends AbstractWizardPane
   /**
    * @param wizard The wizard managing the states
    */
-  public CreateTrezorWalletConfirmNewPinPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateHardwareWalletEnterNewPinPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     // Need to use the LOCK icon here because TH is visually confusing
-    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.CHANGE_PIN_CONFIRM_NEW_PIN_TITLE);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.CHANGE_PIN_ENTER_NEW_PIN_TITLE);
 
   }
 
@@ -64,7 +65,7 @@ public class CreateTrezorWalletConfirmNewPinPanelView extends AbstractWizardPane
 
     // Use the initial state to set this
 
-    contentPanel.add(Labels.newConfirmNewPin(), "align center,wrap");
+    contentPanel.add(Labels.newEnterNewPin(), "align center,wrap");
     contentPanel.add(Labels.newEnterPinLookAtDevice(), "align center,wrap");
     contentPanel.add(enterPinMaV.getView().newComponentPanel(), "align center,wrap");
 

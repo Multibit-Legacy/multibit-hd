@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
+package org.multibit.hd.ui.views.wizards.welcome.create_hardware_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -28,7 +28,7 @@ import javax.swing.*;
  * @since 0.0.1
  *
  */
-public class CreateTrezorWalletSelectBackupLocationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, SelectFileModel> {
+public class CreateHardwareWalletSelectBackupLocationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, SelectFileModel> {
 
   private ModelAndView<SelectFileModel, SelectFileView> selectFileMaV;
 
@@ -36,7 +36,7 @@ public class CreateTrezorWalletSelectBackupLocationPanelView extends AbstractWiz
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public CreateTrezorWalletSelectBackupLocationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateHardwareWalletSelectBackupLocationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.FOLDER_OPEN, MessageKey.SELECT_BACKUP_LOCATION_TITLE);
 

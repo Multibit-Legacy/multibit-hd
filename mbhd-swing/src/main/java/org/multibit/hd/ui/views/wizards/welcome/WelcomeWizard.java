@@ -5,7 +5,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
-import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.*;
+import org.multibit.hd.ui.views.wizards.welcome.create_hardware_wallet.*;
 import org.multibit.hd.ui.views.wizards.welcome.create_wallet.*;
 import org.multibit.hd.ui.views.wizards.welcome.restore_wallet.*;
 
@@ -76,39 +76,39 @@ public class WelcomeWizard extends AbstractHardwareWalletWizard<WelcomeWizardMod
 
     wizardViewMap.put(
       HARDWARE_CREATE_WALLET_PREPARATION.name(),
-      new CreateTrezorWalletPreparationPanelView(this, HARDWARE_CREATE_WALLET_PREPARATION.name()));
+      new CreateHardwareWalletPreparationPanelView(this, HARDWARE_CREATE_WALLET_PREPARATION.name()));
 
     wizardViewMap.put(
       HARDWARE_CREATE_WALLET_SELECT_BACKUP_LOCATION.name(),
-      new CreateTrezorWalletSelectBackupLocationPanelView(this, HARDWARE_CREATE_WALLET_SELECT_BACKUP_LOCATION.name()));
+      new CreateHardwareWalletSelectBackupLocationPanelView(this, HARDWARE_CREATE_WALLET_SELECT_BACKUP_LOCATION.name()));
 
     wizardViewMap.put(
       HARDWARE_CREATE_WALLET_ENTER_DETAILS.name(),
-      new CreateTrezorWalletEnterDetailsPanelView(this, HARDWARE_CREATE_WALLET_ENTER_DETAILS.name()));
+      new CreateHardwareWalletEnterDetailsPanelView(this, HARDWARE_CREATE_WALLET_ENTER_DETAILS.name()));
 
     wizardViewMap.put(
       HARDWARE_CREATE_WALLET_REQUEST_CREATE_WALLET.name(),
-      new CreateTrezorWalletRequestCreateWalletPanelView(this, HARDWARE_CREATE_WALLET_REQUEST_CREATE_WALLET.name()));
+      new CreateHardwareWalletRequestCreateWalletPanelView(this, HARDWARE_CREATE_WALLET_REQUEST_CREATE_WALLET.name()));
 
     wizardViewMap.put(
       HARDWARE_CREATE_WALLET_CONFIRM_CREATE_WALLET.name(),
-      new CreateTrezorWalletConfirmCreateWalletPanelView(this, HARDWARE_CREATE_WALLET_CONFIRM_CREATE_WALLET.name()));
+      new CreateHardwareWalletConfirmCreateWalletPanelView(this, HARDWARE_CREATE_WALLET_CONFIRM_CREATE_WALLET.name()));
 
     wizardViewMap.put(
       HARDWARE_CREATE_WALLET_ENTER_NEW_PIN.name(),
-      new CreateTrezorWalletEnterNewPinPanelView(this, HARDWARE_CREATE_WALLET_ENTER_NEW_PIN.name()));
+      new CreateHardwareWalletEnterNewPinPanelView(this, HARDWARE_CREATE_WALLET_ENTER_NEW_PIN.name()));
 
     wizardViewMap.put(
       HARDWARE_CREATE_WALLET_CONFIRM_NEW_PIN.name(),
-      new CreateTrezorWalletConfirmNewPinPanelView(this, HARDWARE_CREATE_WALLET_CONFIRM_NEW_PIN.name()));
+      new CreateHardwareWalletConfirmNewPinPanelView(this, HARDWARE_CREATE_WALLET_CONFIRM_NEW_PIN.name()));
 
     wizardViewMap.put(
       HARDWARE_CREATE_WALLET_CONFIRM_WORD.name(),
-      new CreateTrezorWalletConfirmWordPanelView(this, HARDWARE_CREATE_WALLET_CONFIRM_WORD.name()));
+      new CreateHardwareWalletConfirmWordPanelView(this, HARDWARE_CREATE_WALLET_CONFIRM_WORD.name()));
 
     wizardViewMap.put(
       HARDWARE_CREATE_WALLET_REPORT.name(),
-      new CreateTrezorWalletReportPanelView(this, HARDWARE_CREATE_WALLET_REPORT.name()));
+      new CreateHardwareWalletReportPanelView(this, HARDWARE_CREATE_WALLET_REPORT.name()));
 
     wizardViewMap.put(
       RESTORE_PASSWORD_SEED_PHRASE.name(),

@@ -34,7 +34,7 @@ import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSum
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
 import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet.CreateTrezorWalletConfirmWordPanelView;
+import org.multibit.hd.ui.views.wizards.welcome.create_hardware_wallet.CreateHardwareWalletConfirmWordPanelView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +112,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   private SeedPhraseSize trezorSeedPhraseSize = SeedPhraseSize.TWELVE_WORDS;
 
   private String mostRecentPin;
-  private CreateTrezorWalletConfirmWordPanelView trezorConfirmWordPanelView;
+  private CreateHardwareWalletConfirmWordPanelView trezorConfirmWordPanelView;
 
   private int trezorWordCount = 0;
   private boolean trezorChecking = false;
@@ -175,7 +175,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
             break;
           }
         } else {
-          // Ensure Trezor is reset if it is attached and initialised
+          // Ensure hardware wallet is reset if it is attached and initialised
+          // in case user left it in an unknown state
           if (hardwareWalletService.isPresent()
             && hardwareWalletService.get().isDeviceReady()) {
             hardwareWalletService.get().requestCancel();
@@ -1067,7 +1068,7 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     this.mostRecentPin = mostRecentPin;
   }
 
-  public void setTrezorConfirmWordPanelView(CreateTrezorWalletConfirmWordPanelView trezorConfirmWordPanelView) {
+  public void setTrezorConfirmWordPanelView(CreateHardwareWalletConfirmWordPanelView trezorConfirmWordPanelView) {
     this.trezorConfirmWordPanelView = trezorConfirmWordPanelView;
   }
 

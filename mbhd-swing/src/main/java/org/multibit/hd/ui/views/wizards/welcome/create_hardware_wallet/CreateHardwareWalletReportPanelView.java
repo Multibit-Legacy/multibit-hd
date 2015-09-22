@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
+package org.multibit.hd.ui.views.wizards.welcome.create_hardware_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -29,9 +29,9 @@ import javax.swing.*;
  *
  * @since 0.0.1
  */
-public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
+public class CreateHardwareWalletReportPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
 
-  private static final Logger log = LoggerFactory.getLogger(CreateTrezorWalletReportPanelView.class);
+  private static final Logger log = LoggerFactory.getLogger(CreateHardwareWalletReportPanelView.class);
 
   // View
   private JLabel reportStatusLabel;
@@ -44,7 +44,7 @@ public class CreateTrezorWalletReportPanelView extends AbstractWizardPanelView<W
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public CreateTrezorWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateHardwareWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.USE_HARDWARE_REPORT_TITLE, wizard.getWizardModel().getWalletMode().brand());
 

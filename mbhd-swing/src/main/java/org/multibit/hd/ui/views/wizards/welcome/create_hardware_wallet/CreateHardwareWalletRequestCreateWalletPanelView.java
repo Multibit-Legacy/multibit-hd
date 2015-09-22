@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
+package org.multibit.hd.ui.views.wizards.welcome.create_hardware_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -22,12 +22,12 @@ import javax.swing.*;
  * @since 0.0.5
  *  
  */
-public class CreateTrezorWalletRequestCreateWalletPanelView extends AbstractHardwareWalletWizardPanelView<WelcomeWizardModel, String> {
+public class CreateHardwareWalletRequestCreateWalletPanelView extends AbstractHardwareWalletWizardPanelView<WelcomeWizardModel, String> {
 
   /**
    * @param wizard The wizard managing the states
    */
-  public CreateTrezorWalletRequestCreateWalletPanelView(AbstractHardwareWalletWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateHardwareWalletRequestCreateWalletPanelView(AbstractHardwareWalletWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.CREATE_HARDWARE_WALLET_REQUEST_CREATE_WALLET_TITLE, wizard.getWizardModel().getWalletMode().brand());
 

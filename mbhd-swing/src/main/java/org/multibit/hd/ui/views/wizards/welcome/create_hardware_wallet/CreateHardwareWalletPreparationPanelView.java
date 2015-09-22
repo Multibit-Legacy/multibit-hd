@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
+package org.multibit.hd.ui.views.wizards.welcome.create_hardware_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -27,7 +27,7 @@ import java.awt.event.ActionListener;
  *
  * @since 0.0.1
  */
-public class CreateTrezorWalletPreparationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
+public class CreateHardwareWalletPreparationPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> {
 
   /**
    * Handles periodic increments of rotation
@@ -52,7 +52,7 @@ public class CreateTrezorWalletPreparationPanelView extends AbstractWizardPanelV
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public CreateTrezorWalletPreparationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateHardwareWalletPreparationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.CREATE_HARDWARE_WALLET_PREPARATION_TITLE, new Object[] { wizard.getWizardModel().getWalletMode().brand()});
 

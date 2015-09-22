@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.wizards.welcome.create_trezor_wallet;
+package org.multibit.hd.ui.views.wizards.welcome.create_hardware_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
@@ -30,7 +30,7 @@ import java.awt.event.ActionListener;
  * @since 0.0.5
  *  
  */
-public class CreateTrezorWalletEnterDetailsPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
+public class CreateHardwareWalletEnterDetailsPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
 
   private JTextField trezorLabel;
   private JComboBox<String> seedSize;
@@ -38,7 +38,7 @@ public class CreateTrezorWalletEnterDetailsPanelView extends AbstractWizardPanel
   /**
    * @param wizard The wizard managing the states
    */
-  public CreateTrezorWalletEnterDetailsPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
+  public CreateHardwareWalletEnterDetailsPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.EDIT, MessageKey.CREATE_HARDWARE_WALLET_ENTER_DETAILS_TITLE);
 
