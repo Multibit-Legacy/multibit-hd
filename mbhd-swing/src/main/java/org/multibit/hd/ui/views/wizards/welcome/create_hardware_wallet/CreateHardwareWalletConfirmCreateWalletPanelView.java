@@ -69,7 +69,7 @@ public class CreateHardwareWalletConfirmCreateWalletPanelView extends AbstractHa
   public void afterShow() {
 
     // Set the confirm text
-    hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION);
+    hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION, getWizardModel().getWalletMode().brand());
 
     // Show wipe message
     hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_WIPE_CONFIRM_DISPLAY);

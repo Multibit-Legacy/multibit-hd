@@ -78,7 +78,7 @@ public class ChangePinConfirmRemovePinPanelView extends AbstractHardwareWalletWi
   public void afterShow() {
 
     // Show the current Trezor display
-    hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION);
+    hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION, getWizardModel().getWalletMode().brand());
     hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_REMOVE_PIN_DISPLAY);
 
   }

@@ -101,16 +101,22 @@ public class WelcomeSelectWalletPanelView extends AbstractWizardPanelView<Welcom
 
   private void initialiseSelection() {
     // Use the wizard model to determine the mode (don't store the result due to thread safety)
-    if (WalletMode.TREZOR.equals(getWizardModel().getWalletMode())) {
-      currentSelection = HARDWARE_CREATE_WALLET_PREPARATION;
-    } else {
-      // if there are no soft wallets there will be an enabled create wallet
-      if (WalletManager.getSoftWalletSummaries(Optional.<Locale>absent()).isEmpty()) {
-        currentSelection = CREATE_WALLET_PREPARATION;
-      } else {
-        // Otherwise use existing wallet will be selected
-        currentSelection = WELCOME_SELECT_WALLET;
-      }
+    WalletMode walletMode = getWizardModel().getWalletMode();
+    switch (walletMode) {
+      case KEEP_KEY:
+        // Fall through
+      case TREZOR:
+        currentSelection = HARDWARE_CREATE_WALLET_PREPARATION;
+        break;
+      default:
+        // if there are no soft wallets there will be an enabled create wallet
+        if (WalletManager.getSoftWalletSummaries(Optional.<Locale>absent()).isEmpty()) {
+          currentSelection = CREATE_WALLET_PREPARATION;
+        } else {
+          // Otherwise use existing wallet will be selected
+          currentSelection = WELCOME_SELECT_WALLET;
+        }
+        break;
     }
   }
 

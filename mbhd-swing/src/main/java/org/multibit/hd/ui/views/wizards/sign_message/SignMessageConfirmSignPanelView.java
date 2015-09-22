@@ -68,7 +68,7 @@ public class SignMessageConfirmSignPanelView extends AbstractHardwareWalletWizar
     String truncatedMessage = getWizardModel().getMessage().substring(0, Math.min(getWizardModel().getMessage().length(), 64));
 
     // Set the confirm text
-    hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION);
+    hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION, getWizardModel().getWalletMode().brand());
 
     // Show sign message
     hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_SIGN_MESSAGE_CONFIRM_DISPLAY, truncatedMessage);

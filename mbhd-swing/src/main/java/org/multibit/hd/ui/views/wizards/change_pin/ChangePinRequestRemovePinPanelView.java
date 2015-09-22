@@ -93,13 +93,7 @@ public class ChangePinRequestRemovePinPanelView extends AbstractHardwareWalletWi
    * @param key The key to the operation text
    */
   public void setOperationText(MessageKey key) {
-    this.hardwareDisplayMaV.getView().setOperationText(key);
+    this.hardwareDisplayMaV.getView().setOperationText(key, getWizardModel().getWalletMode().brand());
   }
 
-  public void confirmRemovePin() {
-
-    hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION);
-    hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_REMOVE_PIN_DISPLAY);
-
-  }
 }

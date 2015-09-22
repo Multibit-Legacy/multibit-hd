@@ -32,7 +32,7 @@ import java.awt.event.ActionListener;
  */
 public class CreateHardwareWalletEnterDetailsPanelView extends AbstractWizardPanelView<WelcomeWizardModel, String> implements ActionListener {
 
-  private JTextField trezorLabel;
+  private JTextField hardwareLabel;
   private JComboBox<String> seedSize;
 
   /**
@@ -61,11 +61,24 @@ public class CreateHardwareWalletEnterDetailsPanelView extends AbstractWizardPan
         "[]10[]" // Row constraints
       ));
 
-    trezorLabel = TextBoxes.newEnterTrezorLabel();
+    String hardwareDisplayMaxWidthMig;
+    switch (getWizardModel().getWalletMode()) {
+      case TREZOR:
+        hardwareLabel = TextBoxes.newEnterTrezorLabel();
+        hardwareDisplayMaxWidthMig = MultiBitUI.TREZOR_DISPLAY_MAX_WIDTH_MIG;
+        break;
+      case KEEP_KEY:
+        hardwareLabel = TextBoxes.newEnterKeepKeyLabel();
+        hardwareDisplayMaxWidthMig = MultiBitUI.KEEPKEY_DISPLAY_MAX_WIDTH_MIG;
+        contentPanel.add(Labels.newEnterHardwareLabel(),"shrink");
+        break;
+      default:
+        throw new IllegalStateException("Unknown hardware wallet " + getWizardModel().getWalletMode().name());
+    }
     seedSize = ComboBoxes.newSeedSizeComboBox(this);
 
-    contentPanel.add(Labels.newEnterTrezorLabel(),"shrink");
-    contentPanel.add(trezorLabel, MultiBitUI.TREZOR_DISPLAY_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(Labels.newEnterHardwareLabel(getWizardModel().getWalletMode().brand()),"shrink");
+    contentPanel.add(hardwareLabel, hardwareDisplayMaxWidthMig + ",wrap");
 
     contentPanel.add(Labels.newSeedSize(), "shrink");
     contentPanel.add(seedSize, "wrap");
@@ -94,16 +107,16 @@ public class CreateHardwareWalletEnterDetailsPanelView extends AbstractWizardPan
   @Override
   public void afterShow() {
 
-    trezorLabel.setText(getWizardModel().getTrezorWalletLabel());
-    trezorLabel.selectAll();
-    trezorLabel.requestFocusInWindow();
+    hardwareLabel.setText(getWizardModel().getTrezorWalletLabel());
+    hardwareLabel.selectAll();
+    hardwareLabel.requestFocusInWindow();
 
   }
 
   @Override
   public void updateFromComponentModels(Optional componentModel) {
 
-    getWizardModel().setTrezorWalletLabel(trezorLabel.getText());
+    getWizardModel().setTrezorWalletLabel(hardwareLabel.getText());
     getWizardModel().setTrezorSeedPhraseSize(SeedPhraseSize.fromOrdinal(seedSize.getSelectedIndex()));
 
   }

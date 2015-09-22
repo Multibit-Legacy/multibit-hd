@@ -33,6 +33,7 @@ public class TextBoxes {
    * The maximum display width of a V1 Trezor device (allowing for icon)
    */
   private static final int TREZOR_MAX_COLUMNS = 22;
+  private static final int KEEPKEY_MAX_COLUMNS = 82;
 
   /**
    * Utilities have no public constructor
@@ -735,4 +736,24 @@ public class TextBoxes {
     return textField;
 
   }
+
+  /**
+   * @return A new "enter KeepKey label" limited length text field
+   */
+  public static JTextField newEnterKeepKeyLabel() {
+
+    JTextField textField = newTextField(KEEPKEY_MAX_COLUMNS);
+
+    // Limit the length of the underlying document
+    DefaultStyledDocument doc = new DefaultStyledDocument();
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(KEEPKEY_MAX_COLUMNS));
+    textField.setDocument(doc);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.ENTER_HARDWARE_LABEL, MessageKey.ENTER_HARDWARE_LABEL_TOOLTIP);
+
+    return textField;
+
+  }
+
 }
