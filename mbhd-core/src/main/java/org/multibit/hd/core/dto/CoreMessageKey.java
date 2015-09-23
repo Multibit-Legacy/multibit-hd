@@ -140,6 +140,7 @@ public enum CoreMessageKey {
   WALLET_CAPABILITY_TREZOR_HARD("core_wallet_capability_trezor_hard"),
   WALLET_CAPABILITY_TREZOR_SOFT("core_wallet_capability_trezor_soft"),
   WALLET_CAPABILITY_KEEP_KEY_HARD("core_wallet_capability_keep_key_hard"),
+  WALLET_CAPABILITY_KEEP_KEY_SOFT("core_wallet_capability_keep_key_soft"),
   WALLET_CAPABILITY_UNKNOWN("core_wallet_capability_unknown"),
 
   WALLET_LOADING("core_wallet_loading"),
