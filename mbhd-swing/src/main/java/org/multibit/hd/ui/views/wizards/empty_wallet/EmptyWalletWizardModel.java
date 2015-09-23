@@ -80,7 +80,7 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
    * The prepared tx
    */
   private SendRequestSummary sendRequestSummary;
-  private EmptyWalletConfirmTrezorPanelView emptyWalletConfirmTrezorPanelView;
+  private EmptyWalletConfirmHardwarePanelView emptyWalletConfirmHardwarePanelView;
   private EmptyWalletEnterPinPanelView enterPinPanelView;
 
   /**
@@ -129,15 +129,27 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
         // Get the current wallet
         Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
         if (currentWalletSummary.isPresent()) {
-          if (WalletType.TREZOR_HARD_WALLET.equals(currentWalletSummary.get().getWalletType())) {
-            log.debug("Sending using a Trezor hard wallet");
-            state = EMPTY_WALLET_CONFIRM_TREZOR;
-            emptyWallet();
-          } else {
-            log.debug("Not sending from a Trezor hard wallet - send directly");
-            emptyWallet();
 
-            state = EMPTY_WALLET_REPORT;
+          // Determine how to send the bitcoin
+          switch (getWalletMode()) {
+
+            case STANDARD:
+              log.debug("Sending using soft wallet");
+              emptyWallet();
+              state = EMPTY_WALLET_REPORT;
+              break;
+            case TREZOR:
+              log.debug("Sending using a Trezor hard wallet");
+              state = EMPTY_WALLET_CONFIRM_HARDWARE;
+              emptyWallet();
+              break;
+            case KEEP_KEY:
+              log.debug("Sending using a KeepKey hard wallet");
+              state = EMPTY_WALLET_CONFIRM_HARDWARE;
+              emptyWallet();
+              break;
+            default:
+              throw new IllegalStateException("Unknown hardware wallet: " + getWalletMode().name());
           }
         } else {
           log.debug("No wallet summary - cannot send");
@@ -145,11 +157,11 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
 
         break;
 
-      case EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_TREZOR:
+      case EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_HARDWARE:
         // Do nothing
         break;
 
-      case EMPTY_WALLET_CONFIRM_TREZOR:
+      case EMPTY_WALLET_CONFIRM_HARDWARE:
         // Move to report
         state = EMPTY_WALLET_REPORT;
         break;
@@ -294,8 +306,8 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
     // The send throws TransactionCreationEvents and BitcoinSentEvents to which you subscribe to to work out success and failure.
   }
 
-  public void setEmptyWalletConfirmTrezorPanelView(EmptyWalletConfirmTrezorPanelView emptyWalletConfirmTrezorPanelView) {
-    this.emptyWalletConfirmTrezorPanelView = emptyWalletConfirmTrezorPanelView;
+  public void setEmptyWalletConfirmHardwarePanelView(EmptyWalletConfirmHardwarePanelView emptyWalletConfirmHardwarePanelView) {
+    this.emptyWalletConfirmHardwarePanelView = emptyWalletConfirmHardwarePanelView;
   }
 
   /**
@@ -349,9 +361,9 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
   public void showPINEntry(HardwareWalletEvent event) {
 
     switch (state) {
-      case EMPTY_WALLET_CONFIRM_TREZOR:
+      case EMPTY_WALLET_CONFIRM_HARDWARE:
         log.debug("Transaction signing is PIN protected");
-        state = EmptyWalletState.EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_TREZOR;
+        state = EmptyWalletState.EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_HARDWARE;
         break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
@@ -365,7 +377,7 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
     log.debug("Received hardware event: '{}'.{}", event.getEventType().name(), event.getMessage());
 
     // Successful PIN entry or not required so transition to Trezor signing display view
-    state = EMPTY_WALLET_CONFIRM_TREZOR;
+    state = EMPTY_WALLET_CONFIRM_HARDWARE;
 
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
 
@@ -403,7 +415,18 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
             // Avoid an accidental high fee by detecting > 10,000 satoshi fee rate
             feeAmount = Formats.formatCoinAsSymbolic(currentTransaction.getFee(), languageConfiguration, bitcoinConfiguration);
 
-            key = MessageKey.TREZOR_HIGH_FEE_CONFIRM_DISPLAY;
+            // Select the display message
+            switch (getWalletMode()) {
+              case TREZOR:
+                key = MessageKey.TREZOR_HIGH_FEE_CONFIRM_DISPLAY;
+                break;
+              case KEEP_KEY:
+                key = MessageKey.KEEP_KEY_HIGH_FEE_CONFIRM_DISPLAY;
+                break;
+              default:
+                throw new IllegalStateException("Unknown hardware wallet: " + getWalletMode().name());
+            }
+
             values = new String[]{feeAmount[0] + feeAmount[1] + " " + bitcoinSymbolText};
             break;
           case CONFIRM_OUTPUT:
@@ -436,7 +459,19 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
                   transactionOutputAddress = output.getAddressFromP2SH(MainNetParams.get());
               }
 
-              key = MessageKey.TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY;
+              // Select the display message
+              switch (getWalletMode()) {
+                case TREZOR:
+                  key = MessageKey.TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY;
+                  break;
+                case KEEP_KEY:
+                  key = MessageKey.KEEP_KEY_TRANSACTION_OUTPUT_CONFIRM_DISPLAY;
+                  break;
+                default:
+                  throw new IllegalStateException("Unknown hardware wallet: " + getWalletMode().name());
+              }
+
+              // Amount, address
               values = new String[]{
                 transactionOutputAmount[0] + transactionOutputAmount[1] + " " + bitcoinSymbolText,
                 transactionOutputAddress == null ? "" : transactionOutputAddress.toString()
@@ -454,7 +489,18 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
             transactionAmountFormatted = Formats.formatCoinAsSymbolic(transactionAmount, languageConfiguration, bitcoinConfiguration);
             feeAmount = Formats.formatCoinAsSymbolic(currentTransaction.getFee(), languageConfiguration, bitcoinConfiguration);
 
-            key = MessageKey.TREZOR_SIGN_CONFIRM_DISPLAY;
+            // Select the display message
+            switch (getWalletMode()) {
+              case TREZOR:
+                key = MessageKey.TREZOR_SIGN_CONFIRM_DISPLAY;
+                break;
+              case KEEP_KEY:
+                key = MessageKey.KEEP_KEY_SIGN_CONFIRM_DISPLAY;
+                break;
+              default:
+                throw new IllegalStateException("Unknown hardware wallet: " + getWalletMode().name());
+            }
+
             values = new String[]{
               transactionAmountFormatted[0] + transactionAmountFormatted[1] + " " + bitcoinSymbolText,
               feeAmount[0] + feeAmount[1] + " " + bitcoinSymbolText
@@ -466,14 +512,14 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
       }
     }
 
-    emptyWalletConfirmTrezorPanelView.setDisplayText(key, values);
+    emptyWalletConfirmHardwarePanelView.setDisplayText(key, values);
 
   }
 
   @Override
   public void showOperationSucceeded(HardwareWalletEvent event) {
 
-    if (state == EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_TREZOR) {
+    if (state == EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_HARDWARE) {
       // Indicate a successful PIN
       getEnterPinPanelView().setPinStatus(true, true);
       return;
@@ -538,9 +584,9 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
             bitcoinNetworkService.setLastSendRequestSummaryOptional(Optional.<SendRequestSummary>absent());
             bitcoinNetworkService.setLastWalletOptional(Optional.<Wallet>absent());
 
-            emptyWalletConfirmTrezorPanelView.setOperationText(MessageKey.HARDWARE_TRANSACTION_CREATED_OPERATION);
-            emptyWalletConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
-            emptyWalletConfirmTrezorPanelView.setDisplayVisible(false);
+            emptyWalletConfirmHardwarePanelView.setOperationText(MessageKey.HARDWARE_TRANSACTION_CREATED_OPERATION);
+            emptyWalletConfirmHardwarePanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
+            emptyWalletConfirmHardwarePanelView.setDisplayVisible(false);
 
             bitcoinNetworkService.commitAndBroadcast(sendRequestSummary, wallet, Optional.<PaymentRequestData>absent());
 
@@ -556,7 +602,7 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
     switch (state) {
-      case EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_TREZOR:
+      case EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_HARDWARE:
         state = EmptyWalletState.EMPTY_WALLET_REPORT;
         setReportMessageKey(MessageKey.HARDWARE_INCORRECT_PIN_FAILURE);
         setReportMessageStatus(false);

@@ -34,12 +34,12 @@ public class EmptyWalletWizard extends AbstractHardwareWalletWizard<EmptyWalletW
     );
 
     wizardViewMap.put(
-      EmptyWalletState.EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_TREZOR.name(),
-      new EmptyWalletEnterPinPanelView(this, EmptyWalletState.EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_TREZOR.name()));
+      EmptyWalletState.EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_HARDWARE.name(),
+      new EmptyWalletEnterPinPanelView(this, EmptyWalletState.EMPTY_WALLET_ENTER_PIN_FROM_CONFIRM_HARDWARE.name()));
 
     wizardViewMap.put(
-      EmptyWalletState.EMPTY_WALLET_CONFIRM_TREZOR.name(),
-      new EmptyWalletConfirmTrezorPanelView(this, EmptyWalletState.EMPTY_WALLET_CONFIRM_TREZOR.name()));
+      EmptyWalletState.EMPTY_WALLET_CONFIRM_HARDWARE.name(),
+      new EmptyWalletConfirmHardwarePanelView(this, EmptyWalletState.EMPTY_WALLET_CONFIRM_HARDWARE.name()));
 
     wizardViewMap.put(
       EmptyWalletState.EMPTY_WALLET_REPORT.name(),

@@ -65,12 +65,12 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
       case SIGN_MESSAGE_PASSWORD:
         break;
       case SIGN_MESSAGE_TREZOR_ENTER_PIN:
-        state = SignMessageState.SIGN_MESSAGE_TREZOR;
+        state = SignMessageState.SIGN_MESSAGE_HARDWARE;
         break;
       case SIGN_MESSAGE_TREZOR_CONFIRM_SIGN:
-        state = SignMessageState.SIGN_MESSAGE_TREZOR;
+        state = SignMessageState.SIGN_MESSAGE_HARDWARE;
         break;
-      case SIGN_MESSAGE_TREZOR:
+      case SIGN_MESSAGE_HARDWARE:
         break;
       default:
         // Do nothing
@@ -83,12 +83,12 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
       case SIGN_MESSAGE_PASSWORD:
         break;
       case SIGN_MESSAGE_TREZOR_ENTER_PIN:
-        state = SignMessageState.SIGN_MESSAGE_TREZOR;
+        state = SignMessageState.SIGN_MESSAGE_HARDWARE;
         break;
       case SIGN_MESSAGE_TREZOR_CONFIRM_SIGN:
-        state = SignMessageState.SIGN_MESSAGE_TREZOR;
+        state = SignMessageState.SIGN_MESSAGE_HARDWARE;
         break;
-      case SIGN_MESSAGE_TREZOR:
+      case SIGN_MESSAGE_HARDWARE:
         break;
       default:
         throw new IllegalStateException("Unexpected state:" + state);
@@ -226,7 +226,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
   public void showPINEntry(HardwareWalletEvent event) {
 
     switch (state) {
-      case SIGN_MESSAGE_TREZOR:
+      case SIGN_MESSAGE_HARDWARE:
         log.debug("Transaction signing is PIN protected");
         state = SignMessageState.SIGN_MESSAGE_TREZOR_ENTER_PIN;
         break;
@@ -254,7 +254,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     log.info("Signature:\n{}", Utils.HEX.encode(signature.getSignature()));
 
     // Ensure we show the Trezor panel view
-    state = SignMessageState.SIGN_MESSAGE_TREZOR;
+    state = SignMessageState.SIGN_MESSAGE_HARDWARE;
 
     // Verify the signature
     String base64Signature = Base64.toBase64String(signature.getSignature());

@@ -106,9 +106,9 @@ public class ComboBoxes {
   public static final String CURRENCY_COMMAND = "currency";
 
   /**
-   * The "Trezor" combo box action command
+   * The "hardware" combo box action command
    */
-  public static final String TREZOR_COMMAND = "trezor";
+  public static final String HARDWARE_COMMAND = "hardware";
 
   /**
    * The "Show restore Beta 7 wallets"action command
@@ -303,14 +303,14 @@ public class ComboBoxes {
    *
    * @return A new "yes/no" combo box
    */
-  public static JComboBox<String> newTrezorYesNoComboBox(ActionListener listener, boolean useTor) {
+  public static JComboBox<String> newHardwareYesNoComboBox(ActionListener listener, boolean useTor) {
 
     JComboBox<String> comboBox = newYesNoComboBox(listener, useTor);
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(comboBox, MessageKey.SELECT_HARDWARE_WALLET, MessageKey.SELECT_HARDWARE_WALLET_TOOLTIP);
 
-    comboBox.setActionCommand(TREZOR_COMMAND);
+    comboBox.setActionCommand(HARDWARE_COMMAND);
 
     return comboBox;
   }

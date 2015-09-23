@@ -53,7 +53,7 @@ public class KeepKeyDisplayView extends AbstractHardwareWalletComponentView<Keep
     // Add to the panel
     panel.add(operationText, "align center,wrap");
     panel.add(recoveryText, "align center,wrap");
-    panel.add(deviceDisplayTextArea, "align center,w 300,wrap"); // KeepKey has a big screen
+    panel.add(deviceDisplayTextArea, "align center,w 320,wrap"); // KeepKey has a big screen
     panel.add(spinner, "align center,wrap");
 
     return panel;

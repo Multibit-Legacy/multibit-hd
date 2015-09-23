@@ -25,13 +25,13 @@ import javax.swing.*;
  *  
  */
 
-public class SendBitcoinConfirmTrezorPanelView extends AbstractHardwareWalletWizardPanelView<SendBitcoinWizardModel, SendBitcoinConfirmTrezorPanelModel> {
+public class SendBitcoinConfirmHardwarePanelView extends AbstractHardwareWalletWizardPanelView<SendBitcoinWizardModel, SendBitcoinConfirmHardwarePanelModel> {
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public SendBitcoinConfirmTrezorPanelView(AbstractHardwareWalletWizard<SendBitcoinWizardModel> wizard, String panelName) {
+  public SendBitcoinConfirmHardwarePanelView(AbstractHardwareWalletWizard<SendBitcoinWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE);
 
@@ -40,7 +40,7 @@ public class SendBitcoinConfirmTrezorPanelView extends AbstractHardwareWalletWiz
   @Override
   public void newPanelModel() {
 
-    getWizardModel().setSendBitcoinConfirmTrezorPanelView(this);
+    getWizardModel().setSendBitcoinConfirmHardwarePanelView(this);
 
   }
 

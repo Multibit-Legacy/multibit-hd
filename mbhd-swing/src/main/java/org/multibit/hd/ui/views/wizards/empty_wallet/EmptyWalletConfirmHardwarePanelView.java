@@ -15,20 +15,20 @@ import javax.swing.*;
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Ask the user to press OK on their Trezor whilst sending bitcoin</li>
+ * <li>Ask the user to press OK on their hardware wallet whilst sending bitcoin</li>
  * </ul>
  *
  * @since 0.0.1
  *  
  */
 
-public class EmptyWalletConfirmTrezorPanelView extends AbstractHardwareWalletWizardPanelView<EmptyWalletWizardModel, EmptyWalletConfirmTrezorPanelModel> {
+public class EmptyWalletConfirmHardwarePanelView extends AbstractHardwareWalletWizardPanelView<EmptyWalletWizardModel, EmptyWalletConfirmHardwarePanelModel> {
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public EmptyWalletConfirmTrezorPanelView(AbstractHardwareWalletWizard<EmptyWalletWizardModel> wizard, String panelName) {
+  public EmptyWalletConfirmHardwarePanelView(AbstractHardwareWalletWizard<EmptyWalletWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE);
 
@@ -37,7 +37,7 @@ public class EmptyWalletConfirmTrezorPanelView extends AbstractHardwareWalletWiz
   @Override
   public void newPanelModel() {
 
-    getWizardModel().setEmptyWalletConfirmTrezorPanelView(this);
+    getWizardModel().setEmptyWalletConfirmHardwarePanelView(this);
 
   }
 

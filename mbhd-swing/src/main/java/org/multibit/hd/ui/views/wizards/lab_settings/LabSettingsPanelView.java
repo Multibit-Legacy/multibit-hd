@@ -70,7 +70,7 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
 
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
-    trezorYesNoComboBox = ComboBoxes.newTrezorYesNoComboBox(this, configuration.isTrezor());
+    trezorYesNoComboBox = ComboBoxes.newHardwareYesNoComboBox(this, configuration.isTrezor());
     showRestoreBeta7WalletsYesNoComboBox = ComboBoxes.newShowRestoreBeta7WalletsYesNoComboBox(this, configuration.isShowRestoreBeta7Wallets());
 
     contentPanel.add(Labels.newLabChangeNote(), "growx,span 2,wrap");
@@ -124,7 +124,7 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
     JComboBox source = (JComboBox) e.getSource();
-    if (ComboBoxes.TREZOR_COMMAND.equals(e.getActionCommand())) {
+    if (ComboBoxes.HARDWARE_COMMAND.equals(e.getActionCommand())) {
       configuration.setTrezor(source.getSelectedIndex() == 0);
     }
     if (ComboBoxes.SHOW_RESTORE_BETA7_WALLETS_COMMAND.equals(e.getActionCommand())) {

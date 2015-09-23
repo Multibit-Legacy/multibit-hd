@@ -36,11 +36,11 @@ public class SendBitcoinWizard extends AbstractHardwareWalletWizard<SendBitcoinW
       SendBitcoinState.SEND_CONFIRM_AMOUNT.name(),
       new SendBitcoinConfirmPanelView(this, SendBitcoinState.SEND_CONFIRM_AMOUNT.name()));
     wizardViewMap.put(
-      SendBitcoinState.SEND_CONFIRM_TREZOR.name(),
-      new SendBitcoinConfirmTrezorPanelView(this, SendBitcoinState.SEND_CONFIRM_TREZOR.name()));
+      SendBitcoinState.SEND_CONFIRM_HARDWARE.name(),
+      new SendBitcoinConfirmHardwarePanelView(this, SendBitcoinState.SEND_CONFIRM_HARDWARE.name()));
     wizardViewMap.put(
-      SendBitcoinState.SEND_ENTER_PIN_FROM_CONFIRM_TREZOR.name(),
-      new SendBitcoinEnterPinPanelView(this, SendBitcoinState.SEND_ENTER_PIN_FROM_CONFIRM_TREZOR.name()));
+      SendBitcoinState.SEND_ENTER_PIN_FROM_CONFIRM_HARDWARE.name(),
+      new SendBitcoinEnterPinPanelView(this, SendBitcoinState.SEND_ENTER_PIN_FROM_CONFIRM_HARDWARE.name()));
     wizardViewMap.put(
       SendBitcoinState.SEND_REPORT.name(),
       new SendBitcoinReportPanelView(this, SendBitcoinState.SEND_REPORT.name()));

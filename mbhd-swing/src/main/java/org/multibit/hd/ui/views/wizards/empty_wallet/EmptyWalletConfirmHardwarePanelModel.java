@@ -11,12 +11,12 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
  * @since 0.0.1
  *  
  */
-public class EmptyWalletConfirmTrezorPanelModel extends AbstractWizardPanelModel {
+public class EmptyWalletConfirmHardwarePanelModel extends AbstractWizardPanelModel {
 
   /**
    * @param panelName The panel name
    */
-  public EmptyWalletConfirmTrezorPanelModel(
+  public EmptyWalletConfirmHardwarePanelModel(
     String panelName
 
   ) {

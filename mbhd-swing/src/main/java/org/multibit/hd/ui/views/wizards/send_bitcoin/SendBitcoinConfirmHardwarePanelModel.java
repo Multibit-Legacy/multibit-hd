@@ -11,13 +11,13 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelModel;
  * @since 0.0.1
  *  
  */
-public class SendBitcoinConfirmTrezorPanelModel extends AbstractWizardPanelModel {
+public class SendBitcoinConfirmHardwarePanelModel extends AbstractWizardPanelModel {
 
   /**
    * @param panelName          The panel name
    */
-  public SendBitcoinConfirmTrezorPanelModel(
-          String panelName
+  public SendBitcoinConfirmHardwarePanelModel(
+    String panelName
 
   ) {
     super(panelName);

@@ -7,6 +7,7 @@ import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.managers.WalletManager;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.views.wizards.about.AboutState;
 import org.multibit.hd.ui.views.wizards.about.AboutWizard;
 import org.multibit.hd.ui.views.wizards.about.AboutWizardModel;
@@ -215,22 +216,29 @@ public class Wizards {
   }
 
   /**
-   * @return A new "sign message" wizard for a warm start
+   * @return A new "sign message" wizard
    */
   public static SignMessageWizard newSignMessageWizard() {
 
-    if (WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType() == WalletType.TREZOR_HARD_WALLET) {
-      log.debug("New 'Sign message wizard' with Trezor");
-      return new SignMessageWizard(
-        new SignMessageWizardModel(SignMessageState.SIGN_MESSAGE_TREZOR),
-        false
-      );
-    } else {
-      log.debug("New 'Sign message wizard' with password");
-      return new SignMessageWizard(
-        new SignMessageWizardModel(SignMessageState.SIGN_MESSAGE_PASSWORD),
-        false
-      );
+    WalletMode walletMode = WalletMode.of(CoreServices.getCurrentHardwareWalletService());
+
+    switch (walletMode) {
+      case STANDARD:
+        log.debug("New 'Sign message wizard' with password");
+        return new SignMessageWizard(
+          new SignMessageWizardModel(SignMessageState.SIGN_MESSAGE_PASSWORD),
+          false
+        );
+      case TREZOR:
+        // Fall through
+      case KEEP_KEY:
+        log.debug("New 'Sign message wizard' with hardware wallet");
+        return new SignMessageWizard(
+          new SignMessageWizardModel(SignMessageState.SIGN_MESSAGE_HARDWARE),
+          false
+        );
+      default:
+        throw new IllegalStateException("Unknown hardware wallet: " + walletMode.name());
     }
 
   }

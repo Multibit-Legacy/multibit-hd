@@ -30,8 +30,8 @@ public class SignMessageWizard extends AbstractHardwareWalletWizard<SignMessageW
     );
 
     wizardViewMap.put(
-      SignMessageState.SIGN_MESSAGE_TREZOR.name(),
-      new SignMessageTrezorPanelView(this, SignMessageState.SIGN_MESSAGE_TREZOR.name())
+      SignMessageState.SIGN_MESSAGE_HARDWARE.name(),
+      new SignMessageTrezorPanelView(this, SignMessageState.SIGN_MESSAGE_HARDWARE.name())
     );
 
     wizardViewMap.put(

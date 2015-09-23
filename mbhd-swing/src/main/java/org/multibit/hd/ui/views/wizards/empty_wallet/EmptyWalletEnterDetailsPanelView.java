@@ -23,8 +23,6 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 
@@ -38,8 +36,6 @@ import javax.swing.*;
  */
 public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<EmptyWalletWizardModel, EmptyWalletEnterDetailsPanelModel> {
 
-  private static final Logger log = LoggerFactory.getLogger(EmptyWalletEnterDetailsPanelView.class);
-
   // Panel specific components
   private ModelAndView<EnterRecipientModel, EnterRecipientView> enterRecipientMaV;
   private ModelAndView<EnterPasswordModel, EnterPasswordView> enterPasswordMaV;
@@ -49,7 +45,7 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
   /**
    * True if this is a hard wallet so has no password to unlock it
    */
-  private final boolean isTrezorHardWallet;
+  private final boolean isHardwareWallet;
 
   /**
    * @param wizard    The wizard managing the states
@@ -61,8 +57,11 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
 
     // Work out the wallet type (may not require a password entry)
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
-    isTrezorHardWallet = currentWalletSummary.isPresent()
-      && WalletType.TREZOR_HARD_WALLET.equals(currentWalletSummary.get().getWalletType());
+    isHardwareWallet = currentWalletSummary.isPresent()
+      && (
+      WalletType.TREZOR_HARD_WALLET.equals(currentWalletSummary.get().getWalletType())
+      || WalletType.KEEP_KEY_HARD_WALLET.equals(currentWalletSummary.get().getWalletType())
+    );
 
   }
 
@@ -105,7 +104,7 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
 
     contentPanel.add(enterRecipientMaV.getView().newComponentPanel(), "wrap");
     // Only add the password MaV if using a soft wallet
-    if (!isTrezorHardWallet) {
+    if (!isHardwareWallet) {
       contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "wrap");
     }
     contentPanel.add(isAddressMineStatusLabel, "wrap");
@@ -176,7 +175,7 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
       .isPresent();
 
     // No password required for a hard wallet
-    if (isTrezorHardWallet) {
+    if (isHardwareWallet) {
       return recipientOK;
     }
 
