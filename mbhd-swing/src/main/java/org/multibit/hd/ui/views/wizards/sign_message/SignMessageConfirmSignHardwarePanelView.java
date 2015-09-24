@@ -15,19 +15,19 @@ import javax.swing.*;
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>Ask the user to press "confirm" on their Trezor in response to a Sign message</li>
+ * <li>Ask the user to press "confirm" on their hardware in response to a Sign message</li>
  * </ul>
  *
  * @since 0.0.8
  *  
  */
-public class SignMessageConfirmSignPanelView extends AbstractHardwareWalletWizardPanelView<SignMessageWizardModel, String> {
+public class SignMessageConfirmSignHardwarePanelView extends AbstractHardwareWalletWizardPanelView<SignMessageWizardModel, String> {
 
   /**
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to filter events from components
    */
-  public SignMessageConfirmSignPanelView(AbstractHardwareWalletWizard<SignMessageWizardModel> wizard, String panelName) {
+  public SignMessageConfirmSignHardwarePanelView(AbstractHardwareWalletWizard<SignMessageWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.HARDWARE_PRESS_CONFIRM_TITLE);
 
@@ -67,11 +67,35 @@ public class SignMessageConfirmSignPanelView extends AbstractHardwareWalletWizar
 
     String truncatedMessage = getWizardModel().getMessage().substring(0, Math.min(getWizardModel().getMessage().length(), 64));
 
+    // Prevent too many lines running over the display by truncating at line feed character
+    int lf = truncatedMessage.indexOf("\n");
+    if (lf >= 0) {
+      // Line 1
+      lf = truncatedMessage.indexOf("\n", lf + 1);
+      if (lf > 0) {
+        // Line 2
+        lf = truncatedMessage.indexOf("\n", lf + 1);
+        if (lf > 0) {
+          // Line 3
+          truncatedMessage = truncatedMessage.substring(0, lf);
+        }
+      }
+    }
+
     // Set the confirm text
     hardwareDisplayMaV.getView().setOperationText(MessageKey.HARDWARE_PRESS_CONFIRM_OPERATION, getWizardModel().getWalletMode().brand());
 
     // Show sign message
-    hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_SIGN_MESSAGE_CONFIRM_DISPLAY, truncatedMessage);
+    switch (getWizardModel().getWalletMode()) {
+      case TREZOR:
+        hardwareDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_SIGN_MESSAGE_CONFIRM_DISPLAY, truncatedMessage);
+        break;
+      case KEEP_KEY:
+        hardwareDisplayMaV.getView().setDisplayText(MessageKey.KEEP_KEY_SIGN_MESSAGE_CONFIRM_DISPLAY, truncatedMessage);
+        break;
+      default:
+        throw new IllegalStateException("Unknown hardware wallet: " + getWizardModel().getWalletMode().name());
+    }
 
     // Reassure users that this is a sign screen but rely on the Trezor buttons to do it
     getNextButton().setEnabled(false);

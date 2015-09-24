@@ -36,7 +36,7 @@ import java.awt.event.ActionEvent;
  * @since 0.0.1
  *
  */
-public class SignMessageTrezorPanelView extends AbstractWizardPanelView<SignMessageWizardModel, String> {
+public class SignMessageHardwarePanelView extends AbstractWizardPanelView<SignMessageWizardModel, String> {
 
   // Labels
   JLabel signingAddressLabel;
@@ -55,7 +55,7 @@ public class SignMessageTrezorPanelView extends AbstractWizardPanelView<SignMess
    * @param wizard    The wizard managing the states
    * @param panelName The panel name to allow event filtering
    */
-  public SignMessageTrezorPanelView(AbstractWizard<SignMessageWizardModel> wizard, String panelName) {
+  public SignMessageHardwarePanelView(AbstractWizard<SignMessageWizardModel> wizard, String panelName) {
 
     super(wizard, panelName, AwesomeIcon.PENCIL, MessageKey.SIGN_MESSAGE_TITLE);
 
@@ -64,7 +64,7 @@ public class SignMessageTrezorPanelView extends AbstractWizardPanelView<SignMess
   @Override
   public void newPanelModel() {
 
-    getWizardModel().setSignMessageTrezorPanelView(this);
+    getWizardModel().setSignMessageHardwarePanelView(this);
     setPanelModel("");
 
   }

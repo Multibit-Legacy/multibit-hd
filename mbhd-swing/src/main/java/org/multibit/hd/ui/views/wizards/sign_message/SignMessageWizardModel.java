@@ -48,8 +48,8 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
   private byte[] signature;
 
   private SignMessageEnterPinPanelView enterPinPanelView;
-  private SignMessageTrezorPanelView signMessageTrezorPanelView;
-  private SignMessageConfirmSignPanelView confirmSignPanelView;
+  private SignMessageHardwarePanelView signMessageHardwarePanelView;
+  private SignMessageConfirmSignHardwarePanelView confirmSignPanelView;
 
   /**
    * @param state The state object
@@ -168,7 +168,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
             CoreMessageKey.SIGN_MESSAGE_FAILURE,
             new String[]{}
           );
-          signMessageTrezorPanelView.showSignMessageResult(signMessageResult);
+          signMessageHardwarePanelView.showSignMessageResult(signMessageResult);
         }
       }
     );
@@ -292,7 +292,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     }
 
     // Update the panel view
-    signMessageTrezorPanelView.showSignMessageResult(signMessageResult);
+    signMessageHardwarePanelView.showSignMessageResult(signMessageResult);
 
     // Must be showing message signing Trezor display
 
@@ -314,7 +314,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
       CoreMessageKey.SIGN_MESSAGE_FAILURE,
       new String[]{}
     );
-    signMessageTrezorPanelView.showSignMessageResult(signMessageResult);
+    signMessageHardwarePanelView.showSignMessageResult(signMessageResult);
 
     // Ignore device reset messages
     ApplicationEventService.setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
@@ -362,15 +362,15 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     return enterPinPanelView;
   }
 
-  public SignMessageTrezorPanelView getSignMessageTrezorPanelView() {
-    return signMessageTrezorPanelView;
+  public SignMessageHardwarePanelView getSignMessageHardwarePanelView() {
+    return signMessageHardwarePanelView;
   }
 
-  public void setSignMessageTrezorPanelView(SignMessageTrezorPanelView signMessageTrezorPanelView) {
-    this.signMessageTrezorPanelView = signMessageTrezorPanelView;
+  public void setSignMessageHardwarePanelView(SignMessageHardwarePanelView signMessageHardwarePanelView) {
+    this.signMessageHardwarePanelView = signMessageHardwarePanelView;
   }
 
-  public void setConfirmSignPanelView(SignMessageConfirmSignPanelView confirmSignPanelView) {
+  public void setConfirmSignPanelView(SignMessageConfirmSignHardwarePanelView confirmSignPanelView) {
     this.confirmSignPanelView = confirmSignPanelView;
   }
 }
