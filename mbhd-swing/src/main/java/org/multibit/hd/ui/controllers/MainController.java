@@ -1028,10 +1028,6 @@ public class MainController extends AbstractController implements
           // Not currently using a Trezor hard wallet so show the alert
           showAlert = true;
           break;
-        case KEEP_KEY_HARD_WALLET:
-          // Not currently using a KeepKey hard wallet so show the alert
-          showAlert = true;
-          break;
         default:
           if (currentHardwareWalletService.isPresent()) {
             // Current features

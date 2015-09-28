@@ -58,10 +58,8 @@ public class EmptyWalletEnterDetailsPanelView extends AbstractWizardPanelView<Em
     // Work out the wallet type (may not require a password entry)
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     isHardwareWallet = currentWalletSummary.isPresent()
-      && (
-      WalletType.TREZOR_HARD_WALLET.equals(currentWalletSummary.get().getWalletType())
-      || WalletType.KEEP_KEY_HARD_WALLET.equals(currentWalletSummary.get().getWalletType())
-    );
+      && WalletType.TREZOR_HARD_WALLET.equals(currentWalletSummary.get().getWalletType())
+    ;
 
   }
 

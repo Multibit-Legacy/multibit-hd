@@ -369,19 +369,7 @@ public class BitcoinNetworkService extends AbstractService {
     switch (currentWalletSummary.getWalletType()) {
 
       case TREZOR_HARD_WALLET:
-        // Attempt to sign the transaction using the Trezor wallet
-        // This will fire HardwareWalletEvents as the signing progresses which are dealt by the onHardwareWalletEvent method in the SendBitcoinConfirmTrezorPanelView
-
-        // Remember the last sendRequestSummary and Wallet for callback
-        lastSendRequestSummaryOptional = Optional.of(sendRequestSummary);
-        lastWalletOptional = Optional.of(wallet);
-
-        if (!signUsingHardwareWallet(sendRequestSummary, wallet)) {
-          return false;
-        }
-        break;
-      case KEEP_KEY_HARD_WALLET:
-        // Attempt to sign the transaction using the KeepKey wallet
+        // Attempt to sign the transaction using the Trezor / KeepKey wallet
         // This will fire HardwareWalletEvents as the signing progresses which are dealt by the onHardwareWalletEvent method in the SendBitcoinConfirmTrezorPanelView
 
         // Remember the last sendRequestSummary and Wallet for callback

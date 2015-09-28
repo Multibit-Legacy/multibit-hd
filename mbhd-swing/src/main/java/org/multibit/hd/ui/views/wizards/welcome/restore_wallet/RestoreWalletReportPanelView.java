@@ -530,14 +530,14 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       switch (walletTypeToRestore) {
         case TREZOR_SOFT_WALLET: {
         // Create Trezor soft wallet
-        WalletManager.INSTANCE.getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
-          applicationDataDirectory,
-          Joiner.on(" ").join(seedPhrase),
-          Dates.thenInSeconds(replayDate),
-          password,
-          name,
-          notes,
-          true);
+        WalletManager.INSTANCE.getOrCreateTrezorCloneSoftWalletSummaryFromSeedPhrase(
+                applicationDataDirectory,
+                Joiner.on(" ").join(seedPhrase),
+                Dates.thenInSeconds(replayDate),
+                password,
+                name,
+                notes,
+                true);
           return true;
         }
         case MBHD_SOFT_WALLET_BIP32: {

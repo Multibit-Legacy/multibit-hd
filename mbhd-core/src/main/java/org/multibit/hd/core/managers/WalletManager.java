@@ -482,7 +482,7 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Create a Trezor hard wallet from an HD root node.
+   * Create a Trezor / KeepKey hard wallet from an HD root node.
    * <p/>
    * This is stored in the specified application directory.
    * The name of the wallet directory is derived from the rootNode.
@@ -505,16 +505,16 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
    */
-  public WalletSummary getOrCreateTrezorHardWalletSummaryFromRootNode(
-    File applicationDataDirectory,
-    DeterministicKey rootNode,
-    long creationTimeInSeconds,
-    String password,
-    String name,
-    String notes,
-    boolean performSync) throws WalletLoadException, WalletVersionException, IOException {
+  public WalletSummary getOrCreateTrezorCloneHardWalletSummaryFromRootNode(
+          File applicationDataDirectory,
+          DeterministicKey rootNode,
+          long creationTimeInSeconds,
+          String password,
+          String name,
+          String notes,
+          boolean performSync) throws WalletLoadException, WalletVersionException, IOException {
 
-    log.debug("getOrCreateTrezorHardWalletSummaryFromRootNode called");
+    log.debug("getOrCreateTrezorCloneHardWalletSummaryFromRootNode called");
 
     // Create a wallet id from the rootNode to work out the wallet root directory
     final WalletId walletId = new WalletId(rootNode.getIdentifier());
@@ -607,7 +607,7 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Create a Trezor soft wallet from a seed phrase
+   * Create a Trezor or KeepKey soft wallet from a seed phrase
    * <p/>
    * This is stored in the specified application directory.
    * The name of the wallet directory is derived from the rootNode.
@@ -630,16 +630,16 @@ public enum WalletManager implements WalletEventListener {
    * @throws WalletLoadException    if there is already a wallet created but it could not be loaded
    * @throws WalletVersionException if there is already a wallet but the wallet version cannot be understood
    */
-  public WalletSummary getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
-    File applicationDataDirectory,
-    String seedPhrase,
-    long creationTimeInSeconds,
-    String password,
-    String name,
-    String notes,
-    boolean performSync) throws UnreadableWalletException, WalletLoadException, WalletVersionException, IOException {
+  public WalletSummary getOrCreateTrezorCloneSoftWalletSummaryFromSeedPhrase(
+          File applicationDataDirectory,
+          String seedPhrase,
+          long creationTimeInSeconds,
+          String password,
+          String name,
+          String notes,
+          boolean performSync) throws UnreadableWalletException, WalletLoadException, WalletVersionException, IOException {
 
-    log.debug("getOrCreateTrezorSoftWalletSummaryFromSeedPhrase called");
+    log.debug("getOrCreateTrezorCloneSoftWalletSummaryFromSeedPhrase called");
 
     // Create a wallet id from the seed to work out the wallet root directory
     SeedPhraseGenerator seedGenerator = new Bip39SeedPhraseGenerator();
@@ -687,7 +687,7 @@ public enum WalletManager implements WalletEventListener {
       trezorRootNodePathList.add(new ChildNumber(ChildNumber.HARDENED_BIT));
 
       DeterministicKey trezorRootNode = HDKeyDerivation.createRootNodeWithPrivateKey(ImmutableList.copyOf(trezorRootNodePathList), seed);
-      log.debug("Creating Trezor soft wallet with root node with path {}", trezorRootNode.getPath());
+      log.debug("Creating Trezor clone soft wallet with root node with path {}", trezorRootNode.getPath());
 
       // Create a KeyCrypter to encrypt the waller
       KeyCrypterScrypt keyCrypterScrypt = new KeyCrypterScrypt(EncryptedFileReaderWriter.makeScryptParameters(WalletManager.SCRYPT_SALT));

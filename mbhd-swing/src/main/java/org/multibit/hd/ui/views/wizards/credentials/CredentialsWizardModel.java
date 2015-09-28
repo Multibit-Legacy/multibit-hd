@@ -898,13 +898,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           // Must be OK to be here
 
           return Optional.fromNullable(
-            WalletManager.INSTANCE.getOrCreateTrezorHardWalletSummaryFromRootNode(
-              applicationDataDirectory,
-              parentKey,
-              // There is no reliable timestamp for a 'new' wallet as it could exist elsewhere
-              replayDateInMillis / 1000,
-              newWalletPassword,
-              label, "Trezor", true));
+            WalletManager.INSTANCE.getOrCreateTrezorCloneHardWalletSummaryFromRootNode(
+                    applicationDataDirectory,
+                    parentKey,
+                    // There is no reliable timestamp for a 'new' wallet as it could exist elsewhere
+                    replayDateInMillis / 1000,
+                    newWalletPassword,
+                    label, "", true));
 
         } catch (Exception e) {
           CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, e, Optional.<File>absent()));

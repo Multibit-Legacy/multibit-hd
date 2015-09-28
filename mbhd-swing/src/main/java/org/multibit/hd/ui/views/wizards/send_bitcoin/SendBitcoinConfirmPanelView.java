@@ -224,10 +224,8 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   private boolean isHardwareWallet() {
 
     return WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() &&
-      (
-        WalletType.TREZOR_HARD_WALLET.equals(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType())
-          || WalletType.KEEP_KEY_HARD_WALLET.equals(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType())
-      );
+            WalletType.TREZOR_HARD_WALLET.equals(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType())
+            ;
   }
 
   @Override

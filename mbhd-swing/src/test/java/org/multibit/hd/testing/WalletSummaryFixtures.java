@@ -74,7 +74,7 @@ public class WalletSummaryFixtures {
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    return walletManager.getOrCreateTrezorHardWalletSummaryFromRootNode(
+    return walletManager.getOrCreateTrezorCloneHardWalletSummaryFromRootNode(
             new File(applicationDirectoryName),
             trezorRootNode,
             nowInSeconds,
@@ -143,14 +143,14 @@ public class WalletSummaryFixtures {
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    return walletManager.getOrCreateTrezorHardWalletSummaryFromRootNode(
-      new File(applicationDirectoryName),
-      trezorRootNode,
-      nowInSeconds,
-      ABANDON_KEEPKEY_PASSWORD,
-      "Example KeepKey hard wallet",
-      "Example empty wallet. Password is '" + ABANDON_KEEPKEY_PASSWORD + "'.",
-      false); // No need to sync
+    return walletManager.getOrCreateTrezorCloneHardWalletSummaryFromRootNode(
+            new File(applicationDirectoryName),
+            trezorRootNode,
+            nowInSeconds,
+            ABANDON_KEEPKEY_PASSWORD,
+            "Example KeepKey hard wallet",
+            "Example empty wallet. Password is '" + ABANDON_KEEPKEY_PASSWORD + "'.",
+            false); // No need to sync
 
   }
 
