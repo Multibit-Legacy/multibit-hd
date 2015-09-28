@@ -82,7 +82,7 @@ public class CredentialsRequestMasterPublicKeyPanelView extends AbstractHardware
   @Override
   public void afterShow() {
 
-    // Check if the attached Trezor is initialised (the hardware wallet service must be OK to be here)
+    // Check if the attached hardware is initialised (the hardware wallet service must be OK to be here)
     Optional<Features> features = CoreServices.getCurrentHardwareWalletService().get().getContext().getFeatures();
 
     final MessageKey operationKey;

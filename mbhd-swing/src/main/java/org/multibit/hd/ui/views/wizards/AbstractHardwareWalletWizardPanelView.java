@@ -65,8 +65,8 @@ public abstract class AbstractHardwareWalletWizardPanelView<M extends AbstractHa
         hardwareDisplayMaV = Components.newKeepKeyDisplayMaV(getPanelName());
         break;
       default:
-        // Unexpected value
-        throw new IllegalStateException("Showing PIN for unknown wallet mode: " + getWizardModel().getWalletMode().name());
+        // Do nothing
+        return;
     }
 
     // Need some text here in case device fails just as we being the process

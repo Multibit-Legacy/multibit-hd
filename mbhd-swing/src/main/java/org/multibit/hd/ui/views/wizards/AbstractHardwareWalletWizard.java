@@ -2,9 +2,7 @@ package org.multibit.hd.ui.views.wizards;
 
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
-import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.services.ApplicationEventService;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.slf4j.Logger;
