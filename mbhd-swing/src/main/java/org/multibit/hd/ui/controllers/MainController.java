@@ -123,7 +123,7 @@ public class MainController extends AbstractController implements
   /**
    * The last time a Trezor device was wiped (or yesterday as the default)
    */
-  private DateTime lastWipedTrezorDateTime = Dates.nowUtc().minusDays(1);
+  private DateTime lastWipedHardwareWalletDateTime = Dates.nowUtc().minusDays(1);
 
   /**
    * Whether alerts should be fired when new transactions appear (true = fire alerts, false = suppress alerts)
@@ -492,7 +492,7 @@ public class MainController extends AbstractController implements
     // Check for specific component changes
     if (UseHardwareWalletState.CONFIRM_WIPE_DEVICE.name().equals(event.getPanelName())) {
       // The user has successfully completed wiping a Trezor device
-      lastWipedTrezorDateTime = (DateTime) event.getComponentModel().get();
+      lastWipedHardwareWalletDateTime = (DateTime) event.getComponentModel().get();
     }
 
   }
@@ -987,7 +987,7 @@ public class MainController extends AbstractController implements
 
   /**
    * <p>Handle the "show device ready" event</p>
-   * <p>Show an alert if the Trezor connects when:</p>
+   * <p>Show an alert if a hardware wallet connects when:</p>
    * <ul>
    * <li>there is a current wallet</li>
    * <li>the current wallet is not the same "hard" wallet as in the alert (different device)</li>
@@ -1023,38 +1023,34 @@ public class MainController extends AbstractController implements
 
       boolean showAlert = false;
 
-      switch (walletSummary.get().getWalletType()) {
-        case TREZOR_HARD_WALLET:
-          // Not currently using a Trezor hard wallet so show the alert
-          showAlert = true;
-          break;
-        default:
-          if (currentHardwareWalletService.isPresent()) {
-            // Current features
-            Optional<Features> newFeatures = currentHardwareWalletService.get().getContext().getFeatures();
-            String currentWalletName = walletSummary.get().getName();
-            if (newFeatures.isPresent() && !newFeatures.get().getLabel().equals(currentWalletName)) {
-              // The newly plugged in Trezor is a different one
-              showAlert = true;
-            }
+      if (walletSummary.get().getWalletType() != WalletType.TREZOR_HARD_WALLET) {
+        // Not currently using a Trezor-style hardware wallet so show the alert
+        showAlert = true;
+      } else {
+        if (currentHardwareWalletService.isPresent()) {
+          // Get the current features
+          Optional<Features> newFeatures = currentHardwareWalletService.get().getContext().getFeatures();
+          String currentWalletName = walletSummary.get().getName();
+          if (newFeatures.isPresent() && !newFeatures.get().getLabel().equals(currentWalletName)) {
+            // The newly plugged in device is a different one
+            showAlert = true;
           }
-          break;
+        }
       }
 
+      // Suppress alert if there has been a recent wipe
       if (currentHardwareWalletService.isPresent()) {
-        if (lastWipedTrezorDateTime
+        if (lastWipedHardwareWalletDateTime
           .plusSeconds(HARDWARE_WALLET_WIPE_TIME_THRESHOLD)
           .isAfter(Dates.nowUtc())) {
-          log.debug("Suppressing the alert due to recent confirmed Trezor wipe operation");
           showAlert = false;
         }
       }
 
       if (showAlert) {
 
-        // TODO Currently getting a false positive due to FEST test use of WalletManager during fixture creation
-
-        log.debug("Trezor attached during an unlocked soft wallet session - showing alert");
+        // NOTE Currently getting a false positive due to FEST test use of WalletManager during fixture creation
+        log.debug("Hardware wallet attached during an unlocked soft wallet session - showing alert");
 
         SwingUtilities.invokeLater(
           new Runnable() {
@@ -1240,11 +1236,6 @@ public class MainController extends AbstractController implements
         log.info("Starting hardware wallet service: {}", hardwareWalletService.get().getContext().getClient().name());
         hardwareWalletService.get().start();
       }
-    }
-
-    // Give the current wallet a chance to update
-    if (!currentHardwareWalletService.isPresent()) {
-      CoreServices.useFirstReadyHardwareWalletService();
     }
 
   }

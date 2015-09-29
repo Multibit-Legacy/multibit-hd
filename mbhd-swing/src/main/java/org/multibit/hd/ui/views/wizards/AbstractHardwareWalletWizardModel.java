@@ -41,7 +41,7 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   /**
    * The current wallet mode (e.g. TREZOR, KEEP_KEY etc)
    */
-  private final WalletMode walletMode;
+  private WalletMode walletMode;
 
   /**
    * The hardware wallet report message key
@@ -68,6 +68,13 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   }
 
   /**
+   * @param walletMode The new wallet mode (devices may attach/detach during wizard presentation)
+   */
+  public void setWalletMode(WalletMode walletMode) {
+    this.walletMode = walletMode;
+  }
+
+  /**
    * Handles state transition to a "device failed" panel
    *
    * Usually this will be an "Report" panel following a "Request" and the
@@ -85,7 +92,7 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   /**
    * Handles state transition to a "device ready" panel
    *
-   * Usually this will be a "use Trezor" panel which will show a collection
+   * Usually this will be a "use hardware wallet" panel which will show a collection
    * of options to determine what happens next
    *
    * Note that an "operation failure" will reset the device back to its

@@ -15,6 +15,7 @@ import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.core.seed_phrase.SeedPhraseSize;
 import org.multibit.hd.core.dto.BackupSummary;
 import org.multibit.hd.core.dto.WalletId;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
@@ -500,7 +501,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
 
   @Override
   public void showDeviceDetached(HardwareWalletEvent event) {
-    // Hardware wallet has been attached
+
+    setWalletMode(WalletMode.STANDARD);
     getAttachHardwareWalletPanelView().setHardwareWalletStatus(
       Optional.<MessageKey>absent(),
       new Object[]{event.getSource()},
@@ -511,7 +513,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   @Override
   public void showDeviceReady(HardwareWalletEvent event) {
 
-    // Hardware wallet has been attached
+    // Hardware wallet has been attached and has features
+    setWalletMode(WalletMode.of(event));
     getAttachHardwareWalletPanelView().setHardwareWalletStatus(
       Optional.of(MessageKey.HARDWARE_FOUND),
       new Object[]{event.getSource()},
@@ -523,7 +526,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   @Override
   public void showDeviceFailed(HardwareWalletEvent event) {
 
-    // Hardware wallet has been attached
+    // Hardware wallet has failed
+    setWalletMode(WalletMode.of(event));
     getAttachHardwareWalletPanelView().setHardwareWalletStatus(
       Optional.of(MessageKey.HARDWARE_FAILURE_ALERT),
       new Object[]{event.getSource()},
