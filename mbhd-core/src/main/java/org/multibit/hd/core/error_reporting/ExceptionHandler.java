@@ -463,6 +463,13 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       return true;
     }
 
+    // Check for java.lang.ClassCastException: sun.awt.image.BufImgSurfaceData cannot be cast to sun.java2d.xr.XRSurfaceData (see Issue #677)
+    // This is a Swing glitch that we can do nothing about
+    if (message.contains("sun.awt.image.BufImgSurfaceData cannot be cast to sun.java2d.xr.XRSurfaceData")) {
+      log.warn("Detected BufImgSurfaceData cannot be cast to XRSurfaceData exception. Treat as benign.");
+      return true;
+    }
+
     // Anything else is a problem
     return false;
   }
