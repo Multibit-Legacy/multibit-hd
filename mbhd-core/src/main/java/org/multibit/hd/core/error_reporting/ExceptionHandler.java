@@ -447,12 +447,19 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       return true;
     }
 
-      // Check for XlibWrapper atom name (see Issue #635)
-      // This also occurs occasionally in clipboard operations and is based in the way
-      // the JVM interacts with the underlying OS - there is nothing we can do
-      // The application logic should not be affected
+    // Check for XlibWrapper atom name (see Issue #635)
+    // This also occurs occasionally in clipboard operations and is based in the way
+    // the JVM interacts with the underlying OS - there is nothing we can do
+    // The application logic should not be affected
     if (message.contains("Failed to retrieve atom name")) {
       log.warn("Detected XlibWrapper exception. Treat as benign.");
+      return true;
+    }
+
+    // Check for java.lang.ClassCastException: javax.swing.plaf.FontUIResource cannot be cast to javax.swing.Painter (see Issue #722)
+    // This is a Swing glitch that we can do nothing about
+    if (message.contains("javax.swing.plaf.FontUIResource cannot be cast to javax.swing.Painter")) {
+      log.warn("Detected FontUIResource cannot be cast to Painter exception. Treat as benign.");
       return true;
     }
 
