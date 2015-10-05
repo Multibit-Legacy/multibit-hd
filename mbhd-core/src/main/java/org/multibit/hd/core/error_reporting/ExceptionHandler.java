@@ -470,6 +470,12 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       return true;
     }
 
+    // Check for sun.awt.Win32GraphicsConfig cannot be cast to sun.java2d.d3d.D3DGraphicsConfig (see Issue #735)
+    // This is a Swing glitch that we can do nothing about
+    if (message.contains("sun.awt.Win32GraphicsConfig cannot be cast to sun.java2d.d3d.D3DGraphicsConfig")) {
+      log.warn("Detected Win32GraphicsConfig cannot be cast to D3DGraphicsConfig exception. Treat as benign.");
+      return true;
+    }
     // Anything else is a problem
     return false;
   }
