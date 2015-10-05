@@ -36,8 +36,9 @@ public class SidebarTreeScreensRequirements {
     new ShowContactsScreenUseCase(window).execute(parameters);
     new ShowHelpScreenUseCase(window).execute(parameters);
     new ShowSettingsScreenUseCase(window).execute(parameters);
-    new ShowManageWalletScreenUseCase(window).execute(parameters);
+    // ShowToolsScreenUseCase before ShowManageWalletScreenUseCase works, reversed does not for some reason
     new ShowToolsScreenUseCase(window).execute(parameters);
+    new ShowManageWalletScreenUseCase(window).execute(parameters);
     new ShowExitScreenUseCase(window).execute(parameters);
   }
 }

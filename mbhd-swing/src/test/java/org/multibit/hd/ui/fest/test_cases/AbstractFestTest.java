@@ -93,7 +93,6 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
 
   @After
   public void tearDown() {
-
     // Make this message stand out
     log.warn("FEST: Test complete. Firing 'SOFT' shutdown.");
 

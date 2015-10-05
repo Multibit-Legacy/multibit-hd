@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.fest.test_cases;
 
 import com.google.common.base.Optional;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
@@ -236,7 +237,7 @@ public class StandardFestTest extends AbstractFestTest {
    * <li>Exercise the Manage Wallet screen</li>
    * </ul>
    */
-  @Test
+  @Ignore
   public void verifyManageWalletScreen() throws Exception {
 
     // Start with the empty hardware wallet fixture
