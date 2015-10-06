@@ -28,6 +28,7 @@ public class BlockExplorers {
     allBlockExplorers.add(new BlockChainInfoBlockExplorer());
     allBlockExplorers.add(new BlockrIoBlockExplorer());
     allBlockExplorers.add(new BlockTrailComBlockExplorer());
+    allBlockExplorers.add(new SmartBitComAuBlockExplorer());
   }
 
   /**

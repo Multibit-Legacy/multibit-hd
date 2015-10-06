@@ -3,12 +3,12 @@ package org.multibit.hd.core.blockexplorer;
 import java.text.MessageFormat;
 
 /**
- *  <p>blockr.io BlockExplorer<br>
+ *  <p>smartbit.com.au BlockExplorer<br>
  *  </p>
  *  
  */
-public class BlockrIoBlockExplorer implements BlockExplorer {
-  public static final String ID = "blockr";
+public class SmartBitComAuBlockExplorer implements BlockExplorer {
+  public static final String ID = "smartbit";
 
   @Override
   public String getId() {
@@ -17,11 +17,11 @@ public class BlockrIoBlockExplorer implements BlockExplorer {
 
   @Override
   public String getName() {
-    return "blockr.io";
+    return "smartbit.com.au";
   }
 
   @Override
   public MessageFormat getTransactionLookupMessageFormat() {
-    return new MessageFormat("https://btc.blockr.io/tx/info/{0}");
+    return new MessageFormat("https://www.smartbit.com.au/tx/{0}");
   }
 }
