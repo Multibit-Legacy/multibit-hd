@@ -39,7 +39,8 @@ public class KeepKeyEnterNextWordUseCase extends AbstractHardwareWalletFestUseCa
       .label(MessageKey.HARDWARE_PRESS_NEXT_TITLE.getKey())
       .requireVisible();
 
-    for (int i=1; i<13; i++) {
+    // Check both KeepKey wallet words are shown
+    for (int i=1; i<2; i++) {
 
       // Get the display text
       String displayText = window

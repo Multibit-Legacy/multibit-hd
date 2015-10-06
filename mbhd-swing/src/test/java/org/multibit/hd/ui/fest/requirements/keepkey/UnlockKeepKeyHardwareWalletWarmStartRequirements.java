@@ -3,11 +3,11 @@ package org.multibit.hd.ui.fest.requirements.keepkey;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
+import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyConfirmUnlockUseCase;
+import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyEnterPinFromMasterPublicKeyUseCase;
+import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyRequestCipherKeyUseCase;
+import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyRequestMasterPublicKeyUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.credentials.UnlockReportUseCase;
-import org.multibit.hd.ui.fest.use_cases.trezor.TrezorConfirmUnlockUseCase;
-import org.multibit.hd.ui.fest.use_cases.trezor.TrezorEnterPinFromMasterPublicKeyUseCase;
-import org.multibit.hd.ui.fest.use_cases.trezor.TrezorRequestCipherKeyUseCase;
-import org.multibit.hd.ui.fest.use_cases.trezor.TrezorRequestMasterPublicKeyUseCase;
 
 import java.util.Map;
 
@@ -27,16 +27,16 @@ public class UnlockKeepKeyHardwareWalletWarmStartRequirements {
     Map<String, Object> parameters = Maps.newHashMap();
 
     // Request the master public key (refer to mock client for PublicKey responses)
-    new TrezorRequestMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
+    new KeepKeyRequestMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Verify PIN entry (refer to mock client for PIN entry responses)
-    new TrezorEnterPinFromMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
+    new KeepKeyEnterPinFromMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Request the cipher key (no PIN usually)
-    new TrezorRequestCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
+    new KeepKeyRequestCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Unlock with cipher key
-    new TrezorConfirmUnlockUseCase(window, hardwareWalletFixture).execute(parameters);
+    new KeepKeyConfirmUnlockUseCase(window, hardwareWalletFixture).execute(parameters);
 
     hardwareWalletFixture.fireNextEvent("Confirm unlock");
 

@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the Keepkey "press confirm unlock device" screen</li>
+ * <li>Verify the KeepKey "press confirm unlock device" screen</li>
  * </ul>
  *
  * <p>Require the panel view to be showing (event triggered earlier)</p>
@@ -35,7 +35,7 @@ public class KeepKeyConfirmUnlockUseCase extends AbstractHardwareWalletFestUseCa
     // Allow time for UI to catch up with events
     pauseForViewReset();
 
-    // Check that the Keepkey press confirm to unlock panel view is showing
+    // Check that the KeepKey press confirm to unlock panel view is showing
     window
       .label(MessageKey.HARDWARE_PRESS_CONFIRM_TITLE.getKey())
       .requireVisible();

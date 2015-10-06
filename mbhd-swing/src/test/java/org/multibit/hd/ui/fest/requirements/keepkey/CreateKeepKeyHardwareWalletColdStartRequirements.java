@@ -62,8 +62,7 @@ public class CreateKeepKeyHardwareWalletColdStartRequirements {
     // Confirm next words
     new KeepKeyEnterNextWordUseCase(window, hardwareWalletFixture).execute(parameters);
 
-    // Confirm words
-    new KeepKeyConfirmNextWordUseCase(window, hardwareWalletFixture).execute(parameters);
+    // No confirm of wallet words with KeepKey
 
     // Verify report
     new KeepKeyCreateWalletReportUseCase(window, hardwareWalletFixture).execute(parameters);

@@ -7,9 +7,9 @@ import org.multibit.hd.hardware.core.events.MessageEvent;
 import org.multibit.hd.hardware.core.events.MessageEventType;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
-import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
-import org.multibit.hd.testing.message_event_fixtures.MessageEventFixtures;
+import org.multibit.hd.hardware.keepkey.clients.AbstractKeepKeyHardwareWalletClient;
 import org.multibit.hd.testing.hardware_wallet_fixtures.AbstractHardwareWalletFixture;
+import org.multibit.hd.testing.message_event_fixtures.MessageEventFixtures;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
  * <li>Low level events and client handling</li>
  * </ul>
  *
- * <p>Emulates an attached initialised Trezor during the re-attach use case</p>
+ * <p>Emulates an attached initialised KeepKey during the re-attach use case</p>
  *
  * <p>Presents a PIN request on "get cipher key"</p>
 
@@ -37,7 +37,7 @@ public class KeepKeyInitialisedReattachedFixture extends AbstractHardwareWalletF
   @Override
   public void setUpClient() {
 
-    client = mock(AbstractTrezorHardwareWalletClient.class);
+    client = mock(AbstractKeepKeyHardwareWalletClient.class);
 
     when(client.name()).thenReturn(name);
     when(client.attach()).thenReturn(true);
@@ -62,7 +62,7 @@ public class KeepKeyInitialisedReattachedFixture extends AbstractHardwareWalletF
 
     // Standard client will start as attached
 
-    // Trezor has been detached
+    // KeepKey has been detached
     final MessageEvent event1 = new MessageEvent(
       MessageEventType.DEVICE_DETACHED,
       Optional.<HardwareWalletMessage>absent(),
@@ -72,7 +72,7 @@ public class KeepKeyInitialisedReattachedFixture extends AbstractHardwareWalletF
 
     messageEvents.add(event1);
 
-    // Trezor has been attached
+    // KeepKey has been attached
     final MessageEvent event2 = new MessageEvent(
       MessageEventType.DEVICE_ATTACHED,
       Optional.<HardwareWalletMessage>absent(),
