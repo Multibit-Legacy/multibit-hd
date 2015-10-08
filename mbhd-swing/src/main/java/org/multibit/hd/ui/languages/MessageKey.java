@@ -196,6 +196,7 @@ public enum MessageKey {
   LOCAL_AMOUNT_INCLUDING_FEES("local_amount_including_fees"),
   AMOUNT_PAID("amount_paid"),
   TRANSACTION_FEE("transaction_fee"),
+  TRANSACTION_FEE_RATE("transaction_fee_rate"),
   ADJUST_TRANSACTION_FEE("adjust_transaction_fee"),
   EXPLAIN_TRANSACTION_FEE1("explain_transaction_fee1"),
   EXPLAIN_TRANSACTION_FEE2("explain_transaction_fee2"),

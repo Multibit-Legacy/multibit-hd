@@ -28,6 +28,7 @@ import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
+import java.text.DecimalFormat;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -45,10 +46,14 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
   private JLabel amountFiatValue;
   private JLabel miningFeePaidLabel;
   private JLabel miningFeePaidValue;
+  private JLabel miningFeePaidRateLabel;
+  private JLabel miningFeePaidRateValue;
   private JLabel clientFeePaidLabel;
   private JLabel clientFeePaidValue;
   private JLabel exchangeRateLabel;
   private JLabel exchangeRateValue;
+
+  private final DecimalFormat feeRateFormat;
 
   /**
    * @param wizard The wizard managing the states
@@ -57,6 +62,7 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
 
     super(wizard, panelName, AwesomeIcon.FILE_TEXT_O, MessageKey.TRANSACTION_AMOUNT);
 
+    feeRateFormat = new DecimalFormat("0.00");
   }
 
   @Override
@@ -106,6 +112,9 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
       Languages.safeText(MessageKey.CLIENT_FEE) + " ");
     clientFeePaidValue = Labels.newValueLabel("");
 
+    miningFeePaidRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_FEE_RATE) + " " + Languages.TRANSACTION_FEE_RATE_UNIT);
+    miningFeePaidRateValue = Labels.newValueLabel("");
+
     exchangeRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.EXCHANGE_RATE_LABEL));
     exchangeRateValue = Labels.newValueLabel("");
 
@@ -122,6 +131,9 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
 
     contentPanel.add(miningFeePaidLabel);
     contentPanel.add(miningFeePaidValue, "wrap");
+
+    contentPanel.add(miningFeePaidRateLabel);
+    contentPanel.add(miningFeePaidRateValue, "wrap");
 
     contentPanel.add(clientFeePaidLabel);
     contentPanel.add(clientFeePaidValue, "wrap");
@@ -174,7 +186,7 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
           }
         }
         // Miner's fee
-        updateMiningFee(languageConfiguration, bitcoinConfiguration, miningFee);
+        updateMiningFee(languageConfiguration, bitcoinConfiguration, miningFee, transactionData.getSize());
 
         // Client fee
         updateClientFee(languageConfiguration, bitcoinConfiguration, transactionData);
@@ -188,6 +200,8 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
           clientFeePaidValue.setVisible(false);
           miningFeePaidLabel.setVisible(false);
           miningFeePaidValue.setVisible(false);
+          miningFeePaidRateLabel.setVisible(false);
+          miningFeePaidRateValue.setVisible(false);
         } else {
 
           // Sent bitcoin
@@ -195,6 +209,8 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
           clientFeePaidValue.setVisible(true);
           miningFeePaidLabel.setVisible(true);
           miningFeePaidValue.setVisible(true);
+          miningFeePaidRateLabel.setVisible(true);
+          miningFeePaidRateValue.setVisible(true);
         }
       }
 
@@ -233,12 +249,22 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
     }
   }
 
-  private void updateMiningFee(LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration, Optional<Coin> miningFee) {
+  private void updateMiningFee(LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration, Optional<Coin> miningFee, int transactionSize) {
     if (miningFee.isPresent()) {
-      String[] minerFeePaidArray = Formats.formatCoinAsSymbolic(miningFee.get().negate(), languageConfiguration, bitcoinConfiguration, true);
+      Coin miningFeeAsCoin = miningFee.get();
+      String[] minerFeePaidArray = Formats.formatCoinAsSymbolic(miningFeeAsCoin.negate(), languageConfiguration, bitcoinConfiguration, true);
       miningFeePaidValue.setText(minerFeePaidArray[0] + minerFeePaidArray[1]);
+
+      // Work out fee rate
+      if (transactionSize > 0) {
+        double feeRate = (double)miningFeeAsCoin.getValue() / transactionSize;
+        miningFeePaidRateValue.setText(feeRateFormat.format(feeRate));
+      } else {
+        miningFeePaidRateValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+      }
     } else {
       miningFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
+      miningFeePaidRateValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
     }
   }
 

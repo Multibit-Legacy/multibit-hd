@@ -28,6 +28,7 @@ public class Languages {
    * The Crowdin.com  MultiBit HD translate site (HTTPS)
    */
   public static final URI MBHD_TRANSLATION_WEBSITE_URI = URI.create("https://crowdin.com/project/multibit-hd");
+  public static final String TRANSACTION_FEE_RATE_UNIT = "sat/byte"; // This is not localised as it is 'universal'
 
   /**
    * Utilities have private constructors
