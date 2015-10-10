@@ -399,8 +399,8 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
           setReportMessageKey(MessageKey.HARDWARE_REMOVE_PIN_SUCCESS);
           setReportMessageStatus(true);
         }
-        // Update the features for next time
-        CoreServices.getCurrentHardwareWalletService().get().getContext().resetToAttached();
+        // Update the features for next time (resetToAttached is too low level)
+        CoreServices.getCurrentHardwareWalletService().get().getContext().resetToConnected();
         break;
       case ENTER_NEW_PIN:
         state = ChangePinState.CONFIRM_NEW_PIN;
@@ -409,8 +409,8 @@ public class ChangePinWizardModel extends AbstractHardwareWalletWizardModel<Chan
         state = ChangePinState.SHOW_REPORT;
         setReportMessageKey(MessageKey.HARDWARE_CHANGE_PIN_SUCCESS);
         setReportMessageStatus(true);
-        // Update the features for next time
-        CoreServices.getCurrentHardwareWalletService().get().getContext().resetToAttached();
+        // Update the features for next time (resetToAttached is too low level)
+        CoreServices.getCurrentHardwareWalletService().get().getContext().resetToConnected();
         break;
       case SHOW_REPORT:
         break;
