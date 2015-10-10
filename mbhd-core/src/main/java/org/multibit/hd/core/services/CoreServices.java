@@ -417,6 +417,11 @@ public class CoreServices {
       return currentHardwareWalletService;
     }
 
+    // Prevent incorrect initialisation (perhaps during testing) from causing problems
+    if (hardwareWalletServices.isEmpty()) {
+      return Optional.absent();
+    }
+
     final Optional<HardwareWalletService> result;
     if (hardwareWalletServices.get(TREZOR_WALLET_SERVICE_INDEX).isPresent()
       && hardwareWalletServices.get(TREZOR_WALLET_SERVICE_INDEX).get().isDeviceReady()) {
