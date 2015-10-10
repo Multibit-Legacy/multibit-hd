@@ -1024,16 +1024,37 @@ public class MainController extends AbstractController implements
       boolean showAlert = false;
 
       if (walletSummary.get().getWalletType() != WalletType.TREZOR_HARD_WALLET) {
-        // Not currently using a Trezor-style hardware wallet so show the alert
+        // Not currently using a hardware wallet so show the alert
         showAlert = true;
       } else {
+        // Currently using a hardware wallet so check for a change in device
         if (currentHardwareWalletService.isPresent()) {
-          // Get the current features
-          Optional<Features> newFeatures = currentHardwareWalletService.get().getContext().getFeatures();
+
+          // Get the current wallet name (label)
           String currentWalletName = walletSummary.get().getName();
-          if (newFeatures.isPresent() && !newFeatures.get().getLabel().equals(currentWalletName)) {
-            // The newly plugged in device is a different one
+
+          // Get the current features
+          Optional<Features> currentFeatures = currentHardwareWalletService.get().getContext().getFeatures();
+
+          // Check for a different device type
+          String currentSource = currentHardwareWalletService.get().getContext().getClient().name();
+          String newSource = event.getSource();
+
+          if (!currentSource.equals(newSource)) {
+            // Different device type (e.g. Trezor attached during KeepKey session)
             showAlert = true;
+          } else {
+            // Same device type (e.g. accidental detach of device or swap in advance of switch)
+            // Check for a different device label
+            if (currentFeatures.isPresent()) {
+              // The current device is remains attached
+              if (!currentFeatures.get().getLabel().equals(currentWalletName)) {
+                showAlert = true;
+              }
+            } else {
+              // The current device was detached so we can't tell if it is different
+              showAlert = true;
+            }
           }
         }
       }
