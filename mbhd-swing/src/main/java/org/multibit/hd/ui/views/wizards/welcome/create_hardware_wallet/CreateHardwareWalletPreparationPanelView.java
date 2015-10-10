@@ -54,7 +54,7 @@ public class CreateHardwareWalletPreparationPanelView extends AbstractWizardPane
    */
   public CreateHardwareWalletPreparationPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.CREATE_HARDWARE_WALLET_PREPARATION_TITLE, new Object[] { wizard.getWizardModel().getWalletMode().brand()});
+    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.CREATE_HARDWARE_WALLET_PREPARATION_TITLE, wizard.getWizardModel().getWalletMode().brand());
 
     // Timer needs to be fairly fast to appear responsive
     timer = new Timer(500, new ActionListener() {
@@ -203,6 +203,9 @@ public class CreateHardwareWalletPreparationPanelView extends AbstractWizardPane
   public void afterShow() {
 
     getNextButton().requestFocusInWindow();
+
+    // Ensure we're still using appropriate branding
+
 
     // Run continuously
     timer.setRepeats(true);

@@ -97,6 +97,12 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   private Optional<JButton> finishButton = Optional.absent();
   private Optional<JButton> applyButton = Optional.absent();
 
+  // Labels
+  /**
+   * The title label in case it needs to be modified after initialisation (e.g. changing a hardware wallet)
+   */
+  protected JLabel title;
+
   /**
    * @param wizard         The wizard
    * @param panelName      The panel name to filter events from components
@@ -132,7 +138,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
     PanelDecorator.applyWizardTheme(wizardScreenPanel);
 
     // Add the title to the wizard
-    JLabel title = Labels.newTitleLabel(titleKey, values);
+    title = Labels.newTitleLabel(titleKey, values);
     wizardScreenPanel.add(title, "span 4," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",gap 0, shrink 200,aligny top,align center,h 90lp!,wrap");
 
     // Provide a basic empty content panel (allows lazy initialisation later)

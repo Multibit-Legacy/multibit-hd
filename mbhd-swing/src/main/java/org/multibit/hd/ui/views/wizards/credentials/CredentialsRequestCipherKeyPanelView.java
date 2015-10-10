@@ -6,6 +6,7 @@ import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.ui.events.view.ViewEvents;
+import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
@@ -86,6 +87,9 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractHardwareWallet
     Optional<HardwareWalletService> currentHardwareWalletService = CoreServices.getCurrentHardwareWalletService();
     Optional<Features> features = currentHardwareWalletService.get().getContext().getFeatures();
 
+    // Update the title to reflect the hardware wallet branding
+    title.setText(Languages.safeText(MessageKey.HARDWARE_UNLOCK_TITLE, getWizardModel().getWalletMode().brand()));
+
     final MessageKey operationKey;
     final boolean nextEnabled;
     final boolean createNewTrezorWallet;
@@ -132,7 +136,7 @@ public class CredentialsRequestCipherKeyPanelView extends AbstractHardwareWallet
 
     // Update the wizard model so we can change state
     getWizardModel().setSwitchToPassword(nextEnabled && !createNewTrezorWallet);
-    getWizardModel().setCreateNewTrezorWallet(createNewTrezorWallet);
+    getWizardModel().setCreateNewHardwareWallet(createNewTrezorWallet);
 
     if (!nextEnabled) {
 

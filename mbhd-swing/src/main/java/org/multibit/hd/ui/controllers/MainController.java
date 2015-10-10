@@ -334,7 +334,7 @@ public class MainController extends AbstractController implements
           if (earliestTransactionDate != null) {
             // Set the wallet key creation time to be the transaction date (minus one day to cater for blockchain forkiness)
             wallet.setEarliestKeyCreationTime(earliestTransactionDate.getTime() / 1000 - Dates.NUMBER_OF_SECONDS_IN_A_DAY);
-            log.debug("Setting Trezor hard wallet earliestKeyCreation Date to one day before : {}", earliestTransactionDate);
+            log.debug("Setting hardware wallet 'earliestKeyCreationDate' to one day before : {}", earliestTransactionDate);
           }
         }
       }

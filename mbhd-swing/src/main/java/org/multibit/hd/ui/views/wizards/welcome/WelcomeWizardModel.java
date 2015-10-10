@@ -502,7 +502,12 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
   @Override
   public void showDeviceDetached(HardwareWalletEvent event) {
 
+    // Reset the wallet mode
     setWalletMode(WalletMode.STANDARD);
+
+    // Switch to first ready device (and deactivate this one)
+    CoreServices.useFirstReadyHardwareWalletService();
+
     getAttachHardwareWalletPanelView().setHardwareWalletStatus(
       Optional.<MessageKey>absent(),
       new Object[]{event.getSource()},

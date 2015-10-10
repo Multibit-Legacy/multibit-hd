@@ -404,22 +404,24 @@ public class CoreServices {
    */
   public static Optional<HardwareWalletService> useFirstReadyHardwareWalletService() {
 
-    // Always use the current if it is present
-    if (currentHardwareWalletService.isPresent()) {
+    log.debug("Searching for first ready hardware wallet...");
+
+    // Always use the current if it is present and ready
+    if (currentHardwareWalletService.isPresent() && currentHardwareWalletService.get().isDeviceReady()) {
       return currentHardwareWalletService;
     }
 
-    Optional<HardwareWalletService> result;
+    final Optional<HardwareWalletService> result;
     if (hardwareWalletServices.get(TREZOR_WALLET_SERVICE_INDEX).isPresent()
       && hardwareWalletServices.get(TREZOR_WALLET_SERVICE_INDEX).get().isDeviceReady()) {
-      // Trezor is ready
+      log.debug("Trezor is ready");
       result = hardwareWalletServices.get(TREZOR_WALLET_SERVICE_INDEX);
     } else if (hardwareWalletServices.get(KEEP_KEY_WALLET_SERVICE_INDEX).isPresent()
       && hardwareWalletServices.get(KEEP_KEY_WALLET_SERVICE_INDEX).get().isDeviceReady()) {
-      // KeepKey is ready
+      log.debug("KeepKey is ready");
       result = hardwareWalletServices.get(KEEP_KEY_WALLET_SERVICE_INDEX);
     } else {
-      // Nothing is ready
+      log.debug("No device is ready");
       result = Optional.absent();
     }
 

@@ -126,7 +126,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   /**
    * @param createNewTrezorWallet True if there is a need to switch to password entry through showNext()
    */
-  public void setCreateNewTrezorWallet(boolean createNewTrezorWallet) {
+  public void setCreateNewHardwareWallet(boolean createNewTrezorWallet) {
     this.createNewTrezorWallet = createNewTrezorWallet;
   }
 
@@ -408,15 +408,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   @Override
   public void showDeviceReady(HardwareWalletEvent event) {
 
-    if (ApplicationEventService.isHardwareWalletEventAllowed()) {
-      // User attached an operational device in place of whatever
-      // they are currently doing so start again.
+    // User attached an operational device in place of whatever
+    // they are currently doing so start again.
 
-      // If a wallet is loading then do not switch to PIN entry
-      if (!state.equals(CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT)) {
-        state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
-        setWalletMode(WalletMode.of(event));
-      }
+    // If a wallet is loading then do not switch to PIN entry
+    if (!state.equals(CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT)) {
+      state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
+      setWalletMode(WalletMode.of(event));
     }
   }
 
@@ -425,14 +423,15 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   public void showDeviceDetached(HardwareWalletEvent event) {
     log.debug("Device is now detached - showing password screen");
 
-    if (ApplicationEventService.isHardwareWalletEventAllowed()) {
-
-      // If the wallet is loading then do not switch to password entry
-      if (!state.equals(CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT)) {
-        state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
-        setWalletMode(WalletMode.STANDARD);
-      }
+    // If the wallet is loading then do not switch to password entry
+    if (!state.equals(CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT)) {
+      state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+      setWalletMode(WalletMode.STANDARD);
     }
+
+    // Switch to first ready device (and deactivate this one)
+    CoreServices.useFirstReadyHardwareWalletService();
+
   }
 
   @Override
