@@ -53,6 +53,20 @@ public enum WalletMode {
   }
 
   /**
+   * @return The historical brand name used when representing hardware wallet operations (e.g. "Buy Trezor" in UseHardwareWalletWizard)
+   */
+  public String historicalBrand() {
+    // Select an appropriate brand
+    switch (this) {
+      case STANDARD:
+        // Maintain historical presentation
+        return WalletMode.TREZOR.brand();
+      default:
+        return brand();
+    }
+  }
+
+  /**
    * Determine a wallet mode from a hardware event's source
    *
    * @param event The hardware wallet event

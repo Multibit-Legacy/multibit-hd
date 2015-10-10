@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -887,17 +888,18 @@ public class Buttons {
 
   /**
    * @param action The click action
-   * @param brand  The brand to add to the message
+   * @param walletMode  The brand to add to the message
    *
    * @return A new "Trezor tools" wizard button with icon
    */
-  public static JButton newShowUseHardwareWalletWizardButton(Action action, String brand) {
+  public static JButton newShowUseHardwareWalletWizardButton(Action action, WalletMode walletMode) {
 
-    JButton button = newLargeButton(action, MessageKey.SHOW_HARDWARE_TOOLS_WIZARD, MessageKey.SHOW_HARDWARE_TOOLS_WIZARD_TOOLTIP, brand);
+    JButton button = newLargeButton(action, MessageKey.SHOW_HARDWARE_TOOLS_WIZARD, MessageKey.SHOW_HARDWARE_TOOLS_WIZARD_TOOLTIP, walletMode.historicalBrand());
 
     AwesomeDecorator.applyIcon(
       // Cannot use LOCK even though it is the closest icon to the Trezor logo
       // since it affects the established iconography throughout the application
+      // This also allows alternative hardware wallets to be consistently represented
       AwesomeIcon.SHIELD,
       button,
       true,

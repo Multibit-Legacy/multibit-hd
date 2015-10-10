@@ -634,7 +634,7 @@ public class Panels {
    * @param buyDeviceCommand    The buy device command
    * @param verifyDeviceCommand The verify device command name
    * @param wipeDeviceCommand   The wipe device command name
-   * @param brand               The brand to apply to the message keys
+   * @param walletMode          The wallet mode to apply (allows historical display)
    *
    * @return A new "use hardware wallet selector" panel
    */
@@ -643,18 +643,18 @@ public class Panels {
     String buyDeviceCommand,
     String verifyDeviceCommand,
     String wipeDeviceCommand,
-    String brand) {
+    WalletMode walletMode) {
 
     JPanel panel = Panels.newPanel();
 
-    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.BUY_HARDWARE, brand);
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.BUY_HARDWARE, walletMode.historicalBrand());
     radio1.setActionCommand(buyDeviceCommand);
     radio1.setSelected(true);
 
-    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_VERIFY_DEVICE, brand);
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_VERIFY_DEVICE, walletMode.historicalBrand());
     radio2.setActionCommand(verifyDeviceCommand);
 
-    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_WIPE_DEVICE, brand);
+    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_WIPE_DEVICE, walletMode.historicalBrand());
     radio3.setActionCommand(wipeDeviceCommand);
 
     // Action selection is mutually exclusive
@@ -843,7 +843,7 @@ public class Panels {
     JPanel panel = Panels.newPanel(
       new MigLayout(
         Panels.migXLayout(),
-        "[]", // Columns
+          "[]", // Columns
         "[]" // Rows
       ));
 

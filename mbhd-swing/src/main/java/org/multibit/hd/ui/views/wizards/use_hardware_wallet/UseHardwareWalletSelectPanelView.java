@@ -35,7 +35,7 @@ public class UseHardwareWalletSelectPanelView extends AbstractWizardPanelView<Us
    */
   public UseHardwareWalletSelectPanelView(AbstractWizard<UseHardwareWalletWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.USE_HARDWARE_TITLE, wizard.getWizardModel().getWalletMode().brand());
+    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.USE_HARDWARE_TITLE, wizard.getWizardModel().getWalletMode().historicalBrand());
 
   }
 
@@ -63,7 +63,7 @@ public class UseHardwareWalletSelectPanelView extends AbstractWizardPanelView<Us
         UseHardwareWalletState.BUY_DEVICE.name(),
         UseHardwareWalletState.VERIFY_DEVICE.name(),
         UseHardwareWalletState.REQUEST_WIPE_DEVICE.name(),
-        getWizardModel().getWalletMode().brand()
+        getWizardModel().getWalletMode()
       ), "span 2, wrap");
 
   }
