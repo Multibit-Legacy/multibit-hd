@@ -19,7 +19,7 @@ public enum WalletMode {
   /**
    * Target a standard soft wallet (BIP 32 or BIP 44)
    */
-  STANDARD("MultiBit"),
+  STANDARD("MultiBit HD"),
 
   /**
    * Target a Trezor wallet (BIP 44 only)
