@@ -237,6 +237,10 @@ public class CoreServices {
       case SWITCH:
         log.info("Applying wallet switch.");
 
+        // Attempt to locate the first ready wallet since we're switching
+        // away from the current one
+        CoreServices.useFirstReadyHardwareWalletService();
+
         shutdownWalletSupportServices(shutdownType);
 
         // Suggest a garbage collection
@@ -279,7 +283,9 @@ public class CoreServices {
   /**
    * <p>Shutdown all application support services (non-optional)</p>
    * <ul>
-   * <li>Hardware wallet service</li>
+   * <li>Environment checking service</li>
+   * <li>Application event service</li>
+   * <li>Payment protocol service</li>
    * </ul>
    *
    * @param shutdownType The shutdown type providing context
