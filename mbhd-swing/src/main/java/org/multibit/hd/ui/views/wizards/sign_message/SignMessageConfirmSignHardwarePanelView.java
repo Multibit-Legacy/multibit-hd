@@ -97,7 +97,7 @@ public class SignMessageConfirmSignHardwarePanelView extends AbstractHardwareWal
         throw new IllegalStateException("Unknown hardware wallet: " + getWizardModel().getWalletMode().name());
     }
 
-    // Reassure users that this is a sign screen but rely on the Trezor buttons to do it
+    // Reassure users that this is a sign screen but rely on the hardware buttons to do it
     getNextButton().setEnabled(false);
 
   }

@@ -98,7 +98,7 @@ public class SendBitcoinConfirmHardwarePanelView extends AbstractHardwareWalletW
   }
 
   public void setOperationText(final MessageKey key) {
-        hardwareDisplayMaV.getView().setOperationText(key);
+        hardwareDisplayMaV.getView().setOperationText(key, getWizardModel().getWalletMode().brand());
   }
 
   public void setDisplayVisible(final boolean visible) {

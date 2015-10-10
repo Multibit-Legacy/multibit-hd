@@ -61,7 +61,7 @@ public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinW
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Provide an empty status label (populated after show)
-    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.HARDWARE_FAILURE_OPERATION), null, Optional.<Boolean>absent());
+    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.HARDWARE_FAILURE_OPERATION), new Object[] { getWizardModel().getWalletMode().brand()}, Optional.<Boolean>absent());
     reportStatusLabel.setVisible(false);
 
     contentPanel.add(reportStatusLabel, "aligny top,wrap");

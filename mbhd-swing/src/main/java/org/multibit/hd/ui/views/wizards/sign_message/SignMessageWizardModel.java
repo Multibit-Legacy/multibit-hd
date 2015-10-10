@@ -64,10 +64,10 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     switch (state) {
       case SIGN_MESSAGE_PASSWORD:
         break;
-      case SIGN_MESSAGE_TREZOR_ENTER_PIN:
+      case SIGN_MESSAGE_HARDWARE_ENTER_PIN:
         state = SignMessageState.SIGN_MESSAGE_HARDWARE;
         break;
-      case SIGN_MESSAGE_TREZOR_CONFIRM_SIGN:
+      case SIGN_MESSAGE_HARDWARE_CONFIRM_SIGN:
         state = SignMessageState.SIGN_MESSAGE_HARDWARE;
         break;
       case SIGN_MESSAGE_HARDWARE:
@@ -82,10 +82,10 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     switch (state) {
       case SIGN_MESSAGE_PASSWORD:
         break;
-      case SIGN_MESSAGE_TREZOR_ENTER_PIN:
+      case SIGN_MESSAGE_HARDWARE_ENTER_PIN:
         state = SignMessageState.SIGN_MESSAGE_HARDWARE;
         break;
-      case SIGN_MESSAGE_TREZOR_CONFIRM_SIGN:
+      case SIGN_MESSAGE_HARDWARE_CONFIRM_SIGN:
         state = SignMessageState.SIGN_MESSAGE_HARDWARE;
         break;
       case SIGN_MESSAGE_HARDWARE:
@@ -226,9 +226,10 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
   public void showPINEntry(HardwareWalletEvent event) {
 
     switch (state) {
+      case SIGN_MESSAGE_HARDWARE_CONFIRM_SIGN:
       case SIGN_MESSAGE_HARDWARE:
         log.debug("Transaction signing is PIN protected");
-        state = SignMessageState.SIGN_MESSAGE_TREZOR_ENTER_PIN;
+        state = SignMessageState.SIGN_MESSAGE_HARDWARE_ENTER_PIN;
         break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
@@ -241,7 +242,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     log.debug("Received hardware event: '{}'.{}", event.getEventType().name(), event.getMessage());
 
     // Ensure we transition to the confirm screen
-    state = SignMessageState.SIGN_MESSAGE_TREZOR_CONFIRM_SIGN;
+    state = SignMessageState.SIGN_MESSAGE_HARDWARE_CONFIRM_SIGN;
 
   }
 
