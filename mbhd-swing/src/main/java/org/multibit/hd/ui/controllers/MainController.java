@@ -269,7 +269,7 @@ public class MainController extends AbstractController implements
   @Subscribe
   public void onSwitchWalletEvent(SwitchWalletEvent event) {
 
-    log.debug("Switch Wallet event: '{}'", event);
+    log.debug("Received 'switch wallet' event");
 
     handleSwitchWallet();
   }
@@ -514,7 +514,7 @@ public class MainController extends AbstractController implements
    * <p>All services are restarted</p>
    * <p>The main view references remain intact</p>
    * <p/>
-   * <p>This is not done through a simple SWITCH shutdown event being fire since the order
+   * <p>This is not done through a simple SWITCH shutdown event being fired since the order
    * of shutdown is important and cannot be guaranteed otherwise.</p>
    */
   private void handleSwitchWallet() {
