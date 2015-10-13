@@ -57,7 +57,7 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
   private JLabel statusValue;
 
   private JLabel trustStatusLabel;
-  private JLabel memo;
+  private JTextArea memo;
   private JLabel displayName;
   private JLabel date;
   private JLabel expires;
@@ -108,8 +108,11 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
     paymentRequestAmountMaV.getView().setVisible(true);
 
     // Populate value labels
-    memo = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));
-    memo.setName(MessageKey.NOTES.getKey() + ".value");
+    //memo = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));
+    //memo.setName(MessageKey.NOTES.getKey() + ".value");
+    //panel.add(Labels.newLabel(CoreMessageKey.WALLET_CAPABILITIES),"wrap");
+    memo = TextBoxes.newReadOnlyTextArea(4,50);
+    AccessibilityDecorator.apply(memo, MessageKey.NOTES);
 
     date = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));
     date.setName(MessageKey.DATE.getKey() + ".value");
