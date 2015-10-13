@@ -202,7 +202,7 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
     Configuration configuration = Configurations.currentConfiguration;
     paymentRequestAmountMaV.getModel().setCoinAmount(paymentRequestData.getAmountCoin().or(Coin.ZERO));
     if (paymentRequestData.getAmountFiat().getAmount().isPresent()) {
-      paymentRequestAmountMaV.getModel().setLocalAmount(paymentRequestData.getAmountFiat().getAmount().get());
+      paymentRequestAmountMaV.getModel().setLocalAmount(paymentRequestData.getAmountFiat().getAmount().get().abs());
       paymentRequestAmountMaV.getModel().setLocalAmountVisible(true);
     } else {
       paymentRequestAmountMaV.getModel().setLocalAmount(null);
