@@ -245,7 +245,7 @@
       <dependency>
         <groupId>org.multibit.hd</groupId>
         <artifactId>brit-core</artifactId>
-        <version>0.3.0</version>
+        <version>develop-SNAPSHOT</version>
       </dependency>
 
       <!-- Error Reporting Core for encrypted error reports -->

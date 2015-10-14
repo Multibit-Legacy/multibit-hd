@@ -83,7 +83,12 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
       ));
 
     WalletConfiguration walletConfiguration = Configurations.currentConfiguration.getWallet().deepCopy();
-    feePerKBSlider = Sliders.newAdjustTransactionFeeSlider(this, walletConfiguration.getFeePerKB());
+    long feePerKB = walletConfiguration.getFeePerKB();
+    // Ensure the feePerKB is within the allowable range, updating the local walletConfiguration
+    Coin normalisedFeePerKB = FeeService.normaliseRawFeePerKB(feePerKB);
+    walletConfiguration.setFeePerKB(normalisedFeePerKB.getValue());
+
+    feePerKBSlider = Sliders.newAdjustTransactionFeeSlider(this, normalisedFeePerKB.longValue());
 
     transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(
       DisplayAmountStyle.PLAIN,
