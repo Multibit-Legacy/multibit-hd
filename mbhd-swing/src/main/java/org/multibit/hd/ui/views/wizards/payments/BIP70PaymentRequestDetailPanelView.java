@@ -108,11 +108,12 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
     paymentRequestAmountMaV.getView().setVisible(true);
 
     // Populate value labels
-    //memo = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));
-    //memo.setName(MessageKey.NOTES.getKey() + ".value");
-    //panel.add(Labels.newLabel(CoreMessageKey.WALLET_CAPABILITIES),"wrap");
     memo = TextBoxes.newReadOnlyTextArea(4,50);
+    memo.setBorder(null);
     AccessibilityDecorator.apply(memo, MessageKey.NOTES);
+    // Memo requires its own scroll pane
+    JScrollPane scrollPane = ScrollPanes.newReadOnlyScrollPane(memo);
+
 
     date = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));
     date.setName(MessageKey.DATE.getKey() + ".value");
@@ -131,7 +132,7 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
     contentPanel.add(statusValue, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     contentPanel.add(Labels.newMemoLabel(), "shrink");
-    contentPanel.add(memo, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(scrollPane, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     contentPanel.add(Labels.newDisplayNameLabel(), "shrink");
     contentPanel.add(displayName, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
