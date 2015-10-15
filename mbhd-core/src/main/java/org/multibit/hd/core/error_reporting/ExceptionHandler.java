@@ -476,6 +476,15 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       log.warn("Detected Win32GraphicsConfig cannot be cast to D3DGraphicsConfig exception. Treat as benign.");
       return true;
     }
+
+    // Check for javax.swing.plaf.nimbus.DerivedColor$UIResource cannot be cast to java.awt.Font (see Issue #754)
+    // This is a Swing glitch that we can do nothing about
+    if (message.contains("javax.swing.plaf.nimbus.DerivedColor$UIResource cannot be cast to java.awt.Font")) {
+      log.warn("Detected DerivedColor$UIResource cannot be cast to java.awt.Font exception. Treat as benign.");
+      return true;
+    }
+
+
     // Anything else is a problem
     return false;
   }
