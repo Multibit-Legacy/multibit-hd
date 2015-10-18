@@ -657,6 +657,18 @@ public class Panels {
     JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_WIPE_DEVICE, walletMode.historicalBrand());
     radio3.setActionCommand(wipeDeviceCommand);
 
+    // Enable/disable selections based on current wallet mode (it's not for exploring devices)
+    switch (walletMode) {
+      case TREZOR:
+      case KEEP_KEY:
+        // Keep all enabled
+        break;
+      default:
+        // Disable wipe and verify
+        radio2.setEnabled(false);
+        radio3.setEnabled(false);
+    }
+
     // Action selection is mutually exclusive
     ButtonGroup group = new ButtonGroup();
     group.add(radio1);

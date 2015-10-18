@@ -42,7 +42,7 @@ public class UseHardwareWalletBuyDevicePanelView extends AbstractHardwareWalletW
    */
   public UseHardwareWalletBuyDevicePanelView(AbstractHardwareWalletWizard<UseHardwareWalletWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.BUY_HARDWARE_TITLE, wizard.getWizardModel().getWalletMode().brand());
+    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.BUY_HARDWARE_TITLE, wizard.getWizardModel().getWalletMode().historicalBrand());
 
   }
 
@@ -65,10 +65,10 @@ public class UseHardwareWalletBuyDevicePanelView extends AbstractHardwareWalletW
       getLaunchBrowserAction(),
       MessageKey.BUY_HARDWARE,
       MessageKey.BUY_HARDWARE_TOOLTIP,
-      getWizardModel().getWalletMode().brand()
+      getWizardModel().getWalletMode().historicalBrand()
     );
 
-    contentPanel.add(Labels.newBuyHardwareCommentNote(getWizardModel().getWalletMode().brand()), "wrap");
+    contentPanel.add(Labels.newBuyHardwareCommentNote(getWizardModel().getWalletMode().historicalBrand()), "wrap");
     contentPanel.add(launchBrowserButton, "wrap");
   }
 
@@ -118,6 +118,7 @@ public class UseHardwareWalletBuyDevicePanelView extends AbstractHardwareWalletW
 
         URI purchaseUri;
         switch (getWizardModel().getWalletMode()) {
+          case STANDARD:
           case TREZOR:
             purchaseUri = URI.create(BUY_TREZOR_URL);
             break;
