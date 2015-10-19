@@ -31,7 +31,7 @@ public class ShowThenCancelTrezorToolsUseCase extends AbstractFestUseCase {
       .click();
 
     // Verify the "Trezor tools" wizard appears
-    assertLabelContainsValue(MessageKey.USE_HARDWARE_TITLE, "Select MultiBit option");
+    assertLabelContainsValue(MessageKey.USE_HARDWARE_TITLE, "Select Trezor option");
 
     // Verify Cancel is present
     window
