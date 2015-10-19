@@ -428,6 +428,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    */
   protected void checkForEnvironmentEventPopover(ModelAndView<DisplayEnvironmentAlertModel, DisplayEnvironmentAlertView> displayEnvironmentPopoverMaV) {
 
+    log.debug("Checking environment...");
+
     // Check for any environment alerts
     Optional<EnvironmentEvent> environmentEvent = CoreServices.getApplicationEventService().getLatestEnvironmentEvent();
 
