@@ -964,6 +964,8 @@ public class MainController extends AbstractController implements
       && featuresOptional.get().isSupported()
       && featuresOptional.get().hasPassphraseProtection();
 
+    log.warn("Hardware device failed. Unsupported firmware: {} Passphrase: {}", isUnsupportedFirmware, isUnsupportedConfigurationPassphrase);
+
     if (isUnsupportedFirmware) {
       // Show as a environment popover
       CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newUnsupportedFirmware());
