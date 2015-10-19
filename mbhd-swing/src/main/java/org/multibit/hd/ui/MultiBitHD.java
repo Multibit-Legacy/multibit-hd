@@ -16,6 +16,7 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.hardware.core.HardwareWalletService;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
@@ -173,10 +174,11 @@ public class MultiBitHD {
 
     mainController = null;
 
-    // final purge in case anything gets missed
+    // Final purge in case anything gets missed
     ViewEvents.unsubscribeAll();
     ControllerEvents.unsubscribeAll();
     CoreEvents.unsubscribeAll();
+    HardwareWalletEvents.unsubscribeAll();
   }
 
   /**
