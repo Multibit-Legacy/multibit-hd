@@ -163,6 +163,29 @@ public class StandardFestTest extends AbstractFestTest {
 
   }
 
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with standard wallet fixture</li>
+   * <li>Unlock wallet</li>
+   * <li>Exercise the Payments screen</li>
+   * </ul>
+   */
+  @Test
+  public void verifyPaymentsScreen() throws Exception {
+
+    // Start with the standard hardware wallet fixture
+    arrangeStandard(Optional.<HardwareWalletFixture>absent());
+
+    // Unlock the wallet
+    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
+
+    // Verify
+    PaymentsScreenRequirements.verifyUsing(window);
+
+  }
+
   /**
    * <p>Verify the following:</p>
    * <ul>
