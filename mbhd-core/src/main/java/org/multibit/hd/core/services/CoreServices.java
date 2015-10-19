@@ -414,11 +414,13 @@ public class CoreServices {
 
     // Always use the current if it is present and ready
     if (currentHardwareWalletService.isPresent() && currentHardwareWalletService.get().isDeviceReady()) {
+      log.debug("Using current hardware wallet service");
       return currentHardwareWalletService;
     }
 
     // Prevent incorrect initialisation (perhaps during testing) from causing problems
     if (hardwareWalletServices.isEmpty()) {
+      log.debug("No hardware wallet services configured");
       return Optional.absent();
     }
 
@@ -475,6 +477,9 @@ public class CoreServices {
 
     // Reset the list to empty to allow re-population later
     hardwareWalletServices.clear();
+
+    // Clear the current hardware wallet service
+    currentHardwareWalletService = Optional.absent();
 
   }
 
