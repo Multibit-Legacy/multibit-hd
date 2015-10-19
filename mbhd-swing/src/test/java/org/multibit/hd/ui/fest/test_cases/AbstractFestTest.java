@@ -81,6 +81,9 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
   @Before
   public void setUp() {
 
+    // Make this message stand out
+    log.warn("FEST: New test case set up.");
+
     // Allow unrestricted operation
     // This will force the use of a temporary directory for application configuration
     // ensuring that existing configurations and wallets are untouched
@@ -94,13 +97,16 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
   @After
   public void tearDown() {
     // Make this message stand out
-    log.warn("FEST: Test complete. Firing 'SOFT' shutdown.");
+    log.warn("FEST: Test complete. Firing 'SOFT' shutdown before tear down.");
 
     // Don't crash the JVM
     CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.SOFT);
 
     // Allow time for the app to terminate and be garbage collected
     pause(3, TimeUnit.SECONDS);
+
+    // Reset the hardware wallet services to ensure they can be restarted
+    CoreServices.stopHardwareWalletServices();
 
     log.debug("FEST: Application cleanup should have finished. Performing final cleanup.");
 
@@ -110,7 +116,6 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
 
     // Reset the installation manager
     InstallationManager.shutdownNow(ShutdownEvent.ShutdownType.SOFT);
-
   }
 
   /**
