@@ -895,6 +895,11 @@ public class MainController extends AbstractController implements
       return;
     }
 
+    // Check if CoreServices has identified a hardware wallet (could be just starting or in FEST mode)
+    if (!CoreServices.getCurrentHardwareWalletService().isPresent()) {
+      CoreServices.useFirstReadyHardwareWalletService();
+    }
+
     // Quick check for relevancy
     switch (event.getEventType()) {
       case SHOW_DEVICE_STOPPED:
