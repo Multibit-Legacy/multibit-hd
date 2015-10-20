@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
  *
  * <p>Presents a PIN request on "get cipher key"</p>
 
- * @since 0.0.1
+ * @since 0.1.4
  *  
  */
 public class KeepKeyInitialisedReattachedFixture extends AbstractHardwareWalletFixture {

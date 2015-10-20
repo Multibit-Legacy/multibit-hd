@@ -4,15 +4,15 @@ import com.google.common.base.Optional;
 import com.google.protobuf.Message;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.hardware.core.HardwareWalletClient;
 import org.multibit.hd.hardware.core.events.MessageEvent;
 import org.multibit.hd.hardware.core.events.MessageEventType;
 import org.multibit.hd.hardware.core.messages.Features;
 import org.multibit.hd.hardware.core.messages.HardwareWalletMessage;
-import org.multibit.hd.hardware.trezor.clients.AbstractTrezorHardwareWalletClient;
-import org.multibit.hd.testing.message_event_fixtures.MessageEventFixtures;
+import org.multibit.hd.hardware.keepkey.clients.AbstractKeepKeyHardwareWalletClient;
 import org.multibit.hd.testing.hardware_wallet_fixtures.AbstractHardwareWalletFixture;
-import org.multibit.hd.core.dto.WalletMode;
+import org.multibit.hd.testing.message_event_fixtures.MessageEventFixtures;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -24,10 +24,10 @@ import static org.mockito.Mockito.when;
  * <li>Low level events and client handling</li>
  * </ul>
  *
- * <p>Emulates an attached initialised Trezor during the deprecated firmware use case</p>
+ * <p>Emulates an attached initialised KeepKey during the deprecated firmware use case</p>
  * <p>Presents a PIN request on "get cipher key"</p>
  *
- * @since 0.0.8
+ * @since 0.1.4
  *  
  */
 public class KeepKeyInitialisedDeprecatedFirmwareFixture extends AbstractHardwareWalletFixture {
@@ -39,7 +39,7 @@ public class KeepKeyInitialisedDeprecatedFirmwareFixture extends AbstractHardwar
   @Override
   public void setUpClient() {
 
-    client = mock(AbstractTrezorHardwareWalletClient.class);
+    client = mock(AbstractKeepKeyHardwareWalletClient.class);
 
     when(client.name()).thenReturn(name);
     when(client.attach()).thenReturn(true);

@@ -32,9 +32,9 @@ import static org.multibit.hd.testing.message_event_fixtures.MessageEventFixture
  * <li>Low level events and client handling</li>
  * </ul>
  *
- * <p>Emulates an attached wiped (factory fresh) Trezor during the create wallet use case</p>
+ * <p>Emulates an attached wiped (factory fresh) KeepKey during the create wallet use case</p>
  *
- * @since 0.0.5
+ * @since 0.1.4
  *  
  */
 public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
