@@ -93,37 +93,35 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
 
     messageEvents.add(event2);
 
-    // Overall need 23 more button presses
-    for (int i = 0; i < 23; i++) {
-      final MessageEvent event = new MessageEvent(
-        MessageEventType.BUTTON_REQUEST,
-        Optional.<HardwareWalletMessage>of(newConfirmWordButtonRequest()),
-        Optional.<Message>absent(),
-        name
-      );
-
-      messageEvents.add(event);
-    }
-
-    // Wallet create success
+    // Confirm word (screen 2/2) - see entropy ack
     final MessageEvent event3 = new MessageEvent(
-      MessageEventType.SUCCESS,
-      Optional.<HardwareWalletMessage>of(newDeviceResetSuccess()),
+      MessageEventType.BUTTON_REQUEST,
+      Optional.<HardwareWalletMessage>of(newConfirmWordButtonRequest()),
       Optional.<Message>absent(),
       name
     );
 
     messageEvents.add(event3);
 
-    // Cipher key success
+    // Wallet create success
     final MessageEvent event4 = new MessageEvent(
+      MessageEventType.SUCCESS,
+      Optional.<HardwareWalletMessage>of(newDeviceResetSuccess()),
+      Optional.<Message>absent(),
+      name
+    );
+
+    messageEvents.add(event4);
+
+    // Cipher key success
+    final MessageEvent event5 = new MessageEvent(
       MessageEventType.CIPHERED_KEY_VALUE,
       Optional.<HardwareWalletMessage>of(newCipheredKeyValue()),
       Optional.<Message>absent(),
       name
     );
 
-    messageEvents.add(event4);
+    messageEvents.add(event5);
 
   }
 
@@ -229,7 +227,7 @@ public class KeepKeyWipedFixture extends AbstractHardwareWalletFixture {
             name
           );
 
-          fireMessageEvent("Entropy ack, confirm 1st word", event);
+          fireMessageEvent("Entropy ack, confirm screen 1/2", event);
 
           return Optional.absent();
         }

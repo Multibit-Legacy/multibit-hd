@@ -40,7 +40,8 @@ public class KeepKeyEnterNextWordUseCase extends AbstractHardwareWalletFestUseCa
       .requireVisible();
 
     // Check both KeepKey wallet words are shown
-    for (int i=1; i<2; i++) {
+
+    for (int i=1; i<3; i++) {
 
       // Get the display text
       String displayText = window
@@ -49,7 +50,7 @@ public class KeepKeyEnterNextWordUseCase extends AbstractHardwareWalletFestUseCa
 
       assertThat(displayText.contains(""+i)).isTrue();
 
-      hardwareWalletFixture.fireNextEvent("Click next");
+      hardwareWalletFixture.fireNextEvent("Click confirm");
 
     }
 

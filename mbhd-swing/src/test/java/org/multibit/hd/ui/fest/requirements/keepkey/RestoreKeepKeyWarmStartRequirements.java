@@ -2,7 +2,6 @@ package org.multibit.hd.ui.fest.requirements.keepkey;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
 import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyConfirmUnlockUseCase;
@@ -45,7 +44,7 @@ public class RestoreKeepKeyWarmStartRequirements {
 
     hardwareWalletFixture.fireNextEvent("Confirm unlock");
 
-    log.debug("Entropy 0 = {}", CoreServices.getHardwareWalletService(WalletMode.KEEP_KEY).get().getContext().getEntropy());
+    log.debug("Entropy 0 = {}", CoreServices.getCurrentHardwareWalletService().get().getContext().getEntropy());
 
   }
 }

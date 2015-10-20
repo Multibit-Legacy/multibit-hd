@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * <li>Exercise the responses to hardware wallet events before wallet unlock takes place</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.1.4
  */
 public class CreateKeepKeyHardwareWalletWarmStartRequirements {
 
@@ -26,7 +26,7 @@ public class CreateKeepKeyHardwareWalletWarmStartRequirements {
 
     Map<String, Object> parameters = Maps.newHashMap();
 
-    // Select create Trezor wallet
+    // Select create hardware wallet wallet
     new WelcomeSelectCreateHardwareWalletUseCase(window).execute(parameters);
 
     // Verify the KeepKey preparation
@@ -49,7 +49,7 @@ public class CreateKeepKeyHardwareWalletWarmStartRequirements {
     hardwareWalletFixture.fireNextEvent("Enter new PIN");
 
     // Enter new PIN (refer to mock client for ButtonRequest response)
-    new KeepKeyPreparationUseCase(window, hardwareWalletFixture).execute(parameters);
+    new KeepKeyEnterNewPinUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Confirm new PIN (refer to mock client for EntropyRequest response)
     new KeepKeyConfirmNewPinUseCase(window, hardwareWalletFixture).execute(parameters);

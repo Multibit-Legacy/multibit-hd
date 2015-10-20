@@ -15,14 +15,14 @@ import static org.fest.swing.timing.Timeout.timeout;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Click "restore" button</li>
+ * <li>Click "restore" button with a hardware wallet attached</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.0.5
  */
-public class RestoreButtonTrezorUseCase extends AbstractFestUseCase {
+public class RestoreButtonHardwareWalletUseCase extends AbstractFestUseCase {
 
-  public RestoreButtonTrezorUseCase(FrameFixture window) {
+  public RestoreButtonHardwareWalletUseCase(FrameFixture window) {
     super(window);
   }
 

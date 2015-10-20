@@ -4,14 +4,14 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
+import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyConfirmUnlockUseCase;
+import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyEnterPinFromMasterPublicKeyUseCase;
+import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyRequestCipherKeyUseCase;
+import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyRequestMasterPublicKeyUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.credentials.UnlockReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.AcceptLicenceUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.AttachHardwareWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
-import org.multibit.hd.ui.fest.use_cases.trezor.TrezorConfirmUnlockUseCase;
-import org.multibit.hd.ui.fest.use_cases.trezor.TrezorEnterPinFromMasterPublicKeyUseCase;
-import org.multibit.hd.ui.fest.use_cases.trezor.TrezorRequestCipherKeyUseCase;
-import org.multibit.hd.ui.fest.use_cases.trezor.TrezorRequestMasterPublicKeyUseCase;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -20,10 +20,10 @@ import java.util.concurrent.TimeUnit;
  * <p>FEST Swing UI test to provide:</p>
  * <ul>
  * <li>Exercise the responses to hardware wallet events in the context of
- * unlocking a Trezor wallet under cold start</li>
+ * unlocking a KeepKey wallet under cold start</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.1.4
  */
 public class UnlockKeepKeyHardwareWalletColdStartRequirements {
 
@@ -41,16 +41,16 @@ public class UnlockKeepKeyHardwareWalletColdStartRequirements {
     Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
 
     // Request the master public key (refer to mock client for PublicKey responses)
-    new TrezorRequestMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
+    new KeepKeyRequestMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Verify PIN entry (refer to mock client for PIN entry responses)
-    new TrezorEnterPinFromMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
+    new KeepKeyEnterPinFromMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Request the cipher key (no PIN usually)
-    new TrezorRequestCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
+    new KeepKeyRequestCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Unlock with cipher key
-    new TrezorConfirmUnlockUseCase(window, hardwareWalletFixture).execute(parameters);
+    new KeepKeyConfirmUnlockUseCase(window, hardwareWalletFixture).execute(parameters);
 
     hardwareWalletFixture.fireNextEvent("Confirm unlock");
 

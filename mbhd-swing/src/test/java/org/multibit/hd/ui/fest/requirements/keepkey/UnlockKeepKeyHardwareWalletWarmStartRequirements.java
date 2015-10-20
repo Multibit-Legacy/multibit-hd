@@ -15,10 +15,10 @@ import java.util.Map;
  * <p>FEST Swing UI test to provide:</p>
  * <ul>
  * <li>Exercise the responses to hardware wallet events in the context of
- * unlocking a Trezor wallet under warm start</li>
+ * unlocking a KeepKey wallet under warm start</li>
  * </ul>
  *
- * @since 0.0.1
+ * @since 0.1.4
  */
 public class UnlockKeepKeyHardwareWalletWarmStartRequirements {
 

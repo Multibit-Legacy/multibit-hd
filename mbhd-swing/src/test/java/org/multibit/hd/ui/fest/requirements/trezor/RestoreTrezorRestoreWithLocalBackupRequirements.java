@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
-import org.multibit.hd.ui.fest.use_cases.standard.credentials.RestoreButtonTrezorUseCase;
+import org.multibit.hd.ui.fest.use_cases.standard.credentials.RestoreButtonHardwareWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.credentials.UnlockReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.trezor.TrezorConfirmUnlockUseCase;
 import org.multibit.hd.ui.fest.use_cases.trezor.TrezorEnterPinFromCipherKeyUseCase;
@@ -30,7 +30,7 @@ public class RestoreTrezorRestoreWithLocalBackupRequirements {
     Map<String, Object> parameters = Maps.newHashMap();
 
     // Verify wallet unlocked and start the restore process
-    new RestoreButtonTrezorUseCase(window).execute(parameters);
+    new RestoreButtonHardwareWalletUseCase(window).execute(parameters);
 
     // Restore is complete - hand over to credentials
     Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
