@@ -428,7 +428,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    */
   protected void checkForEnvironmentEventPopover(ModelAndView<DisplayEnvironmentAlertModel, DisplayEnvironmentAlertView> displayEnvironmentPopoverMaV) {
 
-    log.debug("Checking environment...");
+    // Don't log this activity since it floods the logs
 
     // Check for any environment alerts
     Optional<EnvironmentEvent> environmentEvent = CoreServices.getApplicationEventService().getLatestEnvironmentEvent();
@@ -462,7 +462,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
           return;
       }
 
-      // Check for an existing lightbox popover
+      // Check for an existing light box popover
       if (!Panels.isLightBoxPopoverShowing()) {
         // Show the popover
         Panels.showLightBoxPopover(popoverPanel);
