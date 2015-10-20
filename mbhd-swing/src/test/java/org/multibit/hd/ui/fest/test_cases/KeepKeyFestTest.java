@@ -11,7 +11,6 @@ import org.multibit.hd.ui.fest.requirements.keepkey.*;
 import org.multibit.hd.ui.fest.requirements.standard.PaymentsScreenRequirements;
 import org.multibit.hd.ui.fest.requirements.standard.QuickUnlockEmptyWalletFixtureRequirements;
 import org.multibit.hd.ui.fest.requirements.standard.SendRequestScreenRequirements;
-import org.multibit.hd.ui.fest.requirements.standard.WelcomeWizardCreateWallet_ro_RO_Requirements;
 import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeySendBitcoinKeepKeyRequirements;
 
 /**
@@ -293,24 +292,6 @@ public class KeepKeyFestTest extends AbstractFestTest {
 
     // Verify up to unlock
     UnlockKeepKeyHardwareWalletUnsupportedConfigurationPassphraseRequirements.verifyUsing(window, hardwareWalletFixture);
-
-  }
-
-  /**
-   * <p>Verify the following:</p>
-   * <ul>
-   * <li>Start with fresh application directory</li>
-   * <li>Create a wallet</li>
-   * </ul>
-   */
-  @Test
-  public void verifyCreateWallet_ro_RO_ColdStart() throws Exception {
-
-    // Start with a completely empty random application directory
-    arrangeFresh(Optional.<HardwareWalletFixture>absent());
-
-    // Create a wallet through the welcome wizard
-    WelcomeWizardCreateWallet_ro_RO_Requirements.verifyUsing(window);
 
   }
 
