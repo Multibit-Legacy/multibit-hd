@@ -8,9 +8,6 @@ import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixtures;
 import org.multibit.hd.ui.fest.requirements.keepkey.*;
-import org.multibit.hd.ui.fest.requirements.standard.PaymentsScreenRequirements;
-import org.multibit.hd.ui.fest.requirements.standard.QuickUnlockEmptyWalletFixtureRequirements;
-import org.multibit.hd.ui.fest.requirements.standard.SendRequestScreenRequirements;
 import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeySendBitcoinKeepKeyRequirements;
 
 /**
@@ -187,28 +184,6 @@ public class KeepKeyFestTest extends AbstractFestTest {
   /**
    * <p>Verify the following:</p>
    * <ul>
-   * <li>Start with standard wallet fixture</li>
-   * <li>Unlock wallet</li>
-   * <li>Exercise the Send/Request screen</li>
-   * </ul>
-   */
-  @Test
-  public void verifySendRequestScreen() throws Exception {
-
-    // Start with the standard hardware wallet fixture
-    arrangeStandard(Optional.<HardwareWalletFixture>absent());
-
-    // Unlock the wallet
-    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
-
-    // Verify
-    SendRequestScreenRequirements.verifyUsing(window);
-
-  }
-
-  /**
-   * <p>Verify the following:</p>
-   * <ul>
    * <li>Start with standard application directory</li>
    * <li>Show the unsupported firmware popover</li>
    * </ul>
@@ -247,29 +222,6 @@ public class KeepKeyFestTest extends AbstractFestTest {
 
     // Verify up to unlock
     UnlockKeepKeyHardwareWalletDeprecatedFirmwareRequirements.verifyUsing(window, hardwareWalletFixture);
-
-  }
-
-
-  /**
-   * <p>Verify the following:</p>
-   * <ul>
-   * <li>Start with standard wallet fixture</li>
-   * <li>Unlock wallet</li>
-   * <li>Exercise the Payments screen</li>
-   * </ul>
-   */
-  @Test
-  public void verifyPaymentsScreen() throws Exception {
-
-    // Start with the standard hardware wallet fixture
-    arrangeStandard(Optional.<HardwareWalletFixture>absent());
-
-    // Unlock the wallet
-    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
-
-    // Verify
-    PaymentsScreenRequirements.verifyUsing(window);
 
   }
 

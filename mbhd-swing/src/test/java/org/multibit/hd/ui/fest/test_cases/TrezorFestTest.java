@@ -7,8 +7,6 @@ import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixtures;
-import org.multibit.hd.ui.fest.requirements.standard.QuickUnlockEmptyWalletFixtureRequirements;
-import org.multibit.hd.ui.fest.requirements.standard.SendRequestScreenRequirements;
 import org.multibit.hd.ui.fest.requirements.trezor.*;
 import org.multibit.hd.ui.fest.use_cases.trezor.TrezorSendBitcoinTrezorRequirements;
 
@@ -180,28 +178,6 @@ public class TrezorFestTest extends AbstractFestTest {
 
     // Verify send workflow
     TrezorSendBitcoinTrezorRequirements.verifyUsing(window, hardwareWalletFixture);
-
-  }
-
-  /**
-   * <p>Verify the following:</p>
-   * <ul>
-   * <li>Start with standard wallet fixture</li>
-   * <li>Unlock wallet</li>
-   * <li>Exercise the Send/Request screen</li>
-   * </ul>
-   */
-  @Test
-  public void verifySendRequestScreen() throws Exception {
-
-    // Start with the standard hardware wallet fixture
-    arrangeStandard(Optional.<HardwareWalletFixture>absent());
-
-    // Unlock the wallet
-    QuickUnlockEmptyWalletFixtureRequirements.verifyUsing(window);
-
-    // Verify
-    SendRequestScreenRequirements.verifyUsing(window);
 
   }
 
