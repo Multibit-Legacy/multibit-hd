@@ -45,7 +45,7 @@ public class KeepKeyMessageEventFixtures {
     features.setLabel(label);
     features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin", "Dogecoin", "Dash"));
     features.setInitialized(true);
-    features.setRevision(Utils.HEX.decode("053A0BAB1466A25F61502BCD"));
+    features.setRevision(Utils.HEX.decode("053a0bab1466a25f61502bcd"));
     features.setBootloaderHash(Utils.HEX.decode("6397c446f6b9002a8b150bf4b9b4e0bb66800ed099b881ca49700139b0559f10"));
     features.setImported(false);
     features.setSupported(true);
@@ -69,8 +69,8 @@ public class KeepKeyMessageEventFixtures {
     features.setLanguage("english");
     features.setLabel(label);
     features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin", "Dogecoin", "Dash"));
-    features.setRevision(Utils.HEX.decode("0cc270e6df3eca352eb8c72b602b7d5a0633b086"));
-    features.setBootloaderHash(Utils.HEX.decode("a03e7e8e9da0b92d3d4b39efff38673512ececc56db602303022e5e87be12261"));
+    features.setRevision(Utils.HEX.decode("053a0bab1466a25f61502bcd"));
+    features.setBootloaderHash(Utils.HEX.decode("6397c446f6b9002a8b150bf4b9b4e0bb66800ed099b881ca49700139b0559f10"));
     features.setImported(false);
     features.setSupported(true);
 
@@ -97,8 +97,8 @@ public class KeepKeyMessageEventFixtures {
     features.setLabel(label);
     features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin"));
     features.setInitialized(true);
-    features.setRevision(Utils.HEX.decode("0cc270e6df3eca352eb8c72b602b7d5a0633b086"));
-    features.setBootloaderHash(Utils.HEX.decode("a03e7e8e9da0b92d3d4b39efff38673512ececc56db602303022e5e87be12261"));
+    features.setRevision(Utils.HEX.decode("053a0bab1466a25f61502bcd"));
+    features.setBootloaderHash(Utils.HEX.decode("6397c446f6b9002a8b150bf4b9b4e0bb66800ed099b881ca49700139b0559f10"));
     features.setImported(false);
 
     return features;
@@ -120,8 +120,8 @@ public class KeepKeyMessageEventFixtures {
     features.setLanguage("english");
     features.setLabel(label);
     features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin", "Dogecoin", "Dash"));
-    features.setRevision(Utils.HEX.decode("0cc270e6df3eca352eb8c72b602b7d5a0633b086"));
-    features.setBootloaderHash(Utils.HEX.decode("a03e7e8e9da0b92d3d4b39efff38673512ececc56db602303022e5e87be12261"));
+    features.setRevision(Utils.HEX.decode("053a0bab1466a25f61502bcd"));
+    features.setBootloaderHash(Utils.HEX.decode("6397c446f6b9002a8b150bf4b9b4e0bb66800ed099b881ca49700139b0559f10"));
     features.setImported(false);
     features.setSupported(true);
 
@@ -148,8 +148,8 @@ public class KeepKeyMessageEventFixtures {
     features.setLabel(label);
     features.setCoins(Lists.newArrayList("Bitcoin", "Testnet", "Namecoin", "Litecoin"));
     features.setInitialized(true);
-    features.setRevision(Utils.HEX.decode("0cc270e6df3eca352eb8c72b602b7d5a0633b086"));
-    features.setBootloaderHash(Utils.HEX.decode("a03e7e8e9da0b92d3d4b39efff38673512ececc56db602303022e5e87be12261"));
+    features.setRevision(Utils.HEX.decode("053a0bab1466a25f61502bcd"));
+    features.setBootloaderHash(Utils.HEX.decode("6397c446f6b9002a8b150bf4b9b4e0bb66800ed099b881ca49700139b0559f10"));
     features.setImported(false);
 
     return features;
