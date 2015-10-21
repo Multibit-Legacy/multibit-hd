@@ -46,7 +46,7 @@ public class CredentialsEnterPasswordPanelView extends AbstractWizardPanelView<C
    */
   public CredentialsEnterPasswordPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.PASSWORD_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PASSWORD_TITLE);
 
   }
 

@@ -55,7 +55,7 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
    * @param panelName The panel name
    */
   public FeeSettingsPanelView(AbstractWizard<FeeSettingsWizardModel> wizard, String panelName) {
-    super(wizard, panelName, MessageKey.FEES_SETTINGS_TITLE, AwesomeIcon.TICKET);
+    super(wizard, panelName, AwesomeIcon.TICKET, MessageKey.FEES_SETTINGS_TITLE);
   }
 
   @Override
@@ -83,7 +83,12 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
       ));
 
     WalletConfiguration walletConfiguration = Configurations.currentConfiguration.getWallet().deepCopy();
-    feePerKBSlider = Sliders.newAdjustTransactionFeeSlider(this, walletConfiguration.getFeePerKB());
+    long feePerKB = walletConfiguration.getFeePerKB();
+    // Ensure the feePerKB is within the allowable range, updating the local walletConfiguration
+    Coin normalisedFeePerKB = FeeService.normaliseRawFeePerKB(feePerKB);
+    walletConfiguration.setFeePerKB(normalisedFeePerKB.getValue());
+
+    feePerKBSlider = Sliders.newAdjustTransactionFeeSlider(this, normalisedFeePerKB.longValue());
 
     transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(
       DisplayAmountStyle.PLAIN,

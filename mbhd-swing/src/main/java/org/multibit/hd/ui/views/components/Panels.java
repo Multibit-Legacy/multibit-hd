@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Uninterruptibles;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.dto.CoreMessageKey;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -537,6 +538,7 @@ public class Panels {
    * @param createCommand         The create command name
    * @param existingWalletCommand The existing wallet command name
    * @param restoreWalletCommand  The restore wallet command name
+   * @param walletMode            The wallet mode
    *
    * @return A new "wallet selector" panel
    */
@@ -544,20 +546,20 @@ public class Panels {
     ActionListener listener,
     String createCommand,
     String existingWalletCommand,
-    String restoreWalletCommand
-  ) {
+    String restoreWalletCommand, WalletMode walletMode) {
 
     JPanel panel = Panels.newPanel();
 
     boolean enableUseExisting = !WalletManager.getWalletSummaries().isEmpty();
 
-    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    // Use the service associated with the wallet mode
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
 
     boolean enableRestore = hardwareWalletService.isPresent()
       && hardwareWalletService.get().isDeviceReady()
       && hardwareWalletService.get().isWalletPresent();
 
-    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.TREZOR_CREATE_WALLET);
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_CREATE_WALLET, walletMode.brand());
     radio1.setSelected(true);
     radio1.setActionCommand(createCommand);
 
@@ -626,33 +628,46 @@ public class Panels {
   }
 
   /**
-   * <p>A "Trezor tool selector" panel provides a means of choosing which Trezor tool to run</p>
+   * <p>A "Hardware wallet tool selector" panel provides a means of choosing which tool to run</p>
    *
    * @param listener            The action listener
-   * @param buyTrezorCommand    The buy trezor command
+   * @param buyDeviceCommand    The buy device command
    * @param verifyDeviceCommand The verify device command name
    * @param wipeDeviceCommand   The wipe device command name
+   * @param walletMode          The wallet mode to apply (allows historical display)
    *
-   * @return A new "use Trezor selector" panel
+   * @return A new "use hardware wallet selector" panel
    */
-  public static JPanel newUseTrezorSelector(
+  public static JPanel newUseHardwareWalletSelector(
     ActionListener listener,
-    String buyTrezorCommand,
+    String buyDeviceCommand,
     String verifyDeviceCommand,
-    String wipeDeviceCommand
-  ) {
+    String wipeDeviceCommand,
+    WalletMode walletMode) {
 
     JPanel panel = Panels.newPanel();
 
-    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.BUY_TREZOR);
-    radio1.setActionCommand(buyTrezorCommand);
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.BUY_HARDWARE, walletMode.historicalBrand());
+    radio1.setActionCommand(buyDeviceCommand);
     radio1.setSelected(true);
 
-    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.VERIFY_DEVICE);
+    JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_VERIFY_DEVICE, walletMode.historicalBrand());
     radio2.setActionCommand(verifyDeviceCommand);
 
-    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.WIPE_DEVICE);
+    JRadioButton radio3 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_WIPE_DEVICE, walletMode.historicalBrand());
     radio3.setActionCommand(wipeDeviceCommand);
+
+    // Enable/disable selections based on current wallet mode (it's not for exploring devices)
+    switch (walletMode) {
+      case TREZOR:
+      case KEEP_KEY:
+        // Keep all enabled
+        break;
+      default:
+        // Disable wipe and verify
+        radio2.setEnabled(false);
+        radio3.setEnabled(false);
+    }
 
     // Action selection is mutually exclusive
     ButtonGroup group = new ButtonGroup();
@@ -840,7 +855,7 @@ public class Panels {
     JPanel panel = Panels.newPanel(
       new MigLayout(
         Panels.migXLayout(),
-        "[]", // Columns
+          "[]", // Columns
         "[]" // Rows
       ));
 

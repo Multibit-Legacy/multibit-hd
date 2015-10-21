@@ -74,27 +74,26 @@ public class BlockStoreManager {
 
     }
 
-    log.debug("Get or create SPV block store (pass 1):\n'{}'", blockStoreFile.getAbsolutePath());
+    log.debug("Get or create SPV block store:\n'{}'", blockStoreFile.getAbsolutePath());
     BlockStore blockStore;
     try {
       blockStore = new SPVBlockStore(networkParameters, blockStoreFile);
     } catch (BlockStoreException bse) {
-
       try {
-        log.warn("Failed to get or create SPV block store", bse);
+        log.warn("Failed to get or create SPV block store", bse.getMessage());
         // If the block store creation failed, delete the block store file and try again.
 
         // Garbage collect any closed references to the block store file (required on Windows)
         System.gc();
         boolean isWritable = blockStoreFile.setWritable(true);
+        log.info("Deleting SPV block store from file:\n'{}'", blockStoreFile.getAbsolutePath());
         boolean isDeletedOk = blockStoreFile.delete();
-        log.info("Deleting SPV block store (pass 2) from file:\n'{}'", blockStoreFile.getAbsolutePath());
         log.info("isWritable: '{}' isDeletedOK: '{}'", isWritable, isDeletedOk);
         blockStoreCreatedNew = true;
 
         blockStore = new SPVBlockStore(networkParameters, blockStoreFile);
       } catch (BlockStoreException bse2) {
-        log.error("Unrecoverable failure in opening block store. This is bad.", bse2);
+        log.error("Unrecoverable failure in opening block store. This is bad.", bse2.getMessage());
         // Throw the exception so that it is indicated on the UI
         throw bse2;
       }

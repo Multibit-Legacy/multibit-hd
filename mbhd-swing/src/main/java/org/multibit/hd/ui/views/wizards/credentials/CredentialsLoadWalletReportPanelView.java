@@ -67,7 +67,7 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
    */
   public CredentialsLoadWalletReportPanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.LOAD_WALLET_REPORT_TITLE, AwesomeIcon.SUN_O);
+    super(wizard, panelName, AwesomeIcon.SUN_O, MessageKey.LOAD_WALLET_REPORT_TITLE);
 
   }
 
@@ -119,7 +119,7 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
   @Override
   protected void initialiseButtons(AbstractWizard<CredentialsWizardModel> wizard) {
 
-    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
 
     if (hardwareWalletService.isPresent() && hardwareWalletService.get().getContext().getFeatures().isPresent()) {
       // The hardware wallet is connected but there may be an issue with the current wallet

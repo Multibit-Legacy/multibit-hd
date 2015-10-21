@@ -56,9 +56,8 @@ import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletState;
 import org.multibit.hd.ui.views.wizards.edit_wallet.EditWalletWizardModel;
 import org.multibit.hd.ui.views.wizards.exit.ExitState;
-import org.multibit.hd.ui.views.wizards.use_trezor.UseTrezorState;
+import org.multibit.hd.ui.views.wizards.use_hardware_wallet.UseHardwareWalletState;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizard;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +69,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URI;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
@@ -92,8 +92,6 @@ public class MainController extends AbstractController implements
   private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
   private Optional<ExchangeTickerService> exchangeTickerService = Optional.absent();
-
-  private Optional<HardwareWalletService> hardwareWalletService = Optional.absent();
 
   private final ListeningExecutorService handoverExecutorService = SafeExecutors.newSingleThreadExecutor("wizard-handover");
 
@@ -120,12 +118,12 @@ public class MainController extends AbstractController implements
   /**
    * The delay between a wipe and insertion of a new device
    */
-  private static final int TREZOR_WIPE_TIME_THRESHOLD = 4;
+  private static final int HARDWARE_WALLET_WIPE_TIME_THRESHOLD = 4;
 
   /**
    * The last time a Trezor device was wiped (or yesterday as the default)
    */
-  private DateTime lastWipedTrezorDateTime = Dates.nowUtc().minusDays(1);
+  private DateTime lastWipedHardwareWalletDateTime = Dates.nowUtc().minusDays(1);
 
   /**
    * Whether alerts should be fired when new transactions appear (true = fire alerts, false = suppress alerts)
@@ -194,7 +192,7 @@ public class MainController extends AbstractController implements
       // Successful wizard interaction
 
       if (WelcomeWizardState.CREATE_WALLET_REPORT.name().equals(event.getPanelName())
-        || WelcomeWizardState.TREZOR_CREATE_WALLET_REPORT.name().equals(event.getPanelName())
+        || WelcomeWizardState.HARDWARE_CREATE_WALLET_REPORT.name().equals(event.getPanelName())
         || WelcomeWizardState.RESTORE_WALLET_REPORT.name().equals(event.getPanelName())
         || WelcomeWizardState.RESTORE_PASSWORD_REPORT.name().equals(event.getPanelName())
         || WelcomeWizardState.WELCOME_SELECT_WALLET.name().equals(event.getPanelName())
@@ -223,7 +221,7 @@ public class MainController extends AbstractController implements
 
       if (CredentialsState.CREDENTIALS_CREATE.name().equals(event.getPanelName())) {
 
-         // We are exiting the credentials wizard via the create button and want the welcome wizard
+        // We are exiting the credentials wizard via the create button and want the welcome wizard
 
         handoverToWelcomeWizardCreate();
       }
@@ -231,9 +229,9 @@ public class MainController extends AbstractController implements
       if (CredentialsState.CREDENTIALS_REQUEST_CIPHER_KEY.name().equals(event.getPanelName()) ||
         CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY.name().equals(event.getPanelName())) {
 
-        // We are exiting the credentials wizard as the Trezor is uninitialised and want the welcome wizard
+        // We are exiting the credentials wizard as the hardware wallet is uninitialised and want the welcome wizard
 
-        handoverToWelcomeWizardCreateTrezorWallet();
+        handoverToWelcomeWizardCreateHardwareWallet();
       }
       if (EditWalletState.EDIT_WALLET.name().equals(event.getPanelName())) {
 
@@ -271,7 +269,7 @@ public class MainController extends AbstractController implements
   @Subscribe
   public void onSwitchWalletEvent(SwitchWalletEvent event) {
 
-    log.debug("Switch Wallet event: '{}'", event);
+    log.debug("Received 'switch wallet' event");
 
     handleSwitchWallet();
   }
@@ -326,7 +324,7 @@ public class MainController extends AbstractController implements
       // For Trezor hard wallets, get the date of the earliest transaction and use it to set the
       // earliestKeyCreationDate. This enables future repair wallets to be quicker
       if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() &&
-              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType() == WalletType.TREZOR_HARD_WALLET) {
+        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType() == WalletType.TREZOR_HARD_WALLET) {
         // See if the synced wallet has transactions
         Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
         java.util.List<Transaction> transactions = wallet.getTransactionsByTime();
@@ -336,7 +334,7 @@ public class MainController extends AbstractController implements
           if (earliestTransactionDate != null) {
             // Set the wallet key creation time to be the transaction date (minus one day to cater for blockchain forkiness)
             wallet.setEarliestKeyCreationTime(earliestTransactionDate.getTime() / 1000 - Dates.NUMBER_OF_SECONDS_IN_A_DAY);
-            log.debug("Setting Trezor hard wallet earliestKeyCreation Date to one day before : {}", earliestTransactionDate);
+            log.debug("Setting hardware wallet 'earliestKeyCreationDate' to one day before : {}", earliestTransactionDate);
           }
         }
       }
@@ -492,9 +490,9 @@ public class MainController extends AbstractController implements
   public void onComponentChangedEvent(ComponentChangedEvent event) {
 
     // Check for specific component changes
-    if (UseTrezorState.CONFIRM_WIPE_TREZOR.name().equals(event.getPanelName())) {
+    if (UseHardwareWalletState.CONFIRM_WIPE_DEVICE.name().equals(event.getPanelName())) {
       // The user has successfully completed wiping a Trezor device
-      lastWipedTrezorDateTime = (DateTime) event.getComponentModel().get();
+      lastWipedHardwareWalletDateTime = (DateTime) event.getComponentModel().get();
     }
 
   }
@@ -516,7 +514,7 @@ public class MainController extends AbstractController implements
    * <p>All services are restarted</p>
    * <p>The main view references remain intact</p>
    * <p/>
-   * <p>This is not done through a simple SWITCH shutdown event being fire since the order
+   * <p>This is not done through a simple SWITCH shutdown event being fired since the order
    * of shutdown is important and cannot be guaranteed otherwise.</p>
    */
   private void handleSwitchWallet() {
@@ -822,18 +820,18 @@ public class MainController extends AbstractController implements
   }
 
   /**
-    * @param transactionSeenEvent The event (very high frequency during synchronisation)
-    */
-   @Subscribe
-   public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
-     if (transactionSeenEvent.isFirstAppearanceInWallet() && isFireTransactionAlerts()) {
-       log.debug("Firing an alert for a new transaction");
-       transactionSeenEvent.setFirstAppearanceInWallet(false);
-       Sounds.playPaymentReceived(Configurations.currentConfiguration.getSound());
-       AlertModel alertModel = Models.newPaymentReceivedAlertModel(transactionSeenEvent);
-       ControllerEvents.fireAddAlertEvent(alertModel);
-     }
-   }
+   * @param transactionSeenEvent The event (very high frequency during synchronisation)
+   */
+  @Subscribe
+  public void onTransactionSeenEvent(TransactionSeenEvent transactionSeenEvent) {
+    if (transactionSeenEvent.isFirstAppearanceInWallet() && isFireTransactionAlerts()) {
+      log.debug("Firing an alert for a new transaction");
+      transactionSeenEvent.setFirstAppearanceInWallet(false);
+      Sounds.playPaymentReceived(Configurations.currentConfiguration.getSound());
+      AlertModel alertModel = Models.newPaymentReceivedAlertModel(transactionSeenEvent);
+      ControllerEvents.fireAddAlertEvent(alertModel);
+    }
+  }
 
   /**
    * Make sure that when a transaction is successfully created its 'metadata' is stored in a transactionInfo
@@ -897,6 +895,11 @@ public class MainController extends AbstractController implements
       return;
     }
 
+    // Check if CoreServices has identified a hardware wallet (could be just starting or in FEST mode)
+    if (!CoreServices.getCurrentHardwareWalletService().isPresent()) {
+      CoreServices.useFirstReadyHardwareWalletService();
+    }
+
     // Quick check for relevancy
     switch (event.getEventType()) {
       case SHOW_DEVICE_STOPPED:
@@ -953,13 +956,15 @@ public class MainController extends AbstractController implements
   private void handleShowDeviceFailed(final HardwareWalletEvent event) {
 
     // Determine the nature of the failure
-    Optional<Features> featuresOptional = hardwareWalletService.get().getContext().getFeatures();
+    Optional<Features> featuresOptional = CoreServices.getCurrentHardwareWalletService().get().getContext().getFeatures();
 
     boolean isUnsupportedFirmware = featuresOptional.isPresent()
       && !featuresOptional.get().isSupported();
     boolean isUnsupportedConfigurationPassphrase = featuresOptional.isPresent()
       && featuresOptional.get().isSupported()
       && featuresOptional.get().hasPassphraseProtection();
+
+    log.warn("Hardware device failed. Unsupported firmware: {} Passphrase: {}", isUnsupportedFirmware, isUnsupportedConfigurationPassphrase);
 
     if (isUnsupportedFirmware) {
       // Show as a environment popover
@@ -989,12 +994,12 @@ public class MainController extends AbstractController implements
 
   /**
    * <p>Handle the "show device ready" event</p>
-   * <p>Show an alert if the Trezor connects when:</p>
+   * <p>Show an alert if a hardware wallet connects when:</p>
    * <ul>
    * <li>there is a current wallet</li>
-   * <li>the current wallet is not the same "hard" Trezor wallet as in the alert</li>
-   * <li>there has not been a "wipe Trezor" in the last few seconds</li>
-   * <li>the Trezor has a supported configuration (e.g. not passphrase protected)</li>
+   * <li>the current wallet is not the same "hard" wallet as in the alert (different device)</li>
+   * <li>there has not been a "wipe" in the last few seconds</li>
+   * <li>the device has a supported configuration (e.g. not passphrase protected)</li>
    * </ul>
    *
    * @param event The hardware wallet event
@@ -1021,36 +1026,59 @@ public class MainController extends AbstractController implements
     Optional<WalletSummary> walletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
 
     if (walletSummary.isPresent()) {
-      Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+      Optional<HardwareWalletService> currentHardwareWalletService = CoreServices.getCurrentHardwareWalletService();
 
       boolean showAlert = false;
-      if (!WalletType.TREZOR_HARD_WALLET.equals(walletSummary.get().getWalletType())) {
-        // Not currently using a Trezor hard wallet so show the alert
+
+      if (walletSummary.get().getWalletType() != WalletType.TREZOR_HARD_WALLET) {
+        // Not currently using a hardware wallet so show the alert
         showAlert = true;
       } else {
-        if (hardwareWalletService.isPresent()) {
-          Optional<Features> features = this.hardwareWalletService.get().getContext().getFeatures();
+        // Currently using a hardware wallet so check for a change in device
+        if (currentHardwareWalletService.isPresent()) {
+
+          // Get the current wallet name (label)
           String currentWalletName = walletSummary.get().getName();
-          if (features.isPresent() && !features.get().getLabel().equals(currentWalletName)) {
-            // The newly plugged in Trezor is a different one
+
+          // Get the current features
+          Optional<Features> currentFeatures = currentHardwareWalletService.get().getContext().getFeatures();
+
+          // Check for a different device type
+          String currentSource = currentHardwareWalletService.get().getContext().getClient().name();
+          String newSource = event.getSource();
+
+          if (!currentSource.equals(newSource)) {
+            // Different device type (e.g. Trezor attached during KeepKey session)
             showAlert = true;
+          } else {
+            // Same device type (e.g. accidental detach of device or swap in advance of switch)
+            // Check for a different device label
+            if (currentFeatures.isPresent()) {
+              // The current device is remains attached
+              if (!currentFeatures.get().getLabel().equals(currentWalletName)) {
+                showAlert = true;
+              }
+            } else {
+              // The current device was detached so we can't tell if it is different
+              showAlert = true;
+            }
           }
         }
       }
-      if (this.hardwareWalletService.isPresent()) {
-        if (lastWipedTrezorDateTime
-          .plusSeconds(TREZOR_WIPE_TIME_THRESHOLD)
+
+      // Suppress alert if there has been a recent wipe
+      if (currentHardwareWalletService.isPresent()) {
+        if (lastWipedHardwareWalletDateTime
+          .plusSeconds(HARDWARE_WALLET_WIPE_TIME_THRESHOLD)
           .isAfter(Dates.nowUtc())) {
-          log.debug("Suppressing the alert due to recent confirmed Trezor wipe operation");
           showAlert = false;
         }
       }
 
       if (showAlert) {
 
-        // TODO Currently getting a false positive due to FEST test use of WalletManager during fixture creation
-
-        log.debug("Trezor attached during an unlocked soft wallet session - showing alert");
+        // NOTE Currently getting a false positive due to FEST test use of WalletManager during fixture creation
+        log.debug("Hardware wallet attached during an unlocked soft wallet session - showing alert");
 
         SwingUtilities.invokeLater(
           new Runnable() {
@@ -1065,7 +1093,7 @@ public class MainController extends AbstractController implements
     }
 
     // Set the deferred credentials request type
-    deferredCredentialsRequestType = CredentialsRequestType.TREZOR;
+    deferredCredentialsRequestType = CredentialsRequestType.HARDWARE;
 
   }
 
@@ -1209,38 +1237,33 @@ public class MainController extends AbstractController implements
       isServiceAllowed = true;
     }
 
+    Optional<HardwareWalletService> currentHardwareWalletService = CoreServices.getCurrentHardwareWalletService();
+
     // Check if the service is running and is allowed
-    if (hardwareWalletService.isPresent() && !isServiceAllowed) {
+    if (currentHardwareWalletService.isPresent() && !isServiceAllowed) {
 
       // Stop the service, all listeners and clear the CoreServices reference
-      CoreServices.stopHardwareWalletService();
-
-      // Clear our reference
-      hardwareWalletService = Optional.absent();
+      CoreServices.stopHardwareWalletServices();
 
       return;
     }
 
-    // Service is allowed and may need to be started
-    // If it is present then it is already started
-    if (!hardwareWalletService.isPresent()) {
+    // Must require hardware wallet services to be here
 
-      hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    // Ensure we have initialised
+    List<Optional<HardwareWalletService>> hardwareWalletServices = CoreServices.getOrCreateHardwareWalletServices();
 
+    // (Re)subscribe to hardware wallet events
+    // This is required in case the user stops and starts the
+    // hardware wallet service during a session
+    HardwareWalletEvents.subscribe(this);
+
+    // Start the services
+    for (Optional<HardwareWalletService> hardwareWalletService : hardwareWalletServices) {
       if (hardwareWalletService.isPresent()) {
-
-        // (Re)subscribe to hardware wallet events
-        // This is required in case the user stops and starts the
-        // hardware wallet service during a session
-        HardwareWalletEvents.subscribe(this);
-
-        // Start the service
+        log.info("Starting hardware wallet service: {}", hardwareWalletService.get().getContext().getClient().name());
         hardwareWalletService.get().start();
-
-        log.info("Started hardware wallet service");
-
       }
-
     }
 
   }
@@ -1357,14 +1380,62 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingWelcomeWizard(true);
     mainView.setShowExitingCredentialsWizard(false);
 
-    // Determine if we are in Trezor mode for the welcome wizard
-    WelcomeWizardMode mode = CredentialsRequestType.TREZOR.equals(deferredCredentialsRequestType) ? WelcomeWizardMode.TREZOR : WelcomeWizardMode.STANDARD;
+    // Select the appropriate wallet mode
+    final WalletMode walletMode;
+    if (CredentialsRequestType.HARDWARE.equals(deferredCredentialsRequestType)) {
+      Optional<HardwareWalletService> currentHardwareWalletService = CoreServices.getCurrentHardwareWalletService();
+      walletMode = WalletMode.of(currentHardwareWalletService);
+    } else {
+      walletMode = WalletMode.STANDARD;
+    }
 
     // For soft wallets the restore goes to the select wallet screen, for Trezor hard wallets go directly to the restore
-    final WelcomeWizardState initialState = WelcomeWizardMode.STANDARD.equals(mode) ? WelcomeWizardState.WELCOME_SELECT_WALLET : WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP;
+    final WelcomeWizardState initialState = (WalletMode.STANDARD == walletMode) ? WelcomeWizardState.WELCOME_SELECT_WALLET : WelcomeWizardState.RESTORE_WALLET_SELECT_BACKUP;
+
+    // Start building the wizard on the EDT to prevent UI updates
+    final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(initialState, walletMode);
+
+    // Use a new thread to handle the new wizard so that the handover can complete
+    handoverExecutorService.execute(
+      new Runnable() {
+        @Override
+        public void run() {
+
+          // Allow time for the other wizard to finish hiding (200ms is the minimum)
+          Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
+
+          // Must execute on the EDT
+          SwingUtilities.invokeLater(
+            new Runnable() {
+              @Override
+              public void run() {
+
+                Panels.hideLightBoxIfPresent();
+
+                log.debug("Showing exiting welcome wizard after handover");
+                Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
+              }
+            });
+        }
+      });
+  }
+
+  /**
+   * Credentials wizard needs to perform a create so hand over to the welcome wizard
+   */
+  private void handoverToWelcomeWizardCreate() {
+
+    log.debug("Hand over to welcome wizard (create wallet)");
+
+    // Handover
+    mainView.setShowExitingWelcomeWizard(true);
+    mainView.setShowExitingCredentialsWizard(false);
+
+    // For soft wallets the create goes to the wallet preparation screen
+    final WelcomeWizardState initialState = WelcomeWizardState.CREATE_WALLET_PREPARATION;
     // Start building the wizard on the EDT to prevent UI updates
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
-      initialState, mode
+      initialState, WalletMode.STANDARD
     );
 
     // Use a new thread to handle the new wizard so that the handover can complete
@@ -1393,52 +1464,9 @@ public class MainController extends AbstractController implements
   }
 
   /**
-    * Credentials wizard needs to perform a create so hand over to the welcome wizard
-    */
-   private void handoverToWelcomeWizardCreate() {
-
-     log.debug("Hand over to welcome wizard (create wallet)");
-
-     // Handover
-     mainView.setShowExitingWelcomeWizard(true);
-     mainView.setShowExitingCredentialsWizard(false);
-
-     // For soft wallets the create goes to the wallet preparation screen
-     final WelcomeWizardState initialState = WelcomeWizardState.CREATE_WALLET_PREPARATION;
-     // Start building the wizard on the EDT to prevent UI updates
-     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
-       initialState, WelcomeWizardMode.STANDARD
-     );
-
-     // Use a new thread to handle the new wizard so that the handover can complete
-     handoverExecutorService.execute(
-       new Runnable() {
-         @Override
-         public void run() {
-
-           // Allow time for the other wizard to finish hiding (200ms is the minimum)
-           Uninterruptibles.sleepUninterruptibly(200, TimeUnit.MILLISECONDS);
-
-           // Must execute on the EDT
-           SwingUtilities.invokeLater(
-             new Runnable() {
-               @Override
-               public void run() {
-
-                 Panels.hideLightBoxIfPresent();
-
-                 log.debug("Showing exiting welcome wizard after handover");
-                 Panels.showLightBox(welcomeWizard.getWizardScreenHolder());
-               }
-             });
-         }
-       });
-   }
-
-  /**
    * Credentials wizard needs to perform a create new Trezor wallet over to the welcome wizard
    */
-  private void handoverToWelcomeWizardCreateTrezorWallet() {
+  private void handoverToWelcomeWizardCreateHardwareWallet() {
 
     log.debug("Hand over to welcome wizard (create Trezor wallet)");
 
@@ -1446,9 +1474,13 @@ public class MainController extends AbstractController implements
     mainView.setShowExitingWelcomeWizard(true);
     mainView.setShowExitingCredentialsWizard(false);
 
+    // Get the wallet mode
+    WalletMode walletMode = WalletMode.of(CoreServices.getCurrentHardwareWalletService());
+
     // Start building the wizard on the EDT to prevent UI updates
     final WelcomeWizard welcomeWizard = Wizards.newExitingWelcomeWizard(
-      WelcomeWizardState.TREZOR_CREATE_WALLET_PREPARATION, WelcomeWizardMode.TREZOR
+      WelcomeWizardState.HARDWARE_CREATE_WALLET_PREPARATION,
+      walletMode
     );
 
     // Use a new thread to handle the new wizard so that the handover can complete
@@ -1500,7 +1532,8 @@ public class MainController extends AbstractController implements
       // Make sure the 'DEVICE_READY' event is not lost
       HardwareWalletEvents.fireHardwareWalletEvent(
         lastHardwareWalletEvent.get().getEventType(),
-        lastHardwareWalletEvent.get().getMessage().get()
+        lastHardwareWalletEvent.get().getMessage().get(),
+        lastHardwareWalletEvent.get().getSource()
       );
     }
 
@@ -1586,15 +1619,15 @@ public class MainController extends AbstractController implements
               if (!status.getStatus().equals(RAGStatus.GREEN)) {
                 // Ensure that there is a message that the spendable balance is lower - Fire a BitcoinSentEvent failure
                 CoreEvents.fireBitcoinSentEvent(
-                              new BitcoinSentEvent(
-                                Optional.<Transaction>absent(), null, transactionData.getAmountCoin().orNull(),
-                                null,
-                                Optional.<Coin>absent(),
-                                Optional.<Coin>absent(),
-                                false,
-                                CoreMessageKey.THE_ERROR_WAS,
-                                new String[]{Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER)}
-                              ));
+                  new BitcoinSentEvent(
+                    Optional.<Transaction>absent(), null, transactionData.getAmountCoin().orNull(),
+                    null,
+                    Optional.<Coin>absent(),
+                    Optional.<Coin>absent(),
+                    false,
+                    CoreMessageKey.THE_ERROR_WAS,
+                    new String[]{Languages.safeText(MessageKey.SPENDABLE_BALANCE_IS_LOWER)}
+                  ));
               }
             }
           }

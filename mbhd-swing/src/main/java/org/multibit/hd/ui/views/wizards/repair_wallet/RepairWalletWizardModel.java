@@ -151,6 +151,7 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       log.debug("Replay of wallet will be from: {}", replayDate);
 
       // Trezor hard wallets disable fastCatchup as some early wallets had an incorrect earliestKeyCreation date
+      // KeepKey not affected
       final boolean enableFastCatchup = currentWalletSummary.getWalletType() != WalletType.TREZOR_HARD_WALLET;
 
       // Hide the header view

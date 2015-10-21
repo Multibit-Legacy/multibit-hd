@@ -186,8 +186,8 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     // Provide warning that the panel is about to be shown
     if (wizardPanelView.beforeShow()) {
 
-      // No abort so show
-      log.debug("Showing wizard panel: {}", panelName);
+      // No abort so show (use info to assist with FEST debugging)
+      log.info("Showing wizard panel: {}", panelName);
       cardLayout.show(wizardScreenHolder, panelName);
 
       // We must ensure that all other EDT processing has completed before

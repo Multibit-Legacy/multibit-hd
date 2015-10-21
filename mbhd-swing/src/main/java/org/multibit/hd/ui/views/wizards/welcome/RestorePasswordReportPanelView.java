@@ -57,7 +57,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
    */
   public RestorePasswordReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.RESTORE_PASSWORD_REPORT_TITLE, AwesomeIcon.MAGIC);
+    super(wizard, panelName, AwesomeIcon.MAGIC, MessageKey.RESTORE_PASSWORD_REPORT_TITLE);
 
   }
 

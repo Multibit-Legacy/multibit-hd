@@ -49,7 +49,7 @@ public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWiza
    */
   public WelcomeLicencePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.WELCOME_TITLE, AwesomeIcon.GLOBE);
+    super(wizard, panelName, AwesomeIcon.GLOBE, MessageKey.WELCOME_TITLE);
 
   }
 
@@ -102,7 +102,7 @@ public class WelcomeLicencePanelView extends AbstractWizardPanelView<WelcomeWiza
     // Ensure we maintain the overall theme (no vertical since we're using rounded border)
     ScrollBarUIDecorator.apply(scrollPane, false);
 
-    contentPanel.add(Labels.newSecureEnviromentNote(), "grow,push,span 2,wrap");
+    contentPanel.add(Labels.newLicenceNote(), "grow,push,span 2,wrap");
     contentPanel.add(scrollPane, "grow,push,span 2," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     contentPanel.add(Panels.newLicenceSelector(

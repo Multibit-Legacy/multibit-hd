@@ -34,7 +34,7 @@ public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinW
    */
   public ChangePinReportPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.CHANGE_PIN_REPORT_TITLE, AwesomeIcon.FILE_TEXT);
+    super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.CHANGE_PIN_REPORT_TITLE);
 
   }
 
@@ -61,7 +61,7 @@ public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinW
     contentPanel.setBackground(Themes.currentTheme.detailPanelBackground());
 
     // Provide an empty status label (populated after show)
-    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.TREZOR_FAILURE_OPERATION), null, Optional.<Boolean>absent());
+    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.HARDWARE_FAILURE_OPERATION), new Object[] { getWizardModel().getWalletMode().brand()}, Optional.<Boolean>absent());
     reportStatusLabel.setVisible(false);
 
     contentPanel.add(reportStatusLabel, "aligny top,wrap");
@@ -83,7 +83,7 @@ public class ChangePinReportPanelView extends AbstractWizardPanelView<ChangePinW
 
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "Must be on EDT");
 
-    LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
+    LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), null, getWizardModel().getReportMessageStatus());
 
     return true;
   }

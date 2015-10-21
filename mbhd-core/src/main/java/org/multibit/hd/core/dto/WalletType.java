@@ -3,7 +3,7 @@ package org.multibit.hd.core.dto;
 /**
  * <p>Enum to provide the following to Core API:</p>
  * <ul>
- * <li>Types of wallet e.g. MultiBit HD soft wallet, Trezor hardwallet, Trezor soft wallet</li>
+ * <li>Types of wallet e.g. MultiBit HD soft wallet, Trezor hard wallet, Trezor soft wallet</li>
  * </ul>
  *
  * @since 0.0.1
@@ -33,18 +33,22 @@ public enum WalletType {
   MBHD_SOFT_WALLET(CoreMessageKey.WALLET_CAPABILITY_MBHD_SOFT_BETA7),
 
   /**
-   * Trezor wallet with no keys
+   * Trezor / KeepKey wallet with no keys
    * Wallet follows BIP44 account 0 and requires a Trezor to do the signing
    * m/44'/0'/0'/0/0 is first receiving key
+   *
+   * DO NOT RENAME THIS ENUM VALUE AS IT IS STORED IN THE WALLET AS AN EXTENSION
    */
-  TREZOR_HARD_WALLET(CoreMessageKey.WALLET_CAPABILITY_TREZOR_HARD),
+  TREZOR_HARD_WALLET(CoreMessageKey.WALLET_CAPABILITY_TREZOR_CLONE_HARD),
 
   /**
-   * Trezor soft wallet
+   * Trezor  / KeepKey soft wallet
    * Wallet has BIP44 account 0 keys only
    * m/44'/0'/0'/0/0 is first receiving key
+   *
+   * DO NOT RENAME THIS ENUM VALUE AS IT IS STORED IN THE WALLET AS AN EXTENSION
    */
-  TREZOR_SOFT_WALLET(CoreMessageKey.WALLET_CAPABILITY_TREZOR_SOFT),
+  TREZOR_SOFT_WALLET(CoreMessageKey.WALLET_CAPABILITY_TREZOR_CLONE_SOFT),
 
   /**
    * A wallet with unknown capabilities (most likely from the future)

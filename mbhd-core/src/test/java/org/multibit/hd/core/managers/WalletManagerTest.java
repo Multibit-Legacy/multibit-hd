@@ -215,7 +215,7 @@ public class WalletManagerTest {
 
     long nowInSeconds = Dates.nowInSeconds();
 
-    WalletSummary walletSummary = walletManager.getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
+    WalletSummary walletSummary = walletManager.getOrCreateTrezorCloneSoftWalletSummaryFromSeedPhrase(
             applicationDirectory,
             TREZOR_SEED_PHRASE,
             nowInSeconds,

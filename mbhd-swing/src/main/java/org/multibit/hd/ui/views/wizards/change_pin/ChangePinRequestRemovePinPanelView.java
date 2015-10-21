@@ -4,15 +4,12 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.Components;
-import org.multibit.hd.ui.views.components.ModelAndView;
 import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.panels.PanelDecorator;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayModel;
-import org.multibit.hd.ui.views.components.trezor_display.TrezorDisplayView;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizard;
+import org.multibit.hd.ui.views.wizards.AbstractHardwareWalletWizardPanelView;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
-import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
 
 import javax.swing.*;
@@ -26,16 +23,14 @@ import javax.swing.*;
  * @since 0.0.5
  *  
  */
-public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
-
-  private ModelAndView<TrezorDisplayModel, TrezorDisplayView> trezorDisplayMaV;
+public class ChangePinRequestRemovePinPanelView extends AbstractHardwareWalletWizardPanelView<ChangePinWizardModel, ChangePinEnterPinPanelModel> {
 
   /**
    * @param wizard The wizard managing the states
    */
-  public ChangePinRequestRemovePinPanelView(AbstractWizard<ChangePinWizardModel> wizard, String panelName) {
+  public ChangePinRequestRemovePinPanelView(AbstractHardwareWalletWizard<ChangePinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.TREZOR_CONFIRM_REMOVE_PIN_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.HARDWARE_CONFIRM_REMOVE_PIN_TITLE);
 
   }
 
@@ -56,13 +51,7 @@ public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<
       "[]10[]" // Row constraints
     ));
 
-    trezorDisplayMaV = Components.newTrezorDisplayMaV(getPanelName());
-
-    // Need some text here in case device fails just as we being the process
-    contentPanel.add(trezorDisplayMaV.getView().newComponentPanel(), "align center,wrap");
-
-    // Ensure we register the components to avoid memory leaks
-    registerComponents(trezorDisplayMaV);
+    addCurrentHardwareDisplay(contentPanel);
 
   }
 
@@ -104,13 +93,7 @@ public class ChangePinRequestRemovePinPanelView extends AbstractWizardPanelView<
    * @param key The key to the operation text
    */
   public void setOperationText(MessageKey key) {
-    this.trezorDisplayMaV.getView().setOperationText(key);
+    this.hardwareDisplayMaV.getView().setOperationText(key, getWizardModel().getWalletMode().brand());
   }
 
-  public void confirmRemovePin() {
-
-    trezorDisplayMaV.getView().setOperationText(MessageKey.TREZOR_PRESS_CONFIRM_OPERATION);
-    trezorDisplayMaV.getView().setDisplayText(MessageKey.TREZOR_REMOVE_PIN_DISPLAY);
-
-  }
 }

@@ -43,7 +43,7 @@ public class EmptyWalletEnterPinPanelView extends AbstractWizardPanelView<EmptyW
    */
   public EmptyWalletEnterPinPanelView(AbstractWizard<EmptyWalletWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.PIN_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PIN_TITLE);
 
   }
 
@@ -119,8 +119,7 @@ public class EmptyWalletEnterPinPanelView extends AbstractWizardPanelView<EmptyW
 
     // Finally check that the firmware is supported
     // The user may try to ignore the popover warnings
-    final boolean enabled = CoreServices
-      .getOrCreateHardwareWalletService().get()
+    final boolean enabled = CoreServices.getCurrentHardwareWalletService().get()
       .getContext()
       .getFeatures().get()
       .isSupported();

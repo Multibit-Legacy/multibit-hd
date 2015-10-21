@@ -3,6 +3,8 @@ package org.multibit.hd.ui.views.wizards;
 import com.google.common.base.Optional;
 import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.services.ApplicationEventService;
+import org.multibit.hd.core.services.CoreServices;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvent;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.slf4j.Logger;
@@ -35,18 +37,18 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
   }
 
   /**
-     * @param wizardModel     The overall wizard data model containing the aggregate information of all components in the wizard
-     * @param isExiting       True if the exit button should trigger an application shutdown
-     * @param wizardParameter An optional parameter that can be referenced during construction
-     * @param escapeIsCancel  A press of the ESC key cancels the wizard
-     */
-    protected AbstractHardwareWalletWizard(M wizardModel, boolean isExiting, Optional wizardParameter, boolean escapeIsCancel) {
-      super(wizardModel, isExiting, wizardParameter, escapeIsCancel);
+   * @param wizardModel     The overall wizard data model containing the aggregate information of all components in the wizard
+   * @param isExiting       True if the exit button should trigger an application shutdown
+   * @param wizardParameter An optional parameter that can be referenced during construction
+   * @param escapeIsCancel  A press of the ESC key cancels the wizard
+   */
+  protected AbstractHardwareWalletWizard(M wizardModel, boolean isExiting, Optional wizardParameter, boolean escapeIsCancel) {
+    super(wizardModel, isExiting, wizardParameter, escapeIsCancel);
 
-      // All hardware wallet wizards can receive hardware wallet events
-      HardwareWalletEvents.subscribe(this);
+    // All hardware wallet wizards can receive hardware wallet events
+    HardwareWalletEvents.subscribe(this);
 
-    }
+  }
 
   /**
    * Unregister from hardware wallet events - called during the hide process
@@ -501,6 +503,13 @@ public abstract class AbstractHardwareWalletWizard<M extends AbstractHardwareWal
     if (!ApplicationEventService.isHardwareWalletEventAllowed()) {
       log.debug("Ignoring device event due to 'ignore threshold' still in force", event);
       return;
+    }
+
+    // Check if this is the first event from the hardware wallet
+    Optional<HardwareWalletService> currentHardwareWalletService = CoreServices.getCurrentHardwareWalletService();
+    if (!currentHardwareWalletService.isPresent()) {
+      // Allow time for the current hardware wallet to initialise
+      CoreServices.useFirstReadyHardwareWalletService();
     }
 
     switch (event.getEventType()) {

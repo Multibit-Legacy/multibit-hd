@@ -48,8 +48,8 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
   private byte[] signature;
 
   private SignMessageEnterPinPanelView enterPinPanelView;
-  private SignMessageTrezorPanelView signMessageTrezorPanelView;
-  private SignMessageConfirmSignPanelView confirmSignPanelView;
+  private SignMessageHardwarePanelView signMessageHardwarePanelView;
+  private SignMessageConfirmSignHardwarePanelView confirmSignPanelView;
 
   /**
    * @param state The state object
@@ -64,13 +64,13 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     switch (state) {
       case SIGN_MESSAGE_PASSWORD:
         break;
-      case SIGN_MESSAGE_TREZOR_ENTER_PIN:
-        state = SignMessageState.SIGN_MESSAGE_TREZOR;
+      case SIGN_MESSAGE_HARDWARE_ENTER_PIN:
+        state = SignMessageState.SIGN_MESSAGE_HARDWARE;
         break;
-      case SIGN_MESSAGE_TREZOR_CONFIRM_SIGN:
-        state = SignMessageState.SIGN_MESSAGE_TREZOR;
+      case SIGN_MESSAGE_HARDWARE_CONFIRM_SIGN:
+        state = SignMessageState.SIGN_MESSAGE_HARDWARE;
         break;
-      case SIGN_MESSAGE_TREZOR:
+      case SIGN_MESSAGE_HARDWARE:
         break;
       default:
         // Do nothing
@@ -82,13 +82,13 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     switch (state) {
       case SIGN_MESSAGE_PASSWORD:
         break;
-      case SIGN_MESSAGE_TREZOR_ENTER_PIN:
-        state = SignMessageState.SIGN_MESSAGE_TREZOR;
+      case SIGN_MESSAGE_HARDWARE_ENTER_PIN:
+        state = SignMessageState.SIGN_MESSAGE_HARDWARE;
         break;
-      case SIGN_MESSAGE_TREZOR_CONFIRM_SIGN:
-        state = SignMessageState.SIGN_MESSAGE_TREZOR;
+      case SIGN_MESSAGE_HARDWARE_CONFIRM_SIGN:
+        state = SignMessageState.SIGN_MESSAGE_HARDWARE;
         break;
-      case SIGN_MESSAGE_TREZOR:
+      case SIGN_MESSAGE_HARDWARE:
         break;
       default:
         throw new IllegalStateException("Unexpected state:" + state);
@@ -134,7 +134,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
           // This call to the Trezor will (sometime later) fire a
           // HardwareWalletEvent containing the encrypted text (or a PIN failure)
           // Expect a MESSAGE_SIGNATURE or SHOW_OPERATION_FAILED
-          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
           hardwareWalletService.get().signMessage(
             0,
             KeyChain.KeyPurpose.RECEIVE_FUNDS,
@@ -168,7 +168,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
             CoreMessageKey.SIGN_MESSAGE_FAILURE,
             new String[]{}
           );
-          signMessageTrezorPanelView.showSignMessageResult(signMessageResult);
+          signMessageHardwarePanelView.showSignMessageResult(signMessageResult);
         }
       }
     );
@@ -192,7 +192,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
           // This call to the Trezor will (sometime later) fire a
           // HardwareWalletEvent containing the encrypted text (or a PIN failure)
           // Expect a SHOW_OPERATION_SUCCEEDED or SHOW_OPERATION_FAILED
-          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
           hardwareWalletService.get().providePIN(pinPositions);
 
           // Must have successfully send the message to be here
@@ -226,9 +226,10 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
   public void showPINEntry(HardwareWalletEvent event) {
 
     switch (state) {
-      case SIGN_MESSAGE_TREZOR:
+      case SIGN_MESSAGE_HARDWARE_CONFIRM_SIGN:
+      case SIGN_MESSAGE_HARDWARE:
         log.debug("Transaction signing is PIN protected");
-        state = SignMessageState.SIGN_MESSAGE_TREZOR_ENTER_PIN;
+        state = SignMessageState.SIGN_MESSAGE_HARDWARE_ENTER_PIN;
         break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
@@ -241,7 +242,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     log.debug("Received hardware event: '{}'.{}", event.getEventType().name(), event.getMessage());
 
     // Ensure we transition to the confirm screen
-    state = SignMessageState.SIGN_MESSAGE_TREZOR_CONFIRM_SIGN;
+    state = SignMessageState.SIGN_MESSAGE_HARDWARE_CONFIRM_SIGN;
 
   }
 
@@ -254,7 +255,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     log.info("Signature:\n{}", Utils.HEX.encode(signature.getSignature()));
 
     // Ensure we show the Trezor panel view
-    state = SignMessageState.SIGN_MESSAGE_TREZOR;
+    state = SignMessageState.SIGN_MESSAGE_HARDWARE;
 
     // Verify the signature
     String base64Signature = Base64.toBase64String(signature.getSignature());
@@ -292,7 +293,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     }
 
     // Update the panel view
-    signMessageTrezorPanelView.showSignMessageResult(signMessageResult);
+    signMessageHardwarePanelView.showSignMessageResult(signMessageResult);
 
     // Must be showing message signing Trezor display
 
@@ -314,7 +315,7 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
       CoreMessageKey.SIGN_MESSAGE_FAILURE,
       new String[]{}
     );
-    signMessageTrezorPanelView.showSignMessageResult(signMessageResult);
+    signMessageHardwarePanelView.showSignMessageResult(signMessageResult);
 
     // Ignore device reset messages
     ApplicationEventService.setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
@@ -362,15 +363,15 @@ public class SignMessageWizardModel extends AbstractHardwareWalletWizardModel<Si
     return enterPinPanelView;
   }
 
-  public SignMessageTrezorPanelView getSignMessageTrezorPanelView() {
-    return signMessageTrezorPanelView;
+  public SignMessageHardwarePanelView getSignMessageHardwarePanelView() {
+    return signMessageHardwarePanelView;
   }
 
-  public void setSignMessageTrezorPanelView(SignMessageTrezorPanelView signMessageTrezorPanelView) {
-    this.signMessageTrezorPanelView = signMessageTrezorPanelView;
+  public void setSignMessageHardwarePanelView(SignMessageHardwarePanelView signMessageHardwarePanelView) {
+    this.signMessageHardwarePanelView = signMessageHardwarePanelView;
   }
 
-  public void setConfirmSignPanelView(SignMessageConfirmSignPanelView confirmSignPanelView) {
+  public void setConfirmSignPanelView(SignMessageConfirmSignHardwarePanelView confirmSignPanelView) {
     this.confirmSignPanelView = confirmSignPanelView;
   }
 }

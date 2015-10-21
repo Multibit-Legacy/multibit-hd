@@ -30,18 +30,18 @@ public class SignMessageWizard extends AbstractHardwareWalletWizard<SignMessageW
     );
 
     wizardViewMap.put(
-      SignMessageState.SIGN_MESSAGE_TREZOR.name(),
-      new SignMessageTrezorPanelView(this, SignMessageState.SIGN_MESSAGE_TREZOR.name())
+      SignMessageState.SIGN_MESSAGE_HARDWARE.name(),
+      new SignMessageHardwarePanelView(this, SignMessageState.SIGN_MESSAGE_HARDWARE.name())
     );
 
     wizardViewMap.put(
-      SignMessageState.SIGN_MESSAGE_TREZOR_ENTER_PIN.name(),
-      new SignMessageEnterPinPanelView(this, SignMessageState.SIGN_MESSAGE_TREZOR_ENTER_PIN.name())
+      SignMessageState.SIGN_MESSAGE_HARDWARE_ENTER_PIN.name(),
+      new SignMessageEnterPinPanelView(this, SignMessageState.SIGN_MESSAGE_HARDWARE_ENTER_PIN.name())
     );
 
     wizardViewMap.put(
-      SignMessageState.SIGN_MESSAGE_TREZOR_CONFIRM_SIGN.name(),
-      new SignMessageConfirmSignPanelView(this, SignMessageState.SIGN_MESSAGE_TREZOR_CONFIRM_SIGN.name())
+      SignMessageState.SIGN_MESSAGE_HARDWARE_CONFIRM_SIGN.name(),
+      new SignMessageConfirmSignHardwarePanelView(this, SignMessageState.SIGN_MESSAGE_HARDWARE_CONFIRM_SIGN.name())
     );
 
   }

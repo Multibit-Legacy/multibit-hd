@@ -58,7 +58,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
    * @param wizard The wizard managing the states
    */
   public SendBitcoinReportPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
-    super(wizard, panelName, MessageKey.SEND_PROGRESS_TITLE, AwesomeIcon.CLOUD_UPLOAD);
+    super(wizard, panelName, AwesomeIcon.CLOUD_UPLOAD, MessageKey.SEND_PROGRESS_TITLE);
   }
 
   @Override
@@ -94,7 +94,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
     AccessibilityDecorator.apply(transactionBroadcastStatusDetail, MessageKey.TRANSACTION_BROADCAST_STATUS_DETAIL);
 
     // Provide an empty status label (populated after show)
-    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.TREZOR_FAILURE_OPERATION), null, Optional.<Boolean>absent());
+    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.HARDWARE_FAILURE_OPERATION), new Object[] { getWizardModel().getWalletMode().brand()}, Optional.<Boolean>absent());
     reportStatusLabel.setVisible(false);
 
     contentPanel.add(reportStatusLabel, "aligny top,wrap");
@@ -159,7 +159,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
                   getFinishButton().requestFocusInWindow();
                 }
                 // Check for report message from hardware wallet
-                LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), getWizardModel().getReportMessageStatus());
+                LabelDecorator.applyReportMessage(reportStatusLabel, getWizardModel().getReportMessageKey(), null, getWizardModel().getReportMessageStatus());
 
                 if (getWizardModel().getReportMessageKey().isPresent() && !getWizardModel().getReportMessageStatus()) {
                   // Hardware wallet report indicates cancellation

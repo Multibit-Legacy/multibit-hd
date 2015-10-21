@@ -66,7 +66,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
    * @param panelName The panel name for filtering component events
    */
   public SendBitcoinConfirmPanelView(AbstractWizard<SendBitcoinWizardModel> wizard, String panelName) {
-    super(wizard, panelName, MessageKey.CONFIRM_SEND_TITLE, AwesomeIcon.CLOUD_UPLOAD);
+    super(wizard, panelName, AwesomeIcon.CLOUD_UPLOAD, MessageKey.CONFIRM_SEND_TITLE);
   }
 
   @Override
@@ -76,8 +76,8 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
     // Configure the panel model
     panelModel = new SendBitcoinConfirmPanelModel(
-            getPanelName(),
-            enterPasswordMaV.getModel()
+      getPanelName(),
+      enterPasswordMaV.getModel()
     );
     setPanelModel(panelModel);
 
@@ -93,27 +93,27 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
     // Transaction information
     transactionDisplayAmountMaV = Components.newDisplayAmountMaV(
-            DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT,
-            true,
-            SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".transaction"
+      DisplayAmountStyle.TRANSACTION_DETAIL_AMOUNT,
+      true,
+      SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".transaction"
     );
     // Ensure local amount on main amount is visible
     transactionDisplayAmountMaV.getModel().setLocalAmountVisible(true);
 
     transactionFeeDisplayAmountMaV = Components.newDisplayAmountMaV(
-            DisplayAmountStyle.FEE_AMOUNT,
-            true,
-            SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".transaction_fee"
+      DisplayAmountStyle.FEE_AMOUNT,
+      true,
+      SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".transaction_fee"
     );
     clientFeeDisplayAmountMaV = Components.newDisplayAmountMaV(
-            DisplayAmountStyle.FEE_AMOUNT,
-            true,
-            SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".client_fee"
+      DisplayAmountStyle.FEE_AMOUNT,
+      true,
+      SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".client_fee"
     );
     runningTotalClientFeeDisplayAmountMaV = Components.newDisplayAmountMaV(
-            DisplayAmountStyle.PLAIN,
-            true,
-            SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".running_total_client_fee"
+      DisplayAmountStyle.PLAIN,
+      true,
+      SendBitcoinState.SEND_CONFIRM_AMOUNT.name() + ".running_total_client_fee"
     );
     // Ensure visibility
     transactionDisplayAmountMaV.getView().setVisible(true);
@@ -160,11 +160,11 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     }
 
     contentPanel.setLayout(
-            new MigLayout(
-                    Panels.migXYLayout(),
-                    "[]10[]4[]0[200]10[120]10[][]", // Column constraints
-                    "[]10[]10[][][][][][]10[][]" // Row constraints
-            ));
+      new MigLayout(
+        Panels.migXYLayout(),
+        "[]10[]4[]0[200]10[120]10[][]", // Column constraints
+        "[]10[]10[][][][][][]10[][]" // Row constraints
+      ));
 
     clientFeeInfoLabel = Labels.newBlankLabel();
     AccessibilityDecorator.apply(clientFeeInfoLabel, MessageKey.CLIENT_FEE);
@@ -199,7 +199,7 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
     contentPanel.add(Labels.newNotes());
     contentPanel.add(notesTextArea, "span 6,growx,push,wrap");
 
-    if (!isTrezorWallet()) {
+    if (!isHardwareWallet()) {
       contentPanel.add(enterPasswordMaV.getView().newComponentPanel(), "span 7,align right,wrap");
     }
 
@@ -215,12 +215,17 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
   @Override
   public void fireInitialStateViewEvents() {
     // Send button starts off disabled for regular wallets, enabled for Trezor hard wallets
-    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, isTrezorWallet());
+    ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.NEXT, isHardwareWallet());
   }
 
-  private boolean isTrezorWallet() {
+  /**
+   * @return True if this is a hard wallet
+   */
+  private boolean isHardwareWallet() {
+
     return WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() &&
-            WalletType.TREZOR_HARD_WALLET.equals(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType());
+            WalletType.TREZOR_HARD_WALLET.equals(WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletType())
+            ;
   }
 
   @Override
@@ -255,9 +260,9 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
       // Update the model and view for the recipient
       recipientSummaryLabel.setText(
-              getWizardModel()
-                      .getRecipient()
-                      .getSummary()
+        getWizardModel()
+          .getRecipient()
+          .getSummary()
       );
     }
 
@@ -343,9 +348,9 @@ public class SendBitcoinConfirmPanelView extends AbstractWizardPanelView<SendBit
 
     // Determine any events
     ViewEvents.fireWizardButtonEnabledEvent(
-            getPanelName(),
-            WizardButton.NEXT,
-            isNextEnabled()
+      getPanelName(),
+      WizardButton.NEXT,
+      isNextEnabled()
     );
   }
 

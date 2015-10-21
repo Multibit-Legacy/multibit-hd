@@ -97,13 +97,25 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   private Optional<JButton> finishButton = Optional.absent();
   private Optional<JButton> applyButton = Optional.absent();
 
+  // Labels
+  /**
+   * The title label in case it needs to be modified after initialisation (e.g. changing a hardware wallet)
+   */
+  protected JLabel title;
+
   /**
    * @param wizard         The wizard
    * @param panelName      The panel name to filter events from components
-   * @param titleKey       The key for the title section text
    * @param backgroundIcon The icon for the content section background
+   * @param titleKey       The key for the title section text
+   * @param values         The values for the title key
    */
-  public AbstractWizardPanelView(AbstractWizard<M> wizard, String panelName, MessageKey titleKey, AwesomeIcon backgroundIcon) {
+  public AbstractWizardPanelView(
+    AbstractWizard<M> wizard,
+    String panelName,
+    AwesomeIcon backgroundIcon,
+    MessageKey titleKey,
+    Object... values) {
 
     Preconditions.checkNotNull(wizard, "'wizard' must be present");
     Preconditions.checkNotNull(titleKey, "'title' must be present");
@@ -126,7 +138,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
     PanelDecorator.applyWizardTheme(wizardScreenPanel);
 
     // Add the title to the wizard
-    JLabel title = Labels.newTitleLabel(titleKey);
+    title = Labels.newTitleLabel(titleKey, values);
     wizardScreenPanel.add(title, "span 4," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",gap 0, shrink 200,aligny top,align center,h 90lp!,wrap");
 
     // Provide a basic empty content panel (allows lazy initialisation later)
@@ -338,15 +350,15 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
   }
 
   /**
-    * @return The "create" button for this view
-    */
-   public JButton getCreateButton() {
-     return createButton.get();
-   }
+   * @return The "create" button for this view
+   */
+  public JButton getCreateButton() {
+    return createButton.get();
+  }
 
-   public void setCreateButton(JButton createButton) {
-     this.createButton = Optional.fromNullable(createButton);
-   }
+  public void setCreateButton(JButton createButton) {
+    this.createButton = Optional.fromNullable(createButton);
+  }
 
   /**
    * @return The "finish" button for this view
@@ -416,6 +428,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
    */
   protected void checkForEnvironmentEventPopover(ModelAndView<DisplayEnvironmentAlertModel, DisplayEnvironmentAlertView> displayEnvironmentPopoverMaV) {
 
+    // Don't log this activity since it floods the logs
+
     // Check for any environment alerts
     Optional<EnvironmentEvent> environmentEvent = CoreServices.getApplicationEventService().getLatestEnvironmentEvent();
 
@@ -448,7 +462,7 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
           return;
       }
 
-      // Check for an existing lightbox popover
+      // Check for an existing light box popover
       if (!Panels.isLightBoxPopoverShowing()) {
         // Show the popover
         Panels.showLightBoxPopover(popoverPanel);
@@ -566,54 +580,54 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
     }
 
     SwingUtilities.invokeLater(
-            new Runnable() {
-              @Override
-              public void run() {
-                // Enable the button if present
-                switch (event.getWizardButton()) {
-                  case CANCEL:
-                    if (cancelButton.isPresent()) {
-                      cancelButton.get().setEnabled(event.isEnabled());
-                    }
-                    break;
-                  case EXIT:
-                    if (exitButton.isPresent()) {
-                      exitButton.get().setEnabled(event.isEnabled());
-                    }
-                    break;
-                  case NEXT:
-                    if (nextButton.isPresent()) {
-                      nextButton.get().setEnabled(event.isEnabled());
-                    }
-                    break;
-                  case PREVIOUS:
-                    if (previousButton.isPresent()) {
-                      previousButton.get().setEnabled(event.isEnabled());
-                    }
-                    break;
-                  case FINISH:
-                    if (finishButton.isPresent()) {
-                      finishButton.get().setEnabled(event.isEnabled());
-                    }
-                    break;
-                  case APPLY:
-                    if (applyButton.isPresent()) {
-                      applyButton.get().setEnabled(event.isEnabled());
-                    }
-                    break;
-                  case RESTORE:
-                    if (restoreButton.isPresent()) {
-                      restoreButton.get().setEnabled(event.isEnabled());
-                    }
-                    break;
-                  case CREATE:
-                    if (createButton.isPresent()) {
-                      createButton.get().setEnabled(event.isEnabled());
-                    }
-                    break;
-                  default:
-                    // No dothing
-                }
+      new Runnable() {
+        @Override
+        public void run() {
+          // Enable the button if present
+          switch (event.getWizardButton()) {
+            case CANCEL:
+              if (cancelButton.isPresent()) {
+                cancelButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+            case EXIT:
+              if (exitButton.isPresent()) {
+                exitButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+            case NEXT:
+              if (nextButton.isPresent()) {
+                nextButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+            case PREVIOUS:
+              if (previousButton.isPresent()) {
+                previousButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+            case FINISH:
+              if (finishButton.isPresent()) {
+                finishButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+            case APPLY:
+              if (applyButton.isPresent()) {
+                applyButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+            case RESTORE:
+              if (restoreButton.isPresent()) {
+                restoreButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+            case CREATE:
+              if (createButton.isPresent()) {
+                createButton.get().setEnabled(event.isEnabled());
+              }
+              break;
+            default:
+              // No dothing
+          }
 
         }
       });

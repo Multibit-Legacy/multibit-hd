@@ -41,7 +41,7 @@ public class CreateWalletConfirmSeedPhrasePanelView extends AbstractWizardPanelV
    */
   public CreateWalletConfirmSeedPhrasePanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.CONFIRM_WALLET_SEED_PHRASE_TITLE, AwesomeIcon.KEY);
+    super(wizard, panelName, AwesomeIcon.KEY, MessageKey.CONFIRM_WALLET_SEED_PHRASE_TITLE);
 
   }
 

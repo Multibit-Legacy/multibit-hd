@@ -233,7 +233,7 @@ public class PaymentsProtobufSerializer {
       }
 
       if (paymentRequestProto.hasHash() && !paymentRequestProto.getHash().isEmpty()) {
-        paymentRequestData.setTransactionHash(Optional.of(new Sha256Hash(paymentRequestProto.getHash())));
+        paymentRequestData.setTransactionHash(Optional.of(Sha256Hash.wrap(paymentRequestProto.getHash())));
       } else {
         paymentRequestData.setTransactionHash(Optional.<Sha256Hash>absent());
       }

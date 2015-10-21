@@ -22,6 +22,6 @@ public class BlockrIoBlockExplorer implements BlockExplorer {
 
   @Override
   public MessageFormat getTransactionLookupMessageFormat() {
-    return new MessageFormat("http://btc.blockr.io/tx/info/{0}");
+    return new MessageFormat("https://btc.blockr.io/tx/info/{0}");
   }
 }

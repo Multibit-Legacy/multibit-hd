@@ -43,7 +43,7 @@ public class PaymentSettingsPanelView extends AbstractWizardPanelView<PaymentSet
    */
   public PaymentSettingsPanelView(AbstractWizard<PaymentSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.PAYMENT_SETTINGS_TITLE, AwesomeIcon.MONEY);
+    super(wizard, panelName, AwesomeIcon.MONEY, MessageKey.PAYMENT_SETTINGS_TITLE);
 
   }
 

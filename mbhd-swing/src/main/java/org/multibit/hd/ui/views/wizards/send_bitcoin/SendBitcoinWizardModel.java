@@ -106,7 +106,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    * The SendRequestSummary that initially contains all the tx details, and then is signed prior to sending
    */
   private SendRequestSummary sendRequestSummary;
-  private SendBitcoinConfirmTrezorPanelView sendBitcoinConfirmTrezorPanelView;
+  private SendBitcoinConfirmHardwarePanelView sendBitcoinConfirmHardwarePanelView;
 
   /**
    * Boolean indicating whether this is processing a BIP70 payment request
@@ -175,31 +175,44 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       case SEND_CONFIRM_AMOUNT:
 
         // The user has confirmed the send details and pressed the next button
-        // For a non-Trezor wallet navigate directly to the send screen
+        // For a soft wallet navigate directly to the send screen
         // Get the current wallet
         Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
         if (currentWalletSummary.isPresent()) {
-          if (WalletType.TREZOR_HARD_WALLET.equals(currentWalletSummary.get().getWalletType())) {
-            log.debug("Sending using a Trezor hard wallet");
-            state = SEND_CONFIRM_TREZOR;
-            sendBitcoin();
-          } else {
-            log.debug("Not sending from a Trezor hard wallet - send directly");
-            sendBitcoin();
 
-            state = SEND_REPORT;
+          // Determine how to send the bitcoin
+          switch (getWalletMode()) {
+
+            case STANDARD:
+              log.debug("Not sending from a Trezor hard wallet - send directly");
+              sendBitcoin();
+              state = SEND_REPORT;
+              break;
+            case TREZOR:
+              log.debug("Sending using a Trezor hard wallet");
+              state = SEND_CONFIRM_HARDWARE;
+              sendBitcoin();
+              break;
+            case KEEP_KEY:
+              log.debug("Sending using a KeepKey hard wallet");
+              state = SEND_CONFIRM_HARDWARE;
+              sendBitcoin();
+              break;
+            default:
+              throw new IllegalStateException("Unknown hardware wallet: " + getWalletMode().name());
           }
+
         } else {
           log.debug("No wallet summary - cannot send");
         }
 
         break;
 
-      case SEND_ENTER_PIN_FROM_CONFIRM_TREZOR:
+      case SEND_ENTER_PIN_FROM_CONFIRM_HARDWARE:
         // Do nothing
         break;
 
-      case SEND_CONFIRM_TREZOR:
+      case SEND_CONFIRM_HARDWARE:
         // Move to report
         state = SEND_REPORT;
         break;
@@ -233,7 +246,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       case SEND_CONFIRM_AMOUNT:
         state = SEND_ENTER_AMOUNT;
         break;
-      case SEND_CONFIRM_TREZOR:
+      case SEND_CONFIRM_HARDWARE:
         state = SEND_CONFIRM_AMOUNT;
         break;
       default:
@@ -312,10 +325,10 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   /**
    * <p>Reduced visibility for panel models only</p>
    *
-   * @param sendBitcoinConfirmTrezorPanelView The "confirm Trezor sign" panel view
+   * @param sendBitcoinConfirmHardwarePanelView The "confirm Trezor sign" panel view
    */
-  void setSendBitcoinConfirmTrezorPanelView(SendBitcoinConfirmTrezorPanelView sendBitcoinConfirmTrezorPanelView) {
-    this.sendBitcoinConfirmTrezorPanelView = sendBitcoinConfirmTrezorPanelView;
+  void setSendBitcoinConfirmHardwarePanelView(SendBitcoinConfirmHardwarePanelView sendBitcoinConfirmHardwarePanelView) {
+    this.sendBitcoinConfirmHardwarePanelView = sendBitcoinConfirmHardwarePanelView;
   }
 
   public SendBitcoinEnterPaymentMemoPanelModel getSendBitcoinEnterPaymentMemoPanelModel() {
@@ -550,7 +563,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
           // This call to the Trezor will (sometime later) fire a
           // HardwareWalletEvent containing the encrypted text (or a PIN failure)
           // Expect a SHOW_OPERATION_SUCCEEDED or SHOW_OPERATION_FAILED
-          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
           hardwareWalletService.get().providePIN(pinPositions);
 
           // Must have successfully send the message to be here
@@ -584,9 +597,9 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   public void showPINEntry(HardwareWalletEvent event) {
 
     switch (state) {
-      case SEND_CONFIRM_TREZOR:
+      case SEND_CONFIRM_HARDWARE:
         log.debug("Transaction signing is PIN protected");
-        state = SendBitcoinState.SEND_ENTER_PIN_FROM_CONFIRM_TREZOR;
+        state = SendBitcoinState.SEND_ENTER_PIN_FROM_CONFIRM_HARDWARE;
         break;
       default:
         throw new IllegalStateException("Unknown state: " + state.name());
@@ -599,7 +612,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     log.debug("Received hardware event: '{}'.{}", event.getEventType().name(), event.getMessage());
 
     // Successful PIN entry or not required so transition to Trezor signing display view
-    state = SEND_CONFIRM_TREZOR;
+    state = SEND_CONFIRM_HARDWARE;
 
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
 
@@ -619,7 +632,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       BitcoinConfiguration bitcoinConfiguration = Configurations.currentConfiguration.getBitcoin();
       LanguageConfiguration languageConfiguration = Configurations.currentConfiguration.getLanguage();
 
-      Optional<Transaction> currentTransactionOptional = CoreServices.getOrCreateHardwareWalletService().get().getContext().getTransaction();
+      Optional<Transaction> currentTransactionOptional = CoreServices.getCurrentHardwareWalletService().get().getContext().getTransaction();
       if (currentTransactionOptional.isPresent()) {
 
         Transaction currentTransaction = currentTransactionOptional.get();
@@ -637,7 +650,19 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
             // Avoid an accidental high fee by detecting > 10,000 satoshi fee rate
             feeAmount = Formats.formatCoinAsSymbolic(currentTransaction.getFee(), languageConfiguration, bitcoinConfiguration);
 
-            key = MessageKey.TREZOR_HIGH_FEE_CONFIRM_DISPLAY;
+            // Select the display message
+            switch (getWalletMode()) {
+              case TREZOR:
+                key = MessageKey.TREZOR_HIGH_FEE_CONFIRM_DISPLAY;
+                break;
+              case KEEP_KEY:
+                key = MessageKey.KEEP_KEY_HIGH_FEE_CONFIRM_DISPLAY;
+                break;
+              default:
+                throw new IllegalStateException("Unknown hardware wallet: " + getWalletMode().name());
+            }
+
+            // Fee
             values = new String[]{feeAmount[0] + feeAmount[1] + " " + bitcoinSymbolText};
             break;
           case CONFIRM_OUTPUT:
@@ -669,7 +694,20 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
                 // Fall back to P2SH
                 transactionOutputAddress = output.getAddressFromP2SH(MainNetParams.get());
               }
-              key = MessageKey.TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY;
+
+              // Select the display message
+              switch (getWalletMode()) {
+                case TREZOR:
+                  key = MessageKey.TREZOR_TRANSACTION_OUTPUT_CONFIRM_DISPLAY;
+                  break;
+                case KEEP_KEY:
+                  key = MessageKey.KEEP_KEY_TRANSACTION_OUTPUT_CONFIRM_DISPLAY;
+                  break;
+                default:
+                  throw new IllegalStateException("Unknown hardware wallet: " + getWalletMode().name());
+              }
+
+              // Amount, address
               values = new String[]{
                 transactionOutputAmount[0] + transactionOutputAmount[1] + " " + bitcoinSymbolText,
                 transactionOutputAddress == null ? "" : transactionOutputAddress.toString()
@@ -687,7 +725,19 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
             transactionAmountFormatted = Formats.formatCoinAsSymbolic(transactionAmount, languageConfiguration, bitcoinConfiguration);
             feeAmount = Formats.formatCoinAsSymbolic(currentTransaction.getFee(), languageConfiguration, bitcoinConfiguration);
 
-            key = MessageKey.TREZOR_SIGN_CONFIRM_DISPLAY;
+            // Select the display message
+            switch (getWalletMode()) {
+              case TREZOR:
+                key = MessageKey.TREZOR_SIGN_CONFIRM_DISPLAY;
+                break;
+              case KEEP_KEY:
+                key = MessageKey.KEEP_KEY_SIGN_CONFIRM_DISPLAY;
+                break;
+              default:
+                throw new IllegalStateException("Unknown hardware wallet: " + getWalletMode().name());
+            }
+
+            // Amount, fee
             values = new String[]{
               transactionAmountFormatted[0] + transactionAmountFormatted[1] + " " + bitcoinSymbolText,
               feeAmount[0] + feeAmount[1] + " " + bitcoinSymbolText
@@ -698,13 +748,13 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
         }
       }
     }
-    sendBitcoinConfirmTrezorPanelView.setDisplayText(key, values);
+    sendBitcoinConfirmHardwarePanelView.setDisplayText(key, values);
   }
 
   @Override
   public void showOperationSucceeded(HardwareWalletEvent event) {
 
-    if (state == SEND_ENTER_PIN_FROM_CONFIRM_TREZOR) {
+    if (state == SEND_ENTER_PIN_FROM_CONFIRM_HARDWARE) {
       // Indicate a successful PIN
       getEnterPinPanelView().setPinStatus(true, true);
       return;
@@ -727,7 +777,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
           // The tx is now complete so commit and broadcast it
           // Trezor will provide a signed serialized transaction
-          byte[] deviceTxPayload = CoreServices.getOrCreateHardwareWalletService().get().getContext().getSerializedTx().toByteArray();
+          byte[] deviceTxPayload = CoreServices.getCurrentHardwareWalletService().get().getContext().getSerializedTx().toByteArray();
 
           log.info("DeviceTx payload:\n{}", Utils.HEX.encode(deviceTxPayload));
 
@@ -770,9 +820,9 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
               sendRequestSummary.getSendRequest().get().tx = deviceTx;
               log.debug("The transaction fee was {}", sendRequestSummary.getSendRequest().get().fee);
 
-              sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_TRANSACTION_CREATED_OPERATION);
-              sendBitcoinConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
-              sendBitcoinConfirmTrezorPanelView.setDisplayVisible(false);
+              sendBitcoinConfirmHardwarePanelView.setOperationText(MessageKey.HARDWARE_TRANSACTION_CREATED_OPERATION);
+              sendBitcoinConfirmHardwarePanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
+              sendBitcoinConfirmHardwarePanelView.setDisplayVisible(false);
 
               // Get the last wallet
               Wallet wallet = bitcoinNetworkService.getLastWalletOptional().get();
@@ -784,9 +834,9 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
               ViewEvents.fireViewChangedEvent(ViewKey.HEADER, false);
             } else {
               // The signed transaction is essentially different from what was sent to it - abort send
-              sendBitcoinConfirmTrezorPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
-              sendBitcoinConfirmTrezorPanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
-              sendBitcoinConfirmTrezorPanelView.setDisplayVisible(false);
+              sendBitcoinConfirmHardwarePanelView.setOperationText(MessageKey.HARDWARE_FAILURE_OPERATION);
+              sendBitcoinConfirmHardwarePanelView.setRecoveryText(MessageKey.CLICK_NEXT_TO_CONTINUE);
+              sendBitcoinConfirmHardwarePanelView.setDisplayVisible(false);
             }
           } else {
             log.debug("Cannot commit and broadcast the last send as it is not present in bitcoinNetworkService");
@@ -802,15 +852,15 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
     switch (state) {
-      case SEND_ENTER_PIN_FROM_CONFIRM_TREZOR:
+      case SEND_ENTER_PIN_FROM_CONFIRM_HARDWARE:
         state = SendBitcoinState.SEND_REPORT;
-        setReportMessageKey(MessageKey.TREZOR_INCORRECT_PIN_FAILURE);
+        setReportMessageKey(MessageKey.HARDWARE_INCORRECT_PIN_FAILURE);
         setReportMessageStatus(false);
         requestCancel();
         break;
       default:
         state = SendBitcoinState.SEND_REPORT;
-        setReportMessageKey(MessageKey.TREZOR_SIGN_FAILURE);
+        setReportMessageKey(MessageKey.HARDWARE_SIGN_FAILURE);
         setReportMessageStatus(false);
         requestCancel();
         break;
@@ -904,7 +954,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
             new String[]{e.getClass().getCanonicalName() + " " + e.getMessage()}));
       }
     } else {
-      String message = "Bitcoin not sent successfully so no payment sent to requestor";
+      String message = "Bitcoin not sent successfully so no payment sent to requester";
       log.debug(message);
       CoreEvents.firePaymentSentToRequestorEvent(new PaymentSentToRequestorEvent(false, CoreMessageKey.PAYMENT_SENT_TO_REQUESTER_FAILED, new String[]{message}));
     }

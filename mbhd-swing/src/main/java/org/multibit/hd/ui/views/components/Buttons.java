@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -19,7 +20,6 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class Buttons {
 
@@ -53,9 +53,9 @@ public class Buttons {
   }
 
   /**
-   * @param key    The resource key for the language string for the button text
+   * @param key        The resource key for the language string for the button text
    * @param tooltipKey The resource key for the tooltip
-   * @param values The values to apply to the button language string (can be null)
+   * @param values     The values to apply to the button language string (can be null)
    *
    * @return A new JButton with default styling
    */
@@ -64,7 +64,7 @@ public class Buttons {
     JButton button = newButton(action);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(button, key, tooltipKey);
+    AccessibilityDecorator.apply(button, key, tooltipKey, values);
 
     button.setText(Languages.safeText(key, values));
 
@@ -72,13 +72,13 @@ public class Buttons {
   }
 
   /**
-   * @param key    The resource key for the button language string
+   * @param key        The resource key for the button language string
    * @param tooltipKey The resource key for the tooltip
-   * @param values The values to apply to the button string (can be null)
+   * @param values     The values to apply to the button string (can be null)
    *
    * @return A new JButton with default styling and text arranged below the icon
    */
-  public static JButton newLargeButton(Action action, MessageKey key, MessageKey tooltipKey,  @Nullable Object... values) {
+  public static JButton newLargeButton(Action action, MessageKey key, MessageKey tooltipKey, @Nullable Object... values) {
 
     JButton button = newButton(action, key, tooltipKey, values);
 
@@ -134,7 +134,7 @@ public class Buttons {
   }
 
   /**
-   * @param action             The click action
+   * @param action The click action
    *
    * @return A new "No" button with icon
    */
@@ -171,7 +171,7 @@ public class Buttons {
    */
   public static JButton newExportButton(Action action) {
 
-    JButton button = newButton(action, MessageKey.EXPORT,  MessageKey.EXPORT_TOOLTIP);
+    JButton button = newButton(action, MessageKey.EXPORT, MessageKey.EXPORT_TOOLTIP);
 
     AwesomeDecorator.applyIcon(AwesomeIcon.SHARE_SQUARE_O, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
@@ -662,18 +662,18 @@ public class Buttons {
   }
 
   /**
-    * @param action The click action
-    *
-    * @return A new "Pay this payment request" button with icon
-    */
-   public static JButton newPayThisPaymentRequestButton(Action action) {
+   * @param action The click action
+   *
+   * @return A new "Pay this payment request" button with icon
+   */
+  public static JButton newPayThisPaymentRequestButton(Action action) {
 
-     JButton button = newButton(action, MessageKey.PAY_THIS_PAYMENT_REQUEST, MessageKey.PAY_THIS_PAYMENT_REQUEST_TOOLTIP);
+    JButton button = newButton(action, MessageKey.PAY_THIS_PAYMENT_REQUEST, MessageKey.PAY_THIS_PAYMENT_REQUEST_TOOLTIP);
 
-     AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, true, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.CLOUD_UPLOAD, button, true, MultiBitUI.NORMAL_ICON_SIZE);
 
-     return button;
-   }
+    return button;
+  }
 
   /**
    * @param action The click action
@@ -804,18 +804,19 @@ public class Buttons {
   }
 
   /**
-    * @param action The click action
-    *
-    * @return A new "create" button with icon
-    */
-   public static JButton newCreateButton(Action action) {
+   * @param action The click action
+   *
+   * @return A new "create" button with icon
+   */
+  public static JButton newCreateButton(Action action) {
 
-     JButton button = newButton(action, MessageKey.CREATE, MessageKey.CREATE_TOOLTIP);
+    JButton button = newButton(action, MessageKey.CREATE, MessageKey.CREATE_TOOLTIP);
 
-     AwesomeDecorator.applyIcon(AwesomeIcon.PLUS_CIRCLE, button, false, MultiBitUI.NORMAL_ICON_SIZE);
+    AwesomeDecorator.applyIcon(AwesomeIcon.PLUS_CIRCLE, button, false, MultiBitUI.NORMAL_ICON_SIZE);
 
-     return button;
-   }
+    return button;
+  }
+
   /**
    * @param action The click action
    *
@@ -886,26 +887,28 @@ public class Buttons {
   }
 
   /**
-     * @param action The click action
-     *
-     * @return A new "Trezor tools" wizard button with icon
-     */
-    public static JButton newShowUseTrezorWizardButton(Action action) {
+   * @param action The click action
+   * @param walletMode  The brand to add to the message
+   *
+   * @return A new "Trezor tools" wizard button with icon
+   */
+  public static JButton newShowUseHardwareWalletWizardButton(Action action, WalletMode walletMode) {
 
-      JButton button = newLargeButton(action, MessageKey.SHOW_TREZOR_TOOLS_WIZARD, MessageKey.SHOW_TREZOR_TOOLS_WIZARD_TOOLTIP);
+    JButton button = newLargeButton(action, MessageKey.SHOW_HARDWARE_TOOLS_WIZARD, MessageKey.SHOW_HARDWARE_TOOLS_WIZARD_TOOLTIP, walletMode.historicalBrand());
 
-      AwesomeDecorator.applyIcon(
-        // Cannot use LOCK even though it is the closest icon to the Trezor logo
-        // since it affects the established iconography throughout the application
-        AwesomeIcon.SHIELD,
-        button,
-        true,
-        JLabel.BOTTOM,
-        MultiBitUI.LARGE_ICON_SIZE
-      );
+    AwesomeDecorator.applyIcon(
+      // Cannot use LOCK even though it is the closest icon to the Trezor logo
+      // since it affects the established iconography throughout the application
+      // This also allows alternative hardware wallets to be consistently represented
+      AwesomeIcon.SHIELD,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
 
-      return button;
-    }
+    return button;
+  }
 
   /**
    * @param action The click action
@@ -988,24 +991,24 @@ public class Buttons {
   }
 
   /**
-    * @param action The click action
-    *
-    * @return A new "Fee settings" wizard button with icon
-    */
-   public static JButton newShowFeeSettingsWizardButton(Action action) {
+   * @param action The click action
+   *
+   * @return A new "Fee settings" wizard button with icon
+   */
+  public static JButton newShowFeeSettingsWizardButton(Action action) {
 
-     JButton button = newLargeButton(action, MessageKey.FEES_SETTINGS_TITLE, MessageKey.FEES_SETTINGS_TITLE);
+    JButton button = newLargeButton(action, MessageKey.FEES_SETTINGS_TITLE, MessageKey.FEES_SETTINGS_TITLE);
 
-     AwesomeDecorator.applyIcon(
-       AwesomeIcon.TICKET,
-       button,
-       true,
-       JLabel.BOTTOM,
-       MultiBitUI.LARGE_ICON_SIZE
-     );
+    AwesomeDecorator.applyIcon(
+      AwesomeIcon.TICKET,
+      button,
+      true,
+      JLabel.BOTTOM,
+      MultiBitUI.LARGE_ICON_SIZE
+    );
 
-     return button;
-   }
+    return button;
+  }
 
   /**
    * @param action The click action
@@ -1228,9 +1231,9 @@ public class Buttons {
   }
 
   /**
-   * @param action The click action
-   *
+   * @param action   The click action
    * @param festName The FEST name
+   *
    * @return A new "PIN matrix" button with icon
    */
   public static JButton newPinMatrixButton(Action action, String festName) {

@@ -26,6 +26,8 @@ import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseMode
 import org.multibit.hd.ui.views.components.enter_seed_phrase.EnterSeedPhraseView;
 import org.multibit.hd.ui.views.components.enter_tags.EnterTagsModel;
 import org.multibit.hd.ui.views.components.enter_tags.EnterTagsView;
+import org.multibit.hd.ui.views.components.keepkey_display.KeepKeyDisplayModel;
+import org.multibit.hd.ui.views.components.keepkey_display.KeepKeyDisplayView;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryModel;
 import org.multibit.hd.ui.views.components.select_backup_summary.SelectBackupSummaryView;
 import org.multibit.hd.ui.views.components.select_file.SelectFileModel;
@@ -314,6 +316,20 @@ public class Components {
 
     TrezorDisplayModel model = new TrezorDisplayModel(panelName);
     TrezorDisplayView view = new TrezorDisplayView(model);
+
+    return new ModelAndView<>(model, view);
+
+  }
+
+  /**
+   * <p>A "KeepKey display" model and view handles presentation of a KeepKey operation and display text</p>
+   *
+   * @return A new "KeepKey display" model and view
+   */
+  public static ModelAndView<KeepKeyDisplayModel, KeepKeyDisplayView> newKeepKeyDisplayMaV(String panelName) {
+
+    KeepKeyDisplayModel model = new KeepKeyDisplayModel(panelName);
+    KeepKeyDisplayView view = new KeepKeyDisplayView(model);
 
     return new ModelAndView<>(model, view);
 

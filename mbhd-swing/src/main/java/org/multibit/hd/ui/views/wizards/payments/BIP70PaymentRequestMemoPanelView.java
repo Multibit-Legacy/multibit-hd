@@ -44,7 +44,7 @@ public class BIP70PaymentRequestMemoPanelView extends AbstractWizardPanelView<Pa
    * @param wizard The wizard managing the states
    */
   public BIP70PaymentRequestMemoPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
-    super(wizard, panelName, MessageKey.DISPLAY_PAYMENT_REQUEST_MEMO_TITLE, AwesomeIcon.FILE_TEXT_O);
+    super(wizard, panelName, AwesomeIcon.FILE_TEXT_O, MessageKey.DISPLAY_PAYMENT_REQUEST_MEMO_TITLE);
   }
 
   @Override

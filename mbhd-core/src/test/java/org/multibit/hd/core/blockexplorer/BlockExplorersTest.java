@@ -19,8 +19,9 @@ public class BlockExplorersTest {
   private static final String EXPECTED_BIT_EASY_COM_URL = "https://www.biteasy.com/blockchain/transactions/58be29550b129655bebae4ceb948768278504fe1378f7a624ab5907019d167da";
   private static final String EXPECTED_BITPAY_COM_URL = "https://insight.bitpay.com/tx/58be29550b129655bebae4ceb948768278504fe1378f7a624ab5907019d167da";
   private static final String EXPECTED_BLOCKCHAIN_INFO_URL = "https://blockchain.info/tx-index/58be29550b129655bebae4ceb948768278504fe1378f7a624ab5907019d167da";
-  private static final String EXPECTED_BLOCKR_IO_URL = "http://btc.blockr.io/tx/info/58be29550b129655bebae4ceb948768278504fe1378f7a624ab5907019d167da";
+  private static final String EXPECTED_BLOCKR_IO_URL = "https://btc.blockr.io/tx/info/58be29550b129655bebae4ceb948768278504fe1378f7a624ab5907019d167da";
   private static final String EXPECTED_BLOCK_TRAIL_COM_URL = "https://www.blocktrail.com/BTC/tx/58be29550b129655bebae4ceb948768278504fe1378f7a624ab5907019d167da";
+  private static final String EXPECTED_SMARTBIT_COM_AU_URL = "https://www.smartbit.com.au/tx/58be29550b129655bebae4ceb948768278504fe1378f7a624ab5907019d167da";
 
 
   @Test
@@ -40,6 +41,7 @@ public class BlockExplorersTest {
     assertThat(iterator.next() instanceof BlockChainInfoBlockExplorer).isTrue();
     assertThat(iterator.next() instanceof BlockrIoBlockExplorer).isTrue();
     assertThat(iterator.next() instanceof BlockTrailComBlockExplorer).isTrue();
+    assertThat(iterator.next() instanceof SmartBitComAuBlockExplorer).isTrue();
 
     // No more
     assertThat(iterator.hasNext()).isFalse();
@@ -92,6 +94,7 @@ public class BlockExplorersTest {
     MessageFormat format = blockExplorer.getTransactionLookupMessageFormat();
     assertThat(EXPECTED_BLOCKCHAIN_INFO_URL.equals(format.format(EXAMPLE_TX_ID))).isTrue();
   }
+
   @Test
   public void testBlockrIo() {
     final String expectedId = "blockr";
@@ -109,18 +112,34 @@ public class BlockExplorersTest {
   }
 
   @Test
-   public void testBlockTrailCom() {
-     final String expectedId = "blocktrail";
-     assertThat(expectedId.equals(BlockTrailComBlockExplorer.ID));
+  public void testBlockTrailCom() {
+    final String expectedId = "blocktrail";
+    assertThat(expectedId.equals(BlockTrailComBlockExplorer.ID));
 
-     Optional<BlockExplorer> blockExplorerOptional = BlockExplorers.getBlockExplorerById(BlockTrailComBlockExplorer.ID);
-     assertThat(blockExplorerOptional.isPresent()).isTrue();
-     BlockExplorer blockExplorer = blockExplorerOptional.get();
+    Optional<BlockExplorer> blockExplorerOptional = BlockExplorers.getBlockExplorerById(BlockTrailComBlockExplorer.ID);
+    assertThat(blockExplorerOptional.isPresent()).isTrue();
+    BlockExplorer blockExplorer = blockExplorerOptional.get();
 
-     assertThat(blockExplorer instanceof BlockTrailComBlockExplorer).isTrue();
-     assertThat(blockExplorer.getName().equals("blocktrail.com")).isTrue();
+    assertThat(blockExplorer instanceof BlockTrailComBlockExplorer).isTrue();
+    assertThat(blockExplorer.getName().equals("blocktrail.com")).isTrue();
 
-     MessageFormat format = blockExplorer.getTransactionLookupMessageFormat();
-     assertThat(EXPECTED_BLOCK_TRAIL_COM_URL.equals(format.format(EXAMPLE_TX_ID))).isTrue();
-   }
+    MessageFormat format = blockExplorer.getTransactionLookupMessageFormat();
+    assertThat(EXPECTED_BLOCK_TRAIL_COM_URL.equals(format.format(EXAMPLE_TX_ID))).isTrue();
+  }
+
+  @Test
+  public void testSmartbitComAuCom() {
+    final String expectedId = "smartbit";
+    assertThat(expectedId.equals(SmartBitComAuBlockExplorer.ID));
+
+    Optional<BlockExplorer> blockExplorerOptional = BlockExplorers.getBlockExplorerById(SmartBitComAuBlockExplorer.ID);
+    assertThat(blockExplorerOptional.isPresent()).isTrue();
+    BlockExplorer blockExplorer = blockExplorerOptional.get();
+
+    assertThat(blockExplorer instanceof SmartBitComAuBlockExplorer).isTrue();
+    assertThat(blockExplorer.getName().equals("smartbit.com.au")).isTrue();
+
+    MessageFormat format = blockExplorer.getTransactionLookupMessageFormat();
+    assertThat(EXPECTED_SMARTBIT_COM_AU_URL.equals(format.format(EXAMPLE_TX_ID))).isTrue();
+  }
 }

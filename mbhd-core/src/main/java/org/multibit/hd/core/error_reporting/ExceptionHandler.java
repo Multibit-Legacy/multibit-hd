@@ -447,14 +447,43 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       return true;
     }
 
-      // Check for XlibWrapper atom name (see Issue #635)
-      // This also occurs occasionally in clipboard operations and is based in the way
-      // the JVM interacts with the underlying OS - there is nothing we can do
-      // The application logic should not be affected
+    // Check for XlibWrapper atom name (see Issue #635)
+    // This also occurs occasionally in clipboard operations and is based in the way
+    // the JVM interacts with the underlying OS - there is nothing we can do
+    // The application logic should not be affected
     if (message.contains("Failed to retrieve atom name")) {
       log.warn("Detected XlibWrapper exception. Treat as benign.");
       return true;
     }
+
+    // Check for java.lang.ClassCastException: javax.swing.plaf.FontUIResource cannot be cast to javax.swing.Painter (see Issue #722)
+    // This is a Swing glitch that we can do nothing about
+    if (message.contains("javax.swing.plaf.FontUIResource cannot be cast to javax.swing.Painter")) {
+      log.warn("Detected FontUIResource cannot be cast to Painter exception. Treat as benign.");
+      return true;
+    }
+
+    // Check for java.lang.ClassCastException: sun.awt.image.BufImgSurfaceData cannot be cast to sun.java2d.xr.XRSurfaceData (see Issue #677)
+    // This is a Swing glitch that we can do nothing about
+    if (message.contains("sun.awt.image.BufImgSurfaceData cannot be cast to sun.java2d.xr.XRSurfaceData")) {
+      log.warn("Detected BufImgSurfaceData cannot be cast to XRSurfaceData exception. Treat as benign.");
+      return true;
+    }
+
+    // Check for sun.awt.Win32GraphicsConfig cannot be cast to sun.java2d.d3d.D3DGraphicsConfig (see Issue #735)
+    // This is a Swing glitch that we can do nothing about
+    if (message.contains("sun.awt.Win32GraphicsConfig cannot be cast to sun.java2d.d3d.D3DGraphicsConfig")) {
+      log.warn("Detected Win32GraphicsConfig cannot be cast to D3DGraphicsConfig exception. Treat as benign.");
+      return true;
+    }
+
+    // Check for javax.swing.plaf.nimbus.DerivedColor$UIResource cannot be cast to java.awt.Font (see Issue #754)
+    // This is a Swing glitch that we can do nothing about
+    if (message.contains("javax.swing.plaf.nimbus.DerivedColor$UIResource cannot be cast to java.awt.Font")) {
+      log.warn("Detected DerivedColor$UIResource cannot be cast to java.awt.Font exception. Treat as benign.");
+      return true;
+    }
+
 
     // Anything else is a problem
     return false;

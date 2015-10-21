@@ -64,7 +64,7 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
    */
   public WelcomeAttachHardwareWalletPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.ATTACH_HARDWARE_WALLET_TITLE, AwesomeIcon.SHIELD);
+    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.ATTACH_HARDWARE_WALLET_TITLE, new Object[]{wizard.getWizardModel().getWalletMode().brand()});
 
     // Timer needs to be fairly fast to appear responsive
     timer = new Timer(
@@ -106,13 +106,13 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
     // Note 1
     note1Icon = Labels.newIconLabel(AwesomeIcon.SHIELD, Optional.<MessageKey>absent(), null);
     contentPanel.add(note1Icon, "shrink");
-    note1Label = Labels.newNoteLabel(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_1, null);
+    note1Label = Labels.newNoteLabel(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_1, new Object[]{getWizardModel().getWalletMode().brand()});
     contentPanel.add(note1Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     // Note 2
     note2Icon = Labels.newIconLabel(AwesomeIcon.PLUS_CIRCLE, Optional.<MessageKey>absent(), null);
     contentPanel.add(note2Icon, "shrink");
-    note2Label = Labels.newNoteLabel(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_2, null);
+    note2Label = Labels.newNoteLabel(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_2, new Object[]{getWizardModel().getWalletMode().brand()});
     contentPanel.add(note2Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     note2Icon.setVisible(false);
     note2Label.setVisible(false);
@@ -120,7 +120,7 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
     // Note 3
     note3Icon = Labels.newIconLabel(AwesomeIcon.EXTERNAL_LINK, Optional.<MessageKey>absent(), null);
     contentPanel.add(note3Icon, "shrink");
-    note3Label = Labels.newNoteLabel(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_3, null);
+    note3Label = Labels.newNoteLabel(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_3, new Object[]{getWizardModel().getWalletMode().brand()});
     contentPanel.add(note3Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     note3Icon.setVisible(false);
     note3Label.setVisible(false);
@@ -128,7 +128,7 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
     // Note 4
     note4Icon = Labels.newIconLabel(AwesomeIcon.PLUG, Optional.<MessageKey>absent(), null);
     contentPanel.add(note4Icon, "shrink");
-    note4Label = Labels.newNoteLabel(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_4, null);
+    note4Label = Labels.newNoteLabel(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_4, new Object[]{getWizardModel().getWalletMode().brand()});
     contentPanel.add(note4Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     note4Icon.setVisible(false);
     note4Label.setVisible(false);
@@ -136,13 +136,13 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
     // Note 5
     note5Icon = Labels.newIconLabel(AwesomeIcon.PLUS_SQUARE, Optional.<MessageKey>absent(), null);
     contentPanel.add(note5Icon, "shrink");
-    note5Label = Labels.newNoteLabel(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_5, null);
+    note5Label = Labels.newNoteLabel(MessageKey.ATTACH_HARDWARE_WALLET_NOTE_5, new Object[]{getWizardModel().getWalletMode().brand()});
     contentPanel.add(note5Label, MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
     note5Icon.setVisible(false);
     note5Label.setVisible(false);
 
     // Provide an empty status label (populated after show)
-    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.TREZOR_FOUND), null, Optional.<Boolean>absent());
+    reportStatusLabel = Labels.newStatusLabel(Optional.of(MessageKey.HARDWARE_FOUND), new Object[]{getWizardModel().getWalletMode().brand()}, Optional.<Boolean>absent());
     reportStatusLabel.setVisible(false);
 
     contentPanel.add(reportStatusLabel, "span 2,aligny top,wrap");
@@ -195,9 +195,9 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
         break;
       case 5:
         // Configure the initial state (the wizard may not have been created when the DEVICE_READY was issued)
-        final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+        final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
         if (hardwareWalletService.isPresent() && hardwareWalletService.get().isDeviceReady()) {
-          setHardwareWalletStatus(Optional.of(MessageKey.TREZOR_FOUND), true);
+          setHardwareWalletStatus(Optional.of(MessageKey.HARDWARE_FOUND), new Object[] {getWizardModel().getWalletMode().brand()}, true);
         }
         break;
       default:
@@ -244,16 +244,17 @@ public class WelcomeAttachHardwareWalletPanelView extends AbstractWizardPanelVie
 
   /**
    * @param messageKey The message key (absent implies not visible)
+   * @param values     The values for the message key
    * @param status     True for a check mark
    */
-  public void setHardwareWalletStatus(final Optional<MessageKey> messageKey, final boolean status) {
+  public void setHardwareWalletStatus(final Optional<MessageKey> messageKey, final Object[] values, final boolean status) {
 
     SwingUtilities.invokeLater(
       new Runnable() {
         @Override
         public void run() {
           // Check for report message from hardware wallet
-          LabelDecorator.applyReportMessage(reportStatusLabel, messageKey, status);
+          LabelDecorator.applyReportMessage(reportStatusLabel, messageKey, values, status);
         }
       });
 

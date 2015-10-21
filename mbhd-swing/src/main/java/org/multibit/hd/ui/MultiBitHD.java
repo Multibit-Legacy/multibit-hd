@@ -16,6 +16,7 @@ import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.OSUtils;
 import org.multibit.hd.hardware.core.HardwareWalletService;
+import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.controllers.HeaderController;
 import org.multibit.hd.ui.controllers.MainController;
@@ -173,10 +174,11 @@ public class MultiBitHD {
 
     mainController = null;
 
-    // final purge in case anything gets missed
+    // Final purge in case anything gets missed
     ViewEvents.unsubscribeAll();
     ControllerEvents.unsubscribeAll();
     CoreEvents.unsubscribeAll();
+    HardwareWalletEvents.unsubscribeAll();
   }
 
   /**
@@ -284,7 +286,6 @@ public class MultiBitHD {
     // and for MainController to subsequently process the events
     // The delay observed in reality and FEST tests ranges from 1400-2200ms and if
     // not included results in wiped hardware wallets being missed on startup
-    final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
     log.debug("Starting the clock for hardware wallet initialisation");
     long hardwareInitialisationTime = System.currentTimeMillis();
 
@@ -367,22 +368,21 @@ public class MultiBitHD {
     boolean deviceAttached = false;
     boolean deviceWiped = false;
 
-    // Check hardware wallet situation after initialisation
+    // Check hardware wallet situation after first initialisation (may not be present or ready)
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.useFirstReadyHardwareWalletService();
+
     if (hardwareWalletService.isPresent()) {
+      // Hardware wallet must be attached to be present
+      deviceAttached = true;
 
-      if (hardwareWalletService.get().isDeviceReady()) {
+      if (!hardwareWalletService.get().isWalletPresent()) {
 
-        deviceAttached = true;
+        log.debug("Wiped hardware wallet detected");
 
-        if (!hardwareWalletService.get().isWalletPresent()) {
-
-          log.debug("Wiped hardware wallet detected");
-
-          // Must show the welcome wizard in hardware wallet mode
-          // regardless of wallet or licence situation
-          // MainController should have handled the events
-          deviceWiped = true;
-        }
+        // Must show the welcome wizard in hardware wallet mode
+        // regardless of wallet or licence situation
+        // MainController should have handled the events
+        deviceWiped = true;
       }
     }
 
@@ -472,11 +472,11 @@ public class MultiBitHD {
 
     if (timeSpent < HARDWARE_INITIALISATION_TIME) {
       long sleepFor = HARDWARE_INITIALISATION_TIME - timeSpent;
-      log.debug("Sleep for an extra {} milliseconds to allow hardwareWalletService to initialise", sleepFor);
+      log.debug("Sleep for an extra {} milliseconds to allow hardware wallets to initialise", sleepFor);
       Uninterruptibles.sleepUninterruptibly(sleepFor, TimeUnit.MILLISECONDS);
       log.debug("Finished sleep");
     } else {
-      log.debug("No need for extra sleep time to allow hardwareWalletService to initialise");
+      log.debug("No need for extra sleep time to allow hardware wallets to initialise");
     }
 
   }

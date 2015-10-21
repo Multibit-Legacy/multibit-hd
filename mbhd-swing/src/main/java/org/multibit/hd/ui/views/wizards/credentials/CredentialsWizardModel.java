@@ -126,7 +126,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   /**
    * @param createNewTrezorWallet True if there is a need to switch to password entry through showNext()
    */
-  public void setCreateNewTrezorWallet(boolean createNewTrezorWallet) {
+  public void setCreateNewHardwareWallet(boolean createNewTrezorWallet) {
     this.createNewTrezorWallet = createNewTrezorWallet;
   }
 
@@ -136,6 +136,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       case CREDENTIALS_LOAD_WALLET_REPORT:
         // Show the enter password screen (for when the user has entered an incorrect password
         state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+        setWalletMode(WalletMode.STANDARD);
         break;
       default:
         throw new IllegalStateException("Cannot showPrevious with a state of " + state);
@@ -156,9 +157,10 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         break;
       case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
       case CREDENTIALS_REQUEST_CIPHER_KEY:
-        // User may detach their Trezor at this point
+        // User may detach their device at this point
         if (switchToPassword) {
           state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+          setWalletMode(WalletMode.STANDARD);
         }
         break;
       case CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY:
@@ -171,7 +173,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         break;
       case CREDENTIALS_CREATE:
         break;
-       case CREDENTIALS_LOAD_WALLET_REPORT:
+      case CREDENTIALS_LOAD_WALLET_REPORT:
         break;
       default:
         throw new IllegalStateException("Cannot showNext with a state of " + state);
@@ -296,6 +298,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
     setSwitchToPassword(true);
     state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+    setWalletMode(WalletMode.STANDARD);
   }
 
   // A note is added to the switch to cover this
@@ -324,9 +327,9 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
             @Override
             public void run() {
 
-              confirmCipherKeyPanelView.getTrezorDisplayView().setOperationText(MessageKey.COMMUNICATING_WITH_TREZOR_OPERATION);
-              confirmCipherKeyPanelView.getTrezorDisplayView().setDisplayVisible(false);
-              confirmCipherKeyPanelView.getTrezorDisplayView().setSpinnerVisible(true);
+              confirmCipherKeyPanelView.getHardwareDisplayView().setOperationText(MessageKey.COMMUNICATING_WITH_HARDWARE_OPERATION, getWalletMode().brand());
+              confirmCipherKeyPanelView.getHardwareDisplayView().setDisplayVisible(false);
+              confirmCipherKeyPanelView.getHardwareDisplayView().setSpinnerVisible(true);
 
             }
           });
@@ -356,7 +359,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   @Override
   public void showOperationFailed(HardwareWalletEvent event) {
 
-    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+    Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
 
     final Failure failure = (Failure) event.getMessage().orNull();
     if (failure == null) {
@@ -370,7 +373,6 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       case CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY:
         // An unsuccessful get master public key has been performed
         ApplicationEventService.setIgnoreHardwareWalletEventsThreshold(Dates.nowUtc().plusSeconds(1));
-
         break;
       case CREDENTIALS_ENTER_PIN_FROM_CIPHER_KEY:
         // User entered incorrect PIN so should start again
@@ -387,6 +389,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         if (FailureType.ACTION_CANCELLED.equals(failure.getType())) {
           // User is backing out of using their device (switch to password)
           state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+          setWalletMode(WalletMode.STANDARD);
         } else {
           // Something has gone wrong with the device so start again
           handleRestart(hardwareWalletService);
@@ -396,7 +399,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
   private void handleRestart(Optional<HardwareWalletService> hardwareWalletService) {
     state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
-    // Reset the trezor and start again
+    // Reset the device and start again
     if (hardwareWalletService.isPresent()) {
       hardwareWalletService.get().requestCancel();
     }
@@ -405,14 +408,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   @Override
   public void showDeviceReady(HardwareWalletEvent event) {
 
-    if (ApplicationEventService.isHardwareWalletEventAllowed()) {
-      // User attached an operational device in place of whatever
-      // they are currently doing so start again.
+    // User attached an operational device in place of whatever
+    // they are currently doing so start again.
 
-      // If a wallet is loading then do not switch to PIN entry
-      if (!state.equals(CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT)) {
-        state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
-      }
+    // If a wallet is loading then do not switch to PIN entry
+    if (!state.equals(CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT)) {
+      state = CredentialsState.CREDENTIALS_REQUEST_MASTER_PUBLIC_KEY;
+      setWalletMode(WalletMode.of(event));
     }
   }
 
@@ -421,13 +423,15 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
   public void showDeviceDetached(HardwareWalletEvent event) {
     log.debug("Device is now detached - showing password screen");
 
-    if (ApplicationEventService.isHardwareWalletEventAllowed()) {
-
-      // If the wallet is loading then do not switch to password entry
-      if (!state.equals(CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT)) {
-        state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
-      }
+    // If the wallet is loading then do not switch to password entry
+    if (!state.equals(CredentialsState.CREDENTIALS_LOAD_WALLET_REPORT)) {
+      state = CredentialsState.CREDENTIALS_ENTER_PASSWORD;
+      setWalletMode(WalletMode.STANDARD);
     }
+
+    // Switch to first ready device (and deactivate this one)
+    CoreServices.useFirstReadyHardwareWalletService();
+
   }
 
   @Override
@@ -463,19 +467,20 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
       new Callable<Boolean>() {
         @Override
         public Boolean call() {
-          log.debug("Performing a request cipher key to Trezor");
+          log.debug("Performing a request cipher key to hardware wallet");
 
           // Provide a short delay to allow UI to update
           Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
 
           // A 'requestCipherKey' is performed in which the user presses the OK button to encrypt a set text
           // (the result of which will be used to decrypt the wallet)
-          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
 
           // Check if there is a wallet present
           if (hardwareWalletService.get().isWalletPresent()) {
 
             // Use this layout to ensure line wrapping occurs on a V1 Trezor
+            // DO NOT CHANGE THIS or client wallets will not unlock
             byte[] key = "MultiBit HD     Unlock".getBytes(Charsets.UTF_8);
             byte[] keyValue = "0123456789abcdef".getBytes(Charsets.UTF_8);
 
@@ -513,7 +518,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         public void onFailure(Throwable t) {
 
           // Failed to send the message
-          requestCipherKeyPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
+          requestCipherKeyPanelView.setOperationText(MessageKey.HARDWARE_FAILURE_OPERATION);
         }
       }
     );
@@ -536,7 +541,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           // This call to the Trezor will (sometime later) fire a
           // HardwareWalletEvent containing the encrypted text (or a PIN failure)
           // Expect a SHOW_OPERATION_SUCCEEDED or SHOW_OPERATION_FAILED
-          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
           hardwareWalletService.get().providePIN(pinPositions);
 
           // Must have successfully send the message to be here
@@ -578,7 +583,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         @Override
         public Boolean call() throws Exception {
 
-          Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
+          Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getCurrentHardwareWalletService();
 
           if (hardwareWalletServiceOptional.isPresent()) {
 
@@ -623,7 +628,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
         public void onFailure(Throwable t) {
 
           // Failed to send the message
-          requestCipherKeyPanelView.setOperationText(MessageKey.TREZOR_FAILURE_OPERATION);
+          requestCipherKeyPanelView.setOperationText(MessageKey.HARDWARE_FAILURE_OPERATION);
         }
 
       });
@@ -819,7 +824,7 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
    */
   private Optional<WalletSummary> getOrCreateTrezorWallet() {
 
-    Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getOrCreateHardwareWalletService();
+    Optional<HardwareWalletService> hardwareWalletServiceOptional = CoreServices.getCurrentHardwareWalletService();
     if (hardwareWalletServiceOptional.isPresent()) {
 
       HardwareWalletService hardwareWalletService = hardwareWalletServiceOptional.get();
@@ -897,13 +902,13 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
           // Must be OK to be here
 
           return Optional.fromNullable(
-            WalletManager.INSTANCE.getOrCreateTrezorHardWalletSummaryFromRootNode(
+            WalletManager.INSTANCE.getOrCreateTrezorCloneHardWalletSummaryFromRootNode(
               applicationDataDirectory,
               parentKey,
               // There is no reliable timestamp for a 'new' wallet as it could exist elsewhere
               replayDateInMillis / 1000,
               newWalletPassword,
-              label, "Trezor", true));
+              label, "", true));
 
         } catch (Exception e) {
           CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.<WalletId>absent(), false, CoreMessageKey.WALLET_FAILED_TO_LOAD, e, Optional.<File>absent()));

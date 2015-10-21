@@ -7,6 +7,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.commons.utils.Dates;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.services.ApplicationEventService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.hardware.core.HardwareWalletService;
@@ -33,9 +34,14 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   private static final Logger log = LoggerFactory.getLogger(AbstractHardwareWalletWizardModel.class);
 
   /**
-   * Trezor requests have their own executor service which is shared across all wizards
+   * Hardware wallet requests have their own executor service which is shared across all hardware wizards
    */
-  protected static final ListeningExecutorService hardwareWalletRequestService = SafeExecutors.newSingleThreadExecutor("trezor-requests");
+  protected static final ListeningExecutorService hardwareWalletRequestService = SafeExecutors.newSingleThreadExecutor("hardware-requests");
+
+  /**
+   * The current wallet mode (e.g. TREZOR, KEEP_KEY etc)
+   */
+  private WalletMode walletMode;
 
   /**
    * The hardware wallet report message key
@@ -49,6 +55,23 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   protected AbstractHardwareWalletWizardModel(S state) {
     super(state);
 
+    // Keep track of the current wallet mode
+    this.walletMode = WalletMode.of(CoreServices.getCurrentHardwareWalletService());
+
+  }
+
+  /**
+   * @return The current wallet mode from when this wizard was created
+   */
+  public WalletMode getWalletMode() {
+    return walletMode;
+  }
+
+  /**
+   * @param walletMode The new wallet mode (devices may attach/detach during wizard presentation)
+   */
+  public void setWalletMode(WalletMode walletMode) {
+    this.walletMode = walletMode;
   }
 
   /**
@@ -69,7 +92,7 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
   /**
    * Handles state transition to a "device ready" panel
    *
-   * Usually this will be a "use Trezor" panel which will show a collection
+   * Usually this will be a "use hardware wallet" panel which will show a collection
    * of options to determine what happens next
    *
    * Note that an "operation failure" will reset the device back to its
@@ -277,7 +300,7 @@ public abstract class AbstractHardwareWalletWizardModel<S> extends AbstractWizar
         public Boolean call() throws Exception {
 
           // See if the attached trezor is initialised - no need to perform a cancel if there is no wallet
-          final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+          final Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
           if (hardwareWalletService.isPresent()) {
 
             // Cancel the current Trezor operation

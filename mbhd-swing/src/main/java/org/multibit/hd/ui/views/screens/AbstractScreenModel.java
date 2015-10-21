@@ -1,7 +1,9 @@
 package org.multibit.hd.ui.views.screens;
 
 import com.google.common.base.Preconditions;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.events.CoreEvents;
+import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.events.view.ViewEvents;
 
 /**
@@ -11,7 +13,6 @@ import org.multibit.hd.ui.events.view.ViewEvents;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public abstract class AbstractScreenModel implements ScreenModel {
 
@@ -19,6 +20,8 @@ public abstract class AbstractScreenModel implements ScreenModel {
    * The detail view
    */
   protected final Screen detailView;
+
+  private final WalletMode walletMode;
 
   protected AbstractScreenModel(Screen detailView) {
 
@@ -30,6 +33,9 @@ public abstract class AbstractScreenModel implements ScreenModel {
     CoreEvents.subscribe(this);
     ViewEvents.subscribe(this);
 
+    // Establish the wallet mode
+    walletMode = WalletMode.of(CoreServices.getCurrentHardwareWalletService());
+
   }
 
   @Override
@@ -39,4 +45,10 @@ public abstract class AbstractScreenModel implements ScreenModel {
 
   }
 
+  /**
+   * @return The wallet mode of the current hardware wallet
+   */
+  public WalletMode getWalletMode() {
+    return walletMode;
+  }
 }

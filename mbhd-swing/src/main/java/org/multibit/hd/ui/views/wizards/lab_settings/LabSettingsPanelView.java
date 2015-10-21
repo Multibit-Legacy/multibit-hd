@@ -41,7 +41,7 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
    */
   public LabSettingsPanelView(AbstractWizard<LabSettingsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.LABS_SETTINGS_TITLE, AwesomeIcon.FLASK);
+    super(wizard, panelName, AwesomeIcon.FLASK, MessageKey.LABS_SETTINGS_TITLE);
 
   }
 
@@ -70,12 +70,12 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
 
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
-    trezorYesNoComboBox = ComboBoxes.newTrezorYesNoComboBox(this, configuration.isTrezor());
+    trezorYesNoComboBox = ComboBoxes.newHardwareYesNoComboBox(this, configuration.isTrezor());
     showRestoreBeta7WalletsYesNoComboBox = ComboBoxes.newShowRestoreBeta7WalletsYesNoComboBox(this, configuration.isShowRestoreBeta7Wallets());
 
     contentPanel.add(Labels.newLabChangeNote(), "growx,span 2,wrap");
 
-    contentPanel.add(Labels.newSelectTrezor(), "shrink");
+    contentPanel.add(Labels.newSelectHardware(), "shrink");
     contentPanel.add(trezorYesNoComboBox, "growx,wrap");
 
     contentPanel.add(Labels.newSelectShowRestoreBeta7Wallets(), "shrink");
@@ -124,7 +124,7 @@ public class LabSettingsPanelView extends AbstractWizardPanelView<LabSettingsWiz
     Configuration configuration = Configurations.currentConfiguration.deepCopy();
 
     JComboBox source = (JComboBox) e.getSource();
-    if (ComboBoxes.TREZOR_COMMAND.equals(e.getActionCommand())) {
+    if (ComboBoxes.HARDWARE_COMMAND.equals(e.getActionCommand())) {
       configuration.setTrezor(source.getSelectedIndex() == 0);
     }
     if (ComboBoxes.SHOW_RESTORE_BETA7_WALLETS_COMMAND.equals(e.getActionCommand())) {

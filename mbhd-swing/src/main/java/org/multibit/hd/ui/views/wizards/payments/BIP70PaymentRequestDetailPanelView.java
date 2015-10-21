@@ -57,7 +57,7 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
   private JLabel statusValue;
 
   private JLabel trustStatusLabel;
-  private JLabel memo;
+  private JTextArea memo;
   private JLabel displayName;
   private JLabel date;
   private JLabel expires;
@@ -71,7 +71,7 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
    * @param panelName The panel name
    */
   public BIP70PaymentRequestDetailPanelView(AbstractWizard<PaymentsWizardModel> wizard, String panelName) {
-    super(wizard, panelName, MessageKey.DISPLAY_PAYMENT_REQUEST_TITLE, AwesomeIcon.MONEY);
+    super(wizard, panelName, AwesomeIcon.MONEY, MessageKey.DISPLAY_PAYMENT_REQUEST_TITLE);
   }
 
 
@@ -108,8 +108,12 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
     paymentRequestAmountMaV.getView().setVisible(true);
 
     // Populate value labels
-    memo = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));
-    memo.setName(MessageKey.NOTES.getKey() + ".value");
+    memo = TextBoxes.newReadOnlyTextArea(4,50);
+    memo.setBorder(null);
+    AccessibilityDecorator.apply(memo, MessageKey.NOTES);
+    // Memo requires its own scroll pane
+    JScrollPane scrollPane = ScrollPanes.newReadOnlyScrollPane(memo);
+
 
     date = Labels.newValueLabel(Languages.safeText(MessageKey.NOT_AVAILABLE));
     date.setName(MessageKey.DATE.getKey() + ".value");
@@ -128,7 +132,7 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
     contentPanel.add(statusValue, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     contentPanel.add(Labels.newMemoLabel(), "shrink");
-    contentPanel.add(memo, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
+    contentPanel.add(scrollPane, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
 
     contentPanel.add(Labels.newDisplayNameLabel(), "shrink");
     contentPanel.add(displayName, "shrink," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",wrap");
@@ -202,7 +206,7 @@ public class BIP70PaymentRequestDetailPanelView extends AbstractWizardPanelView<
     Configuration configuration = Configurations.currentConfiguration;
     paymentRequestAmountMaV.getModel().setCoinAmount(paymentRequestData.getAmountCoin().or(Coin.ZERO));
     if (paymentRequestData.getAmountFiat().getAmount().isPresent()) {
-      paymentRequestAmountMaV.getModel().setLocalAmount(paymentRequestData.getAmountFiat().getAmount().get());
+      paymentRequestAmountMaV.getModel().setLocalAmount(paymentRequestData.getAmountFiat().getAmount().get().abs());
       paymentRequestAmountMaV.getModel().setLocalAmountVisible(true);
     } else {
       paymentRequestAmountMaV.getModel().setLocalAmount(null);

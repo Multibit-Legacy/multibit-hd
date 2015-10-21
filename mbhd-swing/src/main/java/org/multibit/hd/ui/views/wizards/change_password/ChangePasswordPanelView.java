@@ -61,7 +61,7 @@ public class ChangePasswordPanelView extends AbstractWizardPanelView<ChangePassw
    */
   public ChangePasswordPanelView(AbstractWizard<ChangePasswordWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.CHANGE_PASSWORD_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.CHANGE_PASSWORD_TITLE);
 
   }
 

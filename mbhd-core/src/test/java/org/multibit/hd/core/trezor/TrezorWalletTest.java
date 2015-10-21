@@ -226,14 +226,14 @@ public class TrezorWalletTest {
     // Create a Trezor hard wallet using the test root node, using a BIP44 account structure
     WalletSummary walletSummary = WalletManager
       .INSTANCE
-      .getOrCreateTrezorHardWalletSummaryFromRootNode(
-        temporaryDirectory,
-        trezorRootNode,
-        TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
-        (String) PASSWORD,
-        "trezor-hard-example",
-        "trezor-hard-example",
-        true);
+      .getOrCreateTrezorCloneHardWalletSummaryFromRootNode(
+              temporaryDirectory,
+              trezorRootNode,
+              TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
+              (String) PASSWORD,
+              "trezor-hard-example",
+              "trezor-hard-example",
+              true);
 
     assertThat(WalletType.TREZOR_HARD_WALLET.equals(walletSummary.getWalletType()));
 
@@ -330,14 +330,14 @@ public class TrezorWalletTest {
     // Create a Trezor soft wallet using a seed phrase, using a BIP44 account structure
     WalletSummary walletSummary = WalletManager
       .INSTANCE
-      .getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
-        temporaryDirectory,
-        TREZOR_SNIFF_SEED_PHRASE,
-        TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
-        (String) PASSWORD,
-        "trezor-soft-example",
-        "trezor-soft-example",
-        true);
+      .getOrCreateTrezorCloneSoftWalletSummaryFromSeedPhrase(
+              temporaryDirectory,
+              TREZOR_SNIFF_SEED_PHRASE,
+              TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
+              (String) PASSWORD,
+              "trezor-soft-example",
+              "trezor-soft-example",
+              true);
 
     assertThat(WalletType.TREZOR_SOFT_WALLET.equals(walletSummary.getWalletType()));
 
@@ -443,14 +443,14 @@ public class TrezorWalletTest {
     // Create a Trezor soft wallet using the seed phrase
     WalletSummary walletSummary = WalletManager
       .INSTANCE
-      .getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
-        temporaryDirectory,
-        TREZOR_SNIFF_SEED_PHRASE,
-        TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
-        (String) PASSWORD,
-        "trezor-soft-example",
-        "trezor-soft-example",
-        true);
+      .getOrCreateTrezorCloneSoftWalletSummaryFromSeedPhrase(
+              temporaryDirectory,
+              TREZOR_SNIFF_SEED_PHRASE,
+              TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
+              (String) PASSWORD,
+              "trezor-soft-example",
+              "trezor-soft-example",
+              true);
 
     Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
 
@@ -485,14 +485,14 @@ public class TrezorWalletTest {
     // Create a Trezor soft wallet using the seed phrase
     WalletSummary walletSummary = WalletManager
       .INSTANCE
-      .getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
-        temporaryDirectory,
-        TREZOR_SNIFF_SEED_PHRASE,
-        TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
-        (String) PASSWORD,
-        "trezor-soft-example",
-        "trezor-soft-example",
-        true);
+      .getOrCreateTrezorCloneSoftWalletSummaryFromSeedPhrase(
+              temporaryDirectory,
+              TREZOR_SNIFF_SEED_PHRASE,
+              TREZOR_SNIFF_WALLET_CREATION_DATE.getMillis() / 1000,
+              (String) PASSWORD,
+              "trezor-soft-example",
+              "trezor-soft-example",
+              true);
 
     WalletService walletService = CoreServices.getOrCreateWalletService(walletSummary.getWalletId());
     // Remove any extant BIP70 payment requests

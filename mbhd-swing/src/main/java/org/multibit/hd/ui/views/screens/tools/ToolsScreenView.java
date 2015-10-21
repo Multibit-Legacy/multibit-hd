@@ -51,8 +51,12 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
     contentPanel.add(Buttons.newLargeShowSignMessageWizardButton(getShowSignMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowVerifyMessageWizardButton(getShowVerifyMessageWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
     contentPanel.add(Buttons.newShowVerifyNetworkButton(getShowVerifyNetworkAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push");
-    // Trezor tool is in top right for good visibility
-    contentPanel.add(Buttons.newShowUseTrezorWizardButton(getShowUseTrezorWizardAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
+
+    // Hardware wallet tool is in top right for good visibility
+    contentPanel.add(Buttons.newShowUseHardwareWalletWizardButton(
+      getShowUseHardwareWalletWizardAction(),
+      getScreenModel().getWalletMode())
+      , MultiBitUI.LARGE_BUTTON_MIG + ",align center,push,wrap");
 
     // Row 2
     contentPanel.add(Buttons.newShowAboutButton(getShowAboutAction()), MultiBitUI.LARGE_BUTTON_MIG + ",align center,push, wrap");
@@ -79,7 +83,7 @@ public class ToolsScreenView extends AbstractScreenView<ToolsScreenModel> {
   /**
    * @return An action to show the "Use Trezor" wizard
    */
-  private AbstractAction getShowUseTrezorWizardAction() {
+  private AbstractAction getShowUseHardwareWalletWizardAction() {
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {

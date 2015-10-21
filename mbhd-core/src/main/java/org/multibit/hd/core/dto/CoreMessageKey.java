@@ -137,8 +137,8 @@ public enum CoreMessageKey {
   WALLET_CAPABILITIES("core_wallet_capabilities"),
   WALLET_CAPABILITY_MBHD_SOFT_BETA7("core_wallet_capability_mbhd_soft_beta7"),
   WALLET_CAPABILITY_MBHD_SOFT_BIP32("core_wallet_capability_mbhd_soft_bip32"),
-  WALLET_CAPABILITY_TREZOR_HARD("core_wallet_capability_trezor_hard"),
-  WALLET_CAPABILITY_TREZOR_SOFT("core_wallet_capability_trezor_soft"),
+  WALLET_CAPABILITY_TREZOR_CLONE_HARD("core_wallet_capability_trezor_clone_hard"),
+  WALLET_CAPABILITY_TREZOR_CLONE_SOFT("core_wallet_capability_trezor_clone_soft"),
   WALLET_CAPABILITY_UNKNOWN("core_wallet_capability_unknown"),
 
   WALLET_LOADING("core_wallet_loading"),

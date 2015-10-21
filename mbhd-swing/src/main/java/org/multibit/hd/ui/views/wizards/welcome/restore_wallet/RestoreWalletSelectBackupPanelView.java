@@ -15,7 +15,7 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardModel;
 
 import javax.swing.*;
@@ -40,7 +40,7 @@ public class RestoreWalletSelectBackupPanelView extends AbstractWizardPanelView<
    */
   public RestoreWalletSelectBackupPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.RESTORE_WALLET_SELECT_BACKUP_TITLE, AwesomeIcon.BITCOIN);
+    super(wizard, panelName, AwesomeIcon.BITCOIN, MessageKey.RESTORE_WALLET_SELECT_BACKUP_TITLE);
 
   }
 
@@ -77,7 +77,7 @@ public class RestoreWalletSelectBackupPanelView extends AbstractWizardPanelView<
   protected void initialiseButtons(AbstractWizard<WelcomeWizardModel> wizard) {
 
     // No previous if restoring a hard wallet
-    if (WelcomeWizardMode.TREZOR.equals(wizard.getWizardModel().getMode())) {
+    if (WalletMode.TREZOR.equals(wizard.getWizardModel().getWalletMode())) {
       PanelDecorator.addExitCancelNext(this, wizard);
     } else {
       PanelDecorator.addExitCancelPreviousNext(this, wizard);

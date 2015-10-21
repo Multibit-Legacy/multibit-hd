@@ -56,43 +56,43 @@ public enum WelcomeWizardState {
   /**
    * Trezor create wallet: Preparation instructions
    */
-  TREZOR_CREATE_WALLET_PREPARATION,
+  HARDWARE_CREATE_WALLET_PREPARATION,
   /**
    * Trezor create wallet: Select backup location
    */
-  TREZOR_CREATE_WALLET_SELECT_BACKUP_LOCATION,
+  HARDWARE_CREATE_WALLET_SELECT_BACKUP_LOCATION,
   /**
    * Trezor create wallet: Enter details (label, seed size)
    */
-  TREZOR_CREATE_WALLET_ENTER_DETAILS,
+  HARDWARE_CREATE_WALLET_ENTER_DETAILS,
   /**
    * Trezor create wallet: Request secure create wallet (wipe, PIN and create)
    */
-  TREZOR_CREATE_WALLET_REQUEST_CREATE_WALLET,
+  HARDWARE_CREATE_WALLET_REQUEST_CREATE_WALLET,
   /**
    * Trezor create wallet: Display confirm wipe
    */
-  TREZOR_CREATE_WALLET_CONFIRM_CREATE_WALLET,
+  HARDWARE_CREATE_WALLET_CONFIRM_CREATE_WALLET,
   /**
    * Trezor create wallet: Confirm supplied entropy
    */
-  TREZOR_CREATE_WALLET_CONFIRM_ENTROPY,
+  HARDWARE_CREATE_WALLET_CONFIRM_ENTROPY,
   /**
    * Trezor create wallet: Enter new PIN
    */
-  TREZOR_CREATE_WALLET_ENTER_NEW_PIN,
+  HARDWARE_CREATE_WALLET_ENTER_NEW_PIN,
   /**
    * Trezor create wallet: Confirm new PIN
    */
-  TREZOR_CREATE_WALLET_CONFIRM_NEW_PIN,
+  HARDWARE_CREATE_WALLET_CONFIRM_NEW_PIN,
   /**
    * Trezor create wallet: Confirm next word from Trezor (seed phrase)
    */
-  TREZOR_CREATE_WALLET_CONFIRM_WORD,
+  HARDWARE_CREATE_WALLET_CONFIRM_WORD,
   /**
    * Trezor create wallet: Report on the outcome
    */
-  TREZOR_CREATE_WALLET_REPORT,
+  HARDWARE_CREATE_WALLET_REPORT,
   /**
    * Restore credentials: Enter seed phrase to begin the process
    */

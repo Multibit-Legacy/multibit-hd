@@ -1,6 +1,7 @@
 package org.multibit.hd.ui.views;
 
 import com.google.common.base.Optional;
+import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.Model;
 
 import javax.swing.*;

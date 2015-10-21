@@ -11,6 +11,7 @@ import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.OSUtils;
+import org.multibit.hd.hardware.core.HardwareWalletService;
 import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.Languages;
@@ -21,7 +22,7 @@ import org.multibit.hd.ui.views.fonts.TitleFontDecorator;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
-import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardMode;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.ui.views.wizards.welcome.WelcomeWizardState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -254,24 +255,31 @@ public class MainView extends JFrame {
 
       // This section must come after a deferred hide has completed
 
-      // Determine if we are in Trezor mode for the welcome wizard
-      WelcomeWizardMode mode = CredentialsRequestType.TREZOR.equals(credentialsRequestType) ? WelcomeWizardMode.TREZOR : WelcomeWizardMode.STANDARD;
+      // Select the appropriate wallet mode
+      final WalletMode walletMode;
+      if (CredentialsRequestType.HARDWARE.equals(credentialsRequestType)) {
+        Optional<HardwareWalletService> currentHardwareWalletService = CoreServices.getCurrentHardwareWalletService();
+        walletMode = WalletMode.of(currentHardwareWalletService);
+      } else {
+        walletMode = WalletMode.STANDARD;
+      }
 
       // Determine the appropriate starting screen for the welcome wizard
       if (Configurations.currentConfiguration.isLicenceAccepted()) {
 
         // Must have run before so perform some additional checks
-        if (WelcomeWizardMode.TREZOR.equals(mode) && !isLanguageChange) {
-          // Starting with an uninitialised Trezor
-          log.debug("Showing exiting welcome wizard (select wallet)");
-          Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET, mode).getWizardScreenHolder());
+        if ((WalletMode.TREZOR == walletMode || WalletMode.KEEP_KEY == walletMode)
+          && !isLanguageChange) {
+          // Starting with an uninitialised hardware wallet
+          log.debug("Showing exiting welcome wizard (select hardware wallet)");
+          Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET, walletMode).getWizardScreenHolder());
         } else {
           log.debug("Showing exiting welcome wizard (select language)");
-          Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE, mode).getWizardScreenHolder());
+          Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE, walletMode).getWizardScreenHolder());
         }
       } else {
         log.debug("Showing exiting welcome wizard (licence agreement)");
-        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_LICENCE, mode).getWizardScreenHolder());
+        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_LICENCE, walletMode).getWizardScreenHolder());
       }
 
     } else if (showExitingCredentialsWizard) {

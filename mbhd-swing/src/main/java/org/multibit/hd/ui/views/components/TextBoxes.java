@@ -33,6 +33,7 @@ public class TextBoxes {
    * The maximum display width of a V1 Trezor device (allowing for icon)
    */
   private static final int TREZOR_MAX_COLUMNS = 22;
+  private static final int KEEPKEY_MAX_COLUMNS = 82;
 
   /**
    * Utilities have no public constructor
@@ -667,12 +668,28 @@ public class TextBoxes {
    */
   public static JTextArea newTrezorV1Display(String panelName) {
 
-    JTextArea trezorDisplay = newReadOnlyTextArea(5, 50);
+    JTextArea deviceDisplay = newReadOnlyTextArea(5, 50);
 
     // Ensure FEST can find it
-    trezorDisplay.setName(panelName + ".trezor_display");
+    deviceDisplay.setName(panelName + ".trezor_display");
 
-    return trezorDisplay;
+    return deviceDisplay;
+
+  }
+
+  /**
+   * @param panelName The panel name used as the basis for the FEST name
+   *
+   * @return A text area with similar dimensions to a V1 KeepKey after MiG resizing
+   */
+  public static JTextArea newKeepKeyV1Display(String panelName) {
+
+    JTextArea deviceDisplay = newReadOnlyTextArea(5, 150);
+
+    // Ensure FEST can find it
+    deviceDisplay.setName(panelName + ".keepkey_display");
+
+    return deviceDisplay;
 
   }
 
@@ -714,9 +731,29 @@ public class TextBoxes {
     textField.setDocument(doc);
 
     // Ensure it is accessible
-    AccessibilityDecorator.apply(textField, MessageKey.ENTER_TREZOR_LABEL, MessageKey.ENTER_TREZOR_LABEL_TOOLTIP);
+    AccessibilityDecorator.apply(textField, MessageKey.ENTER_HARDWARE_LABEL, MessageKey.ENTER_HARDWARE_LABEL_TOOLTIP);
 
     return textField;
 
   }
+
+  /**
+   * @return A new "enter KeepKey label" limited length text field
+   */
+  public static JTextField newEnterKeepKeyLabel() {
+
+    JTextField textField = newTextField(KEEPKEY_MAX_COLUMNS);
+
+    // Limit the length of the underlying document
+    DefaultStyledDocument doc = new DefaultStyledDocument();
+    doc.setDocumentFilter(new DocumentMaxLengthFilter(KEEPKEY_MAX_COLUMNS));
+    textField.setDocument(doc);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.ENTER_HARDWARE_LABEL, MessageKey.ENTER_HARDWARE_LABEL_TOOLTIP);
+
+    return textField;
+
+  }
+
 }

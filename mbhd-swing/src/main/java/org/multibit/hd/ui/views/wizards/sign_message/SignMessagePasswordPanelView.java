@@ -61,7 +61,7 @@ public class SignMessagePasswordPanelView extends AbstractWizardPanelView<SignMe
    */
   public SignMessagePasswordPanelView(AbstractWizard<SignMessageWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.SIGN_MESSAGE_TITLE, AwesomeIcon.PENCIL);
+    super(wizard, panelName, AwesomeIcon.PENCIL, MessageKey.SIGN_MESSAGE_TITLE);
 
   }
 

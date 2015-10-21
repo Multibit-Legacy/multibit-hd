@@ -39,7 +39,7 @@ public class WalletDetailsPanelView extends AbstractWizardPanelView<WalletDetail
    */
   public WalletDetailsPanelView(AbstractWizard<WalletDetailsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.WALLET_DETAILS_TITLE, AwesomeIcon.DASHBOARD);
+    super(wizard, panelName, AwesomeIcon.DASHBOARD, MessageKey.WALLET_DETAILS_TITLE);
   }
 
   @Override

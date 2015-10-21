@@ -85,7 +85,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
    */
   public RestoreWalletReportPanelView(AbstractWizard<WelcomeWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.RESTORE_WALLET_REPORT_TITLE, AwesomeIcon.FILE_TEXT);
+    super(wizard, panelName, AwesomeIcon.FILE_TEXT, MessageKey.RESTORE_WALLET_REPORT_TITLE);
 
   }
 
@@ -530,14 +530,14 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       switch (walletTypeToRestore) {
         case TREZOR_SOFT_WALLET: {
         // Create Trezor soft wallet
-        WalletManager.INSTANCE.getOrCreateTrezorSoftWalletSummaryFromSeedPhrase(
-          applicationDataDirectory,
-          Joiner.on(" ").join(seedPhrase),
-          Dates.thenInSeconds(replayDate),
-          password,
-          name,
-          notes,
-          true);
+        WalletManager.INSTANCE.getOrCreateTrezorCloneSoftWalletSummaryFromSeedPhrase(
+                applicationDataDirectory,
+                Joiner.on(" ").join(seedPhrase),
+                Dates.thenInSeconds(replayDate),
+                password,
+                name,
+                notes,
+                true);
           return true;
         }
         case MBHD_SOFT_WALLET_BIP32: {
@@ -638,7 +638,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
     try {
       // For Trezor hard wallets the backups are encrypted with the entropy derived password
       String walletPassword = null;
-      Optional<HardwareWalletService> hardwareWalletService = CoreServices.getOrCreateHardwareWalletService();
+      Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
       if (hardwareWalletService.isPresent() && hardwareWalletService.get().getContext().getEntropy().isPresent()) {
         walletPassword = Hex.toHexString(hardwareWalletService.get().getContext().getEntropy().get());
       }

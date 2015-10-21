@@ -81,7 +81,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
    */
   public RequestBitcoinEnterDetailsPanelView(AbstractWizard<RequestBitcoinWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.REQUEST_BITCOIN_TITLE, AwesomeIcon.CLOUD_DOWNLOAD);
+    super(wizard, panelName, AwesomeIcon.CLOUD_DOWNLOAD, MessageKey.REQUEST_BITCOIN_TITLE);
 
   }
 

@@ -26,7 +26,7 @@ public class CredentialsRestorePanelView extends AbstractWizardPanelView<Credent
    */
   public CredentialsRestorePanelView(AbstractWizard<CredentialsWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, MessageKey.PASSWORD_TITLE, AwesomeIcon.LOCK);
+    super(wizard, panelName, AwesomeIcon.LOCK, MessageKey.PASSWORD_TITLE);
 
   }
 
