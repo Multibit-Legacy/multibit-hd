@@ -16,7 +16,8 @@
 <h4>Use a cloud backup service</h4>
 
 <p>Setting up a cloud backup service is straightforward and for small amounts of data (under 2GB) it is often free. We would strongly
-  urge you to consider SpiderOak for its end to end encryption. An alternative is Dropbox which is extremely common and provides an excellent user experience.</p>
+  urge you to consider <a href="https://spideroak.com" target="_blank">SpiderOak</a> for its end to end encryption. An alternative is Dropbox which is extremely
+    common and provides an excellent user experience.</p>
 <p>MultiBit HD encrypts all your cloud backup information using a strong AES key derived from either your wallet words or from a password provided by your Trezor. It is safe to
   store in the cloud without worrying about bad people being able to read your data.</p>
 
@@ -40,11 +41,12 @@
 <p>A "soft" wallet is one that is not linked to an external hardware device such as a <a href="https://buytrezor.com?a=multibit.org" target="_blank">Trezor</a>.</p>
 
 <p>The rolling backups encrypt a snapshot of the current wallet. Rolling backups are loaded automatically if the load of the primary wallet fails. The user is told if a rolling
-  backup is loaded on the 'Wallet startup' screen.</p>
+  backup is loaded on the 'Wallet startup' screen after unlock. The rolling backup is AES-256 encrypted using a key derived from the user's password after running it through
+  Scrypt (N=16384, r=8, p=1). Interested readers <a href="https://www.tarsnap.com/scrypt/scrypt.pdf" target="_blank">should refer to the Scrypt white paper (PDF)</a> for more
+  details if brute force or dictionary attacks are a concern (in particular pages 12-14).</p>
 
 <p>When making a local or cloud backup we zip up the wallet directory and include the wallet password in encrypted form in the archive. Short wallet passwords are padded. The zip
-  file is then encrypted using a key derived from
-  the wallet words. This approach allows the password to be recovered from a cloud backup so long as the user knows the wallet words.</p>
+  file is then encrypted using a key derived from the wallet words. This approach allows the password to be recovered from a cloud backup so long as the user knows the wallet words.</p>
 
 <p>It also means that cloud backups are safe for long term off-site storage.</p>
 
