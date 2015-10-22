@@ -71,7 +71,7 @@ public class CreateTrezorHardwareWalletWarmStartRequirements {
     new TrezorRequestMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Allow time to gather the deterministic hierarchy
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+    Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
 
     // Request the cipher key (refer to mock client for PIN entry responses)
     // Transitional

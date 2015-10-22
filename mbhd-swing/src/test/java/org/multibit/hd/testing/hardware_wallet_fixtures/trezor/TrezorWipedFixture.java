@@ -93,7 +93,7 @@ public class TrezorWipedFixture extends AbstractHardwareWalletFixture {
 
     messageEvents.add(event2);
 
-    // Overall need 23 more button presses
+    // Overall need 23 more button presses (see entropy ack earlier)
     for (int i = 0; i < 23; i++) {
       final MessageEvent event = new MessageEvent(
         MessageEventType.BUTTON_REQUEST,

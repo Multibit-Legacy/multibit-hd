@@ -3,8 +3,6 @@ package org.multibit.hd.ui.controllers;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.hardware.core.events.HardwareWalletEvents;
 import org.multibit.hd.ui.events.controller.ControllerEvents;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract base class to provide the following to UI controllers:</p>
@@ -15,8 +13,6 @@ import org.slf4j.LoggerFactory;
  * @since 0.0.1
  */
 public abstract class AbstractController {
-
-  private static final Logger log = LoggerFactory.getLogger(AbstractController.class);
 
   public AbstractController() {
 
