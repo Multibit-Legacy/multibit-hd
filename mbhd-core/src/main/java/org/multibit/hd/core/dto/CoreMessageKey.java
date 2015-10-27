@@ -36,6 +36,7 @@ public enum CoreMessageKey {
   // Environment
   DEBUGGER_ATTACHED("core_debugger_attached"),
   SYSTEM_TIME_DRIFT("core_system_time_drift"),
+  ATOM_FEED_CHECK("core_atom_feed_check"),
   BACKUP_FAILED("core_backup_failed"),
   CERTIFICATE_FAILED("core_certificate_failed"),
   BACKUP_WALLET_WAS_LOADED("core_backup_wallet_was_loaded"),

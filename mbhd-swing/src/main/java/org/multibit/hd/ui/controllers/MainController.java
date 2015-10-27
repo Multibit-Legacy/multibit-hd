@@ -10,6 +10,10 @@ import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
 import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.commons.utils.Dates;
+import org.multibit.hd.core.atom.AscendingAtomEntryComparator;
+import org.multibit.hd.core.atom.AtomEntry;
+import org.multibit.hd.core.atom.AtomFeed;
+import org.multibit.hd.core.atom.AtomFeeds;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
@@ -40,6 +44,8 @@ import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.platform.listener.*;
 import org.multibit.hd.ui.services.ExternalDataListeningService;
+import org.multibit.hd.ui.utils.HtmlUtils;
+import org.multibit.hd.ui.utils.SafeDesktop;
 import org.multibit.hd.ui.views.MainView;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -68,10 +74,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URI;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -454,6 +458,27 @@ public class MainController extends AbstractController implements
             summary.getSeverity())
         );
         break;
+      case ATOM_FEED_CHECK:
+        // Create a button to open the desktop browser
+        if (!event.getSummary().getUri().isPresent()) {
+          // Ignore
+          return;
+        }
+        JButton browserButton = Buttons.newAlertPanelButton(
+          getShowAtomFeedArticleAction(event.getSummary().getUri().get()),
+          MessageKey.YES,
+          MessageKey.YES_TOOLTIP,
+          AwesomeIcon.CHECK
+        );
+
+        // Ensure we provide a button
+        ControllerEvents.fireAddAlertEvent(
+          Models.newAlertModel(
+            localisedMessage,
+            summary.getSeverity(),
+            browserButton)
+        );
+        break;
       case CERTIFICATE_FAILED:
         // Create a button to the repair wallet tool
         JButton button = Buttons.newAlertPanelButton(getShowRepairWalletAction(), MessageKey.REPAIR, MessageKey.REPAIR_TOOLTIP, AwesomeIcon.MEDKIT);
@@ -732,6 +757,9 @@ public class MainController extends AbstractController implements
 
     // Check for system time drift (runs in the background)
     handleSystemTimeDrift();
+
+    // Check for Atom feed change (runs in the background)
+    handleAtomFeedCheck();
 
   }
 
@@ -1125,6 +1153,19 @@ public class MainController extends AbstractController implements
   }
 
   /**
+   * @return An action to show the Atom feed article
+   */
+  private AbstractAction getShowAtomFeedArticleAction(final URI articleUri) {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        SafeDesktop.browse(articleUri);
+        ControllerEvents.fireRemoveAlertEvent();
+      }
+    };
+  }
+
+  /**
    * Handles the changes to the exchange ticker service
    */
   private void handleExchange() {
@@ -1298,6 +1339,56 @@ public class MainController extends AbstractController implements
 
           // Problem encountered - user won't be able to fix it
           log.warn("System drift check timed out: '{}'", t.getMessage());
+
+        }
+      });
+
+  }
+
+  /**
+   * <p>Performs an Atom feed check against MultiBit.org over HTTPS
+   * If a new article is present an alert is shown</p>
+   */
+  private void handleAtomFeedCheck() {
+
+    // Parse the MultiBit.org Atom feed asynchronously
+    final ListenableFuture<AtomFeed> atomFeedFuture = AtomFeeds.parseMultiBitOrgFeed();
+    Futures.addCallback(
+      atomFeedFuture, new FutureCallback<AtomFeed>() {
+        @Override
+        public void onSuccess(@Nullable AtomFeed result) {
+
+          if (result != null && !result.getAtomEntries().isEmpty()) {
+
+            // Sort the results in updated order
+            Collections.sort(result.getAtomEntries(), new AscendingAtomEntryComparator());
+
+            // Check for Atom feed entries
+            AtomEntry latestEntry = result.getAtomEntries().get(result.getAtomEntries().size() - 1);
+
+            // Get the title text without HTML
+            String title = HtmlUtils.stripHtml(latestEntry.getTitle());
+
+            // Issue the info alert
+            URI atomEntryUri;
+            try {
+              atomEntryUri = URI.create(latestEntry.getLink().getHref());
+            } catch (IllegalArgumentException e) {
+              // Silently fail (nothing the user can do about this so no point logging it)
+              return;
+            }
+            CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newAtomFeedCheck(title, atomEntryUri));
+          } else {
+            log.debug("No Atom feed available.");
+          }
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          // Problem encountered - user won't be able to fix it
+          log.warn("Atom feed check timed out: '{}'", t.getMessage());
 
         }
       });
@@ -1554,6 +1645,10 @@ public class MainController extends AbstractController implements
             // Check for system time drift (runs in the background)
             log.debug("Check for system time drift...");
             handleSystemTimeDrift();
+
+            // Check for Atom feed from MultiBit.org
+            log.debug("Check for MultiBit.org Atom feed update...");
+            handleAtomFeedCheck();
 
           } catch (Exception e) {
             // TODO localise and put on UI via an alert

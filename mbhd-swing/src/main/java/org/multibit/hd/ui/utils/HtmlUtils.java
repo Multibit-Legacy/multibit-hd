@@ -10,7 +10,6 @@ import org.multibit.hd.ui.languages.Languages;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class HtmlUtils {
 
@@ -53,29 +52,29 @@ public class HtmlUtils {
   }
 
   /**
-    * @param lines The lines to wrap in HTML
-    *
-    * @return A single block of HTML that provides appropriate text alignment (LTR or RTL) and line breaks for the locale
-    */
-   public static String localiseCenteredWithLineBreaks(String[] lines) {
+   * @param lines The lines to wrap in HTML
+   *
+   * @return A single block of HTML that provides appropriate text alignment (LTR or RTL) and line breaks for the locale
+   */
+  public static String localiseCenteredWithLineBreaks(String[] lines) {
 
-     final StringBuilder sb = new StringBuilder("<html><body style='width: 100%'><div align=center>");
+    final StringBuilder sb = new StringBuilder("<html><body style='width: 100%'><div align=center>");
 
-     // Wrap in paragraphs to ensure word wrap
-     boolean first = true;
-     for (String line : lines) {
-       if (!first) {
-         sb.append("<br>");
-       }
-       sb.append("<p>")
-         .append(line)
-         .append("</p>");
-       first = false;
-     }
-     sb.append("</div></body></html>");
+    // Wrap in paragraphs to ensure word wrap
+    boolean first = true;
+    for (String line : lines) {
+      if (!first) {
+        sb.append("<br>");
+      }
+      sb.append("<p>")
+        .append(line)
+        .append("</p>");
+      first = false;
+    }
+    sb.append("</div></body></html>");
 
-     return sb.toString();
-   }
+    return sb.toString();
+  }
 
   /**
    * @param lines The lines to wrap in HTML
@@ -145,4 +144,14 @@ public class HtmlUtils {
     return sb.toString();
   }
 
+  /**
+   * <p>A naive HTML to text conversion. It assumes a simple unescaped HTML input and removes the tags.</p>
+   *
+   * @param html The source HTML
+   *
+   * @return The stripped text
+   */
+  public static String stripHtml(String html) {
+    return html.replaceAll("<[^>]*>","");
+  }
 }

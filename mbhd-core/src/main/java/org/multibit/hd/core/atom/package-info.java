@@ -11,6 +11,7 @@
 package org.multibit.hd.core.atom;
 
 import org.joda.time.DateTime;
+import org.multibit.hd.core.utils.DateTimeJaxbAdapter;
 
 import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlNsForm;

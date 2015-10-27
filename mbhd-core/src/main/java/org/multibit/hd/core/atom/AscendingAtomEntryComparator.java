@@ -5,13 +5,13 @@ import java.util.Comparator;
 /**
  * <p>Comparator to provide the following to the Atom feed:</p>
  * <ul>
- * <li>Sorting by updated field</li>
+ * <li>Sorting by updated field ascending</li>
  * </ul>
  *
  * @since 0.1.5
  *   
  */
-public class AtomEntryComparator implements Comparator<AtomEntry> {
+public class AscendingAtomEntryComparator implements Comparator<AtomEntry> {
 
 
   @Override
