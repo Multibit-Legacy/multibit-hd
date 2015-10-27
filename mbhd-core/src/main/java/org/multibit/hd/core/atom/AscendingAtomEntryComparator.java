@@ -1,5 +1,6 @@
 package org.multibit.hd.core.atom;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -11,8 +12,7 @@ import java.util.Comparator;
  * @since 0.1.5
  *   
  */
-public class AscendingAtomEntryComparator implements Comparator<AtomEntry> {
-
+public class AscendingAtomEntryComparator implements Comparator<AtomEntry>, Serializable {
 
   @Override
   public int compare(AtomEntry atomEntry, AtomEntry atomEntry2) {
