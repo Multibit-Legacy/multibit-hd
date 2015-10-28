@@ -459,11 +459,30 @@ public class MainController extends AbstractController implements
         );
         break;
       case ATOM_FEED_CHECK:
-        // Create a button to open the desktop browser
+        // Check configuration allows alert
+        if (!Configurations.currentConfiguration.getAppearance().isShowAtomFeedAlert()) {
+          // Ignore
+          return;
+        }
+        // Check for article URI
         if (!event.getSummary().getUri().isPresent()) {
           // Ignore
           return;
         }
+
+        String eventUri = event.getSummary().getUri().get().toString();
+        String latestUri = Configurations.currentConfiguration.getAppearance().getLatestArticleUri();
+
+        // Check against local latest
+        if (eventUri.equalsIgnoreCase(latestUri)) {
+          // Ignore
+          return;
+        }
+
+        // Persist the article URI even if the user subsequently ignores it to prevent repeat alerts
+        Configurations.currentConfiguration.getAppearance().setLatestArticleUri(eventUri);
+        Configurations.persistCurrentConfiguration();
+
         JButton browserButton = Buttons.newAlertPanelButton(
           getShowAtomFeedArticleAction(event.getSummary().getUri().get()),
           MessageKey.YES,

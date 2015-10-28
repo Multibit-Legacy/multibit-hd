@@ -54,14 +54,14 @@ public class AppearanceConfiguration {
   private String blockExplorerId = BlockChainInfoBlockExplorer.ID;
 
   /**
-   * True if Atom feed alerts should be shown (subject to most recent article UUID)
+   * True if Atom feed alerts should be shown (subject to most recent article URI)
    */
   private boolean showAtomFeedAlert = true;
 
   /**
-   * The UUID of the latest read article from the MultiBitOrg Atom feed
+   * The URI of the latest read article from the MultiBitOrg Atom feed
    */
-  private String latestArticleUuid = "";
+  private String latestArticleUri = "";
 
   /**
    * @return The application directory path (e.g. ".")
@@ -183,7 +183,7 @@ public class AppearanceConfiguration {
   }
 
   /**
-   * @return True if the Atom feed alert should be shown (subject to most recent article UUID)
+   * @return True if the Atom feed alert should be shown (subject to most recent article URI)
    */
   public boolean isShowAtomFeedAlert() {
     return showAtomFeedAlert;
@@ -194,14 +194,14 @@ public class AppearanceConfiguration {
   }
 
   /**
-   * @return The UUID of the most latest article read from the MultiBit.org Atom feed
+   * @return The URI of the most latest article read from the MultiBit.org Atom feed
    */
-  public String getLatestArticleUuid() {
-    return latestArticleUuid;
+  public String getLatestArticleUri() {
+    return latestArticleUri;
   }
 
-  public void setLatestArticleUuid(String latestArticleUuid) {
-    this.latestArticleUuid = latestArticleUuid;
+  public void setLatestArticleUri(String latestArticleUri) {
+    this.latestArticleUri = latestArticleUri;
   }
 
   /**
@@ -223,7 +223,7 @@ public class AppearanceConfiguration {
     app.setCloudBackupLocation(getCloudBackupLocation());
     app.setBlockExplorerId(getBlockExplorerId());
     app.setShowAtomFeedAlert(isShowAtomFeedAlert());
-    app.setLatestArticleUuid(getLatestArticleUuid());
+    app.setLatestArticleUri(getLatestArticleUri());
 
     return app;
   }

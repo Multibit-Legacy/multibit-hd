@@ -179,7 +179,7 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
       configuration.getAppearance().setShowAtomFeedAlert(showAtomFeedAlert);
       if (!showAtomFeedAlert) {
         // Clear the latest UUID to demonstrate a refresh if it is set once more
-        configuration.getAppearance().setLatestArticleUuid("");
+        configuration.getAppearance().setLatestArticleUri("");
       }
 
       // Update the model
