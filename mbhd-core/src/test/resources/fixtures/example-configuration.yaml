@@ -14,6 +14,8 @@ appearance:
   sidebarWidth: "180"
   cloudBackupLocation: ""
   blockExplorerId: "blockchain"
+  showAtomFeedAlert: true
+  latestArticleUri: ""
 bitcoin:
   bitcoinSymbol: "MICON"
   bitcoinNetwork: "MAIN_NET"
