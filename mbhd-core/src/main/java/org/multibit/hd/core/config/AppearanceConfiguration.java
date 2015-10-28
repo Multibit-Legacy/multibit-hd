@@ -11,7 +11,6 @@ import org.multibit.hd.core.blockexplorer.BlockChainInfoBlockExplorer;
  * <p>This configuration is for general appearance parameters</p>
  *
  * @since 0.0.1
- *
  */
 public class AppearanceConfiguration {
 
@@ -50,9 +49,19 @@ public class AppearanceConfiguration {
   private String cloudBackupLocation = "";
 
   /**
-   * The id of the blockexplorer used to drill down into transactions
+   * The id of the block explorer used to drill down into transactions
    */
   private String blockExplorerId = BlockChainInfoBlockExplorer.ID;
+
+  /**
+   * True if Atom feed alerts should be shown (subject to most recent article UUID)
+   */
+  private boolean showAtomFeedAlert = true;
+
+  /**
+   * The UUID of the latest read article from the MultiBitOrg Atom feed
+   */
+  private String latestArticleUuid = "";
 
   /**
    * @return The application directory path (e.g. ".")
@@ -162,7 +171,6 @@ public class AppearanceConfiguration {
     this.cloudBackupLocation = cloudBackupLocation;
   }
 
-
   /**
    * @return The id of the current block explorer
    */
@@ -172,6 +180,28 @@ public class AppearanceConfiguration {
 
   public void setBlockExplorerId(String blockExplorerId) {
     this.blockExplorerId = blockExplorerId;
+  }
+
+  /**
+   * @return True if the Atom feed alert should be shown (subject to most recent article UUID)
+   */
+  public boolean isShowAtomFeedAlert() {
+    return showAtomFeedAlert;
+  }
+
+  public void setShowAtomFeedAlert(boolean showAtomFeedAlert) {
+    this.showAtomFeedAlert = showAtomFeedAlert;
+  }
+
+  /**
+   * @return The UUID of the most latest article read from the MultiBit.org Atom feed
+   */
+  public String getLatestArticleUuid() {
+    return latestArticleUuid;
+  }
+
+  public void setLatestArticleUuid(String latestArticleUuid) {
+    this.latestArticleUuid = latestArticleUuid;
   }
 
   /**
@@ -192,6 +222,8 @@ public class AppearanceConfiguration {
     app.setVersion(getVersion());
     app.setCloudBackupLocation(getCloudBackupLocation());
     app.setBlockExplorerId(getBlockExplorerId());
+    app.setShowAtomFeedAlert(isShowAtomFeedAlert());
+    app.setLatestArticleUuid(getLatestArticleUuid());
 
     return app;
   }

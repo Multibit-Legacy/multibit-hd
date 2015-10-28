@@ -501,6 +501,15 @@ public class Labels {
   }
 
   /**
+   * @return A new "show Atom feed alert" label
+   */
+  public static JLabel newShowAtomFeedAlert() {
+
+    return Labels.newLabel(MessageKey.SHOW_ATOM_FEED_ALERT);
+
+  }
+
+  /**
    * @return A new "Block explorer" label
    */
   public static JLabel newBlockExplorer() {

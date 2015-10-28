@@ -238,6 +238,9 @@ public enum MessageKey {
   SHOW_BALANCE("show_balance"),
   SHOW_BALANCE_TOOLTIP("show_balance_tooltip"),
 
+  SHOW_ATOM_FEED_ALERT("show_atom_feed_alert"),
+  SHOW_ATOM_FEED_ALERT_TOOLTIP("show_atom_feed_alert_tooltip"),
+
   BLOCK_EXPLORER("block_explorer"),
 
   SELECT_THEME("select_theme"),

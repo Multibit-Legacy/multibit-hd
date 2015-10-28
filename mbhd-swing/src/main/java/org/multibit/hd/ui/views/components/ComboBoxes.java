@@ -56,6 +56,10 @@ public class ComboBoxes {
    */
   public static final String SHOW_BALANCE_COMMAND = "showBalance";
   /**
+   * The "show Atom feed alert" combo box action command
+   */
+  public static final String SHOW_ATOM_FEED_ALERT_COMMAND = "showAtomFeedAlert";
+  /**
     * The "block explorer" combo box action command
     */
   public static final String BLOCK_EXPLORER_COMMAND = "blockExplorer";
@@ -347,6 +351,24 @@ public class ComboBoxes {
     AccessibilityDecorator.apply(comboBox, MessageKey.SHOW_BALANCE, MessageKey.SHOW_BALANCE_TOOLTIP);
 
     comboBox.setActionCommand(SHOW_BALANCE_COMMAND);
+
+    return comboBox;
+  }
+
+  /**
+   * @param listener    The action listener to alert when the selection is made
+   * @param showBalance True if the "yes" option should be pre-selected
+   *
+   * @return A new "yes/no" combo box
+   */
+  public static JComboBox<String> newShowAtomFeedAlertYesNoComboBox(ActionListener listener, boolean showBalance) {
+
+    JComboBox<String> comboBox = newYesNoComboBox(listener, showBalance);
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(comboBox, MessageKey.SHOW_ATOM_FEED_ALERT, MessageKey.SHOW_ATOM_FEED_ALERT_TOOLTIP);
+
+    comboBox.setActionCommand(SHOW_ATOM_FEED_ALERT_COMMAND);
 
     return comboBox;
   }
