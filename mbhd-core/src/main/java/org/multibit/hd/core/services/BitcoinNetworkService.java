@@ -145,6 +145,10 @@ public class BitcoinNetworkService extends AbstractService {
     // Close the wallet
     WalletManager.INSTANCE.closeWallet();
 
+    // Clear the mempool to avoid any hysteresis
+    TxConfidenceTable mempool = Context.get().getConfidenceTable();
+    mempool.reset();
+
     log.debug("Bitcoin network service specific code is shut down");
 
     // The Bitcoin network service is tied to a wallet so must always be fully shutdown
@@ -1586,10 +1590,6 @@ public class BitcoinNetworkService extends AbstractService {
       log.error("No wallet is present to allow restart to occur");
       return;
     }
-
-    // Clear the mempool
-    TxConfidenceTable mempool = Context.get().getConfidenceTable();
-    mempool.reset();
 
     blockChain.addWallet(wallet);
     log.debug("Created block chain '{}' with height '{}'", blockChain, blockChain.getBestChainHeight());
