@@ -1,5 +1,4 @@
 
-
 Build status: [![Build Status](https://travis-ci.org/bitcoin-solutions/multibit-hd.png?branch=develop)](https://travis-ci.org/bitcoin-solutions/multibit-hd)
 
 Project status: Pre-release. Expect minor bugs and UI adjustments. Suitable for small scale production.
