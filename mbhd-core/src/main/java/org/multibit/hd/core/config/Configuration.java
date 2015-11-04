@@ -66,7 +66,7 @@ public class Configuration {
   private Map<String, Object> other = Maps.newLinkedHashMap();
 
   /**
-   * @return The map of any unknown objects in the configuration
+   * @return The map of any unknown objects in the configuration at this level
    */
   @JsonAnyGetter
   public Map<String, Object> any() {
@@ -261,6 +261,11 @@ public class Configuration {
     configuration.setTor(isTor());
     configuration.setTrezor(isTrezor());
     configuration.setShowRestoreBeta7Wallets(isShowRestoreBeta7Wallets());
+
+    // Unknown properties
+    for (Map.Entry<String, Object> entry : any().entrySet()) {
+      configuration.set(entry.getKey(), entry.getValue());
+    }
 
     return configuration;
   }

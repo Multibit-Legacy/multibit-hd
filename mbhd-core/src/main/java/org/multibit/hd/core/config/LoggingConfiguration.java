@@ -1,6 +1,8 @@
 package org.multibit.hd.core.config;
 
 import ch.qos.logback.classic.Level;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.google.common.collect.Maps;
 import org.multibit.hd.core.managers.InstallationManager;
 
@@ -32,6 +34,26 @@ public class LoggingConfiguration {
   private FileConfiguration file = new FileConfiguration();
 
   private SyslogConfiguration syslog = new SyslogConfiguration();
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Any unknown objects in the configuration go here (preserve order of insertion)
+   */
+  private Map<String, Object> other = Maps.newLinkedHashMap();
+
+  /**
+   * @return The map of any unknown objects in the configuration at this level
+   */
+  @JsonAnyGetter
+  public Map<String, Object> any() {
+    return other;
+  }
+
+  @JsonAnySetter
+  public void set(String name, Object value) {
+    other.put(name, value);
+  }
 
   public LoggingConfiguration() {
 
@@ -85,15 +107,21 @@ public class LoggingConfiguration {
    */
   public LoggingConfiguration deepCopy() {
 
-    LoggingConfiguration logging = new LoggingConfiguration();
+    LoggingConfiguration configuration = new LoggingConfiguration();
 
+    // Unknown properties
+    for (Map.Entry<String, Object> entry : any().entrySet()) {
+      configuration.set(entry.getKey(), entry.getValue());
+    }
+
+    // Known properties
     // Only configure the basics to match the properties file
-    logging.setLevel(getLevel());
-    logging.setLoggers(getLoggers());
-    logging.getFileConfiguration().setArchivedLogFilenamePattern(getFileConfiguration().getArchivedLogFilenamePattern());
-    logging.getFileConfiguration().setCurrentLogFilename(getFileConfiguration().getCurrentLogFilename());
+    configuration.setLevel(getLevel());
+    configuration.setLoggers(getLoggers());
+    configuration.getFileConfiguration().setArchivedLogFilenamePattern(getFileConfiguration().getArchivedLogFilenamePattern());
+    configuration.getFileConfiguration().setCurrentLogFilename(getFileConfiguration().getCurrentLogFilename());
 
-    return logging;
+    return configuration;
   }
 
   // Output configurations (console, file, system etc)

@@ -1,6 +1,11 @@
 package org.multibit.hd.core.config;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.google.common.collect.Maps;
 import org.multibit.hd.brit.core.services.FeeService;
+
+import java.util.Map;
 
 /**
  * <p>Configuration to provide the following to application:</p>
@@ -31,6 +36,26 @@ public class WalletConfiguration {
    * Note feePerKB is a long rather than a Coin as Coin does not round trip as is via JSON
    */
   private long feePerKB = FeeService.DEFAULT_FEE_PER_KB.longValue();
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Any unknown objects in the configuration go here (preserve order of insertion)
+   */
+  private Map<String, Object> other = Maps.newLinkedHashMap();
+
+  /**
+   * @return The map of any unknown objects in the configuration at this level
+   */
+  @JsonAnyGetter
+  public Map<String, Object> any() {
+    return other;
+  }
+
+  @JsonAnySetter
+  public void set(String name, Object value) {
+    other.put(name, value);
+  }
 
   /**
    * @return The last/current soft wallet root (e.g. "mbhd-11111111-22222222-33333333-44444444-55555555")
@@ -79,6 +104,12 @@ public class WalletConfiguration {
 
     WalletConfiguration configuration = new WalletConfiguration();
 
+    // Unknown properties
+    for (Map.Entry<String, Object> entry : any().entrySet()) {
+      configuration.set(entry.getKey(), entry.getValue());
+    }
+
+    // Known properties
     configuration.setLastSoftWalletRoot(getLastSoftWalletRoot());
     configuration.setRecentWalletDataValidity(getRecentWalletDataValidity());
     configuration.setRecentWalletLabel(getRecentWalletLabel());
