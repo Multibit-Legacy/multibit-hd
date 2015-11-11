@@ -128,6 +128,11 @@ public class CoreServices {
   private static volatile ListeningExecutorService coreServices = null;
   private static Context context;
 
+  /**
+   * The depth of blocks at which we will not track confidence in detail
+   */
+  private static int EVENT_HORIZON = Integer.MAX_VALUE;
+
   public static Context getContext() {
     return context;
   }
@@ -166,7 +171,7 @@ public class CoreServices {
     }
 
     // Set up the bitcoinj context
-    context = new Context(NetworkParameters.fromID(NetworkParameters.ID_MAINNET));
+    context = new Context(NetworkParameters.fromID(NetworkParameters.ID_MAINNET), EVENT_HORIZON);
     log.debug("Context identity: {}", System.identityHashCode(context));
 
     // Ensure any errors can be reported
