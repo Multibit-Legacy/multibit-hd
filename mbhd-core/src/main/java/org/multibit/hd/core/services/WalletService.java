@@ -406,14 +406,13 @@ public class WalletService extends AbstractService {
     FiatPayment amountFiat = calculateFiatPaymentAndAddTransactionInfo(amountBTC.get(), transactionHashAsString);
 
     TransactionConfidence confidence = transaction.getConfidence();
-    TransactionConfidence transactionConfidence = confidence;
 
     // Depth
     int depth = 0; // By default not in a block
     TransactionConfidence.ConfidenceType confidenceType = TransactionConfidence.ConfidenceType.UNKNOWN;
 
     PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER, CoreMessageKey.UNKNOWN);
-    if (transactionConfidence != null) {
+    if (confidence != null) {
       confidenceType = confidence.getConfidenceType();
       if (TransactionConfidence.ConfidenceType.BUILDING == confidenceType) {
         depth = confidence.getDepthInBlocks();
@@ -421,6 +420,8 @@ public class WalletService extends AbstractService {
 
       // Payment status
       paymentStatus = calculateStatus(confidence.getConfidenceType(), depth, confidence.numBroadcastPeers());
+    } else {
+      log.debug("No transaction confidence for t {}", transactionHashAsString);
     }
 
 
