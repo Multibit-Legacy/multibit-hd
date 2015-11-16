@@ -241,7 +241,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     fiatPayment.setExchangeName(Optional.of(exchangeKey.getExchangeName()));
 
     final Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-    if (exchangeRateChangedEvent.isPresent()) {
+    if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
       fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
       fiatPayment.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
     } else {
