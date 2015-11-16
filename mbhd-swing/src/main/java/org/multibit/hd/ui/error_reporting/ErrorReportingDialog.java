@@ -86,6 +86,7 @@ public class ErrorReportingDialog extends JFrame {
 
     setTitle(Languages.safeText(MessageKey.ERROR_REPORTING_TITLE));
     setIconImage(Images.newLogoIconImage());
+    setBackground(Themes.currentTheme.detailPanelBackground());
 
     JPanel contentPanel = Panels.newPanel(
       new MigLayout(
@@ -93,7 +94,7 @@ public class ErrorReportingDialog extends JFrame {
         "[][]", // Columns
         "[]10[][][][][shrink][shrink]" // Rows
       ));
-
+    contentPanel.setOpaque(true);
 
     JLabel preambleLabel;
     if (showApology) {

@@ -166,10 +166,14 @@ public class MainController extends AbstractController implements
       case SOFT:
 
         // Unsubscribe views for events
-        mainView.unsubscribe();
+        if (mainView != null) {
+          mainView.unsubscribe();
+        }
 
         // Unregister controllers for events
-        headerController.unsubscribe();
+        if (headerController != null) {
+          headerController.unsubscribe();
+        }
 
         // Unregister this
         unsubscribe();
