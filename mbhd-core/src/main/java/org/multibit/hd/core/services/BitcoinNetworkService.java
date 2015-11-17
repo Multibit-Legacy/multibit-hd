@@ -160,7 +160,7 @@ public class BitcoinNetworkService extends AbstractService {
    * Open the blockstore, optionally checkpointing it to a date
    *
    * @param applicationDataDirectory The current application directory
-   * @param replayDateOptional       the date from which to replay the blcock store (hence use the next earliest checkpoint)
+   * @param replayDateOptional       The date from which to replay the block store (hence use the next earliest checkpoint)
    *                                 if not present then no checkpointing is done and te blockstore is simply opened
    */
   public BlockStore openBlockStore(File applicationDataDirectory, Optional<DateTime> replayDateOptional) {
