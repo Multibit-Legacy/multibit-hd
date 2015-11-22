@@ -833,7 +833,7 @@ public enum WalletManager implements WalletEventListener {
             // Open the blockstore with no checkpointing (this is to get the chain height)
             blockStore = bitcoinNetworkService.openBlockStore(
               InstallationManager.getOrCreateApplicationDataDirectory(),
-              Optional.<DateTime>absent()
+              new ReplayConfig()
             );
           }
           log.debug("blockStore = {}", blockStore);
@@ -1140,10 +1140,10 @@ public enum WalletManager implements WalletEventListener {
 
           // Replay wallet using fast catch up without clearing mempool (not a repair scenario)
           CoreServices.getOrCreateBitcoinNetworkService().replayWallet(
-            InstallationManager.getOrCreateApplicationDataDirectory(),
-            replayDate,
-            true,
-            false
+                  InstallationManager.getOrCreateApplicationDataDirectory(),
+                  replayDate,
+                  true,
+                  false
           );
           return true;
 
