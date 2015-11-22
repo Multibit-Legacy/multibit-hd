@@ -54,7 +54,6 @@ public class BlockStoreManager {
    * @throws BlockStoreException
    * @throws IOException
    */
-  @SuppressFBWarnings({"DM_GC"})
   public BlockStore createOrOpenBlockStore(File blockStoreFile, File checkpointsFile, DateTime checkpointDate, boolean createNew) throws BlockStoreException, IOException {
 
     boolean blockStoreCreatedNew = deleteBlockStoreIfRequired(createNew, blockStoreFile);
@@ -113,7 +112,6 @@ public class BlockStoreManager {
    * @throws BlockStoreException
    * @throws IOException
    */
-  @SuppressFBWarnings({"DM_GC"})
   public BlockStore createOrOpenBlockStore(File blockStoreFile, Stack<StoredBlock> storedBlockStack, boolean createNew) throws BlockStoreException, IOException {
 
     boolean blockStoreCreatedNew = deleteBlockStoreIfRequired(createNew, blockStoreFile);
@@ -163,6 +161,7 @@ public class BlockStoreManager {
     return blockStore;
   }
 
+  @SuppressFBWarnings({"DM_GC"})
   private boolean deleteBlockStoreIfRequired(boolean createNew, File blockStoreFile) {
     // If the spvBlockStore is to be created new
     // or its size is 0 bytes delete the file so that it is recreated fresh

@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
@@ -291,6 +292,7 @@ public class BitcoinNetworkService extends AbstractService {
    * @param useFastCatchup           True if only block headers from genesis block is required (fast catch up)
    * @param clearMemPool             True if the memory pool should be cleared (e.g. repair wallet scenario)
    */
+  @SuppressFBWarnings({"RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"})
   public void replayWallet(File applicationDataDirectory, Optional<DateTime> replayDateTime, boolean useFastCatchup, boolean clearMemPool) {
 
     Preconditions.checkNotNull(replayDateTime);
