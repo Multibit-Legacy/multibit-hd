@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -69,6 +70,11 @@ public class BitcoinNetworkService extends AbstractService {
   private static int CONNECTION_TIMEOUT = 4000; // milliseconds
 
   private static int NUMBER_OF_PEERS_TO_PING = 2;
+
+  /**
+   * The number of blocks to go back for a replay (based on the length of time coinbases need to mature for similar forking reasons)
+   */
+  private static int NUMBER_OF_BLOCKS_DELTA_FOR_REPLAY = 120;
 
   // The minimum BRIT fee that the multibit developers charge
   private static Coin MINIMUM_MULTIBIT_DEVELOPER_FEE = Coin.valueOf(5000); // satoshi
@@ -160,10 +166,10 @@ public class BitcoinNetworkService extends AbstractService {
    * Open the blockstore, optionally checkpointing it to a date
    *
    * @param applicationDataDirectory The current application directory
-   * @param replayDateOptional       The date from which to replay the block store (hence use the next earliest checkpoint)
+   * @param replayConfig              ReplayHints giving the date or stored block to use for replay
    *                                 if not present then no checkpointing is done and te blockstore is simply opened
    */
-  public BlockStore openBlockStore(File applicationDataDirectory, Optional<DateTime> replayDateOptional) {
+  public BlockStore openBlockStore(File applicationDataDirectory, ReplayConfig replayConfig) {
 
     BlockStore blockStoreToReturn = null;
     try {
@@ -177,18 +183,25 @@ public class BitcoinNetworkService extends AbstractService {
       File blockStoreFile = SecureFiles.verifyOrCreateFile(walletParentDirectory, InstallationManager.MBHD_PREFIX + InstallationManager.SPV_BLOCKCHAIN_SUFFIX);
       File checkpointsFile = SecureFiles.verifyOrCreateFile(walletParentDirectory, InstallationManager.MBHD_PREFIX + InstallationManager.CHECKPOINTS_SUFFIX);
 
-      if (replayDateOptional.isPresent()) {
-        // Create a block store and checkpoint it
-        blockStoreToReturn = new BlockStoreManager(networkParameters).createOrOpenBlockStore(blockStoreFile, checkpointsFile, replayDateOptional.get(), true);
+      if (replayConfig.getReplayDate().isPresent()) {
+        // Create a block store and checkpoint it using the replay date
+        log.debug("Create new block store - using replay date");
+        blockStoreToReturn = new BlockStoreManager(networkParameters).createOrOpenBlockStore(blockStoreFile, checkpointsFile, replayConfig.getReplayDate().get(), true);
       } else {
-        // Load or create the blockStore - no checkpointing
-        log.debug("Create new block store - no replay date");
-        blockStoreToReturn = new BlockStoreManager(networkParameters).createOrOpenBlockStore(blockStoreFile, checkpointsFile, null, false);
-        log.debug(
-          "Success. Blockstore is '{}', height is {}",
-          blockStoreToReturn,
-          blockStoreToReturn.getChainHead() == null ? "Unknown" : blockStoreToReturn.getChainHead().getHeight());
+        if (replayConfig.getReplayStoredBlockStack().isPresent()) {
+          // Create a blockstore using the StoredBlockStack
+          blockStoreToReturn = new BlockStoreManager(networkParameters).createOrOpenBlockStore(blockStoreFile, replayConfig.getReplayStoredBlockStack().get(), true);
+        } else {
+          // Load or create the blockStore - no checkpointing or storedBlock used
+          log.debug("Create new block store - no replay date or storedBlock");
+          blockStoreToReturn = new BlockStoreManager(networkParameters).createOrOpenBlockStore(blockStoreFile, checkpointsFile, null, false);
+          log.debug(
+            "Success. Blockstore is '{}', height is {}",
+            blockStoreToReturn,
+            blockStoreToReturn.getChainHead() == null ? "Unknown" : blockStoreToReturn.getChainHead().getHeight());
+        }
       }
+
     } catch (IOException | BlockStoreException e) {
       log.error("Block store could not be opened", e);
 
@@ -296,16 +309,36 @@ public class BitcoinNetworkService extends AbstractService {
         memPool.reset();
       }
 
+      // See if the replayDate is within the current block stores knowledge,
+      // if so then we can do a replay from that and do not have to sync back from a checkpoint
+      ReplayConfig replayConfig;
+
+      Optional<Stack<StoredBlock>> replayStoredBlockStack = findStoredBlockBefore(replayDateTime);
+      if (replayStoredBlockStack.isPresent()) {
+        log.debug("Can replay wallet from storedBlock");
+        replayConfig = new ReplayConfig(replayStoredBlockStack.get());
+      } else {
+         if (replayDateTime.isPresent()) {
+          // Use the specified replay date
+          log.debug("Using the specified reaplyDateTime {}", replayDateTime);
+          replayConfig = new ReplayConfig(replayDateTime.get());
+        } else {
+          // No replay date nor a stored block
+          log.debug("No replay date nor stored block available for replay");
+          replayConfig = new ReplayConfig();
+        }
+      }
+
       // Close the block store if it is present
       closeBlockstore();
 
-      log.info(
-        "Starting replay of wallet with id '{}' from date '{}'",
-        WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId(),
-        replayDateTime.orNull()
+      log.debug(
+              "Starting replay of wallet with id '{}' from date '{}'",
+              WalletManager.INSTANCE.getCurrentWalletSummary().get().getWalletId(),
+              replayDateTime.orNull()
       );
 
-      blockStore = openBlockStore(applicationDataDirectory, replayDateTime);
+      blockStore = openBlockStore(applicationDataDirectory, replayConfig);
       log.debug("Blockstore is '{}'", blockStore);
 
       restartNetwork(blockStore, useFastCatchup);
@@ -314,9 +347,116 @@ public class BitcoinNetworkService extends AbstractService {
 
       log.debug("Blockchain download started.");
     } catch (BlockStoreException | IOException | TimeoutException | RuntimeException e) {
-      log.debug("Wallet replay was interrupted. Error was : '" + e.getMessage() + "'");
+      log.debug("Wallet replay was interrupted. Error was : '" + e.getClass().getCanonicalName() + " " + e.getMessage() + e.getCause() == null ? " " : e.getCause().getMessage() + "'");
     }
   }
+
+  /*
+   * If a replayDateTime is specified, see if the replayDate is within the current block store's knowledge,
+   * if so return the stored block from before the replay date
+   * If not, return Optional.absent()
+   *
+   * We wind back NUMBER_OF_BLOCKS_DELTA_FOR_REPLAY blocks to cater for forks.
+   * There has to be a difficulty transition in the stack returned (otherwise adding blocks fails) so if there isn't return Optional.absent()
+   *
+   */
+  private Optional<Stack<StoredBlock>> findStoredBlockBefore(Optional<DateTime> replayDateTime) {
+    // No replay datetime specified
+    if (!replayDateTime.isPresent()) {
+      log.debug("No replay date available");
+      return Optional.absent();
+    }
+
+    // No open blockStore
+    if (blockStore == null) {
+      log.debug("No blockstore");
+      return Optional.absent();
+    }
+
+    try {
+      StoredBlock cursor = blockStore.getChainHead();
+      if (cursor == null) {
+        // No chainHead so cannot search back in time
+        log.debug("No chainhead");
+        return Optional.absent();
+      } else {
+        while (cursor != null) {
+          if (cursor.getHeader().getTime().before(replayDateTime.get().toDate())) {
+            // Found a stored block with time earlier than replay date
+            // Copy to a stack the snippet of blockchain from earliest known to just before cursor
+            // Check that there is a difficulty transition
+            Stack<StoredBlock> storedBlockStack = pushStoredBlocksToCursorAndCheckDifficulty(cursor);
+            return Optional.fromNullable(storedBlockStack);
+          }
+
+          // Find the previous header (will be null once blockstore is exhausted)
+          cursor = cursor.getPrev(blockStore);
+        }
+
+        // Could not find stored block before replay date
+        log.debug("No stored block available before replay date");
+
+        return Optional.absent();
+      }
+    } catch (BlockStoreException bse) {
+      // Something bad happened accessing the block store so give up search
+      return Optional.absent();
+    }
+  }
+
+  /**
+   * Push to a stack all the headers from the earliest known in the block store to NUMBER_OF_BLOCKS_DELTA_FOR_REPLAY prior to the cursor
+   * The stack returned is guaranteed to have a difficulty transition
+   * @return Stack the snippet of chain from cursor backwards to whatever earliest the block store knows about, or null
+   **/
+  private Stack<StoredBlock> pushStoredBlocksToCursorAndCheckDifficulty(StoredBlock storedBlock) throws BlockStoreException {
+    // Go back some more blocks to cater for possible forks
+    for (int i = 0; i < NUMBER_OF_BLOCKS_DELTA_FOR_REPLAY; i++) {
+      if (storedBlock == null) {
+        // No header available
+        log.debug("Not enough blocks in block store so returning null");
+        return null;
+      }
+      storedBlock = storedBlock.getPrev(blockStore);
+    }
+
+    boolean foundDifficultyTransition = false;
+
+    Stack<StoredBlock> stack = new Stack<>();
+
+    while (storedBlock != null) {
+      log.trace("Pushing block {} at height {}", storedBlock.getHeader().getHashAsString(), storedBlock.getHeight());
+      stack.push(storedBlock);
+      StoredBlock previousStoredBlock = null;
+      try {
+        previousStoredBlock = storedBlock.getPrev(blockStore);
+
+        // Difficulty transition worked out as per AbstractBitcoinNetParams#isDifficultyTransitionPoint
+        if (previousStoredBlock != null && ((previousStoredBlock.getHeight() + 1) % networkParameters.getInterval()) == 0) {
+          foundDifficultyTransition = true;
+          log.debug("Found difficulty transition");
+        }
+      } catch (BlockStoreException bse) {
+        log.debug("Failed to get previous block, error was {}", bse.getMessage());
+      }
+
+      storedBlock = previousStoredBlock;
+    }
+
+    log.debug("Navigated back to beginning of blockstore");
+
+    if (foundDifficultyTransition) {
+      // return the chain snippet as it has a difficulty transition
+      log.debug("Found a chain snippet for use in replay of length {}", stack.size());
+      return stack;
+    } else {
+      log.debug("No difficulty transition in chain snippet so returning null");
+
+      // No difficulty transition in chain snippet, or not enough stored blocks in the blockstore
+      return null;
+    }
+  }
+
 
   /**
    * <p>Send bitcoin</p>
