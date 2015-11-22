@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import net.miginfocom.swing.MigLayout;
-import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.BitcoinNetworkSummary;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.dto.WalletType;
@@ -13,7 +12,6 @@ import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardHideEvent;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -184,20 +182,6 @@ public class ManageWalletScreenView extends AbstractScreenView<ManageWalletScree
       public void actionPerformed(ActionEvent e) {
 
         Panels.showLightBox(Wizards.newChangePinWizard().getWizardScreenHolder());
-      }
-    };
-  }
-
-  /**
-   * @return An action to show the "history" screen
-   */
-  private AbstractAction getShowHistoryAction() {
-    return new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-
-        Configurations.currentConfiguration.getAppearance().setCurrentScreen(Screen.HISTORY.name());
-        ViewEvents.fireShowDetailScreenEvent(Screen.HISTORY);
       }
     };
   }

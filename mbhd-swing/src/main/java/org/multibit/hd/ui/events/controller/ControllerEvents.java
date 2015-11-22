@@ -121,7 +121,7 @@ public class ControllerEvents {
       return;
     }
 
-    // Must be in an unlocked wallet to be here so History is available
+    // Must be in an unlocked wallet to be here
 
     eventExecutor.submit(
       new Runnable() {

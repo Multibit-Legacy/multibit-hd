@@ -1476,7 +1476,7 @@ public class WalletService extends AbstractService {
     }
 
     // Close the Network connection to stop writes to the wallet + payments database whilst we are rewriting files
-    // Close  Contacts / History / Payments
+    // Close  Contacts / Payments
     CoreServices.shutdownNow(ShutdownEvent.ShutdownType.SWITCH);
 
     // Close the current wallet
@@ -1555,7 +1555,7 @@ public class WalletService extends AbstractService {
       // Do the commit of the changed non-wallet files by "rename existing + rename new + delete old"
       EncryptedFileReaderWriter.changeEncryptionCommit(filesToChangePassword, newFiles);
 
-      // Restart Contacts / History / Payments / Bitcoin network services
+      // Restart Contacts / Payments / Bitcoin network services
       CoreServices.bootstrap();
       CoreServices.getOrCreateBackupService();
       CoreServices.getOrCreateWalletService(walletId);

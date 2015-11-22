@@ -55,11 +55,11 @@ public enum Screen {
 
   // Specialised screens from buttons
   /**
-   * The history screen
+   * The history screen - do not delete in case it is referenced in old configuration files
+   * @deprecated
    */
+  @Deprecated
   HISTORY,
-
-
 
   // End of enum
   ;

@@ -64,6 +64,7 @@ public class Screens {
       // Deprecated screens
       case HISTORY:
         // History no longer supported so show a SendRequest screen to get the user started
+        // Older configuration files may still reference the index
 
       // Sidebar screens
       case SEND_REQUEST:
