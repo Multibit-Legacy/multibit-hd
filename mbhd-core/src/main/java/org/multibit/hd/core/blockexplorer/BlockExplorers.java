@@ -9,11 +9,8 @@ import java.util.List;
 /**
  *  <p>Factory to provide the following to [related classes]:<br>
  *  <ul>
- *  <li>Provide block explorer information for lookup of transaction data for various blockexplorers</li>
+ *  <li>Provide block explorer information for lookup of transaction data for various block explorers</li>
  *  </ul>
- *  Example:<br>
- *  <pre>TransactionDetailPanelView
- *  </pre>
  *  </p>
  *  
  */
