@@ -26,6 +26,7 @@ public class BlockExplorers {
     allBlockExplorers.add(new BitEasyComBlockExplorer());
     allBlockExplorers.add(new BitPayComBlockExplorer());
     allBlockExplorers.add(new BlockChainInfoBlockExplorer());
+    allBlockExplorers.add(new BlockonomicsBlockExplorer());
     allBlockExplorers.add(new BlockrIoBlockExplorer());
     allBlockExplorers.add(new BlockTrailComBlockExplorer());
     allBlockExplorers.add(new SmartBitComAuBlockExplorer());
