@@ -231,7 +231,7 @@ public class BitcoinNetworkService extends AbstractService {
   public void recalculateFastCatchupAndFilter() {
 
     if (peerGroup != null) {
-      peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.FORCE_SEND_FOR_REFRESH);
+      peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
     }
 
   }
