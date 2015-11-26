@@ -311,6 +311,11 @@ public class BitcoinNetworkService extends AbstractService {
         memPool.reset();
       }
 
+      // Open the block store if it has not been yet with no replay config - this is so that it can be interrogated
+      if (blockStore == null) {
+        blockStore = openBlockStore(applicationDataDirectory, new ReplayConfig());
+      }
+
       // See if the replayDate is within the current block stores knowledge,
       // if so then we can do a replay from that and do not have to sync back from a checkpoint
       ReplayConfig replayConfig;
@@ -322,7 +327,7 @@ public class BitcoinNetworkService extends AbstractService {
       } else {
          if (replayDateTime.isPresent()) {
           // Use the specified replay date
-          log.debug("Using the specified reaplyDateTime {}", replayDateTime);
+          log.debug("Using the specified replayDateTime {}", replayDateTime);
           replayConfig = new ReplayConfig(replayDateTime.get());
         } else {
           // No replay date nor a stored block
