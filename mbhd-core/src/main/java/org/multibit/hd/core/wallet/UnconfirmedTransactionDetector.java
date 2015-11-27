@@ -18,10 +18,9 @@ import java.util.Map;
  *  <p>Class to provide the following to WalletManager:<br>
  *  <ul>
  *  <li>Detects unconfirmed transactions in a window of time of interest</li>
- * <li>Works out a date to replay from when a replay is appropriate</li>
+ *  <li>Works out a date to replay from when a replay is appropriate</li>
  *  </ul>
- *  </p>
- *  
+ *  </p> 
  */
 public class UnconfirmedTransactionDetector {
 
@@ -59,13 +58,11 @@ public class UnconfirmedTransactionDetector {
    * (No replay is required i.e no unconfirmed transactions in window of interest)
    *
    * @param wallet             The wallet containing the transactions
-   * @param previousReplayDate The date the wallet was last replayed to try to confirm transactions
    * @param compareDate        The date to compare transaction dates against (typically the time now)
    * @return The datetime of the oldest transaction in the time window of interest
    */
-  public static Optional<DateTime> calculateReplayDate(Wallet wallet, DateTime previousReplayDate, DateTime compareDate) {
+  public static Optional<DateTime> calculateReplayDate(Wallet wallet, DateTime compareDate) {
     Preconditions.checkNotNull(wallet);
-    Preconditions.checkNotNull(previousReplayDate);
     Preconditions.checkNotNull(compareDate);
 
     // Get all the unconfirmed transactions in the wallet with age (compared to the compareDate)

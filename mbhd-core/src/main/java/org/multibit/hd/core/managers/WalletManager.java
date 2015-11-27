@@ -22,7 +22,6 @@ import org.bitcoinj.store.WalletProtobufSerializer;
 import org.bitcoinj.wallet.DeterministicSeed;
 import org.bitcoinj.wallet.Protos;
 import org.joda.time.DateTime;
-import org.joda.time.Days;
 import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.commons.crypto.AESUtils;
 import org.multibit.commons.files.SecureFiles;
@@ -857,8 +856,7 @@ public enum WalletManager implements WalletEventListener {
           }
 
           // Work out if the wallet has unconfirmed transactions in the time window of interest for replay
-          DateTime previousReplayDate = Dates.nowUtc().minus(Days.ONE);
-          unconfirmedTransactionReplayDate = UnconfirmedTransactionDetector.calculateReplayDate(walletBeingReturned, previousReplayDate, Dates.nowUtc());
+          unconfirmedTransactionReplayDate = UnconfirmedTransactionDetector.calculateReplayDate(walletBeingReturned, Dates.nowUtc());
 
           // If (wallet and block store match or wallet is brand new) and
           //    no sync is required due to unconfirmed transactions
