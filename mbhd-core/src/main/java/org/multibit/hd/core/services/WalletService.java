@@ -426,7 +426,7 @@ public class WalletService extends AbstractService {
 
 
     // Payment type
-    PaymentType paymentType = calculatePaymentType(amountBTC.get(), depth);
+    PaymentType paymentType = calculatePaymentType(amountBTC.get(), depth, confidenceType);
 
     // Mining fee
     Optional<Coin> miningFee = calculateMiningFee(paymentType, transactionHashAsString);
@@ -498,7 +498,6 @@ public class WalletService extends AbstractService {
     if (confidenceType != null) {
 
       if (TransactionConfidence.ConfidenceType.BUILDING.equals(confidenceType)) {
-
         // Confirmed
         final PaymentStatus paymentStatus;
         if (depth == 1) {
@@ -542,21 +541,21 @@ public class WalletService extends AbstractService {
 
   }
 
-  private PaymentType calculatePaymentType(Coin amountBTC, int depth) {
+  private PaymentType calculatePaymentType(Coin amountBTC, int depth, TransactionConfidence.ConfidenceType confidenceType) {
     PaymentType paymentType;
     if (amountBTC.compareTo(Coin.ZERO) < 0) {
       // Debit
-      if (depth == 0) {
-        paymentType = PaymentType.SENDING;
-      } else {
+      if (depth > 0 || TransactionConfidence.ConfidenceType.BUILDING.equals(confidenceType)) {
         paymentType = PaymentType.SENT;
+      } else {
+        paymentType = PaymentType.SENDING;
       }
     } else {
       // Credit
-      if (depth == 0) {
-        paymentType = PaymentType.RECEIVING;
-      } else {
+      if (depth > 0 || TransactionConfidence.ConfidenceType.BUILDING.equals(confidenceType)) {
         paymentType = PaymentType.RECEIVED;
+      } else {
+        paymentType = PaymentType.RECEIVING;
       }
     }
     return paymentType;
