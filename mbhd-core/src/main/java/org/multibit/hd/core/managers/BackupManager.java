@@ -430,7 +430,7 @@ public enum BackupManager {
           break;
         } catch (Exception e) {
           // Log the initial error (and then carry on to the next rolling backup
-          log.error("Could not load rolling backup:\n'{}'", rollingBackupFiles.get(i - 1).getAbsolutePath(), e);
+          log.error("Could not load rolling backup:\n'{}', error was: {}", rollingBackupFiles.get(i - 1).getAbsolutePath(), e.getClass().getCanonicalName() + " " + e.getMessage());
         }
       }
 
