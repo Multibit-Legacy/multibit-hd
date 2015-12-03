@@ -484,6 +484,13 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       return true;
     }
 
+    // Check for java.lang.IllegalArgumentException: bad position: -1 (see Issue #628)
+    // This is a Swing glitch that we can do nothing about
+    if (message.contains("java.lang.IllegalArgumentException: bad position: -1")) {
+      log.warn("Detected java.lang.IllegalArgumentException: bad position: -1 exception. Treat as benign.");
+      return true;
+    }
+
 
     // Anything else is a problem
     return false;
