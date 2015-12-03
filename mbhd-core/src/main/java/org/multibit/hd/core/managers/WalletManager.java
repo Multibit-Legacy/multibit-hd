@@ -1771,7 +1771,7 @@ public enum WalletManager implements WalletEventListener {
       }
 
     } catch (RuntimeException | AddressFormatException | SignatureException e) {
-      log.warn("Failed to verify the message", e);
+      log.warn("Failed to verify the message", e.getClass().getCanonicalName() + " " + e.getMessage());
       return new VerifyMessageResult(false, CoreMessageKey.VERIFY_MESSAGE_FAILURE, null);
     }
   }
