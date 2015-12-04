@@ -1007,8 +1007,9 @@ public class BitcoinNetworkService extends AbstractService {
       // Loop over all the tx outputs, adding up everything but the change address
       log.debug("Calculating the fiat equivalent for transaction being sent");
       for (TransactionOutput transactionOutput : sendRequestSummary.getSendRequest().get().tx.getOutputs()) {
-        log.debug("Examining tx output = " + transactionOutput.toString());
         try {
+          log.debug("Examining tx output = " + transactionOutput.toString());
+
           Script script = transactionOutput.getScriptPubKey();
           // Calculate a TO address if possible
           if (script.isSentToAddress() || script.isPayToScriptHash() || script.isSentToRawPubKey()) {
