@@ -1008,7 +1008,7 @@ public class BitcoinNetworkService extends AbstractService {
       log.debug("Calculating the fiat equivalent for transaction being sent");
       for (TransactionOutput transactionOutput : sendRequestSummary.getSendRequest().get().tx.getOutputs()) {
         try {
-          log.debug("Examining tx output = " + transactionOutput.toString());
+          log.debug("Examining tx output {} ", transactionOutput.toString());
 
           Script script = transactionOutput.getScriptPubKey();
           // Calculate a TO address if possible
@@ -1017,7 +1017,7 @@ public class BitcoinNetworkService extends AbstractService {
             if (!toAddress.equals(sendRequestSummary.getChangeAddress())) {
               // Add to the running total
               totalAmountIncludingTransactionAndClientFee = totalAmountIncludingTransactionAndClientFee.add(transactionOutput.getValue());
-              log.debug("Adding a transaction output amount, total bitcoin is now " + totalAmountIncludingTransactionAndClientFee.toString());
+              log.debug("Adding a transaction output amount, total bitcoin is now {}", totalAmountIncludingTransactionAndClientFee.toString());
             } else {
               log.debug("Skipping a transaction output as it is the change address");
             }
@@ -1035,7 +1035,7 @@ public class BitcoinNetworkService extends AbstractService {
       // Sends are negative
       totalAmountIncludingTransactionAndClientFee = totalAmountIncludingTransactionAndClientFee.negate();
 
-      log.debug("Added the transaction fee, bitcoin total is now " + totalAmountIncludingTransactionAndClientFee.toString());
+      log.debug("Added the transaction fee, bitcoin total is now {}", totalAmountIncludingTransactionAndClientFee.toString());
 
       // Apply the exchange rate
       BigDecimal localAmount;
@@ -1046,7 +1046,7 @@ public class BitcoinNetworkService extends AbstractService {
       } else {
         localAmount = BigDecimal.ZERO;
       }
-      log.debug("Total transaction bitcoin amount = " + totalAmountIncludingTransactionAndClientFee.toString() + ", calculated fiat amount = " + localAmount.toString());
+      log.debug("Total transaction bitcoin amount = {}, calculated fiat amount {}", totalAmountIncludingTransactionAndClientFee.toString(), localAmount.toString());
       return true;
     } catch (ScriptException e) {
       log.error("Could not process the fiat amount", e);
