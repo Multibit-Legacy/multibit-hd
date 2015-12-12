@@ -1,8 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
 import org.multibit.hd.ui.MultiBitUI;
-import org.multibit.hd.ui.languages.Languages;
-import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.fonts.AwesomeDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.themes.Themes;
@@ -21,7 +19,6 @@ import java.awt.*;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
 
@@ -78,44 +75,47 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
       switch (nodeInfo.getDetailScreen()) {
 
         case BUY_SELL:
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.LIFE_BOUY, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 2));
-          setIconTextGap(6);
+          // Credit card indicates dealing with a regulated authority
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.CREDIT_CARD, iconColor, MultiBitUI.NORMAL_ICON_SIZE-3));
+          setIconTextGap(8);
           break;
         case SEND_REQUEST:
-          if (nodeInfo.getText().equals(Languages.safeText(MessageKey.SEND_OR_REQUEST))) {
-            setIcon(AwesomeDecorator.createIcon(AwesomeIcon.EXCHANGE, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 3));
-            setIconTextGap(9);
-          } else {
-            // In "single mode" this is the home
-            setIcon(AwesomeDecorator.createIcon(AwesomeIcon.HOME, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
-            setIconTextGap(7);
-          }
+          // Exchange icon represents person to person exchange associated with direct transactions
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.EXCHANGE, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 3));
+          setIconTextGap(9);
           break;
         case CONTACTS:
+          // Standard contact icon
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.USER, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
           setIconTextGap(10);
           break;
         case TRANSACTIONS:
+          // List indicates a spreadsheet or balance sheet
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.LIST, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 2));
           setIconTextGap(8);
           break;
         case HELP:
+          // Question mark leading to answers
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 10));
           setIconTextGap(9);
           break;
         case SETTINGS:
+          // Standard settings icon
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 1));
           setIconTextGap(6);
           break;
         case MANAGE_WALLET:
+          // Edit indicates changing text information
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.EDIT, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
           setIconTextGap(6);
           break;
         case TOOLS:
+          // Tools indicates utilities to get stuff done
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.WRENCH, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
           setIconTextGap(6);
           break;
         case EXIT:
+          // Exit icon
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.SIGN_OUT, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 2));
           setIconTextGap(6);
           break;
