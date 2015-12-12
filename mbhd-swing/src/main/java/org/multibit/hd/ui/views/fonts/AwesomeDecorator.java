@@ -26,7 +26,7 @@ public class AwesomeDecorator {
   static {
 
     // See FontAwesomeTools when upgrading to later version
-    try (InputStream in = AwesomeDecorator.class.getResourceAsStream("/assets/fonts/FontAwesome-4.2.0.ttf")) {
+    try (InputStream in = AwesomeDecorator.class.getResourceAsStream("/assets/fonts/FontAwesome-4.5.0.ttf")) {
 
       Font font = Font.createFont(Font.TRUETYPE_FONT, in);
       Preconditions.checkNotNull(font, "Font Awesome not loaded");
