@@ -32,8 +32,9 @@ public class SidebarTreeScreensRequirements {
     new SidebarAccessibilityUseCase(window).execute(parameters);
 
     // Verify each screen shows
-    new ShowThenCancelBuySellUseCase(window).execute(parameters);
     new ShowSendRequestScreenUseCase(window).execute(parameters);
+    // Do the buy/sell after send/request to ensure sidebar transitions work correctly
+    new ShowThenCancelBuySellUseCase(window).execute(parameters);
     new ShowPaymentsScreenUseCase(window).execute(parameters);
     new ShowContactsScreenUseCase(window).execute(parameters);
     new ShowHelpScreenUseCase(window).execute(parameters);

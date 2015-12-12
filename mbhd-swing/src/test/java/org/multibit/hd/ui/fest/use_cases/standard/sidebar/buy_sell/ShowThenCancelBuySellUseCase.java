@@ -39,9 +39,6 @@ public class ShowThenCancelBuySellUseCase extends AbstractFestUseCase {
 
     // Verify the notes appear
     assertLabelText(MessageKey.BUY_SELL_NOTE_1);
-    assertLabelText(MessageKey.BUY_SELL_NOTE_2);
-    assertLabelText(MessageKey.BUY_SELL_NOTE_3);
-    assertLabelText(MessageKey.BUY_SELL_NOTE_4);
 
     // Verify "visit website" is present
     window
@@ -59,6 +56,11 @@ public class ShowThenCancelBuySellUseCase extends AbstractFestUseCase {
     window
       .button(MessageKey.FINISH.getKey())
       .click();
+
+    // Expect the sidebar to grab focus
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .requireFocused();
 
   }
 
