@@ -291,6 +291,8 @@ public enum MessageKey {
 
   SIDEBAR_TREE("sidebar_tree"),
   WALLET("wallet"),
+
+  BUY_OR_SELL("buy_or_sell"),
   SEND_OR_REQUEST("send_or_request"),
 
   CONTACTS("contacts"),
