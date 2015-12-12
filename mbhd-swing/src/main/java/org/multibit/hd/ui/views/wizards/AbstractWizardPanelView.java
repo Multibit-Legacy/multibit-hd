@@ -458,7 +458,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
           popoverPanel.add(Panels.newUnsupportedConfigurationPassphrase(), "align center,wrap");
           break;
         default:
-          // Do nothing
+          // Do nothing and discard the environment event to prevent multiple showings
+          CoreServices.getApplicationEventService().onEnvironmentEvent(null);
           return;
       }
 

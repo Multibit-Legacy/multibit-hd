@@ -145,6 +145,15 @@ public class Wizards {
   }
 
   /**
+   * @return A new "Glidera" wizard
+   */
+  public static ExitWizard newGlideraWizard() {
+
+    log.debug("New 'Glidera wizard'");
+    return new ExitWizard(new ExitWizardModel(ExitState.SELECT_RESET_OPTION), true);
+  }
+
+  /**
    * @return A new "about" wizard
    */
   public static AboutWizard newAboutWizard() {
