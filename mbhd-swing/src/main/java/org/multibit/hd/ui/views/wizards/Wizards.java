@@ -153,7 +153,7 @@ public class Wizards {
   public static BuySellWizard newBuySellWizard() {
 
     log.debug("New 'Buy/sell wizard'");
-    return new BuySellWizard(new BuySellWizardModel(BuySellState.REGION_NONE));
+    return new BuySellWizard(new BuySellWizardModel(BuySellState.SHOW_PARTNER_NOTES));
   }
 
   /**

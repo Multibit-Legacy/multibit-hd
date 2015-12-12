@@ -49,7 +49,7 @@ public class BuySellScreenView extends AbstractScreenView<BuySellScreenModel>  {
 
   @Override
   public boolean beforeShow() {
-    Panels.showLightBox(Wizards.newGlideraWizard().getWizardScreenHolder());
+    Panels.showLightBox(Wizards.newBuySellWizard().getWizardScreenHolder());
     return true;
 
   }

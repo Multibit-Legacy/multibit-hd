@@ -167,7 +167,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     Preconditions.checkState(SwingUtilities.isEventDispatchThread(), "This method should run on the EDT");
 
     if (!wizardViewMap.containsKey(panelName)) {
-      log.error("'{}' is not a valid panel name. Check the panel has been registered in the view map. Registered panels are\n{}", wizardViewMap.keySet());
+      log.error("'{}' is not a valid panel name. Check the panel has been registered in the view map. Registered panels are\n{}", panelName, wizardViewMap.keySet());
       return;
     }
 
@@ -216,7 +216,7 @@ public abstract class AbstractWizard<M extends AbstractWizardModel> {
     log.debug("Hide requested for {} with exitCancel {} ", panelName, isExitCancel);
 
     if (!wizardViewMap.containsKey(panelName)) {
-      log.error("'{}' is not a valid panel name. Check the panel has been registered in the view map. Registered panels are\n{}", wizardViewMap.keySet());
+      log.error("'{}' is not a valid panel name. Check the panel has been registered in the view map. Registered panels are\n{}", panelName, wizardViewMap.keySet());
       return;
     }
 

@@ -3,6 +3,8 @@ package org.multibit.hd.ui.views.screens;
 import org.multibit.hd.core.services.ContactService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.ui.languages.MessageKey;
+import org.multibit.hd.ui.views.screens.buy_sell.BuySellScreenModel;
+import org.multibit.hd.ui.views.screens.buy_sell.BuySellScreenView;
 import org.multibit.hd.ui.views.screens.contacts.ContactsScreenModel;
 import org.multibit.hd.ui.views.screens.contacts.ContactsScreenView;
 import org.multibit.hd.ui.views.screens.exit.ExitScreenModel;
@@ -65,8 +67,13 @@ public class Screens {
       case HISTORY:
         // History no longer supported so show a SendRequest screen to get the user started
         // Older configuration files may still reference the index
+        view = new SendRequestScreenView(new SendRequestScreenModel(screen), screen, MessageKey.SEND_OR_REQUEST);
+        break;
 
       // Sidebar screens
+      case BUY_SELL:
+        view = new BuySellScreenView(new BuySellScreenModel(screen), screen, MessageKey.BUY_OR_SELL);
+        break;
       case SEND_REQUEST:
         view = new SendRequestScreenView(new SendRequestScreenModel(screen), screen, MessageKey.SEND_OR_REQUEST);
         break;

@@ -248,7 +248,7 @@ public class SidebarView extends AbstractView {
       switch (detailScreen) {
         // Add special cases
         case BUY_SELL:
-          Panels.showLightBox(Wizards.newGlideraWizard().getWizardScreenHolder());
+          Panels.showLightBox(Wizards.newBuySellWizard().getWizardScreenHolder());
           break;
         case EXIT:
           Panels.showLightBox(Wizards.newExitWizard().getWizardScreenHolder());
