@@ -11,15 +11,15 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  * <p>Use case to provide the following to FEST testing:</p>
  * <ul>
- * <li>Verify the "buy/sell" sidebar screen</li>
+ * <li>Verify the "buy/sell" screen about wizard shows</li>
  * </ul>
  *
  * @since 0.0.1
  *
  */
-public class ShowBuySellScreenUseCase extends AbstractFestUseCase {
+public class ShowThenCancelBuySellUseCase extends AbstractFestUseCase {
 
-  public ShowBuySellScreenUseCase(FrameFixture window) {
+  public ShowThenCancelBuySellUseCase(FrameFixture window) {
     super(window);
   }
 
@@ -34,23 +34,32 @@ public class ShowBuySellScreenUseCase extends AbstractFestUseCase {
       .requireEnabled()
       .selectRow(BUY_SELL_ROW);
 
-    // Expect the buy/sell wizard to show
+    // Verify the "buy/sell" wizard appears
+    assertLabelText(MessageKey.BUY_SELL_TITLE);
+
+    // Verify the notes appear
+    assertLabelText(MessageKey.BUY_SELL_NOTE_1);
+    assertLabelText(MessageKey.BUY_SELL_NOTE_2);
+    assertLabelText(MessageKey.BUY_SELL_NOTE_3);
+    assertLabelText(MessageKey.BUY_SELL_NOTE_4);
+
+    // Verify "visit website" is present
     window
-      .button(MessageKey.BUY_OR_SELL.getKey())
+      .button(MessageKey.BUY_SELL_VISIT_GLIDERA.getKey())
       .requireVisible()
       .requireEnabled();
 
-    // Click cancel to escape
+    // Verify Finish is present
     window
-      .button(MessageKey.CANCEL.getKey())
+      .button(MessageKey.FINISH.getKey())
       .requireVisible()
-      .requireEnabled()
+      .requireEnabled();
+
+    // Click Finish
+    window
+      .button(MessageKey.FINISH.getKey())
       .click();
 
-    // Expect the sidebar to grab focus
-    window
-      .tree(MessageKey.SIDEBAR_TREE.getKey())
-      .requireFocused();
   }
 
 }

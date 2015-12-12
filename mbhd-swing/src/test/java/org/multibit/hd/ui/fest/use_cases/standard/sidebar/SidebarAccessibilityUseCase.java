@@ -36,9 +36,9 @@ public class SidebarAccessibilityUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled()
       .selectRow(BUY_SELL_ROW);
-    // Expect the Buy/Sell dialog to show with a Cancel button
+    // Expect the Buy/Sell dialog to show with a Finish button
     window
-      .button(MessageKey.CANCEL.getKey())
+      .button(MessageKey.FINISH.getKey())
       .requireVisible()
       .click();
 
@@ -170,9 +170,9 @@ public class SidebarAccessibilityUseCase extends AbstractFestUseCase {
     window
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_UP));
-    // Expect the Buy/Sell dialog to show with a Cancel button
+    // Expect the Buy/Sell dialog to show with a Finish button
     window
-      .button(MessageKey.CANCEL.getKey())
+      .button(MessageKey.FINISH.getKey())
       .requireVisible()
       .click();
 
