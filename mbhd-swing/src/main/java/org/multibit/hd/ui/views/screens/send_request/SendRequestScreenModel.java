@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.screens.wallet;
+package org.multibit.hd.ui.views.screens.send_request;
 
 import org.multibit.hd.ui.views.screens.AbstractScreenModel;
 import org.multibit.hd.ui.views.screens.Screen;

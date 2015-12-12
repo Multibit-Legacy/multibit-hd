@@ -17,8 +17,8 @@ import org.multibit.hd.ui.views.screens.settings.SettingsScreenModel;
 import org.multibit.hd.ui.views.screens.settings.SettingsScreenView;
 import org.multibit.hd.ui.views.screens.tools.ToolsScreenModel;
 import org.multibit.hd.ui.views.screens.tools.ToolsScreenView;
-import org.multibit.hd.ui.views.screens.wallet.SendRequestScreenModel;
-import org.multibit.hd.ui.views.screens.wallet.SendRequestScreenView;
+import org.multibit.hd.ui.views.screens.send_request.SendRequestScreenModel;
+import org.multibit.hd.ui.views.screens.send_request.SendRequestScreenView;
 
 /**
  * <p>Factory to provide the following to UI:</p>

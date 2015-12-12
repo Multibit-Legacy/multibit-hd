@@ -212,9 +212,10 @@ public class SidebarView extends AbstractView {
 
   private DefaultMutableTreeNode createSidebarTreeNodes() {
 
-    DefaultMutableTreeNode root = TreeNodes.newSidebarTreeNode("", Screen.SEND_REQUEST);
+    DefaultMutableTreeNode root = TreeNodes.newSidebarTreeNode("", Screen.BUY_SELL);
 
-    // Add standard wallet nodes at the root level
+    // Add nodes
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.BUY_OR_SELL, Screen.BUY_SELL));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.SEND_REQUEST));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.PAYMENTS, Screen.TRANSACTIONS));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
