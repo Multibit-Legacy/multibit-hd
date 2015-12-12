@@ -18,8 +18,8 @@ import java.util.Map;
  */
 public class VerifyNetworkWizard extends AbstractWizard<VerifyNetworkWizardModel> {
 
-  public VerifyNetworkWizard(VerifyNetworkWizardModel model, boolean isExiting) {
-    super(model, isExiting, Optional.absent());
+  public VerifyNetworkWizard(VerifyNetworkWizardModel model) {
+    super(model, false, Optional.absent());
   }
 
   @Override

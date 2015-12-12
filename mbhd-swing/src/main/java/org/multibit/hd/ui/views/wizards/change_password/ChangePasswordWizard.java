@@ -18,8 +18,8 @@ import java.util.Map;
  */
 public class ChangePasswordWizard extends AbstractWizard<ChangePasswordWizardModel> {
 
-  public ChangePasswordWizard(ChangePasswordWizardModel model, boolean isExiting) {
-    super(model, isExiting, Optional.absent());
+  public ChangePasswordWizard(ChangePasswordWizardModel model) {
+    super(model, false, Optional.absent());
   }
 
   @Override

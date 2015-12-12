@@ -14,6 +14,9 @@ import org.multibit.hd.ui.views.wizards.about.AboutWizardModel;
 import org.multibit.hd.ui.views.wizards.appearance_settings.AppearanceSettingsState;
 import org.multibit.hd.ui.views.wizards.appearance_settings.AppearanceSettingsWizard;
 import org.multibit.hd.ui.views.wizards.appearance_settings.AppearanceSettingsWizardModel;
+import org.multibit.hd.ui.views.wizards.buy_sell.BuySellState;
+import org.multibit.hd.ui.views.wizards.buy_sell.BuySellWizard;
+import org.multibit.hd.ui.views.wizards.buy_sell.BuySellWizardModel;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordState;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizard;
 import org.multibit.hd.ui.views.wizards.change_password.ChangePasswordWizardModel;
@@ -145,12 +148,12 @@ public class Wizards {
   }
 
   /**
-   * @return A new "Glidera" wizard
+   * @return A new "buy/sell" wizard
    */
-  public static ExitWizard newGlideraWizard() {
+  public static BuySellWizard newBuySellWizard() {
 
-    log.debug("New 'Glidera wizard'");
-    return new ExitWizard(new ExitWizardModel(ExitState.SELECT_RESET_OPTION), true);
+    log.debug("New 'Buy/sell wizard'");
+    return new BuySellWizard(new BuySellWizardModel(BuySellState.REGION_NONE));
   }
 
   /**
@@ -159,7 +162,7 @@ public class Wizards {
   public static AboutWizard newAboutWizard() {
 
     log.debug("New 'About wizard'");
-    return new AboutWizard(new AboutWizardModel(AboutState.ABOUT_DETAILS), true);
+    return new AboutWizard(new AboutWizardModel(AboutState.ABOUT_DETAILS));
   }
 
   /**
@@ -180,7 +183,7 @@ public class Wizards {
   public static RequestBitcoinWizard newRequestBitcoinWizard() {
 
     log.debug("New 'Request bitcoin wizard'");
-    return new RequestBitcoinWizard(new RequestBitcoinWizardModel(RequestBitcoinState.REQUEST_ENTER_DETAILS), false);
+    return new RequestBitcoinWizard(new RequestBitcoinWizardModel(RequestBitcoinState.REQUEST_ENTER_DETAILS));
 
   }
 
@@ -259,7 +262,7 @@ public class Wizards {
 
     log.debug("New 'Verify message wizard'");
 
-    return new VerifyMessageWizard(new VerifyMessageWizardModel(VerifyMessageState.EDIT_MESSAGE), false);
+    return new VerifyMessageWizard(new VerifyMessageWizardModel(VerifyMessageState.EDIT_MESSAGE));
 
   }
 
@@ -302,7 +305,7 @@ public class Wizards {
    */
   public static UseHardwareWalletWizard newUseTrezorWizard() {
 
-    return new UseHardwareWalletWizard(new UseHardwareWalletWizardModel(UseHardwareWalletState.SELECT_HARDWARE_ACTION), false);
+    return new UseHardwareWalletWizard(new UseHardwareWalletWizardModel(UseHardwareWalletState.SELECT_HARDWARE_ACTION));
   }
 
   /**
@@ -312,7 +315,7 @@ public class Wizards {
 
     log.debug("New 'Change credentials wizard'");
 
-    return new ChangePasswordWizard(new ChangePasswordWizardModel(ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD), false);
+    return new ChangePasswordWizard(new ChangePasswordWizardModel(ChangePasswordState.CHANGE_PASSWORD_ENTER_PASSWORD));
 
   }
 
@@ -323,7 +326,7 @@ public class Wizards {
 
     log.debug("New 'Change PIN wizard'");
 
-    return new ChangePinWizard(new ChangePinWizardModel(ChangePinState.SELECT_OPTION), false);
+    return new ChangePinWizard(new ChangePinWizardModel(ChangePinState.SELECT_OPTION));
 
   }
 
@@ -334,7 +337,7 @@ public class Wizards {
 
     log.debug("New 'Verify network wizard'");
 
-    return new VerifyNetworkWizard(new VerifyNetworkWizardModel(VerifyNetworkState.VERIFY_NETWORK_SHOW_REPORT), false);
+    return new VerifyNetworkWizard(new VerifyNetworkWizardModel(VerifyNetworkState.VERIFY_NETWORK_SHOW_REPORT));
 
   }
 
@@ -345,7 +348,7 @@ public class Wizards {
 
     log.debug("New 'Repair wallet wizard'");
 
-    return new RepairWalletWizard(new RepairWalletWizardModel(RepairWalletState.REPAIR_WALLET), false);
+    return new RepairWalletWizard(new RepairWalletWizardModel(RepairWalletState.REPAIR_WALLET));
 
   }
 
@@ -356,7 +359,7 @@ public class Wizards {
 
     log.debug("New 'Empty wallet wizard'");
 
-    return new EmptyWalletWizard(new EmptyWalletWizardModel(EmptyWalletState.EMPTY_WALLET_ENTER_DETAILS), false);
+    return new EmptyWalletWizard(new EmptyWalletWizardModel(EmptyWalletState.EMPTY_WALLET_ENTER_DETAILS));
 
   }
 
@@ -489,7 +492,7 @@ public class Wizards {
     }
 
 
-    return new PaymentsWizard(paymentsWizardModel, false);
+    return new PaymentsWizard(paymentsWizardModel);
   }
 
   /**
@@ -499,7 +502,7 @@ public class Wizards {
 
     log.debug("New 'Export payments wizard'");
 
-    return new ExportPaymentsWizard(new ExportPaymentsWizardModel(initialState), false);
+    return new ExportPaymentsWizard(new ExportPaymentsWizardModel(initialState));
   }
 
   /**
@@ -512,7 +515,7 @@ public class Wizards {
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present");
 
-    return new EditWalletWizard(new EditWalletWizardModel(EditWalletState.EDIT_WALLET, currentWalletSummary.get()), false);
+    return new EditWalletWizard(new EditWalletWizardModel(EditWalletState.EDIT_WALLET, currentWalletSummary.get()));
   }
 
   /**
@@ -525,7 +528,7 @@ public class Wizards {
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
     Preconditions.checkState(currentWalletSummary.isPresent(), "'currentWalletSummary' must be present");
 
-    return new WalletDetailsWizard(new WalletDetailsWizardModel(WalletDetailsState.WALLET_DETAILS, currentWalletSummary.get()), false);
+    return new WalletDetailsWizard(new WalletDetailsWizardModel(WalletDetailsState.WALLET_DETAILS, currentWalletSummary.get()));
   }
 
 }
