@@ -30,7 +30,7 @@ import java.net.URI;
 public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizardModel, String> {
 
   // TODO Add partner code
-  private static final URI buySellUri = URI.create("https://glidera.io");
+  private static final URI buySellUri = URI.create("https://www.glidera.io");
 
   /**
    * @param wizard    The wizard managing the states
