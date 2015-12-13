@@ -318,7 +318,7 @@
     <dependency>
       <groupId>org.bitcoinj</groupId>
       <artifactId>bitcoinj-core</artifactId>
-      <version>0.13.3-alice-0.1.5</version>
+      <version>0.13.3-alice-0.2.0-SNAPSHOT</version>
     </dependency>
 
     <!-- BRIT Core for managing income -->
