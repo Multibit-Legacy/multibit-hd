@@ -23,7 +23,9 @@ import java.awt.*;
 public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
 
   // Provide padding for rows
-  private Border border = BorderFactory.createEmptyBorder(5, 0, 5, 0);
+  private Border borderTightTop = BorderFactory.createEmptyBorder(0, 0, 5, 0);
+  private Border borderNormal = BorderFactory.createEmptyBorder(5, 0, 5, 0);
+  private Border borderPaddedTop = BorderFactory.createEmptyBorder(15, 0, 5, 0);
 
   @Override
   public Color getBackgroundNonSelectionColor() {
@@ -58,7 +60,7 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
     ret.setText(nodeInfo.getText());
 
     // Theme
-    ret.setBorder(border);
+    ret.setBorder(borderNormal);
     final Color iconColor;
     if (sel) {
       iconColor = Themes.currentTheme.sidebarSelectedText();
@@ -78,46 +80,55 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
           // Credit card indicates dealing with a regulated authority
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.CREDIT_CARD, iconColor, MultiBitUI.NORMAL_ICON_SIZE-3));
           setIconTextGap(8);
+          ret.setBorder(borderNormal);
           break;
         case SEND_REQUEST:
           // Exchange icon represents person to person exchange associated with direct transactions
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.EXCHANGE, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 3));
           setIconTextGap(9);
-          break;
-        case CONTACTS:
-          // Standard contact icon
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.USER, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
-          setIconTextGap(10);
+          ret.setBorder(borderNormal);
           break;
         case TRANSACTIONS:
           // List indicates a spreadsheet or balance sheet
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.LIST, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 2));
           setIconTextGap(8);
+          ret.setBorder(borderNormal);
+          break;
+        case CONTACTS:
+          // Standard contact icon
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.USER, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
+          setIconTextGap(10);
+          ret.setBorder(borderPaddedTop);
           break;
         case HELP:
           // Question mark leading to answers
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 10));
-          setIconTextGap(9);
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, iconColor, MultiBitUI.NORMAL_ICON_SIZE+2));
+          setIconTextGap(13);
+          ret.setBorder(borderTightTop);
           break;
         case SETTINGS:
           // Standard settings icon
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 1));
           setIconTextGap(6);
+          ret.setBorder(borderPaddedTop);
           break;
         case MANAGE_WALLET:
           // Edit indicates changing text information
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.EDIT, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
           setIconTextGap(6);
+          ret.setBorder(borderNormal);
           break;
         case TOOLS:
           // Tools indicates utilities to get stuff done
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.WRENCH, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
           setIconTextGap(6);
+          ret.setBorder(borderNormal);
           break;
         case EXIT:
           // Exit icon
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.SIGN_OUT, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 2));
           setIconTextGap(6);
+          ret.setBorder(borderPaddedTop);
           break;
         default:
           throw new IllegalStateException("Unexpected screen:" + nodeInfo.getDetailScreen());
