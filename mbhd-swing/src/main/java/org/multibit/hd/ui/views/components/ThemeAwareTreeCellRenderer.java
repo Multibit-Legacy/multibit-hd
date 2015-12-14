@@ -25,7 +25,7 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
   // Provide padding for rows
   private Border borderTightTop = BorderFactory.createEmptyBorder(0, 0, 5, 0);
   private Border borderNormal = BorderFactory.createEmptyBorder(5, 0, 5, 0);
-  private Border borderPaddedTop = BorderFactory.createEmptyBorder(15, 0, 5, 0);
+  private Border borderPaddedTop = BorderFactory.createEmptyBorder(25, 0, 5, 0);
 
   @Override
   public Color getBackgroundNonSelectionColor() {
