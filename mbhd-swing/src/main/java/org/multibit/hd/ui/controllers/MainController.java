@@ -56,6 +56,7 @@ import org.multibit.hd.ui.views.themes.Theme;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.buy_sell.BuySellState;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsState;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
@@ -264,6 +265,11 @@ public class MainController extends AbstractController implements
 
       }
 
+      // The buy/sell dialog requires the sidebar to regain focus for accessibility reasons
+      if (BuySellState.SHOW_PARTNER_NOTES.name().equals(event.getPanelName())) {
+        mainView.sidebarRequestFocus();
+      }
+
       // Do nothing other than usual wizard hide operations
 
     } else {
@@ -419,14 +425,14 @@ public class MainController extends AbstractController implements
   }
 
   @Subscribe
-  public void onEnvironmentEvent(EnvironmentEvent event) {
+  public void onEnvironmentEvent(final EnvironmentEvent event) {
 
     log.trace("Received 'environment' event");
 
     Preconditions.checkNotNull(event, "'event' must be present");
     Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");
 
-    EnvironmentSummary summary = event.getSummary();
+    final EnvironmentSummary summary = event.getSummary();
 
     Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
     Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
@@ -487,32 +493,44 @@ public class MainController extends AbstractController implements
         Configurations.currentConfiguration.getAppearance().setLatestArticleUri(eventUri);
         Configurations.persistCurrentConfiguration();
 
-        JButton browserButton = Buttons.newAlertPanelButton(
-          getShowAtomFeedArticleAction(event.getSummary().getUri().get()),
-          MessageKey.YES,
-          MessageKey.YES_TOOLTIP,
-          AwesomeIcon.CHECK
-        );
+        // Creation of buttons must be on the EDT
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            JButton browserButton = Buttons.newAlertPanelButton(
+              getShowAtomFeedArticleAction(event.getSummary().getUri().get()),
+              MessageKey.YES,
+              MessageKey.YES_TOOLTIP,
+              AwesomeIcon.CHECK
+            );
 
-        // Ensure we provide a button
-        ControllerEvents.fireAddAlertEvent(
-          Models.newAlertModel(
-            localisedMessage,
-            summary.getSeverity(),
-            browserButton)
-        );
+            // Ensure we provide a button
+            ControllerEvents.fireAddAlertEvent(
+              Models.newAlertModel(
+                localisedMessage,
+                summary.getSeverity(),
+                browserButton)
+            );
+          }
+        });
         break;
       case CERTIFICATE_FAILED:
-        // Create a button to the repair wallet tool
-        JButton button = Buttons.newAlertPanelButton(getShowRepairWalletAction(), MessageKey.REPAIR, MessageKey.REPAIR_TOOLTIP, AwesomeIcon.MEDKIT);
+        // Creation of buttons must be on the EDT
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            // Create a button to the repair wallet tool
+            JButton button = Buttons.newAlertPanelButton(getShowRepairWalletAction(), MessageKey.REPAIR, MessageKey.REPAIR_TOOLTIP, AwesomeIcon.MEDKIT);
 
-        // Append general security advice allowing for LTR/RTL
-        ControllerEvents.fireAddAlertEvent(
-          Models.newAlertModel(
-            localisedMessage + "\n" + Languages.safeText(CoreMessageKey.SECURITY_ADVICE),
-            summary.getSeverity(),
-            button)
-        );
+            // Append general security advice allowing for LTR/RTL
+            ControllerEvents.fireAddAlertEvent(
+              Models.newAlertModel(
+                localisedMessage + "\n" + Languages.safeText(CoreMessageKey.SECURITY_ADVICE),
+                summary.getSeverity(),
+                button)
+            );
+          }
+        });
         break;
       case UNSUPPORTED_FIRMWARE_ATTACHED:
       case DEPRECATED_FIRMWARE_ATTACHED:

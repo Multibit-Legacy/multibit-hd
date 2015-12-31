@@ -6,12 +6,18 @@ package org.multibit.hd.ui.views.screens;
  * <li>References to detail views</li>
  * </ul>
  *
- * @since 0.0.1
+ * <p>Note that configuration uses the name of the enum to avoid ordering issues</p>
  *
+ * @since 0.0.1
  */
 public enum Screen {
 
   // Sidebar screens
+
+  /**
+   * The buy/sell screen
+   */
+  BUY_SELL,
 
   /**
    * The send/request screen
@@ -56,6 +62,7 @@ public enum Screen {
   // Specialised screens from buttons
   /**
    * The history screen - do not delete in case it is referenced in old configuration files
+   *
    * @deprecated
    */
   @Deprecated

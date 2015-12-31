@@ -21,8 +21,8 @@ import java.util.Map;
  */
 public class PaymentsWizard extends AbstractWizard<PaymentsWizardModel> {
 
-  public PaymentsWizard(PaymentsWizardModel model, boolean isExiting) {
-    super(model, isExiting, Optional.absent());
+  public PaymentsWizard(PaymentsWizardModel model) {
+    super(model, false, Optional.absent());
   }
 
   @Override

@@ -17,8 +17,8 @@ import java.util.Map;
  */
 public class VerifyMessageWizard extends AbstractWizard<VerifyMessageWizardModel> {
 
-  public VerifyMessageWizard(VerifyMessageWizardModel model, boolean isExiting) {
-    super(model, isExiting, Optional.absent());
+  public VerifyMessageWizard(VerifyMessageWizardModel model) {
+    super(model, false, Optional.absent());
   }
 
   @Override

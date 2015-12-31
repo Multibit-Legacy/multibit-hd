@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.views.screens.wallet;
+package org.multibit.hd.ui.views.screens.send_request;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

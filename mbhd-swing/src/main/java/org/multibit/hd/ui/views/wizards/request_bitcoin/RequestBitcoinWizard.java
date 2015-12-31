@@ -18,8 +18,8 @@ import java.util.Map;
  */
 public class RequestBitcoinWizard extends AbstractWizard<RequestBitcoinWizardModel> {
 
-  public RequestBitcoinWizard(RequestBitcoinWizardModel model, boolean isExiting) {
-    super(model, isExiting, Optional.absent());
+  public RequestBitcoinWizard(RequestBitcoinWizardModel model) {
+    super(model, false, Optional.absent());
   }
 
   @Override

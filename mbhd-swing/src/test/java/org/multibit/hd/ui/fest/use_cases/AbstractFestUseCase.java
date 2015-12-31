@@ -33,14 +33,15 @@ public abstract class AbstractFestUseCase {
 
   protected static final Logger log = LoggerFactory.getLogger(AbstractFestUseCase.class);
 
-  protected static final int SEND_REQUEST_ROW = 0;
-  protected static final int PAYMENTS_ROW = 1;
-  protected static final int CONTACTS_ROW = 2;
-  protected static final int HELP_ROW = 3;
-  protected static final int SETTINGS_ROW = 4;
-  protected static final int MANAGE_WALLET_ROW = 5;
-  protected static final int TOOLS_ROW = 6;
-  protected static final int EXIT_ROW = 7;
+  protected static final int BUY_SELL_ROW = 0;
+  protected static final int SEND_REQUEST_ROW = 1;
+  protected static final int PAYMENTS_ROW = 2;
+  protected static final int CONTACTS_ROW = 3;
+  protected static final int HELP_ROW = 4;
+  protected static final int SETTINGS_ROW = 5;
+  protected static final int MANAGE_WALLET_ROW = 6;
+  protected static final int TOOLS_ROW = 7;
+  protected static final int EXIT_ROW = 8;
 
   protected final FrameFixture window;
 

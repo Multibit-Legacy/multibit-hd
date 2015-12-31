@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -56,11 +55,6 @@ public class SidebarView extends AbstractView {
   private Screen lastSelectedScreen = Screen.SEND_REQUEST;
 
   /**
-   * The wallet tree node
-   */
-  private DefaultMutableTreeNode walletNode;
-
-  /**
    * The settings tree node
    */
   private DefaultMutableTreeNode settingsNode;
@@ -70,16 +64,9 @@ public class SidebarView extends AbstractView {
    */
   private DefaultMutableTreeNode toolsNode;
 
-  private final boolean multiWallet;
-
-  /**
-   * @param multiWallet True if the overall application is supporting hard- and soft-wallets or is in hierarchical mode
-   */
-  public SidebarView(boolean multiWallet) {
+  public SidebarView() {
 
     super();
-
-    this.multiWallet = multiWallet;
 
     // Insets for top, left
     MigLayout layout = new MigLayout(
@@ -116,18 +103,6 @@ public class SidebarView extends AbstractView {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-
-        // Preconditions
-        if (multiWallet) {
-
-          // Multi wallet requires a tree node to be updated
-          SidebarNodeInfo nodeInfo = new SidebarNodeInfo(name, Screen.SEND_REQUEST);
-          walletNode.setUserObject(nodeInfo);
-
-          // This is to ensure the tree resizes correctly
-          ((DefaultTreeModel) sidebarTree.getModel()).nodeChanged(walletNode);
-
-        }
 
         // Always update the title
         Panels.getApplicationFrame().setTitle(Languages.safeText(MessageKey.MULTIBIT_HD_TITLE) + " - " + name);
@@ -237,24 +212,13 @@ public class SidebarView extends AbstractView {
 
   private DefaultMutableTreeNode createSidebarTreeNodes() {
 
-    DefaultMutableTreeNode root = TreeNodes.newSidebarTreeNode("", Screen.SEND_REQUEST);
+    DefaultMutableTreeNode root = TreeNodes.newSidebarTreeNode("", Screen.BUY_SELL);
 
-    // This node gets overwritten by WalletSummary.getName()
-    walletNode = TreeNodes.newSidebarTreeNode(MessageKey.WALLET, Screen.SEND_REQUEST);
-
-    // #61 At the moment all users don't use a Trezor or soft-wallet trezor
-    if (multiWallet) {
-      // Add standard wallet nodes at the soft-wallet level
-      walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.SEND_REQUEST));
-      walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.PAYMENTS, Screen.TRANSACTIONS));
-      walletNode.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
-      root.add(walletNode);
-    } else {
-      // Add standard wallet nodes at the root level
-      root.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.SEND_REQUEST));
-      root.add(TreeNodes.newSidebarTreeNode(MessageKey.PAYMENTS, Screen.TRANSACTIONS));
-      root.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
-    }
+    // Add nodes
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.BUY_OR_SELL, Screen.BUY_SELL));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.SEND_REQUEST));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.PAYMENTS, Screen.TRANSACTIONS));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
 
     // Add application nodes
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.HELP, Screen.HELP));
@@ -283,6 +247,9 @@ public class SidebarView extends AbstractView {
 
       switch (detailScreen) {
         // Add special cases
+        case BUY_SELL:
+          Panels.showLightBox(Wizards.newBuySellWizard().getWizardScreenHolder());
+          break;
         case EXIT:
           Panels.showLightBox(Wizards.newExitWizard().getWizardScreenHolder());
           break;

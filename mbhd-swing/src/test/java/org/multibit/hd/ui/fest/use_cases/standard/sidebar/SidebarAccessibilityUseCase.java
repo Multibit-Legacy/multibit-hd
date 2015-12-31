@@ -35,9 +35,17 @@ public class SidebarAccessibilityUseCase extends AbstractFestUseCase {
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()
       .requireEnabled()
-      .selectRow(SEND_REQUEST_ROW);
+      .selectRow(BUY_SELL_ROW);
+    // Expect the Buy/Sell dialog to show with a Finish button
+    window
+      .button(MessageKey.FINISH.getKey())
+      .requireVisible()
+      .click();
 
-    // Expect the Send/Request screen to show
+    // Down to Send/Request
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_DOWN));
     window
       .button(MessageKey.SHOW_SEND_WIZARD.getKey())
       .requireVisible();
@@ -94,10 +102,13 @@ public class SidebarAccessibilityUseCase extends AbstractFestUseCase {
     window
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_DOWN));
+    // Expect the Exit dialog to show with a Cancel button
     window
       .button(MessageKey.CANCEL.getKey())
       .requireVisible()
       .click();
+
+    // Change direction
 
     // Up to Tools
     window
@@ -154,6 +165,16 @@ public class SidebarAccessibilityUseCase extends AbstractFestUseCase {
     window
       .button(MessageKey.SHOW_SEND_WIZARD.getKey())
       .requireVisible();
+
+    // Up to Buy/Sell
+    window
+      .tree(MessageKey.SIDEBAR_TREE.getKey())
+      .pressAndReleaseKey(KeyPressInfo.keyCode(KeyEvent.VK_UP));
+    // Expect the Buy/Sell dialog to show with a Finish button
+    window
+      .button(MessageKey.FINISH.getKey())
+      .requireVisible()
+      .click();
 
   }
 

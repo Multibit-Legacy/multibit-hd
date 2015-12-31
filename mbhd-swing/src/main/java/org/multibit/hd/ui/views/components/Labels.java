@@ -1128,6 +1128,19 @@ public class Labels {
   }
 
   /**
+   * @return A new "buy/sell region" note
+   */
+  public static JLabel newBuySellRegionNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.BUY_SELL_NOTE_1,
+      MessageKey.BUY_SELL_NOTE_2,
+      MessageKey.BUY_SELL_NOTE_3,
+      MessageKey.BUY_SELL_NOTE_4,
+    }, new Object[][]{});
+  }
+
+  /**
    * @return A new "default" note for use on the Fee slider
    */
   public static JLabel newDefaultNote() {

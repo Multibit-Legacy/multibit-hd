@@ -28,8 +28,6 @@ public class ShowSendRequestScreenUseCase extends AbstractFestUseCase {
 
     assertThat(parameters).isNotNull();
 
-    // Selecting multi-wallet row 0 does not trigger detail view in FEST but works fine in app
-
     window
       .tree(MessageKey.SIDEBAR_TREE.getKey())
       .requireVisible()

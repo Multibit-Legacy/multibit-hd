@@ -272,6 +272,7 @@ public enum MessageKey {
   EXCHANGE_RATE_LABEL("exchange_rate_label"),
 
   NOT_AVAILABLE("not_available"),
+  NOT_AVAILABLE_TOOLTIP("not_available_tooltip"),
 
   NO_CLIENT_FEE_WAS_ADDED("no_client_fee_was_added"),
 
@@ -291,6 +292,8 @@ public enum MessageKey {
 
   SIDEBAR_TREE("sidebar_tree"),
   WALLET("wallet"),
+
+  BUY_OR_SELL("buy_or_sell"),
   SEND_OR_REQUEST("send_or_request"),
 
   CONTACTS("contacts"),
@@ -366,6 +369,14 @@ public enum MessageKey {
   ERROR_REPORTING_UPLOADING("error_reporting_uploading"),
   ERROR_REPORTING_UPLOAD_COMPLETE("error_reporting_upload_complete"),
   ERROR_REPORTING_UPLOAD_FAILED("error_reporting_upload_failed"),
+
+  // Buy/sell
+  BUY_SELL_TITLE("buy_sell_title"),
+  BUY_SELL_REGION_1("buy_sell_region_1"),
+  BUY_SELL_REGION_2("buy_sell_region_2"),
+  BUY_SELL_REGION_NONE("buy_sell_region_none"),
+  BUY_SELL_VISIT_GLIDERA("buy_sell_visit_glidera"),
+  BUY_SELL_VISIT_GLIDERA_TOOLTIP("buy_sell_visit_glidera_tooltip"),
 
   // Send/request
   REQUEST_BITCOIN_TITLE("request_bitcoin_title"),
@@ -739,6 +750,11 @@ public enum MessageKey {
 
   VERIFY_MESSAGE_NOTE_1("verify_message_note_1"),
   VERIFY_MESSAGE_NOTE_2("verify_message_note_2"),
+
+  BUY_SELL_NOTE_1("buy_sell_note_1"),
+  BUY_SELL_NOTE_2("buy_sell_note_2"),
+  BUY_SELL_NOTE_3("buy_sell_note_3"),
+  BUY_SELL_NOTE_4("buy_sell_note_4"),
 
   RECIPIENT_SUMMARY("recipient_summary"),
 

@@ -855,7 +855,7 @@ public class Panels {
     JPanel panel = Panels.newPanel(
       new MigLayout(
         Panels.migXLayout(),
-          "[]", // Columns
+        "[]", // Columns
         "[]" // Rows
       ));
 
