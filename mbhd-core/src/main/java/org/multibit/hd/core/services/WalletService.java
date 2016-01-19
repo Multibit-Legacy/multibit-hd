@@ -281,7 +281,8 @@ public class WalletService extends AbstractService {
   }
 
   public int getPaymentDataSetSize() {
-    if (lastSeenPaymentDataSet == null) {
+    // IF lastSeenPaymentDataSet is not assigned/ empty then rebuild it to determine payment list size
+    if (lastSeenPaymentDataSet == null || lastSeenPaymentDataSet.isEmpty()) {
       // Self-assignment to keep Findbugs happy
       lastSeenPaymentDataSet = getPaymentDataSet();
     }
