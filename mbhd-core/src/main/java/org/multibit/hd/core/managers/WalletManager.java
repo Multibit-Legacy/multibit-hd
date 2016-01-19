@@ -534,6 +534,11 @@ public enum WalletManager implements WalletEventListener {
         // There is already a wallet created with this root - if so load it and return that
         log.debug("Opening AES wallet:\n'{}'", walletFileWithAES.getAbsolutePath());
         walletSummary = loadFromWalletDirectory(walletDirectory, password);
+
+        // Use any existing notes if none is specified
+        if (Strings.isNullOrEmpty(notes) && !Strings.isNullOrEmpty(walletSummary.getNotes())) {
+          notes = walletSummary.getNotes();
+        }
       } catch (WalletLoadException e) {
         // Failed to decrypt the existing wallet/backups or something else went wrong
         log.error("Failed to load from wallet directory.");
