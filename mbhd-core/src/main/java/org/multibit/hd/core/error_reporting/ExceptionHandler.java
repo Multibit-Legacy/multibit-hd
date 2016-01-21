@@ -491,6 +491,12 @@ public class ExceptionHandler extends EventQueue implements Thread.UncaughtExcep
       return true;
     }
 
+    // Check for org.bitcoinj.net.discovery.PeerDiscoveryException: No peer discovery returned any results: check internet connection? (see Issue 747)
+    // This isn't really benign but as it is thrown on a PeerGroup executor thread we cannot intercept it anywhere else
+    if (message.contains("org.bitcoinj.net.discovery.PeerDiscoveryException: No peer discovery returned any results: check internet connection?")) {
+      log.warn("Detected org.bitcoinj.net.discovery.PeerDiscoveryException: No peer discovery returned any results: check internet connection? exception. Treat as benign.");
+      return true;
+    }
 
     // Anything else is a problem
     return false;
