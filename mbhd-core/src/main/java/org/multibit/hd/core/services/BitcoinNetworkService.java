@@ -1084,12 +1084,9 @@ public class BitcoinNetworkService extends AbstractService {
         message = "Transaction cannot be completed at this time - unconfirmed?";
       }
 
-      Coin totalAmount = Coin.ZERO; // Arbitary default value in case getTotalAmount fails
-      try {
-        totalAmount = sendRequestSummary.getTotalAmount();
-      } catch (NullPointerException npe) {
-        log.trace("NPE in sendRequestSummary.getTotalAmount(), carrying on");
-      }
+      // Provide arbitrary value to replace possible null
+      Coin totalAmount = sendRequestSummary.getTotalAmount() == null ? Coin.ZERO : sendRequestSummary.getTotalAmount();
+
       // Fire a failed transaction creation event
       CoreEvents.fireTransactionCreationEvent(
         new TransactionCreationEvent(
