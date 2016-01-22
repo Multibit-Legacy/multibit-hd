@@ -23,9 +23,9 @@ import java.awt.*;
 public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
 
   // Provide padding for rows
-  private Border borderTightTop = BorderFactory.createEmptyBorder(0, 0, 5, 0);
   private Border borderNormal = BorderFactory.createEmptyBorder(5, 0, 5, 0);
-  private Border borderPaddedTop = BorderFactory.createEmptyBorder(25, 0, 5, 0);
+  private Border borderPaddedUpper = BorderFactory.createEmptyBorder(5, 0, 17, 0);
+  private Border borderPaddedLower = BorderFactory.createEmptyBorder(17, 0, 5, 0);
 
   @Override
   public Color getBackgroundNonSelectionColor() {
@@ -92,25 +92,25 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
           // List indicates a spreadsheet or balance sheet
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.LIST, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 2));
           setIconTextGap(8);
-          ret.setBorder(borderNormal);
+          ret.setBorder(borderPaddedUpper);
           break;
         case CONTACTS:
           // Standard contact icon
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.USER, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
           setIconTextGap(10);
-          ret.setBorder(borderPaddedTop);
+          ret.setBorder(borderPaddedLower);
           break;
         case HELP:
           // Question mark leading to answers
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.QUESTION, iconColor, MultiBitUI.NORMAL_ICON_SIZE+2));
           setIconTextGap(13);
-          ret.setBorder(borderTightTop);
+          ret.setBorder(borderPaddedUpper);
           break;
         case SETTINGS:
           // Standard settings icon
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.GEARS, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 1));
           setIconTextGap(6);
-          ret.setBorder(borderPaddedTop);
+          ret.setBorder(borderPaddedLower);
           break;
         case MANAGE_WALLET:
           // Edit indicates changing text information
@@ -122,13 +122,13 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
           // Tools indicates utilities to get stuff done
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.WRENCH, iconColor, MultiBitUI.NORMAL_ICON_SIZE));
           setIconTextGap(6);
-          ret.setBorder(borderNormal);
+          ret.setBorder(borderPaddedUpper);
           break;
         case EXIT:
           // Exit icon
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.SIGN_OUT, iconColor, MultiBitUI.NORMAL_ICON_SIZE + 2));
           setIconTextGap(6);
-          ret.setBorder(borderPaddedTop);
+          ret.setBorder(borderPaddedLower);
           break;
         default:
           throw new IllegalStateException("Unexpected screen:" + nodeInfo.getDetailScreen());
