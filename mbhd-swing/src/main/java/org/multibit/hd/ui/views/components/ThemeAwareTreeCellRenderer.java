@@ -78,7 +78,7 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
 
         case BUY_SELL:
           // Shopping basket indicates buying and selling
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.SHOPPING_BASKET, iconColor, MultiBitUI.NORMAL_ICON_SIZE-3));
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.CREDIT_CARD, iconColor, MultiBitUI.NORMAL_ICON_SIZE-3));
           setIconTextGap(8);
           ret.setBorder(borderNormal);
           break;

@@ -66,7 +66,7 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
    */
   public BuySellSelectPanelView(AbstractWizard<BuySellWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.SHOPPING_BASKET, MessageKey.BUY_SELL_TITLE);
+    super(wizard, panelName, AwesomeIcon.CREDIT_CARD, MessageKey.BUY_SELL_TITLE);
 
   }
 
@@ -83,12 +83,12 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
-      "[]", // Column constraints
+      "[300][240][30]", // Column constraints
       "[][]10" // Row constraints
     ));
 
-    contentPanel.add(Labels.newBuySellRegionNote(), "span 2, growx, wrap");
-    contentPanel.add(Buttons.newLaunchBrowserButton(getBuyLaunchBrowserAction(), MessageKey.BUY_VISIT_GLIDERA, MessageKey.BUY_VISIT_GLIDERA_TOOLTIP), "align center, wrap");
+    contentPanel.add(Labels.newBuySellRegionNote(), "span 3, growx, wrap");
+    contentPanel.add(Buttons.newLaunchBrowserButton(getBuyLaunchBrowserAction(), MessageKey.BUY_VISIT_GLIDERA, MessageKey.BUY_VISIT_GLIDERA_TOOLTIP), "align center");
     contentPanel.add(Buttons.newLaunchBrowserButton(getSellLaunchBrowserAction(),MessageKey.SELL_VISIT_GLIDERA, MessageKey.SELL_VISIT_GLIDERA_TOOLTIP), "align center, wrap");
 
   }
