@@ -40,9 +40,15 @@ public class ShowThenCancelBuySellUseCase extends AbstractFestUseCase {
     // Verify the notes appear
     assertLabelText(MessageKey.BUY_SELL_NOTE_1);
 
-    // Verify "visit website" is present
+    // Verify "buy bitcoin" is present
     window
-      .button(MessageKey.BUY_SELL_VISIT_GLIDERA.getKey())
+      .button(MessageKey.BUY_VISIT_GLIDERA.getKey())
+      .requireVisible()
+      .requireEnabled();
+
+    // Verify "sell bitcoin" is present
+    window
+      .button(MessageKey.SELL_VISIT_GLIDERA.getKey())
       .requireVisible()
       .requireEnabled();
 

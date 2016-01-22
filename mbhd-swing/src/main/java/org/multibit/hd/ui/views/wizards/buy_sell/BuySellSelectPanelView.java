@@ -21,7 +21,7 @@ import java.net.URI;
 /**
  * <p>Wizard to provide the following to UI:</p>
  * <ul>
- * <li>About: Show details</li>
+ * <li>Show details and buy, Sell buttons</li>
  * </ul>
  *
  * @since 0.0.1
@@ -29,8 +29,10 @@ import java.net.URI;
  */
 public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizardModel, String> {
 
-  // TODO Add partner code
-  private static final URI buySellUri = URI.create("https://www.glidera.io");
+  // TODO add bitcoin address
+  private static final URI buyUri = URI.create("https://www.glidera.io/referral?client_id=700a89b3cf4ce97d08bb58ea4e550f38");
+
+  private static final URI sellUri = URI.create("https://www.glidera.io/referral?client_id=700a89b3cf4ce97d08bb58ea4e550f38");
 
   /**
    * @param wizard    The wizard managing the states
@@ -38,7 +40,7 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
    */
   public BuySellSelectPanelView(AbstractWizard<BuySellWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.CREDIT_CARD, MessageKey.BUY_SELL_TITLE);
+    super(wizard, panelName, AwesomeIcon.SHOPPING_BASKET, MessageKey.BUY_SELL_TITLE);
 
   }
 
@@ -59,8 +61,9 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
       "[][]10" // Row constraints
     ));
 
-    contentPanel.add(Labels.newBuySellRegionNote(), "wrap");
-    contentPanel.add(Buttons.newLaunchBrowserButton(getLaunchBrowserAction(),MessageKey.BUY_SELL_VISIT_GLIDERA, MessageKey.BUY_SELL_VISIT_GLIDERA_TOOLTIP), "wrap,align center");
+    contentPanel.add(Labels.newBuySellRegionNote(), "span 2, growx, wrap");
+    contentPanel.add(Buttons.newLaunchBrowserButton(getBuyLaunchBrowserAction(),MessageKey.BUY_VISIT_GLIDERA, MessageKey.BUY_VISIT_GLIDERA_TOOLTIP), "align center, wrap");
+    contentPanel.add(Buttons.newLaunchBrowserButton(getSellLaunchBrowserAction(),MessageKey.SELL_VISIT_GLIDERA, MessageKey.SELL_VISIT_GLIDERA_TOOLTIP), "align center, wrap");
 
   }
 
@@ -84,19 +87,36 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
   }
 
   /**
-   * @return The "launch browser" action
+   * @return The "launch browser" action for the Buy button
    */
-  private Action getLaunchBrowserAction() {
+  private Action getBuyLaunchBrowserAction() {
 
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        if (!SafeDesktop.browse(buySellUri)) {
+        if (!SafeDesktop.browse(buyUri)) {
           Sounds.playBeep(Configurations.currentConfiguration.getSound());
         }
 
       }
     };
   }
+
+  /**
+    * @return The "launch browser" action for the Sell button
+    */
+   private Action getSellLaunchBrowserAction() {
+
+     return new AbstractAction() {
+       @Override
+       public void actionPerformed(ActionEvent e) {
+
+         if (!SafeDesktop.browse(sellUri)) {
+           Sounds.playBeep(Configurations.currentConfiguration.getSound());
+         }
+
+       }
+     };
+   }
 }

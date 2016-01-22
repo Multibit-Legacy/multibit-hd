@@ -77,8 +77,8 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
       switch (nodeInfo.getDetailScreen()) {
 
         case BUY_SELL:
-          // Credit card indicates dealing with a regulated authority
-          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.CREDIT_CARD, iconColor, MultiBitUI.NORMAL_ICON_SIZE-3));
+          // Shopping basket indicates buying and selling
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.SHOPPING_BASKET, iconColor, MultiBitUI.NORMAL_ICON_SIZE-3));
           setIconTextGap(8);
           ret.setBorder(borderNormal);
           break;

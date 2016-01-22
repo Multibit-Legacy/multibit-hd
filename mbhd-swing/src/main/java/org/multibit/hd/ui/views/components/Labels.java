@@ -1135,8 +1135,7 @@ public class Labels {
     return newNoteLabel(new MessageKey[]{
       MessageKey.BUY_SELL_NOTE_1,
       MessageKey.BUY_SELL_NOTE_2,
-      MessageKey.BUY_SELL_NOTE_3,
-      MessageKey.BUY_SELL_NOTE_4,
+      MessageKey.BUY_SELL_NOTE_3
     }, new Object[][]{});
   }
 

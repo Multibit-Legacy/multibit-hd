@@ -375,8 +375,10 @@ public enum MessageKey {
   BUY_SELL_REGION_1("buy_sell_region_1"),
   BUY_SELL_REGION_2("buy_sell_region_2"),
   BUY_SELL_REGION_NONE("buy_sell_region_none"),
-  BUY_SELL_VISIT_GLIDERA("buy_sell_visit_glidera"),
-  BUY_SELL_VISIT_GLIDERA_TOOLTIP("buy_sell_visit_glidera_tooltip"),
+  BUY_VISIT_GLIDERA("buy_visit_glidera"),
+  BUY_VISIT_GLIDERA_TOOLTIP("buy_visit_glidera_tooltip"),
+  SELL_VISIT_GLIDERA("sell_visit_glidera"),
+  SELL_VISIT_GLIDERA_TOOLTIP("sell_visit_glidera_tooltip"),
 
   // Send/request
   REQUEST_BITCOIN_TITLE("request_bitcoin_title"),
@@ -754,7 +756,6 @@ public enum MessageKey {
   BUY_SELL_NOTE_1("buy_sell_note_1"),
   BUY_SELL_NOTE_2("buy_sell_note_2"),
   BUY_SELL_NOTE_3("buy_sell_note_3"),
-  BUY_SELL_NOTE_4("buy_sell_note_4"),
 
   RECIPIENT_SUMMARY("recipient_summary"),
 
