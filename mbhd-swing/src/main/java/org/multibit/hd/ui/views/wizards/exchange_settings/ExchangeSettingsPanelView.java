@@ -165,7 +165,8 @@ public class ExchangeSettingsPanelView extends AbstractWizardPanelView<ExchangeS
     contentPanel.add(currencyCodeLabel, "shrink");
     contentPanel.add(currencyCodeComboBox, "growx,push");
     contentPanel.add(tickerSpinner, "grow," + MultiBitUI.NORMAL_PLUS_ICON_SIZE_MIG + ",wrap");
-    contentPanel.add(tickerVerifiedStatus, "grow,cell 1 4,push,wrap");
+    // Avoid overflow if error message is too long
+    contentPanel.add(tickerVerifiedStatus, "grow,cell 1 4,push,wmax 350,wrap");
 
   }
 
