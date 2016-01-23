@@ -1147,7 +1147,7 @@ public class Labels {
     String[] lines = new String[2];
     lines[0] = "\u25B2"; // 25B2 =up black triangle
     lines[1] = Languages.toCapitalCase(Languages.safeText(MessageKey.DEFAULT));
-    JLabel label = new JLabel(HtmlUtils.localiseCenteredWithLineBreaks(lines));
+    JLabel label = new JLabel(HtmlUtils.localiseWithCenteredLinedBreaks(lines));
     label.setHorizontalAlignment(SwingConstants.CENTER);
 
     // Ensure it is accessible
