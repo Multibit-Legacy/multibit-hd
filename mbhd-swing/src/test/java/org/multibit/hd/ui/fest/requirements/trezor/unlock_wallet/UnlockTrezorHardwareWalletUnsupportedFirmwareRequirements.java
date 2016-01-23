@@ -1,16 +1,13 @@
-package org.multibit.hd.ui.fest.requirements.trezor;
+package org.multibit.hd.ui.fest.requirements.trezor.unlock_wallet;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
-import org.multibit.hd.core.dto.WalletMode;
-import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
-import org.multibit.hd.ui.fest.use_cases.trezor.TrezorConfirmUnlockUseCase;
-import org.multibit.hd.ui.fest.use_cases.trezor.TrezorEnterPinFromCipherKeyUseCase;
+import org.multibit.hd.ui.fest.use_cases.standard.credentials.QuickUnlockWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.standard.credentials.UnlockReportUseCase;
+import org.multibit.hd.ui.fest.use_cases.standard.environment.CloseUnsupportedFirmwareEnvironmentPopoverUseCase;
 import org.multibit.hd.ui.fest.use_cases.trezor.TrezorRequestCipherKeyUseCase;
 import org.multibit.hd.ui.fest.use_cases.trezor.TrezorRequestMasterPublicKeyUseCase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -18,14 +15,12 @@ import java.util.Map;
  * <p>FEST Swing UI test to provide:</p>
  * <ul>
  * <li>Exercise the responses to hardware wallet events in the context of
- * unlocking a Trezor wallet under warm start followed by a restore</li>
+ * unlocking a Trezor wallet with unsupported firmware</li>
  * </ul>
  *
  * @since 0.0.1
  */
-public class RestoreTrezorWarmStartRequirements {
-
-  private static final Logger log = LoggerFactory.getLogger(RestoreTrezorWarmStartRequirements.class);
+public class UnlockTrezorHardwareWalletUnsupportedFirmwareRequirements {
 
   public static void verifyUsing(FrameFixture window, HardwareWalletFixture hardwareWalletFixture) {
 
@@ -37,15 +32,13 @@ public class RestoreTrezorWarmStartRequirements {
     // Request the cipher key (refer to mock client for PIN entry responses)
     new TrezorRequestCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
-    // Verify PIN entry
-    new TrezorEnterPinFromCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
+    // Expect "unsupported firmware" popover to be showing
+    new CloseUnsupportedFirmwareEnvironmentPopoverUseCase(window).execute(null);
 
-    // Unlock with cipher key
-    new TrezorConfirmUnlockUseCase(window, hardwareWalletFixture).execute(parameters);
+    // Unlock the wallet
+    new QuickUnlockWalletUseCase(window).execute(null);
 
-    hardwareWalletFixture.fireNextEvent("Confirm unlock");
-
-    log.debug("Entropy 0 = {}", CoreServices.getHardwareWalletService(WalletMode.TREZOR).get().getContext().getEntropy());
-
+    // Verify the report screen is working
+    new UnlockReportUseCase(window).execute(null);
   }
 }

@@ -1,13 +1,13 @@
-package org.multibit.hd.ui.fest.requirements.keepkey;
+package org.multibit.hd.ui.fest.requirements.keepkey.unlock_wallet;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
-import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyConfirmUnlockUseCase;
-import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyEnterPinFromMasterPublicKeyUseCase;
 import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyRequestCipherKeyUseCase;
 import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyRequestMasterPublicKeyUseCase;
+import org.multibit.hd.ui.fest.use_cases.standard.credentials.QuickUnlockWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.credentials.UnlockReportUseCase;
+import org.multibit.hd.ui.fest.use_cases.standard.environment.CloseUnsupportedConfigurationEnvironmentPopoverUseCase;
 
 import java.util.Map;
 
@@ -15,12 +15,12 @@ import java.util.Map;
  * <p>FEST Swing UI test to provide:</p>
  * <ul>
  * <li>Exercise the responses to hardware wallet events in the context of
- * unlocking a KeepKey wallet under warm start</li>
+ * unlocking a KeepKey wallet with unsupported configuration "passphrase"</li>
  * </ul>
  *
  * @since 0.1.4
  */
-public class UnlockKeepKeyHardwareWalletWarmStartRequirements {
+public class UnlockKeepKeyHardwareWalletUnsupportedConfigurationPassphraseRequirements {
 
   public static void verifyUsing(FrameFixture window, HardwareWalletFixture hardwareWalletFixture) {
 
@@ -29,20 +29,16 @@ public class UnlockKeepKeyHardwareWalletWarmStartRequirements {
     // Request the master public key (refer to mock client for PublicKey responses)
     new KeepKeyRequestMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
-    // Verify PIN entry (refer to mock client for PIN entry responses)
-    new KeepKeyEnterPinFromMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
-
-    // Request the cipher key (no PIN usually)
+    // Request the cipher key (refer to mock client for PIN entry responses)
     new KeepKeyRequestCipherKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
-    // Unlock with cipher key
-    new KeepKeyConfirmUnlockUseCase(window, hardwareWalletFixture).execute(parameters);
+    // Expect "unsupported configuration" popover to be showing
+    new CloseUnsupportedConfigurationEnvironmentPopoverUseCase(window).execute(null);
 
-    hardwareWalletFixture.fireNextEvent("Confirm unlock");
+    // Unlock the wallet
+    new QuickUnlockWalletUseCase(window).execute(null);
 
-    // Verify the wallet unlocked
-    new UnlockReportUseCase(window).execute(parameters);
-
-
+    // Verify the report screen is working
+    new UnlockReportUseCase(window).execute(null);
   }
 }

@@ -1,4 +1,4 @@
-package org.multibit.hd.ui.fest.requirements.trezor;
+package org.multibit.hd.ui.fest.requirements.trezor.unlock_wallet;
 
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;

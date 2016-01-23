@@ -1,33 +1,28 @@
-package org.multibit.hd.ui.fest.requirements.trezor;
+package org.multibit.hd.ui.fest.requirements.trezor.create_wallet;
 
-import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
 import org.multibit.hd.ui.fest.use_cases.standard.create_wallet.CreateWalletSelectBackupLocationWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.credentials.UnlockReportUseCase;
-import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.WelcomeSelectCreateHardwareWalletUseCase;
+import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.AttachHardwareWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.trezor.*;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-/**
- * <p>FEST Swing UI test to provide:</p>
- * <ul>
- * <li>Exercise the responses to hardware wallet events before wallet unlock takes place</li>
- * </ul>
- *
- * @since 0.0.1
- */
-public class CreateTrezorHardwareWalletWarmStartRequirements {
+public class BaseCreateTrezorHardwareWalletColdStartRequirements {
 
-  public static void verifyUsing(FrameFixture window, HardwareWalletFixture hardwareWalletFixture) {
+  /**
+   * Handle the create wallet process for the Trezor hardware wallet after language is selected
+   *
+   * @param window                The frame fixture windows
+   * @param hardwareWalletFixture The hardware wallet fixture
+   * @param parameters            Optional parameters
+   */
+  protected static void verifyCreateTrezorHardwareWalletAfterLanguage(FrameFixture window, HardwareWalletFixture hardwareWalletFixture, Map<String, Object> parameters) {
 
-    Map<String, Object> parameters = Maps.newHashMap();
-
-    // Select create Trezor wallet
-    new WelcomeSelectCreateHardwareWalletUseCase(window).execute(parameters);
+    new AttachHardwareWalletUseCase(window).execute(parameters);
 
     // Verify the Trezor preparation
     new TrezorPreparationUseCase(window, hardwareWalletFixture).execute(parameters);
@@ -71,7 +66,7 @@ public class CreateTrezorHardwareWalletWarmStartRequirements {
     new TrezorRequestMasterPublicKeyUseCase(window, hardwareWalletFixture).execute(parameters);
 
     // Allow time to gather the deterministic hierarchy
-    Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
     // Request the cipher key (refer to mock client for PIN entry responses)
     // Transitional
@@ -87,6 +82,5 @@ public class CreateTrezorHardwareWalletWarmStartRequirements {
 
     // Verify the wallet unlocked
     new UnlockReportUseCase(window).execute(parameters);
-
   }
 }
