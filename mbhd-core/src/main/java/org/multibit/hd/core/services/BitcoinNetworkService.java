@@ -1084,8 +1084,7 @@ public class BitcoinNetworkService extends AbstractService {
         message = "Transaction cannot be completed at this time - unconfirmed?";
       }
 
-      // Provide arbitrary value to replace possible null
-      Coin totalAmount = sendRequestSummary.getTotalAmount() == null ? Coin.ZERO : sendRequestSummary.getTotalAmount();
+      Coin totalAmount = sendRequestSummary.getTotalAmount();
 
       // Fire a failed transaction creation event
       CoreEvents.fireTransactionCreationEvent(
