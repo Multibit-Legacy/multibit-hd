@@ -377,6 +377,7 @@ public enum MessageKey {
   BUY_SELL_REGION_NONE("buy_sell_region_none"),
   BUY_VISIT_GLIDERA("buy_visit_glidera"),
   BUY_VISIT_GLIDERA_TOOLTIP("buy_visit_glidera_tooltip"),
+  BUY_VISIT_GLIDERA_EXPLAIN("buy_visit_glidera_explain"),
   SELL_VISIT_GLIDERA("sell_visit_glidera"),
   SELL_VISIT_GLIDERA_TOOLTIP("sell_visit_glidera_tooltip"),
 

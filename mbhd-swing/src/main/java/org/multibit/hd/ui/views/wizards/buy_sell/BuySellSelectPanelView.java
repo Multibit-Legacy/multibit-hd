@@ -215,10 +215,10 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
      Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent(), "'currentWalletSummary' must be present");
 
      final MBHDPaymentRequestData MBHDPaymentRequestData = new MBHDPaymentRequestData();
-     MBHDPaymentRequestData.setNote("");
-     MBHDPaymentRequestData.setDate(DateTime.now());
+      MBHDPaymentRequestData.setDate(DateTime.now());
      MBHDPaymentRequestData.setAddress(Addresses.parse(buyAddress).get());
      MBHDPaymentRequestData.setLabel(Languages.safeText(MessageKey.BUY_VISIT_GLIDERA));
+     MBHDPaymentRequestData.setNote(Languages.safeText(MessageKey.BUY_VISIT_GLIDERA_EXPLAIN));
      MBHDPaymentRequestData.setAmountCoin(Optional.<Coin>absent());
 
      final FiatPayment fiatPayment = new FiatPayment();
