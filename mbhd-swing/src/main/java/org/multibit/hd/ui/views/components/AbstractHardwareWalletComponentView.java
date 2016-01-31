@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.components;
 import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.models.Model;
+import org.multibit.hd.ui.utils.HtmlUtils;
 
 import javax.swing.*;
 
@@ -42,14 +43,17 @@ public abstract class AbstractHardwareWalletComponentView<M extends Model> exten
 
   public void setOperationText(final MessageKey key, final Object... values) {
 
+    // Wrap with HTML to ensure wrapping takes place in all languages
+    final String text = HtmlUtils.localiseWithLineBreaks(new String[] {Languages.safeText(key, values)});
+
     if (SwingUtilities.isEventDispatchThread()) {
-      operationText.setText(Languages.safeText(key, values));
+      operationText.setText(text);
     } else {
       SwingUtilities.invokeLater(
         new Runnable() {
           @Override
           public void run() {
-            operationText.setText(Languages.safeText(key, values));
+            operationText.setText(text);
           }
         });
     }
@@ -64,14 +68,17 @@ public abstract class AbstractHardwareWalletComponentView<M extends Model> exten
    */
   public void setRecoveryText(final MessageKey key, final Object... values) {
 
+    // Wrap with HTML to ensure wrapping takes place in all languages
+    final String text = HtmlUtils.localiseWithLineBreaks(new String[] {Languages.safeText(key, values)});
+
     if (SwingUtilities.isEventDispatchThread()) {
-      recoveryText.setText(Languages.safeText(key, values));
+      recoveryText.setText(text);
     } else {
       SwingUtilities.invokeLater(
         new Runnable() {
           @Override
           public void run() {
-            recoveryText.setText(Languages.safeText(key, values));
+            recoveryText.setText(text);
           }
         });
     }
