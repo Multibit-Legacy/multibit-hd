@@ -361,6 +361,12 @@ public class CredentialsWizardModel extends AbstractHardwareWalletWizardModel<Cr
 
     Optional<HardwareWalletService> hardwareWalletService = CoreServices.getCurrentHardwareWalletService();
 
+    // Harden response to unexpected non-Failure message
+    if (event.getMessage().orNull() == null || !(event.getMessage().orNull() instanceof Failure)) {
+      handleRestart(hardwareWalletService);
+      return;
+    }
+
     final Failure failure = (Failure) event.getMessage().orNull();
     if (failure == null) {
       handleRestart(hardwareWalletService);
