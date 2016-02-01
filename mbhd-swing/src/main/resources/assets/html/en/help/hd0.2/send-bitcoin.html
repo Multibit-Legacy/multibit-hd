@@ -29,6 +29,17 @@
   <li>You are told whether the Bitcoin transaction was constructed successfully (for instance, you may not have enough bitcoin in your wallet)</li>
   <li>The progress of the transaction being sent to the Bitcoin network. The broadcast icon fills up as the transaction send progresses</li>
 </ul>
-<p>Occasionally your transaction does not broadcast cleanly to the Bitcoin network. When this happens you are shown a messages like:
-"Your spendable balance is lower". If this happens you can close down MultiBit HD, check your network connection and restart MultiBit HD. It will then rebroadcast any transactions that have not confirmed.
-Often you simply have to wait for the next couple of blocks (say 30 minutes) and the transactions get confirmed normally and your balance updates automatically.</p>
+
+<h4>Failed broadcast</h4>
+<p>Sometimes your transaction does not broadcast cleanly to the Bitcoin network. When this happens you are shown a messages like <code>"Your spendable balance is
+  lower"</code>. If this happens and you are in a hurry you can close down MultiBit HD, check your network connection and restart MultiBit HD. It will then
+  rebroadcast any transactions that have not confirmed. Otherwise, simply leave it running and wait for the next couple of blocks (say 30 minutes) for the transaction to get
+  confirmed normally. Your balance will update automatically.</p>
+
+<h4>Replace-by-fee (RBF) transactions</h4>
+<p>A change to Bitcoin Core in version 0.12+ involves replace-by-fee transaction support. RBF is an optional extension to a standard Bitcoin transaction that permits the sender
+  to perform a repeat broadcast of an earlier failed transaction with a higher fee attached. Typically this is to "free up" an earlier transaction that has been accepted into the
+  network as valid but because the fee is too low is being ignored by miners. Repeating the transaction with a higher fee allows the sender to override the earlier transaction
+  in the hope that the miners will add it to a block.</p>
+<p>MultiBit HD does not currently support the creation of these types of transactions and relies instead on setting an appropriate fee to the transaction to ensure timely
+  inclusion.</p>
