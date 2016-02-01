@@ -56,13 +56,15 @@ cd multibit-hd
   us know through the website issue link at the foot of the page.</p>
 
 <h3 id="ubuntu">Ubuntu</h3>
-<p>This script will activate the USB HID rules for Trezor:</p>
+<p>This script will activate the USB HID rules for Trezor and KeepKey (just re-attach your device after running):</p>
 <pre>
 #!/bin/sh
 echo Activate HID USB...
 cat << _EOF_ > /etc/udev/rules.d/99-multibit-hd.rules
 # Trezor HID device
 ATTRS{idProduct}=="0001", ATTRS{idVendor}=="534c", MODE="0660", GROUP="plugdev"
+# KeepKey HID device
+ATTRS{idProduct}=="0001", ATTRS{idVendor}=="2b24", MODE="0660", GROUP="plugdev"
 _EOF_
 </pre>
 <p>This script will ensure that MultiBit HD can respond correctly to Bitcoin links in web pages</p>
