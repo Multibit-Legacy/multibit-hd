@@ -208,10 +208,10 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
                     if (walletLoadEvent.getBackupLoaded().isPresent()) {
                       // Indicate backup wallet was loaded with a cross
                       LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.BACKUP_WALLET_WAS_LOADED));
-                      LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.FALSE));
+                      LabelDecorator.applyStatusIcon(walletLoadedStatusLabel, Optional.of(Boolean.FALSE));
                     } else {
                       LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_LOADED_OK));
-                      LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.TRUE));
+                      LabelDecorator.applyStatusIcon(walletLoadedStatusLabel, Optional.of(Boolean.TRUE));
                     }
 
                     // Enable the finish button
@@ -234,7 +234,7 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
                     } else {
                       LabelDecorator.applyWrappingLabel(walletLoadedStatusLabel, Languages.safeText(CoreMessageKey.WALLET_FAILED_TO_LOAD));
                     }
-                    LabelDecorator.applyStatusLabel(walletLoadedStatusLabel, Optional.of(Boolean.FALSE));
+                    LabelDecorator.applyStatusIcon(walletLoadedStatusLabel, Optional.of(Boolean.FALSE));
 
                     // Disable the finish button
                     ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, false);
@@ -283,7 +283,7 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
                   case CONNECTED:
                     connectedStatusLabel.setVisible(true);
                     LabelDecorator.applyWrappingLabel(connectedStatusLabel, Languages.safeText(CoreMessageKey.CONNECTED_TO_BITCOIN_NETWORK));
-                    LabelDecorator.applyStatusLabel(connectedStatusLabel, Optional.of(Boolean.TRUE));
+                    LabelDecorator.applyStatusIcon(connectedStatusLabel, Optional.of(Boolean.TRUE));
 
                     if (!startedSync) {
                       synchronisationStatusLabel.setVisible(true);
@@ -301,13 +301,13 @@ public class CredentialsLoadWalletReportPanelView extends AbstractWizardPanelVie
                     startedSync = true;
                     synchronisationStatusLabel.setVisible(true);
                     LabelDecorator.applyWrappingLabel(synchronisationStatusLabel, Languages.safeText(CoreMessageKey.SYNCHRONISED));
-                    LabelDecorator.applyStatusLabel(synchronisationStatusLabel, Optional.of(Boolean.TRUE));
+                    LabelDecorator.applyStatusIcon(synchronisationStatusLabel, Optional.of(Boolean.TRUE));
 
                     if (loadedOk) {
                       // Wallet is ready to use
                       walletIsReadyToUseStatusLabel.setVisible(true);
                       LabelDecorator.applyWrappingLabel(walletIsReadyToUseStatusLabel, Languages.safeText(CoreMessageKey.WALLET_IS_READY_TO_USE));
-                      LabelDecorator.applyStatusLabel(walletIsReadyToUseStatusLabel, Optional.of(Boolean.TRUE));
+                      LabelDecorator.applyStatusIcon(walletIsReadyToUseStatusLabel, Optional.of(Boolean.TRUE));
                     }
                     break;
 

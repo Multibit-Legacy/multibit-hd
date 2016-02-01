@@ -218,14 +218,14 @@ public class LabelDecorator {
     }
 
     if (reportMessageKey.isPresent()) {
-      label.setText(Languages.safeText(reportMessageKey.get(), values));
-      AccessibilityDecorator.apply(
-        label,
-        reportMessageKey.get()
-      );
-      applyStatusLabel(
-        label,
-        Optional.of(reportMessageStatus)
+      // Ensure HTML wrapping is used
+      applyWrappingLabel(label, Languages.safeText(reportMessageKey.get(), values));
+
+      // Ensure it is accessible
+      AccessibilityDecorator.apply(label,reportMessageKey.get());
+
+      // Ensure the correct icon is present
+      applyStatusIcon(label, Optional.of(reportMessageStatus)
       );
 
       label.setVisible(true);
@@ -256,7 +256,7 @@ public class LabelDecorator {
    * @param statusLabel The status label to decorate
    * @param status      True for check, false for cross, absent for nothing (useful for initial message)
    */
-  public static void applyStatusLabel(JLabel statusLabel, Optional<Boolean> status) {
+  public static void applyStatusIcon(JLabel statusLabel, Optional<Boolean> status) {
 
     if (status.isPresent()) {
       if (status.get()) {

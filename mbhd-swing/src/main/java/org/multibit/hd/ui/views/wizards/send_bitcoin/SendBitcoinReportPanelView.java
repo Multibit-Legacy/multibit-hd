@@ -222,7 +222,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
                 if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
                   LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
                   LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, "");
-                  LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
+                  LabelDecorator.applyStatusIcon(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
                 } else {
                   String detailMessage = Languages.safeText(
                           transactionCreationEvent.getTransactionCreationFailureReasonKey(),
@@ -231,7 +231,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
                   LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
                   LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, detailMessage);
-                  LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
+                  LabelDecorator.applyStatusIcon(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
 
                   // If transaction creation failed enable the Finish/ Next button
                   if (getWizardModel().isBIP70()) {
@@ -302,7 +302,7 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
                         transactionBroadcastStatusSummary.setIcon(icon);
                       } else {
                         // Success - progress == 1.0
-                        LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
+                        LabelDecorator.applyStatusIcon(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
                       }
                     }
                   }
@@ -337,14 +337,14 @@ public class SendBitcoinReportPanelView extends AbstractWizardPanelView<SendBitc
 
                 if (bitcoinSentEvent.isSendWasSuccessful()) {
                   LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
-                  LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
+                  LabelDecorator.applyStatusIcon(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
                   transactionBroadcastStatusDetail.setText("");
                 } else {
                   String summaryMessage = Languages.safeText(CoreMessageKey.BITCOIN_SEND_FAILED);
                   String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReason(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
                   LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, summaryMessage);
                   LabelDecorator.applyWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
-                  LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
+                  LabelDecorator.applyStatusIcon(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
                 }
 
                 switchHeaderOn();

@@ -295,7 +295,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         @Override
         public void run() {
 
-          LabelDecorator.applyStatusLabel(backupLocationStatusLabel, Optional.of(backupLocationStatus));
+          LabelDecorator.applyStatusIcon(backupLocationStatusLabel, Optional.of(backupLocationStatus));
           backupLocationStatusLabel.setVisible(true);
 
           // Hide the header view (switching back on is done in MainController#onBitcoinNetworkChangedEvent
@@ -315,7 +315,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       new Runnable() {
         @Override
         public void run() {
-          LabelDecorator.applyStatusLabel(walletCreatedStatusLabel, Optional.of(walletCreatedStatus));
+          LabelDecorator.applyStatusIcon(walletCreatedStatusLabel, Optional.of(walletCreatedStatus));
           walletCreatedStatusLabel.setVisible(true);
         }
       });
@@ -331,7 +331,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         @Override
         public void run() {
 
-          LabelDecorator.applyStatusLabel(caCertificateStatusLabel, Optional.of(caCertificatesStatus));
+          LabelDecorator.applyStatusIcon(caCertificateStatusLabel, Optional.of(caCertificatesStatus));
           caCertificateStatusLabel.setVisible(true);
 
         }
@@ -351,7 +351,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
         @Override
         public void run() {
 
-          LabelDecorator.applyStatusLabel(synchronizationStatusLabel, Optional.of(walletSynchronizationStatus));
+          LabelDecorator.applyStatusIcon(synchronizationStatusLabel, Optional.of(walletSynchronizationStatus));
           synchronizationStatusLabel.setVisible(true);
 
         }
@@ -434,7 +434,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
           new Runnable() {
             @Override
             public void run() {
-              LabelDecorator.applyStatusLabel(walletCreatedStatusLabel, Optional.of(false));
+              LabelDecorator.applyStatusIcon(walletCreatedStatusLabel, Optional.of(false));
               walletCreatedStatusLabel.setVisible(true);
             }
           });

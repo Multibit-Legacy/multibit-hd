@@ -258,7 +258,7 @@ public class SignMessageHardwarePanelView extends AbstractWizardPanelView<SignMe
         @Override
         public void run() {
           reportLabel.setText(Languages.safeText(signMessageResult.getSignatureKey(), signMessageResult.getSignatureData()));
-          LabelDecorator.applyStatusLabel(reportLabel, Optional.of(signMessageResult.isSigningWasSuccessful()));
+          LabelDecorator.applyStatusIcon(reportLabel, Optional.of(signMessageResult.isSigningWasSuccessful()));
 
           if (signMessageResult.isSigningWasSuccessful() && signMessageResult.getSignature().isPresent()) {
             signature.setText(signMessageResult.getSignature().get());

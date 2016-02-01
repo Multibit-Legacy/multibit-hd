@@ -50,7 +50,9 @@ public class Labels {
    */
   public static JLabel newLabel(MessageKey key, Object... values) {
 
-    JLabel label = new JLabel(Languages.safeText(key, values));
+    // Wrap with HTML to ensure line breaks
+    String text = HtmlUtils.localiseWithLineBreaks(new String[] {Languages.safeText(key, values)});
+    JLabel label = new JLabel(text);
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(label, key);
@@ -70,7 +72,9 @@ public class Labels {
    */
   public static JLabel newLabel(CoreMessageKey key, Object... values) {
 
-    JLabel label = new JLabel(Languages.safeText(key, values));
+    // Wrap with HTML to ensure line breaks
+    String text = HtmlUtils.localiseWithLineBreaks(new String[] {Languages.safeText(key, values)});
+    JLabel label = new JLabel(text);
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(label, key);
@@ -272,7 +276,7 @@ public class Labels {
       label = newBlankLabel();
     }
 
-    LabelDecorator.applyStatusLabel(label, status);
+    LabelDecorator.applyStatusIcon(label, status);
 
     return label;
   }
@@ -296,7 +300,7 @@ public class Labels {
       label = newBlankLabel();
     }
 
-    LabelDecorator.applyStatusLabel(label, status);
+    LabelDecorator.applyStatusIcon(label, status);
 
     return label;
   }

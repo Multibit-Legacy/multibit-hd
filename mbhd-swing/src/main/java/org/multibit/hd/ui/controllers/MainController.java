@@ -1025,6 +1025,21 @@ public class MainController extends AbstractController implements
   private void handleShowDeviceFailed(final HardwareWalletEvent event) {
 
     // Determine the nature of the failure
+    if (!CoreServices.getCurrentHardwareWalletService().isPresent()) {
+      // Use the alert bar mechanism
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            // Attempt to create a suitable alert model in addition to view event
+            AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+            ControllerEvents.fireAddAlertEvent(alertModel);
+          }
+        });
+      return;
+    }
+
+    // 
     Optional<Features> featuresOptional = CoreServices.getCurrentHardwareWalletService().get().getContext().getFeatures();
 
     boolean isUnsupportedFirmware = featuresOptional.isPresent()
