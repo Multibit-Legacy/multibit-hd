@@ -26,6 +26,11 @@ public class MBHDPaymentRequestData implements PaymentData {
   private DateTime date;
 
   /**
+   * This payment request was generated for use by Glidera
+   */
+  private boolean isGlidera = false;
+
+  /**
    * The amount of bitcoin actually paid by transactions
    */
   private Coin paidAmountCoin;
@@ -191,6 +196,15 @@ public class MBHDPaymentRequestData implements PaymentData {
     return paymentStatus;
   }
 
+
+  public boolean isGlidera() {
+    return isGlidera;
+  }
+
+  public void setGlidera(boolean isGlidera) {
+    this.isGlidera = isGlidera;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -198,12 +212,18 @@ public class MBHDPaymentRequestData implements PaymentData {
 
     MBHDPaymentRequestData that = (MBHDPaymentRequestData) o;
 
+    if (isGlidera != that.isGlidera) return false;
     if (address != null ? !address.equals(that.address) : that.address != null) return false;
     if (amountCoin != null ? !amountCoin.equals(that.amountCoin) : that.amountCoin != null) return false;
-    if (date != null ? !date.equals(that.date) : that.date != null) return false;
     if (amountFiat != null ? !amountFiat.equals(that.amountFiat) : that.amountFiat != null) return false;
+    if (date != null ? !date.equals(that.date) : that.date != null) return false;
     if (label != null ? !label.equals(that.label) : that.label != null) return false;
     if (note != null ? !note.equals(that.note) : that.note != null) return false;
+    if (paidAmountCoin != null ? !paidAmountCoin.equals(that.paidAmountCoin) : that.paidAmountCoin != null)
+      return false;
+    if (!payingTransactionHashes.equals(that.payingTransactionHashes)) {
+      return false;
+    }
 
     return true;
   }
@@ -216,6 +236,9 @@ public class MBHDPaymentRequestData implements PaymentData {
     result = 31 * result + (amountFiat != null ? amountFiat.hashCode() : 0);
     result = 31 * result + (note != null ? note.hashCode() : 0);
     result = 31 * result + (date != null ? date.hashCode() : 0);
+    result = 31 * result + (isGlidera ? 1 : 0);
+    result = 31 * result + (paidAmountCoin != null ? paidAmountCoin.hashCode() : 0);
+    result = 31 * result + (payingTransactionHashes.hashCode());
     return result;
   }
 }

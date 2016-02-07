@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.buy_sell;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import net.miginfocom.swing.MigLayout;
 import org.bitcoinj.core.Coin;
 import org.joda.time.DateTime;
@@ -41,6 +42,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Currency;
+import java.util.List;
 
 /**
  * <p>Wizard to provide the following to UI:</p>
@@ -126,7 +128,7 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
         URI buyUri = URI.create(uriText);
 
         // Add a payment request for the Glidera address
-        savePaymentRequest(glideraBuyAddress);
+        saveGlideraPaymentRequest(glideraBuyAddress);
 
         if (!SafeDesktop.browse(buyUri)) {
           Sounds.playBeep(Configurations.currentConfiguration.getSound());
@@ -166,7 +168,7 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
     Optional<CharSequence> passwordParameter = Optional.absent();
     CharSequence password = currentWalletSummary.get().getWalletPassword().getPassword();
     if (currentWalletSummary.isPresent()) {
-      if (!(password == null) && !"".equals(password)) {
+      if (!Strings.isNullOrEmpty((String)password)) {
         passwordParameter = Optional.of(password);
       }
     }
@@ -182,21 +184,39 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
       }
     }
 
-    String nextAddressToShow;
+    String nextAddressToShow = null;
 
-    Optional<Integer> gap = walletService.getGap();
-    log.debug("current gap: {}", gap);
-    boolean atGapLimit = gap.isPresent() && gap.get() >= WalletService.GAP_LIMIT;
+    // See if there is currently a PaymentRequest for use by Glidera that has not been used yet
+    List<MBHDPaymentRequestData> existingPaymentRequests = walletService.getMBHDPaymentRequestDataList();
+    for (MBHDPaymentRequestData mbhdPaymentRequestData : existingPaymentRequests) {
+      if (mbhdPaymentRequestData.isGlidera()) {
+        // This was generated as a Glidera address
+        if (mbhdPaymentRequestData.getPayingTransactionHashes().isEmpty()) {
+          // There are no tx that have paid to this payment request so we can reuse it
+          nextAddressToShow = mbhdPaymentRequestData.getAddress().toString();
 
-    if (atGapLimit) {
-      nextAddressToShow = walletService.getLastGeneratedReceivingAddress();
-    } else {
-      nextAddressToShow = walletService.generateNextReceivingAddress(passwordParameter);
+          break;
+        }
+      }
+    }
 
-      // Recreate bloom filter
-      BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
-      Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started OK");
-      bitcoinNetworkService.recalculateFastCatchupAndFilter();
+    if (nextAddressToShow == null) {
+      // If there is no address marked as for use by Glidera then create a new one
+      // If at gap limit then the last generated receiving address is used
+      Optional<Integer> gap = walletService.getGap();
+      log.debug("current gap: {}", gap);
+      boolean atGapLimit = gap.isPresent() && gap.get() >= WalletService.GAP_LIMIT;
+
+      if (atGapLimit) {
+        nextAddressToShow = walletService.getLastGeneratedReceivingAddress();
+      } else {
+        nextAddressToShow = walletService.generateNextReceivingAddress(passwordParameter);
+
+        // Recreate bloom filter
+        BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
+        Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started OK");
+        bitcoinNetworkService.recalculateFastCatchupAndFilter();
+      }
     }
 
     return nextAddressToShow;
@@ -205,7 +225,7 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
   /**
     * Save the displayed payment request
     */
-   private void savePaymentRequest(String buyAddress) {
+   private void saveGlideraPaymentRequest(String buyAddress) {
 
      log.debug("Saving payment request");
      WalletService walletService = CoreServices.getCurrentWalletService().get();
@@ -215,7 +235,9 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
      Preconditions.checkState(WalletManager.INSTANCE.getCurrentWalletSummary().isPresent(), "'currentWalletSummary' must be present");
 
      final MBHDPaymentRequestData MBHDPaymentRequestData = new MBHDPaymentRequestData();
-      MBHDPaymentRequestData.setDate(DateTime.now());
+     MBHDPaymentRequestData.setGlidera(true);
+
+     MBHDPaymentRequestData.setDate(DateTime.now());
      MBHDPaymentRequestData.setAddress(Addresses.parse(buyAddress).get());
      MBHDPaymentRequestData.setLabel(Languages.safeText(MessageKey.BUY_VISIT_GLIDERA));
      MBHDPaymentRequestData.setNote(Languages.safeText(MessageKey.BUY_VISIT_GLIDERA_EXPLAIN));
