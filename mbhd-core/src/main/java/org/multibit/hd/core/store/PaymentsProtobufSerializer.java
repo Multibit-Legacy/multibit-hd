@@ -162,6 +162,9 @@ public class PaymentsProtobufSerializer {
           log.warn("Failed to parse address: '{}'", mbhdPaymentRequestProto.getAddress());
         }
 
+        if (mbhdPaymentRequestProto.hasIsGlidera()) {
+          MBHDPaymentRequestData.setGlidera(mbhdPaymentRequestProto.getIsGlidera());
+        }
         if (mbhdPaymentRequestProto.hasLabel()) {
           MBHDPaymentRequestData.setLabel(mbhdPaymentRequestProto.getLabel());
         }
@@ -419,7 +422,7 @@ public class PaymentsProtobufSerializer {
     MBHDPaymentsProtos.MBHDPaymentRequest.Builder paymentRequestBuilder = MBHDPaymentsProtos.MBHDPaymentRequest.newBuilder();
 
     if (MBHDPaymentRequestData != null) {
-
+      paymentRequestBuilder.setIsGlidera(MBHDPaymentRequestData.isGlidera());
       paymentRequestBuilder.setAddress(MBHDPaymentRequestData.getAddress() == null ? "" : MBHDPaymentRequestData.getAddress().toString());
       paymentRequestBuilder.setNote(MBHDPaymentRequestData.getNote() == null ? "" : MBHDPaymentRequestData.getNote());
       paymentRequestBuilder.setAmountBTC(MBHDPaymentRequestData.getAmountCoin() == null || !MBHDPaymentRequestData.getAmountCoin().isPresent() ? 0 : MBHDPaymentRequestData.getAmountCoin().get().longValue());

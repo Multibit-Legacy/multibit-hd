@@ -22,7 +22,7 @@
  */
  
 /* Notes:
- * - To regenerate after editing, run mvn clean package -DupdateProtobuf
+ * - To regenerate after editing, run mvn clean package -DupdateProtobuf=true
  * - Then manually add the following to the top level generated classes:
  * // This class is auto-generated so is exempt from warnings and Findbugs
  * @SuppressWarnings(value="")
@@ -57,6 +57,7 @@ message MBHDPaymentRequest {
   optional FiatPayment amount_fiat = 4;  // The fiat equivalent of the bitcoin amount
   optional string note = 5;              // The private note (this is not included on any QRcode)
   optional int64 date = 6;               // The creation datetime (millis since epoch)
+  optional bool isGlidera = 7;           // If true then this payment request is intended for use by Glidera, false otherwise
 }
 
 /** 
