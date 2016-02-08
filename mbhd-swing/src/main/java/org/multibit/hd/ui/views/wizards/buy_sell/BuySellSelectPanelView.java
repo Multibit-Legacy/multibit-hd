@@ -122,13 +122,16 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
     return new AbstractAction() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String glideraBuyAddress =  getGlideraBuyAddress();
+        GlideraAddressResult glideraAddressResult =  getGlideraBuyAddress();
+        String glideraBuyAddress = glideraAddressResult.getAddress();
         String uriText = buyUriText + glideraBuyAddress;
         log.debug("Glidera buy URI text: {}", uriText);
         URI buyUri = URI.create(uriText);
 
-        // Add a payment request for the Glidera address
-        saveGlideraPaymentRequest(glideraBuyAddress);
+        // Add a payment request for the Glidera address if the address is new
+        if (!glideraAddressResult.isReuse()) {
+          saveGlideraPaymentRequest(glideraBuyAddress);
+        }
 
         if (!SafeDesktop.browse(buyUri)) {
           Sounds.playBeep(Configurations.currentConfiguration.getSound());
@@ -159,9 +162,9 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
    * Get the Bitcoin address (in the current wallet) to add onto the 'buy bitcoin' URL.
    * This tells Glidera the address to use to send bitcoin to
    *
-   * @return String the Bitcoin address
+   * @return GlideraAddressResult the Bitcoin address and whether it is new or not
    */
-  private String getGlideraBuyAddress() {
+  private GlideraAddressResult getGlideraBuyAddress() {
     // Get the next receiving address to show from the wallet service.
     // This is normally a new receiving address but if the gap limit is reached it is the current one
     Optional<WalletSummary> currentWalletSummary = WalletManager.INSTANCE.getCurrentWalletSummary();
@@ -184,6 +187,7 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
       }
     }
 
+    boolean reuse = false;
     String nextAddressToShow = null;
 
     // See if there is currently a PaymentRequest for use by Glidera that has not been used yet
@@ -195,6 +199,7 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
           // There are no tx that have paid to this payment request so we can reuse it
           nextAddressToShow = mbhdPaymentRequestData.getAddress().toString();
 
+          reuse = true;
           break;
         }
       }
@@ -219,7 +224,7 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
       }
     }
 
-    return nextAddressToShow;
+    return new GlideraAddressResult(nextAddressToShow, reuse);
   }
 
   /**
@@ -288,4 +293,31 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
        }
      });
    }
+
+  static class GlideraAddressResult {
+
+    /**
+     * Is this is a newly created address ? (true)
+     * Or reusing an existing Glidera payment request (false)
+     */
+    final boolean reuse;
+
+    /**
+     * The address to use as the Glidera address
+     */
+    final String address;
+
+    public GlideraAddressResult(String address, boolean reuse) {
+      this.address = address;
+      this.reuse = reuse;
+    }
+
+    public boolean isReuse() {
+      return reuse;
+    }
+
+    public String getAddress() {
+      return address;
+    }
+  }
 }
