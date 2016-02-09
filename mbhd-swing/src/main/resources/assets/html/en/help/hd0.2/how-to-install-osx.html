@@ -42,6 +42,30 @@
 
 <p>Bitcoin software requires a secure environment and OS X Lion (released in 2011) is quite old now. We urge you to upgrade to keep your system up to date.</p>
 
+<h3 id="troubleshooting">Troubleshooting</h3>
+
+<p>Occasionally people encounter problems getting MultiBit HD set up on their OS X machine. Here are some common solutions to known problems.</p>
+
+<h4>I don't have much system memory</h4>
+
+<p>MultiBit HD uses the Java Virtual Machine (JVM) to manage its memory. This means that over time you will see memory use increase as various activities take place.
+  Synchronizing with the block chain is a memory-intensive process and during the initial sync or a Repair Wallet operation you will notice an increase. By default MultiBit HD
+  will not consume more than the <em>lesser</em> of one quarter of your system memory or 1Gb. For example, on a 2Gb system (2009 mid-range machine) MultiBit HD will start having
+  memory constraints at around 500Mb.</p>
+
+<p>This default is sufficient to allow for smooth and responsive operations on most systems. However, MultiBit HD can continue to work with only 256Mb allocated to it although
+  performance tends to reduce.</p>
+
+<p>If you want to change the memory allocated to MultiBit HD you will need to do the following:</p>
+<ol>
+  <li>After installation, locate MultiBit HD in the Finder (in Applications)</li>
+  <li>Right click and select "Show Package Contents"</li>
+  <li>Open <code>Contents/vmoptions.txt</code> in a text editor</li>
+  <li>Edit the line <code># -Xmx512m</code> to remove the <code>#</code> and following space</li>
+  <li>Change the value to something else, e.g. <code>-Xmx1024m</code> is 1Gb</li>
+  <li>Save the changes and use the shortcut as normal to start MultiBit HD</li>
+</ol>
+
 <h4>Related articles</h4>
 <p>Here are some related articles:</p>
 <ul>

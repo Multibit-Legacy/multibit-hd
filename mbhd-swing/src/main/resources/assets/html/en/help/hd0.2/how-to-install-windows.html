@@ -57,6 +57,29 @@
 <p>We don't support Windows XP. It has <a href="http://blogs.microsoft.com/cybertrust/2013/08/15/the-risk-of-running-windows-xp-after-support-ends-april-2014/" target="_blank">too many security issues to be viable
   for Bitcoin software</a> outside of a highly controlled environment.</p>
 
+<h3 id="troubleshooting">Troubleshooting</h3>
+
+<p>Occasionally people encounter problems getting MultiBit HD set up on their Windows machine. Here are some common solutions to known problems.</p>
+
+<h4>I don't have much system memory</h4>
+
+<p>MultiBit HD uses the Java Virtual Machine (JVM) to manage its memory. This means that over time you will see memory use increase as various activities take place.
+  Synchronizing with the block chain is a memory-intensive process and during the initial sync or a Repair Wallet operation you will notice an increase. By default MultiBit HD
+  will not consume more than the <em>lesser</em> of one quarter of your system memory or 1Gb. For example, on a 2Gb system (2009 mid-range machine) MultiBit HD will start having
+  memory constraints at around 500Mb.</p>
+
+<p>This default is sufficient to allow for smooth and responsive operations on most systems. However, MultiBit HD can continue to work with only 256Mb allocated to it although
+  performance tends to reduce.</p>
+
+<p>If you want to change the memory allocated to MultiBit HD you will need to do the following:</p>
+<ol>
+  <li>After installation, locate the MultiBit HD shortcut</li>
+  <li>Right click and select "Properties"</li>
+  <li>Edit the Target line by adding <code>-J-Xmx1024m</code> including a space after the final <code>"</code> to set a 1Gb limit (e.g.Target:
+    <code>"C:\Program Files\MultiBit HD\multibit-hd.exe" -J-Xmx1024m</code></li>
+  <li>Save the changes and use the shortcut as normal to start MultiBit HD</li>
+</ol>
+
 <h4>Related articles</h4>
 <p>Here are some related articles:</p>
 <ul>

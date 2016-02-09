@@ -152,6 +152,19 @@ deleting: lib/x86_64/linux/libscrypt.so
 </pre>
 <p>Save and restart Firefox and click a Bitcoin URI. It should prompt for a handler and give you the option to make this choice permanent.</p>
 
+<h4>I don't have much system memory</h4>
+
+<p>MultiBit HD uses the Java Virtual Machine (JVM) to manage its memory. This means that over time you will see memory use increase as various activities take place.
+  Synchronizing with the block chain is a memory-intensive process and during the initial sync or a Repair Wallet operation you will notice an increase. By default MultiBit HD
+  will not consume more than the <em>lesser</em> of one quarter of your system memory or 1Gb. For example, on a 2Gb system (2009 mid-range machine) MultiBit HD will start having
+  memory constraints at around 500Mb.</p>
+
+<p>This default is sufficient to allow for smooth and responsive operations on most systems. However, MultiBit HD can continue to work with only 256Mb allocated to it although
+  performance tends to reduce.</p>
+
+<p>If you want to change the memory allocated to MultiBit HD you will need to start it with a command line parameter like this <code>-Xmx1024m</code> for a total memory
+  allocation of 1024Mb or 1Gb.</p>
+
 <h4>Related articles</h4>
 <p>Here are some related articles:</p>
 <ul>
