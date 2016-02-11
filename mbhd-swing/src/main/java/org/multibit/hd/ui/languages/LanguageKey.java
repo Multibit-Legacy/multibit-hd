@@ -160,6 +160,10 @@ public enum LanguageKey {
    */
   RU_RU("ru_RU", OPENSANS_SEMIBOLD),
   /**
+   * Serbian (Latin)
+   */
+  SR_CS("sr_CS", OPENSANS_SEMIBOLD),
+  /**
    * Slovak
    */
   SK_SK("sk_SK", OPENSANS_SEMIBOLD),

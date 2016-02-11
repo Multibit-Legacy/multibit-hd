@@ -103,20 +103,21 @@ public class SelectFileView extends AbstractComponentView<SelectFileModel> {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            // Only require a directory
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-            // Set an initial directory, if already chosen
+            // Work our directory to show, if already chosen
+            File fileToSelect = null;
             if (getModel().isPresent()) {
               String selectedFileAsString = getModel().get().getValue();
               if (selectedFileAsString != null) {
-                File selectedFile = new File(selectedFileAsString);
-                if (selectedFile.exists() && selectedFile.isDirectory()) {
-                  fileChooser.setSelectedFile(selectedFile);
+                File candidateFileToSelect = new File(selectedFileAsString);
+                if (candidateFileToSelect.exists() && candidateFileToSelect.isDirectory()) {
+                  fileToSelect = candidateFileToSelect;
                 }
               }
             }
+            JFileChooser fileChooser = fileToSelect == null ? new JFileChooser() : new JFileChooser(fileToSelect);
+
+            // Only require a directory
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
             int result = fileChooser.showOpenDialog(currentComponentPanel());
 

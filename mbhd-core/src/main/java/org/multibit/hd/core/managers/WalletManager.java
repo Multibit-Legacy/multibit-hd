@@ -22,6 +22,7 @@ import org.bitcoinj.store.WalletProtobufSerializer;
 import org.bitcoinj.wallet.DeterministicSeed;
 import org.bitcoinj.wallet.Protos;
 import org.joda.time.DateTime;
+import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.commons.crypto.AESUtils;
 import org.multibit.commons.files.SecureFiles;
 import org.multibit.commons.utils.Dates;
@@ -32,7 +33,6 @@ import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.core.services.FeeService;
 import org.multibit.hd.brit.core.services.TransactionSentBySelfProvider;
-import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Yaml;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -51,6 +51,7 @@ import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
 import org.multibit.hd.core.utils.BitcoinNetwork;
 import org.multibit.hd.core.utils.Collators;
+import org.multibit.hd.core.wallet.UnconfirmedTransactionDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
@@ -533,6 +534,11 @@ public enum WalletManager implements WalletEventListener {
         // There is already a wallet created with this root - if so load it and return that
         log.debug("Opening AES wallet:\n'{}'", walletFileWithAES.getAbsolutePath());
         walletSummary = loadFromWalletDirectory(walletDirectory, password);
+
+        // Use any existing notes if none is specified
+        if (Strings.isNullOrEmpty(notes) && !Strings.isNullOrEmpty(walletSummary.getNotes())) {
+          notes = walletSummary.getNotes();
+        }
       } catch (WalletLoadException e) {
         // Failed to decrypt the existing wallet/backups or something else went wrong
         log.error("Failed to load from wallet directory.");
@@ -811,6 +817,7 @@ public enum WalletManager implements WalletEventListener {
       } else {
 
         boolean performRegularSync = false;
+        Optional<DateTime> unconfirmedTransactionReplayDate = Optional.absent();
         BlockStore blockStore = null;
         try {
           // Get the bitcoin network service
@@ -833,7 +840,7 @@ public enum WalletManager implements WalletEventListener {
             // Open the blockstore with no checkpointing (this is to get the chain height)
             blockStore = bitcoinNetworkService.openBlockStore(
               InstallationManager.getOrCreateApplicationDataDirectory(),
-              Optional.<DateTime>absent()
+              new ReplayConfig()
             );
           }
           log.debug("blockStore = {}", blockStore);
@@ -853,10 +860,15 @@ public enum WalletManager implements WalletEventListener {
             }
           }
 
-          // If wallet and block store match or wallet is brand new use regular sync
-          if ((walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) ||
-            (walletLastSeenBlockTime == null && !keyCreationTimeIsInThePast)) {
-            // Regular sync is ok - no need to use checkpoints
+          // Work out if the wallet has unconfirmed transactions in the time window of interest for replay
+          unconfirmedTransactionReplayDate = UnconfirmedTransactionDetector.calculateReplayDate(walletBeingReturned, Dates.nowUtc());
+
+          // If (wallet and block store match or wallet is brand new) and
+          //    no sync is required due to unconfirmed transactions
+          // then use regular sync
+          if (((walletBlockHeight > 0 && walletBlockHeight == blockStoreBlockHeight) ||
+            (walletLastSeenBlockTime == null && !keyCreationTimeIsInThePast)) && !unconfirmedTransactionReplayDate.isPresent()) {
+            // Regular sync is ok - no need to use checkpoints / replayDate
             log.debug("Will perform a regular sync");
             performRegularSync = true;
           }
@@ -877,8 +889,9 @@ public enum WalletManager implements WalletEventListener {
         if (performRegularSync) {
           synchroniseWallet(Optional.<DateTime>absent());
         } else {
-          // Work out the replay date based on the last block seen, the earliest key creation date and the earliest HD wallet date
-          DateTime replayDate = calculateReplayDateTime(walletBeingReturned);
+          // Work out the replay date based on the last block seen, the earliest key creation date, the earliest HD wallet date
+          // and the unconfirmed transaction replay date
+          DateTime replayDate = calculateReplayDateTime(walletBeingReturned, unconfirmedTransactionReplayDate);
           synchroniseWallet(Optional.of(replayDate));
         }
       }
@@ -887,16 +900,24 @@ public enum WalletManager implements WalletEventListener {
 
   /**
    * @param walletBeingReturned The wallet requiring replay
+   * @param unconfirmedTransactionReplayDate The replayDate required due to there being unconfirmed transactions
    *
    * @return The most appropriate date time to being replay
    */
-  private DateTime calculateReplayDateTime(Wallet walletBeingReturned) {
+  private DateTime calculateReplayDateTime(Wallet walletBeingReturned, Optional<DateTime> unconfirmedTransactionReplayDate) {
 
     DateTime replayDateTime = null;
 
-    // Start with the last block seen
+    // Start with the last block seen date
     if (walletBeingReturned.getLastBlockSeenTime() != null) {
       replayDateTime = new DateTime(walletBeingReturned.getLastBlockSeenTime());
+      log.debug("Setting potential replay date from last block seen time of {}", replayDateTime);
+    }
+
+    // If there is an unconfirmedTransactionReplayDate then we will go back further to that
+    if (unconfirmedTransactionReplayDate.isPresent()) {
+      replayDateTime = unconfirmedTransactionReplayDate.get();
+      log.debug("Setting potential replay date from unconfirmedTransaction replay date of {}", replayDateTime);
     }
 
     // Override with the earliest key creation date
@@ -908,10 +929,11 @@ public enum WalletManager implements WalletEventListener {
       DateTime earliestKeyCreationDateTime = new DateTime(earliestKeyCreationSeconds * 1000); // Using seconds
       if (replayDateTime == null) {
         replayDateTime = earliestKeyCreationDateTime;
+        log.debug("Setting potential replay date from earliestKeyCreationDateTime date (1) of {}", replayDateTime);
       } else {
         // Do not go further back than earliest key creation date (0 will trigger epoch which gets overridden later)
         replayDateTime = replayDateTime.isBefore(earliestKeyCreationDateTime) ? earliestKeyCreationDateTime : replayDateTime;
-      }
+        log.debug("Setting potential replay date from earliestKeyCreationDateTime date (2) of {}", replayDateTime);      }
     }
 
     // Override with earliest HD wallet date (shared with other wallets)
@@ -919,6 +941,7 @@ public enum WalletManager implements WalletEventListener {
     if (replayDateTime == null || replayDateTime.isBefore(earliestHDWalletDate)) {
       // Do not go further back than earliest HD wallet (this avoids epoch)
       replayDateTime = earliestHDWalletDate;
+      log.debug("Setting potential replay date from earliest HDwallet date of {}", replayDateTime);
     }
 
     // Cannot be null
@@ -1140,10 +1163,10 @@ public enum WalletManager implements WalletEventListener {
 
           // Replay wallet using fast catch up without clearing mempool (not a repair scenario)
           CoreServices.getOrCreateBitcoinNetworkService().replayWallet(
-            InstallationManager.getOrCreateApplicationDataDirectory(),
-            replayDate,
-            true,
-            false
+                  InstallationManager.getOrCreateApplicationDataDirectory(),
+                  replayDate,
+                  true,
+                  false
           );
           return true;
 
@@ -1753,7 +1776,7 @@ public enum WalletManager implements WalletEventListener {
       }
 
     } catch (RuntimeException | AddressFormatException | SignatureException e) {
-      log.warn("Failed to verify the message", e);
+      log.warn("Failed to verify the message", e.getClass().getCanonicalName() + " " + e.getMessage());
       return new VerifyMessageResult(false, CoreMessageKey.VERIFY_MESSAGE_FAILURE, null);
     }
   }

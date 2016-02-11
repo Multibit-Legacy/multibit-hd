@@ -10,7 +10,6 @@ import org.multibit.hd.ui.languages.Languages;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class HtmlUtils {
 
@@ -19,7 +18,6 @@ public class HtmlUtils {
    */
   private HtmlUtils() {
   }
-
 
   /**
    * @param lines The lines to wrap in HTML
@@ -37,45 +35,12 @@ public class HtmlUtils {
     }
 
     // Wrap in paragraphs to ensure word wrap
-    boolean first = true;
-    for (String line : lines) {
-      if (!first) {
-        sb.append("<br>");
-      }
-      sb.append("<p>")
-        .append(line)
-        .append("</p>");
-      first = false;
-    }
+    wrapAndLineBreak(lines, sb);
+
     sb.append("</div></body></html>");
 
     return sb.toString();
   }
-
-  /**
-    * @param lines The lines to wrap in HTML
-    *
-    * @return A single block of HTML that provides appropriate text alignment (LTR or RTL) and line breaks for the locale
-    */
-   public static String localiseCenteredWithLineBreaks(String[] lines) {
-
-     final StringBuilder sb = new StringBuilder("<html><body style='width: 100%'><div align=center>");
-
-     // Wrap in paragraphs to ensure word wrap
-     boolean first = true;
-     for (String line : lines) {
-       if (!first) {
-         sb.append("<br>");
-       }
-       sb.append("<p>")
-         .append(line)
-         .append("</p>");
-       first = false;
-     }
-     sb.append("</div></body></html>");
-
-     return sb.toString();
-   }
 
   /**
    * @param lines The lines to wrap in HTML
@@ -87,16 +52,8 @@ public class HtmlUtils {
     final StringBuilder sb = new StringBuilder("<html><body style='width: 100%'><div align=center>");
 
     // Wrap in paragraphs to ensure word wrap
-    boolean first = true;
-    for (String line : lines) {
-      if (!first) {
-        sb.append("<br>");
-      }
-      sb.append("<p>")
-        .append(line)
-        .append("</p>");
-      first = false;
-    }
+    wrapAndLineBreak(lines, sb);
+
     sb.append("</div></body></html>");
 
     return sb.toString();
@@ -145,4 +102,31 @@ public class HtmlUtils {
     return sb.toString();
   }
 
+  /**
+   * <p>A naive HTML to text conversion. It assumes a simple unescaped HTML input and removes the tags.</p>
+   *
+   * @param html The source HTML
+   *
+   * @return The stripped text
+   */
+  public static String stripHtml(String html) {
+    return html.replaceAll("<[^>]*>", "");
+  }
+
+  /**
+   * @param lines The lines to wrap in HTML
+   * @param sb    The StringBuilder containing the result
+   */
+  private static void wrapAndLineBreak(String[] lines, StringBuilder sb) {
+    boolean first = true;
+    for (String line : lines) {
+      if (!first) {
+        sb.append("<br>");
+      }
+      sb.append("<p>")
+        .append(line)
+        .append("</p>");
+      first = false;
+    }
+  }
 }

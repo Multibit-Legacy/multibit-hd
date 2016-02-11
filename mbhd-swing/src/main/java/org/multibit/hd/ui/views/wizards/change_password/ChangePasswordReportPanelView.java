@@ -119,7 +119,7 @@ public class ChangePasswordReportPanelView extends AbstractWizardPanelView<Chang
         ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
 
         passwordChangedStatusLabel.setText(Languages.safeText(changePasswordResultEvent.getChangePasswordResultKey(), changePasswordResultEvent.getChangePasswordResultData()));
-        LabelDecorator.applyStatusLabel(passwordChangedStatusLabel, Optional.of(changePasswordResultEvent.isChangePasswordWasSuccessful()));
+        LabelDecorator.applyStatusIcon(passwordChangedStatusLabel, Optional.of(changePasswordResultEvent.isChangePasswordWasSuccessful()));
         getFinishButton().requestFocusInWindow();
       }
     });

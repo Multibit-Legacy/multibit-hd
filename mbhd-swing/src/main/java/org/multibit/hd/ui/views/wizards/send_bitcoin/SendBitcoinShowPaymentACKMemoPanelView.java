@@ -148,13 +148,13 @@ public class SendBitcoinShowPaymentACKMemoPanelView extends AbstractWizardPanelV
 
           if (paymentSentToRequestorEvent.isSendWasSuccessful()) {
             LabelDecorator.applyWrappingLabel(paymentSentOKSummary, Languages.safeText(CoreMessageKey.PAYMENT_SENT_TO_REQUESTER_OK));
-            LabelDecorator.applyStatusLabel(paymentSentOKSummary, Optional.of(Boolean.TRUE));
+            LabelDecorator.applyStatusIcon(paymentSentOKSummary, Optional.of(Boolean.TRUE));
 
           } else {
             // Add (Object) cast to suppress varargs warning
             String summaryMessage = Languages.safeText(CoreMessageKey.PAYMENT_SENT_TO_REQUESTER_FAILED, (Object) paymentSentToRequestorEvent.getSendFailureReasonData());
             LabelDecorator.applyWrappingLabel(paymentSentOKSummary, summaryMessage);
-            LabelDecorator.applyStatusLabel(paymentSentOKSummary, Optional.of(Boolean.FALSE));
+            LabelDecorator.applyStatusIcon(paymentSentOKSummary, Optional.of(Boolean.FALSE));
           }
         }
       });

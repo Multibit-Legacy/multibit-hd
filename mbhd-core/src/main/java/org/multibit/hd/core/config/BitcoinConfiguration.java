@@ -1,5 +1,7 @@
 package org.multibit.hd.core.config;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
@@ -46,6 +48,26 @@ public class BitcoinConfiguration {
    */
   private Map<String, String> exchangeApiKeys = Maps.newHashMap();
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Any unknown objects in the configuration go here (preserve order of insertion)
+   */
+  private Map<String, Object> other = Maps.newLinkedHashMap();
+
+  /**
+   * @return The map of any unknown objects in the configuration at this level
+   */
+  @JsonAnyGetter
+  public Map<String, Object> any() {
+    return other;
+  }
+
+  @JsonAnySetter
+  public void set(String name, Object value) {
+    other.put(name, value);
+  }
+
   /**
    * <p>Default constructor uses the default locale</p>
    */
@@ -59,6 +81,12 @@ public class BitcoinConfiguration {
 
     BitcoinConfiguration configuration = new BitcoinConfiguration();
 
+    // Unknown properties
+    for (Map.Entry<String, Object> entry : any().entrySet()) {
+      configuration.set(entry.getKey(), entry.getValue());
+    }
+
+    // Known properties
     configuration.setBitcoinSymbol(getBitcoinSymbol());
     configuration.setCurrencySymbolLeading(isCurrencySymbolLeading());
 

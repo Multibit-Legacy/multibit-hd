@@ -19,8 +19,8 @@ import java.util.Map;
  */
 public class ChangePinWizard extends AbstractHardwareWalletWizard<ChangePinWizardModel> {
 
-  public ChangePinWizard(ChangePinWizardModel model, boolean isExiting) {
-    super(model, isExiting, Optional.absent());
+  public ChangePinWizard(ChangePinWizardModel model) {
+    super(model, false, Optional.absent());
   }
 
   @Override

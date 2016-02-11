@@ -1315,6 +1315,24 @@ public final class MBHDPaymentsProtos {
      * </pre>
      */
     long getDate();
+
+    // optional bool isGlidera = 7;
+    /**
+     * <code>optional bool isGlidera = 7;</code>
+     *
+     * <pre>
+     * If true then this payment request is intended for use by Glidera, false otherwise
+     * </pre>
+     */
+    boolean hasIsGlidera();
+    /**
+     * <code>optional bool isGlidera = 7;</code>
+     *
+     * <pre>
+     * If true then this payment request is intended for use by Glidera, false otherwise
+     * </pre>
+     */
+    boolean getIsGlidera();
   }
   /**
    * Protobuf type {@code MBHDPaymentRequest}
@@ -1408,6 +1426,11 @@ public final class MBHDPaymentsProtos {
             case 48: {
               bitField0_ |= 0x00000020;
               date_ = input.readInt64();
+              break;
+            }
+            case 56: {
+              bitField0_ |= 0x00000040;
+              isGlidera_ = input.readBool();
               break;
             }
           }
@@ -1697,6 +1720,30 @@ public final class MBHDPaymentsProtos {
       return date_;
     }
 
+    // optional bool isGlidera = 7;
+    public static final int ISGLIDERA_FIELD_NUMBER = 7;
+    private boolean isGlidera_;
+    /**
+     * <code>optional bool isGlidera = 7;</code>
+     *
+     * <pre>
+     * If true then this payment request is intended for use by Glidera, false otherwise
+     * </pre>
+     */
+    public boolean hasIsGlidera() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    /**
+     * <code>optional bool isGlidera = 7;</code>
+     *
+     * <pre>
+     * If true then this payment request is intended for use by Glidera, false otherwise
+     * </pre>
+     */
+    public boolean getIsGlidera() {
+      return isGlidera_;
+    }
+
     private void initFields() {
       address_ = "";
       label_ = "";
@@ -1704,6 +1751,7 @@ public final class MBHDPaymentsProtos {
       amountFiat_ = org.multibit.hd.core.protobuf.MBHDPaymentsProtos.FiatPayment.getDefaultInstance();
       note_ = "";
       date_ = 0L;
+      isGlidera_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1745,6 +1793,9 @@ public final class MBHDPaymentsProtos {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeInt64(6, date_);
       }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeBool(7, isGlidera_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -1777,6 +1828,10 @@ public final class MBHDPaymentsProtos {
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(6, date_);
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(7, isGlidera_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1916,6 +1971,8 @@ public final class MBHDPaymentsProtos {
         bitField0_ = (bitField0_ & ~0x00000010);
         date_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000020);
+        isGlidera_ = false;
+        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
 
@@ -1972,6 +2029,10 @@ public final class MBHDPaymentsProtos {
           to_bitField0_ |= 0x00000020;
         }
         result.date_ = date_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.isGlidera_ = isGlidera_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2011,6 +2072,9 @@ public final class MBHDPaymentsProtos {
         }
         if (other.hasDate()) {
           setDate(other.getDate());
+        }
+        if (other.hasIsGlidera()) {
+          setIsGlidera(other.getIsGlidera());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -2590,6 +2654,55 @@ public final class MBHDPaymentsProtos {
       public Builder clearDate() {
         bitField0_ = (bitField0_ & ~0x00000020);
         date_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // optional bool isGlidera = 7;
+      private boolean isGlidera_ ;
+      /**
+       * <code>optional bool isGlidera = 7;</code>
+       *
+       * <pre>
+       * If true then this payment request is intended for use by Glidera, false otherwise
+       * </pre>
+       */
+      public boolean hasIsGlidera() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>optional bool isGlidera = 7;</code>
+       *
+       * <pre>
+       * If true then this payment request is intended for use by Glidera, false otherwise
+       * </pre>
+       */
+      public boolean getIsGlidera() {
+        return isGlidera_;
+      }
+      /**
+       * <code>optional bool isGlidera = 7;</code>
+       *
+       * <pre>
+       * If true then this payment request is intended for use by Glidera, false otherwise
+       * </pre>
+       */
+      public Builder setIsGlidera(boolean value) {
+        bitField0_ |= 0x00000040;
+        isGlidera_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool isGlidera = 7;</code>
+       *
+       * <pre>
+       * If true then this payment request is intended for use by Glidera, false otherwise
+       * </pre>
+       */
+      public Builder clearIsGlidera() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        isGlidera_ = false;
         onChanged();
         return this;
       }
@@ -7925,25 +8038,26 @@ public final class MBHDPaymentsProtos {
     java.lang.String[] descriptorData = {
       "\n\034main/protobuf/payments.proto\"O\n\013FiatPa" +
       "yment\022\016\n\006amount\030\001 \002(\t\022\020\n\010currency\030\002 \002(\t\022" +
-      "\020\n\010exchange\030\003 \001(\t\022\014\n\004rate\030\004 \001(\t\"\206\001\n\022MBHD" +
+      "\020\n\010exchange\030\003 \001(\t\022\014\n\004rate\030\004 \001(\t\"\231\001\n\022MBHD" +
       "PaymentRequest\022\017\n\007address\030\001 \002(\t\022\r\n\005label" +
       "\030\002 \001(\t\022\021\n\tamountBTC\030\003 \001(\003\022!\n\013amount_fiat" +
       "\030\004 \001(\0132\014.FiatPayment\022\014\n\004note\030\005 \001(\t\022\014\n\004da" +
-      "te\030\006 \001(\003\"\224\001\n\017TransactionInfo\022\014\n\004hash\030\001 \002" +
-      "(\t\022!\n\013amount_fiat\030\003 \001(\0132\014.FiatPayment\022\014\n" +
-      "\004note\030\004 \001(\t\022\021\n\tminer_fee\030\005 \001(\003\022\022\n\nclient" +
-      "_fee\030\006 \001(\003\022\033\n\014sent_by_self\030\007 \001(\010:\005false\"",
-      "\351\001\n\016PaymentRequest\022\014\n\004uuid\030\001 \002(\t\022\014\n\004hash" +
-      "\030\002 \001(\t\022!\n\013amount_fiat\030\003 \001(\0132\014.FiatPaymen" +
-      "t\022\021\n\tamountBTC\030\004 \001(\003\022\014\n\004note\030\005 \001(\t\022\014\n\004da" +
-      "te\030\006 \001(\003\022\035\n\025identity_display_name\030\007 \001(\t\022" +
-      "\024\n\014trust_status\030\010 \001(\t\022\033\n\023trust_error_mes" +
-      "sage\030\t \001(\t\022\027\n\017expiration_date\030\n \001(\003\"\223\001\n\010" +
-      "Payments\0221\n\024mbhd_payment_request\030\001 \003(\0132\023" +
-      ".MBHDPaymentRequest\022*\n\020transaction_info\030" +
-      "\002 \003(\0132\020.TransactionInfo\022(\n\017payment_reque" +
-      "st\030\004 \003(\0132\017.PaymentRequestB3\n\035org.multibi",
-      "t.hd.core.protobufB\022MBHDPaymentsProtos"
+      "te\030\006 \001(\003\022\021\n\tisGlidera\030\007 \001(\010\"\224\001\n\017Transact" +
+      "ionInfo\022\014\n\004hash\030\001 \002(\t\022!\n\013amount_fiat\030\003 \001" +
+      "(\0132\014.FiatPayment\022\014\n\004note\030\004 \001(\t\022\021\n\tminer_" +
+      "fee\030\005 \001(\003\022\022\n\nclient_fee\030\006 \001(\003\022\033\n\014sent_by",
+      "_self\030\007 \001(\010:\005false\"\351\001\n\016PaymentRequest\022\014\n" +
+      "\004uuid\030\001 \002(\t\022\014\n\004hash\030\002 \001(\t\022!\n\013amount_fiat" +
+      "\030\003 \001(\0132\014.FiatPayment\022\021\n\tamountBTC\030\004 \001(\003\022" +
+      "\014\n\004note\030\005 \001(\t\022\014\n\004date\030\006 \001(\003\022\035\n\025identity_" +
+      "display_name\030\007 \001(\t\022\024\n\014trust_status\030\010 \001(\t" +
+      "\022\033\n\023trust_error_message\030\t \001(\t\022\027\n\017expirat" +
+      "ion_date\030\n \001(\003\"\223\001\n\010Payments\0221\n\024mbhd_paym" +
+      "ent_request\030\001 \003(\0132\023.MBHDPaymentRequest\022*" +
+      "\n\020transaction_info\030\002 \003(\0132\020.TransactionIn" +
+      "fo\022(\n\017payment_request\030\004 \003(\0132\017.PaymentReq",
+      "uestB3\n\035org.multibit.hd.core.protobufB\022M" +
+      "BHDPaymentsProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -7961,7 +8075,7 @@ public final class MBHDPaymentsProtos {
           internal_static_MBHDPaymentRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_MBHDPaymentRequest_descriptor,
-              new java.lang.String[] { "Address", "Label", "AmountBTC", "AmountFiat", "Note", "Date", });
+              new java.lang.String[] { "Address", "Label", "AmountBTC", "AmountFiat", "Note", "Date", "IsGlidera", });
           internal_static_TransactionInfo_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_TransactionInfo_fieldAccessorTable = new

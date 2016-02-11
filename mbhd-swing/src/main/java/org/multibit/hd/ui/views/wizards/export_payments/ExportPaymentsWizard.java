@@ -22,8 +22,8 @@ import static org.multibit.hd.ui.views.wizards.export_payments.ExportPaymentsWiz
  */
 public class ExportPaymentsWizard extends AbstractWizard<ExportPaymentsWizardModel> {
 
-  public ExportPaymentsWizard(ExportPaymentsWizardModel model, boolean isExiting) {
-    super(model, isExiting, Optional.absent());
+  public ExportPaymentsWizard(ExportPaymentsWizardModel model) {
+    super(model, false, Optional.absent());
   }
 
   @Override

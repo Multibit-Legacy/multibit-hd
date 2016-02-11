@@ -16,6 +16,8 @@ import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.gravatar.Gravatars;
 import org.multibit.hd.ui.utils.ClipboardUtils;
 import org.multibit.hd.ui.views.components.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -256,5 +258,4 @@ public class EnterRecipientView extends AbstractComponentView<EnterRecipientMode
 
     }
   }
-
 }

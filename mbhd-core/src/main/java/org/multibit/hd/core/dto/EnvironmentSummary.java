@@ -2,6 +2,8 @@ package org.multibit.hd.core.dto;
 
 import com.google.common.base.Optional;
 
+import java.net.URI;
+
 /**
  * <p>Value object to provide the following to Core API:</p>
  * <ul>
@@ -9,7 +11,6 @@ import com.google.common.base.Optional;
  * </ul>
  *
  * @since 0.0.1
- *
  */
 public class EnvironmentSummary {
 
@@ -23,6 +24,10 @@ public class EnvironmentSummary {
      * The system time has drifted from time standards
      */
     SYSTEM_TIME_DRIFT,
+    /**
+     * A new article is present on the MultiBit.org Atom feed
+     */
+    ATOM_FEED_CHECK,
     /**
      * A backup operation failed
      */
@@ -54,7 +59,7 @@ public class EnvironmentSummary {
 
   private final Optional<CoreMessageKey> messageKey;
   private final Optional<Object[]> messageData;
-
+  private final Optional<URI> uri;
 
   /**
    * <p>A debugger is attached - could be an attack in progress</p>
@@ -66,6 +71,7 @@ public class EnvironmentSummary {
       RAGStatus.RED,
       Optional.of(CoreMessageKey.DEBUGGER_ATTACHED),
       Optional.<Object[]>absent(),
+      Optional.<URI>absent(),
       AlertType.DEBUGGER_ATTACHED
     );
   }
@@ -80,7 +86,26 @@ public class EnvironmentSummary {
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.SYSTEM_TIME_DRIFT),
       Optional.<Object[]>absent(),
+      Optional.<URI>absent(),
       AlertType.SYSTEM_TIME_DRIFT
+    );
+  }
+
+  /**
+   * <p>A new Atom feed article is present - could be useful info for the user</p>
+   *
+   * @param truncatedTitle The truncated title string
+   * @param atomEntryUri The Atom entry URI
+   *
+   * @return A new "Atom feed" summary
+   */
+  public static EnvironmentSummary newAtomFeedCheck(String truncatedTitle, URI atomEntryUri) {
+    return new EnvironmentSummary(
+      RAGStatus.GREEN,
+      Optional.of(CoreMessageKey.ATOM_FEED_CHECK),
+      Optional.of(new Object[]{truncatedTitle}),
+      Optional.of(atomEntryUri),
+      AlertType.ATOM_FEED_CHECK
     );
   }
 
@@ -94,6 +119,7 @@ public class EnvironmentSummary {
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.BACKUP_FAILED),
       Optional.<Object[]>absent(),
+      Optional.<URI>absent(),
       AlertType.BACKUP_FAILED
     );
   }
@@ -108,6 +134,7 @@ public class EnvironmentSummary {
       RAGStatus.RED,
       Optional.of(CoreMessageKey.CERTIFICATE_FAILED),
       Optional.<Object[]>absent(),
+      Optional.<URI>absent(),
       AlertType.CERTIFICATE_FAILED
     );
   }
@@ -122,6 +149,7 @@ public class EnvironmentSummary {
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.UNSUPPORTED_FIRMWARE_ATTACHED),
       Optional.<Object[]>absent(),
+      Optional.<URI>absent(),
       AlertType.UNSUPPORTED_FIRMWARE_ATTACHED
     );
   }
@@ -136,6 +164,7 @@ public class EnvironmentSummary {
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.DEPRECATED_FIRMWARE_ATTACHED),
       Optional.<Object[]>absent(),
+      Optional.<URI>absent(),
       AlertType.DEPRECATED_FIRMWARE_ATTACHED
     );
   }
@@ -150,6 +179,7 @@ public class EnvironmentSummary {
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.UNSUPPORTED_CONFIGURATION_PASSPHRASE),
       Optional.<Object[]>absent(),
+      Optional.<URI>absent(),
       AlertType.UNSUPPORTED_CONFIGURATION_ATTACHED
     );
   }
@@ -164,6 +194,7 @@ public class EnvironmentSummary {
       RAGStatus.AMBER,
       Optional.of(CoreMessageKey.UNSUPPORTED_CONFIGURATION_PASSPHRASE),
       Optional.<Object[]>absent(),
+      Optional.<URI>absent(),
       AlertType.UNSUPPORTED_CONFIGURATION_ATTACHED
     );
   }
@@ -172,13 +203,16 @@ public class EnvironmentSummary {
    * @param severity    The severity (Red, Amber, Green)
    * @param messageKey  The error key to allow localisation
    * @param messageData The error data for insertion into the error message
+   * @param uri
    */
   public EnvironmentSummary(
     RAGStatus severity,
     Optional<CoreMessageKey> messageKey,
     Optional<Object[]> messageData,
+    Optional<URI> uri,
     AlertType alertType
   ) {
+    this.uri = uri;
 
     this.alertType = alertType;
     this.severity = severity;
@@ -213,6 +247,13 @@ public class EnvironmentSummary {
    */
   public Optional<Object[]> getMessageData() {
     return messageData;
+  }
+
+  /**
+   * @return An optional URI (such as for an Atom feed article)
+   */
+  public Optional<URI> getUri() {
+    return uri;
   }
 
   @Override

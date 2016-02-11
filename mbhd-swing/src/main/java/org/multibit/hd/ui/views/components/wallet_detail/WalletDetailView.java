@@ -68,13 +68,13 @@ public class WalletDetailView extends AbstractComponentView<WalletDetailModel> {
     panel.add(Labels.newValueLabel(Languages.safeText(MessageKey.APPLICATION_DIRECTORY)));
     applicationDirectoryTextField = TextBoxes.newReadOnlyTextField(40, MessageKey.APPLICATION_DIRECTORY, MessageKey.APPLICATION_DIRECTORY);
     applicationDirectoryTextField.setText(walletDetail.getApplicationDirectory());
-    panel.add(applicationDirectoryTextField, MultiBitUI.WIZARD_MAX_WIDTH_MIG+",wrap");
+    panel.add(applicationDirectoryTextField, MultiBitUI.WIZARD_MAX_WIDTH_MIG +",wrap");
 
     // Wallet directory (limit width)
     panel.add(Labels.newValueLabel(Languages.safeText(MessageKey.WALLET_DIRECTORY)));
     walletDirectoryTextField = TextBoxes.newReadOnlyTextField(40, MessageKey.WALLET_DIRECTORY, MessageKey.WALLET_DIRECTORY);
     walletDirectoryTextField.setText(walletDetail.getWalletDirectory());
-    panel.add(walletDirectoryTextField, MultiBitUI.WIZARD_MAX_WIDTH_MIG+",wrap");
+    panel.add(walletDirectoryTextField, MultiBitUI.WIZARD_MAX_WIDTH_MIG +",wrap");
 
     // Contacts
     panel.add(Labels.newLabel(MessageKey.CONTACTS));

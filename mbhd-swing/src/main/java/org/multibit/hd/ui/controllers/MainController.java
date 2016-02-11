@@ -10,6 +10,10 @@ import org.bitcoinj.core.Wallet;
 import org.joda.time.DateTime;
 import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.commons.utils.Dates;
+import org.multibit.hd.core.atom.AscendingAtomEntryComparator;
+import org.multibit.hd.core.atom.AtomEntry;
+import org.multibit.hd.core.atom.AtomFeed;
+import org.multibit.hd.core.atom.AtomFeeds;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
@@ -40,6 +44,8 @@ import org.multibit.hd.ui.models.AlertModel;
 import org.multibit.hd.ui.models.Models;
 import org.multibit.hd.ui.platform.listener.*;
 import org.multibit.hd.ui.services.ExternalDataListeningService;
+import org.multibit.hd.ui.utils.HtmlUtils;
+import org.multibit.hd.ui.utils.SafeDesktop;
 import org.multibit.hd.ui.views.MainView;
 import org.multibit.hd.ui.views.ViewKey;
 import org.multibit.hd.ui.views.components.Buttons;
@@ -50,6 +56,7 @@ import org.multibit.hd.ui.views.themes.Theme;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.buy_sell.BuySellState;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsRequestType;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsState;
 import org.multibit.hd.ui.views.wizards.credentials.CredentialsWizard;
@@ -68,10 +75,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URI;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -162,10 +167,14 @@ public class MainController extends AbstractController implements
       case SOFT:
 
         // Unsubscribe views for events
-        mainView.unsubscribe();
+        if (mainView != null) {
+          mainView.unsubscribe();
+        }
 
         // Unregister controllers for events
-        headerController.unsubscribe();
+        if (headerController != null) {
+          headerController.unsubscribe();
+        }
 
         // Unregister this
         unsubscribe();
@@ -254,6 +263,11 @@ public class MainController extends AbstractController implements
         // We have just finished with the exit wizard and want to shut down
         CoreEvents.fireShutdownEvent(ShutdownEvent.ShutdownType.HARD);
 
+      }
+
+      // The buy/sell dialog requires the sidebar to regain focus for accessibility reasons
+      if (BuySellState.SHOW_PARTNER_NOTES.name().equals(event.getPanelName())) {
+        mainView.sidebarRequestFocus();
       }
 
       // Do nothing other than usual wizard hide operations
@@ -411,14 +425,14 @@ public class MainController extends AbstractController implements
   }
 
   @Subscribe
-  public void onEnvironmentEvent(EnvironmentEvent event) {
+  public void onEnvironmentEvent(final EnvironmentEvent event) {
 
     log.trace("Received 'environment' event");
 
     Preconditions.checkNotNull(event, "'event' must be present");
     Preconditions.checkNotNull(event.getSummary(), "'summary' must be present");
 
-    EnvironmentSummary summary = event.getSummary();
+    final EnvironmentSummary summary = event.getSummary();
 
     Preconditions.checkNotNull(summary.getSeverity(), "'severity' must be present");
     Preconditions.checkNotNull(summary.getMessageKey(), "'errorKey' must be present");
@@ -454,17 +468,69 @@ public class MainController extends AbstractController implements
             summary.getSeverity())
         );
         break;
-      case CERTIFICATE_FAILED:
-        // Create a button to the repair wallet tool
-        JButton button = Buttons.newAlertPanelButton(getShowRepairWalletAction(), MessageKey.REPAIR, MessageKey.REPAIR_TOOLTIP, AwesomeIcon.MEDKIT);
+      case ATOM_FEED_CHECK:
+        // Check configuration allows alert
+        if (!Configurations.currentConfiguration.getAppearance().isShowAtomFeedAlert()) {
+          // Ignore
+          return;
+        }
+        // Check for article URI
+        if (!event.getSummary().getUri().isPresent()) {
+          // Ignore
+          return;
+        }
 
-        // Append general security advice allowing for LTR/RTL
-        ControllerEvents.fireAddAlertEvent(
-          Models.newAlertModel(
-            localisedMessage + "\n" + Languages.safeText(CoreMessageKey.SECURITY_ADVICE),
-            summary.getSeverity(),
-            button)
-        );
+        String eventUri = event.getSummary().getUri().get().toString();
+        String latestUri = Configurations.currentConfiguration.getAppearance().getLatestArticleUri();
+
+        // Check against local latest
+        if (eventUri.equalsIgnoreCase(latestUri)) {
+          // Ignore
+          return;
+        }
+
+        // Persist the article URI even if the user subsequently ignores it to prevent repeat alerts
+        Configurations.currentConfiguration.getAppearance().setLatestArticleUri(eventUri);
+        Configurations.persistCurrentConfiguration();
+
+        // Creation of buttons must be on the EDT
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            JButton browserButton = Buttons.newAlertPanelButton(
+              getShowAtomFeedArticleAction(event.getSummary().getUri().get()),
+              MessageKey.YES,
+              MessageKey.YES_TOOLTIP,
+              AwesomeIcon.CHECK
+            );
+
+            // Ensure we provide a button
+            ControllerEvents.fireAddAlertEvent(
+              Models.newAlertModel(
+                localisedMessage,
+                summary.getSeverity(),
+                browserButton)
+            );
+          }
+        });
+        break;
+      case CERTIFICATE_FAILED:
+        // Creation of buttons must be on the EDT
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            // Create a button to the repair wallet tool
+            JButton button = Buttons.newAlertPanelButton(getShowRepairWalletAction(), MessageKey.REPAIR, MessageKey.REPAIR_TOOLTIP, AwesomeIcon.MEDKIT);
+
+            // Append general security advice allowing for LTR/RTL
+            ControllerEvents.fireAddAlertEvent(
+              Models.newAlertModel(
+                localisedMessage + "\n" + Languages.safeText(CoreMessageKey.SECURITY_ADVICE),
+                summary.getSeverity(),
+                button)
+            );
+          }
+        });
         break;
       case UNSUPPORTED_FIRMWARE_ATTACHED:
       case DEPRECATED_FIRMWARE_ATTACHED:
@@ -733,6 +799,9 @@ public class MainController extends AbstractController implements
     // Check for system time drift (runs in the background)
     handleSystemTimeDrift();
 
+    // Check for Atom feed change (runs in the background)
+    handleAtomFeedCheck();
+
   }
 
   /**
@@ -956,6 +1025,21 @@ public class MainController extends AbstractController implements
   private void handleShowDeviceFailed(final HardwareWalletEvent event) {
 
     // Determine the nature of the failure
+    if (!CoreServices.getCurrentHardwareWalletService().isPresent()) {
+      // Use the alert bar mechanism
+      SwingUtilities.invokeLater(
+        new Runnable() {
+          @Override
+          public void run() {
+            // Attempt to create a suitable alert model in addition to view event
+            AlertModel alertModel = Models.newHardwareWalletAlertModel(event);
+            ControllerEvents.fireAddAlertEvent(alertModel);
+          }
+        });
+      return;
+    }
+
+    // 
     Optional<Features> featuresOptional = CoreServices.getCurrentHardwareWalletService().get().getContext().getFeatures();
 
     boolean isUnsupportedFirmware = featuresOptional.isPresent()
@@ -1120,6 +1204,19 @@ public class MainController extends AbstractController implements
 
         // TODO show the 'spendable balance may be lower' help screen when it is written
         ViewEvents.fireShowDetailScreenEvent(Screen.HELP);
+      }
+    };
+  }
+
+  /**
+   * @return An action to show the Atom feed article
+   */
+  private AbstractAction getShowAtomFeedArticleAction(final URI articleUri) {
+    return new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        SafeDesktop.browse(articleUri);
+        ControllerEvents.fireRemoveAlertEvent();
       }
     };
   }
@@ -1298,6 +1395,56 @@ public class MainController extends AbstractController implements
 
           // Problem encountered - user won't be able to fix it
           log.warn("System drift check timed out: '{}'", t.getMessage());
+
+        }
+      });
+
+  }
+
+  /**
+   * <p>Performs an Atom feed check against MultiBit.org over HTTPS
+   * If a new article is present an alert is shown</p>
+   */
+  private void handleAtomFeedCheck() {
+
+    // Parse the MultiBit.org Atom feed asynchronously
+    final ListenableFuture<AtomFeed> atomFeedFuture = AtomFeeds.parseMultiBitOrgFeed();
+    Futures.addCallback(
+      atomFeedFuture, new FutureCallback<AtomFeed>() {
+        @Override
+        public void onSuccess(@Nullable AtomFeed result) {
+
+          if (result != null && !result.getAtomEntries().isEmpty()) {
+
+            // Sort the results in updated order
+            Collections.sort(result.getAtomEntries(), new AscendingAtomEntryComparator());
+
+            // Check for Atom feed entries
+            AtomEntry latestEntry = result.getAtomEntries().get(result.getAtomEntries().size() - 1);
+
+            // Get the title text without HTML
+            String title = HtmlUtils.stripHtml(latestEntry.getTitle());
+
+            // Issue the info alert
+            URI atomEntryUri;
+            try {
+              atomEntryUri = URI.create(latestEntry.getLink().getHref());
+            } catch (IllegalArgumentException e) {
+              // Silently fail (nothing the user can do about this so no point logging it)
+              return;
+            }
+            CoreEvents.fireEnvironmentEvent(EnvironmentSummary.newAtomFeedCheck(title, atomEntryUri));
+          } else {
+            log.debug("No Atom feed available.");
+          }
+
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+
+          // Problem encountered - user won't be able to fix it
+          log.warn("Atom feed check timed out: '{}'", t.getMessage());
 
         }
       });
@@ -1554,6 +1701,10 @@ public class MainController extends AbstractController implements
             // Check for system time drift (runs in the background)
             log.debug("Check for system time drift...");
             handleSystemTimeDrift();
+
+            // Check for Atom feed from MultiBit.org
+            log.debug("Check for MultiBit.org Atom feed update...");
+            handleAtomFeedCheck();
 
           } catch (Exception e) {
             // TODO localise and put on UI via an alert

@@ -7,7 +7,14 @@ import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixtures;
-import org.multibit.hd.ui.fest.requirements.trezor.*;
+import org.multibit.hd.ui.fest.requirements.trezor.ReattachTrezorHardwareWalletRequirements;
+import org.multibit.hd.ui.fest.requirements.trezor.create_wallet.CreateTrezorHardwareWalletColdStart_en_US_Requirements;
+import org.multibit.hd.ui.fest.requirements.trezor.create_wallet.CreateTrezorHardwareWalletColdStart_ro_RO_Requirements;
+import org.multibit.hd.ui.fest.requirements.trezor.create_wallet.CreateTrezorHardwareWalletColdStart_ru_RU_Requirements;
+import org.multibit.hd.ui.fest.requirements.trezor.create_wallet.CreateTrezorHardwareWalletWarmStartRequirements;
+import org.multibit.hd.ui.fest.requirements.trezor.restore_wallet.RestoreTrezorRestoreWithLocalBackupRequirements;
+import org.multibit.hd.ui.fest.requirements.trezor.restore_wallet.RestoreTrezorWarmStartRequirements;
+import org.multibit.hd.ui.fest.requirements.trezor.unlock_wallet.*;
 import org.multibit.hd.ui.fest.use_cases.trezor.TrezorSendBitcoinTrezorRequirements;
 
 /**
@@ -38,7 +45,49 @@ public class TrezorFestTest extends AbstractFestTest {
     arrangeFresh(Optional.of(hardwareWalletFixture));
 
     // Verify
-    CreateTrezorHardwareWalletColdStartRequirements.verifyUsing(window, hardwareWalletFixture);
+    CreateTrezorHardwareWalletColdStart_en_US_Requirements.verifyUsing(window, hardwareWalletFixture);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with fresh application directory</li>
+   * <li>Create a wallet in Romanian</li>
+   * </ul>
+   */
+  @Test
+  public void verifyCreateHardwareWallet_ro_RO_ColdStart() throws Exception {
+
+    // Prepare an empty and attached Trezor device that will be initialised
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newWipedFixture(walletMode);
+
+    // Start with a completely empty random application directory
+    arrangeFresh(Optional.of(hardwareWalletFixture));
+
+    // Verify
+    CreateTrezorHardwareWalletColdStart_ro_RO_Requirements.verifyUsing(window, hardwareWalletFixture);
+
+  }
+
+  /**
+   * <p>Verify the following:</p>
+   * <ul>
+   * <li>Start with fresh application directory</li>
+   * <li>Create a wallet in Russian</li>
+   * </ul>
+   */
+  @Test
+  public void verifyCreateHardwareWallet_ru_RU_ColdStart() throws Exception {
+
+    // Prepare an empty and attached Trezor device that will be initialised
+    HardwareWalletFixture hardwareWalletFixture = HardwareWalletFixtures.newWipedFixture(walletMode);
+
+    // Start with a completely empty random application directory
+    arrangeFresh(Optional.of(hardwareWalletFixture));
+
+    // Verify
+    CreateTrezorHardwareWalletColdStart_ru_RU_Requirements.verifyUsing(window, hardwareWalletFixture);
 
   }
 

@@ -50,7 +50,9 @@ public class Labels {
    */
   public static JLabel newLabel(MessageKey key, Object... values) {
 
-    JLabel label = new JLabel(Languages.safeText(key, values));
+    // Wrap with HTML to ensure line breaks
+    String text = HtmlUtils.localiseWithLineBreaks(new String[] {Languages.safeText(key, values)});
+    JLabel label = new JLabel(text);
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(label, key);
@@ -70,7 +72,9 @@ public class Labels {
    */
   public static JLabel newLabel(CoreMessageKey key, Object... values) {
 
-    JLabel label = new JLabel(Languages.safeText(key, values));
+    // Wrap with HTML to ensure line breaks
+    String text = HtmlUtils.localiseWithLineBreaks(new String[] {Languages.safeText(key, values)});
+    JLabel label = new JLabel(text);
 
     // Ensure it is accessible
     AccessibilityDecorator.apply(label, key);
@@ -272,7 +276,7 @@ public class Labels {
       label = newBlankLabel();
     }
 
-    LabelDecorator.applyStatusLabel(label, status);
+    LabelDecorator.applyStatusIcon(label, status);
 
     return label;
   }
@@ -296,7 +300,7 @@ public class Labels {
       label = newBlankLabel();
     }
 
-    LabelDecorator.applyStatusLabel(label, status);
+    LabelDecorator.applyStatusIcon(label, status);
 
     return label;
   }
@@ -497,6 +501,15 @@ public class Labels {
   public static JLabel newShowBalance() {
 
     return Labels.newLabel(MessageKey.SHOW_BALANCE);
+
+  }
+
+  /**
+   * @return A new "show Atom feed alert" label
+   */
+  public static JLabel newShowAtomFeedAlert() {
+
+    return Labels.newLabel(MessageKey.SHOW_ATOM_FEED_ALERT);
 
   }
 
@@ -1119,6 +1132,18 @@ public class Labels {
   }
 
   /**
+   * @return A new "buy/sell region" note
+   */
+  public static JLabel newBuySellRegionNote() {
+
+    return newNoteLabel(new MessageKey[]{
+      MessageKey.BUY_SELL_NOTE_1,
+      MessageKey.BUY_SELL_NOTE_2,
+      MessageKey.BUY_SELL_NOTE_3
+    }, new Object[][]{});
+  }
+
+  /**
    * @return A new "default" note for use on the Fee slider
    */
   public static JLabel newDefaultNote() {
@@ -1126,7 +1151,7 @@ public class Labels {
     String[] lines = new String[2];
     lines[0] = "\u25B2"; // 25B2 =up black triangle
     lines[1] = Languages.toCapitalCase(Languages.safeText(MessageKey.DEFAULT));
-    JLabel label = new JLabel(HtmlUtils.localiseCenteredWithLineBreaks(lines));
+    JLabel label = new JLabel(HtmlUtils.localiseWithCenteredLinedBreaks(lines));
     label.setHorizontalAlignment(SwingConstants.CENTER);
 
     // Ensure it is accessible

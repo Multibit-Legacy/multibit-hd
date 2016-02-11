@@ -36,6 +36,7 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
   // Panel specific components
   private JComboBox<String> themesComboBox;
   private JComboBox<String> showBalanceComboBox;
+  private JComboBox<String> showAtomFeedAlertComboBox;
 
   /**
    * @param wizard    The wizard managing the states
@@ -74,12 +75,16 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
 
     themesComboBox = ComboBoxes.newThemesComboBox(this);
     showBalanceComboBox = ComboBoxes.newShowBalanceYesNoComboBox(this, appearanceConfiguration.isShowBalance());
+    showAtomFeedAlertComboBox = ComboBoxes.newShowAtomFeedAlertYesNoComboBox(this, appearanceConfiguration.isShowAtomFeedAlert());
 
     contentPanel.add(Labels.newSelectTheme(), "shrink");
     contentPanel.add(themesComboBox, "growx,shrinky,width min:250:,push,wrap");
 
     contentPanel.add(Labels.newShowBalance(), "shrink");
     contentPanel.add(showBalanceComboBox, "growx,shrinky,width min:250:,push,wrap");
+
+    contentPanel.add(Labels.newShowAtomFeedAlert(), "shrink");
+    contentPanel.add(showAtomFeedAlertComboBox, "growx,shrinky,width min:250:,push,wrap");
 
     contentPanel.add(Labels.newBlankLabel(), "grow,span 2,push,wrap"); // Fill out the remainder
 
@@ -159,6 +164,23 @@ public class AppearanceSettingsPanelView extends AbstractWizardPanelView<Appeara
 
       Configuration configuration = getWizardModel().getConfiguration();
       configuration.getAppearance().setShowBalance(showBalance);
+
+      // Update the model
+      getWizardModel().setConfiguration(configuration);
+
+    }
+
+    // Show Atom feed alert
+    if (ComboBoxes.SHOW_ATOM_FEED_ALERT_COMMAND.equalsIgnoreCase(e.getActionCommand())) {
+
+      boolean showAtomFeedAlert = source.getSelectedIndex() == 0;
+
+      Configuration configuration = getWizardModel().getConfiguration();
+      configuration.getAppearance().setShowAtomFeedAlert(showAtomFeedAlert);
+      if (!showAtomFeedAlert) {
+        // Clear the latest UUID to demonstrate a refresh if it is set once more
+        configuration.getAppearance().setLatestArticleUri("");
+      }
 
       // Update the model
       getWizardModel().setConfiguration(configuration);

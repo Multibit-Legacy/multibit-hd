@@ -17,8 +17,8 @@ import java.util.Map;
  */
 public class WalletDetailsWizard extends AbstractWizard<WalletDetailsWizardModel> {
 
-  public WalletDetailsWizard(WalletDetailsWizardModel model, boolean isExiting) {
-    super(model, isExiting, Optional.absent());
+  public WalletDetailsWizard(WalletDetailsWizardModel model) {
+    super(model, false, Optional.absent());
   }
 
   @Override

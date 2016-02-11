@@ -96,10 +96,10 @@ public enum WalletMode {
   public static WalletMode of(Optional<HardwareWalletService> hardwareWalletService) {
 
     if (hardwareWalletService.isPresent()) {
-      String name = hardwareWalletService.get().getContext().getClient().name();
       try {
+        String name = hardwareWalletService.get().getContext().getClient().name();
         return WalletMode.valueOf(name.toUpperCase().trim());
-      } catch (IllegalArgumentException e) {
+      } catch (IllegalStateException | IllegalArgumentException e) {
         return UNKNOWN;
       }
 

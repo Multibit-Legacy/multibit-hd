@@ -88,7 +88,7 @@ public class PaymentProtocolService extends AbstractService {
    * @param checkPKI          True if the PKI details should be checked (recommended - see policy note)
    * @param trustStoreLoader  The trust store loader linked to the local CA certs file
    *
-   * @return A new payment session covering this payment request, absent if a failure occurred (see History)
+   * @return A new payment session covering this payment request, absent if a failure occurred
    */
   public PaymentSessionSummary probeForPaymentSession(URI paymentRequestUri, boolean checkPKI, TrustStoreLoader trustStoreLoader) {
 

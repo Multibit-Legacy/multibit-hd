@@ -193,7 +193,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
         if (transactionCreationEvent.isTransactionCreationWasSuccessful()) {
           LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATED_OK));
           transactionConstructionStatusDetail.setText("");
-          LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
+          LabelDecorator.applyStatusIcon(transactionConstructionStatusSummary, Optional.of(Boolean.TRUE));
         } else {
           String detailMessage = Languages.safeText(
                   transactionCreationEvent.getTransactionCreationFailureReasonKey(),
@@ -201,7 +201,7 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
           );
           LabelDecorator.applyWrappingLabel(transactionConstructionStatusSummary, Languages.safeText(CoreMessageKey.TRANSACTION_CREATION_FAILED));
           LabelDecorator.applyWrappingLabel(transactionConstructionStatusDetail, detailMessage);
-          LabelDecorator.applyStatusLabel(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
+          LabelDecorator.applyStatusIcon(transactionConstructionStatusSummary, Optional.of(Boolean.FALSE));
 
           ViewEvents.fireWizardButtonEnabledEvent(getPanelName(), WizardButton.FINISH, true);
           switchHeaderOn();
@@ -291,13 +291,13 @@ public class EmptyWalletReportPanelView extends AbstractWizardPanelView<EmptyWal
 
                 if (bitcoinSentEvent.isSendWasSuccessful()) {
                   LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, Languages.safeText(CoreMessageKey.BITCOIN_SENT_OK));
-                  LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
+                  LabelDecorator.applyStatusIcon(transactionBroadcastStatusSummary, Optional.of(Boolean.TRUE));
                 } else {
                   String summaryMessage = Languages.safeText(CoreMessageKey.BITCOIN_SEND_FAILED);
                   String detailMessage = Languages.safeText(bitcoinSentEvent.getSendFailureReason(), (Object[]) bitcoinSentEvent.getSendFailureReasonData());
                   LabelDecorator.applyWrappingLabel(transactionBroadcastStatusSummary, summaryMessage);
                   LabelDecorator.applyWrappingLabel(transactionBroadcastStatusDetail, detailMessage);
-                  LabelDecorator.applyStatusLabel(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
+                  LabelDecorator.applyStatusIcon(transactionBroadcastStatusSummary, Optional.of(Boolean.FALSE));
                 }
 
                 switchHeaderOn();

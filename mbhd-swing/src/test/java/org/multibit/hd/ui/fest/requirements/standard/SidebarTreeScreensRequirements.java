@@ -3,6 +3,7 @@ package org.multibit.hd.ui.fest.requirements.standard;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.SidebarAccessibilityUseCase;
+import org.multibit.hd.ui.fest.use_cases.standard.sidebar.buy_sell.ShowThenCancelBuySellUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.contacts.ShowContactsScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.exit.ShowExitScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.help.ShowHelpScreenUseCase;
@@ -32,6 +33,8 @@ public class SidebarTreeScreensRequirements {
 
     // Verify each screen shows
     new ShowSendRequestScreenUseCase(window).execute(parameters);
+    // Do the buy/sell after send/request to ensure sidebar transitions work correctly
+    new ShowThenCancelBuySellUseCase(window).execute(parameters);
     new ShowPaymentsScreenUseCase(window).execute(parameters);
     new ShowContactsScreenUseCase(window).execute(parameters);
     new ShowHelpScreenUseCase(window).execute(parameters);

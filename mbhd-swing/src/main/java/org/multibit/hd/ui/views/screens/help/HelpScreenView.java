@@ -193,7 +193,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
       new Runnable() {
         @Override
         public void run() {
-          // Load the current page in the history
+          // Load the current page
           try {
             editorPane.setPage(currentPage());
           } catch (IOException e) {
@@ -509,14 +509,14 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
   }
 
   /**
-   * @return The URL for the current page in the history
+   * @return The URL for the current page
    */
   private URL currentPage() {
     return pageList.get(currentPageIndex);
   }
 
   /**
-   * @return The URL for the previous in the history
+   * @return The URL for the previous page
    */
   private URL previousPage() {
 
@@ -530,7 +530,7 @@ public class HelpScreenView extends AbstractScreenView<HelpScreenModel> implemen
   }
 
   /**
-   * @return The URL for the next page in the history
+   * @return The URL for the next page
    */
   private URL nextPage() {
 

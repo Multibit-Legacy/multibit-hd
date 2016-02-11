@@ -7,7 +7,6 @@ import com.google.common.eventbus.Subscribe;
 import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.EnvironmentEvent;
 import org.multibit.hd.core.services.CoreServices;
-import org.multibit.hd.ui.MultiBitUI;
 import org.multibit.hd.ui.events.view.ComponentChangedEvent;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.events.view.WizardButtonEnabledEvent;
@@ -139,7 +138,9 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
 
     // Add the title to the wizard
     title = Labels.newTitleLabel(titleKey, values);
-    wizardScreenPanel.add(title, "span 4," + MultiBitUI.WIZARD_MAX_WIDTH_MIG + ",gap 0, shrink 200,aligny top,align center,h 90lp!,wrap");
+    // Spans all 4 cells to max width and is the last to shrink
+    // Aligns to the top in the center with a fixed height of 90px
+    wizardScreenPanel.add(title, "span 4,shrink 200,aligny top,align center,h 90lp!,push,wrap");
 
     // Provide a basic empty content panel (allows lazy initialisation later)
     contentPanel = Panels.newDetailBackgroundPanel(backgroundIcon);
@@ -458,7 +459,8 @@ public abstract class AbstractWizardPanelView<M extends AbstractWizardModel, P> 
           popoverPanel.add(Panels.newUnsupportedConfigurationPassphrase(), "align center,wrap");
           break;
         default:
-          // Do nothing
+          // Do nothing and discard the environment event to prevent multiple showings
+          CoreServices.getApplicationEventService().onEnvironmentEvent(null);
           return;
       }
 

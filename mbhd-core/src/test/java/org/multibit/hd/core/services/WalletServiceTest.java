@@ -262,8 +262,17 @@ public class WalletServiceTest {
     assertThat(other.getPaymentACK().get().getMemo()).isEqualTo(first.getPaymentACK().get().getMemo());
   }
 
+  /**
+   * Create a BIP70 PaymentRequestData that the BIP70 protobuf objects will be stored in
+   *
+   * @return PaymentRequestData with BIP70 fields
+   * @throws KeyStoreException
+   * @throws CertificateException
+   * @throws NoSuchAlgorithmException
+   * @throws IOException
+   * @throws AddressFormatException
+   */
   public static PaymentRequestData createPlumpPaymentDataRequest() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, AddressFormatException {
-      // Create a BIP70 PaymentRequestData that the BIP70 protobuf objects will be stored in
     PaymentRequestData paymentRequestData = new PaymentRequestData();
     paymentRequestData.setUuid(UUID.randomUUID());
     paymentRequestData.setAmountCoin(Optional.of(Coin.MILLICOIN));

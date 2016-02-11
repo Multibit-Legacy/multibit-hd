@@ -123,6 +123,13 @@ public class SendBitcoinEnterAmountPanelView extends AbstractWizardPanelView<Sen
   @Override
   public void afterShow() {
     enterRecipientMaV.getView().requestInitialFocus();
+
+    // Determine any events (we may have a fully populated screen right at the start)
+    ViewEvents.fireWizardButtonEnabledEvent(
+      getPanelName(),
+      WizardButton.NEXT,
+      isNextEnabled()
+    );
   }
 
   @Override

@@ -1,6 +1,11 @@
 package org.multibit.hd.core.config;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.google.common.collect.Maps;
 import org.multibit.hd.core.blockexplorer.BlockChainInfoBlockExplorer;
+
+import java.util.Map;
 
 /**
  * <p>Configuration to provide the following to application:</p>
@@ -11,7 +16,6 @@ import org.multibit.hd.core.blockexplorer.BlockChainInfoBlockExplorer;
  * <p>This configuration is for general appearance parameters</p>
  *
  * @since 0.0.1
- *
  */
 public class AppearanceConfiguration {
 
@@ -36,7 +40,7 @@ public class AppearanceConfiguration {
    * If you change this DON'T FORGET to update the core/test/resources/fixtures/messages/test-simple.txt
    * and rerun BitcoinMessagesTest
    */
-  public static final String CURRENT_VERSION = "0.1.4";
+  public static final String CURRENT_VERSION = "0.2.0";
   private String version = CURRENT_VERSION;
 
   /**
@@ -50,9 +54,39 @@ public class AppearanceConfiguration {
   private String cloudBackupLocation = "";
 
   /**
-   * The id of the blockexplorer used to drill down into transactions
+   * The id of the block explorer used to drill down into transactions
    */
   private String blockExplorerId = BlockChainInfoBlockExplorer.ID;
+
+  /**
+   * True if Atom feed alerts should be shown (subject to most recent article URI)
+   */
+  private boolean showAtomFeedAlert = true;
+
+  /**
+   * The URI of the latest read article from the MultiBitOrg Atom feed
+   */
+  private String latestArticleUri = "";
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Any unknown objects in the configuration go here (preserve order of insertion)
+   */
+  private Map<String, Object> other = Maps.newLinkedHashMap();
+
+  /**
+   * @return The map of any unknown objects in the configuration at this level
+   */
+  @JsonAnyGetter
+  public Map<String, Object> any() {
+    return other;
+  }
+
+  @JsonAnySetter
+  public void set(String name, Object value) {
+    other.put(name, value);
+  }
 
   /**
    * @return The application directory path (e.g. ".")
@@ -162,7 +196,6 @@ public class AppearanceConfiguration {
     this.cloudBackupLocation = cloudBackupLocation;
   }
 
-
   /**
    * @return The id of the current block explorer
    */
@@ -175,24 +208,54 @@ public class AppearanceConfiguration {
   }
 
   /**
+   * @return True if the Atom feed alert should be shown (subject to most recent article URI)
+   */
+  public boolean isShowAtomFeedAlert() {
+    return showAtomFeedAlert;
+  }
+
+  public void setShowAtomFeedAlert(boolean showAtomFeedAlert) {
+    this.showAtomFeedAlert = showAtomFeedAlert;
+  }
+
+  /**
+   * @return The URI of the most latest article read from the MultiBit.org Atom feed
+   */
+  public String getLatestArticleUri() {
+    return latestArticleUri;
+  }
+
+  public void setLatestArticleUri(String latestArticleUri) {
+    this.latestArticleUri = latestArticleUri;
+  }
+
+  /**
    * @return A deep copy of this object
    */
   public AppearanceConfiguration deepCopy() {
 
-    AppearanceConfiguration app = new AppearanceConfiguration();
+    AppearanceConfiguration configuration = new AppearanceConfiguration();
 
-    app.setCurrentScreen(getCurrentScreen());
-    app.setBitcoinUriHandling(getBitcoinUriHandling());
-    app.setRestoreApplicationLayoutOnStartup(isRestoreApplicationLayoutOnStartup());
-    app.setLastFrameBounds(getLastFrameBounds());
-    app.setSidebarWidth(getSidebarWidth());
-    app.setCurrentTheme(getCurrentTheme());
-    app.setShowBalance(isShowBalance());
-    app.setApplicationDirectory(getApplicationDirectory());
-    app.setVersion(getVersion());
-    app.setCloudBackupLocation(getCloudBackupLocation());
-    app.setBlockExplorerId(getBlockExplorerId());
+    // Unknown properties
+    for (Map.Entry<String, Object> entry : any().entrySet()) {
+      configuration.set(entry.getKey(), entry.getValue());
+    }
 
-    return app;
+    // Known properties
+    configuration.setCurrentScreen(getCurrentScreen());
+    configuration.setBitcoinUriHandling(getBitcoinUriHandling());
+    configuration.setRestoreApplicationLayoutOnStartup(isRestoreApplicationLayoutOnStartup());
+    configuration.setLastFrameBounds(getLastFrameBounds());
+    configuration.setSidebarWidth(getSidebarWidth());
+    configuration.setCurrentTheme(getCurrentTheme());
+    configuration.setShowBalance(isShowBalance());
+    configuration.setApplicationDirectory(getApplicationDirectory());
+    configuration.setVersion(getVersion());
+    configuration.setCloudBackupLocation(getCloudBackupLocation());
+    configuration.setBlockExplorerId(getBlockExplorerId());
+    configuration.setShowAtomFeedAlert(isShowAtomFeedAlert());
+    configuration.setLatestArticleUri(getLatestArticleUri());
+
+    return configuration;
   }
 }

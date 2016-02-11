@@ -442,7 +442,11 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
       if (exchangeRateChangedEvent.isPresent()) {
         fiatPayment = Optional.of(new FiatPayment());
-        fiatPayment.get().setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
+        if (exchangeRateChangedEvent.get().getRate() != null) {
+          fiatPayment.get().setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
+        } else {
+          fiatPayment.get().setRate(Optional.<String>absent());
+        }
         // A send is denoted with a negative fiat amount
         fiatPayment.get().setAmount(Optional.<BigDecimal>absent());
         fiatPayment.get().setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));

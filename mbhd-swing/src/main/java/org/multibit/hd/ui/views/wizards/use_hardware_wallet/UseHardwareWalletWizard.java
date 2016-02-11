@@ -18,8 +18,8 @@ import java.util.Map;
  */
 public class UseHardwareWalletWizard extends AbstractHardwareWalletWizard<UseHardwareWalletWizardModel> {
 
-  public UseHardwareWalletWizard(UseHardwareWalletWizardModel model, boolean isExiting) {
-    super(model, isExiting, Optional.absent());
+  public UseHardwareWalletWizard(UseHardwareWalletWizardModel model) {
+    super(model, false, Optional.absent());
   }
 
   @Override

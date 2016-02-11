@@ -46,6 +46,7 @@ public class PaymentsProtobufSerializerTest {
 
     MBHDPaymentRequestData mbhdPaymentRequestData1 = new MBHDPaymentRequestData();
 
+    mbhdPaymentRequestData1.setGlidera(true);
     mbhdPaymentRequestData1.setAddress(Addresses.parse("1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty").get());
     mbhdPaymentRequestData1.setAmountCoin(Optional.of(Coin.valueOf(245)));
     DateTime date1 = new DateTime();
@@ -95,6 +96,7 @@ public class PaymentsProtobufSerializerTest {
   }
 
   private void checkPaymentRequest(MBHDPaymentRequestData MBHDPaymentRequestData, MBHDPaymentRequestData other) {
+    assertThat(other.isGlidera() == MBHDPaymentRequestData.isGlidera()).isTrue();
     assertThat(other.getAddress()).isEqualTo(MBHDPaymentRequestData.getAddress());
     assertThat(other.getLabel()).isEqualTo(MBHDPaymentRequestData.getLabel());
     assertThat(other.getNote()).isEqualTo(MBHDPaymentRequestData.getNote());

@@ -9,11 +9,8 @@ import java.util.List;
 /**
  *  <p>Factory to provide the following to [related classes]:<br>
  *  <ul>
- *  <li>Provide block explorer information for lookup of transaction data for various blockexplorers</li>
+ *  <li>Provide block explorer information for lookup of transaction data for various block explorers</li>
  *  </ul>
- *  Example:<br>
- *  <pre>TransactionDetailPanelView
- *  </pre>
  *  </p>
  *  
  */
@@ -26,6 +23,7 @@ public class BlockExplorers {
     allBlockExplorers.add(new BitEasyComBlockExplorer());
     allBlockExplorers.add(new BitPayComBlockExplorer());
     allBlockExplorers.add(new BlockChainInfoBlockExplorer());
+    allBlockExplorers.add(new BlockonomicsBlockExplorer());
     allBlockExplorers.add(new BlockrIoBlockExplorer());
     allBlockExplorers.add(new BlockTrailComBlockExplorer());
     allBlockExplorers.add(new SmartBitComAuBlockExplorer());

@@ -19,6 +19,7 @@ public class BlockExplorersTest {
   private static final String EXPECTED_BIT_EASY_COM_URL = "https://www.biteasy.com/blockchain/transactions/58be29550b129655bebae4ceb948768278504fe1378f7a624ab5907019d167da";
   private static final String EXPECTED_BITPAY_COM_URL = "https://insight.bitpay.com/tx/58be29550b129655bebae4ceb948768278504fe1378f7a624ab5907019d167da";
   private static final String EXPECTED_BLOCKCHAIN_INFO_URL = "https://blockchain.info/tx-index/58be29550b129655bebae4ceb948768278504fe1378f7a624ab5907019d167da";
+  private static final String EXPECTED_BLOCKONOMICS_CO_URL = "https://www.blockonomics.co/api/tx?txid=58be29550b129655bebae4ceb948768278504fe1378f7a624ab5907019d167da";
   private static final String EXPECTED_BLOCKR_IO_URL = "https://btc.blockr.io/tx/info/58be29550b129655bebae4ceb948768278504fe1378f7a624ab5907019d167da";
   private static final String EXPECTED_BLOCK_TRAIL_COM_URL = "https://www.blocktrail.com/BTC/tx/58be29550b129655bebae4ceb948768278504fe1378f7a624ab5907019d167da";
   private static final String EXPECTED_SMARTBIT_COM_AU_URL = "https://www.smartbit.com.au/tx/58be29550b129655bebae4ceb948768278504fe1378f7a624ab5907019d167da";
@@ -39,6 +40,7 @@ public class BlockExplorersTest {
     assertThat(iterator.next() instanceof BitEasyComBlockExplorer).isTrue();
     assertThat(iterator.next() instanceof BitPayComBlockExplorer).isTrue();
     assertThat(iterator.next() instanceof BlockChainInfoBlockExplorer).isTrue();
+    assertThat(iterator.next() instanceof BlockonomicsBlockExplorer).isTrue();
     assertThat(iterator.next() instanceof BlockrIoBlockExplorer).isTrue();
     assertThat(iterator.next() instanceof BlockTrailComBlockExplorer).isTrue();
     assertThat(iterator.next() instanceof SmartBitComAuBlockExplorer).isTrue();
@@ -93,6 +95,22 @@ public class BlockExplorersTest {
 
     MessageFormat format = blockExplorer.getTransactionLookupMessageFormat();
     assertThat(EXPECTED_BLOCKCHAIN_INFO_URL.equals(format.format(EXAMPLE_TX_ID))).isTrue();
+  }
+
+  @Test
+  public void testBlockonomicsCo() {
+    final String expectedId = "blockonomics";
+    assertThat(expectedId.equals(BlockonomicsBlockExplorer.ID));
+
+    Optional<BlockExplorer> blockExplorerOptional = BlockExplorers.getBlockExplorerById(BlockonomicsBlockExplorer.ID);
+    assertThat(blockExplorerOptional.isPresent()).isTrue();
+    BlockExplorer blockExplorer = blockExplorerOptional.get();
+
+    assertThat(blockExplorer instanceof BlockonomicsBlockExplorer).isTrue();
+    assertThat(blockExplorer.getName().equals("blockonomics.co")).isTrue();
+
+    MessageFormat format = blockExplorer.getTransactionLookupMessageFormat();
+    assertThat(EXPECTED_BLOCKONOMICS_CO_URL.equals(format.format(EXAMPLE_TX_ID))).isTrue();
   }
 
   @Test

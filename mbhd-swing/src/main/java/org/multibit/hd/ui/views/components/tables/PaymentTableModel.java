@@ -38,7 +38,7 @@ public class PaymentTableModel extends AbstractTableModel {
   private String[] columnNames = {
           Languages.safeText(MessageKey.DATE),
           Languages.safeText(MessageKey.STATUS),
-          Languages.safeText(MessageKey.TYPE).replace(" :",""),  // Old translation was suffixed with a ' :'.
+          Languages.safeText(MessageKey.TYPE),
           Languages.safeText(MessageKey.DESCRIPTION),
           Languages.safeText(MessageKey.LOCAL_AMOUNT) + " ", // BTC symbol added later
           Languages.safeText(MessageKey.LOCAL_AMOUNT) + " " + Configurations.currentConfiguration.getBitcoin().getLocalCurrencySymbol()

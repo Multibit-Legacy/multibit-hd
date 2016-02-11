@@ -254,7 +254,6 @@ public class CoreServices {
    * <p>Shutdown all application support services (non-optional)</p>
    * <ul>
    * <li>Contact service</li>
-   * <li>History service</li>
    * <li>Bitcoin network service</li>
    * <li>Wallet service</li>
    * <li>Backup service</li>

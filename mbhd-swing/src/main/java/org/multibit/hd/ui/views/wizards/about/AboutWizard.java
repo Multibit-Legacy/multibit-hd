@@ -17,8 +17,8 @@ import java.util.Map;
  */
 public class AboutWizard extends AbstractWizard<AboutWizardModel> {
 
-  public AboutWizard(AboutWizardModel model, boolean isExiting) {
-    super(model, isExiting, Optional.absent());
+  public AboutWizard(AboutWizardModel model) {
+    super(model, false, Optional.absent());
   }
 
   @Override

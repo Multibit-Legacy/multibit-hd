@@ -24,7 +24,7 @@ public class SendRequestSummary {
 
   // Mutable values
   private boolean emptyWallet;
-  private Coin amount;
+  private Coin amount = Coin.ZERO;
   private Optional<KeyParameter> keyParameter = Optional.absent();
   private Optional<Wallet.SendRequest> sendRequest = Optional.absent();
   private Optional<String> notes = Optional.absent();
@@ -112,12 +112,13 @@ public class SendRequestSummary {
 
   /**
    * @return The total amount sent, including the client fee
+   * If no total amount is available Coin.ZERO is returned
    */
   public Coin getTotalAmount() {
-    if (clientFeeAdded.isPresent()) {
-      return amount.add(clientFeeAdded.get());
+    if (clientFeeAdded != null && clientFeeAdded.isPresent() && clientFeeAdded.get() != null) {
+      return amount == null ? Coin.ZERO : amount.add(clientFeeAdded.get());
     } else {
-      return amount;
+      return amount == null ? Coin.ZERO :amount;
     }
   }
 

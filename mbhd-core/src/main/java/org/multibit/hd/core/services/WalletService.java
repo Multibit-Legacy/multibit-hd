@@ -281,7 +281,8 @@ public class WalletService extends AbstractService {
   }
 
   public int getPaymentDataSetSize() {
-    if (lastSeenPaymentDataSet == null) {
+    // IF lastSeenPaymentDataSet is not assigned/ empty then rebuild it to determine payment list size
+    if (lastSeenPaymentDataSet == null || lastSeenPaymentDataSet.isEmpty()) {
       // Self-assignment to keep Findbugs happy
       lastSeenPaymentDataSet = getPaymentDataSet();
     }
@@ -406,14 +407,13 @@ public class WalletService extends AbstractService {
     FiatPayment amountFiat = calculateFiatPaymentAndAddTransactionInfo(amountBTC.get(), transactionHashAsString);
 
     TransactionConfidence confidence = transaction.getConfidence();
-    TransactionConfidence transactionConfidence = confidence;
 
     // Depth
     int depth = 0; // By default not in a block
     TransactionConfidence.ConfidenceType confidenceType = TransactionConfidence.ConfidenceType.UNKNOWN;
 
     PaymentStatus paymentStatus = new PaymentStatus(RAGStatus.AMBER, CoreMessageKey.UNKNOWN);
-    if (transactionConfidence != null) {
+    if (confidence != null) {
       confidenceType = confidence.getConfidenceType();
       if (TransactionConfidence.ConfidenceType.BUILDING == confidenceType) {
         depth = confidence.getDepthInBlocks();
@@ -421,11 +421,13 @@ public class WalletService extends AbstractService {
 
       // Payment status
       paymentStatus = calculateStatus(confidence.getConfidenceType(), depth, confidence.numBroadcastPeers());
+    } else {
+      log.debug("No transaction confidence for t {}", transactionHashAsString);
     }
 
 
     // Payment type
-    PaymentType paymentType = calculatePaymentType(amountBTC.get(), depth);
+    PaymentType paymentType = calculatePaymentType(amountBTC.get(), depth, confidenceType);
 
     // Mining fee
     Optional<Coin> miningFee = calculateMiningFee(paymentType, transactionHashAsString);
@@ -497,7 +499,6 @@ public class WalletService extends AbstractService {
     if (confidenceType != null) {
 
       if (TransactionConfidence.ConfidenceType.BUILDING.equals(confidenceType)) {
-
         // Confirmed
         final PaymentStatus paymentStatus;
         if (depth == 1) {
@@ -541,21 +542,21 @@ public class WalletService extends AbstractService {
 
   }
 
-  private PaymentType calculatePaymentType(Coin amountBTC, int depth) {
+  private PaymentType calculatePaymentType(Coin amountBTC, int depth, TransactionConfidence.ConfidenceType confidenceType) {
     PaymentType paymentType;
     if (amountBTC.compareTo(Coin.ZERO) < 0) {
       // Debit
-      if (depth == 0) {
-        paymentType = PaymentType.SENDING;
-      } else {
+      if (depth > 0 || TransactionConfidence.ConfidenceType.BUILDING.equals(confidenceType)) {
         paymentType = PaymentType.SENT;
+      } else {
+        paymentType = PaymentType.SENDING;
       }
     } else {
       // Credit
-      if (depth == 0) {
-        paymentType = PaymentType.RECEIVING;
-      } else {
+      if (depth > 0 || TransactionConfidence.ConfidenceType.BUILDING.equals(confidenceType)) {
         paymentType = PaymentType.RECEIVED;
+      } else {
+        paymentType = PaymentType.RECEIVING;
       }
     }
     return paymentType;
@@ -1475,7 +1476,7 @@ public class WalletService extends AbstractService {
     }
 
     // Close the Network connection to stop writes to the wallet + payments database whilst we are rewriting files
-    // Close  Contacts / History / Payments
+    // Close  Contacts / Payments
     CoreServices.shutdownNow(ShutdownEvent.ShutdownType.SWITCH);
 
     // Close the current wallet
@@ -1554,7 +1555,7 @@ public class WalletService extends AbstractService {
       // Do the commit of the changed non-wallet files by "rename existing + rename new + delete old"
       EncryptedFileReaderWriter.changeEncryptionCommit(filesToChangePassword, newFiles);
 
-      // Restart Contacts / History / Payments / Bitcoin network services
+      // Restart Contacts / Payments / Bitcoin network services
       CoreServices.bootstrap();
       CoreServices.getOrCreateBackupService();
       CoreServices.getOrCreateWalletService(walletId);

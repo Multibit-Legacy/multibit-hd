@@ -99,6 +99,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
         passwordParameter = Optional.of(password);
       }
     }
+
     // Get the next receiving address to show from the wallet service.
     // This is normally a new receiving address but if the gap limit is reached it is the current one
     WalletService walletService;
@@ -241,7 +242,7 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
     fiatPayment.setExchangeName(Optional.of(exchangeKey.getExchangeName()));
 
     final Optional<ExchangeRateChangedEvent> exchangeRateChangedEvent = CoreServices.getApplicationEventService().getLatestExchangeRateChangedEvent();
-    if (exchangeRateChangedEvent.isPresent()) {
+    if (exchangeRateChangedEvent.isPresent() && exchangeRateChangedEvent.get().getRate() != null) {
       fiatPayment.setRate(Optional.of(exchangeRateChangedEvent.get().getRate().toString()));
       fiatPayment.setCurrency(Optional.of(exchangeRateChangedEvent.get().getCurrency()));
     } else {
@@ -286,7 +287,6 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
         ViewEvents.fireWalletDetailChangedEvent(walletDetail);
       }
     });
-
   }
 
   @Override

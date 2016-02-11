@@ -22,6 +22,7 @@
     <xchange.version>2.1.0</xchange.version>
     <jackson.version>2.3.2</jackson.version>
     <findbugs.version>3.0.0</findbugs.version>
+    <multibit-hardware.version>0.7.0</multibit-hardware.version>
 
   </properties>
 
@@ -259,12 +260,12 @@
       <dependency>
         <groupId>org.multibit.hd.hardware</groupId>
         <artifactId>trezor</artifactId>
-        <version>develop-SNAPSHOT</version>
+        <version>${multibit-hardware.version}</version>
       </dependency>
       <dependency>
         <groupId>org.multibit.hd.hardware</groupId>
         <artifactId>keepkey</artifactId>
-        <version>develop-SNAPSHOT</version>
+        <version>${multibit-hardware.version}</version>
       </dependency>
 
       <!-- Jersey client for upstream requests -->
@@ -312,6 +313,13 @@
 
   <!-- All modules will have these dependencies -->
   <dependencies>
+
+    <!-- bitcoinj alice fork -->
+    <dependency>
+      <groupId>org.bitcoinj</groupId>
+      <artifactId>bitcoinj-core</artifactId>
+      <version>0.13.3-alice-0.2.0-SNAPSHOT</version>
+    </dependency>
 
     <!-- BRIT Core for managing income -->
     <dependency>

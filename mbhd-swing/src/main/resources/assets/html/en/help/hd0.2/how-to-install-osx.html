@@ -1,0 +1,74 @@
+<h2 class="text-center">Thank you for choosing MultiBit HD</h2>
+
+<p><a href="https://www.ej-technologies.com" target="_blank">Install4j by EJ Technologies GmBH</a> was used to create our installers.
+  If you're a Java developer needing an installer solution you should check them out.</p>
+
+<p>Follow <a href="https://twitter.com/intent/user?screen_name=MultiBitOrg">@MultiBitOrg</a> on Twitter for <strong>official announcements</strong> and occasional news items.</p>
+
+<h3>Getting Started</h3>
+
+<div class="panel panel-info">
+  <div class="panel-body">
+    <div class="col-xs-6">
+      <a href="https://www.youtube.com/watch?v=3B6xrfoPqPg&rel=0&modestbranding=1" target="_blank"><img class="img-responsive"
+                                                                                                        src="/images/en/hd0_1/how-to-create-a-wallet-0.1.2.png"
+                                                                                                        title="How to create a wallet with MultiBit HD"></a>
+    </div>
+    <div class="col-xs-6">
+      <h4>Quick install guide</h4>
+      <ul>
+        <li>After download completes double-click the installer icon</li>
+        <li>We recommend using the default settings</li>
+        <li>It is safe to overwrite an earlier version if prompted</li>
+        <li>Any existing wallet files and configuration will not be affected</li>
+        <li>If you are new to Bitcoin <strong>you should watch the video</strong> so you know what to expect.</li>
+      </ul>
+      <p>We recommend <a href="https://spideroak.com/" target="_blank">SpiderOak</a> as a privacy-conscious cloud backup provider. The first 2Gb are free.</p>
+      <p>We have a <a href="getting-started.html" target="_blank">Getting Started guide</a> so you can be up and running with Bitcoin quickly and safely.</p>
+      <p>There are <a href="https://www.youtube.com/user/MultiBitOrg" target="_blank">more tutorials on our YouTube channel MultiBitOrg</a>.</p>
+    </div>
+  </div>
+</div>
+
+<h3>How to install on OS X (Mac)</h3>
+
+<p>The MultiBit HD installer is slightly different from a standard OS X installer in that it doesn't rely on a single drag and drop into the Applications directory. However, once
+  the installer has completed the resulting package in Applications can be dragged to the launch bar as usual.</p>
+
+<h4 id="lion">Requires OS X Lion or higher</h4>
+
+<p>For security reasons MultiBit HD requires OS X 10.7.3 (Lion) or higher. You can get a <a href="https://www.apple.com/osx/how-to-upgrade/"
+                                                                                                                target="_blank">free OS X upgrade from the Apple app store</a>.</p>
+
+<p>Bitcoin software requires a secure environment and OS X Lion (released in 2011) is quite old now. We urge you to upgrade to keep your system up to date.</p>
+
+<h3 id="troubleshooting">Troubleshooting</h3>
+
+<p>Occasionally people encounter problems getting MultiBit HD set up on their OS X machine. Here are some common solutions to known problems.</p>
+
+<h4>I don't have much system memory</h4>
+
+<p>MultiBit HD uses the Java Virtual Machine (JVM) to manage its memory. This means that over time you will see memory use increase as various activities take place.
+  Synchronizing with the block chain is a memory-intensive process and during the initial sync or a Repair Wallet operation you will notice an increase. By default MultiBit HD
+  will not consume more than the <em>lesser</em> of one quarter of your system memory or 1Gb. For example, on a 2Gb system (2009 mid-range machine) MultiBit HD will start having
+  memory constraints at around 500Mb.</p>
+
+<p>This default is sufficient to allow for smooth and responsive operations on most systems. However, MultiBit HD can continue to work with only 256Mb allocated to it although
+  performance tends to reduce.</p>
+
+<p>If you want to change the memory allocated to MultiBit HD you will need to do the following:</p>
+<ol>
+  <li>After installation, locate MultiBit HD in the Finder (in Applications)</li>
+  <li>Right click and select "Show Package Contents"</li>
+  <li>Open <code>Contents/vmoptions.txt</code> in a text editor</li>
+  <li>Edit the line <code># -Xmx512m</code> to remove the <code>#</code> and following space</li>
+  <li>Change the value to something else, e.g. <code>-Xmx1024m</code> is 1Gb</li>
+  <li>Save the changes and use the shortcut as normal to start MultiBit HD</li>
+</ol>
+
+<h4>Related articles</h4>
+<p>Here are some related articles:</p>
+<ul>
+  <li><a href="getting-started.html">Getting started</a></li>
+  <li><a href="/blog/2013/07/24/how-to-check-signatures.html">How to check signatures</a></li>
+</ul>

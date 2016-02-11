@@ -5,7 +5,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
@@ -424,7 +423,6 @@ public class Formats {
     // Extract merchant information (payment session must be present)
     Optional<Coin> amount = paymentSessionSummary.getPaymentSessionValue();
 
-    // We do not truncate here since it is needed for the history
     // The UI will handle truncation
     String label = paymentSessionSummary.getPaymentSessionMemo().orNull();
     if (Strings.isNullOrEmpty(label)) {
