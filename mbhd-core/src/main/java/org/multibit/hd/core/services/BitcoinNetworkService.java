@@ -152,10 +152,6 @@ public class BitcoinNetworkService extends AbstractService {
     // Close the wallet
     WalletManager.INSTANCE.closeWallet();
 
-    // Clear the mempool to avoid any hysteresis
-    TxConfidenceTable mempool = Context.get().getConfidenceTable();
-    mempool.reset();
-
     log.debug("Bitcoin network service specific code is shut down");
 
     // The Bitcoin network service is tied to a wallet so must always be fully shutdown
