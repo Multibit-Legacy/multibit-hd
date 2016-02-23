@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
+import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -17,8 +18,9 @@ import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.script.Script;
 import org.joda.time.DateTime;
-import org.multibit.commons.crypto.AESUtils;
 import org.multibit.commons.concurrent.SafeExecutors;
+import org.multibit.commons.crypto.AESUtils;
+import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.*;
@@ -26,7 +28,6 @@ import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
-import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.ExportManager;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -636,7 +637,53 @@ public class WalletService extends AbstractService {
           }
         }
       }
-    }
+
+      // Link the transaction to the BIP70 payment request by UUID
+      if (transaction.getOutputs() != null) {
+        for (TransactionOutput transactionOutput : transaction.getOutputs()) {
+
+          // TODO this is an expensive routine as it runs for every Transaction added to the wallet
+          // TODO Perhaps better to precalculate all the BIP70 payment requests addresses
+
+          // Iterate through all the Outputs of all the BIP70 payment requests to see if this TransactionOutput pays to that Output
+          Collection<PaymentRequestData> paymentRequestDatas = bip70PaymentRequestDataMap.values();
+          for (PaymentRequestData paymentRequestData : paymentRequestDatas) {
+            if (paymentRequestData.getPaymentRequest().isPresent()) {
+             Protos.PaymentRequest paymentRequest = paymentRequestData.getPaymentRequest().get();
+              Protos.PaymentDetails paymentDetails = null;
+              try {
+                paymentDetails = Protos.PaymentDetails.parseFrom(paymentRequest.getSerializedPaymentDetails());
+              } catch (InvalidProtocolBufferException ipbe) {
+                // Do nothing
+                ipbe.printStackTrace();
+              }
+              if (paymentDetails != null) {
+                List<Protos.Output> outputs = paymentDetails.getOutputsList();
+                for (Protos.Output output :outputs)  {
+                  ByteString scriptBytes = output.getScript();
+                  Script script = new Script(scriptBytes.toByteArray());
+                  if (script.isSentToAddress()) {
+                    Address bip70ToAddress = script.getToAddress(BitcoinNetwork.current().get());
+                    Address transactionOutputToAddress = transactionOutput.getAddressFromP2PKHScript(BitcoinNetwork.current().get());
+                    if (transactionOutputToAddress != null && transactionOutputToAddress.equals(bip70ToAddress)) {
+                      // If so then we have matched the BIP70 payment request to the transaction
+                      // Set the Transaction hash and re-add to WalletService (replacing any pre-existing paymentRequestData with the same UUID)
+                      Sha256Hash txHash = transaction.getHash();
+                      paymentRequestData.setTransactionHash(Optional.of(txHash));
+                      addPaymentRequestData(paymentRequestData);
+                      log.debug("Linking the BIP70 payment request with UUID {} to the transaction with hash {}", paymentRequestData.getUuid(), txHash);
+
+                      // In theory a single tx can pay multiple payment requests but the UI does not permit this so break to save time
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+     }
     return description.toString();
   }
 
