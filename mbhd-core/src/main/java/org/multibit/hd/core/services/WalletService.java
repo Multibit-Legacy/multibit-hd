@@ -57,6 +57,7 @@ import java.util.concurrent.ExecutorService;
  * <p/>
  * Most of the functionality is provided by WalletManager and BackupManager.
  */
+@SuppressFBWarnings({"WMI_WRONG_MAP_ITERATOR"})
 public class WalletService extends AbstractService {
 
   private static final Logger log = LoggerFactory.getLogger(WalletService.class);
