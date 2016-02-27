@@ -120,10 +120,13 @@ public class TitleFontDecorator {
    * @param size      The size required (usually from MultiBitUI)
    */
   public static void apply(JComponent component, float size) {
-
-    Font font = TITLE_FONT.deriveFont(size);
-    component.setFont(font);
-
+    try {
+      Font font = TITLE_FONT.deriveFont(size);
+      component.setFont(font);
+    } catch (NullPointerException npe) {
+      // Fix for https://github.com/bitcoin-solutions/multibit-hd/issues/676
+      log.warn("Failed to apply font to component", npe);
+    }
   }
 
   /**
