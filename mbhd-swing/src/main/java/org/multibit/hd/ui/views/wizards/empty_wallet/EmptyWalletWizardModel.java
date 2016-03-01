@@ -15,7 +15,9 @@ import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ApplicationEventService;
@@ -242,6 +244,27 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
     // Ensure Bitcoin network service is started
     bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
+
+    // Check the wallet balance is available and greater than zero, otherwise create a transaction creation failure
+    if (!coinAmount.isPresent() || Coin.ZERO.equals(coinAmount.get())) {
+         // Fire a failed transaction creation event - cannot empty a wallet with no bitcoin in it
+      CoreEvents.fireTransactionCreationEvent(
+              new TransactionCreationEvent(
+                      "?",
+                      sendRequestSummary.getTotalAmount(),
+                      Optional.<FiatPayment>absent(),
+                      Optional.<Coin>absent(),
+                      Optional.<Coin>absent(),
+                      sendRequestSummary.getDestinationAddress(),
+                      sendRequestSummary.getChangeAddress(),
+                      false,
+                      CoreMessageKey.THE_ERROR_WAS.getKey(),
+                      new String[]{Languages.safeText(MessageKey.NO_MONEY_TO_SEND)},
+                      sendRequestSummary.getNotes(),
+                      false));
+      // Prepare failed
+      return false;
+    }
 
     Address changeAddress = bitcoinNetworkService.getNextChangeAddress();
 

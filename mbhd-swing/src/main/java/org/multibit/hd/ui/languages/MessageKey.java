@@ -396,6 +396,8 @@ public enum MessageKey {
   SEND_PAYMENT_ACK_MEMO_LABEL("send_payment_ack_memo_label"),
   SEND_PAYMENT_ACK_MEMO_TITLE("send_payment_ack_memo_title"),
 
+  NO_MONEY_TO_SEND("no_money_to_send"),
+
   EXIT_OR_SWITCH_TITLE("exit_or_switch_title"),
 
   ABOUT_TITLE("about_title"),
