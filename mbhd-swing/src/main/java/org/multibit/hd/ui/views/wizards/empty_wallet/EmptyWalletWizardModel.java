@@ -251,16 +251,16 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
       CoreEvents.fireTransactionCreationEvent(
               new TransactionCreationEvent(
                       "?",
-                      sendRequestSummary.getTotalAmount(),
+                      Coin.ZERO,
                       Optional.<FiatPayment>absent(),
                       Optional.<Coin>absent(),
                       Optional.<Coin>absent(),
-                      sendRequestSummary.getDestinationAddress(),
-                      sendRequestSummary.getChangeAddress(),
+                      null,
+                      null,
                       false,
                       CoreMessageKey.THE_ERROR_WAS.getKey(),
                       new String[]{Languages.safeText(MessageKey.NO_MONEY_TO_SEND)},
-                      sendRequestSummary.getNotes(),
+                      Optional.<String>absent(),
                       false));
       // Prepare failed
       return false;
