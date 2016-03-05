@@ -789,11 +789,6 @@ public class BitcoinNetworkService extends AbstractService {
         return false;
       }
 
-      log.debug("Adjusting outputs using 'dry run' values");
-
-      // Examine the result to determine miner fees - the calculated maximum amount is put on the (single) tx output
-      Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
-
       // Update the SendRequestSummary to ensure it is not an "empty wallet" and has the adjusted recipient amount
       sendRequestSummary.setEmptyWallet(false);
 
@@ -817,7 +812,6 @@ public class BitcoinNetworkService extends AbstractService {
     log.debug("Prepare transaction has completed");
 
     return true;
-
   }
 
   /**
