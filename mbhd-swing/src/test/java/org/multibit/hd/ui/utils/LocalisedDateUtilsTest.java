@@ -41,7 +41,7 @@ public class LocalisedDateUtilsTest {
     // Ensure any changes are returned to UK locale
     Locale.setDefault(Locale.UK);
     DateTimeUtils.setCurrentMillisSystem();
-    DateTimeZone.setDefault(DateTimeZone.forID(original.getID()));
+    DateTimeZone.setDefault(DateTimeZone.forOffsetHours(original.getRawOffset()/3_600_000)); // Raw offset is in millis
 
   }
 
