@@ -4,13 +4,14 @@ import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Wallet;
-import org.multibit.hd.brit.core.dto.FeeState;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.ui.events.view.ViewEvents;
-import org.multibit.hd.ui.languages.Languages;
 import org.multibit.hd.ui.languages.MessageKey;
-import org.multibit.hd.ui.views.components.*;
+import org.multibit.hd.ui.views.components.Components;
+import org.multibit.hd.ui.views.components.Labels;
+import org.multibit.hd.ui.views.components.ModelAndView;
+import org.multibit.hd.ui.views.components.Panels;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountModel;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountStyle;
 import org.multibit.hd.ui.views.components.display_amount.DisplayAmountView;
@@ -40,11 +41,8 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
   // View components
   private ModelAndView<DisplayAmountModel, DisplayAmountView> transactionDisplayAmountMaV;
   private ModelAndView<DisplayAmountModel, DisplayAmountView> transactionFeeDisplayAmountMaV;
-  private ModelAndView<DisplayAmountModel, DisplayAmountView> clientFeeDisplayAmountMaV;
 
   private JLabel recipientSummaryLabel;
-
-  private JLabel clientFeeInfoLabel;
 
   /**
    * @param wizard    The wizard managing the states
@@ -77,48 +75,35 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
       true,
       EmptyWalletState.EMPTY_WALLET_CONFIRM.name() + ".transaction_fee"
     );
-    clientFeeDisplayAmountMaV = Components.newDisplayAmountMaV(
-      DisplayAmountStyle.FEE_AMOUNT,
-      true,
-      EmptyWalletState.EMPTY_WALLET_CONFIRM.name() + ".client_fee"
-    );
 
     // Ensure amounts are visible
     transactionDisplayAmountMaV.getView().setVisible(true);
     transactionFeeDisplayAmountMaV.getView().setVisible(true);
-    clientFeeDisplayAmountMaV.getView().setVisible(true);
 
     // Blank labels populated from wizard model later
     recipientSummaryLabel = Labels.newRecipientSummary(getWizardModel().getRecipient());
 
     contentPanel.setLayout(new MigLayout(
       Panels.migXYLayout(),
-      "[][]", // Column constraints
-      "[]10[]10[][][]10[][]" // Row constraints
+      "[][][]", // Column constraints
+      "[]10[]10[][][]" // Row constraints
     ));
 
-    clientFeeInfoLabel = Labels.newBlankLabel();
-    AccessibilityDecorator.apply(clientFeeInfoLabel, MessageKey.CLIENT_FEE);
-
-    contentPanel.add(Labels.newConfirmSendAmount(), "span 4,push,wrap");
+    contentPanel.add(Labels.newConfirmSendAmount(), "span 3,push,wrap");
 
     contentPanel.add(Labels.newRecipient());
-    contentPanel.add(recipientSummaryLabel, "span 3,wrap");
+    contentPanel.add(recipientSummaryLabel, "align left, growx, push, wrap");
 
     contentPanel.add(Labels.newAmount(), "baseline");
-    contentPanel.add(transactionDisplayAmountMaV.getView().newComponentPanel(), "span 3,wrap");
+    contentPanel.add(transactionDisplayAmountMaV.getView().newComponentPanel(), "align left, wrap");
 
     contentPanel.add(Labels.newTransactionFee(), "top");
-    contentPanel.add(transactionFeeDisplayAmountMaV.getView().newComponentPanel(), "span 3,wrap");
+    contentPanel.add(transactionFeeDisplayAmountMaV.getView().newComponentPanel(), "align left, wrap");
 
-    contentPanel.add(Labels.newClientFee(), "top");
-    contentPanel.add(clientFeeDisplayAmountMaV.getView().newComponentPanel(), "top");
-    contentPanel.add(clientFeeInfoLabel, "top");
-
-    contentPanel.add(Labels.newBlankLabel(), "top, growx, push,wrap");
+    contentPanel.add(Labels.newBlankLabel(), "span 3, top, growx, push,wrap");
 
     // Register components
-    registerComponents(transactionDisplayAmountMaV, transactionFeeDisplayAmountMaV, clientFeeDisplayAmountMaV);
+    registerComponents(transactionDisplayAmountMaV, transactionFeeDisplayAmountMaV);
 
   }
 
@@ -146,36 +131,6 @@ public class EmptyWalletConfirmPanelView extends AbstractWizardPanelView<EmptyWa
     }
     transactionFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
     transactionFeeDisplayAmountMaV.getView().updateView(configuration);
-
-    // Update the model and view for the client fee
-    Optional<FeeState> feeStateOptional = getWizardModel().getSendRequestSummary().getFeeState();
-    log.debug("Fee state at beforeShow {}", feeStateOptional);
-    String feeText;
-    if (feeStateOptional.isPresent()) {
-      FeeState feeState = feeStateOptional.get();
-
-      // Work out the fee text
-      if (feeState.getFeeOwed().compareTo(Coin.ZERO) < 0) {
-        // The user has overpaid
-        feeText = Languages.safeText(MessageKey.CLIENT_FEE_OVERPAID);
-      }  else {
-        if (getWizardModel().getSendRequestSummary().isApplyClientFee()) {
-          // The fee is due now
-          feeText = Languages.safeText(MessageKey.CLIENT_FEE_NOW);
-          clientFeeDisplayAmountMaV.getModel().setCoinAmount(feeState.getFeeOwed());
-          clientFeeDisplayAmountMaV.getModel().setLocalAmountVisible(false);
-          clientFeeDisplayAmountMaV.getView().updateView(configuration);
-        } else {
-          // No client fee added
-          feeText = "";
-        }
-      }
-    } else {
-      // Possibly no wallet loaded
-      feeText = "";
-    }
-
-    clientFeeInfoLabel.setText(feeText);
 
     // Update the model and view for the recipient
     recipientSummaryLabel.setText(getWizardModel()

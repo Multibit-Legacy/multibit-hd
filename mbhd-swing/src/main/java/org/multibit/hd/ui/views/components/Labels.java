@@ -899,20 +899,6 @@ public class Labels {
   }
 
   /**
-   * @return A new "client fee" message
-   */
-  public static JLabel newClientFee() {
-    return newLabel(MessageKey.CLIENT_FEE);
-  }
-
-  /**
-   * @return A new "running total" message
-   */
-  public static JLabel newClientFeeRunningTotal() {
-    return newLabel(MessageKey.CLIENT_FEE_RUNNING_TOTAL);
-  }
-
-  /**
    * @return A new "seed size" message
    */
   public static JLabel newSeedSize() {
