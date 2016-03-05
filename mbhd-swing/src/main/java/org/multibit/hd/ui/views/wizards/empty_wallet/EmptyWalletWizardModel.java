@@ -9,7 +9,6 @@ import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.params.MainNetParams;
 import org.multibit.commons.utils.Dates;
-import org.multibit.hd.brit.core.dto.FeeState;
 import org.multibit.hd.brit.core.services.FeeService;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
@@ -254,7 +253,6 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
                       Coin.ZERO,
                       Optional.<FiatPayment>absent(),
                       Optional.<Coin>absent(),
-                      Optional.<Coin>absent(),
                       null,
                       null,
                       false,
@@ -275,9 +273,6 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
       .getBitcoinAddress();
 
     String password = enterDetailsPanelModel.getEnterPasswordModel().getValue();
-
-    Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState(true);
-    log.debug("FeeState after initial calculation: {}", feeState);
 
     // Create the fiat payment - note that the fiat amount is not populated, only the exchange rate data.
     // This is because the client and transaction fee is only worked out at point of sending, and the fiat equivalent is computed from that
@@ -306,7 +301,6 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
       changeAddress,
       FeeService.normaliseRawFeePerKB(Configurations.currentConfiguration.getWallet().getFeePerKB()),
       password,
-      feeState,
       true);
 
     // Set a tx description of 'Empty Wallet' localised

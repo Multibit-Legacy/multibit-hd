@@ -1377,7 +1377,7 @@ public enum WalletManager implements WalletEventListener {
 
 
   /**
-   * Get the spendable balance of the current wallet (this does not include a decrement due to the BRIT fees)
+   * Get the spendable balance of the current wallet
    * This is Optional.absent() if there is no wallet
    */
   public Optional<Coin> getCurrentWalletBalance() {
@@ -1392,7 +1392,7 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Get the balance of the current wallet including unconfirmed (this does not include a decrement due to the BRIT fees)
+   * Get the balance of the current wallet including unconfirmed
    * This is Optional.absent() if there is no wallet
    */
   public Optional<Coin> getCurrentWalletBalanceWithUnconfirmed() {
@@ -1402,35 +1402,6 @@ public enum WalletManager implements WalletEventListener {
       return Optional.of(currentWalletSummary.get().getWallet().getBalance(Wallet.BalanceType.ESTIMATED));
     } else {
       // Unknown at this time
-      return Optional.absent();
-    }
-  }
-
-  /**
-   * @param includeOneExtraFee include an extra fee to include a tx currently being constructed that isn't in the wallet yet
-   *
-   * @return The BRIT fee state for the current wallet - this includes things like how much is
-   * currently owed to BRIT
-   */
-  public Optional<FeeState> calculateBRITFeeState(boolean includeOneExtraFee) {
-    if (feeService == null) {
-      feeService = CoreServices.createFeeService();
-    }
-
-    if (getCurrentWalletSummary() != null && getCurrentWalletSummary().isPresent()) {
-      Wallet wallet = getCurrentWalletSummary().get().getWallet();
-
-      // Set the transaction sent by self provider to use TransactionInfos
-      TransactionSentBySelfProvider transactionSentBySelfProvider = new TransactionInfoSentBySelfProvider(getCurrentWalletSummary().get().getWalletId());
-      feeService.setTransactionSentBySelfProvider(transactionSentBySelfProvider);
-
-      FeeState feeState = feeService.calculateFeeState(wallet, false);
-      if (includeOneExtraFee) {
-        feeState.setFeeOwed(feeState.getFeeOwed().add(FeeService.FEE_PER_SEND));
-      }
-
-      return Optional.of(feeState);
-    } else {
       return Optional.absent();
     }
   }

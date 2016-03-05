@@ -13,7 +13,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.multibit.commons.files.SecureFiles;
 import org.multibit.commons.utils.Dates;
-import org.multibit.hd.brit.core.dto.FeeState;
 import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
@@ -229,7 +228,6 @@ public class BitcoinNetworkServiceFunctionalTest {
         changeAddress,
         FEE_PER_KB,
         WALLET_PASSWORD,
-        Optional.<FeeState>absent(),
         false);
       sendRequestSummary.setNotes(Optional.of("BitcoinNetworkServiceFunctionalTest"));
       bitcoinNetworkService.send(sendRequestSummary);

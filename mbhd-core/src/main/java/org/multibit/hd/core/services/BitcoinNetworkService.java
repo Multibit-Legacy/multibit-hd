@@ -77,9 +77,6 @@ public class BitcoinNetworkService extends AbstractService {
    */
   private static int NUMBER_OF_BLOCKS_DELTA_FOR_REPLAY = 120;
 
-  // The minimum BRIT fee that the multibit developers charge
-  private static Coin MINIMUM_MULTIBIT_DEVELOPER_FEE = Coin.valueOf(5000); // satoshi
-
   /**
    * The boundary for when more mining fee is due
    */
@@ -276,7 +273,6 @@ public class BitcoinNetworkService extends AbstractService {
           }
         }
       });
-
   }
 
   /**
@@ -623,7 +619,6 @@ public class BitcoinNetworkService extends AbstractService {
           sendRequestSummary.getTotalAmount(),
           Optional.<FiatPayment>absent(),
           Optional.<Coin>absent(),
-          Optional.<Coin>absent(),
           sendRequestSummary.getDestinationAddress(),
           sendRequestSummary.getChangeAddress(),
           false,
@@ -635,58 +630,6 @@ public class BitcoinNetworkService extends AbstractService {
 
     // Must have failed to be here
     return false;
-  }
-
-  /**
-   * Work out if a client fee is required to be added.
-   * If the client fee is smaller than the dust level then it is never added
-   * If the client fee is smaller than the multibit developer minimum then it is not added
-   *
-   * @param sendRequestSummary The information required to send bitcoin
-   *
-   * @return True if no error was encountered
-   */
-  private boolean workOutIfClientFeeIsRequired(SendRequestSummary sendRequestSummary, boolean forceNow) {
-    log.debug("Working out if client fee is required");
-
-    boolean isClientFeeRequired;
-    if (sendRequestSummary.getFeeState().isPresent()) {
-      int currentNumberOfSends = sendRequestSummary.getFeeState().get().getCurrentNumberOfSends();
-      int nextFeeSendCount = sendRequestSummary.getFeeState().get().getNextFeeSendCount();
-
-      isClientFeeRequired = (currentNumberOfSends == nextFeeSendCount) || forceNow;
-
-      // Never send a client fee that is dust
-      if (isClientFeeRequired && sendRequestSummary.getFeeState().get().getFeeOwed().isLessThan(Transaction.MIN_NONDUST_OUTPUT)) {
-        isClientFeeRequired = false;
-      }
-
-      // Never send a client fee that is below the minimum multibit developer fee
-      if (isClientFeeRequired && sendRequestSummary.getFeeState().get().getFeeOwed().isLessThan(MINIMUM_MULTIBIT_DEVELOPER_FEE)) {
-        isClientFeeRequired = false;
-      }
-
-      // Never send a client fee larger than the recipient amount with a wallet empty (as recipient is adjusted down by client fee on empty wallet)
-      if (sendRequestSummary.isEmptyWallet() && sendRequestSummary.getFeeState().get().getFeeOwed().isGreaterThan(sendRequestSummary.getAmount())) {
-        isClientFeeRequired = false;
-      }
-
-    } else {
-      // Nothing more to be done
-      sendRequestSummary.setApplyClientFee(false);
-      return true;
-    }
-
-    // May need to add the client fee
-    sendRequestSummary.setApplyClientFee(isClientFeeRequired);
-    if (isClientFeeRequired) {
-      log.debug("Client fee will be added to address: '{}'", sendRequestSummary.getFeeState().get().getNextFeeAddress());
-    } else {
-      log.debug("No client fee address added for this tx");
-    }
-
-    // Must be OK to be here
-    return true;
   }
 
   /**
@@ -705,7 +648,6 @@ public class BitcoinNetworkService extends AbstractService {
           null,
           sendRequestSummary.getTotalAmount(),
           Optional.<FiatPayment>absent(),
-          Optional.<Coin>absent(),
           Optional.<Coin>absent(),
           sendRequestSummary.getDestinationAddress(),
           sendRequestSummary.getChangeAddress(),
@@ -766,80 +708,6 @@ public class BitcoinNetworkService extends AbstractService {
       sendRequest.fee = Coin.ZERO;
       sendRequest.feePerKb = sendRequestSummary.getFeePerKB();
 
-      // Only include the fee output if not emptying since it interferes
-      // with the coin selector
-      if (!sendRequest.emptyWallet && sendRequestSummary.isApplyClientFee()) {
-        // Work out the size of the transaction in bytes (the fee solver will have calculated the fee for this size)
-        int initialSize;
-        try {
-          // TODO Not sure if this is being done at the right place - input coins need to be selected prior to the size check
-          initialSize = calculateSizeWithSignatures(sendRequest.tx);
-          log.debug("Size of transaction before adding the client fee was {}", initialSize);
-        } catch (IOException ioe) {
-          log.error("Could not calculate initial transaction size. " + ioe.getMessage());
-          return false;
-        }
-
-        // Add a tx output to pay the client fee if it is greater than or equal to the dust level
-        if (sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(Transaction.MIN_NONDUST_OUTPUT) < 0) {
-          log.debug("Not adding client fee as it is smaller than dust : {}", sendRequestSummary.getFeeState().get().getFeeOwed());
-          sendRequestSummary.setClientFeeAdded(Optional.<Coin>absent());
-        } else {
-          log.debug("Adding client fee output of {} to address {}", sendRequestSummary.getFeeState().get().getFeeOwed(), sendRequestSummary.getFeeState().get().getNextFeeAddress());
-          sendRequest.tx.addOutput(
-            sendRequestSummary.getFeeState().get().getFeeOwed(),
-            sendRequestSummary.getFeeState().get().getNextFeeAddress()
-          );
-          sendRequestSummary.setClientFeeAdded(Optional.of(sendRequestSummary.getFeeState().get().getFeeOwed()));
-
-          // The transaction now has an extra client fee output added
-          // This increases the size of the transaction, and may require more fee if it pushes it over a 1000 byte size boundary
-          int updatedSize;
-          try {
-            updatedSize = calculateSizeWithSignatures(sendRequest.tx);
-            log.debug("Size of transaction after adding the client fee was {}", updatedSize);
-          } catch (IOException ioe) {
-            log.error("Could not calculate updated transaction size. " + ioe.getMessage());
-            return false;
-          }
-
-          double updatedSizeBoundary = Math.floor((double) updatedSize / MINING_FEE_BOUNDARY);
-          double initialSizeBoundary = Math.floor((double) initialSize / MINING_FEE_BOUNDARY);
-          if (updatedSizeBoundary > initialSizeBoundary) {
-            // Adding a client fee output has stepped over a mining fee boundary.
-            // There is extra mining fee due - this can either be paid by reducing the amount redeemed (tx output 0)
-            // or reducing the client fee (tx output 1)
-            // If neither of these is possible (due to dust limits) then give up trying to claim the client fee.
-
-            if (sendRequest.tx.getOutput(0).getValue().compareTo(Transaction.MIN_NONDUST_OUTPUT.add(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE)) > 0) {
-              // There is enough bitcoin on the redemption output, decrease that
-              sendRequest.tx.getOutput(0).setValue(sendRequest.tx.getOutput(0).getValue().subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE));
-              log.debug("Adjusting transaction output 0 to {}", sendRequest.tx.getOutput(0).getValue());
-            } else {
-              // Try decreasing the client fee
-              if (sendRequest.tx.getOutput(1).getValue().compareTo(Transaction.MIN_NONDUST_OUTPUT.add(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE)) > 0) {
-                // There is enough bitcoin on the client fee output, decrease that
-                Coin adjustedClientFee = sendRequest.tx.getOutput(1).getValue().subtract(Transaction.REFERENCE_DEFAULT_MIN_TX_FEE);
-                sendRequest.tx.getOutput(1).setValue(adjustedClientFee);
-                sendRequestSummary.setClientFeeAdded(Optional.of(adjustedClientFee));
-                log.debug("Adjusting transaction output 1 to {}", adjustedClientFee);
-              } else {
-                // We cannot pay the mining fee for the extra client fee output so remove it.
-                // Put back the original amount on the redemption output
-                sendRequest.tx.clearOutputs();
-                sendRequest.tx.addOutput(sendRequestSummary.getAmount(), sendRequestSummary.getDestinationAddress());
-                sendRequestSummary.setClientFeeAdded(Optional.<Coin>absent());
-                log.debug("Removing client fee as cannot be paid due to dust levels");
-              }
-            }
-          }
-        }
-      } else {
-        log.debug(
-          "Not adding client fee output due to !sendRequest.emptyWallet = {} or sendRequestSummary.isApplyClientFee() = {}",
-          sendRequest.emptyWallet, sendRequestSummary.isApplyClientFee());
-      }
-
       // Append the Bitcoinj send request to the summary
       sendRequestSummary.setSendRequest(sendRequest);
 
@@ -853,7 +721,6 @@ public class BitcoinNetworkService extends AbstractService {
           null,
           sendRequestSummary.getTotalAmount(),
           Optional.<FiatPayment>absent(),
-          Optional.<Coin>absent(),
           Optional.<Coin>absent(),
           sendRequestSummary.getDestinationAddress(),
           sendRequestSummary.getChangeAddress(),
@@ -892,15 +759,6 @@ public class BitcoinNetworkService extends AbstractService {
     // Get the current wallet
     Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
 
-    // Build and append the client fee (if it is not set already)
-    if (sendRequestSummary.isApplyClientFee()) {
-      log.debug("Apply client fee is already set in sendRequestSummary so no need to work it out");
-    } else {
-      if (!workOutIfClientFeeIsRequired(sendRequestSummary, sendRequestSummary.isEmptyWallet())) {
-        return false;
-      }
-    }
-
     if (!sendRequestSummary.isEmptyWallet()) {
       // This is a standard send so proceed as normal
       log.debug("Treating as standard send");
@@ -936,27 +794,7 @@ public class BitcoinNetworkService extends AbstractService {
       // Examine the result to determine miner fees - the calculated maximum amount is put on the (single) tx output
       Wallet.SendRequest sendRequest = sendRequestSummary.getSendRequest().get();
 
-      // Determine the maximum amount allowing for client fees
-      Coin recipientAmount = sendRequest.tx.getOutput(0).getValue();
-      Optional<Coin> clientFeeAmountOptional;
-      if (sendRequestSummary.isApplyClientFee()) {
-        clientFeeAmountOptional = Optional.of(sendRequestSummary.getFeeState().get().getFeeOwed());
-        // Adjust the send request summary accordingly (it may be negative if user has donated to multibit.org
-        if (sendRequestSummary.getFeeState().get().getFeeOwed().compareTo(Coin.ZERO) > 0) {
-          recipientAmount = recipientAmount.subtract(clientFeeAmountOptional.get());
-        }
-        sendRequestSummary.setAmount(recipientAmount);
-
-        // There is a new recipient amount so blank the existing sendRequest (it is reconstructed in the appendSendRequest below)
-        sendRequestSummary.setSendRequest(null);
-      } else {
-        clientFeeAmountOptional = Optional.absent();
-      }
-
-      log.debug("Adjusted recipientAmount: {}, clientFeeAmount: {}", recipientAmount.toString(), clientFeeAmountOptional.orNull());
-      sendRequestSummary.setClientFeeAdded(clientFeeAmountOptional);
-
-      // Update the SendRequestSummary to ensure it is not an "empty wallet" and has the adjusted recipient amount and client fee
+      // Update the SendRequestSummary to ensure it is not an "empty wallet" and has the adjusted recipient amount
       sendRequestSummary.setEmptyWallet(false);
 
       // Attempt to build and append the send request as if it were standard
@@ -1089,7 +927,6 @@ public class BitcoinNetworkService extends AbstractService {
           totalAmount,
           Optional.<FiatPayment>absent(),
           Optional.<Coin>absent(),
-          Optional.<Coin>absent(),
           sendRequestSummary.getDestinationAddress(),
           sendRequestSummary.getChangeAddress(),
           false,
@@ -1208,7 +1045,6 @@ public class BitcoinNetworkService extends AbstractService {
           sendRequestSummary.getTotalAmount(),
           Optional.<FiatPayment>absent(),
           Optional.<Coin>absent(),
-          Optional.<Coin>absent(),
           sendRequestSummary.getDestinationAddress(),
           sendRequestSummary.getChangeAddress(),
           false,
@@ -1260,7 +1096,6 @@ public class BitcoinNetworkService extends AbstractService {
           sendRequestSummary.getTotalAmount(),
           sendRequestSummary.getFiatPayment(),
           Optional.of(sendRequest.fee) /* the actual mining fee paid */,
-          sendRequestSummary.getClientFeeAdded(),
           sendRequestSummary.getDestinationAddress(),
           sendRequestSummary.getChangeAddress(),
           true,
@@ -1280,7 +1115,6 @@ public class BitcoinNetworkService extends AbstractService {
           transactionId,
           sendRequestSummary.getTotalAmount(),
           Optional.<FiatPayment>absent(),
-          Optional.<Coin>absent(),
           Optional.<Coin>absent(),
           sendRequestSummary.getDestinationAddress(),
           sendRequestSummary.getChangeAddress(),
@@ -1326,7 +1160,6 @@ public class BitcoinNetworkService extends AbstractService {
             sendRequestSummary.getTotalAmount(),
             sendRequestSummary.getChangeAddress(),
             Optional.<Coin>absent(),
-            Optional.<Coin>absent(),
             false,
             CoreMessageKey.COULD_NOT_CONNECT_TO_BITCOIN_NETWORK,
             new String[]{"Could not reach any Bitcoin nodes"}
@@ -1342,8 +1175,7 @@ public class BitcoinNetworkService extends AbstractService {
           sendRequestSummary.getDestinationAddress(),
           sendRequestSummary.getTotalAmount(),
           sendRequestSummary.getChangeAddress(),
-          Optional.of(sendRequest.fee),
-          sendRequestSummary.getClientFeeAdded()
+          Optional.of(sendRequest.fee)
         ));
 
       // Receive it in the wallet
@@ -1397,7 +1229,6 @@ public class BitcoinNetworkService extends AbstractService {
                 sendRequestSummary.getTotalAmount(),
                 sendRequestSummary.getChangeAddress(),
                 Optional.of(sendRequest.fee),
-                sendRequestSummary.getClientFeeAdded(),
                 true,
                 CoreMessageKey.BITCOIN_SENT_OK,
                 null
@@ -1417,7 +1248,6 @@ public class BitcoinNetworkService extends AbstractService {
               new BitcoinSentEvent(
                 Optional.<Transaction>absent(), sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
                 sendRequestSummary.getChangeAddress(),
-                Optional.<Coin>absent(),
                 Optional.<Coin>absent(),
                 false,
                 CoreMessageKey.THE_ERROR_WAS,
@@ -1442,7 +1272,6 @@ public class BitcoinNetworkService extends AbstractService {
         new BitcoinSentEvent(
           Optional.<Transaction>absent(), sendRequestSummary.getDestinationAddress(), sendRequestSummary.getTotalAmount(),
           sendRequestSummary.getChangeAddress(),
-          Optional.<Coin>absent(),
           Optional.<Coin>absent(),
           false,
           CoreMessageKey.THE_ERROR_WAS,

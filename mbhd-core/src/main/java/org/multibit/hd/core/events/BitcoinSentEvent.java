@@ -26,8 +26,6 @@ public class BitcoinSentEvent implements CoreEvent {
 
   private final Optional<Coin> miningFeePaid;
 
-  private final Optional<Coin> clientFeePaid;
-
   private final Address destinationAddress;
 
   private final Address changeAddress;
@@ -49,7 +47,6 @@ public class BitcoinSentEvent implements CoreEvent {
     Coin amount,
     Address changeAddress,
     Optional<Coin> miningFeePaid,
-    Optional<Coin> clientFeePaid,
     boolean sendWasSuccessful,
     CoreMessageKey sendFailureReason,
     String[] sendFailureReasonData
@@ -58,7 +55,6 @@ public class BitcoinSentEvent implements CoreEvent {
     this.transaction = transaction;
     this.amount = amount;
     this.miningFeePaid = miningFeePaid;
-    this.clientFeePaid = clientFeePaid;
     this.destinationAddress = destinationAddress;
     this.changeAddress = changeAddress;
     this.sendWasSuccessful = sendWasSuccessful;
@@ -86,13 +82,6 @@ public class BitcoinSentEvent implements CoreEvent {
    */
   public Optional<Coin> getMiningFeePaid() {
     return miningFeePaid;
-  }
-
-  /**
-   * @return The client fee paid
-   */
-  public Optional<Coin> getClientFeePaid() {
-    return clientFeePaid;
   }
 
   /**
@@ -137,7 +126,6 @@ public class BitcoinSentEvent implements CoreEvent {
       ", destinationAddress=" + destinationAddress +
       ", changeAddress=" + changeAddress +
       ", miningFeePaid=" + miningFeePaid +
-      ", clientFeePaid=" + clientFeePaid +
       ", sendWasSuccessful=" + sendWasSuccessful +
       ", sendFailureReason=" + sendFailureReason +
       ", sendFailureReasonData=" + Arrays.toString(sendFailureReasonData) +

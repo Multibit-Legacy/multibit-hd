@@ -462,9 +462,6 @@ public class WalletService extends AbstractService {
     // Mining fee
     Optional<Coin> miningFee = calculateMiningFee(paymentType, transactionHashAsString);
 
-    // Client fee
-    Optional<Coin> clientFee = calculateClientFee(paymentType, transactionHashAsString);
-
     // Description +
     // Ensure that any payment requests that are funded by this transaction know about it
     // (The payment request knows about the transactions that fund it but not the reverse)
@@ -494,7 +491,7 @@ public class WalletService extends AbstractService {
             amountBTC,
             amountFiat,
             miningFee,
-            clientFee,
+            Optional.<Coin>absent(),
             confidenceType,
             paymentType,
             description,
@@ -827,23 +824,6 @@ public class WalletService extends AbstractService {
     }
 
     return miningFee;
-  }
-
-  private Optional<Coin> calculateClientFee(PaymentType paymentType, String transactionHashAsString) {
-
-    Optional<Coin> clientFee = Optional.absent();
-
-    if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
-      TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
-      if (transactionInfo != null) {
-        clientFee = transactionInfo.getClientFee();
-        if (clientFee == null) {
-          clientFee = Optional.absent();
-        }
-      }
-    }
-
-    return clientFee;
   }
 
   /**

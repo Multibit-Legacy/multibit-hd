@@ -927,9 +927,6 @@ public class MainController extends AbstractController implements
     log.debug("Transaction creation event with mining fee of {}", transactionCreationEvent.getMiningFeePaid());
     transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
 
-    // Append client fee info
-    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
-
     // Set the fiat payment amount
     transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
 
@@ -1773,7 +1770,6 @@ public class MainController extends AbstractController implements
                   new BitcoinSentEvent(
                     Optional.<Transaction>absent(), null, transactionData.getAmountCoin().orNull(),
                     null,
-                    Optional.<Coin>absent(),
                     Optional.<Coin>absent(),
                     false,
                     CoreMessageKey.THE_ERROR_WAS,
