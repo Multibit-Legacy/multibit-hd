@@ -70,7 +70,7 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
       new MigLayout(
         Panels.migXYLayout(),
         "[]20[]", // Column constraints
-        "[]1[]6[]18[]4[]4[]1[]" // Row constraints
+        "[]1[]30[][]" // Row constraints
       ));
 
     WalletConfiguration walletConfiguration = Configurations.currentConfiguration.getWallet().deepCopy();
@@ -97,7 +97,7 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     contentPanel.add(Labels.newLabel(MessageKey.TRANSACTION_FEE_CHOSEN), "shrink");
     contentPanel.add(transactionFeeAmountViewPanel, "growx,shrinky,push,wrap");
     contentPanel.add(Labels.newBlankLabel(), "span 2, push, wrap"); // spacer
-    
+
     setChosenFee(Coin.valueOf(walletConfiguration.getFeePerKB()));
   }
 
