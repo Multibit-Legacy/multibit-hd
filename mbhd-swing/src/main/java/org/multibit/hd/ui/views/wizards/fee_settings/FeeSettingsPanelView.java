@@ -3,8 +3,6 @@ package org.multibit.hd.ui.views.wizards.fee_settings;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.bitcoinj.core.Coin;
-import org.bitcoinj.uri.BitcoinURI;
-import org.bitcoinj.uri.BitcoinURIParseException;
 import org.multibit.hd.brit.core.services.FeeService;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
@@ -20,15 +18,10 @@ import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
 import org.multibit.hd.ui.views.wizards.WizardButton;
-import org.multibit.hd.ui.views.wizards.Wizards;
-import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.event.ActionEvent;
 
 /**
  * <p>View to provide the following to UI:</p>
@@ -40,8 +33,6 @@ import java.awt.event.ActionEvent;
  */
 
 public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWizardModel, FeeSettingsPanelModel> implements ChangeListener {
-
-  private static final Logger log = LoggerFactory.getLogger(FeeSettingsPanelView.class);
 
   // Panel specific components
   private JSlider feePerKBSlider;
@@ -106,43 +97,8 @@ public class FeeSettingsPanelView extends AbstractWizardPanelView<FeeSettingsWiz
     contentPanel.add(Labels.newLabel(MessageKey.TRANSACTION_FEE_CHOSEN), "shrink");
     contentPanel.add(transactionFeeAmountViewPanel, "growx,shrinky,push,wrap");
     contentPanel.add(Labels.newBlankLabel(), "span 2, push, wrap"); // spacer
-
-    contentPanel.add(Labels.newExplainClientFee1(FeeService.FEE_PER_SEND), "span 2, wrap");
-    contentPanel.add(Labels.newExplainClientFee2(), "span 2, wrap");
-
-    contentPanel.add(Labels.newBlankLabel(), "");
-    contentPanel.add(Buttons.newDonateNowButton(createDonateNowAction()), "wrap");
-    contentPanel.add(Labels.newBlankLabel(), "span 2, push, wrap"); // spacer
+    
     setChosenFee(Coin.valueOf(walletConfiguration.getFeePerKB()));
-  }
-
-  /**
-   * @return Action to process the 'donate now' button press
-   */
-  private Action createDonateNowAction() {
-    return new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        try {
-          Coin feePerKB = Coin.valueOf(feePerKBSlider.getValue() * Sliders.RESOLUTION);
-          setChosenFee(feePerKB);
-
-          // Set the new feePerKB
-          Configurations.currentConfiguration.getWallet().setFeePerKB(feePerKB.getValue());
-
-          Panels.hideLightBoxIfPresent();
-
-          SendBitcoinParameter donateParameter = new SendBitcoinParameter(
-            new BitcoinURI("bitcoin:" + FeeService.DONATION_ADDRESS + "?amount=" + FeeService.DEFAULT_DONATION_AMOUNT),
-            null
-          );
-          Panels.showLightBox(Wizards.newSendBitcoinWizard(donateParameter).getWizardScreenHolder());
-        } catch (BitcoinURIParseException pe) {
-          // Should not happen
-          log.error(pe.getMessage());
-        }
-      }
-    };
   }
 
   @Override
