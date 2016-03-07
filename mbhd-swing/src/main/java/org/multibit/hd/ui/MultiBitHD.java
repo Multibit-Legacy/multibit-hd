@@ -360,7 +360,6 @@ public class MultiBitHD {
     // Check for fresh install
     boolean noWallets = walletDirectories.isEmpty();
     boolean noSoftWallets = softWalletSummaries.isEmpty();
-    boolean unacceptedLicence = !Configurations.currentConfiguration.isLicenceAccepted();
 
     // HardwareWalletService needs HARDWARE_INITIALISATION_TIME milliseconds to initialise so sleep the rest
     conditionallySleep(hardwareInitialisationTime);
@@ -387,8 +386,7 @@ public class MultiBitHD {
     }
 
     // Determine if welcome wizard should show
-    boolean showWelcomeWizard = unacceptedLicence // Always prompt for a licence
-      || (deviceAttached && deviceWiped) // We have a wiped hardware wallet so need to initialise
+    boolean showWelcomeWizard = (deviceAttached && deviceWiped) // We have a wiped hardware wallet so need to initialise
       || (noSoftWallets && !deviceAttached) // No soft wallets and no hardware wallet so need to create/restore one
       || noWallets; // No wallets at all so need to create/restore one (either hard or soft)
 

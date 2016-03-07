@@ -131,7 +131,7 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
     log.info("Arranging fresh environment...");
 
     // Continue with the set up
-    setUpAfterArrange(false, hardwareWalletFixture, WalletMode.TREZOR);
+    setUpAfterArrange(hardwareWalletFixture, WalletMode.TREZOR);
 
   }
 
@@ -167,7 +167,7 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
     }
 
     // Continue with the set up
-    setUpAfterArrange(true, hardwareWalletFixture, WalletMode.TREZOR);
+    setUpAfterArrange(hardwareWalletFixture, WalletMode.TREZOR);
 
     return walletSummary;
   }
@@ -200,7 +200,7 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
     WalletSummaryFixtures.createStandardMBHDSoftWalletFixture();
 
     // Continue with the set up
-    setUpAfterArrange(true, hardwareWalletFixture, WalletMode.TREZOR);
+    setUpAfterArrange(hardwareWalletFixture, WalletMode.TREZOR);
 
   }
 
@@ -210,9 +210,8 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
    * @throws Exception If something goes wrong
    */
   protected void setUpAfterArrange(
-    boolean licenceAccepted,
-    Optional<HardwareWalletFixture> hardwareWalletFixture,
-    WalletMode walletMode) throws Exception {
+          Optional<HardwareWalletFixture> hardwareWalletFixture,
+          WalletMode walletMode) throws Exception {
 
     if (hardwareWalletFixture.isPresent()) {
 
@@ -251,7 +250,6 @@ public abstract class AbstractFestTest extends FestSwingTestCaseTemplate {
     // Always start without an exchange and with cloud backups
     Configuration configuration = Configurations.newDefaultConfiguration();
     configuration.getBitcoin().setCurrentExchange(ExchangeKey.NONE.name());
-    configuration.setLicenceAccepted(licenceAccepted);
 
     String festCloudBackupDirectory = InstallationManager.getOrCreateApplicationDataDirectory().getAbsolutePath() + "/fest-cloud-backups";
     configuration.getAppearance().setCloudBackupLocation(festCloudBackupDirectory);

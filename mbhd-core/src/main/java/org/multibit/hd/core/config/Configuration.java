@@ -36,11 +36,6 @@ public class Configuration {
   @JsonIgnore
   private LoggingConfiguration logging = new LoggingConfiguration();
 
-  /**
-   * True if the user has accepted the licence agreement
-   */
-  private boolean licenceAccepted = false;
-
   //////////////// Labs properties are added to the top configuration before being allocated to a sub-section ///////////////////////
 
   /**
@@ -187,17 +182,6 @@ public class Configuration {
   }
 
   /**
-   * @return True if the user has accepted the licence agreement
-   */
-  public boolean isLicenceAccepted() {
-    return licenceAccepted;
-  }
-
-  public void setLicenceAccepted(boolean licenceAccepted) {
-    this.licenceAccepted = licenceAccepted;
-  }
-
-  /**
    * TODO Move out of "labs" in Release 0.1
    *
    * @return True if Tor should be used for communications
@@ -255,7 +239,6 @@ public class Configuration {
 
     // Copy top level properties
     configuration.setConfigurationVersion(getConfigurationVersion());
-    configuration.setLicenceAccepted(isLicenceAccepted());
 
     // Labs properties
     configuration.setTor(isTor());

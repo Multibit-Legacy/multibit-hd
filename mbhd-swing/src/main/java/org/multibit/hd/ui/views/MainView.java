@@ -265,21 +265,15 @@ public class MainView extends JFrame {
       }
 
       // Determine the appropriate starting screen for the welcome wizard
-      if (Configurations.currentConfiguration.isLicenceAccepted()) {
-
-        // Must have run before so perform some additional checks
-        if ((WalletMode.TREZOR == walletMode || WalletMode.KEEP_KEY == walletMode)
-          && !isLanguageChange) {
-          // Starting with an uninitialised hardware wallet
-          log.debug("Showing exiting welcome wizard (select hardware wallet)");
-          Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET, walletMode).getWizardScreenHolder());
-        } else {
-          log.debug("Showing exiting welcome wizard (select language)");
-          Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE, walletMode).getWizardScreenHolder());
-        }
+      // Must have run before so perform some additional checks
+      if ((WalletMode.TREZOR == walletMode || WalletMode.KEEP_KEY == walletMode)
+              && !isLanguageChange) {
+        // Starting with an uninitialised hardware wallet
+        log.debug("Showing exiting welcome wizard (select hardware wallet)");
+        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_WALLET, walletMode).getWizardScreenHolder());
       } else {
-        log.debug("Showing exiting welcome wizard (licence agreement)");
-        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_LICENCE, walletMode).getWizardScreenHolder());
+        log.debug("Showing exiting welcome wizard (select language)");
+        Panels.showLightBox(Wizards.newExitingWelcomeWizard(WelcomeWizardState.WELCOME_SELECT_LANGUAGE, walletMode).getWizardScreenHolder());
       }
 
     } else if (showExitingCredentialsWizard) {

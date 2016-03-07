@@ -143,9 +143,6 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     Optional<HardwareWalletService> hardwareWalletService;
 
     switch (state) {
-      case WELCOME_LICENCE:
-        state = WELCOME_SELECT_LANGUAGE;
-        break;
       case WELCOME_SELECT_LANGUAGE:
         state = WELCOME_ATTACH_HARDWARE_WALLET;
         break;
@@ -275,11 +272,8 @@ public class WelcomeWizardModel extends AbstractHardwareWalletWizardModel<Welcom
     Optional<HardwareWalletService> hardwareWalletService;
 
     switch (state) {
-      case WELCOME_LICENCE:
-        state = WELCOME_LICENCE;
-        break;
       case WELCOME_SELECT_LANGUAGE:
-        state = WELCOME_LICENCE;
+        state = WELCOME_SELECT_LANGUAGE;
         break;
       case WELCOME_ATTACH_HARDWARE_WALLET:
         state = WELCOME_SELECT_LANGUAGE;
