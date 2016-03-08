@@ -10,7 +10,6 @@ import org.multibit.hd.ui.fest.use_cases.standard.sidebar.settings.exchange.Show
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.settings.exchange.VerifyExchangeNoneUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.settings.exchange.VerifyExchangeOERUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.settings.fees.ShowThenCancelFeesUseCase;
-import org.multibit.hd.ui.fest.use_cases.standard.sidebar.settings.fees.VerifyFeesDonateNowUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.settings.fees.VerifyFeesSliderUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.settings.labs.ShowThenCancelLabsUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.settings.labs.VerifyLabsToggleEnableBeta7UseCase;
@@ -61,7 +60,6 @@ public class SettingsScreenRequirements {
 
     // Fees
     new VerifyFeesSliderUseCase(window).execute(parameters);
-    new VerifyFeesDonateNowUseCase(window).execute(parameters);
 
     // TODO Sounds
 
