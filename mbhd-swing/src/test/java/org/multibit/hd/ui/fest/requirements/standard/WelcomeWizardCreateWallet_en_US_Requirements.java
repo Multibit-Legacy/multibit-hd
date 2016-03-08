@@ -8,7 +8,6 @@ import org.multibit.hd.ui.fest.use_cases.standard.credentials.QuickUnlockWalletU
 import org.multibit.hd.ui.fest.use_cases.standard.credentials.UnlockReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.environment.CloseDebugEnvironmentPopoverUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.manage_wallet.ShowManageWalletScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.AcceptLicenceUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.AttachHardwareWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.WelcomeSelectCreateWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
@@ -31,8 +30,6 @@ public class WelcomeWizardCreateWallet_en_US_Requirements {
     Map<String, Object> parameters = Maps.newHashMap();
 
     new CloseDebugEnvironmentPopoverUseCase(window).execute(parameters);
-
-    new AcceptLicenceUseCase(window).execute(parameters);
 
     // Use the en_US language
     new WelcomeSelectLanguage_en_US_UseCase(window).execute(parameters);
