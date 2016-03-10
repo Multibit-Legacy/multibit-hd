@@ -70,7 +70,7 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
     contentPanel.add(Labels.newVersion(), "shrink");
     contentPanel.add(Labels.newValueLabel(version), "push,align left,wrap");
 
-    contentPanel.add(Buttons.newLaunchBrowserButton(getLaunchBrowserAction(),MessageKey.VISIT_WEBSITE, MessageKey.VISIT_WEBSITE_TOOLTIP));
+    contentPanel.add(Buttons.newLaunchBrowserButton(getLaunchBrowserAction(),MessageKey.VISIT_WEBSITE, MessageKey.VISIT_WEBSITE_TOOLTIP), "wrap");
     contentPanel.add(Buttons.newDonateNowButton(createDonateNowAction()), "wrap");
     contentPanel.add(Labels.newAboutNote(), "grow,push,span 2,wrap");
 
