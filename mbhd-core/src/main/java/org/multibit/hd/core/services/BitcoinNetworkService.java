@@ -197,7 +197,7 @@ public class BitcoinNetworkService extends AbstractService {
       }
 
     } catch (IOException | BlockStoreException e) {
-      log.error("Block store could not be opened", e);
+      log.error("Block store could not be opened", e.getMessage());
 
       CoreEvents.fireBitcoinNetworkChangedEvent(
         BitcoinNetworkSummary.newNetworkStartupFailed(
