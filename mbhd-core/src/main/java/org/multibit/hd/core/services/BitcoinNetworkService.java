@@ -1028,7 +1028,7 @@ public class BitcoinNetworkService extends AbstractService {
       }
     } catch (Exception e) {
 
-      log.error("Could not sign the transaction", e);
+      log.error("Could not sign the transaction", e.getMessage());
 
       String transactionId = sendRequest.tx != null ? sendRequest.tx.getHashAsString() : "?";
 
