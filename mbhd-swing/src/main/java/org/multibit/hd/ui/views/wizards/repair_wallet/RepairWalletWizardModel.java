@@ -142,17 +142,18 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
       WalletSummary currentWalletSummary = currentWalletSummaryOptional.get();
       Wallet currentWallet = currentWalletSummary.getWallet();
 
-      // Work out the replay date
-      long earliestKeyCreationTime = currentWallet.getEarliestKeyCreationTime();
-      log.debug("currentWallet.getEarliestKeyCreationTime(): {}", earliestKeyCreationTime);
-
-      final DateTime replayDate = new DateTime(earliestKeyCreationTime * 1000);
+      // Work out the replay date, this is the earliestKeyCreationTime for soft wallets
+      // and the earliest HD wallet for hard wallets
+      final DateTime replayDate;
+      if (currentWalletSummary.getWalletType() == WalletType.TREZOR_HARD_WALLET) {
+        replayDate =  DateTime.parse(WalletManager.EARLIEST_HD_WALLET_DATE);
+      } else {
+        long earliestKeyCreationTime = currentWallet.getEarliestKeyCreationTime();
+        log.debug("currentWallet.getEarliestKeyCreationTime(): {}", earliestKeyCreationTime);
+        replayDate = new DateTime(earliestKeyCreationTime * 1000);
+      }
 
       log.debug("Replay of wallet will be from: {}", replayDate);
-
-      // Trezor hard wallets disable fastCatchup as some early wallets had an incorrect earliestKeyCreation date
-      // KeepKey not affected
-      final boolean enableFastCatchup = currentWalletSummary.getWalletType() != WalletType.TREZOR_HARD_WALLET;
 
       // Hide the header view
       SwingUtilities.invokeLater(
@@ -184,7 +185,7 @@ public class RepairWalletWizardModel extends AbstractWizardModel<RepairWalletSta
             CoreServices.getOrCreateBitcoinNetworkService().replayWallet(
                       InstallationManager.getOrCreateApplicationDataDirectory(),
                       Optional.of(replayDate),
-                      enableFastCatchup,
+                      false,
                       true
             );
 

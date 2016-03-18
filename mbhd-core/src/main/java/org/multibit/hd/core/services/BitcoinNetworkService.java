@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.Uninterruptibles;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.ChildNumber;
@@ -221,12 +222,25 @@ public class BitcoinNetworkService extends AbstractService {
     return startedOk;
   }
 
-  public void recalculateFastCatchupAndFilter() {
+  public void recalculateFastCatchupAndFilter(boolean wait) {
 
     if (peerGroup != null) {
-      peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
-    }
+      ListenableFuture<BloomFilter> bloomFilterFuture = peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.FORCE_SEND_FOR_REFRESH);
 
+      if (wait) {
+        try {
+          bloomFilterFuture.get(1, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+          log.error("Bloom filter construction failed with error {}", e.getMessage());
+        }
+
+        // Wait one second for the remote peer to process the new BloomFilter
+        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
+      }
+
+      log.debug("Status of BloomFilterFuture after 1 second:{}", bloomFilterFuture.isDone());
+    }
   }
 
   /**
@@ -242,7 +256,7 @@ public class BitcoinNetworkService extends AbstractService {
 
           // Recalculate the bloom filter before every sync
           log.debug("Recalculating bloom filter ...");
-          recalculateFastCatchupAndFilter();
+          recalculateFastCatchupAndFilter(true);
 
           log.debug("Downloading block chain...");
 
@@ -1399,24 +1413,26 @@ public class BitcoinNetworkService extends AbstractService {
     peerGroup.setUserAgent(
       InstallationManager.MBHD_APP_NAME,
       Configurations.currentConfiguration.getCurrentVersion());
-    if (useFastCatchup) {
-      peerGroup.setFastCatchupTimeSecs(0); // Do fast catch up starting from the genesis block
-    }
+
     peerGroup.setMaxConnections(MAXIMUM_NUMBER_OF_PEERS);
     peerGroup.setUseLocalhostPeerWhenPossible(true);
 
     peerEventListener = new MultiBitPeerEventListener();
     peerGroup.addEventListener(peerEventListener);
 
-    addWalletToPeerGroup(wallet);
+    addWalletToPeerGroup(wallet, useFastCatchup);
   }
 
-  public void addWalletToPeerGroup(Wallet wallet) {
+  public void addWalletToPeerGroup(Wallet wallet, boolean useFastCatchup) {
     if (peerGroup != null && wallet != null) {
       log.trace("Adding wallet {} to peerGroup {}", wallet, peerGroup);
       peerGroup.addWallet(wallet);
-      peerGroup.setFastCatchupTimeSecs(wallet.getEarliestKeyCreationTime());
-      peerGroup.recalculateFastCatchupAndFilter(PeerGroup.FilterRecalculateMode.SEND_IF_CHANGED);
+      if (useFastCatchup) {
+        peerGroup.setFastCatchupTimeSecs(wallet.getEarliestKeyCreationTime());
+      } else {
+        peerGroup.setFastCatchupTimeSecs(0); // Download full blocks always
+      }
+      recalculateFastCatchupAndFilter(false);
     } else {
       log.debug("Could not add wallet to peerGroup - one or more is missing");
     }
@@ -1533,7 +1549,7 @@ public class BitcoinNetworkService extends AbstractService {
    * THe current wallet is hooked up to the blockchain and new peer group
    *
    * @param blockStore     The blockstore to use for the network connection
-   * @param useFastCatchup True if
+   * @param useFastCatchup True if fast catch up from the earliestKeDate is to used
    *
    * @throws BlockStoreException                   If the block store fails
    * @throws IOException                           If the network fails
