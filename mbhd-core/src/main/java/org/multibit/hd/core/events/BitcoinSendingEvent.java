@@ -16,13 +16,11 @@ import org.bitcoinj.core.Coin;
 public class BitcoinSendingEvent implements CoreEvent {
 
   /**
-   * The total amount paid (including the client fee)
+   * The total amount paid
    */
   private final Coin amount;
 
   private final Optional<Coin> miningFeePaid;
-
-  private final Optional<Coin> clientFeePaid;
 
   private final Address destinationAddress;
 
@@ -32,13 +30,11 @@ public class BitcoinSendingEvent implements CoreEvent {
           Address destinationAddress,
           Coin amount,
           Address changeAddress,
-          Optional<Coin> miningFeePaid,
-          Optional<Coin> clientFeePaid
+          Optional<Coin> miningFeePaid
   ) {
 
     this.amount = amount;
     this.miningFeePaid = miningFeePaid;
-    this.clientFeePaid = clientFeePaid;
     this.destinationAddress = destinationAddress;
     this.changeAddress = changeAddress;
   }
@@ -53,7 +49,6 @@ public class BitcoinSendingEvent implements CoreEvent {
     return "BitcoinSendingEvent{" +
       "amount=" + amount +
       ", miningFeePaid=" + miningFeePaid +
-      ", clientFeePaid=" + clientFeePaid +
       ", destinationAddress='" + destinationAddress + '\'' +
       ", changeAddress='" + changeAddress + '\'' +
       '}';

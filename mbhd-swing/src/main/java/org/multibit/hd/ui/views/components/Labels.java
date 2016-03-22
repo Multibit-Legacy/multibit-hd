@@ -871,20 +871,6 @@ public class Labels {
   }
 
   /**
-   * @return A new "Explain client fee 1" message
-   */
-  public static JLabel newExplainClientFee1(Coin clientFee) {
-    return newNoteLabel(MessageKey.EXPLAIN_CLIENT_FEE1, new Object[]{String.valueOf(clientFee.longValue())});
-  }
-
-  /**
-   * @return A new "Explain client fee 2" message
-   */
-  public static JLabel newExplainClientFee2() {
-    return newNoteLabel(MessageKey.EXPLAIN_CLIENT_FEE2, null);
-  }
-
-  /**
    * @return A new "transaction hash" label
    */
   public static JLabel newTransactionHash() {
@@ -896,20 +882,6 @@ public class Labels {
    */
   public static JLabel newRawTransaction() {
     return Labels.newValueLabel(Languages.safeText(MessageKey.RAW_TRANSACTION));
-  }
-
-  /**
-   * @return A new "client fee" message
-   */
-  public static JLabel newClientFee() {
-    return newLabel(MessageKey.CLIENT_FEE);
-  }
-
-  /**
-   * @return A new "running total" message
-   */
-  public static JLabel newClientFeeRunningTotal() {
-    return newLabel(MessageKey.CLIENT_FEE_RUNNING_TOTAL);
   }
 
   /**

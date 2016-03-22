@@ -203,8 +203,7 @@ public enum MessageKey {
   TRANSACTION_FEE_CHOSEN("transaction_fee_chosen"),
   LOWER("lower"),
   HIGHER("higher"),
-  EXPLAIN_CLIENT_FEE1("explain_client_fee1"),
-  EXPLAIN_CLIENT_FEE2("explain_client_fee2"),
+
   DONATE_NOW("donate_now"),
 
   CLIENT_FEE("client_fee"),

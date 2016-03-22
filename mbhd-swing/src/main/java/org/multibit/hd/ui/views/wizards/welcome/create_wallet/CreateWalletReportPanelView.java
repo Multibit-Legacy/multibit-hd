@@ -10,7 +10,6 @@ import org.bitcoinj.crypto.MnemonicException;
 import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.commons.utils.Dates;
 import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.brit.core.services.FeeService;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
@@ -300,7 +299,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
         false // Do not force loading if they are already present
       );
 
-      // Update the UI after the BRIT exchange completes
+      // Update the UI
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
@@ -315,17 +314,7 @@ public class CreateWalletReportPanelView extends AbstractWizardPanelView<Welcome
       // Give the user the impression of work being done
       Uninterruptibles.sleepUninterruptibly(250, TimeUnit.MILLISECONDS);
 
-      // Once all the initial wallet creation is complete and stored to disk, perform a BRIT wallet exchange.
-      // This saves the wallet creation date/ replay date and returns a list of Bitcoin addresses to use for BRIT fee payment
-      if (seed != null && walletSummary.getWallet() != null) {
-
-        // Perform a BRIT exchange
-        FeeService feeService = CoreServices.createFeeService();
-        feeService.performExchangeWithMatcher(seed, walletSummary.getWallet());
-
-      }
-
-      // Update the UI after the BRIT exchange completes
+      // Update the UI
       SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {

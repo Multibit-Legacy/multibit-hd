@@ -37,7 +37,6 @@ wallet:
   recentWalletDataValidity: 1419692967155
   recentWalletLabel: "multibit.org 178"
   feePerKB: 3000
-licenceAccepted: true
 tor: false
 trezor: true
 showRestoreBeta7Wallets: false

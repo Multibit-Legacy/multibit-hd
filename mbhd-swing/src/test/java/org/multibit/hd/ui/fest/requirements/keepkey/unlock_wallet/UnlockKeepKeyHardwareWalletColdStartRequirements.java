@@ -9,7 +9,6 @@ import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyEnterPinFromMasterPublic
 import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyRequestCipherKeyUseCase;
 import org.multibit.hd.ui.fest.use_cases.keepkey.KeepKeyRequestMasterPublicKeyUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.credentials.UnlockReportUseCase;
-import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.AcceptLicenceUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.AttachHardwareWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
 
@@ -31,8 +30,7 @@ public class UnlockKeepKeyHardwareWalletColdStartRequirements {
 
     Map<String, Object> parameters = Maps.newHashMap();
 
-    // Work through the licence and language panels
-    new AcceptLicenceUseCase(window).execute(parameters);
+    // Work through the language panel
     new WelcomeSelectLanguage_en_US_UseCase(window).execute(parameters);
 
     new AttachHardwareWalletUseCase(window).execute(parameters);

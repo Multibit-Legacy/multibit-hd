@@ -9,7 +9,6 @@ import org.multibit.hd.ui.fest.use_cases.standard.restore_wallet.RestoreBeta7Wal
 import org.multibit.hd.ui.fest.use_cases.standard.restore_wallet.RestoreWalletDateStampUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.restore_wallet.RestoreWalletReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.restore_wallet.RestoreWalletSelectBackupLocationWalletUseCase;
-import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.AcceptLicenceUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.AttachHardwareWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.WelcomeSelectRestoreWalletUseCase;
@@ -32,8 +31,6 @@ public class WelcomeWizardRestoreBeta7Wallet_en_US_Requirements {
     Map<String, Object> parameters = Maps.newHashMap();
 
     new CloseDebugEnvironmentPopoverUseCase(window).execute(parameters);
-
-    new AcceptLicenceUseCase(window).execute(parameters);
 
     // Use the en_US language
     new WelcomeSelectLanguage_en_US_UseCase(window).execute(parameters);

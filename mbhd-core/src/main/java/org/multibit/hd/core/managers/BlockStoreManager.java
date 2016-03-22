@@ -66,7 +66,7 @@ public class BlockStoreManager {
       try {
         log.warn("Failed to get or create SPV block store", bse.getMessage());
         // If the block store creation failed, delete the block store file and try again.
-        blockStoreCreatedNew = deleteBlockStoreIfRequired(createNew, blockStoreFile);
+        blockStoreCreatedNew = deleteBlockStoreIfRequired(true, blockStoreFile);
 
         blockStore = new SPVBlockStore(networkParameters, blockStoreFile);
       } catch (BlockStoreException bse2) {

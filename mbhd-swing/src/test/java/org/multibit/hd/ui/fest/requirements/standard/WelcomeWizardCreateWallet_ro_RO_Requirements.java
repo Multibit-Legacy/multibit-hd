@@ -9,7 +9,6 @@ import org.multibit.hd.ui.fest.use_cases.standard.credentials.UnlockReportUseCas
 import org.multibit.hd.ui.fest.use_cases.standard.environment.CloseDebugEnvironmentPopoverUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.manage_wallet.ShowManageWalletScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.manage_wallet.edit_wallet.ShowThenCancelEditWalletUseCase;
-import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.AcceptLicenceUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.AttachHardwareWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.WelcomeSelectCreateWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.WelcomeSelectLanguage_ro_RO_UseCase;
@@ -32,8 +31,6 @@ public class WelcomeWizardCreateWallet_ro_RO_Requirements {
     Map<String, Object> parameters = Maps.newHashMap();
 
     new CloseDebugEnvironmentPopoverUseCase(window).execute(parameters);
-
-    new AcceptLicenceUseCase(window).execute(parameters);
 
     // Use the ro_RO language
     new WelcomeSelectLanguage_ro_RO_UseCase(window).execute(parameters);

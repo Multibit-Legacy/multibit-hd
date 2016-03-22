@@ -33,11 +33,6 @@ public class TransactionCreationEvent implements CoreEvent {
    */
   private final Optional<Coin> miningFeePaid;
 
-  /**
-   * The client fee that was paid, or Optional.absent() if no client fee was added to the transaction
-   */
-  private final Optional<Coin> clientFeePaid;
-
   private final Address destinationAddress;
 
   private final Address changeAddress;
@@ -64,7 +59,6 @@ public class TransactionCreationEvent implements CoreEvent {
     Coin amount,
     Optional<FiatPayment> fiatPayment,
     Optional<Coin> miningFeePaid,
-    Optional<Coin> clientFeePaid,
     Address destinationAddress,
     Address changeAddress,
     boolean transactionCreationWasSuccessful,
@@ -78,7 +72,6 @@ public class TransactionCreationEvent implements CoreEvent {
     this.amount = amount;
     this.fiatPayment = fiatPayment;
     this.miningFeePaid = miningFeePaid;
-    this.clientFeePaid = clientFeePaid;
     this.destinationAddress = destinationAddress;
     this.changeAddress = changeAddress;
     this.transactionCreationWasSuccessful = transactionCreationWasSuccessful;
@@ -99,10 +92,6 @@ public class TransactionCreationEvent implements CoreEvent {
   public Optional<Coin> getMiningFeePaid() {
     return miningFeePaid;
   }
-
-  public Optional<Coin> getClientFeePaid() {
-     return clientFeePaid;
-   }
 
   public boolean isTransactionCreationWasSuccessful() {
     return transactionCreationWasSuccessful;
@@ -136,7 +125,6 @@ public class TransactionCreationEvent implements CoreEvent {
       "amount=" + amount +
       ", fiatPayment=" + fiatPayment +
       ", miningFeePaid=" + miningFeePaid +
-      ", clientFeePaid=" + clientFeePaid +
       ", destinationAddress='" + destinationAddress + '\'' +
       ", changeAddress='" + changeAddress + '\'' +
       ", transactionCreationWasSuccessful=" + transactionCreationWasSuccessful +

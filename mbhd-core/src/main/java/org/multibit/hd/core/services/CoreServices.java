@@ -12,8 +12,6 @@ import org.bitcoinj.utils.Threading;
 import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.brit.core.services.BRITServices;
-import org.multibit.hd.brit.core.services.FeeService;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
@@ -24,7 +22,6 @@ import org.multibit.hd.core.dto.WalletPassword;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.error_reporting.ExceptionHandler;
 import org.multibit.hd.core.events.ShutdownEvent;
-import org.multibit.hd.core.exceptions.CoreException;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.logging.LoggingFactory;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -39,7 +36,6 @@ import org.multibit.hd.hardware.trezor.clients.TrezorHardwareWalletClient;
 import org.multibit.hd.hardware.trezor.wallets.v1.TrezorV1HidHardwareWallet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongycastle.openpgp.PGPException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -653,22 +649,6 @@ public class CoreServices {
 
     // Return the existing or new contact service
     return contactService.get();
-  }
-
-  /**
-   * @return A BRIT fee service pointing to the live Matcher machine
-   */
-  public static FeeService createFeeService() throws CoreException {
-
-    log.debug("Create fee service");
-
-    try {
-      return BRITServices.newFeeService();
-    } catch (IOException | PGPException e) {
-      log.error("Failed to create the FeeService", e);
-      // Throw as ISE to trigger ExceptionHandler
-      throw new IllegalStateException("Failed to create the FeeService");
-    }
   }
 
   /**

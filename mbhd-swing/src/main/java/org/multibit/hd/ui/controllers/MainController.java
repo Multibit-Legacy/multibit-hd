@@ -632,9 +632,9 @@ public class MainController extends AbstractController implements
           File applicationDataDirectory = InstallationManager.getOrCreateApplicationDataDirectory();
           java.util.List<File> walletDirectories = WalletManager.findWalletDirectories(applicationDataDirectory);
 
-          if (walletDirectories.isEmpty() || !Configurations.currentConfiguration.isLicenceAccepted()) {
+          if (walletDirectories.isEmpty()) {
 
-            log.debug("No wallets in the directory or licence not accepted - showing the welcome wizard");
+            log.debug("No wallets in the directory - showing the welcome wizard");
             mainView.setShowExitingWelcomeWizard(true);
             mainView.setShowExitingCredentialsWizard(false);
 
@@ -926,9 +926,6 @@ public class MainController extends AbstractController implements
     // Append miner's fee info
     log.debug("Transaction creation event with mining fee of {}", transactionCreationEvent.getMiningFeePaid());
     transactionInfo.setMinerFee(transactionCreationEvent.getMiningFeePaid());
-
-    // Append client fee info
-    transactionInfo.setClientFee(transactionCreationEvent.getClientFeePaid());
 
     // Set the fiat payment amount
     transactionInfo.setAmountFiat(transactionCreationEvent.getFiatPayment().orNull());
@@ -1773,7 +1770,6 @@ public class MainController extends AbstractController implements
                   new BitcoinSentEvent(
                     Optional.<Transaction>absent(), null, transactionData.getAmountCoin().orNull(),
                     null,
-                    Optional.<Coin>absent(),
                     Optional.<Coin>absent(),
                     false,
                     CoreMessageKey.THE_ERROR_WAS,

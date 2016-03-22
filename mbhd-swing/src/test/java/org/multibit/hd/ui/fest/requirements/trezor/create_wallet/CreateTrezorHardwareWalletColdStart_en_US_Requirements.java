@@ -3,7 +3,6 @@ package org.multibit.hd.ui.fest.requirements.trezor.create_wallet;
 import com.google.common.collect.Maps;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.testing.hardware_wallet_fixtures.HardwareWalletFixture;
-import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.AcceptLicenceUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
 
 import java.util.Map;
@@ -21,8 +20,6 @@ public class CreateTrezorHardwareWalletColdStart_en_US_Requirements extends Base
   public static void verifyUsing(FrameFixture window, HardwareWalletFixture hardwareWalletFixture) {
 
     Map<String, Object> parameters = Maps.newHashMap();
-
-    new AcceptLicenceUseCase(window).execute(parameters);
 
     // Select English in the United States
     new WelcomeSelectLanguage_en_US_UseCase(window).execute(parameters);

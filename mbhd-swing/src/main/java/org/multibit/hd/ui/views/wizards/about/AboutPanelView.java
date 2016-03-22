@@ -2,6 +2,9 @@ package org.multibit.hd.ui.views.wizards.about;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.bitcoinj.uri.BitcoinURI;
+import org.bitcoinj.uri.BitcoinURIParseException;
+import org.multibit.hd.brit.core.services.FeeService;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.ui.audio.Sounds;
@@ -14,6 +17,10 @@ import org.multibit.hd.ui.views.components.panels.PanelDecorator;
 import org.multibit.hd.ui.views.fonts.AwesomeIcon;
 import org.multibit.hd.ui.views.wizards.AbstractWizard;
 import org.multibit.hd.ui.views.wizards.AbstractWizardPanelView;
+import org.multibit.hd.ui.views.wizards.Wizards;
+import org.multibit.hd.ui.views.wizards.send_bitcoin.SendBitcoinParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -28,6 +35,8 @@ import java.awt.event.ActionEvent;
  *
  */
 public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, String> {
+
+  private static final Logger log = LoggerFactory.getLogger(AboutPanelView.class);
 
   /**
    * @param wizard    The wizard managing the states
@@ -62,7 +71,7 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
     contentPanel.add(Labels.newValueLabel(version), "push,align left,wrap");
 
     contentPanel.add(Buttons.newLaunchBrowserButton(getLaunchBrowserAction(),MessageKey.VISIT_WEBSITE, MessageKey.VISIT_WEBSITE_TOOLTIP), "wrap");
-
+    contentPanel.add(Buttons.newDonateNowButton(createDonateNowAction()), "wrap");
     contentPanel.add(Labels.newAboutNote(), "grow,push,span 2,wrap");
 
   }
@@ -102,4 +111,27 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
       }
     };
   }
+
+  /**
+    * @return Action to process the 'donate now' button press
+    */
+   private Action createDonateNowAction() {
+     return new AbstractAction() {
+       @Override
+       public void actionPerformed(ActionEvent e) {
+         try {
+           Panels.hideLightBoxIfPresent();
+
+           SendBitcoinParameter donateParameter = new SendBitcoinParameter(
+             new BitcoinURI("bitcoin:" + FeeService.DONATION_ADDRESS + "?amount=" + FeeService.DEFAULT_DONATION_AMOUNT),
+             null
+           );
+           Panels.showLightBox(Wizards.newSendBitcoinWizard(donateParameter).getWizardScreenHolder());
+         } catch (BitcoinURIParseException pe) {
+           // Should not happen
+           log.error(pe.getMessage());
+         }
+       }
+     };
+   }
 }

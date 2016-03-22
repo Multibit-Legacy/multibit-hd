@@ -220,7 +220,7 @@ public class BuySellSelectPanelView extends AbstractWizardPanelView<BuySellWizar
         // Recreate bloom filter
         BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
         Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started OK");
-        bitcoinNetworkService.recalculateFastCatchupAndFilter();
+        bitcoinNetworkService.recalculateFastCatchupAndFilter(false);
       }
     }
 
