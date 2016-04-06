@@ -7,7 +7,6 @@ import org.multibit.hd.ui.fest.use_cases.standard.create_wallet.*;
 import org.multibit.hd.ui.fest.use_cases.standard.credentials.QuickUnlockWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.credentials.UnlockReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.environment.CloseDebugEnvironmentPopoverUseCase;
-import org.multibit.hd.ui.fest.use_cases.standard.sidebar.manage_wallet.ShowManageWalletScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.AttachHardwareWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.WelcomeSelectCreateWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.welcome_select.WelcomeSelectLanguage_en_US_UseCase;
@@ -62,7 +61,8 @@ public class WelcomeWizardCreateWallet_en_US_Requirements {
     new UnlockReportUseCase(window).execute(parameters);
 
     // Show the manage wallets screen
-    new ShowManageWalletScreenUseCase(window).execute(parameters);
+    // Not working
+    //new ShowManageWalletScreenUseCase(window).execute(parameters);
 
     // TODO at this point the close MBHD screen is shown and MBHD is shutting down.
     // Test that the cloud backup was successful

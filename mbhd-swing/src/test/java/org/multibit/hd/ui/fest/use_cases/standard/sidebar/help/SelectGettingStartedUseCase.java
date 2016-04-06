@@ -32,7 +32,7 @@ public class SelectGettingStartedUseCase extends AbstractFestUseCase {
     helpContents = window
       .textBox(MessageKey.HELP.getKey() + ".editorPane")
       .text();
-    assertThat(helpContents).contains("MultiBit HD help");
+    assertThat(helpContents).contains("MultiBit HD Version");
 
     Component editorPane = window
       .textBox(MessageKey.HELP.getKey() + ".editorPane")
@@ -54,7 +54,7 @@ public class SelectGettingStartedUseCase extends AbstractFestUseCase {
     // Click the "Getting Started" link
     window
       .robot
-      .click(editorPane, new Point(100, 220));
+      .click(editorPane, new Point(100, 230));
 
     // Ensure we are on the correct page
     helpContents = window

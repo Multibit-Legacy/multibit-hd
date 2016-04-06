@@ -36,15 +36,13 @@ public class ShowManageWalletScreenUseCase extends AbstractFestUseCase {
       .selectRow(MANAGE_WALLET_ROW)
       .click();
 
-    // Expect the Manage Wallet screen to show
-
     // Row 1
     window
-      .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
-      .requireVisible()
-      .requireEnabled();
+       .button(MessageKey.SHOW_EDIT_WALLET_WIZARD.getKey())
+       .requireVisible()
+       .requireEnabled();
 
-    window
+     window
       .button(MessageKey.SHOW_WALLET_DETAILS_WIZARD.getKey())
       .requireVisible()
       .requireEnabled();

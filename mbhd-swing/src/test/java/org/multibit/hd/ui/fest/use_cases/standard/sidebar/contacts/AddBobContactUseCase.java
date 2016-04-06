@@ -140,10 +140,10 @@ public class AddBobContactUseCase extends AbstractFestUseCase {
       .click();
 
     // Expect Yes/No popover
-    window
-      .button(MessageKey.YES.getKey())
-      .requireVisible()
-      .requireEnabled();
+//    window
+//      .button(MessageKey.YES.getKey())
+//      .requireVisible()
+//      .requireEnabled();
 
     window
       .button("popover_"+MessageKey.CLOSE.getKey())
