@@ -3,7 +3,9 @@ package org.multibit.hd.ui.fest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.multibit.hd.ui.fest.test_cases.AbstractFestTest;
+import org.multibit.hd.ui.fest.test_cases.KeepKeyFestTest;
 import org.multibit.hd.ui.fest.test_cases.StandardFestTest;
+import org.multibit.hd.ui.fest.test_cases.TrezorFestTest;
 
 /**
  * <p>Test suite for Swing UI functional tests</p>
@@ -15,9 +17,9 @@ import org.multibit.hd.ui.fest.test_cases.StandardFestTest;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-  StandardFestTest.class /*,
+  StandardFestTest.class,
   TrezorFestTest.class,
-  KeepKeyFestTest.class */
+  KeepKeyFestTest.class
 })
 public class MultiBitHDFestTest extends AbstractFestTest {
 
