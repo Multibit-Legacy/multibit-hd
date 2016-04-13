@@ -178,23 +178,16 @@ public class ExternalDataListeningService extends AbstractService {
 
     Preconditions.checkNotNull(message, "'message' must be present");
 
-    try {
-      Socket clientSocket = new Socket(
-        InetAddress.getLoopbackAddress(),
-        MULTIBIT_HD_NETWORK_SOCKET
-      );
-
-      try (OutputStream out = clientSocket.getOutputStream()) {
-
+    try(Socket clientSocket = new Socket(
+            InetAddress.getLoopbackAddress(),
+            MULTIBIT_HD_NETWORK_SOCKET); 
+        OutputStream out = clientSocket.getOutputStream()) {
+      
         // Write out the raw external data for parsing by the other instance
         out.write(MESSAGE_START.getBytes(Charsets.UTF_8));
         out.write(message.getBytes(Charsets.UTF_8));
         out.write(MESSAGE_END.getBytes(Charsets.UTF_8));
-
-        out.close();
-      }
-      clientSocket.close();
-
+        
     } catch (IOException e) {
       log.error(e.getMessage(), e);
     }
