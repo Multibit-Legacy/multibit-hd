@@ -278,6 +278,7 @@ public class StandardFestTest extends AbstractFestTest {
    * <li>Exercise the Manage Wallet screen</li>
    * </ul>
    */
+  // Not working fully
   @Ignore
   public void verifyManageWalletScreen() throws Exception {
 

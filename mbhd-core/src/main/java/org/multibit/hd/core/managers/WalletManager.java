@@ -26,13 +26,11 @@ import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.commons.crypto.AESUtils;
 import org.multibit.commons.files.SecureFiles;
 import org.multibit.commons.utils.Dates;
-import org.multibit.hd.brit.core.dto.FeeState;
 import org.multibit.hd.brit.core.extensions.MatcherResponseWalletExtension;
 import org.multibit.hd.brit.core.extensions.SendFeeDtoWalletExtension;
 import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.brit.core.services.FeeService;
-import org.multibit.hd.brit.core.services.TransactionSentBySelfProvider;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Yaml;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -914,10 +912,13 @@ public enum WalletManager implements WalletEventListener {
       log.debug("Setting potential replay date from last block seen time of {}", replayDateTime);
     }
 
-    // If there is an unconfirmedTransactionReplayDate then we will go back further to that
+    // If there is an unconfirmedTransactionReplayDate and it is earlier then we will go back further to that
     if (unconfirmedTransactionReplayDate.isPresent()) {
-      replayDateTime = unconfirmedTransactionReplayDate.get();
-      log.debug("Setting potential replay date from unconfirmedTransaction replay date of {}", replayDateTime);
+      DateTime candidateReplayDate = unconfirmedTransactionReplayDate.get();
+      if (candidateReplayDate != null && candidateReplayDate.isBefore(replayDateTime)) {
+        replayDateTime = candidateReplayDate;
+        log.debug("Setting earlier potential replay date from unconfirmedTransaction replay date of {}", replayDateTime);
+      }
     }
 
     // Override with the earliest key creation date
@@ -930,10 +931,7 @@ public enum WalletManager implements WalletEventListener {
       if (replayDateTime == null) {
         replayDateTime = earliestKeyCreationDateTime;
         log.debug("Setting potential replay date from earliestKeyCreationDateTime date (1) of {}", replayDateTime);
-      } else {
-        // Do not go further back than earliest key creation date (0 will trigger epoch which gets overridden later)
-        replayDateTime = replayDateTime.isBefore(earliestKeyCreationDateTime) ? earliestKeyCreationDateTime : replayDateTime;
-        log.debug("Setting potential replay date from earliestKeyCreationDateTime date (2) of {}", replayDateTime);      }
+      }
     }
 
     // Override with earliest HD wallet date (shared with other wallets)
@@ -1161,7 +1159,7 @@ public enum WalletManager implements WalletEventListener {
         public Boolean call() throws Exception {
           log.debug("Synchronizing wallet with replay date '{}'", replayDate.orNull());
 
-          // Replay wallet using fast catch up without clearing mempool (not a repair scenario)
+          // Replay wallet, use fast catch up, no clearing mempool
           CoreServices.getOrCreateBitcoinNetworkService().replayWallet(
                   InstallationManager.getOrCreateApplicationDataDirectory(),
                   replayDate,
@@ -1377,7 +1375,7 @@ public enum WalletManager implements WalletEventListener {
 
 
   /**
-   * Get the spendable balance of the current wallet (this does not include a decrement due to the BRIT fees)
+   * Get the spendable balance of the current wallet
    * This is Optional.absent() if there is no wallet
    */
   public Optional<Coin> getCurrentWalletBalance() {
@@ -1392,7 +1390,7 @@ public enum WalletManager implements WalletEventListener {
   }
 
   /**
-   * Get the balance of the current wallet including unconfirmed (this does not include a decrement due to the BRIT fees)
+   * Get the balance of the current wallet including unconfirmed
    * This is Optional.absent() if there is no wallet
    */
   public Optional<Coin> getCurrentWalletBalanceWithUnconfirmed() {
@@ -1402,35 +1400,6 @@ public enum WalletManager implements WalletEventListener {
       return Optional.of(currentWalletSummary.get().getWallet().getBalance(Wallet.BalanceType.ESTIMATED));
     } else {
       // Unknown at this time
-      return Optional.absent();
-    }
-  }
-
-  /**
-   * @param includeOneExtraFee include an extra fee to include a tx currently being constructed that isn't in the wallet yet
-   *
-   * @return The BRIT fee state for the current wallet - this includes things like how much is
-   * currently owed to BRIT
-   */
-  public Optional<FeeState> calculateBRITFeeState(boolean includeOneExtraFee) {
-    if (feeService == null) {
-      feeService = CoreServices.createFeeService();
-    }
-
-    if (getCurrentWalletSummary() != null && getCurrentWalletSummary().isPresent()) {
-      Wallet wallet = getCurrentWalletSummary().get().getWallet();
-
-      // Set the transaction sent by self provider to use TransactionInfos
-      TransactionSentBySelfProvider transactionSentBySelfProvider = new TransactionInfoSentBySelfProvider(getCurrentWalletSummary().get().getWalletId());
-      feeService.setTransactionSentBySelfProvider(transactionSentBySelfProvider);
-
-      FeeState feeState = feeService.calculateFeeState(wallet, false);
-      if (includeOneExtraFee) {
-        feeState.setFeeOwed(feeState.getFeeOwed().add(FeeService.FEE_PER_SEND));
-      }
-
-      return Optional.of(feeState);
-    } else {
       return Optional.absent();
     }
   }

@@ -16,7 +16,6 @@ import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.commons.utils.Dates;
-import org.multibit.hd.brit.core.dto.FeeState;
 import org.multibit.hd.brit.core.services.FeeService;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
@@ -401,15 +400,12 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       Wallet.SendRequest sendRequest = paymentSession.getSendRequest();
       log.debug("SendRequest from BIP70 paymentSession: {}", sendRequest);
 
-      Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState(true);
-
       // Prepare the transaction i.e work out the fee sizes (not empty wallet)
       sendRequestSummary = new SendRequestSummary(
         sendRequest,
         fiatPayment,
         FeeService.normaliseRawFeePerKB(Configurations.currentConfiguration.getWallet().getFeePerKB()),
-        null,
-        feeState
+        null
       );
 
       // Ensure we keep track of the change address (used when calculating fiat equivalent)
@@ -433,8 +429,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
         .getRecipient()
         .get()
         .getBitcoinAddress();
-
-      Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState(true);
 
       // Create the fiat payment - note that the fiat amount is not populated, only the exchange rate data.
       // This is because the client and transaction fee is only worked out at point of sending, and the fiat equivalent is computed from that
@@ -463,7 +457,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
         changeAddress,
         FeeService.normaliseRawFeePerKB(Configurations.currentConfiguration.getWallet().getFeePerKB()),
         null,
-        feeState,
         false);
     }
 

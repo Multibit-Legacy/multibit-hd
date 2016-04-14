@@ -48,8 +48,6 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
   private JLabel miningFeePaidValue;
   private JLabel miningFeePaidRateLabel;
   private JLabel miningFeePaidRateValue;
-  private JLabel clientFeePaidLabel;
-  private JLabel clientFeePaidValue;
   private JLabel exchangeRateLabel;
   private JLabel exchangeRateValue;
 
@@ -104,14 +102,6 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
       Languages.safeText(MessageKey.TRANSACTION_FEE) + " ");
     miningFeePaidValue = Labels.newValueLabel("");
 
-    clientFeePaidLabel = Labels.newValueLabel(Languages.safeText(MessageKey.CLIENT_FEE));
-    // Add bitcoin unit to client fee label
-    LabelDecorator.applyBitcoinSymbolLabel(
-      clientFeePaidLabel,
-      Configurations.currentConfiguration.getBitcoin(),
-      Languages.safeText(MessageKey.CLIENT_FEE) + " ");
-    clientFeePaidValue = Labels.newValueLabel("");
-
     miningFeePaidRateLabel = Labels.newValueLabel(Languages.safeText(MessageKey.TRANSACTION_FEE_RATE) + " " + Languages.TRANSACTION_FEE_RATE_UNIT);
     miningFeePaidRateValue = Labels.newValueLabel("");
 
@@ -134,9 +124,6 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
 
     contentPanel.add(miningFeePaidRateLabel);
     contentPanel.add(miningFeePaidRateValue, "wrap");
-
-    contentPanel.add(clientFeePaidLabel);
-    contentPanel.add(clientFeePaidValue, "wrap");
   }
 
   @Override
@@ -188,16 +175,10 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
         // Miner's fee
         updateMiningFee(languageConfiguration, bitcoinConfiguration, miningFee, transactionData.getSize());
 
-        // Client fee
-        updateClientFee(languageConfiguration, bitcoinConfiguration, transactionData);
-
         if (transactionData.getAmountCoin().or(Coin.ZERO).compareTo(Coin.ZERO) >= 0) {
 
           // Received bitcoin
-          // Client and mining fee is not applicable
-          clientFeePaidValue.setText(Languages.safeText(MessageKey.NOT_AVAILABLE));
-          clientFeePaidLabel.setVisible(false);
-          clientFeePaidValue.setVisible(false);
+          // Mining fee is not applicable
           miningFeePaidLabel.setVisible(false);
           miningFeePaidValue.setVisible(false);
           miningFeePaidRateLabel.setVisible(false);
@@ -205,8 +186,6 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
         } else {
 
           // Sent bitcoin
-          clientFeePaidLabel.setVisible(true);
-          clientFeePaidValue.setVisible(true);
           miningFeePaidLabel.setVisible(true);
           miningFeePaidValue.setVisible(true);
           miningFeePaidRateLabel.setVisible(true);
@@ -236,16 +215,6 @@ public class TransactionAmountPanelView extends AbstractWizardPanelView<Payments
         }
       }
       exchangeRateValue.setText(exchangeRateText);
-    }
-  }
-
-  private void updateClientFee(LanguageConfiguration languageConfiguration, BitcoinConfiguration bitcoinConfiguration, TransactionData transactionData) {
-    Optional<Coin> clientFee = transactionData.getClientFee();
-    if (clientFee.isPresent()) {
-      String[] clientFeePaidArray = Formats.formatCoinAsSymbolic(clientFee.get().negate(), languageConfiguration, bitcoinConfiguration, true);
-      clientFeePaidValue.setText(clientFeePaidArray[0] + clientFeePaidArray[1]);
-    } else {
-      clientFeePaidValue.setText(Languages.safeText(MessageKey.NO_CLIENT_FEE_WAS_ADDED));
     }
   }
 

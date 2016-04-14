@@ -127,7 +127,8 @@ public class RequestBitcoinEnterDetailsPanelView extends AbstractWizardPanelView
       // Recreate bloom filter
       BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
       Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started OK");
-      bitcoinNetworkService.recalculateFastCatchupAndFilter();
+
+      bitcoinNetworkService.recalculateFastCatchupAndFilter(false);
     }
 
     displayBitcoinAddressMaV = Components.newDisplayBitcoinAddressMaV(nextAddressToShow);

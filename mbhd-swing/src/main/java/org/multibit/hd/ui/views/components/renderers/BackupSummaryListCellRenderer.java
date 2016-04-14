@@ -45,7 +45,7 @@ public class BackupSummaryListCellRenderer extends JLabel implements ListCellRen
       // If the date is available use that, otherwise use the name
       if (value.getCreated() != null) {
         // Display in the system timezone
-        setText(Dates.formatHttpDateHeaderLocal(value.getCreated()));
+        setText(Dates.formatTransactionDateLocal(value.getCreated()));
       } else {
         setText(value.getName());
       }

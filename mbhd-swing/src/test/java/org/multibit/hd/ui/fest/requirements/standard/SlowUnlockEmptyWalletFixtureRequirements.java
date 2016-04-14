@@ -1,9 +1,12 @@
 package org.multibit.hd.ui.fest.requirements.standard;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.standard.credentials.SlowUnlockWalletUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.credentials.UnlockReportUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.environment.CloseDebugEnvironmentPopoverUseCase;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>FEST Swing UI test to provide:</p>
@@ -23,6 +26,8 @@ public class SlowUnlockEmptyWalletFixtureRequirements {
     new SlowUnlockWalletUseCase(window).execute(null);
 
     new UnlockReportUseCase(window).execute(null);
+
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
   }
 }

@@ -40,7 +40,6 @@ public class ConfigurationsTest {
 
     assertThat(configuration.isPresent()).isTrue();
     assertThat(configuration.get().getAppearance().getCurrentScreen()).isEqualTo("TOOLS");
-    assertThat(configuration.get().isLicenceAccepted()).isTrue();
 
     assertThat(configuration.get().any().isEmpty()).isFalse();
   }
@@ -56,7 +55,6 @@ public class ConfigurationsTest {
     assertThat(configuration.isPresent()).isTrue();
     assertThat(configuration.get().getAppearance().getCurrentScreen()).isEqualTo("TOOLS");
     assertThat(configuration.get().isTrezor()).isTrue();
-    assertThat(configuration.get().isLicenceAccepted()).isTrue();
 
     assertThat(configuration.get().any().isEmpty()).isFalse();
 

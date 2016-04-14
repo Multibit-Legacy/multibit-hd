@@ -6,8 +6,10 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
+import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.googlecode.jcsv.writer.CSVEntryConverter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -17,8 +19,9 @@ import org.bitcoinj.crypto.ChildNumber;
 import org.bitcoinj.crypto.DeterministicKey;
 import org.bitcoinj.script.Script;
 import org.joda.time.DateTime;
-import org.multibit.commons.crypto.AESUtils;
 import org.multibit.commons.concurrent.SafeExecutors;
+import org.multibit.commons.crypto.AESUtils;
+import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
 import org.multibit.hd.core.dto.*;
 import org.multibit.hd.core.events.*;
@@ -26,7 +29,6 @@ import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
-import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.ExportManager;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -55,6 +57,7 @@ import java.util.concurrent.ExecutorService;
  * <p/>
  * Most of the functionality is provided by WalletManager and BackupManager.
  */
+@SuppressFBWarnings({"WMI_WRONG_MAP_ITERATOR"})
 public class WalletService extends AbstractService {
 
   private static final Logger log = LoggerFactory.getLogger(WalletService.class);
@@ -246,10 +249,16 @@ public class WalletService extends AbstractService {
     // Adapted transaction data to return
     Set<TransactionData> transactionDataSet = Sets.newHashSet();
 
+    // Work out the unmatched BIP70 payment requests
+    Set<PaymentData> unmatchedBip70PaymentDatas = createUnmatchedPaymentRequestDatas();
+
+    // Create a Map of all the unmatched paymentDetails
+    Map<UUID, Protos.PaymentDetails> unmatchedPaymentDetailsMap = createUnmatchedPaymentDetails(unmatchedBip70PaymentDatas);
+
     if (transactions != null) {
       for (Transaction transaction : transactions) {
         // Adapt the transaction - adding on matching MBHDPaymentRequests and BIP70 PaymentRequests
-        TransactionData transactionData = adaptTransaction(wallet, transaction);
+        TransactionData transactionData = adaptTransaction(wallet, transaction, unmatchedPaymentDetailsMap);
         transactionDataSet.add(transactionData);
       }
     }
@@ -266,18 +275,38 @@ public class WalletService extends AbstractService {
     // Union the transactionData set and paymentData set
     lastSeenPaymentDataSet = Sets.union(transactionDataSet, paymentRequestsNotFullyFunded);
 
-    Set<PaymentData> bip70PaymentData = Sets.newHashSet();
-    for (PaymentData paymentData : bip70PaymentRequestDataMap.values()) {
-      // If there is a tx hash then the bip70 payment is not a 'top level' object - not shown in payments table
-      if (!((PaymentRequestData) paymentData).getTransactionHash().isPresent()) {
-        bip70PaymentData.add(paymentData);
-      }
-    }
-    log.trace("Adding in {} BIP70 payment data rows", bip70PaymentData.size());
-    lastSeenPaymentDataSet = Sets.union(lastSeenPaymentDataSet, bip70PaymentData);
+    lastSeenPaymentDataSet = Sets.union(lastSeenPaymentDataSet, unmatchedBip70PaymentDatas);
 
     //log.debug("lastSeenPaymentDataSet:\n" + lastSeenPaymentDataSet.toString());
     return lastSeenPaymentDataSet;
+  }
+
+  private Set<PaymentData> createUnmatchedPaymentRequestDatas() {
+    // Work out the unmatched BIP70 payment requests
+    Set<PaymentData> unmatchedBip70PaymentDatas = Sets.newHashSet();
+    for (PaymentData paymentData : bip70PaymentRequestDataMap.values()) {
+      // If there is a tx hash then the bip70 payment is not a 'top level' object - not shown in payments table
+      if (!((PaymentRequestData) paymentData).getTransactionHash().isPresent()) {
+        unmatchedBip70PaymentDatas.add(paymentData);
+      }
+    }
+    return unmatchedBip70PaymentDatas;
+  }
+
+  private Map<UUID, Protos.PaymentDetails> createUnmatchedPaymentDetails(Set<PaymentData> unmatchedBip70PaymentDatas) {
+    // Create a Map of all the unmatched paymentDetails
+    Map<UUID, Protos.PaymentDetails> unmatchedPaymentDetailsMap = Maps.newHashMap();
+    for (PaymentData unmatchedBip70PaymentData : unmatchedBip70PaymentDatas) {
+      Protos.PaymentRequest paymentRequest = ((PaymentRequestData) unmatchedBip70PaymentData).getPaymentRequest().get();
+      try {
+        Protos.PaymentDetails paymentDetails = Protos.PaymentDetails.parseFrom(paymentRequest.getSerializedPaymentDetails());
+        unmatchedPaymentDetailsMap.put(((PaymentRequestData) unmatchedBip70PaymentData).getUuid(), paymentDetails);
+      } catch (InvalidProtocolBufferException ipbe) {
+        // Do nothing
+        ipbe.printStackTrace();
+      }
+    }
+    return unmatchedPaymentDetailsMap;
   }
 
   public int getPaymentDataSetSize() {
@@ -388,11 +417,12 @@ public class WalletService extends AbstractService {
    * Also merges in any transactionInfo available.
    * Also checks if this transaction funds any payment requests
    *
-   * @param wallet      the current wallet
-   * @param transaction the transaction to adapt
+   * @param wallet                     the current wallet
+   * @param transaction                the transaction to adapt
+   * @param unmatchedPaymentDetailsMap Unmatched BIP70 payment details map
    * @return TransactionData the transaction data
    */
-  public TransactionData adaptTransaction(Wallet wallet, Transaction transaction) {
+  public TransactionData adaptTransaction(Wallet wallet, Transaction transaction, Map<UUID, Protos.PaymentDetails> unmatchedPaymentDetailsMap) {
 
     // Tx id
     String transactionHashAsString = transaction.getHashAsString();
@@ -432,14 +462,11 @@ public class WalletService extends AbstractService {
     // Mining fee
     Optional<Coin> miningFee = calculateMiningFee(paymentType, transactionHashAsString);
 
-    // Client fee
-    Optional<Coin> clientFee = calculateClientFee(paymentType, transactionHashAsString);
-
     // Description +
     // Ensure that any payment requests that are funded by this transaction know about it
     // (The payment request knows about the transactions that fund it but not the reverse)
 
-    String description = calculateDescriptionAndUpdatePaymentRequests(wallet, transaction, transactionHashAsString, paymentType, amountBTC.get());
+    String description = calculateDescriptionAndUpdatePaymentRequests(wallet, transaction, transactionHashAsString, paymentType, amountBTC.get(), unmatchedPaymentDetailsMap);
     // Also works out outputAddresses
 
     // Include the raw serialized form of the transaction for lowest level viewing
@@ -464,7 +491,7 @@ public class WalletService extends AbstractService {
             amountBTC,
             amountFiat,
             miningFee,
-            clientFee,
+            Optional.<Coin>absent(),
             confidenceType,
             paymentType,
             description,
@@ -567,7 +594,8 @@ public class WalletService extends AbstractService {
           Transaction transaction,
           String transactionHashAsString,
           PaymentType paymentType,
-          Coin amountBTC
+          Coin amountBTC,
+          Map<UUID, Protos.PaymentDetails> unmatchedPaymentDetailsMap
   ) {
 
     StringBuilder description = new StringBuilder();
@@ -633,6 +661,43 @@ public class WalletService extends AbstractService {
           } else {
             // Not sure what this output sends to but put something neutral
             description.append(" N/A");
+          }
+        }
+      }
+
+      // Link the transaction to the BIP70 payment request by UUID
+      if (transaction.getOutputs() != null) {
+        for (TransactionOutput transactionOutput : transaction.getOutputs()) {
+          // Iterate through all the Outputs of all the BIP70 payment requests to see if this TransactionOutput pays to that Output
+          for (UUID uuid : unmatchedPaymentDetailsMap.keySet()) {
+            Protos.PaymentDetails unmatchedPaymentDetail = unmatchedPaymentDetailsMap.get(uuid);
+            if (unmatchedPaymentDetail != null) {
+              List<Protos.Output> outputs = unmatchedPaymentDetail.getOutputsList();
+              for (Protos.Output output : outputs) {
+                ByteString scriptBytes = output.getScript();
+                Script script = new Script(scriptBytes.toByteArray());
+                if (script.isSentToAddress()) {
+                  Address bip70ToAddress = script.getToAddress(BitcoinNetwork.current().get());
+                  Address transactionOutputToAddress = transactionOutput.getAddressFromP2PKHScript(BitcoinNetwork.current().get());
+                  if (transactionOutputToAddress != null && transactionOutputToAddress.equals(bip70ToAddress)) {
+                    // If so then we have matched the BIP70 payment request to the transaction
+                    // Set the Transaction hash and re-add to WalletService (replacing any pre-existing paymentRequestData with the same UUID)
+                    Sha256Hash txHash = transaction.getHash();
+                    PaymentRequestData paymentRequestData = bip70PaymentRequestDataMap.get(uuid);
+                    if (paymentRequestData != null) {
+                      paymentRequestData.setTransactionHash(Optional.of(txHash));
+                      addPaymentRequestData(paymentRequestData);
+                      log.debug("Linking the BIP70 payment request with UUID {} to the transaction with hash {}", uuid, txHash);
+
+                      // In theory a single tx can pay multiple payment requests but the UI does not permit this so break to save time
+                      break;
+                    } else {
+                      log.debug("Could not find PaymentRequestData with UUID: {}, carrying on", uuid);
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -759,23 +824,6 @@ public class WalletService extends AbstractService {
     }
 
     return miningFee;
-  }
-
-  private Optional<Coin> calculateClientFee(PaymentType paymentType, String transactionHashAsString) {
-
-    Optional<Coin> clientFee = Optional.absent();
-
-    if (paymentType == PaymentType.SENDING || paymentType == PaymentType.SENT) {
-      TransactionInfo transactionInfo = transactionInfoMap.get(transactionHashAsString);
-      if (transactionInfo != null) {
-        clientFee = transactionInfo.getClientFee();
-        if (clientFee == null) {
-          clientFee = Optional.absent();
-        }
-      }
-    }
-
-    return clientFee;
   }
 
   /**
@@ -1122,7 +1170,14 @@ public class WalletService extends AbstractService {
     if (WalletManager.INSTANCE.getCurrentWalletSummary().isPresent() && WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet() != null) {
       Wallet wallet = WalletManager.INSTANCE.getCurrentWalletSummary().get().getWallet();
       Transaction transaction = wallet.getTransaction(Sha256Hash.wrap(transactionHashAsString));
-      return adaptTransaction(wallet, transaction);
+
+      // Work out the unmatched BIP70 payment requests
+      Set<PaymentData> unmatchedBip70PaymentDatas = createUnmatchedPaymentRequestDatas();
+
+      // Create a Map of all the unmatched paymentDetails
+      Map<UUID, Protos.PaymentDetails> unmatchedPaymentDetailsMap = createUnmatchedPaymentDetails(unmatchedBip70PaymentDatas);
+
+      return adaptTransaction(wallet, transaction, unmatchedPaymentDetailsMap);
     } else {
       // No transaction with that hash in current wallet
       return null;
@@ -1494,9 +1549,9 @@ public class WalletService extends AbstractService {
 
       KeyParameter oldWalletPasswordDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(oldPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
       byte[] decryptedOldBackupAESKey = AESUtils.decrypt(
-        encryptedOldBackupAESKey,
-        oldWalletPasswordDerivedAESKey,
-        WalletManager.aesInitialisationVector());
+              encryptedOldBackupAESKey,
+              oldWalletPasswordDerivedAESKey,
+              WalletManager.aesInitialisationVector());
 
       KeyParameter newWalletPasswordDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(newPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
       byte[] encryptedNewBackupAESKey = AESUtils.encrypt(

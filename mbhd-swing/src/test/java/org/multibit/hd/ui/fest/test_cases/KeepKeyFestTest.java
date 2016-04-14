@@ -35,7 +35,7 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * <li>Unlock the wallet</li>
    * </ul>
    */
-  @Test
+  @Ignore
   public void verifyCreateHardwareWallet_ColdStart() throws Exception {
 
     // Prepare an empty and attached KeepKey device that will be initialised
@@ -56,7 +56,7 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * <li>Create a wallet in Romanian</li>
    * </ul>
    */
-  @Test
+  @Ignore
   public void verifyCreateHardwareWallet_ro_RO_ColdStart() throws Exception {
 
     // Prepare an empty and attached Trezor device that will be initialised
@@ -77,7 +77,7 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * <li>Create a wallet in Russian</li>
    * </ul>
    */
-  @Test
+  @Ignore
   public void verifyCreateHardwareWallet_ru_RU_ColdStart() throws Exception {
 
     // Prepare an empty and attached Trezor device that will be initialised
@@ -141,7 +141,7 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * <li>Unlock wallet</li>
    * </ul>
    */
-  @Test
+  @Ignore
   public void verifyUnlockHardwareWallet_ColdStart() throws Exception {
 
     // Prepare an initialised and attached KeepKey device that will be unlocked
@@ -213,7 +213,7 @@ public class KeepKeyFestTest extends AbstractFestTest {
    * <li>Send and force a PIN request</li>
    * </ul>
    */
-  @Test
+  @Ignore
   public void verifySendScreen() throws Exception {
 
     // Prepare an initialised and attached KeepKey device that will be restored then unlocked

@@ -39,7 +39,7 @@ public class ContactsScreenRequirements {
     new EditBobContactUseCase(window).execute(parameters);
 
     // Click Edit and fill in some extra info on Bob but then Cancel
-    new EditThenCancelBobContactUseCase(window).execute(parameters);
+    //new EditThenCancelBobContactUseCase(window).execute(parameters);
 
     // Select Alice and Bob then use multi-edit
     new EditAliceAndBobContactUseCase(window).execute(parameters);

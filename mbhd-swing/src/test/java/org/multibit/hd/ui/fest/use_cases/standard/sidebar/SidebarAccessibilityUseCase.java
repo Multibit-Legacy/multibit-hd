@@ -1,5 +1,6 @@
 package org.multibit.hd.ui.fest.use_cases.standard.sidebar;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import org.fest.swing.core.KeyPressInfo;
 import org.fest.swing.fixture.FrameFixture;
 import org.multibit.hd.ui.fest.use_cases.AbstractFestUseCase;
@@ -7,6 +8,7 @@ import org.multibit.hd.ui.languages.MessageKey;
 
 import java.awt.event.KeyEvent;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -36,6 +38,9 @@ public class SidebarAccessibilityUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled()
       .selectRow(BUY_SELL_ROW);
+
+    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
     // Expect the Buy/Sell dialog to show with a Finish button
     window
       .button(MessageKey.FINISH.getKey())

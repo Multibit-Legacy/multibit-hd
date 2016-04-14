@@ -9,15 +9,17 @@
     <delete dir="${basedir}/mbhd-swing/src/main/resources/assets/images/en/screenshots/mbhd-0.1" />
     <delete dir="${basedir}/mbhd-swing/src/main/resources/assets/html/en/help/hd0.2" />
     <delete dir="${basedir}/mbhd-swing/src/main/resources/assets/images/en/screenshots/mbhd-0.2" />
+    <delete dir="${basedir}/mbhd-swing/src/main/resources/assets/html/en/help/hd0.3" />
+    <delete dir="${basedir}/mbhd-swing/src/main/resources/assets/images/en/screenshots/mbhd-0.3" />
 
     <!-- Replace the directories -->
-    <mkdir dir="${basedir}/../multibit-website/src/main/resources/views/html/en/help/hd0.2" />
+    <mkdir dir="${basedir}/../multibit-website/src/main/resources/views/html/en/help/hd0.3" />
     <!-- no screen shots in embedded help -->
 
     <!-- MultiBit HD help files for "en" -->
     <!-- Requires MultiBit branch release-4.0.0 or later to access the files -->
-    <copy todir="${basedir}/mbhd-swing/src/main/resources/assets/html/en/help/hd0.2" overwrite="true" failonerror="false">
-      <fileset dir="${basedir}/../multibit-website/src/main/resources/views/html/en/help/hd0.2"/>
+    <copy todir="${basedir}/mbhd-swing/src/main/resources/assets/html/en/help/hd0.3" overwrite="true" failonerror="false">
+      <fileset dir="${basedir}/../multibit-website/src/main/resources/views/html/en/help/hd0.3"/>
     </copy>
 
   </target>

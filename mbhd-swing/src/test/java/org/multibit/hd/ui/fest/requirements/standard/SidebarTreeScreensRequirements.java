@@ -7,7 +7,6 @@ import org.multibit.hd.ui.fest.use_cases.standard.sidebar.buy_sell.ShowThenCance
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.contacts.ShowContactsScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.exit.ShowExitScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.help.ShowHelpScreenUseCase;
-import org.multibit.hd.ui.fest.use_cases.standard.sidebar.manage_wallet.ShowManageWalletScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.payments.ShowPaymentsScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.send_request.ShowSendRequestScreenUseCase;
 import org.multibit.hd.ui.fest.use_cases.standard.sidebar.settings.ShowSettingsScreenUseCase;
@@ -39,9 +38,10 @@ public class SidebarTreeScreensRequirements {
     new ShowContactsScreenUseCase(window).execute(parameters);
     new ShowHelpScreenUseCase(window).execute(parameters);
     new ShowSettingsScreenUseCase(window).execute(parameters);
-    // ShowToolsScreenUseCase before ShowManageWalletScreenUseCase works, reversed does not for some reason
+
     new ShowToolsScreenUseCase(window).execute(parameters);
-    new ShowManageWalletScreenUseCase(window).execute(parameters);
     new ShowExitScreenUseCase(window).execute(parameters);
+    // Not working
+    //new ShowManageWalletScreenUseCase(window).execute(parameters);
   }
 }

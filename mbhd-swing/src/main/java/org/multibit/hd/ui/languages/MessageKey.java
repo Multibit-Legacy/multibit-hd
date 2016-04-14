@@ -203,8 +203,7 @@ public enum MessageKey {
   TRANSACTION_FEE_CHOSEN("transaction_fee_chosen"),
   LOWER("lower"),
   HIGHER("higher"),
-  EXPLAIN_CLIENT_FEE1("explain_client_fee1"),
-  EXPLAIN_CLIENT_FEE2("explain_client_fee2"),
+
   DONATE_NOW("donate_now"),
 
   CLIENT_FEE("client_fee"),
@@ -395,6 +394,8 @@ public enum MessageKey {
 
   SEND_PAYMENT_ACK_MEMO_LABEL("send_payment_ack_memo_label"),
   SEND_PAYMENT_ACK_MEMO_TITLE("send_payment_ack_memo_title"),
+
+  NO_MONEY_TO_SEND("no_money_to_send"),
 
   EXIT_OR_SWITCH_TITLE("exit_or_switch_title"),
 

@@ -9,13 +9,14 @@ import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.params.MainNetParams;
 import org.multibit.commons.utils.Dates;
-import org.multibit.hd.brit.core.dto.FeeState;
 import org.multibit.hd.brit.core.services.FeeService;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
 import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.events.CoreEvents;
 import org.multibit.hd.core.events.ExchangeRateChangedEvent;
+import org.multibit.hd.core.events.TransactionCreationEvent;
 import org.multibit.hd.core.exchanges.ExchangeKey;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.services.ApplicationEventService;
@@ -243,6 +244,26 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
     bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
     Preconditions.checkState(bitcoinNetworkService.isStartedOk(), "'bitcoinNetworkService' should be started");
 
+    // Check the wallet balance is available and greater than zero, otherwise create a transaction creation failure
+    if (!coinAmount.isPresent() || Coin.ZERO.equals(coinAmount.get())) {
+         // Fire a failed transaction creation event - cannot empty a wallet with no bitcoin in it
+      CoreEvents.fireTransactionCreationEvent(
+              new TransactionCreationEvent(
+                      "?",
+                      Coin.ZERO,
+                      Optional.<FiatPayment>absent(),
+                      Optional.<Coin>absent(),
+                      null,
+                      null,
+                      false,
+                      CoreMessageKey.THE_ERROR_WAS.getKey(),
+                      new String[]{Languages.safeText(MessageKey.NO_MONEY_TO_SEND)},
+                      Optional.<String>absent(),
+                      false));
+      // Prepare failed
+      return false;
+    }
+
     Address changeAddress = bitcoinNetworkService.getNextChangeAddress();
 
     Address bitcoinAddress = enterDetailsPanelModel
@@ -252,9 +273,6 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
       .getBitcoinAddress();
 
     String password = enterDetailsPanelModel.getEnterPasswordModel().getValue();
-
-    Optional<FeeState> feeState = WalletManager.INSTANCE.calculateBRITFeeState(true);
-    log.debug("FeeState after initial calculation: {}", feeState);
 
     // Create the fiat payment - note that the fiat amount is not populated, only the exchange rate data.
     // This is because the client and transaction fee is only worked out at point of sending, and the fiat equivalent is computed from that
@@ -283,7 +301,6 @@ public class EmptyWalletWizardModel extends AbstractHardwareWalletWizardModel<Em
       changeAddress,
       FeeService.normaliseRawFeePerKB(Configurations.currentConfiguration.getWallet().getFeePerKB()),
       password,
-      feeState,
       true);
 
     // Set a tx description of 'Empty Wallet' localised

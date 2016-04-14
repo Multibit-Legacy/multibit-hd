@@ -153,10 +153,10 @@ public class AddAliceContactUseCase extends AbstractFestUseCase {
       .click();
 
     // Expect Yes/No popup)
-    window
-      .button(MessageKey.YES.getKey())
-      .requireVisible()
-      .requireEnabled();
+//    window
+//      .button(MessageKey.YES.getKey())
+//      .requireVisible()
+//      .requireEnabled();
 
     window
       .button("popover_"+MessageKey.CLOSE.getKey())
