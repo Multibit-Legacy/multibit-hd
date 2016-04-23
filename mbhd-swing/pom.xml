@@ -124,7 +124,6 @@
                     <urn>com.google.protobuf:protobuf-java:2.5.0:jar:null:compile:a10732c76bfacdbd633a7eb0f7968b1059a65dfa</urn>
                     <urn>com.google.zxing:core:1.7:jar:null:compile:888814a387fc7570d50c4fbf4d20555d4fdd7646</urn>
                     <urn>com.googlecode.jcsv:jcsv:1.4.0:jar:null:compile:3b2dfd1ff251cdcf4745a7643a966f14d10e2532</urn>
-                    <urn>com.googlecode.soundlibs:jlayer:1.0.1-1:jar:null:compile:173a17a780aa0e6fa42fc011b42a5555b7da834e</urn>
                     <urn>com.lambdaworks:scrypt:1.4.0:jar:null:compile:906506b74f30c8c20bccd9ed4a11112d8941fe87</urn>
                     <urn>com.madgag.spongycastle:core:1.51.0.0:jar:null:compile:0f642963312ea0e615ad65f28adc5a5b3a2a0862</urn>
                     <urn>com.madgag.spongycastle:pg:1.51.0.0:jar:null:compile:0597a22ac4d21069afce4d101ff4b027a19ef1a2</urn>
@@ -291,13 +290,6 @@
       <groupId>com.miglayout</groupId>
       <artifactId>miglayout-swing</artifactId>
       <version>4.2</version>
-    </dependency>
-
-    <!-- JLayer for MP3 playback -->
-    <dependency>
-      <groupId>com.googlecode.soundlibs</groupId>
-      <artifactId>jlayer</artifactId>
-      <version>1.0.1-1</version>
     </dependency>
 
     <!-- ZXing for QR code generation -->
