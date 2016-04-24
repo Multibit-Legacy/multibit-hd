@@ -95,7 +95,7 @@ public class Sounds {
         }
       });
 
-      clip.open(AudioSystem.getAudioInputStream(new ByteArrayInputStream(sound));
+      clip.open(AudioSystem.getAudioInputStream(new ByteArrayInputStream(sound)));
       clip.start();
     } catch (UnsupportedAudioFileException e) {
       throw new IllegalStateException(e.getMessage());
