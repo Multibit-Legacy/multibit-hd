@@ -2,12 +2,11 @@ package org.multibit.hd.ui.audio;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.Player;
 import org.multibit.commons.concurrent.SafeExecutors;
 import org.multibit.hd.core.config.SoundConfiguration;
 import org.spongycastle.util.io.Streams;
 
+import javax.sound.sampled.*;
 import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -86,16 +85,24 @@ public class Sounds {
 
     byte[] sound = allSounds.get(name);
 
-    Player player = null;
     try {
-      player = new Player(new ByteArrayInputStream(sound));
-      player.play();
-    } catch (JavaLayerException e) {
+      final Clip clip = AudioSystem.getClip();
+      clip.addLineListener(new LineListener() {
+        @Override
+        public void update(LineEvent event) {
+          if (event.getType() == LineEvent.Type.STOP)
+            clip.close();
+        }
+      });
+
+      clip.open(AudioSystem.getAudioInputStream(new ByteArrayInputStream(sound)));
+      clip.start();
+    } catch (UnsupportedAudioFileException e) {
       throw new IllegalStateException(e.getMessage());
-    } finally {
-      if (player != null) {
-        player.close();
-      }
+    } catch (IOException e) {
+      throw new IllegalStateException(e.getMessage());
+    } catch (LineUnavailableException e) {
+      throw new IllegalStateException(e.getMessage());
     }
   }
 
@@ -107,7 +114,7 @@ public class Sounds {
   private static byte[] load(String name) {
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    try (InputStream is = Sounds.class.getResourceAsStream("/assets/sounds/" + name + ".mp3")) {
+    try (InputStream is = Sounds.class.getResourceAsStream("/assets/sounds/" + name + ".wav")) {
 
       Streams.pipeAll(is, baos);
 
