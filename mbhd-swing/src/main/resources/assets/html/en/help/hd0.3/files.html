@@ -2,13 +2,13 @@
 
 <p>This is a technical article aimed at people with working knowledge of navigating files on their computer.</p>
 
-<p>When MultiBit HD runs, it creates various files on your computer. This help section describes what each of these files is for.</p>
+<p>When Multibit runs, it creates various files on your computer. This help section describes what each of these files is for.</p>
 
 <h3>Installation directory</h3>
 
-<p>The installation directory is where you installed MultiBit HD. No configuration files or wallets are stored there normally.</p>
+<p>The installation directory is where you installed Multibit. No configuration files or wallets are stored there normally.</p>
 
-<p>If you chose the default installation options, you will find the MultiBit HD application in one of the following locations:</p>
+<p>If you chose the default installation options, you will find the Multibit application in one of the following locations:</p>
 
 <ul>
   <li>Windows (7,8) - <code>C:\Program Files\MultiBit HD</code></li>
@@ -17,12 +17,12 @@
 
 <h3>Application directory</h3>
 
-<p>The application directory is where MultiBit HD will store your configuration and wallets. This allows you to safely upgrade
-  MultiBit HD without worrying about deleting important data.</p>
+<p>The application directory is where Multibit will store your configuration and wallets. This allows you to safely upgrade
+  Multibit without worrying about deleting important data.</p>
 
 <p>In the following section <code>[EXAMPLE]</code> is used to indicate an environment variable called "EXAMPLE". Environment variables
   are used to provide common starting points for directories. If you have an unusual set up you may need to refer to these to locate
-  where MultiBit HD has placed its application directory. Open a "command prompt" or "Terminal" and type "set" or "export" to see a
+  where Multibit has placed its application directory. Open a "command prompt" or "Terminal" and type "set" or "export" to see a
   list of them.</p>
 
 <p>Before exploring environment variables, try one of the following locations.<strong>You may need to enable hidden directories</strong>.</p>
@@ -47,7 +47,7 @@
 
 <h3>Contents of application directory</h3>
 
-<p>Here is a list of the files that MultiBit HD uses:</p>
+<p>Here is a list of the files that Multibit uses:</p>
 
 <ul>
   <li><code>mbhd.yaml</code> - Contains general preferences and configuration information (theme, exchange etc).</li>
@@ -61,10 +61,10 @@
   <li><code>multibit-hd.log - This is the latest log</code></li>
   <li><code>multibit-hd-[timestamp].zip - This is a ZIP of an old log</code></li>
 </ul>
-<p>Log files are automatically deleted after 14 days and all times within are in UTC. At present MultiBit HD is not configured
+<p>Log files are automatically deleted after 14 days and all times within are in UTC. At present Multibit is not configured
 to automatically log to syslog.</p>
 <p>The log files are extremely useful for debugging and are included in an error report upload. In rare circumstances you may 
-may be  asked by a member of MultiBit HD support staff to search your logs as part of an investigation into an Issue that you
+may be  asked by a member of Multibit support staff to search your logs as part of an investigation into an Issue that you
 have raised with us. The procedure for this search is as follows:</p>
 <ol>
   <li>Create a new blank text document using the standard text editor for your system (e.g. Notepad, TextMate, gEdit etc)</li>
@@ -105,9 +105,9 @@ only just discovered the problem then assess the impact below.</p>
 
 <p>Deleting different files/directories will have different impacts:</p>
 <ul>
-  <li><code>logs</code> directory - No problem. MultiBit HD will simply create new logs when it next starts</li>
+  <li><code>logs</code> directory - No problem. Multibit will simply create new logs when it next starts</li>
   <li><code>mbhd.yaml</code> file - You'll need to work through the welcome wizard but you can select "Use an existing wallet" when prompted</li>
-  <li><code>mbhd.checkpoints</code> file - Synchronization will take a very long time, it is best to re-install MultiBit HD</li>
+  <li><code>mbhd.checkpoints</code> file - Synchronization will take a very long time, it is best to re-install Multibit</li>
   <li><code>mbhd.spvchain</code> file - Synchronization will take a long time based on how old your wallet is</li>
   <li><code>mbhd-[some long number]</code> directory - You've deleted a wallet. Refer to <a href="restore-wallet.html">"Restoring a wallet"</a>
   for step by step instructions to recover.</li>

@@ -10,7 +10,7 @@
   <li>your payment history and notes.</li>
 </ul>
 
-<p>Hardware and software can fail, be lost or stolen. MultiBit HD ensures that an automatic encrypted backup is made of your wallet
+<p>Hardware and software can fail, be lost or stolen. Multibit ensures that an automatic encrypted backup is made of your wallet
   to a location that you specify.</p>
 
 <h4>Use a cloud backup service</h4>
@@ -18,12 +18,12 @@
 <p>Setting up a cloud backup service is straightforward and for small amounts of data (under 2GB) it is often free. We would strongly
   urge you to consider <a href="https://spideroak.com" target="_blank">SpiderOak</a> for its end to end encryption. An alternative is Dropbox which is extremely
     common and provides an excellent user experience.</p>
-<p>MultiBit HD encrypts all your cloud backup information using a strong AES key derived from either your wallet words or from a password provided by your Trezor. It is safe to
+<p>Multibit encrypts all your cloud backup information using a strong AES key derived from either your wallet words or from a password provided by your Trezor. It is safe to
   store in the cloud without worrying about bad people being able to read your data.</p>
 
 <h3>Technical details</h3>
 
-<p>MultiBit HD maintains three stages of wallet backup:</p>
+<p>Multibit maintains three stages of wallet backup:</p>
 <ul>
   <li>rolling backup - these are recent copies of your wallet. They are encrypted with your wallet password / Trezor provided password</li>
   <li>local backup - this is a zip of the wallet directory (less block chain) encrypted with a key derived from the wallet words or from your Trezor provided password. It is stored
@@ -62,12 +62,12 @@
 
 <h4>Managing all the backups</h4>
 
-<p>MultiBit HD maintains a comprehensive backup strategy consisting of rolling, local and cloud backups. While technical in nature
+<p>Multibit maintains a comprehensive backup strategy consisting of rolling, local and cloud backups. While technical in nature
   interested readers may find the following information helpful.</p>
 
-<p>After successfully unlocking a wallet MultiBit HD will follow this process to maintain backups:</p>
+<p>After successfully unlocking a wallet Multibit will follow this process to maintain backups:</p>
 <ol>
-  <li>Wait 1 minute after MultiBit HD starts and then start "ticking" every 2 minutes.</li>
+  <li>Wait 1 minute after Multibit starts and then start "ticking" every 2 minutes.</li>
   <li>Every "tick" (2 minutes), create a rolling wallet backup. This is a copy of the encrypted wallet stored in the
     wallet's <code>rolling-backup</code> sub-directory. It is timestamped and encrypted with the wallet password.
     There are up to 4 of these in place covering the last 8 minutes of activity.
@@ -103,7 +103,7 @@
 
 <h4>What about storing wallets directly on USB keys ?</h4>
 
-<p>MultiBit HD does not support changing the location of where wallets are stored.</p>
+<p>Multibit does not support changing the location of where wallets are stored.</p>
 
 <p>This is by design. We found that the seemingly straightforward option of letting users choose where to put their wallet,
   including on removable media such as USB drives (IronKeys and so forth), created a whole host of subtle problems:</p>
@@ -121,7 +121,7 @@
   the path/mapping is likely to be different between machines. Consequently by relying on the removable media you run the risk of losing 3 out
   of the 4 possible recovery mechanisms (wallet words being the only remaining one, which won't recover all your contacts, exchange rates etc).</p>
 
-<p>Overall, the failure rate for storing wallets on removable media is too high for the intended user of MultiBit HD so we've chosen
+<p>Overall, the failure rate for storing wallets on removable media is too high for the intended user of Multibit so we've chosen
   not to support it for the above safety and security reasons.</p>
 
 <h4>Related</h4>

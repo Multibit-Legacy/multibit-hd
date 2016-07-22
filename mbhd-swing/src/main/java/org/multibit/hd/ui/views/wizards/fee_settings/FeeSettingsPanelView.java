@@ -3,7 +3,7 @@ package org.multibit.hd.ui.views.wizards.fee_settings;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.bitcoinj.core.Coin;
-import org.multibit.hd.brit.core.services.FeeService;
+import org.multibit.hd.core.services.FeeService;
 import org.multibit.hd.core.config.Configuration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.WalletConfiguration;

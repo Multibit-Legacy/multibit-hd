@@ -1,4 +1,4 @@
-<h2 class="text-center">Thank you for choosing MultiBit HD</h2>
+<h2 class="text-center">Thank you for choosing Multibit</h2>
 
 <p><a href="https://www.ej-technologies.com" target="_blank">Install4j by EJ Technologies GmBH</a> was used to create our installers.
   If you're a Java developer needing an installer solution you should check them out.</p>
@@ -12,7 +12,7 @@
     <div class="col-xs-6">
       <a href="https://www.youtube.com/watch?v=3B6xrfoPqPg&rel=0&modestbranding=1" target="_blank"><img class="img-responsive"
                                                                                                         src="/images/en/hd0_1/how-to-create-a-wallet-0.1.2.png"
-                                                                                                        title="How to create a wallet with MultiBit HD"></a>
+                                                                                                        title="How to create a wallet with Multibit"></a>
     </div>
     <div class="col-xs-6">
       <h4>Quick install guide</h4>
@@ -42,7 +42,7 @@ cd ~
 chmod +x multibit-hd-unix-0.x.y.sh
 ./multibit-hd-unix-0.x.y.sh
 </pre>
-<p>After a short time MultiBit HD will show a wizard and install into <code>~/multibit-hd</code>. Your application directory will be <code>~/.multibit-hd</code> and will hold all
+<p>After a short time Multibit will show a wizard and install into <code>~/multibit-hd</code>. Your application directory will be <code>~/.multibit-hd</code> and will hold all
   your configuration and wallet files. It will appear on first startup. A basic Unity <code>.desktop</code> file will be created and registered if available so you should be able
   to simply open Unity and search for "MultiBit" to get started (but see later). Alternatively you can run from the command line as follows (you'll see a lot of logging messages
   this way):</p>
@@ -51,7 +51,7 @@ cd multibit-hd
 ./multibit-hd &
 </pre>
 
-<p>After running the installer you may need to run some scripts to further integrate MultiBit HD into your environment. In particular the <a href="https://buytrezor.com/?a=multibit.org" target="_blank">Trezor</a> support requires certain
+<p>After running the installer you may need to run some scripts to further integrate Multibit into your environment. In particular the <a href="https://buytrezor.com/?a=multibit.org" target="_blank">Trezor</a> support requires certain
   <code>udev</code> rules to be in place. The following sections provide these scripts. If you have a distro that is not included and have a script you'd like to share please let
   us know through the website issue link at the foot of the page.</p>
 
@@ -67,7 +67,7 @@ ATTRS{idProduct}=="0001", ATTRS{idVendor}=="534c", MODE="0660", GROUP="plugdev"
 ATTRS{idProduct}=="0001", ATTRS{idVendor}=="2b24", MODE="0660", GROUP="plugdev"
 _EOF_
 </pre>
-<p>This script will ensure that MultiBit HD can respond correctly to Bitcoin links in web pages</p>
+<p>This script will ensure that Multibit can respond correctly to Bitcoin links in web pages</p>
 <pre>
 #!/bin/sh
 echo Build Unity desktop...
@@ -106,7 +106,7 @@ sudo ./post-install.sh
 <p>When complete you will have a launch icon in the dock that you can locate using "MultiBit" in the search.</p>
 
 <h3 id="other">Other Linux distributions</h3>
-<p>You can run MultiBit HD manually as follows:</p>
+<p>You can run Multibit manually as follows:</p>
 <pre>
 cd ~/multibit-hd
 java -jar multibit-hd.jar &
@@ -114,10 +114,10 @@ java -jar multibit-hd.jar &
 
 <h3 id="troubleshooting">Troubleshooting</h3>
 
-<p>Occasionally people encounter problems getting MultiBit HD set up on their Linux distribution. Here are some common solutions to known problems.</p>
+<p>Occasionally people encounter problems getting Multibit set up on their Linux distribution. Here are some common solutions to known problems.</p>
 
 <h4>I'm seeing a SIGSEV (0xb) crash when creating a wallet</h4>
-<p>Some people have had issues using MultiBit HD with OpenJDK on Arch Linux, CentOS, OpenSuse and Fedora distributions. The error manifests when trying to add a password to a
+<p>Some people have had issues using Multibit with OpenJDK on Arch Linux, CentOS, OpenSuse and Fedora distributions. The error manifests when trying to add a password to a
   wallet and occurs deep within the platform-specific parts of the JVM. If this affects you the error will be like this:</p>
 <pre>
 SIGSEGV (0xb) at pc=0x00007f97ec7d06a0, pid=588, tid=140289289742080
@@ -139,11 +139,11 @@ deleting: lib/x86_64/linux/libscrypt.so
 
 <h4>My external browser does not launch</h4>
 
-<p>MultiBit HD will first attempt to launch a browser using GNOME libraries and will fall back to <code>xdg-open</code> if that fails. It may be that your
+<p>Multibit will first attempt to launch a browser using GNOME libraries and will fall back to <code>xdg-open</code> if that fails. It may be that your
   system does not have a default browser available in which case you may need to add one manually.</p>
 
 <h4>Clicking a Bitcoin link in Firefox doesn't work</h4>
-<p>Assuming that you have installed MultiBit HD and run the post-install script this should work out of the box. However some people have fixed this by manually editing the <code>~/.mozilla/firefox/YOUR_PROFILE.default/mimeTypes.rdf</code>
+<p>Assuming that you have installed Multibit and run the post-install script this should work out of the box. However some people have fixed this by manually editing the <code>~/.mozilla/firefox/YOUR_PROFILE.default/mimeTypes.rdf</code>
   file with an entry as follows:</p>
 <pre>  &lt;RDF:Description RDF:about="urn:scheme:bitcoin"
                    NC:value="~/multibit-hd/multibit-hd”&gt;
@@ -154,15 +154,15 @@ deleting: lib/x86_64/linux/libscrypt.so
 
 <h4>I don't have much system memory</h4>
 
-<p>MultiBit HD uses the Java Virtual Machine (JVM) to manage its memory. This means that over time you will see memory use increase as various activities take place.
-  Synchronizing with the block chain is a memory-intensive process and during the initial sync or a Repair Wallet operation you will notice an increase. By default MultiBit HD
-  will not consume more than the <em>lesser</em> of one quarter of your system memory or 1Gb. For example, on a 2Gb system (2009 mid-range machine) MultiBit HD will start having
+<p>Multibit uses the Java Virtual Machine (JVM) to manage its memory. This means that over time you will see memory use increase as various activities take place.
+  Synchronizing with the block chain is a memory-intensive process and during the initial sync or a Repair Wallet operation you will notice an increase. By default Multibit
+  will not consume more than the <em>lesser</em> of one quarter of your system memory or 1Gb. For example, on a 2Gb system (2009 mid-range machine) Multibit will start having
   memory constraints at around 500Mb.</p>
 
-<p>This default is sufficient to allow for smooth and responsive operations on most systems. However, MultiBit HD can continue to work with only 256Mb allocated to it although
+<p>This default is sufficient to allow for smooth and responsive operations on most systems. However, Multibit can continue to work with only 256Mb allocated to it although
   performance tends to reduce.</p>
 
-<p>If you want to change the memory allocated to MultiBit HD you will need to start it with a command line parameter like this <code>-Xmx1024m</code> for a total memory
+<p>If you want to change the memory allocated to Multibit you will need to start it with a command line parameter like this <code>-Xmx1024m</code> for a total memory
   allocation of 1024Mb or 1Gb.</p>
 
 <h4>Related articles</h4>
