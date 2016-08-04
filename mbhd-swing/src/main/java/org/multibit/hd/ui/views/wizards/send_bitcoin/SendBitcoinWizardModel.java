@@ -16,7 +16,7 @@ import org.bitcoinj.protocols.payments.PaymentProtocolException;
 import org.bitcoinj.protocols.payments.PaymentSession;
 import org.bitcoinj.uri.BitcoinURI;
 import org.multibit.commons.utils.Dates;
-import org.multibit.hd.core.services.FeeService;
+import org.multibit.hd.brit.core.services.FeeService;
 import org.multibit.hd.core.config.BitcoinConfiguration;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.LanguageConfiguration;
@@ -670,8 +670,11 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
             do {
               // Always increment from starting position (first button request is then 0 index)
               txOutputIndex++;
-
-              if (!currentTransaction.getOutput(txOutputIndex).isMine(wallet)) {
+              log.debug("txOutputIndex:{}",txOutputIndex);
+              SendRequestSummary sendRequestSummary = getSendRequestSummary();
+              log.debug("p2pkhscriptaddress:{} p2shaddress:{}",currentTransaction.getOutput(txOutputIndex).getAddressFromP2PKHScript(MainNetParams.get()),currentTransaction.getOutput(txOutputIndex).getAddressFromP2SH(MainNetParams.get()));
+              log.debug("output is {} == destination address is {}",currentTransaction.getOutput(txOutputIndex),sendRequestSummary.getDestinationAddress());
+              if (!currentTransaction.getOutput(txOutputIndex).isMine(wallet)||currentTransaction.getOutput(txOutputIndex).getAddressFromP2PKHScript(MainNetParams.get()).equals(sendRequestSummary.getDestinationAddress())||currentTransaction.getOutput(txOutputIndex).getAddressFromP2PKHScript(MainNetParams.get()).equals(sendRequestSummary.getDestinationAddress())) {
                 // Not owned by us so Trezor will show it on the display
                 confirmingOutput = Optional.of(currentTransaction.getOutput(txOutputIndex));
                 break;

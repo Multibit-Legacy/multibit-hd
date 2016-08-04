@@ -78,6 +78,7 @@ public class BitcoinNetworkService extends AbstractService {
    */
   private static int NUMBER_OF_BLOCKS_DELTA_FOR_REPLAY = 120;
 
+
   /**
    * The boundary for when more mining fee is due
    */
@@ -109,6 +110,7 @@ public class BitcoinNetworkService extends AbstractService {
     this.networkParameters = networkParameters;
 
     requireFixedThreadPoolExecutor(5, "bitcoin-network");
+
 
   }
 
@@ -979,8 +981,10 @@ public class BitcoinNetworkService extends AbstractService {
 
         Map<Address, ImmutableList<ChildNumber>> changeAddressPathMap = buildChangeAddressPathMap(
           sendRequest.tx,
-          wallet
+          wallet,sendRequestSummary.getDestinationAddress()
+
         );
+
 
         // Shuffle the outputs to obfuscate change and payment addresses
         sendRequest.tx.shuffleOutputs();
@@ -1337,7 +1341,7 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @return The receiving address path map linking the tx input index to a deterministic path
    */
-  private Map<Address, ImmutableList<ChildNumber>> buildChangeAddressPathMap(Transaction unsignedTx, Wallet wallet) {
+  private Map<Address, ImmutableList<ChildNumber>> buildChangeAddressPathMap(Transaction unsignedTx, Wallet wallet, Address destinationAddress) {
 
     Map<Address, ImmutableList<ChildNumber>> changeAddressPathMap = Maps.newHashMap();
 
@@ -1381,13 +1385,17 @@ public class BitcoinNetworkService extends AbstractService {
       if (key.isPresent() && address.isPresent()) {
 
         // Found an address we own
-        changeAddressPathMap.put(address.get(), key.get().getPath());
+        log.debug("are they eqyual??{}", (!address.get().equals(destinationAddress)));
+        if (!address.get().equals(destinationAddress)) {
+          changeAddressPathMap.put(address.get(), key.get().getPath());
+          log.debug("added address {}, destination address{}", address, destinationAddress);
+        }
       }
 
     }
+      return changeAddressPathMap;
+    }
 
-    return changeAddressPathMap;
-  }
 
 
   /**
@@ -1553,7 +1561,7 @@ public class BitcoinNetworkService extends AbstractService {
    *
    * @throws BlockStoreException                   If the block store fails
    * @throws IOException                           If the network fails
-   * @throws java.util.concurrent.TimeoutException If the Tor connection fails
+   * @throws TimeoutException If the Tor connection fails
    */
   private void restartNetwork(BlockStore blockStore, boolean useFastCatchup) throws BlockStoreException, IOException, TimeoutException {
 
