@@ -37,9 +37,9 @@ public class Sliders {
    */
   public static JSlider newAdjustTransactionFeeSlider(ChangeListener changeListener, long initialPosition) {
     // Resolution is RESOLUTION satoshis per tick
-    int minimumPosition = 0/RESOLUTION;
-    int defaultPosition = 10000/RESOLUTION;
-    int maximumPosition = 100000/RESOLUTION;
+    int minimumPosition = (int) FeeService.MINIMUM_FEE_PER_KB.value/RESOLUTION;
+    int defaultPosition = (int)FeeService.DEFAULT_FEE_PER_KB.value/RESOLUTION;
+    int maximumPosition = (int)FeeService.MAXIMUM_FEE_PER_KB.value/RESOLUTION;
 
     // Make sure feePerKB is normalised first so that it will be in range of the slider
     int currentPosition = (int)FeeService.normaliseRawFeePerKB(initialPosition).longValue()/RESOLUTION;

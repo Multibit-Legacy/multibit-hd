@@ -93,6 +93,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    * Start with -1 to allow for initial increment
    */
   private int txOutputIndex = -1;
+  private Coin outputVal = Coin.valueOf(0);
 
   private final Optional<BitcoinURI> bitcoinURI;
 
@@ -610,6 +611,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
     // Successful PIN entry or not required so transition to Trezor signing display view
     state = SEND_CONFIRM_HARDWARE;
+    Optional<TransactionOutput> confirmingOutput = Optional.absent();
+    boolean isInternalTransfer = false;
 
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
 
@@ -666,25 +669,19 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
 
             // Work out which output we're confirming (will be in same order as tx but wallet addresses will be ignored)
 
-            Optional<TransactionOutput> confirmingOutput = Optional.absent();
             do {
               // Always increment from starting position (first button request is then 0 index)
               txOutputIndex++;
-              log.debug("txOutputIndex:{}",txOutputIndex);
-              SendRequestSummary sendRequestSummary = getSendRequestSummary();
-              log.debug("p2pkhscriptaddress:{} p2shaddress:{}",currentTransaction.getOutput(txOutputIndex).getAddressFromP2PKHScript(MainNetParams.get()),currentTransaction.getOutput(txOutputIndex).getAddressFromP2SH(MainNetParams.get()));
-              log.debug("output is {} == destination address is {}",currentTransaction.getOutput(txOutputIndex),sendRequestSummary.getDestinationAddress());
-              if (!currentTransaction.getOutput(txOutputIndex).isMine(wallet)||currentTransaction.getOutput(txOutputIndex).getAddressFromP2PKHScript(MainNetParams.get()).equals(sendRequestSummary.getDestinationAddress())||currentTransaction.getOutput(txOutputIndex).getAddressFromP2PKHScript(MainNetParams.get()).equals(sendRequestSummary.getDestinationAddress())) {
                 // Not owned by us so Trezor will show it on the display
                 confirmingOutput = Optional.of(currentTransaction.getOutput(txOutputIndex));
                 break;
-              }
             } while (txOutputIndex < currentTransaction.getOutputs().size());
 
             if (confirmingOutput.isPresent()) {
 
               // Trezor will be displaying this output
               TransactionOutput output = confirmingOutput.get();
+              outputVal = output.getValue();
 
               String[] transactionOutputAmount = Formats.formatCoinAsSymbolic(output.getValue(), languageConfiguration, bitcoinConfiguration);
 
@@ -721,7 +718,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
             // Transaction#getValue() provides the net amount leaving the wallet which includes the fee
             // See #499: Trezor firmware below 1.3.3 displays the sum of all external outputs (including fee) and the fee separately
             // From 1.3.3+ the display is the net amount leaving the wallet with fees shown separately
-            Coin transactionAmount = currentTransaction.getValue(wallet).negate();
+            Coin transactionAmount = outputVal.add(currentTransaction.getFee());
             transactionAmountFormatted = Formats.formatCoinAsSymbolic(transactionAmount, languageConfiguration, bitcoinConfiguration);
             feeAmount = Formats.formatCoinAsSymbolic(currentTransaction.getFee(), languageConfiguration, bitcoinConfiguration);
 
