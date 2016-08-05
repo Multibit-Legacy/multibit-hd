@@ -10,3 +10,6 @@ notifications:
   email:
     - gary.rowe@bitcoin-solutions.co.uk
     - jim.burton@bitcoin-solutions.co.uk
+    - ken@keepkey.com
+    - kartik@keepkey.com
+  slack: keepkey:NeKNwXldiqJgFvjGOF3qy58C
