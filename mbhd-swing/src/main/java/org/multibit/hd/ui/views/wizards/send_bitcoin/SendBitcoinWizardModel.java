@@ -672,9 +672,12 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
             do {
               // Always increment from starting position (first button request is then 0 index)
               txOutputIndex++;
+              log.debug("txOutputIndex:{}",txOutputIndex);
+              if (!currentTransaction.getOutput(txOutputIndex).isMine(wallet)||currentTransaction.getOutput(txOutputIndex).getAddressFromP2PKHScript(MainNetParams.get()).equals(sendRequestSummary.getDestinationAddress())||currentTransaction.getOutput(txOutputIndex).getAddressFromP2PKHScript(MainNetParams.get()).equals(sendRequestSummary.getDestinationAddress())) {
                 // Not owned by us so Trezor will show it on the display
                 confirmingOutput = Optional.of(currentTransaction.getOutput(txOutputIndex));
                 break;
+              }
             } while (txOutputIndex < currentTransaction.getOutputs().size());
 
             if (confirmingOutput.isPresent()) {

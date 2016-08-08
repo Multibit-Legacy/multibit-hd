@@ -101,7 +101,7 @@ public class MultiBitHD {
     System.setProperty("java.net.preferIPv4Stack", "true");
 
     // Fix for version.txt not visible for Java 7
-    System.setProperty("jsse.enableSNIExtension", "false");
+    System.setProperty("jsse.enableSNIExtension", "true");
 
   }
 
