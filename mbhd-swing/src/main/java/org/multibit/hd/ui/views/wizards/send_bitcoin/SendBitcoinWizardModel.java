@@ -612,7 +612,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
     // Successful PIN entry or not required so transition to Trezor signing display view
     state = SEND_CONFIRM_HARDWARE;
     Optional<TransactionOutput> confirmingOutput = Optional.absent();
-    boolean isInternalTransfer = false;
 
     BitcoinNetworkService bitcoinNetworkService = CoreServices.getOrCreateBitcoinNetworkService();
 
@@ -672,8 +671,7 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
             do {
               // Always increment from starting position (first button request is then 0 index)
               txOutputIndex++;
-              log.debug("txOutputIndex:{}",txOutputIndex);
-              if (!currentTransaction.getOutput(txOutputIndex).isMine(wallet)||currentTransaction.getOutput(txOutputIndex).getAddressFromP2PKHScript(MainNetParams.get()).equals(sendRequestSummary.getDestinationAddress())||currentTransaction.getOutput(txOutputIndex).getAddressFromP2PKHScript(MainNetParams.get()).equals(sendRequestSummary.getDestinationAddress())) {
+              if (validateOutputAddress(sendRequestSummary.getDestinationAddress(),currentTransaction,txOutputIndex,wallet)) {
                 // Not owned by us so Trezor will show it on the display
                 confirmingOutput = Optional.of(currentTransaction.getOutput(txOutputIndex));
                 break;
@@ -981,6 +979,11 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       log.debug("No payment request available, moving to SEND_REPORT");
       this.state = SEND_REPORT;
     }
+  }
+  private boolean validateOutputAddress(Address destinationAddress,Transaction currentTransaction,int txOutputIndex,Wallet wallet){
+    return !currentTransaction.getOutput(txOutputIndex).isMine(wallet)
+            ||currentTransaction.getOutput(txOutputIndex).getAddressFromP2PKHScript(MainNetParams.get()).equals(destinationAddress)
+            ||currentTransaction.getOutput(txOutputIndex).getAddressFromP2SH(MainNetParams.get()).equals(destinationAddress);
   }
 
   @Subscribe

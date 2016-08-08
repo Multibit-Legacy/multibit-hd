@@ -77,8 +77,6 @@ public class BitcoinNetworkService extends AbstractService {
    * The number of blocks to go back for a replay (based on the length of time coinbases need to mature for similar forking reasons)
    */
   private static int NUMBER_OF_BLOCKS_DELTA_FOR_REPLAY = 120;
-
-
   /**
    * The boundary for when more mining fee is due
    */
@@ -110,7 +108,6 @@ public class BitcoinNetworkService extends AbstractService {
     this.networkParameters = networkParameters;
 
     requireFixedThreadPoolExecutor(5, "bitcoin-network");
-
 
   }
 
@@ -981,8 +978,8 @@ public class BitcoinNetworkService extends AbstractService {
 
         Map<Address, ImmutableList<ChildNumber>> changeAddressPathMap = buildChangeAddressPathMap(
           sendRequest.tx,
-          wallet,sendRequestSummary.getDestinationAddress()
-
+          wallet,
+          sendRequestSummary.getDestinationAddress()
         );
 
 
@@ -1385,10 +1382,8 @@ public class BitcoinNetworkService extends AbstractService {
       if (key.isPresent() && address.isPresent()) {
 
         // Found an address we own
-        log.debug("are they eqyual??{}", (!address.get().equals(destinationAddress)));
         if (!address.get().equals(destinationAddress)) {
           changeAddressPathMap.put(address.get(), key.get().getPath());
-          log.debug("added address {}, destination address{}", address, destinationAddress);
         }
       }
 

@@ -1780,11 +1780,6 @@ public class MainController extends AbstractController implements
           }
         }
       });
-
-
-
-
-
   }
 
   public static boolean isFireTransactionAlerts() {

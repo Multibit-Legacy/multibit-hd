@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.google.common.collect.Maps;
 import org.multibit.hd.core.services.FeeService;
-
-
 import java.util.Map;
 
 /**
