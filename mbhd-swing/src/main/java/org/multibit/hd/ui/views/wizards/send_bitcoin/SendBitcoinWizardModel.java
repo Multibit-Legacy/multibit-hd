@@ -671,7 +671,11 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
             do {
               // Always increment from starting position (first button request is then 0 index)
               txOutputIndex++;
-              if (validateOutputAddress(sendRequestSummary.getDestinationAddress(),currentTransaction,txOutputIndex,wallet)) {
+              TransactionOutput currentOutput = currentTransaction.getOutput(txOutputIndex);
+              Address destinationAddress = sendRequestSummary.getDestinationAddress();
+              if (! currentOutput.isMine(wallet)
+                  || isEqual(currentOutput.getAddressFromP2PKHScript(MainNetParams.get()),destinationAddress)
+                  || isEqual(currentOutput.getAddressFromP2SH(MainNetParams.get()),destinationAddress)) {
                 // Not owned by us so Trezor will show it on the display
                 confirmingOutput = Optional.of(currentTransaction.getOutput(txOutputIndex));
                 break;
@@ -980,11 +984,6 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
       this.state = SEND_REPORT;
     }
   }
-  private boolean validateOutputAddress(Address destinationAddress,Transaction currentTransaction,int txOutputIndex,Wallet wallet){
-    return !currentTransaction.getOutput(txOutputIndex).isMine(wallet)
-            ||currentTransaction.getOutput(txOutputIndex).getAddressFromP2PKHScript(MainNetParams.get()).equals(destinationAddress)
-            ||currentTransaction.getOutput(txOutputIndex).getAddressFromP2SH(MainNetParams.get()).equals(destinationAddress);
-  }
 
   @Subscribe
   public void onBitcoinSentEvent(BitcoinSentEvent bitcoinSentEvent) {
@@ -1006,5 +1005,9 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   public void setEnterPinPanelView(SendBitcoinEnterPinPanelView enterPinPanelView) {
     this.enterPinPanelView = enterPinPanelView;
   }
+  public static boolean isEqual(Object o1, Object o2) {
+    return o1 == o2 || (o1 != null && o1.equals(o2));
+  }
+
 
 }
