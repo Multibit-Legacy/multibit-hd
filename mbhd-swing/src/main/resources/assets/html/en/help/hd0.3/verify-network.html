@@ -1,6 +1,6 @@
 <h3>Verify network</h3>
 
-<p>If Multibit seems to be stuck doing nothing, then verifying the network is one way to narrow down what is wrong and fix it.
+<p>If MultiBit seems to be stuck doing nothing, then verifying the network is one way to narrow down what is wrong and fix it.
   Verifying the network checks you are still connected to the Bitcoin network and shows how far behind you are with synchronization.</p>
 
 <p>To synchronize you must be able to connect to "full nodes" which have complete copy of the block chain and are in a position to provide
@@ -19,7 +19,7 @@ with other wallets.</p>
 <p>The Bitcoin protocol requires <a href="http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers" target="_blank">port 8333 (Unofficial)</a> to be open on your
   router or hub for traffic over TCP (and UDP if your settings allow).</p>
 
-<p>Internally Multibit uses <a href="http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers" target="_blank">port 8330 (Unofficial)</a> to ensure
+<p>Internally MultiBit uses <a href="http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers" target="_blank">port 8330 (Unofficial)</a> to ensure
   that no other instances are present. There is no need to open it on your router or hub.</p>
 
 <p>You may find this <a href="http://www.wikihow.com/Open-Ports">wikiHow article</a> provides helpful instructions covering how to configure
@@ -40,14 +40,14 @@ your own network setup.</p>
 <p>You most likely have a corrupted file in your wallet directory. Here's the procedure to resolve the situation:</p>
 
 <ol>
-  <li>Start Multibit as normal</li>
+  <li>Start MultiBit as normal</li>
   <li>Unlock your wallet and click Finish as normal</li>
   <li>Click "Manage Wallet" in the sidebar and click the "Wallet dashboard" button</li>
   <li>Make a note of your "application directory" and your "wallet directory" (copy/paste into a text editor is useful here)</li>
-  <li>Close Multibit in the usual way</li>
+  <li>Close MultiBit in the usual way</li>
   <li>Open a file browser and navigate to the "application directory" and from there into your "wallet directory"</li>
   <li>Locate the file called <code>mbhd.spvchain</code> and delete it</li>
-  <li>Start Multibit as normal and unlock your wallet</li>
+  <li>Start MultiBit as normal and unlock your wallet</li>
   <li>You should now be able to connect to the Bitcoin network and after a  much longer synchronization process than usual your balance will be restored</li>
 </ol>
 
