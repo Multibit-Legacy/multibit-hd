@@ -2,6 +2,7 @@ package org.multibit.hd.ui.views.wizards.use_hardware_wallet;
 
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
 import org.multibit.hd.ui.views.components.Panels;
@@ -41,8 +42,9 @@ public class UseHardwareWalletSelectPanelView extends AbstractWizardPanelView<Us
 
   @Override
   public void newPanelModel() {
-
     currentSelection = UseHardwareWalletState.VERIFY_DEVICE;
+    if(getWizardModel().getWalletMode().equals(WalletMode.TREZOR))
+    currentSelection = UseHardwareWalletState.BUY_DEVICE;
     setPanelModel(currentSelection);
   }
 
@@ -59,6 +61,7 @@ public class UseHardwareWalletSelectPanelView extends AbstractWizardPanelView<Us
     contentPanel.add(
       Panels.newUseHardwareWalletSelector(
         this,
+        UseHardwareWalletState.VERIFY_DEVICE.name(),
         UseHardwareWalletState.VERIFY_DEVICE.name(),
         UseHardwareWalletState.REQUEST_WIPE_DEVICE.name(),
         getWizardModel().getWalletMode()
