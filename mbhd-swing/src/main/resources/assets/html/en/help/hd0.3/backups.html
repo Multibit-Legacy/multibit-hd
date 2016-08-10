@@ -25,11 +25,11 @@
 
 <p>MultiBit maintains three stages of wallet backup:</p>
 <ul>
-  <li>rolling backup - these are recent copies of your wallet. They are encrypted with your wallet password / Trezor provided password</li>
-  <li>local backup - this is a zip of the wallet directory (less block chain) encrypted with a key derived from the wallet words or from your Trezor provided password. It is stored
+  <li>rolling backup - these are recent copies of your wallet. They are encrypted with your wallet password / KeepKey provided password</li>
+  <li>local backup - this is a zip of the wallet directory (less block chain) encrypted with a key derived from the wallet words or from your Keepkey provided password. It is stored
     locally on your machine
   </li>
-  <li>cloud backup - this is a zip of the wallet directory (less block chain) encrypted with a key derived from the wallet words or from your Trezor provided password. It is copied
+  <li>cloud backup - this is a zip of the wallet directory (less block chain) encrypted with a key derived from the wallet words or from your KeepKey provided password. It is copied
     to your cloud backup directory
   </li>
 </ul>
@@ -38,7 +38,7 @@
 
 <h4>Encrypting "soft" wallets and their backups</h4>
 
-<p>A "soft" wallet is one that is not linked to an external hardware device such as a <a href="https://buytrezor.com?a=MultiBit.org" target="_blank">Trezor</a>.</p>
+<p>A "soft" wallet is one that is not linked to an external hardware device such as a <a href="https://www.keepkey.com/?a=MultiBit.org" target="_blank">Trezor</a>.</p>
 
 <p>The rolling backups encrypt a snapshot of the current wallet. Rolling backups are loaded automatically if the load of the primary wallet fails. The user is told if a rolling
   backup is loaded on the 'Wallet startup' screen after unlock. The rolling backup is AES-256 encrypted using a key derived from the user's password after running it through
