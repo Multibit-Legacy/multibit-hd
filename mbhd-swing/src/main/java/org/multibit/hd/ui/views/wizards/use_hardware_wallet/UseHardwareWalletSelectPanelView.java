@@ -42,9 +42,8 @@ public class UseHardwareWalletSelectPanelView extends AbstractWizardPanelView<Us
   @Override
   public void newPanelModel() {
 
-    currentSelection = UseHardwareWalletState.BUY_DEVICE;
+    currentSelection = UseHardwareWalletState.VERIFY_DEVICE;
     setPanelModel(currentSelection);
-
   }
 
   @Override
@@ -60,7 +59,6 @@ public class UseHardwareWalletSelectPanelView extends AbstractWizardPanelView<Us
     contentPanel.add(
       Panels.newUseHardwareWalletSelector(
         this,
-        UseHardwareWalletState.BUY_DEVICE.name(),
         UseHardwareWalletState.VERIFY_DEVICE.name(),
         UseHardwareWalletState.REQUEST_WIPE_DEVICE.name(),
         getWizardModel().getWalletMode()

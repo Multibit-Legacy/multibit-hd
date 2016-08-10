@@ -631,7 +631,6 @@ public class Panels {
    * <p>A "Hardware wallet tool selector" panel provides a means of choosing which tool to run</p>
    *
    * @param listener            The action listener
-   * @param buyDeviceCommand    The buy device command
    * @param verifyDeviceCommand The verify device command name
    * @param wipeDeviceCommand   The wipe device command name
    * @param walletMode          The wallet mode to apply (allows historical display)
@@ -640,16 +639,11 @@ public class Panels {
    */
   public static JPanel newUseHardwareWalletSelector(
     ActionListener listener,
-    String buyDeviceCommand,
     String verifyDeviceCommand,
     String wipeDeviceCommand,
     WalletMode walletMode) {
 
     JPanel panel = Panels.newPanel();
-
-    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.BUY_HARDWARE, walletMode.historicalBrand());
-    radio1.setActionCommand(buyDeviceCommand);
-    radio1.setSelected(true);
 
     JRadioButton radio2 = RadioButtons.newRadioButton(listener, MessageKey.HARDWARE_VERIFY_DEVICE, walletMode.historicalBrand());
     radio2.setActionCommand(verifyDeviceCommand);
@@ -671,12 +665,10 @@ public class Panels {
 
     // Action selection is mutually exclusive
     ButtonGroup group = new ButtonGroup();
-    group.add(radio1);
     group.add(radio2);
     group.add(radio3);
 
     // Add to the panel
-    panel.add(radio1, "wrap");
     panel.add(radio2, "wrap");
     panel.add(radio3, "wrap");
 
