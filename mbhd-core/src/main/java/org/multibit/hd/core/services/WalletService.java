@@ -1144,7 +1144,7 @@ public class WalletService extends AbstractService {
   }
 
   public void addTransactionInfo(TransactionInfo transactionInfo) {
-    transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
+    transactionInfoMap.putIfAbsent(transactionInfo.getHash(),transactionInfo);;
   }
 
   public TransactionInfo getTransactionInfoByHash(String transactionHashAsString) {
