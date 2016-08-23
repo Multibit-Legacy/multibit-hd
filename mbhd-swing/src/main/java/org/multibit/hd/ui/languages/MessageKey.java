@@ -380,6 +380,9 @@ public enum MessageKey {
   SELL_VISIT_GLIDERA("sell_visit_glidera"),
   SELL_VISIT_GLIDERA_TOOLTIP("sell_visit_glidera_tooltip"),
 
+  //SHAPESHIFT exchange
+  SHAPE_SHIFT_TITLE("shape_shift_title"),
+
   // Send/request
   REQUEST_BITCOIN_TITLE("request_bitcoin_title"),
 

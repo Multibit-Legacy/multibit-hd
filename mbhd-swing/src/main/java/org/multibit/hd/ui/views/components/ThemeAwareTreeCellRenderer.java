@@ -94,6 +94,12 @@ public class ThemeAwareTreeCellRenderer extends DefaultTreeCellRenderer {
           setIconTextGap(8);
           ret.setBorder(borderPaddedUpper);
           break;
+        case SHAPE_SHIFT:
+          // Indicates ShapeShift Exchange
+          setIcon(AwesomeDecorator.createIcon(AwesomeIcon.RANDOM, iconColor, MultiBitUI.NORMAL_ICON_SIZE - 4));
+          setIconTextGap(8);
+          ret.setBorder(borderNormal);
+          break;
         case CONTACTS:
           // Standard contact icon
           setIcon(AwesomeDecorator.createIcon(AwesomeIcon.USER, iconColor, MultiBitUI.NORMAL_ICON_SIZE));

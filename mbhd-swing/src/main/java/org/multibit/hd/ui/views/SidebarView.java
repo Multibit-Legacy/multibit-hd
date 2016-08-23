@@ -219,6 +219,7 @@ public class SidebarView extends AbstractView {
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.SEND_OR_REQUEST, Screen.SEND_REQUEST));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.PAYMENTS, Screen.TRANSACTIONS));
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.CONTACTS, Screen.CONTACTS));
+    root.add(TreeNodes.newSidebarTreeNode(MessageKey.SHAPE_SHIFT_TITLE, Screen.SHAPE_SHIFT));
 
     // Add application nodes
     root.add(TreeNodes.newSidebarTreeNode(MessageKey.HELP, Screen.HELP));
@@ -252,6 +253,8 @@ public class SidebarView extends AbstractView {
           break;
         case EXIT:
           Panels.showLightBox(Wizards.newExitWizard().getWizardScreenHolder());
+          break;
+        case SHAPE_SHIFT:Panels.showLightBox((Wizards.newRequestBitcoinWizard().getWizardScreenHolder()));
           break;
         default:
           Configurations.currentConfiguration.getAppearance().setCurrentScreen(nodeInfo.getDetailScreen().name());

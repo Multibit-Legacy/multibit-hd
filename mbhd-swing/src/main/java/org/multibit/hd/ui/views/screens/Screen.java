@@ -25,6 +25,11 @@ public enum Screen {
   SEND_REQUEST,
 
   /**
+   * The shapeshift exchange screen
+   */
+  SHAPE_SHIFT,
+
+  /**
    * The wallet payments screen
    */
   TRANSACTIONS,
