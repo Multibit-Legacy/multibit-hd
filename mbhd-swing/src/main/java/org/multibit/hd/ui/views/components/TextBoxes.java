@@ -401,6 +401,32 @@ public class TextBoxes {
 
     return textField;
   }
+  public static JFormattedTextField newAltcoinAddress() {
+
+    // Use the Bitcoin symbol multiplier to determine the decimal places
+
+    // The max edit length varies depending on the Bitcoin symbol (e.g. coins have no decimal)
+    int maxEditLength = 35;
+
+    JFormattedTextField textField = new JFormattedTextField();
+    textField.setColumns(20);
+
+
+    // Ensure it is accessible
+    AccessibilityDecorator.apply(textField, MessageKey.BITCOIN_ADDRESS, MessageKey.BITCOIN_ADDRESS_TOOLTIP);
+
+    Font font = textField.getFont().deriveFont((float) MultiBitUI.NORMAL_ICON_SIZE);
+
+    textField.setFont(font);
+
+    // Set the theme
+    textField.setBorder(new TextBubbleBorder(Themes.currentTheme.dataEntryBorder()));
+    textField.setBackground(Themes.currentTheme.dataEntryBackground());
+
+    textField.setOpaque(false);
+
+    return textField;
+  }
 
   /**
    * @param maximum The largest value than can be accepted (typically the wallet local balance) - no financial calculations are performed on this value

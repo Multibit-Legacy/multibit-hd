@@ -19,6 +19,7 @@ import java.util.Iterator;
         Client shapeShiftClient = Client.create();
         public HashMap <String,String> CurrencyTable = this.getCurrencyType();
         static String pair ="btc_";
+        public HashMap <String,Object> currentAltCoinMarketInfo = new HashMap<String,Object>();
         final static String apiKey = "6ad5831b778484bb849da45180ac35047848e5cac0fa666454f4ff78b8c7399fea6a8ce2c7ee6287bcd78db6610ca3f538d6b3e90ca80c8e6368b6021445950b";
         private String current_currency_Pair = "";
 
@@ -50,6 +51,9 @@ import java.util.Iterator;
                 return altCoinNames;
 
             }
+        public String [] getCoinList(){
+            return (this.CurrencyTable.keySet().toArray(new String[this.CurrencyTable.size()]));
+        }
 
         public HashMap <String,Object> getMarketInfo(String altCoinName){
             HashMap <String,Object> marketInfo = new HashMap<String,Object>();
@@ -97,7 +101,7 @@ import java.util.Iterator;
             }
          return isValid;
         }
-        public HashMap <String,Object> createTransaction(String withdrawalAddress,Long Amount,String returnAddress){
+        public HashMap <String,Object> createTransaction(String withdrawalAddress,Double Amount,String returnAddress){
             HashMap <String,Object> transactionInfo = new HashMap<String,Object>();
             WebResource webResource = shapeShiftClient.resource("https://shapeshift.io/sendamount");
             JSONObject input = new JSONObject();
@@ -106,7 +110,7 @@ import java.util.Iterator;
                 input.put("withdrawal",withdrawalAddress);
                 input.put("returnAddress",returnAddress);
                 input.put("apiKey",apiKey);
-                input.put("pair",current_currency_Pair);
+                input.put("pair","btc_ltc");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -142,8 +146,9 @@ import java.util.Iterator;
         public static void main(String [] args){
             ShapeShiftService service = new ShapeShiftService();
             HashMap <String,Object> marketInfo = service.getMarketInfo("Litecoin");
-            System.out.println(service.isValidAltCoinAddress("LWdfXUxLBV9nCJ6yk5Ed2pBNhiV7kTaTQJ","Litecoin"));
-            HashMap <String,Object> transactionInfo = service.createTransaction("LWdfXUxLBV9nCJ6yk5Ed2pBNhiV7kTaTQJ",Long.valueOf(1),"1AhAAJ5nhMpT7fsnW9Hv3UjgP8ZFEf5e5i");
+            System.out.println(service.isValidAltCoinAddress("LgCD3vmz2TkYGbaDDy1YRyT4JwL95XpYPw","Litecoin"));
+            HashMap <String,Object> transactionInfo = service.createTransaction("LWdfXUxLBV9nCJ6yk5Ed2pBNhiV7kTaTQJ",Double.valueOf(1),"1AhAAJ5nhMpT7fsnW9Hv3UjgP8ZFEf5e5i");
+            System.out.println(transactionInfo);
 
         }
 

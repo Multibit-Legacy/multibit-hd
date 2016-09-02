@@ -68,6 +68,8 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    */
   private SendBitcoinEnterAmountPanelModel enterAmountPanelModel;
 
+  private SendBitCoinShapeShiftEnterAmountModel shapeShiftEnterAmountModel;
+
   /**
    * The "confirm" panel model
    */
@@ -87,6 +89,10 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
    * The current "enter PIN" panel view (might have one each for master public key and cipher key)
    */
   private SendBitcoinEnterPinPanelView enterPinPanelView;
+
+  private SendBitCoinShapeShiftEnterAmountView sendBitCoinShapeShiftEnterAmountView;
+
+  private SendBitCoinShapeShiftPaymentAckView sendBitCoinShapeShiftPaymentAckView;
 
   /**
    * Keep track of which transaction output is being signed
@@ -136,6 +142,14 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   public void showNext() {
 
     switch (state) {
+      case SEND_SHAPE_SHIFT_ENTER_ADDRESS:
+        System.out.println(sendBitCoinShapeShiftEnterAmountView.altcoinPerBitcoin);
+        state = SEND_SHAPE_SHIFT_TRANSACTION;
+        break;
+      case SEND_SHAPE_SHIFT_TRANSACTION:
+        state = SEND_ENTER_AMOUNT;
+        break;
+
       case SEND_DISPLAY_PAYMENT_REQUEST:
 
         // The user has confirmed the payment request so the tx can be prepared
@@ -240,6 +254,13 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   @Override
   public void showPrevious() {
     switch (state) {
+      case SEND_SHAPE_SHIFT_ENTER_ADDRESS:
+        System.out.println(sendBitCoinShapeShiftEnterAmountView.altcoinPerBitcoin);
+        state = SEND_SHAPE_SHIFT_ENTER_ADDRESS;
+        break;
+      case SEND_SHAPE_SHIFT_TRANSACTION:
+        state = SEND_SHAPE_SHIFT_ENTER_ADDRESS;
+        break;
       case SEND_ENTER_AMOUNT:
         state = SEND_ENTER_AMOUNT;
         break;
@@ -312,6 +333,10 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   void setEnterAmountPanelModel(SendBitcoinEnterAmountPanelModel enterAmountPanelModel) {
     this.enterAmountPanelModel = enterAmountPanelModel;
   }
+  void setShapeShiftEnterBitcoinModel (SendBitCoinShapeShiftEnterAmountModel enterAmountPanelModel) {
+    this.shapeShiftEnterAmountModel = enterAmountPanelModel;
+  }
+
 
   /**
    * <p>Reduced visibility for panel models only</p>
@@ -1001,9 +1026,20 @@ public class SendBitcoinWizardModel extends AbstractHardwareWalletWizardModel<Se
   public SendBitcoinEnterPinPanelView getEnterPinPanelView() {
     return enterPinPanelView;
   }
-
+  public SendBitCoinShapeShiftEnterAmountView getEnterAmountShapeshiftView() {
+    return sendBitCoinShapeShiftEnterAmountView;
+  }
+  public SendBitCoinShapeShiftPaymentAckView getSendBitCoinShapeShiftPaymentAckView() {
+    return sendBitCoinShapeShiftPaymentAckView;
+  }
+  public void setSendBitCoinShapeShiftPaymentAckView(SendBitCoinShapeShiftPaymentAckView shapeShiftPaymentAckView) {
+    this.sendBitCoinShapeShiftPaymentAckView = shapeShiftPaymentAckView;
+  }
   public void setEnterPinPanelView(SendBitcoinEnterPinPanelView enterPinPanelView) {
     this.enterPinPanelView = enterPinPanelView;
+  }
+  public void setSendBitCoinShapeShiftEnterAmountView(SendBitCoinShapeShiftEnterAmountView enterPinPanelView) {
+    this.sendBitCoinShapeShiftEnterAmountView = enterPinPanelView;
   }
   public static boolean isEqual(Object o1, Object o2) {
     return o1 == o2 || (o1 != null && o1.equals(o2));

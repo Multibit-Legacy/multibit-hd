@@ -254,7 +254,7 @@ public class SidebarView extends AbstractView {
         case EXIT:
           Panels.showLightBox(Wizards.newExitWizard().getWizardScreenHolder());
           break;
-        case SHAPE_SHIFT:Panels.showLightBox((Wizards.newRequestBitcoinWizard().getWizardScreenHolder()));
+        case SHAPE_SHIFT:Panels.showLightBox((Wizards.newSendBitcoinShapeShiftWizard().getWizardScreenHolder()));
           break;
         default:
           Configurations.currentConfiguration.getAppearance().setCurrentScreen(nodeInfo.getDetailScreen().name());

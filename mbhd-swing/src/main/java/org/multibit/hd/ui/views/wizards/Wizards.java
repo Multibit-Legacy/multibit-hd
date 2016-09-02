@@ -176,6 +176,13 @@ public class Wizards {
 
     return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_ENTER_AMOUNT, parameter));
   }
+  public static SendBitcoinWizard newSendBitcoinShapeShiftWizard() {
+
+    log.debug("New 'Send bitcoin ShapeShift wizard'");
+    SendBitcoinParameter parameter = new SendBitcoinParameter(null,Optional.<PaymentRequestData>absent());
+
+    return new SendBitcoinWizard(new SendBitcoinWizardModel(SendBitcoinState.SEND_SHAPE_SHIFT_ENTER_ADDRESS,parameter));
+  }
 
   /**
    * @return A new "request bitcoin" wizard

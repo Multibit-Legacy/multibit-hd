@@ -50,5 +50,11 @@ public class SendBitcoinWizard extends AbstractHardwareWalletWizard<SendBitcoinW
     wizardViewMap.put(
       SendBitcoinState.SEND_BIP70_PAYMENT_ACK_MEMO.name(),
       new SendBitcoinShowPaymentACKMemoPanelView(this, SendBitcoinState.SEND_BIP70_PAYMENT_ACK_MEMO.name()));
+    wizardViewMap.put(
+            SendBitcoinState.SEND_SHAPE_SHIFT_ENTER_ADDRESS.name(),
+            new SendBitCoinShapeShiftEnterAmountView(this, SendBitcoinState.SEND_SHAPE_SHIFT_ENTER_ADDRESS.name()));
+    wizardViewMap.put(
+            SendBitcoinState.SEND_SHAPE_SHIFT_TRANSACTION.name(),
+            new SendBitCoinShapeShiftPaymentAckView(this,SendBitcoinState.SEND_SHAPE_SHIFT_TRANSACTION.name()));
   }
 }
