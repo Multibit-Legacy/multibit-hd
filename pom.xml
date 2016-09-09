@@ -31,12 +31,12 @@
     <module>mbhd-swing</module>
   </modules>
 
-  <url>http://github.com/bitcoin-solutions/multibit-hd</url>
+  <url>http://github.com/keepkey/multibit-hd</url>
   <inceptionYear>2013</inceptionYear>
 
   <organization>
-    <name>Bitcoin Solutions Ltd</name>
-    <url>http://bitcoin-solutions.co.uk</url>
+    <name>KeepKey</name>
+    <url>https://KeepKey.com</url>
   </organization>
 
   <developers>
@@ -48,6 +48,13 @@
       <name>Gary Rowe</name>
       <email>gary.rowe@bitcoin-solutions.co.uk</email>
     </developer>
+    <developer>
+      <name>Kenneth Heutmaker</name>
+      <email>ken@keepkey.com</email>
+    </developer><developer>
+    <name>Kartik Iyer</name>
+    <email>kartik@keepkey.com</email>
+  </developer>
   </developers>
 
   <licenses>
@@ -61,7 +68,7 @@
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/bitcoin-solutions/multibit-hd/issues</url>
+    <url>https://github.com/keepkey/multibit-hd/issues</url>
   </issueManagement>
 
   <repositories>
@@ -69,12 +76,12 @@
     <!-- Use https://rawgithub.com to provide a consistent result -->
     <repository>
       <id>mbhd-maven-release</id>
-      <url>https://raw.github.com/bitcoin-solutions/mbhd-maven/master/releases</url>
+      <url>https://raw.github.com/keepkey/mbhd-maven/master/releases</url>
       <releases/>
     </repository>
     <repository>
       <id>mbhd-maven-snapshot</id>
-      <url>https://raw.github.com/bitcoin-solutions/mbhd-maven/master/snapshots</url>
+      <url>https://raw.github.com/keepkey/mbhd-maven/master/snapshots</url>
       <!-- These artifacts change frequently during development iterations -->
       <snapshots>
         <updatePolicy>always</updatePolicy>
@@ -98,9 +105,9 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:git:git@github.com:bitcoin-solutions/multibit-hd.git</connection>
-    <developerConnection>scm:git:git@github.com:bitcoin-solutions/multibit-hd.git</developerConnection>
-    <url>git@github.com:bitcoin-solutions/multibit-hd.git</url>
+    <connection>scm:git:git@github.com:keepkey/multibit-hd.git</connection>
+    <developerConnection>scm:git:git@github.com:keepkey/multibit-hd.git</developerConnection>
+    <url>git@github.com:keepkey/multibit-hd.git</url>
     <tag>HEAD</tag>
   </scm>
 
