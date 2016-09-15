@@ -25,7 +25,7 @@ public class LoggingConfiguration {
 
   static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
-  private Level level = Level.INFO;
+  private Level level = Level.WARN;
 
   private Map<String, Level> loggers = Maps.newHashMap();
 
