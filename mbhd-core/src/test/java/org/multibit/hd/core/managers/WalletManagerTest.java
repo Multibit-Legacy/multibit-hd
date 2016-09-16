@@ -95,7 +95,7 @@ public class WalletManagerTest {
   public final static String TREZOR_ADDRESS_M_44H_0H_0H_1_3 = "1DzVLMA4HzjXPAr6aZoaacDPHXXntsZ2zL";
 
   /**
-   * The 'skin' seed phrase used in the issue: https://github.com/bitcoin-solutions/multibit-hd/issues/445
+   * The 'skin' seed phrase used in the issue: https://github.com/keepkey/multibit-hd/issues/445
    */
   public static final String SKIN_SEED_PHRASE = "skin join dog sponsor camera puppy ritual diagram arrow poverty boy elbow";
 

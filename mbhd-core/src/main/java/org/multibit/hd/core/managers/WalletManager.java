@@ -270,7 +270,7 @@ public enum WalletManager implements WalletEventListener {
    * <h1>THIS METHOD DOES NOT PRODUCE BIP32 COMPLIANT WALLETS !</h1>
    * <h1>THIS METHOD DOES NOT PRODUCE BIP32 COMPLIANT WALLETS !</h1>
    *
-   * See: https://github.com/bitcoin-solutions/multibit-hd/issues/445
+   * See: https://github.com/keepkey/multibit-hd/issues/445
    *
    * <p>Create a MBHD soft wallet from a seed.</p>
    * <p>This is stored in the specified directory.</p>

@@ -9,8 +9,9 @@
   <packaging>pom</packaging>
 
   <name>MultiBit HD</name>
-  <description>MultiBit HD is a Java Bitcoin wallet providing a simple to use wallet based on hierarchical deterministic wallets and hardware wallets. It
-    relies on the Simplified Payment Verification (SPV) mode of Bitcoin.
+  <description>
+    MultiBit HD is a Java Bitcoin wallet providing a simple to use wallet based on hierarchical deterministic wallets
+    and hardware wallets. It relies on the Simplified Payment Verification (SPV) mode of Bitcoin.
   </description>
 
   <properties>
@@ -22,7 +23,7 @@
     <xchange.version>2.1.0</xchange.version>
     <jackson.version>2.3.2</jackson.version>
     <findbugs.version>3.0.0</findbugs.version>
-    <multibit-hardware.version>0.7.0</multibit-hardware.version>
+    <multibit-hardware.version>0.8.0</multibit-hardware.version>
 
   </properties>
 
@@ -31,12 +32,12 @@
     <module>mbhd-swing</module>
   </modules>
 
-  <url>http://github.com/bitcoin-solutions/multibit-hd</url>
+  <url>http://github.com/keepkey/multibit-hd</url>
   <inceptionYear>2013</inceptionYear>
 
   <organization>
-    <name>Bitcoin Solutions Ltd</name>
-    <url>http://bitcoin-solutions.co.uk</url>
+    <name>KeepKey, LLC</name>
+    <url>http://keepkey.com</url>
   </organization>
 
   <developers>
@@ -47,6 +48,14 @@
     <developer>
       <name>Gary Rowe</name>
       <email>gary.rowe@bitcoin-solutions.co.uk</email>
+    </developer>
+    <developer>
+      <name>Kenneth Heutmaker</name>
+      <email>ken@keepkey.com</email>
+    </developer>
+    <developer>
+      <name>Kartik Iyer</name>
+      <email>kartik@keepkey.com</email>
     </developer>
   </developers>
 
@@ -61,7 +70,7 @@
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/bitcoin-solutions/multibit-hd/issues</url>
+    <url>https://github.com/keepkey/multibit-hd/issues</url>
   </issueManagement>
 
   <repositories>
@@ -69,12 +78,12 @@
     <!-- Use https://rawgithub.com to provide a consistent result -->
     <repository>
       <id>mbhd-maven-release</id>
-      <url>https://raw.github.com/bitcoin-solutions/mbhd-maven/master/releases</url>
+      <url>https://raw.github.com/keepkey/mbhd-maven/master/releases</url>
       <releases/>
     </repository>
     <repository>
       <id>mbhd-maven-snapshot</id>
-      <url>https://raw.github.com/bitcoin-solutions/mbhd-maven/master/snapshots</url>
+      <url>https://raw.github.com/keepkey/mbhd-maven/master/snapshots</url>
       <!-- These artifacts change frequently during development iterations -->
       <snapshots>
         <updatePolicy>always</updatePolicy>
@@ -83,6 +92,7 @@
 
   </repositories>
 
+  <!--
   <distributionManagement>
     <snapshotRepository>
       <id>sonatype-nexus-snapshots</id>
@@ -96,11 +106,13 @@
     </repository>
     <downloadUrl>https://oss.sonatype.org/content/groups/public/uk/co/bitcoin-solutions</downloadUrl>
   </distributionManagement>
+  -->
 
   <scm>
-    <connection>scm:git:git@github.com:bitcoin-solutions/multibit-hd.git</connection>
-    <developerConnection>scm:git:git@github.com:bitcoin-solutions/multibit-hd.git</developerConnection>
-    <url>git@github.com:bitcoin-solutions/multibit-hd.git</url>
+    <connection>scm:git:git@github.com:keepkey/multibit-hd.git</connection>
+    <developerConnection>scm:git:git@github.com:keepkey/multibit-hd.git</developerConnection>
+    <url>git@github.com:keepkey/multibit-hd.git</url>
+    <url>git@github.com:keepkey/multibit-hd.git</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -118,7 +130,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.4</version>
+            <version>1.6</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
@@ -126,11 +138,39 @@
                 <goals>
                   <goal>sign</goal>
                 </goals>
+                <configuration>
+                  <homedir>${gpg.homedir}</homedir>
+                  <defaultKeyring>false</defaultKeyring>
+                </configuration>
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-install-plugin</artifactId>
+            <configuration>
+              <createChecksum>true</createChecksum>
+            </configuration>
+          </plugin>
         </plugins>
       </build>
+      <properties>
+        <gpg.homedir>/Volumes/GPG/.gnupg</gpg.homedir>
+      </properties>
     </profile>
 
   </profiles>
@@ -228,7 +268,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.4.1</version>
+        <version>2.5.2</version>
         <configuration>
           <autoVersionSubmodules>true</autoVersionSubmodules>
         </configuration>
@@ -318,7 +358,7 @@
     <dependency>
       <groupId>org.bitcoinj</groupId>
       <artifactId>bitcoinj-core</artifactId>
-      <version>0.13.3-alice-0.2.1-SNAPSHOT</version>
+      <version>0.13.3-alice-0.2.1</version>
     </dependency>
 
     <!-- BRIT Core for managing income -->

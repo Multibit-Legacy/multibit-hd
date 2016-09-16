@@ -22,7 +22,7 @@ public enum WalletType {
   /**
    * MultiBit HD soft wallet (Beta 7 wallet)
    * This was the first attempt at a BIP32 wallet and was NOT compliant
-   * (see https://github.com/bitcoin-solutions/multibit-hd/issues/445)
+   * (see https://github.com/keepkey/multibit-hd/issues/445)
    *
    * Wallet is NOT BIP 32 compliant
    * m/0'

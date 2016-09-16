@@ -124,7 +124,7 @@ public class TitleFontDecorator {
       Font font = TITLE_FONT.deriveFont(size);
       component.setFont(font);
     } catch (NullPointerException npe) {
-      // Fix for https://github.com/bitcoin-solutions/multibit-hd/issues/676
+      // Fix for https://github.com/keepkey/multibit-hd/issues/676
       log.warn("Failed to apply font to component", npe);
     }
   }

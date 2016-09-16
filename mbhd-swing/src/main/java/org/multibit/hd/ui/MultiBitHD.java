@@ -91,7 +91,7 @@ public class MultiBitHD {
    */
   private static void initialiseSystemProperties() {
 
-    // Fix for "TimSort" clipboard failure - https://github.com/bitcoin-solutions/multibit-hd/issues/645
+    // Fix for "TimSort" clipboard failure - https://github.com/keepkey/multibit-hd/issues/645
     // Suggested by https://www.java.net/node/700601
     // See also http://stackoverflow.com/a/26829874/396747 for more details on ordering at startup
     // Verified that java.util.Arrays has not been loaded at this stage
