@@ -112,7 +112,6 @@
     <connection>scm:git:git@github.com:keepkey/multibit-hd.git</connection>
     <developerConnection>scm:git:git@github.com:keepkey/multibit-hd.git</developerConnection>
     <url>git@github.com:keepkey/multibit-hd.git</url>
-    <url>git@github.com:keepkey/multibit-hd.git</url>
     <tag>HEAD</tag>
   </scm>
 
