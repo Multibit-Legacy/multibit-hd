@@ -30,7 +30,7 @@ import org.multibit.hd.brit.core.extensions.MatcherResponseWalletExtension;
 import org.multibit.hd.brit.core.extensions.SendFeeDtoWalletExtension;
 import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.brit.core.services.FeeService;
+import org.multibit.hd.core.services.FeeService;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Yaml;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;

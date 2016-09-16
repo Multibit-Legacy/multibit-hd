@@ -3,6 +3,7 @@ package org.multibit.hd.ui.views.wizards.use_hardware_wallet;
 import com.google.common.base.Optional;
 import net.miginfocom.swing.MigLayout;
 import org.multibit.hd.core.config.Configurations;
+import org.multibit.hd.core.dto.WalletMode;
 import org.multibit.hd.ui.audio.Sounds;
 import org.multibit.hd.ui.events.view.ViewEvents;
 import org.multibit.hd.ui.languages.MessageKey;
@@ -33,7 +34,7 @@ import java.net.URI;
 
 public class UseHardwareWalletBuyDevicePanelView extends AbstractHardwareWalletWizardPanelView<UseHardwareWalletWizardModel, UseHardwareWalletState> implements ActionListener {
 
-  private static String BUY_TREZOR_URL = "https://buytrezor.com?a=multibit.org";
+  private static String BUY_TREZOR_URL = "https://www.keepkey.com?r=multibit.org";
   private static String BUY_KEEP_KEY_URL = "https://www.keepkey.com?r=multibit.org";
 
   /**
@@ -42,7 +43,7 @@ public class UseHardwareWalletBuyDevicePanelView extends AbstractHardwareWalletW
    */
   public UseHardwareWalletBuyDevicePanelView(AbstractHardwareWalletWizard<UseHardwareWalletWizardModel> wizard, String panelName) {
 
-    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.BUY_HARDWARE_TITLE, wizard.getWizardModel().getWalletMode().historicalBrand());
+    super(wizard, panelName, AwesomeIcon.SHIELD, MessageKey.BUY_HARDWARE_TITLE, WalletMode.KEEP_KEY.historicalBrand());
 
   }
 
@@ -65,10 +66,10 @@ public class UseHardwareWalletBuyDevicePanelView extends AbstractHardwareWalletW
       getLaunchBrowserAction(),
       MessageKey.BUY_HARDWARE,
       MessageKey.BUY_HARDWARE_TOOLTIP,
-      getWizardModel().getWalletMode().historicalBrand()
+      WalletMode.KEEP_KEY.historicalBrand()
     );
 
-    contentPanel.add(Labels.newBuyHardwareCommentNote(getWizardModel().getWalletMode().historicalBrand()), "wrap");
+    contentPanel.add(Labels.newBuyHardwareCommentNote(WalletMode.KEEP_KEY.historicalBrand()), "wrap");
     contentPanel.add(launchBrowserButton, "wrap");
   }
 

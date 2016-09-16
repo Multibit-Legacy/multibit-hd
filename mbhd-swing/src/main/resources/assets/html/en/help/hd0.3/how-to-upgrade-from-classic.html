@@ -1,6 +1,6 @@
-<h3>Upgrading from MultiBit Classic to MultiBit HD</h3>
+<h3>Upgrading from MultiBit Classic to MultiBit</h3>
 
-<p>We recommend that you <a href="https://multibit.org/try-multibit-hd.html">read the try MultiBit HD</a> article if you haven't already.</p>
+<p>We recommend that you <a href="https://multibit.org/try-multibit-hd.html">read the try MultiBit</a> article if you haven't already.</p>
 
 <h4>Spending is the safest way</h4>
 <p>One of the problems with random private keys is that they cannot be easily regenerated. It is for this reason that we, the MultiBit developers, have decided against direct import of a MultiBit Classic wallet. To illustrate this, consider the following example.</p>
@@ -9,10 +9,10 @@
   backups. Fortunately she has her wallet words and so all the bitcoins associated with it can be recovered. However, those bitcoins that remained with the random private keys are
   only protected by backups which have been stolen as well so they cannot be recovered.</p>
 
-<p>In the remainder of the article we discuss how to safely upgrade from MultiBit Classic to MultiBit HD and still retain control over old private keys.</p>
+<p>In the remainder of the article we discuss how to safely upgrade from MultiBit Classic to MultiBit and still retain control over old private keys.</p>
 
 <h4>Step 1 - Preparation</h4>
-<p>If you have a large amount stored in bitcoin (typically over 500 USD worth) then you should seriously consider purchasing a <a href="https://buytrezor.com/?a=multibit.org" target="_blank">Trezor</a> device.
+<p>If you have a large amount stored in bitcoin (typically over 500 USD worth) then you should seriously consider purchasing a <a href="https://www.keepkey.com/?a=multibit.org" target="_blank">KeepKey</a> device.
   This will provide the best possible protection for your bitcoins while still enabling you to use them without undue hassle.</p>
 
 <p>You may decide that you want to take this opportunity to split your bitcoin up into smaller amounts and spread them across multiple wallets, each with its own set of wallet
@@ -20,31 +20,31 @@
 
 <ol>
   <li>Arrange a collection of A5 cards for each wallet</li>
-  <li>On each card write a section for Datestamp, Wallet words (leave space for 24 words), Wallet type (MultiBit HD, Trezor) and first receiving Address</li>
+  <li>On each card write a section for Datestamp, Wallet words (leave space for 24 words), Wallet type (MultiBit,KeepKey) and first receiving Address</li>
 </ol>
 
-<h4>Step 2 - Spend from MultiBit Classic to MultiBit HD</h4>
+<h4>Step 2 - Spend from MultiBit Classic to MultiBit</h4>
 
 <p></p>
 
 <ol>
   <li>Start MultiBit Classic and ensure it is fully synchronized</li>
-  <li>Start MultiBit HD and navigate to the "Create Wallet" screen (see the <a href="create-wallet.html">"How to create a wallet"</a> article for details).</li>
-  <li>Create a wallet using MultiBit HD (choosing the Trezor option if you have one) and fill in the card using a pen</li>
-  <li>Unlock your wallet in MultiBit HD using your password and select "Request bitcoin"</li>
+  <li>Start MultiBit and navigate to the "Create Wallet" screen (see the <a href="create-wallet.html">"How to create a wallet"</a> article for details).</li>
+  <li>Create a wallet using MultiBit (choosing the KeepKey option if you have one) and fill in the card using a pen</li>
+  <li>Unlock your wallet in MultiBit using your password and select "Request bitcoin"</li>
   <li>Copy the offered receiving address (or at least the first 8 letters so you can identify them later) to your card</li>
 </ol>
 
-<p>At this point you have a MultiBit HD receiving address and MultiBit Classic is ready to spend. To ensure that your funds are transferred safely do the following:</p>
+<p>At this point you have a MultiBit receiving address and MultiBit Classic is ready to spend. To ensure that your funds are transferred safely do the following:</p>
 
 <ol>
   <li>Spend a small amount (under 1 USD worth) to the receiving address</li>
-  <li>Observe the receipt of the funds in MultiBit HD - this should be almost immediate</li>
+  <li>Observe the receipt of the funds in MultiBit - this should be almost immediate</li>
   <li>Spend the rest of the funds you want to allocate to that wallet - you might want to split the funds over several addresses</li>
 </ol>
 
 <h4>Step 3 - Preserve the MultiBit Classic private keys</h4>
-<p>Even though all funds have been spent to MultiBit HD receiving addresses there is still the chance that someone could send you bitcoins using the old address. To ensure that you can always access these funds it is best to maintain a copy of the private keys somewhere safe. There are several approaches to this:</p>
+<p>Even though all funds have been spent to MultiBit receiving addresses there is still the chance that someone could send you bitcoins using the old address. To ensure that you can always access these funds it is best to maintain a copy of the private keys somewhere safe. There are several approaches to this:</p>
 
 <ol>
   <li>export the private keys, encrypted, from MultiBit Classic to a <code>.key</code> file</li>

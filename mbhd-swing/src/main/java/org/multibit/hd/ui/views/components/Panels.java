@@ -646,8 +646,7 @@ public class Panels {
     WalletMode walletMode) {
 
     JPanel panel = Panels.newPanel();
-
-    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.BUY_HARDWARE, walletMode.historicalBrand());
+    JRadioButton radio1 = RadioButtons.newRadioButton(listener, MessageKey.BUY_HARDWARE, walletMode.KEEP_KEY.historicalBrand());
     radio1.setActionCommand(buyDeviceCommand);
     radio1.setSelected(true);
 
@@ -671,14 +670,16 @@ public class Panels {
 
     // Action selection is mutually exclusive
     ButtonGroup group = new ButtonGroup();
-    group.add(radio1);
-    group.add(radio2);
-    group.add(radio3);
+    if(walletMode.equals(WalletMode.TREZOR))
+      group.add(radio1);
+      group.add(radio2);
+      group.add(radio3);
 
     // Add to the panel
-    panel.add(radio1, "wrap");
-    panel.add(radio2, "wrap");
-    panel.add(radio3, "wrap");
+    if(walletMode.equals(WalletMode.TREZOR))
+      panel.add(radio1, "wrap");
+      panel.add(radio2, "wrap");
+      panel.add(radio3, "wrap");
 
     return panel;
   }

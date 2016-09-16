@@ -1,6 +1,6 @@
 package org.multibit.hd.ui.views.components;
 
-import org.multibit.hd.brit.core.services.FeeService;
+import org.multibit.hd.core.services.FeeService;
 import org.multibit.hd.ui.languages.MessageKey;
 
 import javax.swing.*;
@@ -21,7 +21,7 @@ public class Sliders {
   /**
    * Resolution of a single tick of the slider, in satoshi
    */
-  public static final int RESOLUTION = 200;
+  public static final int RESOLUTION = 500;
 
   /**
    * Utilities have no public constructor
