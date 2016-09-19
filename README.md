@@ -1,5 +1,5 @@
 
-Build status: [![Build Status](https://travis-ci.org/bitcoin-solutions/multibit-hd.png?branch=develop)](https://travis-ci.org/bitcoin-solutions/multibit-hd)
+Build status: [![Build Status](https://travis-ci.org/keepkey/multibit-hd.png?branch=develop)](https://travis-ci.org/keepkey/multibit-hd)
 
 Project status: Pre-release. Expect minor bugs and UI adjustments. Suitable for small scale production.
 
@@ -10,7 +10,7 @@ A desktop Hierarchical Deterministic Wallet (HDW) for Bitcoin using the Simplifi
 The target audience is "international mainstream" which compels the user interface to remain as simple and consistent as possible while still retaining advanced capabilities
 under the covers.
 
-Support for external hardware wallets (such as the Trezor) is [available through the MultiBit Hardware project](https://github.com/bitcoin-solutions/mbhd-hardware).
+Support for external hardware wallets (such as the Trezor) is [available through the MultiBit Hardware project](https://github.com/keepkey/mbhd-hardware).
 
 ### Main website
 
@@ -21,7 +21,7 @@ Pre-packaged installers are available from the [MultiBit website](https://beta.m
 * Java 7 and Swing
 * [Bitcoinj](https://github.com/bitcoinj/bitcoinj) - Providing various Bitcoin protocol utilities (GitHub is the reference)
 * [hid4java](https://github.com/gary-rowe/hid4java) - Java library providing USB Human Interface Device (HID) native interface
-* [MultiBit Hardware](https://github.com/bitcoin-solutions/multibit-hardware) - Java library providing Trezor support
+* [MultiBit Hardware](https://github.com/keepkey/multibit-hardware) - Java library providing Trezor support
 * [Google Protocol Buffers](https://code.google.com/p/protobuf/) (protobuf) - For use with serialization and hardware communications
 * [Font Awesome](http://fortawesome.github.io/Font-Awesome/) - for iconography
 * [Install4j](https://www.ej-technologies.com/download/install4j/files) - for a smooth installation and update process
@@ -30,7 +30,7 @@ Pre-packaged installers are available from the [MultiBit website](https://beta.m
 
 MultiBit HD is a standard Maven build from a GitHub repository and currently relies on some builds of libraries which aren't available in Maven Central.
 
-Below are some basic instructions for developers - there is [more information in the MultiBit HD wiki](https://github.com/bitcoin-solutions/multibit-hd/wiki).
+Below are some basic instructions for developers - there is [more information in the MultiBit HD wiki](https://github.com/keepkey/multibit-hd/wiki).
 
 #### Verify you have Git
 
@@ -43,7 +43,7 @@ $ git --version
 Then, if this is your first time working with MultiBit HD source code, clone the source code repository (over HTTPS) using:
 
 ```
-$ git clone https://github.com/bitcoin-solutions/multibit-hd.git
+$ git clone https://github.com/keepkey/multibit-hd.git
 ```
 A sub-directory called `multibit-hd` will be created which is your project root directory.
 
@@ -69,7 +69,7 @@ Maven uses a file called `pom.xml` present in the MultiBit HD source code projec
 
 #### We currently use a forked version of Bitcoinj
 
-The [MultiBit Staging repository](https://github.com/bitcoin-solutions/mbhd-maven) contains a fork of the bitcoinj library
+The [MultiBit Staging repository](https://github.com/keepkey/mbhd-maven) contains a fork of the bitcoinj library
 and its supporting Orchid JAR for Tor that is aligned with the MultiBit HD `develop` branch. This should be used for
 development builds and is suitable for production. As we make changes to our fork we update the staging repository. 
 
@@ -128,7 +128,7 @@ As always, donations to the MultiBit address are welcome: [1AhN6rPdrMuKBGFDKR1k9
 
 #### Where's the Trezor support ?
 
-We've begun the process of integrating the Trezor device through the [MultiBit Hardware](https://github.com/bitcoin-solutions/multibit-hardware) project. If you are a hardware 
+We've begun the process of integrating the Trezor device through the [MultiBit Hardware](https://github.com/keepkey/multibit-hardware) project. If you are a hardware
 wallet developer, or are just interested to learn how the Trezor device works under the covers please watch this project.
 
 From now you should be able to attach your Trezor device and see an alert message providing information and a button to switch your current wallet over to one that tracks your
@@ -140,7 +140,7 @@ At the time MBHD was being written (Q4 2013 - Q2 2014) Java 8 was not in product
 Classic and 3x the standard Java 7 packaged footprints). That footprint alone would be sufficient to dramatically increase the cost of serving the application and deter people
 from downloading in countries where bandwidth is less available.
 
-We will revisit this once we have suitable Install4j JREs available. We expect this to occur shortly after [Release 0.1](https://github.com/bitcoin-solutions/multibit-hd/milestones).
+We will revisit this once we have suitable Install4j JREs available. We expect this to occur shortly after [Release 0.1](https://github.com/keepkey/multibit-hd/milestones).
 
 #### Why not JavaFX ?
 
@@ -186,14 +186,14 @@ As new changes are released they will update automatically over HTTPS from 0.0.4
 
 #### Is there a developer wiki ?
 
-Yes. [The wiki pages](https://github.com/bitcoin-solutions/multibit-hd/wiki/_pages) provide comprehensive instructions for developers that cover a variety of environments.
+Yes. [The wiki pages](https://github.com/keepkey/multibit-hd/wiki/_pages) provide comprehensive instructions for developers that cover a variety of environments.
 
 #### What is your development roadmap ?
 
 We are currently working to the following timetable:
 
-1. Hardware wallet (Trezor) support (see [version 0.0.5 issues](https://github.com/bitcoin-solutions/multibit-hd/milestones/Beta%205%20Trezor))
-1. BIP70-73 payment protocol support (see [version 0.1.0 issues](https://github.com/bitcoin-solutions/multibit-hd/milestones/Release%200.1%20Payment%20Protocol))
+1. Hardware wallet (Trezor) support (see [version 0.0.5 issues](https://github.com/keepkey/multibit-hd/milestones/Beta%205%20Trezor))
+1. BIP70-73 payment protocol support (see [version 0.1.0 issues](https://github.com/keepkey/multibit-hd/milestones/Release%200.1%20Payment%20Protocol))
 1. Hierarchical deterministic multi-signature (HDM) support (still planning)
 
 ## Developer tools
@@ -227,7 +227,7 @@ Use the `ResourceBundleTools` to find similar entries and to arrange keys in the
 
 To do an internal help refresh:
 
-1. Ensure you have cloned the [MultiBit website](https://github.com/bitcoin-solutions/multibit-website) into a sibling directory to MultiBit HD
+1. Ensure you have cloned the [MultiBit website](https://github.com/keepkey/multibit-website) into a sibling directory to MultiBit HD
 1. Switch to the appropriate site branch (e.g. `master` for ongoing releases) and update
 1. Use Ant to execute the `update-internal-help.xml` script to copy the relevant files into the correct locations
 1. Within Intellij, navigate to `assets/images/en/screenshots/mbhd-01`, select all image files and copy to clipboard

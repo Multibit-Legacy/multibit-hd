@@ -434,7 +434,7 @@ public abstract class AbstractHardwareWalletFixture implements HardwareWalletFix
   /**
    * <p>Configure for series of SIGN_TX messages for PIN, TX_INPUT, TX_OUTPUT, TX_META</p>
    * <p>Fires low level messages that trigger state changes in the MultiBit Hardware FSM</p>
-   * <p>See <a href="https://github.com/bitcoin-solutions/multibit-hardware/wiki/Trezor-SignTx-Messages">MultiBit Hardware wiki</a> for more information</p>
+   * <p>See <a href="https://github.com/keepkey/multibit-hardware/wiki/Trezor-SignTx-Messages">MultiBit Hardware wiki</a> for more information</p>
    *
    * @param client The mock client
    */

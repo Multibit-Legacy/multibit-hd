@@ -868,7 +868,7 @@ public class WalletService extends AbstractService {
         for (PaymentRequestData paymentRequestData : paymentRequestDataCollection) {
 
           // Clear any tx hash if the tx is not in the wallet
-          // (See issue https://github.com/bitcoin-solutions/multibit-hd/issues/463)
+          // (See issue https://github.com/keepkey/multibit-hd/issues/463)
           // This will get persisted at MBHD close or when payments is next written
           Optional<Sha256Hash> transactionHashOptional = paymentRequestData.getTransactionHash();
           if (transactionHashOptional.isPresent() && walletSummaryOptional.isPresent()) {
@@ -1144,7 +1144,7 @@ public class WalletService extends AbstractService {
   }
 
   public void addTransactionInfo(TransactionInfo transactionInfo) {
-    transactionInfoMap.put(transactionInfo.getHash(), transactionInfo);
+    transactionInfoMap.putIfAbsent(transactionInfo.getHash(),transactionInfo);;
   }
 
   public TransactionInfo getTransactionInfoByHash(String transactionHashAsString) {

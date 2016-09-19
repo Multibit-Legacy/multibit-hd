@@ -60,6 +60,7 @@ public class LoggingConfiguration {
     loggers.put("org.multibit", Level.DEBUG);
     loggers.put("com.xeiam", Level.WARN);
     loggers.put("org.bitcoinj", Level.ERROR);
+    loggers.put("PeerConnectionLog", Level.INFO);
   }
 
   public Level getLevel() {

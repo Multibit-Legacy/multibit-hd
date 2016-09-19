@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <groupId>org.multibit.hd</groupId>
     <artifactId>mbhd-parent</artifactId>
@@ -42,15 +40,15 @@
                     <path id="proto.path">
                       <!-- Include all MBHD protobuf files -->
                       <fileset dir="src/main/protobuf">
-                        <include name="**/*.proto"/>
+                        <include name="**/*.proto" />
                       </fileset>
                     </path>
-                    <pathconvert pathsep=" " property="proto.files" refid="proto.path"/>
+                    <pathconvert pathsep=" " property="proto.files" refid="proto.path" />
                     <exec executable="/usr/local/bin/protoc" failonerror="true">
-                      <arg value="--java_out=${project.basedir}/src/main/java"/>
-                      <arg value="-I=${project.basedir}/src"/>
+                      <arg value="--java_out=${project.basedir}/src/main/java" />
+                      <arg value="-I=${project.basedir}/src" />
                       <!-- This "error" can be ignored in IDEs -->
-                      <arg line="${proto.files}"/>
+                      <arg line="${proto.files}" />
                     </exec>
                   </tasks>
                 </configuration>
@@ -81,7 +79,7 @@
               <target>
                 <!-- The deterministic date is arbitrary so Bitcoin genesis seems appropriate -->
                 <touch millis="1231006500000">
-                  <fileset dir="target/classes" erroronmissingdir="false"/>
+                  <fileset dir="target/classes" erroronmissingdir="false" />
                 </touch>
               </target>
             </configuration>
@@ -98,10 +96,7 @@
               <target>
                 <!-- Move the deterministic ZIP into a JAR ignoring absence since we may be in a parent POM -->
                 <!-- If Ant 1.8.3+ can be guaranteed on all build+dev environments then the quiet="true" attribute can be added -->
-                <move file="target/${project.artifactId}-${project.version}-deterministic.zip"
-                      tofile="target/${project.artifactId}-${project.version}.jar"
-                      failonerror="false"
-                  />
+                <move file="target/${project.artifactId}-${project.version}-deterministic.zip" tofile="target/${project.artifactId}-${project.version}.jar" failonerror="false" />
               </target>
             </configuration>
             <goals>
