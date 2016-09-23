@@ -40,7 +40,7 @@ public class AppearanceConfiguration {
    * If you change this DON'T FORGET to update the core/test/resources/fixtures/messages/test-simple.txt
    * and rerun BitcoinMessagesTest
    */
-  public static final String CURRENT_VERSION = "0.3.0";
+  public static final String CURRENT_VERSION = "0.4.1";
   private String version = CURRENT_VERSION;
 
   /**
