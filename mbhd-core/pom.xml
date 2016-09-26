@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.multibit.hd</groupId>
     <artifactId>mbhd-parent</artifactId>
-    <version>0.3.0</version>
+    <version>develop-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 

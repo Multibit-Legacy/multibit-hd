@@ -1,0 +1,133 @@
+<h3>Wallet backups</h3>
+
+<p><strong>You can always recover your bitcoin <a href="restore-wallet.html">through your wallet words (seed phrase).</a></strong></p>
+
+<p><strong>So long as you know your wallet words</strong> (or your KeepKey and PIN if you are using one) you can use a wallet backup to <a href="restore-wallet.html">recover</a>:
+</p>
+<ul>
+  <li>your bitcoin</li>
+  <li>your contacts and notes</li>
+  <li>your payment history and notes.</li>
+</ul>
+
+<p>Hardware and software can fail, be lost or stolen. MultiBit ensures that an automatic encrypted backup is made of your wallet
+  to a location that you specify.</p>
+
+<h4>Use a cloud backup service</h4>
+
+<p>Setting up a cloud backup service is straightforward and for small amounts of data (under 2GB) it is often free. We would strongly
+  urge you to consider <a href="https://spideroak.com" target="_blank">SpiderOak</a> for its end to end encryption. An alternative is Dropbox which is extremely
+    common and provides an excellent user experience.</p>
+<p>MultiBit encrypts all your cloud backup information using a strong AES key derived from either your wallet words or from a password provided by your Trezor. It is safe to
+  store in the cloud without worrying about bad people being able to read your data.</p>
+
+<h4>Technical details</h4>
+
+<p>MultiBit maintains three stages of wallet backup:</p>
+<ul>
+  <li>rolling backup - these are recent copies of your wallet. They are encrypted with your wallet password / KeepKey provided password</li>
+  <li>local backup - this is a zip of the wallet directory (less block chain) encrypted with a key derived from the wallet words or from your KeepKey provided password. It is stored
+    locally on your machine
+  </li>
+  <li>cloud backup - this is a zip of the wallet directory (less block chain) encrypted with a key derived from the wallet words or from your KeepKey provided password. It is copied
+    to your cloud backup directory
+  </li>
+</ul>
+
+<p>More information on the scheduling of these backups is given later.</p>
+
+<h4>Encrypting "soft" wallets and their backups</h4>
+
+<p>A "soft" wallet is one that is not linked to an external hardware device such as a <a href="https://www.keepkey.com/?a=MultiBit.org" target="_blank">Trezor</a>.</p>
+
+<p>The rolling backups encrypt a snapshot of the current wallet. Rolling backups are loaded automatically if the load of the primary wallet fails. The user is told if a rolling
+  backup is loaded on the 'Wallet startup' screen after unlock. The rolling backup is AES-256 encrypted using a key derived from the user's password after running it through
+  Scrypt (N=16384, r=8, p=1). Interested readers <a href="https://www.tarsnap.com/scrypt/scrypt.pdf" target="_blank">should refer to the Scrypt white paper (PDF)</a> for more
+  details if brute force or dictionary attacks are a concern (in particular pages 12-14).</p>
+
+<p>When making a local or cloud backup we zip up the wallet directory and include the wallet password in encrypted form in the archive. Short wallet passwords are padded. The zip
+  file is then encrypted using a key derived from the wallet words. This approach allows the password to be recovered from a cloud backup so long as the user knows the wallet words.</p>
+
+<p>It also means that cloud backups are safe for long term off-site storage.</p>
+
+<h4>Encrypting "hard" wallets and their backups</h4>
+
+<p>A "hard" wallet is one that is linked to an external hardware device such as a KeepKey. They provide much greater protection for your bitcoins because the
+  private keys are never present on your desktop machine and are not susceptible to malware or viruses.</p>
+
+<p>After entering the KeepKey PIN the password for your KeepKey wallet is provided by the KeepKey encrypting a fixed phrase in a deterministic manner. This password is also used to
+  encrypt your cloud backups.</p>
+
+<p>Therefore the only way to unlock either the wallet or the backups is to physically have the correct KeepKey present and to know its PIN.</p>
+
+<h4>Managing all the backups</h4>
+
+<p>MultiBit maintains a comprehensive backup strategy consisting of rolling, local and cloud backups. While technical in nature
+  interested readers may find the following information helpful.</p>
+
+<p>After successfully unlocking a wallet MultiBit will follow this process to maintain backups:</p>
+<ol>
+  <li>Wait 1 minute after MultiBit starts and then start "ticking" every 2 minutes.</li>
+  <li>Every "tick" (2 minutes), create a rolling wallet backup. This is a copy of the encrypted wallet stored in the
+    wallet's <code>rolling-backup</code> sub-directory. It is timestamped and encrypted with the wallet password.
+    There are up to 4 of these in place covering the last 8 minutes of activity.
+  </li>
+  <li>Every "tick modulo 5" (10 minutes), create a zip backup in the wallet <code>zip-backup</code> directory. These
+    are the local zip backups. This is everything in the wallet directory except the blockstore (always retrievable from
+    the Bitcoin network) and the zip-backups themselves. Note that the rolling backups are put in the zip backup.
+    It is a zip file which is then AES encrypted using a strong key derived from your wallet words or from a password provided by your KeepKey.
+  </li>
+  <li>Every "tick modulo 15" (30 minutes), copy the just created zip backup to the cloud backup directory if one has
+    been set.
+  </li>
+</ol>
+
+<p>In summary:</p>
+<ul>
+  <li>Rolling backups are made at 1, 3, 5, 7 ... minutes after start up</li>
+  <li>Local zip backups at 1, 11, 21, 31, 41 ... minutes after start up</li>
+  <li>Cloud zip backups at 1, 31, 61, 91 ... minutes after start up</li>
+</ul>
+
+<p>To avoid excessive unnecessary data storage the rolling backups are pruned, oldest first, when there are more than 4
+  backups using a secure delete mechanism.</p>
+
+<p>The local and cloud zip backups are pruned when there are more than 60 using the following process:</p>
+<ul>
+  <li>The first 2 are always kept</li>
+  <li>The last 8 are always kept</li>
+  <li>For the remaining, the backup that was most rapidly replaced is secure deleted</li>
+</ul>
+<p>This approach gradually spaces out the backups so that there is protection for the most recent changes and also the
+  ability to go all the way back to the beginning if necessary.</p>
+
+<h4>What about storing wallets directly on USB keys ?</h4>
+
+<p>MultiBit does not support changing the location of where wallets are stored.</p>
+
+<p>This is by design. We found that the seemingly straightforward option of letting users choose where to put their wallet,
+  including on removable media such as USB drives (IronKeys and so forth), created a whole host of subtle problems:</p>
+<ul>
+  <li>writing critical data to removable drives can be problematic due to users pulling them out leading to corrupted wallet files</li>
+  <li>the failure rate for USB drives is much higher than fixed disks when you take into account losses and breakages etc</li>
+  <li>it is too easy to lose track of where the wallet files are located - fixed locations are easy to identify</li>
+</ul>
+
+<p>Using a removable drive introduces a single point of failure that invalidates the automatic backups. The rolling
+  and local zip backups are co-located with the wallet so if you lose/break your USB drive you've also lost them. By contrast, it would take a
+  catastrophic fixed disk failure to prevent access to both the rolling and local zip backups which is much less likely.</p>
+
+<p>Consider also how cloud backups would be set up in this configurable wallet environment. Assuming that a cloud backup folder has been set
+  the path/mapping is likely to be different between machines. Consequently by relying on the removable media you run the risk of losing 3 out
+  of the 4 possible recovery mechanisms (wallet words being the only remaining one, which won't recover all your contacts, exchange rates etc).</p>
+
+<p>Overall, the failure rate for storing wallets on removable media is too high for the intended user of MultiBit so we've chosen
+  not to support it for the above safety and security reasons.</p>
+
+<h4>Related</h4>
+
+<ul>
+  <li><a href="restore-password.html">Restore a password</a></li>
+  <li><a href="restore-wallet.html">Restore a wallet</a></li>
+  <li><a href="edit-wallet.html">Edit wallet</a></li>
+</ul>

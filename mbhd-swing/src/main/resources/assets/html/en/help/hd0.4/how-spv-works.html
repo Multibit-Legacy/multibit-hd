@@ -1,0 +1,74 @@
+<h3>SPV, Bloom filters and checkpoints</h3>
+
+<p>This is a technical article that assumes a working knowledge of Bitcoin.</p>
+
+<p>A full node, such as Bitcoin Core, knows the following:</p>
+
+<ul>
+  <li>every transaction that is currently being broadcast around the network</li>
+  <li>every transaction that has EVER been sent</li>
+  <li>all the unspent transaction outputs (UTXOs)</li>
+</ul>
+
+<p>This requires a lot of data to be downloaded, stored and indexed. However, there are some shortcuts that reduce the amount of redundant
+  information if you don't need a complete block chain.</p>
+
+<h4 id="spv">Simplified Payment Verification (SPV).</h4>
+
+<p>SPV provides a way where you can determine that a particular transaction was in a block in the block chain without requiring the entire
+  block chain to be downloaded. It does this as follows:</p>
+<ul>
+  <li>every transaction has a hash</li>
+  <li>every block has a hash</li>
+  <li>a transaction hash and the block hash can be linked using a Merkle tree proof.</li>
+</ul>
+<p>A Merkle tree is a mathematical model where the block is at the apex and all the transaction get placed in a tree-like structure.</p>
+<p>A Merkle tree proof is a list of all the hashes between the apex (block) and the leaf (transaction). The point of a Merkle tree proof
+  is that you only need a small part of the block to prove the transaction is in the block.</p>
+<p>Thus when a wallet says it uses SPV it means that before it believes in a transaction it checks:</p>
+<ol>
+  <li>there is a Merkle tree proof that the transaction is in a block</li>
+  <li>the block itself is in the main chain of the block chain</li>
+</ol>
+<p>The transaction is then "good" and will be added to the wallet.</p>
+
+<h4 id="single-hd-account">Bloom filtering and single HD account support</h4>
+
+<p>Many people have asked us about why we only support HD accounts (namely Account 1 in the normal parlance).</p>
+
+<p>The main reason is due to how we get our transactions from the Bitcoin Core nodes. We use a technique called bloom filtering. We don't
+  ask for the transaction directly, instead we give the Bitcoin Core nodes a filter that we know will match all the transaction we are interested
+  in (plus some false positives to put anyone spying off the scent a little).</p>
+<p>Supporting just one account means creating filters for a steadily increasing number of addresses for both the main addresses and the
+  change addresses. This starts off as "hundreds" and, as the wallets get used, will become "thousands".</p>
+<p>Scaling this up to supporting any number of accounts means creating filters that match:</p>
+<p><code>number of accounts x (main addresses + change addresses)</code></p>
+<p>Thus we have to filter to match many more addresses to the point (we think) where we are pretty much getting the complete blocks.
+  This makes us as at least as slow as a Bitcoin Core node and more likely slower as we are uploading very wide bloom filters.</p>
+<p>We think this will be far too slow to be useful so we are restricting our usage to a single account.</p>
+
+<h4 id="utxo">We don't have the UTXO set</h4>
+<p>We don't have access to the Unspent Transaction Output (UTXO) set using Bitcoinj thus we cannot check directly against it. Only
+  implementations that have a full block store in their backend - and can query it directly - can use the UTXO set which would mean
+  downloading the entire block chain.</p>
+<p>Bitcoinj only talks the Bitcoin network protocol which does not support features such as "give me all the UTXO for this address".</p>
+
+<h4 id="checkpoints">Checkpoints</h4>
+<p>To reduce the amount of blocks that need to be downloaded we include a checkpoints file in the installer which contains the headers of
+  each block when the Bitcoin difficulty level changes (every 2015 blocks).</p>
+<p>This allows us to only sync from the checkpoint before the wallet birth date which saves a lot of time and is why we ask you to record
+  the "datestamp" during wallet creation. Thus if the wallet datestamp is equivalent to block 200,050 and we have a checkpoint at
+  block 200,000 then we can just sync 50 blocks.</p>
+<p>Since the checkpoints file is stored locally and is provided through our installer it enables us to detect when a Bitcoin node is attempting
+  to spoof the use of their forked chain (containing fake transactions) rather than the genuine Bitcoin block chain.</p>
+
+<h4 id="localhost">Connecting to a local Bitcoin Core node</h4>
+<p>MultiBit will automatically connect to a Bitcoin Core running on localhost if it can detect one. It also connects to other nodes since we use transaction
+  propagation to determine when a transaction has been sent properly and when the change from a transaction can be used. If we relied purely on a
+  single node (even if it was trusted) we could not have confidence that the real external Bitcoin network is relaying it.</p>
+
+<h4>Related articles</h4>
+<p>Here are some related articles:</p>
+<ul>
+  <li><a href="getting-started.html">Getting started</a></li>
+</ul>

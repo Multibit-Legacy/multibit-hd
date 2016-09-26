@@ -4,7 +4,7 @@
 
   <groupId>org.multibit.hd</groupId>
   <artifactId>mbhd-parent</artifactId>
-  <version>0.3.0</version>
+  <version>develop-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>MultiBit HD</name>
@@ -22,7 +22,7 @@
     <xchange.version>2.1.0</xchange.version>
     <jackson.version>2.3.2</jackson.version>
     <findbugs.version>3.0.0</findbugs.version>
-    <multibit-hardware.version>0.8.0</multibit-hardware.version>
+    <multibit-hardware.version>0.8.1</multibit-hardware.version>
 
   </properties>
 

@@ -1,0 +1,70 @@
+<h3>Windows Installation Guide</h3>
+
+<p>Follow <a href="https://twitter.com/intent/user?screen_name=MultiBitOrg">@MultiBitOrg</a> on Twitter for <strong>official announcements</strong> and occasional news items.</p>
+
+<h4>Quick install guide</h4>
+<ul>
+  <li>After download completes double-click the installer icon</li>
+  <li>We recommend using the default settings</li>
+  <li>It is safe to overwrite an earlier version if prompted</li>
+  <li>Any existing wallet files and configuration will not be affected</li>
+  <li>If you are new to Bitcoin <a href="https://www.weusecoins.com">you should watch the video</a> so you know what to expect.</li>
+</ul>
+<p>We recommend <a href="https://spideroak.com/" target="_blank">SpiderOak</a> as a privacy-conscious cloud backup provider. The first 2Gb are free.</p>
+<p>We have a <a href="getting-started.html" target="_blank">Getting Started guide</a> so you can be up and running with Bitcoin quickly and safely.</p>
+<p>There are <a href="https://www.youtube.com/user/MultiBitOrg" target="_blank">more tutorials on our YouTube channel MultiBitOrg</a>.</p>
+
+<h4>How to install on Windows</h4>
+
+<p><strong>Please note that for security reasons we do not support Windows XP and below.</strong></p>
+
+<h4 id="windows7">Running Windows 7 and higher?</h4>
+
+<p>This is the default "64-bit" installer and is suitable for Windows 7 (and some editions of Vista) and higher.</p>
+
+<p>Double click the installer - it is signed by KeepKey, LLC. Work through the installer - accepting the defaults is normally the
+  easiest.</p>
+<p>If you have a firewall set up when you first open MultiBit you will be asked by Windows if you want MultiBit to communicate over your internet connection. MultiBit
+  needs to communicate with the Bitcoin network and the multibit.org server so permit this access.</p>
+
+<h4 id="vista">Running Windows Vista?</h4>
+
+<p>We don't support Windows Vista. You <a href="https://www.microsoftstore.com/store/msusa/en_US/cat/categoryID.70036700?=en_US_Store_UH_software_Win" target="_blank">should consider upgrading</a>
+    to take advantage of the latest security fixes.</p>
+
+<p>The installation process is the same as for the 64-bit version.</p>
+
+<h4 id="xp">Running Windows XP?</h4>
+
+<p>We don't support Windows XP. It has <a href="http://blogs.microsoft.com/cybertrust/2013/08/15/the-risk-of-running-windows-xp-after-support-ends-april-2014/" target="_blank">too many security issues to be viable
+  for Bitcoin software</a> outside of a highly controlled environment.</p>
+
+<h4 id="troubleshooting">Troubleshooting</h4>
+
+<p>Occasionally people encounter problems getting MultiBit set up on their Windows machine. Here are some common solutions to known problems.</p>
+
+<h5>I don't have much system memory</h5>
+
+<p>MultiBit uses the Java Virtual Machine (JVM) to manage its memory. This means that over time you will see memory use increase as various activities take place.
+  Synchronizing with the block chain is a memory-intensive process and during the initial sync or a Repair Wallet operation you will notice an increase. By default MultiBit
+  will not consume more than the <em>lesser</em> of one quarter of your system memory or 1Gb. For example, on a 2Gb system (2009 mid-range machine) MultiBit will start having
+  memory constraints at around 500Mb.</p>
+
+<p>This default is sufficient to allow for smooth and responsive operations on most systems. However, MultiBit can continue to work with only 256Mb allocated to it although
+  performance tends to reduce.</p>
+
+<p>If you want to change the memory allocated to MultiBit you will need to do the following:</p>
+<ol>
+  <li>After installation, locate the MultiBit shortcut</li>
+  <li>Right click and select "Properties"</li>
+  <li>Edit the Target line by adding <code>-J-Xmx1024m</code> including a space after the final <code>"</code> to set a 1Gb limit (e.g.Target:
+    <code>"C:\Program Files\MultiBit HD\multibit-hd.exe" -J-Xmx1024m</code></li>
+  <li>Save the changes and use the shortcut as normal to start MultiBit</li>
+</ol>
+
+<h4>Related articles</h4>
+<p>Here are some related articles:</p>
+<ul>
+  <li><a href="getting-started.html">Getting started</a></li>
+  <li><a href="/blog/2013/07/24/how-to-check-signatures.html">How to check digital signatures (recommended)</a></li>
+</ul>

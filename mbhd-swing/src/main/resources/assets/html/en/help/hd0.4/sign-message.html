@@ -1,0 +1,40 @@
+<h3>Sign message</h3>
+
+<p>To prove that you own a Bitcoin address, send a signed message together with the address. 
+Anyone can then use MultiBit to <a href="verify-message.html">verify</a> that the message was signed with the address's private key.
+From the Tools select "Sign message"</p>
+
+<ol>
+  <li>Select an address to sign the message in the "Bitcoin address" field. This must be from the wallet and can be obtained by requesting a payment.</li>
+  <li>Enter the message to sign.</li>
+  <li>Enter the wallet password in the "Password" field to allow access to the private key.</li>
+  <li>Press the "Sign Message" button.</li>
+  <li>You will see the signature appear below.</li>
+</ol>
+
+<p>The "Clear All" button will erase the contents of all fields.</p>
+
+<h4>Bitcoin signed messages</h4>
+
+<p>If you select "Copy All" a Bitcoin signed message will be copied to your clipboard. You can then paste this into
+an email or chat window to transfer the signed message to a recipient. Below is an example.</p>
+
+<pre>
+-----BEGIN BITCOIN SIGNED MESSAGE-----
+Hello World
+-----BEGIN BITCOIN SIGNATURE-----
+Version: MultiBit HD (0.1)
+Comment: https://multibit.org
+Address: 16R2kAxaUNM4xj6ykKbxEugpJdYyJzTP13
+
+H0b22gIQIfutUzm7Z9qchdfhUtaO52alhNPK3emrkGOfbOzGHVPuWD9rMIphxniwBNgF/YN4c5C/dMwXz3yJz5k=
+-----END BITCOIN SIGNATURE-----
+</pre>
+
+<h4>Related</h4>
+
+<ul>
+  <li><a href="verify-message.html">Verifying messages</a></li>
+  <li><a href="verify-network.html">Verify network</a></li>
+  <li><a href="keepkey.html">KeepKey</a></li>
+</ul>

@@ -1,0 +1,60 @@
+<h3>Verify network</h3>
+
+<p>If MultiBit seems to be stuck doing nothing, then verifying the network is one way to narrow down what is wrong and fix it.
+  Verifying the network checks you are still connected to the Bitcoin network and shows how far behind you are with synchronization.</p>
+
+<p>To synchronize you must be able to connect to "full nodes" which have complete copy of the block chain and are in a position to provide
+the small parts of it that are of interest to your wallet. If the ratio of full nodes to lightweight wallets is high then synchronization
+takes place much more quickly. If the number of full nodes decreases significantly then synchronization takes longer due to more competition
+with other wallets.</p>
+
+<p>If you are in a position to run or sponsor a full node then we would urge you to consider it.</p>
+
+<p>From the Tools select "Verify network"</p>
+
+<p>If the Peer Count is zero, then you aren't connected to the block chain. This could happen for several reasons detailed below</p>
+
+<h4>Verify port 8333 is open</h4>
+
+<p>The Bitcoin protocol requires <a href="http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers" target="_blank">port 8333 (Unofficial)</a> to be open on your
+  router or hub for traffic over TCP (and UDP if your settings allow).</p>
+
+<p>Internally MultiBit uses <a href="http://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers" target="_blank">port 8330 (Unofficial)</a> to ensure
+  that no other instances are present. There is no need to open it on your router or hub.</p>
+
+<p>You may find this <a href="http://www.wikihow.com/Open-Ports">wikiHow article</a> provides helpful instructions covering how to configure
+your own network setup.</p>
+
+<h4>Synchronization is taking ages - what's wrong ?</h4>
+
+<p>The speed of synchronization depends on many factors:</p>
+<ul>
+  <li>The speed of your network connection</li>
+  <li>The number of connected Peers (6+ is good)</li>
+  <li>The speed of the connected Peers - some nodes don't respond quickly to synchronization requests</li>
+  <li>The overall number of nodes - the more the merrier</li>
+</ul>
+
+<h4>I see "There was an error in creating a connection to the Bitcoin network" in the corner</h4>
+
+<p>You most likely have a corrupted file in your wallet directory. Here's the procedure to resolve the situation:</p>
+
+<ol>
+  <li>Start MultiBit as normal</li>
+  <li>Unlock your wallet and click Finish as normal</li>
+  <li>Click "Manage Wallet" in the sidebar and click the "Wallet dashboard" button</li>
+  <li>Make a note of your "application directory" and your "wallet directory" (copy/paste into a text editor is useful here)</li>
+  <li>Close MultiBit in the usual way</li>
+  <li>Open a file browser and navigate to the "application directory" and from there into your "wallet directory"</li>
+  <li>Locate the file called <code>mbhd.spvchain</code> and delete it</li>
+  <li>Start MultiBit as normal and unlock your wallet</li>
+  <li>You should now be able to connect to the Bitcoin network and after a  much longer synchronization process than usual your balance will be restored</li>
+</ol>
+
+<h4>Related</h4>
+
+<ul>
+  <li><a href="sign-message.html">Sign messages</a></li>
+  <li><a href="verify-message.html">Verifying messages</a></li>
+  <li><a href="keepkey.html">KeepKey</a></li>
+</ul>
