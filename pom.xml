@@ -4,7 +4,7 @@
 
   <groupId>org.multibit.hd</groupId>
   <artifactId>mbhd-parent</artifactId>
-  <version>0.3.0</version>
+  <version>develop-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>MultiBit HD</name>
