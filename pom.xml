@@ -4,7 +4,7 @@
 
   <groupId>org.multibit.hd</groupId>
   <artifactId>mbhd-parent</artifactId>
-  <version>develop-SNAPSHOT</version>
+  <version>0.4.1</version>
   <packaging>pom</packaging>
 
   <name>MultiBit HD</name>
@@ -111,7 +111,7 @@
     <connection>scm:git:git@github.com:keepkey/multibit-hd.git</connection>
     <developerConnection>scm:git:git@github.com:keepkey/multibit-hd.git</developerConnection>
     <url>git@github.com:keepkey/multibit-hd.git</url>
-    <tag>HEAD</tag>
+    <tag>0.4.1</tag>
   </scm>
 
   <profiles>
