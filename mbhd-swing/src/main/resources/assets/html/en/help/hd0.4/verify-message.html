@@ -1,0 +1,45 @@
+<h3>Verify message</h3>
+
+<p>To prove that a message really came from an owner of a Bitcoin address, get the person who claims to own the address to 
+<a href="sign-message.html">sign</a>
+ the message and send you the 
+<a href="#signed-hello-world">message with its signature.</a>
+  You can then use MultiBit to verify that the message was indeed signed with the address's private key. Whoever knows its private key effectively owns an address, so you will have proven that the message really came from an owner.</p>
+
+<p>From the Tools select "Verify message"</p>
+
+<ol>
+  <li>Enter the address that was used to sign the message in the "Bitcoin address" field.</li>
+  <li>Enter the message that was signed that you want to verify in the "Message" field. Pay particular attention to spaces before and after the text - the text must be exact for it
+    to verify correctly.
+  </li>
+  <li>Enter the signature given to you in the "Signature" field.</li>
+  <li>Press the "Verify Message" button.</li>
+  <li>You will see the result of whether the message has been verified.</li>
+</ol>
+
+<p>The "Clear All" button will erase the contents of all fields.</p>
+
+<h4>Bitcoin signed messages</h4>
+
+<p>If you have copied a Bitcoin signed message format message you can use the "Paste All" button to fill in all the fields instantly. Simply copy the complete contents of the
+  message below and use "Paste All" to try it.</p>
+
+<a name="signed-hello-world"></a>
+<pre>
+-----BEGIN BITCOIN SIGNED MESSAGE-----
+Hello World
+-----BEGIN BITCOIN SIGNATURE-----
+Version: MultiBit HD (0.1)
+Comment: https://multibit.org
+Address: 16R2kAxaUNM4xj6ykKbxEugpJdYyJzTP13
+
+H0b22gIQIfutUzm7Z9qchdfhUtaO52alhNPK3emrkGOfbOzGHVPuWD9rMIphxniwBNgF/YN4c5C/dMwXz3yJz5k=
+-----END BITCOIN SIGNATURE-----
+</pre>
+
+<h4>Related</h4>
+
+<ul>
+  <li><a href="sign-message.html">Signing messages</a></li>
+</ul>

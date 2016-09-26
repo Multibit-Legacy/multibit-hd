@@ -1,0 +1,68 @@
+<h3>Restoring a hardware wallet</h3>
+
+<p>Currently MultiBit supports the KeepKey and Trezor hardware wallets.</p>
+
+<p>There are several ways to restore a KeepKey / Trezor depending on the nature of the problem. Please select from the sections below.</p>
+
+<h4 id="data-error">Wallet not loading</h4>
+
+<p>MultiBit makes continuous encrypted backups in case of disk failure or other data loss. If, after unlocking your wallet,
+  the report screen is showing that it could not be opened then you may have a disk problem.</p>
+
+<p>The recovery procedure is as follows:</p>
+
+<ol>
+  <li>Attempt to unlock and observe a failed wallet load</li>
+  <li>Click the Restore button</li>
+  <li>Select a backup from the list presented</li>
+  <li>Wait for the Restore wallet report screen to finish</li>
+  <li>Unlock the wallet and observe a successful load</li>
+  <li>If not successful repeat from step 2 working back through the backups</li>
+  <li>If all backups are exhausted, perform the "lost or stolen" procedure</li>
+</ol>
+
+<h4 id="lost-or-stolen">Lost or stolen KeepKey / Trezor</h4>
+
+<p><strong>To restore your hardware wallet and recover your bitcoin without the device you must have your wallet words.</strong></p>
+<p>With your wallet words, you can recover your bitcoin. You must keep your wallet words safe, because <strong>anyone</strong> who knows your wallet words can steal your bitcoin.</p>
+
+<p>MultiBit supports restoring a KeepKey / Trezor hardware wallet as a "soft" wallet using its wallet words. This means
+    that all the keys that were held on the KeepKey / Trezor are duplicated on the desktop machine running MultiBit.
+    This is a reduction in security from a "hard" wallet where the private keys never touch the desktop machine. We
+    strongly recommend that you buy a replacement <a href="https://www.keepkey.com" target="_blank">KeepKey</a> as soon
+    as possible.</p>
+
+<p>The recovery procedure is as follows:</p>
+
+<ol>
+  <li>Start MultiBit and click Restore on the password screen</li>
+  <li>Select "I want to restore a wallet" when prompted</li>
+  <li>Select "KeepKey / Trezor device" from the drop down list</li>
+  <li>Enter your KeepKey / Trezor wallet words exactly as you wrote them down (order is important)</li>
+  <li>Observe a "Verified" message when you have completed the list</li>
+  <li>Click Next</li>
+  <li>If you have a cloud backup select it now, otherwise leave it blank and click Next</li>
+  <li>Enter the date stamp or leave it blank if you don't have one (this makes restore much faster)</li>
+  <li>Enter and confirm a password to secure your wallet (this is <strong>not</strong> a BIP44 passphrase)</li>
+  <li>Click Next</li>
+  <li>Wait for the restore wallet report screen to finish (this can take a long time for older wallets)</li>
+  <li>Unlock the wallet with your password and observe a successful load</li>
+  <li>Use "Tools | Empty wallet" to move your bitcoins to safety (see explanation below)</li>
+</ol>
+
+<p>At this stage you have recovered your bitcoins. However, your KeepKey / Trezor remains lost or stolen and so someone else may be able to gain access to your bitcoins if they
+manage to break the security of your device. Consequently you will need to move your bitcoins to safety as soon as possible. The "Empty wallet" tool is designed
+for this purpose.</p>
+
+<p>If you have already obtained a replacement KeepKey / Trezor device then you can use this to create a suitable receiving address to provide to the Empty Wallet tool. If not
+    then you should <a href="create-wallet.html">create a separate MultiBit "soft" wallet</a> immediately and use that
+    to create a suitable receiving address.</p>
+
+<h4>Related articles</h4>
+
+<ul>
+  <li><a href="empty-wallet.html">Empty a wallet</a></li>
+  <li><a href="create-wallet.html">Create a wallet</a></li>
+  <li><a href="restore-wallet.html">Restore a wallet</a></li>
+  <li><a href="backups.html">Wallet backups</a></li>
+</ul>

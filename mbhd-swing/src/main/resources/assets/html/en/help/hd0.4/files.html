@@ -1,0 +1,122 @@
+<h3>File descriptions</h3>
+
+<p>This is a technical article aimed at people with working knowledge of navigating files on their computer.</p>
+
+<p>When MultiBit runs, it creates various files on your computer. This help section describes what each of these files is for.</p>
+
+<h4>Installation directory</h4>
+
+<p>The installation directory is where you installed MultiBit. No configuration files or wallets are stored there normally.</p>
+
+<p>If you chose the default installation options, you will find the MultiBit application in one of the following locations:</p>
+
+<ul>
+  <li>Windows (7,8) - <code>C:\Program Files\MultiBit HD</code></li>
+  <li>OS X - <code>/Applications/MultiBit HD</code></li>
+</ul>
+
+<h4>Application directory</h4>
+
+<p>The application directory is where MultiBit will store your configuration and wallets. This allows you to safely upgrade
+  MultiBit without worrying about deleting important data.</p>
+
+<p>In the following section <code>[EXAMPLE]</code> is used to indicate an environment variable called "EXAMPLE". Environment variables
+  are used to provide common starting points for directories. If you have an unusual set up you may need to refer to these to locate
+  where MultiBit has placed its application directory. Open a "command prompt" or "Terminal" and type "set" or "export" to see a
+  list of them.</p>
+
+<p>Before exploring environment variables, try one of the following locations.<strong>You may need to enable hidden directories</strong>.</p>
+<h4>Windows</h4>
+<ul>
+  <li><code>[APPDATA]/MultiBitHD</code>. Windows (Vista,2008,7,8): <code>C:\Users\example\AppData\Roaming\MultiBitHD</code>
+  <li><code>[APPDATA]/MultiBitHD</code>. Windows (XP and below): <code>C:\Documents and Settings\example\Application Data\MultiBitHD</code>
+</ul>
+
+<h4>OS X</h4>
+<p>In OS X the user Library directory is normally hidden. Follow the <a href="http://osxdaily.com/2009/02/25/show-hidden-files-in-os-x/">show hidden files</a>
+  instructions to reveal it in the Finder.</p>
+<ul>
+  <li><code>[user.home]/Library/Application Support/MultiBitHD</code>. OS X 10.5+: <code>/Users/example/Library/Application Support/MultiBitHD</code>
+</ul>
+
+<h4>Linux</h4>
+<p>In Linux the user home directory is normally hidden due to the leading ".".</p>
+<ul>
+  <li><code>[user.home]/.MultiBitHD</code>. Ubuntu/Debian: <code>/home/example/.MultiBitHD</code>
+</ul>
+
+<h4>Contents of application directory</h4>
+
+<p>Here is a list of the files that MultiBit uses:</p>
+
+<ul>
+  <li><code>mbhd.yaml</code> - Contains general preferences and configuration information (theme, exchange etc).</li>
+  <li><code>mbhd.checkpoints</code> - A Bitcoin checkpoints file, used when syncing your wallet.</li>
+  <li><code>mbhd.spvchain</code> - A Bitcoin block store, used when syncing your wallet</li>
+</ul>
+
+<h4>Application logs</h4>
+<p>All logs are stored in plain text in the <code>logs</code> directory as follows:</p>
+<ul>
+  <li><code>multibit-hd.log - This is the latest log</code></li>
+  <li><code>multibit-hd-[timestamp].zip - This is a ZIP of an old log</code></li>
+</ul>
+<p>Log files are automatically deleted after 14 days and all times within are in UTC. At present MultiBit is not configured
+to automatically log to syslog.</p>
+<p>The log files are extremely useful for debugging and are included in an error report upload. In rare circumstances you may 
+may be  asked by a member of MultiBit support staff to search your logs as part of an investigation into an Issue that you
+have raised with us. The procedure for this search is as follows:</p>
+<ol>
+  <li>Create a new blank text document using the standard text editor for your system (e.g. Notepad, TextMate, gEdit etc)</li>
+  <li>Locate <code>multibit-hd.log</code> on your system (it may be in a hidden folder)</li>
+  <li>Use your text editor to open it</li>
+  <li>Search for "stack_trace" (no quotes) using the editor's search tool</li>
+  <li>Copy a few lines before and after the big block of technical info if found</li>
+  <li>Paste these into the blank text document you prepared earlier</li>
+  <li>Return to the log and attempt to locate another "stack_trace" and repeat the copy/paste until all are covered</li>
+  <li>Return to our Issue database on GitHub and paste the stack traces into your Issue. We'll tidy them up as necessary.</li>
+</ol>
+
+<h4>Wallets</h4>
+<p>All wallets are stored encrypted in directories of the form <code>mbhd-[some long number]</code> as follows:</p>
+<ul>
+  <li><code>mbhd.wallet.aes</code> - This is the main wallet file containing your private keys and transactions.</li>
+  <li><code>contacts.aes</code>. In the ‘contacts’ directory is stored a file ‘contacts.aes’. This contains your contacts information.</li>
+  <li><code>payments.aes</code>. In the ‘payments’ directory is stored a file ‘payments.aes’. This contains your payments information.</li>
+  <li><code>rolling-backup</code>. In your rolling backup directory you will see files with the name ‘mbhd-YYYYMMDDHHMMSS.wallet.aes’. These are rolling wallet backup files. Every
+    time the wallet writes to disk, the existing wallet is kept as a backup. The main purpose of this file is to recover from any sudden loss of power that prevents a clean wallet
+    save. The last four rolling backups are kept.
+  </li>
+  <li><code>zip-backup</code>. In the directory ‘zip-backup’ are stored encrypted zip copies of all the files in your wallet directory.</li>
+</ul>
+
+<p>If you have a cloud backup directory set for your wallet, the local zip backups are <a href="backups.html">regularly copied to your cloud backup directory</a>.</p>
+
+<h4>Troubleshooting file problems</h4>
+<p>Occasionally people make changes to the application directory in error. Here are some helpful tips to assist in recovery.</p>
+
+<h4>I've accidentally deleted something!</h4>
+
+<p>Don't worry. So long as you have your wallet words you can recover your bitcoins. See <a href="restore-wallet.html">"Restoring a wallet"</a>
+  for step by step instructions to recover.</p>
+  
+<p>First try to simply Undo the delete (use CTRL+Z if it's the most recent thing you did) or fish around in your Recycle bin. If you've
+only just discovered the problem then assess the impact below.</p>  
+
+<p>Deleting different files/directories will have different impacts:</p>
+<ul>
+  <li><code>logs</code> directory - No problem. MultiBit will simply create new logs when it next starts</li>
+  <li><code>mbhd.yaml</code> file - You'll need to work through the welcome wizard but you can select "Use an existing wallet" when prompted</li>
+  <li><code>mbhd.checkpoints</code> file - Synchronization will take a very long time, it is best to re-install MultiBit</li>
+  <li><code>mbhd.spvchain</code> file - Synchronization will take a long time based on how old your wallet is</li>
+  <li><code>mbhd-[some long number]</code> directory - You've deleted a wallet. Refer to <a href="restore-wallet.html">"Restoring a wallet"</a>
+  for step by step instructions to recover.</li>
+</ul>
+
+<h4>Related articles</h4>
+
+<ul>
+  <li><a href="restore-password.html">Restore a password</a></li>
+  <li><a href="restore-wallet.html">Restore a wallet</a></li>
+  <li><a href="backups.html">Wallet backups</a></li>
+</ul>

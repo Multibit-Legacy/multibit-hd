@@ -1,0 +1,52 @@
+<h3>Deterministic build process</h3>
+
+<p>This is a technical article that assumes a detailed knowledge of Java build processes.</p>
+
+<p>The reason for having a deterministic build process is to ensure that others can independently verify that the code
+  has not been tampered with. This is accomplished through a combination of:</p>
+<ul>
+  <li>agreed build operating system and JDK (we use Oracle JDK 1.7.0_72 on OS X Mavericks)</li>
+  <li>secure checkout of source code (we use GitHub over HTTPS)</li>
+  <li>verification of source code commit hash (we use git)</li>
+  <li>removal of time-sensitive information from build for repeatable results</li>
+  <li>signed declarations of interim build artifact hashes by known developers</li>
+  <li>signed declarations of code-signed JARs by known developers</li>
+  <li>signed declaration of installer by KeepKey, LLC</li>
+</ul>
+
+<h4>Co-signing a release</h4>
+
+<p>Here is a run-through of the overall process. Following the usual crypto casting, the lead developer is Alice, with
+  Charles and Claire as co-signers:</p>
+<ol>
+  <li>Alice does the final release build from git master using agreed JDK</li>
+  <li>Alice takes a SHA256 of each artifact (by running a simple shared script) and adds it to <code>release-notes.txt</code></li>
+  <li>Alice adds any extra text (version and whatnot) then does a GPG-sign with the MultiBit key and pushes to the master branch</li>
+  <li>Charles performs a rebuild and verifies the SHA256 of each artifact (using an external tool such as OpenSSL/shasum etc)</li>
+  <li>Claire does the same as Charles</li>
+  <li>Charles and Claire report any problems to Alice</li>
+  <li>If all is OK, Alice Alice performs an OS-specific code sign and uses the JAR in install4j</li>
+  <li>Alice GPG-signs the installer with the MultiBit key</li>
+  <li>Charles verifies the release notes and verifies that the installer delivers the correct JAR to the end user</li>
+  <li>Charles signs the <code>release-notes.txt</code> with his GPG key and pushes that to master (or issues a pull request)</li>
+  <li>Claire does the same as Charles with a further updated <code>release-notes.txt</code></li>
+  <li>After all co-signers have signed, Alice releases the installer to the live site</li>
+</ol>
+
+<h4>Verifying an OS-specific signed JAR</h4>
+
+<p>In order to run without warnings on Windows and OS X it is necessary to supply an installer that has been signed with an
+OS-specific code signing key. This is tied to a particular developer's identity and is verified by the issuing authority (such as
+Microsoft or Apple). Linux does not use code signing in this way due to the lack of a central owning authority.</p>
+
+<p>Both Microsoft and Apple provide tools to enable developers to verify the before and after state of a code-signed artifact without
+requiring ownership of the signing keys themselves. This allows the original artifact to be extracted from the signed version and a
+hash performed to ensure it matches the one built locally.</p>
+
+<h4>Related articles</h4>
+<p>Here are some related articles:</p>
+<ul>
+  <li><a href="getting-started.html">Getting started</a></li>
+  <li><a href="how-spv-works.html">How SPV works</a></li>
+  <li><a href="files.html">File descriptions</a></li>
+</ul>

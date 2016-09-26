@@ -1,0 +1,60 @@
+<h3>Request payment</h3>
+
+<p>To request bitcoin from someone else you need to provide them with a "Bitcoin address". They look like this <code>1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty</code> and you might
+  want think of them as a unique address for a payment.</p>
+<p>Anyone that you give this address to will be able to send you bitcoin from that moment on. Remember that they may keep this address for a long time so <strong>you should never
+  abandon a wallet</strong> by throwing away the wallet words.</p>
+<p>It's very unlikely you'll ever have to type a Bitcoin address by hand so don't worry about having to memorise them.</p>
+<p>Bitcoin addresses are intended to be used just once since for technical reasons (see later) they become a little less secure after you have spent the bitcoin received by
+  them. For this reason MultiBit always gives you a new address each time you click the "Request" button.</p>
+
+<h4>General procedure</h4>
+<ol>
+  <li>Click Send/Request on the sidebar, then click the Request button.</li>
+  <li>Enter an amount denominated in <a href="units.html">whatever bitcoin unit you have chosen</a> in the left entry
+      field or the amount in your <a href="units.html">chosen national currency</a> in the right entry field. MultiBit
+      will perform a currency conversion using your <a
+    href="exchange-settings.html">choice of exchange</a>.</li>
+  <li>Click the "Copy" icon next to the Recipient box to copy the address to your clipboard for easy pasting into an email, instant message etc</li>
+  <li>You may want to add some private notes to the this payment request. These are held encrypted within your wallet and are not revealed to anyone else including the payer.</li>
+  <li>Click "Finish" to go back to the Send/Request screen</li>
+</ol>
+
+<h4>Showing a quick response (QR) code</h4>
+<p>QR codes are a convenient way to transfer information from one machine to another. MultiBit will generate one for you by clicking the QR code icon near the Recipient box.
+This makes it easy for you to request payment from smartphones with Bitcoin wallets installed.</p>
+
+<h4>Tracking your payment request's progress</h4>
+<p>Once you have requested a payment it appears in the Payments screen with the status 'You requested'. At this point you are waiting to get paid, the general process is as
+  follows:</p>
+
+<p>The other person sends you bitcoin and the status moves to "Unconfirmed" to indicate that the Bitcoin network is processing it. You will also get a green alert bar with a
+  message indicating that bitcoin is incoming.</p>
+<p>You will see at the top of MultiBit the message "+ Unconfirmed: mBTC xyz", where "xyz" is the amount of bitcoin they sent you. You cannot spend unconfirmed transactions in
+  MultiBit since they could fail to confirm for many reasons.</p>
+<p>When your request has been paid and before it is confirmed the status of the transaction moves to "Receiving". If the other person only sends you part of the bitcoin you
+  requested, the status is "Part paid" until they send you all that you requested.</p>
+<p>Bitcoin miners process all the unconfirmed transactions and put them into blocks. Once this happens your transaction is confirmed and you can spend it. This normally takes
+  between 10 minutes and an hour. Once your transaction is confirmed in a block its status changes to "Received".</p>
+
+<h4>How can I find out more about a transaction ?</h4>
+<p>You can view many details of a particular transaction as follows:</p>
+<ol>
+  <li>Select a transaction in the Payments screen and click the "Details" button (or double click the transaction) to open the "Transaction wizard".</li>
+  <li>In the transaction wizard, navigate to the screen titled "Transaction details".</li>
+  <li>Click the "View in blockchain.info" button.</li>
+  <li>MultiBit supports several block explorers. You can change which block explorer is used to view a transaction as described in <a href="payment-settings.html">Payment
+    settings</a></li>
+</ol>
+
+<h4>How can I remove a payment request I made by mistake?</h4>
+<p>Use the Payments screen. select the payment request and click the Delete button. You can undo this if you select the wrong one.</p>
+
+<h4>Why should Bitcoin addresses only be used once ?</h4>
+<p>This requires a technical explanation of how Bitcoin addresses are created. In short, a Bitcoin address is a hash of a hash of an elliptic curve public key
+  (<code>RIPEMD160(SHA256(pubkey))</code> and some other integrity checking information. This process makes the address short so it doesn't take up much space in the block
+  chain, and also makes it very hard to work back from the address through two different hashing algorithms to arrive at the original public key.</p>
+<p>During the Bitcoin spending process the public key is exposed in the block chain for all to see. This is necessary to allow everyone to verify that the address matches the
+  public key and that the private key was used to sign the transaction, but removes the hash of a hash protection. This weakens the security from that of an address to simply the
+  mathematical relationship between a public and private key within elliptic curve cryptography. While this is immensely strong, it is still weaker than the additional hash of a
+  hash which is why addresses should not be re-used.</p>

@@ -1,0 +1,47 @@
+<h3>Send payment</h3>
+
+<p>To send bitcoin to someone select Send/Request and then select "Send".</p>
+
+<h4>General procedure</h4>
+<ol>
+  <li>Enter the destination address (e.g <a href="bitcoin:1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty?amount=0.005&label=Please%20donate%20to%20multibit.org">1AhN6rPdrMuKBGFDKR1k9A8SCLYaNgXhty</a> for MultiBit donations)</li>
+  <li>Enter a value (e.g. 5mB or 0.005 BTC) in the BTC box.  Make sure you know which <a href="units.html">units</a> you are using. 
+  <li>You can enter an amount denominated in <a href="units.html">whatever bitcoin unit you have chosen</a> in the left entry field or the amount in your <a href="exchange-settings.html">chosen fiat currency</a> in the right entry field. MultiBit will perform a currency conversion using your <a href="exchange-settings.html">choice of exchange</a>.</li>
+  <li>The amount that is sent will always be the amount of bitcoin in the BTC box.  If you want to send this amount of bitcoin, select "Next".  MultiBit will then show a confirmation screen requiring you to enter your wallet password and giving you the chance to back out. If you proceed then your transaction will be submitted to the Bitcoin network and should be considered irreversible.</li>
+  <li>If you do want to proceed then:
+  <ol>
+    <li>Enter a note (e.g. "My donation to MultiBit") to help you keep track of who you're spending your bitcoin on.</li>
+    <li>Enter your wallet password, and select "Send".</li>
+  </ol>
+  </li>
+</ol>
+
+<h4>Details</h4>
+<p>The Bitcoin network requires you to specify the destination address. Any of the following will work:</p>
+<ul>
+  <li>Type in the name, or part of a name, of one of your Contacts. Select the contact.</li>
+  <li>Type in the destination address directly.</li>
+  <li>Copy the destination address to the system clipboard and then click on the Paste button next to the address field to paste it in.</li>
+</ul>
+
+<p>When you press the Send button MultiBit shows you the progress of the send as follows:</p>
+<ul>
+  <li>You are told whether the Bitcoin transaction was constructed successfully (for instance, you may not have enough bitcoin in your wallet)</li>
+  <li>The progress of the transaction being sent to the Bitcoin network. The broadcast icon fills up as the transaction send progresses</li>
+</ul>
+
+<h4>Failed broadcast</h4>
+<p>Sometimes your transaction does not broadcast cleanly to the Bitcoin network. When this happens you are shown a messages like <code>"Your spendable balance is
+  lower"</code>. If this happens and you are in a hurry you can close down MultiBit, check your network connection and restart MultiBit. It will then
+  rebroadcast any transactions that have not confirmed. Otherwise, simply leave it running and wait for the next couple of blocks (say 30 minutes) for the transaction to get
+  confirmed normally. Your balance will update automatically.</p>
+
+<p>Some people have reported transactions taking quite a long time to confirm under these conditions - even up to 24 hours later.</p>
+
+<h4>Replace-by-fee (RBF) transactions</h4>
+<p>A change to Bitcoin Core in version 0.12+ involves replace-by-fee transaction support. RBF is an optional extension to a standard Bitcoin transaction that permits the sender
+  to perform a repeat broadcast of an earlier failed transaction with a higher fee attached. Typically this is to "free up" an earlier transaction that has been accepted into the
+  network as valid but because the fee is too low is being ignored by miners. Repeating the transaction with a higher fee allows the sender to override the earlier transaction
+  in the hope that the miners will add it to a block.</p>
+<p>MultiBit does not currently support the creation of these types of transactions and relies instead on setting an appropriate fee to the transaction to ensure timely
+  inclusion.</p>
