@@ -13,6 +13,7 @@ import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.Contact;
 import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.events.ShutdownEvent;
+import org.multibit.hd.core.files.EncryptedContactsFile;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
@@ -57,7 +58,7 @@ public class PersistentContactServiceTest {
               "Example",
               false); // No need to sync
 
-    File contactDbFile = new File(applicationDirectory.getAbsolutePath() + File.separator + ContactService.CONTACTS_DATABASE_NAME);
+    EncryptedContactsFile contactDbFile = new EncryptedContactsFile(applicationDirectory.getAbsolutePath() + File.separator + ContactService.CONTACTS_DATABASE_NAME);
 
     contactService = new PersistentContactService(contactDbFile, WalletServiceTest.PASSWORD);
     contactService.addDemoContacts();

@@ -13,6 +13,8 @@ import org.multibit.hd.core.exceptions.ContactsLoadException;
 import org.multibit.hd.core.exceptions.ContactsSaveException;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.commons.files.SecureFiles;
+import org.multibit.hd.core.files.EncryptedContactsFile;
+import org.multibit.hd.core.files.EncryptedPaymentsFile;
 import org.multibit.hd.core.managers.InstallationManager;
 import org.multibit.hd.core.managers.WalletManager;
 import org.multibit.hd.core.store.ContactsProtobufSerializer;
@@ -48,7 +50,7 @@ public class PersistentContactService extends AbstractService implements Contact
   /**
    * The location of the backing writeContacts for the contacts
    */
-  private File backingStoreFile;
+  private EncryptedContactsFile backingStoreFile;
 
   /**
    * The serializer for the backing writeContacts
@@ -75,7 +77,7 @@ public class PersistentContactService extends AbstractService implements Contact
     File contactsDirectory = new File(walletDirectory.getAbsolutePath() + File.separator + CONTACTS_DIRECTORY_NAME);
     SecureFiles.verifyOrCreateDirectory(contactsDirectory);
 
-    this.backingStoreFile = new File(contactsDirectory.getAbsolutePath() + File.separator + CONTACTS_DATABASE_NAME);
+    this.backingStoreFile = new EncryptedContactsFile(contactsDirectory.getAbsolutePath() + File.separator + CONTACTS_DATABASE_NAME);
 
     initialise(walletPassword.getPassword());
   }
@@ -84,7 +86,7 @@ public class PersistentContactService extends AbstractService implements Contact
    * <p>Create a ContactService with the specified File as the backing writeContacts. (This exists primarily for testing where you just run things in a temporary directory)</p>
    * <p>Reduced visibility constructor to prevent accidental instance creation outside of CoreServices.</p>
    */
-  PersistentContactService(File backingStoreFile, CharSequence password) {
+  PersistentContactService(EncryptedContactsFile backingStoreFile, CharSequence password) {
 
     this.backingStoreFile = backingStoreFile;
 

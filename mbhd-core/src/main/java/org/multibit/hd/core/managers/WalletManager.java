@@ -12,6 +12,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.protobuf.InvalidProtocolBufferException;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.*;
 import org.bitcoinj.script.Script;
@@ -30,7 +31,6 @@ import org.multibit.hd.brit.core.extensions.MatcherResponseWalletExtension;
 import org.multibit.hd.brit.core.extensions.SendFeeDtoWalletExtension;
 import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
-import org.multibit.hd.core.services.FeeService;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.config.Yaml;
 import org.multibit.hd.core.crypto.EncryptedFileReaderWriter;
@@ -166,9 +166,7 @@ public enum WalletManager implements WalletEventListener {
   public static final String MBHD_AES_SUFFIX = ".aes";
   public static final String MBHD_SUMMARY_SUFFIX = ".yaml";
   public static final String MBHD_WALLET_NAME = MBHD_WALLET_PREFIX + MBHD_WALLET_SUFFIX;
-
   public static final String MBHD_SUMMARY_NAME = MBHD_WALLET_PREFIX + MBHD_SUMMARY_SUFFIX;
-
   public static final int LOOK_AHEAD_SIZE = 50; // A smaller look ahead size than the bitcoinj default of 100 (speeds up syncing as te bloom filters are smaller)
   public static final long MAXIMUM_WALLET_CREATION_DELTA = 180 * 1000; // 3 minutes in millis
 
@@ -187,8 +185,6 @@ public enum WalletManager implements WalletEventListener {
    * The salt used for deriving the KeyParameter from the credentials in AES encryption for wallets
    */
   private static final byte[] SCRYPT_SALT = new byte[]{(byte) 0x35, (byte) 0x51, (byte) 0x03, (byte) 0x80, (byte) 0x75, (byte) 0xa3, (byte) 0xb0, (byte) 0xc5};
-
-  private FeeService feeService;
 
   private ListeningExecutorService walletExecutorService = null;
 
@@ -961,8 +957,9 @@ public enum WalletManager implements WalletEventListener {
   public Wallet loadWalletFromFile(File walletFile, CharSequence password) throws IOException, UnreadableWalletException {
 
     // Read the encrypted file in and decrypt it.
-    byte[] encryptedWalletBytes = Files.toByteArray(walletFile);
-
+    byte[] fileBytes = Files.toByteArray(walletFile);
+    byte[] ivBytes = Arrays.copyOfRange(fileBytes, 0, 16);
+    byte[] encryptedWalletBytes = Arrays.copyOfRange(fileBytes, 16, fileBytes.length);
     Preconditions.checkNotNull(encryptedWalletBytes, "'encryptedWalletBytes' must be present");
 
     log.trace("Encrypted wallet bytes after load:\n{}", Utils.HEX.encode(encryptedWalletBytes));
@@ -972,28 +969,40 @@ public enum WalletManager implements WalletEventListener {
     KeyParameter keyParameter = keyCrypterScrypt.deriveKey(password);
 
     // Decrypt the wallet bytes
-    byte[] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, AES_INITIALISATION_VECTOR);
 
-    log.debug("Successfully decrypted wallet bytes, length is now: {}", decryptedBytes.length);
+    try {
+      byte [] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, ivBytes);
+      ByteArrayInputStream inputStream = new ByteArrayInputStream(decryptedBytes);
+      Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(inputStream);
 
-    InputStream inputStream = new ByteArrayInputStream(decryptedBytes);
+      WalletExtension[] walletExtensions = new WalletExtension[]{new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension(), new WalletTypeExtension()};
+      Wallet wallet = new WalletProtobufSerializer().readWallet(BitcoinNetwork.current().get(), walletExtensions, walletProto);
+      wallet.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
 
-    Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(inputStream);
+      // Try to infer the wallet type from the key structure to bootstrap missing WalletType values
+      inferWalletType(wallet);
 
-    WalletExtension[] walletExtensions = new WalletExtension[]{new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension(), new WalletTypeExtension()};
-    Wallet wallet = new WalletProtobufSerializer().readWallet(BitcoinNetwork.current().get(), walletExtensions, walletProto);
-    wallet.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
+      // Writing out a wallet to a clear text file is security risk
+      // Do not do it except for debug
+      // log.debug("Wallet loaded OK:\n{}\n", wallet);
 
-    // Try to infer the wallet type from the key structure to bootstrap missing WalletType values
-    inferWalletType(wallet);
+      return wallet;
+    } catch (InvalidProtocolBufferException ex) {
+      byte [] decryptedBytes = AESUtils.decrypt(fileBytes, keyParameter, AES_INITIALISATION_VECTOR);
+      InputStream inputStream = new ByteArrayInputStream(decryptedBytes);
+      Protos.Wallet walletProtoFixed = WalletProtobufSerializer.parseToProto(inputStream);
+      WalletExtension[] walletExtensions = new WalletExtension[]{new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension(), new WalletTypeExtension()};
+      Wallet wallet = new WalletProtobufSerializer().readWallet(BitcoinNetwork.current().get(), walletExtensions, walletProtoFixed);
+      wallet.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
+      // Try to infer the wallet type from the key structure to bootstrap missing WalletType values
+      inferWalletType(wallet);
+      // Writing out a wallet to a clear text file is security risk
+      // Do not do it except for debug
+      // log.debug("Wallet loaded OK:\n{}\n", wallet);
+      return wallet;
+    }
 
-    // Writing out a wallet to a clear text file is security risk
-    // Do not do it except for debug
-    // log.debug("Wallet loaded OK:\n{}\n", wallet);
-
-    return wallet;
   }
-
   private void inferWalletType(Wallet wallet) {
     // Get the wallet type as defined by the wallet type extension
     WalletType walletType = getWalletType(wallet);
