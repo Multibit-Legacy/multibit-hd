@@ -9,7 +9,7 @@ import java.io.InputStream;
 /**
  * Created by Keepkey on 10/10/16.
  */
-public class EncryptedBIP70PaymentFile extends EncryptedFileListItem implements EncryptedFile {
+public class EncryptedBIP70PaymentFile extends EncryptedFileListItem  {
     public EncryptedBIP70PaymentFile (String fileName){
         super(fileName);
     }

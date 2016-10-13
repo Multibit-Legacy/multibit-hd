@@ -46,6 +46,7 @@ import org.spongycastle.crypto.params.KeyParameter;
 import java.io.*;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -1552,19 +1553,22 @@ public class WalletService extends AbstractService {
       byte[] decryptedOldBackupAESKey = AESUtils.decrypt(
               encryptedOldBackupAESKey,
               oldWalletPasswordDerivedAESKey,
-              WalletManager.aesInitialisationVector());
+              walletSummary.getIntializationVector());
 
       KeyParameter newWalletPasswordDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(newPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
+      SecureRandom secureRandom = new SecureRandom();
+      byte[] ivBytes = new byte [16];
+      secureRandom.nextBytes(ivBytes);
       byte[] encryptedNewBackupAESKey = AESUtils.encrypt(
               decryptedOldBackupAESKey,
               newWalletPasswordDerivedAESKey,
-              WalletManager.aesInitialisationVector());
+              ivBytes);
 
       // Check the encryption is reversible
       byte[] decryptedRebornBackupAESKey = AESUtils.decrypt(
               encryptedNewBackupAESKey,
               newWalletPasswordDerivedAESKey,
-              WalletManager.aesInitialisationVector());
+              ivBytes);
 
       if (!Arrays.equals(decryptedOldBackupAESKey, decryptedRebornBackupAESKey)) {
         throw new IllegalStateException("The encryption of the backup AES key was not reversible. Aborting change of wallet credentials");
@@ -1577,13 +1581,13 @@ public class WalletService extends AbstractService {
       byte[] encryptedPaddedNewPassword = AESUtils.encrypt(
               paddedNewPassword,
               new KeyParameter(decryptedOldBackupAESKey),
-              WalletManager.aesInitialisationVector());
+              ivBytes);
 
       // Check the encryption is reversible
       byte[] decryptedRebornPaddedNewPassword = AESUtils.decrypt(
               encryptedPaddedNewPassword,
               new KeyParameter(decryptedOldBackupAESKey),
-              WalletManager.aesInitialisationVector());
+              ivBytes);
 
       if (!Arrays.equals(newPasswordBytes, WalletManager.unpadPasswordBytes(decryptedRebornPaddedNewPassword))) {
         throw new IllegalStateException("The encryption of the new credentials was not reversible. Aborting change of wallet credentials");
@@ -1602,6 +1606,7 @@ public class WalletService extends AbstractService {
 
       // Save the new encrypted backup key using the new password
       walletSummary.setEncryptedBackupKey(encryptedNewBackupAESKey);
+      walletSummary.setIntializationVector(ivBytes);
 
       // Save the wallet summary file
       WalletManager.updateWalletSummary(currentWalletSummaryFile, walletSummary);

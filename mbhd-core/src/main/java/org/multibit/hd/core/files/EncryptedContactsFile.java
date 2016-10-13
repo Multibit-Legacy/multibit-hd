@@ -10,7 +10,7 @@ import org.multibit.hd.core.store.ContactsProtobufSerializer;
 /**
  * Created by Keepkey on 10/10/16.
  */
-public class EncryptedContactsFile extends EncryptedFileListItem implements EncryptedFile {
+public class EncryptedContactsFile extends EncryptedFileListItem  {
     public EncryptedContactsFile(String fileName){
         super(fileName);
     }

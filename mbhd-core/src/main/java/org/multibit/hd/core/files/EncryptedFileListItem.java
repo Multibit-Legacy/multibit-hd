@@ -7,12 +7,12 @@ import java.io.InputStream;
 /**
  * Created by Keepkey on 10/10/16.
  */
-public abstract class EncryptedFileListItem extends File implements EncryptedFile {
+public abstract class EncryptedFileListItem extends File  {
     public EncryptedFileListItem (String path){
         super(path);
 
     }
 
-    @Override
+
     abstract public boolean isValidDecryption(InputStream inputStream) throws IOException ;
 }

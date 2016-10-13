@@ -9,6 +9,7 @@ import com.google.protobuf.ByteString;
 import org.bitcoinj.crypto.KeyCrypterScrypt;
 import org.bitcoinj.wallet.Protos;
 import org.multibit.commons.crypto.AESUtils;
+import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.commons.files.SecureFiles;
 import org.multibit.hd.core.files.EncryptedFileListItem;
@@ -111,14 +112,15 @@ public class EncryptedFileReaderWriter {
    * @return the resultant encrypted file
    * @throws EncryptedFileReaderWriterException
    */
-  public static File makeBackupAESEncryptedCopyAndDeleteOriginal(File fileToEncrypt, String password, byte[] encryptedBackupAESKey) throws EncryptedFileReaderWriterException {
+  public static File makeBackupAESEncryptedCopyAndDeleteOriginal(File fileToEncrypt, String password, WalletSummary walletSummary) throws EncryptedFileReaderWriterException {
     Preconditions.checkNotNull(fileToEncrypt);
     Preconditions.checkNotNull(password);
-    Preconditions.checkNotNull(encryptedBackupAESKey);
+    Preconditions.checkNotNull(walletSummary.getEncryptedBackupKey());
+    Preconditions.checkNotNull(walletSummary.getIntializationVector());
     try {
       // Decrypt the backup AES key stored in the wallet summary
       KeyParameter walletPasswordDerivedAESKey = AESUtils.createAESKey(password.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
-      byte[] backupAESKeyBytes = AESUtils.decrypt(encryptedBackupAESKey, walletPasswordDerivedAESKey, WalletManager.aesInitialisationVector());
+      byte[] backupAESKeyBytes = AESUtils.decrypt(walletSummary.getEncryptedBackupKey(), walletPasswordDerivedAESKey,walletSummary.getIntializationVector());
       KeyParameter backupAESKey = new KeyParameter(backupAESKeyBytes);
       File destinationFile = new File(fileToEncrypt.getAbsoluteFile() + WalletManager.MBHD_AES_SUFFIX);
 

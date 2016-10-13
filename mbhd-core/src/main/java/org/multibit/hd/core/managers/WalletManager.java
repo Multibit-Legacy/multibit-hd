@@ -44,6 +44,7 @@ import org.multibit.hd.core.exceptions.WalletLoadException;
 import org.multibit.hd.core.exceptions.WalletSaveException;
 import org.multibit.hd.core.exceptions.WalletVersionException;
 import org.multibit.hd.core.extensions.WalletTypeExtension;
+import org.multibit.hd.core.files.EncryptedWalletFile;
 import org.multibit.hd.core.services.BackupService;
 import org.multibit.hd.core.services.BitcoinNetworkService;
 import org.multibit.hd.core.services.CoreServices;
@@ -970,9 +971,11 @@ public enum WalletManager implements WalletEventListener {
 
     // Decrypt the wallet bytes
 
-    try {
       byte [] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, ivBytes);
-      ByteArrayInputStream inputStream = new ByteArrayInputStream(decryptedBytes);
+      if(!EncryptedWalletFile.isParseable(decryptedBytes)){
+          decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, WalletManager.aesInitialisationVector());
+      }
+      InputStream inputStream = new ByteArrayInputStream(decryptedBytes);
       Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(inputStream);
 
       WalletExtension[] walletExtensions = new WalletExtension[]{new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension(), new WalletTypeExtension()};
@@ -987,20 +990,6 @@ public enum WalletManager implements WalletEventListener {
       // log.debug("Wallet loaded OK:\n{}\n", wallet);
 
       return wallet;
-    } catch (InvalidProtocolBufferException ex) {
-      byte [] decryptedBytes = AESUtils.decrypt(fileBytes, keyParameter, AES_INITIALISATION_VECTOR);
-      InputStream inputStream = new ByteArrayInputStream(decryptedBytes);
-      Protos.Wallet walletProtoFixed = WalletProtobufSerializer.parseToProto(inputStream);
-      WalletExtension[] walletExtensions = new WalletExtension[]{new SendFeeDtoWalletExtension(), new MatcherResponseWalletExtension(), new WalletTypeExtension()};
-      Wallet wallet = new WalletProtobufSerializer().readWallet(BitcoinNetwork.current().get(), walletExtensions, walletProtoFixed);
-      wallet.setKeychainLookaheadSize(LOOK_AHEAD_SIZE);
-      // Try to infer the wallet type from the key structure to bootstrap missing WalletType values
-      inferWalletType(wallet);
-      // Writing out a wallet to a clear text file is security risk
-      // Do not do it except for debug
-      // log.debug("Wallet loaded OK:\n{}\n", wallet);
-      return wallet;
-    }
 
   }
   private void inferWalletType(Wallet wallet) {
@@ -1111,7 +1100,7 @@ public enum WalletManager implements WalletEventListener {
       }
 
       // Create the wallet summary with its wallet
-      WalletSummary walletSummary = getOrCreateWalletSummary(walletDirectory, walletId);
+      WalletSummary walletSummary = getandChangeWalletSummary(walletDirectory, walletId,password);
       walletSummary.setWallet(wallet);
       walletSummary.setWalletFile(new File(walletFilenameNoAESSuffix));
       walletSummary.setWalletPassword(new WalletPassword(password, walletId));
@@ -1122,6 +1111,8 @@ public enum WalletManager implements WalletEventListener {
       if (!backupFileLoaded) {
         CoreEvents.fireWalletLoadEvent(new WalletLoadEvent(Optional.of(walletId), true, CoreMessageKey.WALLET_LOADED_OK, null, Optional.<File>absent()));
       }
+      File walletSummaryFile = getOrCreateWalletSummaryFile(walletDirectory);
+      updateWalletSummary(walletSummaryFile,walletSummary);
 
       return walletSummary;
 
@@ -1557,6 +1548,42 @@ public enum WalletManager implements WalletEventListener {
     return walletSummary;
 
   }
+  public static WalletSummary getandChangeWalletSummary(File walletDirectory, WalletId walletId,CharSequence password) {
+
+    verifyWalletDirectory(walletDirectory);
+
+    Optional<WalletSummary> walletSummaryOptional = Optional.absent();
+
+    File walletSummaryFile = new File(walletDirectory.getAbsolutePath() + File.separator + MBHD_SUMMARY_NAME);
+    if (walletSummaryFile.exists()) {
+      try (InputStream is = new FileInputStream(walletSummaryFile)) {
+        // Load configuration (providing a default if none exists)
+        walletSummaryOptional = Yaml.readYaml(is, WalletSummary.class);
+      } catch (IOException e) {
+        // A full stack trace is too much here
+        log.warn("Could not read wallet summary:\n'{}'\nException: {}", walletDirectory.getAbsolutePath(), e.getMessage());
+      }
+    }
+
+    final WalletSummary walletSummary;
+    if (walletSummaryOptional.isPresent()) {
+      walletSummary = walletSummaryOptional.get();
+      try {
+        changeEncryptedPasswordAndBackupKeyWithRandomIV(walletSummary,password);
+      } catch (NoSuchAlgorithmException e) {
+        e.printStackTrace();
+      }
+    } else {
+      walletSummary = new WalletSummary();
+      String shortWalletDirectory = walletDirectory.getName().substring(0, 13); // The mbhd and the first group of digits
+      walletSummary.setName("Wallet (" + shortWalletDirectory + "...)");
+      walletSummary.setNotes("");
+    }
+    walletSummary.setWalletId(walletId);
+
+    return walletSummary;
+
+  }
 
   /**
    * Write the encrypted wallet credentials and backup AES key to the wallet configuration.
@@ -1575,14 +1602,48 @@ public enum WalletManager implements WalletEventListener {
     // Save the wallet credentials, AES encrypted with a key derived from the wallet secret
     KeyParameter secretDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(secret, SCRYPT_SALT);
     byte[] passwordBytes = password.getBytes(Charsets.UTF_8);
-
+    SecureRandom secureRandom = new SecureRandom();
+    byte[] ivBytes = new byte[16];
+    secureRandom.nextBytes(ivBytes);
+    walletSummary.setIntializationVector(ivBytes);
     byte[] paddedPasswordBytes = padPasswordBytes(passwordBytes);
-    byte[] encryptedPaddedPassword = AESUtils.encrypt(paddedPasswordBytes, secretDerivedAESKey, AES_INITIALISATION_VECTOR);
+    byte[] encryptedPaddedPassword = AESUtils.encrypt(paddedPasswordBytes, secretDerivedAESKey, ivBytes);
     walletSummary.setEncryptedPassword(encryptedPaddedPassword);
 
     // Save the backupAESKey, AES encrypted with a key generated from the wallet password
     KeyParameter walletPasswordDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(passwordBytes, SCRYPT_SALT);
-    byte[] encryptedBackupAESKey = AESUtils.encrypt(secretDerivedAESKey.getKey(), walletPasswordDerivedAESKey, AES_INITIALISATION_VECTOR);
+    byte[] encryptedBackupAESKey = AESUtils.encrypt(secretDerivedAESKey.getKey(), walletPasswordDerivedAESKey,ivBytes);
+    walletSummary.setEncryptedBackupKey(encryptedBackupAESKey);
+  }
+  /**
+   * Write the encrypted wallet credentials and backup AES key to the wallet configuration.
+   * You probably want to save it afterwards with an updateSummary
+   *
+   * @param walletSummary The wallet summary to write the encrypted details for
+   * @param password      The password you want to store encrypted
+   */
+  public static void changeEncryptedPasswordAndBackupKeyWithRandomIV(WalletSummary walletSummary,CharSequence password) throws NoSuchAlgorithmException {
+
+    Preconditions.checkNotNull(walletSummary, "'walletSummary' must be present");
+    Preconditions.checkNotNull(password, "'password' must be present");
+
+    // Save the wallet credentials, AES encrypted with a key derived from the wallet secret
+
+    byte[] passwordBytes = password.toString().getBytes(Charsets.UTF_8);
+    KeyParameter walletPasswordDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(passwordBytes, SCRYPT_SALT);
+    byte[] encryptedSecretDerivedAESkey = walletSummary.getEncryptedBackupKey();
+    KeyParameter secretDerivedAESKey = new KeyParameter(AESUtils.decrypt(encryptedSecretDerivedAESkey,walletPasswordDerivedAESKey,WalletManager.aesInitialisationVector()));
+    SecureRandom secureRandom = new SecureRandom();
+    byte[] randomIvBytes = new byte[16];
+    secureRandom.nextBytes(randomIvBytes);;
+    walletSummary.setIntializationVector(randomIvBytes);
+    byte[] paddedPasswordBytes = padPasswordBytes(passwordBytes);
+    byte[] encryptedPaddedPassword = AESUtils.encrypt(paddedPasswordBytes, secretDerivedAESKey,randomIvBytes);
+    walletSummary.setEncryptedPassword(encryptedPaddedPassword);
+
+    // Save the backupAESKey, AES encrypted with a key generated from the wallet password
+
+    byte[] encryptedBackupAESKey = AESUtils.encrypt(secretDerivedAESKey.getKey(), walletPasswordDerivedAESKey,randomIvBytes);
     walletSummary.setEncryptedBackupKey(encryptedBackupAESKey);
   }
 

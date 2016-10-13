@@ -27,7 +27,7 @@ import org.multibit.hd.core.files.ZipFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongycastle.crypto.params.KeyParameter;
-
+import org.multibit.hd.core.files.EncryptedWalletFile;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,10 +35,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.multibit.hd.core.dto.WalletId.LENGTH_OF_FORMATTED_WALLET_ID;
 import static org.multibit.hd.core.dto.WalletId.WALLET_ID_SEPARATOR;
@@ -324,7 +321,7 @@ public enum BackupManager {
       throw new IOException("Directory " + walletRootDirectory + " does not exist. Cannot backup.");
     }
 
-    WalletSummary walletSummary = WalletManager.getOrCreateWalletSummary(walletRootDirectory, walletId);
+    WalletSummary walletSummary = WalletManager.getandChangeWalletSummary(walletRootDirectory, walletId , password);
 
     File localBackupDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_ZIP_BACKUP_DIRECTORY_NAME);
     SecureFiles.verifyOrCreateDirectory(localBackupDirectory);
@@ -342,7 +339,7 @@ public enum BackupManager {
     File localBackupEncryptedFilename = EncryptedFileReaderWriter.makeBackupAESEncryptedCopyAndDeleteOriginal(
       new File(localBackupFilename),
       (String) password,
-      walletSummary.getEncryptedBackupKey());
+      walletSummary);
     log.debug("Created encrypted local zip-backup successfully. Size = {} bytes", localBackupEncryptedFilename.length());
 
     // Thin the local backup directory
@@ -370,7 +367,7 @@ public enum BackupManager {
       throw new IOException("Directory " + walletRootDirectory + " does not exist. Cannot backup.");
     }
 
-    WalletSummary walletSummary = WalletManager.getOrCreateWalletSummary(walletRootDirectory, walletId);
+    WalletSummary walletSummary = WalletManager.getandChangeWalletSummary(walletRootDirectory, walletId, password);
 
 
     String backupFilename = WalletManager.WALLET_DIRECTORY_PREFIX
@@ -387,7 +384,7 @@ public enum BackupManager {
       File cloudBackupEncryptedFilename = EncryptedFileReaderWriter.makeBackupAESEncryptedCopyAndDeleteOriginal(
         new File(cloudBackupFilename),
         (String) password,
-        walletSummary.getEncryptedBackupKey());
+        walletSummary);
 
       log.debug("Created encrypted cloud zip-backup successfully. Size = " + (cloudBackupEncryptedFilename).length() + " bytes");
 
@@ -494,10 +491,14 @@ public enum BackupManager {
       File walletRootDirectory = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId));
 
       // Read the encrypted file in.
-      byte[] encryptedBytes = Files.toByteArray(new File(backupFileToLoad.getAbsolutePath()));
-
+      byte[] fileBytes = Files.toByteArray(new File(backupFileToLoad.getAbsolutePath()));
+      byte[] ivBytes = Arrays.copyOfRange(fileBytes, 0, 16);
+      byte[] encryptedWalletBytes = Arrays.copyOfRange(fileBytes, 16, fileBytes.length);
       // Decrypt the backup bytes
-      byte[] decryptedBytes = AESUtils.decrypt(encryptedBytes, backupAESKey, WalletManager.aesInitialisationVector());
+      byte[] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, backupAESKey, ivBytes);
+      if(!EncryptedWalletFile.isParseable(decryptedBytes)){
+        decryptedBytes = AESUtils.decrypt(fileBytes, backupAESKey, WalletManager.aesInitialisationVector());
+      }
 
       File tempDirectory = Files.createTempDir();
       temporaryFile = File.createTempFile("backup", "zip", tempDirectory);
