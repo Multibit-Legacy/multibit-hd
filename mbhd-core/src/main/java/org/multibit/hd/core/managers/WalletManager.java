@@ -12,7 +12,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.protobuf.InvalidProtocolBufferException;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.*;
 import org.bitcoinj.script.Script;
@@ -1100,7 +1099,7 @@ public enum WalletManager implements WalletEventListener {
       }
 
       // Create the wallet summary with its wallet
-      WalletSummary walletSummary = getandChangeWalletSummary(walletDirectory, walletId,password);
+      WalletSummary walletSummary = getAndChangeWalletSummary(walletDirectory, walletId,password);
       walletSummary.setWallet(wallet);
       walletSummary.setWalletFile(new File(walletFilenameNoAESSuffix));
       walletSummary.setWalletPassword(new WalletPassword(password, walletId));
@@ -1548,7 +1547,7 @@ public enum WalletManager implements WalletEventListener {
     return walletSummary;
 
   }
-  public static WalletSummary getandChangeWalletSummary(File walletDirectory, WalletId walletId,CharSequence password) {
+  public static WalletSummary getAndChangeWalletSummary(File walletDirectory, WalletId walletId, CharSequence password) {
 
     verifyWalletDirectory(walletDirectory);
 
