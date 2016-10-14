@@ -20,7 +20,7 @@ public class EncryptedWalletFile extends EncryptedFileListItem{
     @Override
     public boolean isValidDecryption(InputStream inputStream) throws IOException {
         try{
-            Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(inputStream);
+             WalletProtobufSerializer.parseToProto(inputStream);
             return true;
         }
 
@@ -31,7 +31,7 @@ public class EncryptedWalletFile extends EncryptedFileListItem{
     public static boolean isParseable(byte[] decryptedBytes) throws IOException{
         InputStream inputStream = new ByteArrayInputStream(decryptedBytes);
         try{
-            Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(inputStream);
+            WalletProtobufSerializer.parseToProto(inputStream);
             return true;
         }
 

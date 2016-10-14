@@ -705,7 +705,7 @@ public class WalletManagerTest {
       byte[] decryptedFoundPaddedPasswordBytes = org.multibit.commons.crypto.AESUtils.decrypt(
               foundEncryptedPaddedPassword,
               seedDerivedAESKey,
-              WalletManager.aesInitialisationVector()
+              walletSummary.getIntializationVector()
       );
       byte[] decryptedFoundPasswordBytes = WalletManager.unpadPasswordBytes(decryptedFoundPaddedPasswordBytes);
       assertThat(Arrays.equals(passwordBytes, decryptedFoundPasswordBytes)).isTrue();
@@ -714,7 +714,7 @@ public class WalletManagerTest {
       byte[] decryptedFoundBackupAESKey = org.multibit.commons.crypto.AESUtils.decrypt(
               foundEncryptedBackupKey,
               walletPasswordDerivedAESKey,
-              WalletManager.aesInitialisationVector()
+              walletSummary.getIntializationVector()
       );
       assertThat(Arrays.equals(seedDerivedAESKey.getKey(), decryptedFoundBackupAESKey)).isTrue();
 

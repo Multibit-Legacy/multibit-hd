@@ -973,7 +973,7 @@ public enum WalletManager implements WalletEventListener {
 
       byte [] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, ivBytes);
       if(!EncryptedWalletFile.isParseable(decryptedBytes)){
-          decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, WalletManager.aesInitialisationVector());
+          decryptedBytes = AESUtils.decrypt(fileBytes, keyParameter, WalletManager.aesInitialisationVector());
       }
       InputStream inputStream = new ByteArrayInputStream(decryptedBytes);
       Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(inputStream);
