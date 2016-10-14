@@ -321,7 +321,7 @@ public enum BackupManager {
       throw new IOException("Directory " + walletRootDirectory + " does not exist. Cannot backup.");
     }
 
-    WalletSummary walletSummary = WalletManager.getAndChangeWalletSummary(walletRootDirectory, walletId,password);
+    WalletSummary walletSummary = WalletManager.getOrCreateWalletSummary(walletRootDirectory, walletId);
 
     File localBackupDirectory = new File(walletRootDirectory.getAbsoluteFile() + File.separator + LOCAL_ZIP_BACKUP_DIRECTORY_NAME);
     SecureFiles.verifyOrCreateDirectory(localBackupDirectory);
