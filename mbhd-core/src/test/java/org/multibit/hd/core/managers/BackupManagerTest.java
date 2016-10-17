@@ -21,7 +21,6 @@ import org.bitcoinj.core.Wallet;
 import org.bitcoinj.crypto.MnemonicCode;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.multibit.commons.files.SecureFiles;
 import org.multibit.commons.utils.Dates;

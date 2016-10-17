@@ -66,7 +66,7 @@ public class EncryptedFileReaderWriter {
           byte [] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes,keyParameter,ivBytes);
           InputStream inputStream = new ByteArrayInputStream(decryptedBytes);
           if(!encryptedProtobufFile.isValidDecryption(inputStream)){
-              decryptedBytes = AESUtils.decrypt(fileBytes,keyParameter,WalletManager.aesInitialisationVector());
+              decryptedBytes = AESUtils.decrypt(fileBytes,keyParameter,WalletManager.deprecatedFixedAesInitializationVector());
           }
           // Decrypt the file bytes
           return decryptedBytes;
@@ -116,11 +116,11 @@ public class EncryptedFileReaderWriter {
     Preconditions.checkNotNull(fileToEncrypt);
     Preconditions.checkNotNull(password);
     Preconditions.checkNotNull(walletSummary.getEncryptedBackupKey());
-    Preconditions.checkNotNull(walletSummary.getIntializationVector());
+    Preconditions.checkNotNull(walletSummary.getInitializationVector());
     try {
       // Decrypt the backup AES key stored in the wallet summary
       KeyParameter walletPasswordDerivedAESKey = AESUtils.createAESKey(password.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
-      byte[] backupAESKeyBytes = AESUtils.decrypt(walletSummary.getEncryptedBackupKey(), walletPasswordDerivedAESKey,walletSummary.getIntializationVector());
+      byte[] backupAESKeyBytes = AESUtils.decrypt(walletSummary.getEncryptedBackupKey(), walletPasswordDerivedAESKey,walletSummary.getInitializationVector());
       KeyParameter backupAESKey = new KeyParameter(backupAESKeyBytes);
       File destinationFile = new File(fileToEncrypt.getAbsoluteFile() + WalletManager.MBHD_AES_SUFFIX);
 
@@ -209,7 +209,7 @@ public class EncryptedFileReaderWriter {
               byte[] plainBytes = AESUtils.decrypt(encryptedWalletBytes, oldKeyParameter, ivBytes);
               InputStream byteArrayInputStream= new ByteArrayInputStream(plainBytes);
               if(!file.isValidDecryption(byteArrayInputStream)){
-                  plainBytes = AESUtils.decrypt(oldFileBytes,oldKeyParameter,WalletManager.aesInitialisationVector());
+                  plainBytes = AESUtils.decrypt(oldFileBytes,oldKeyParameter,WalletManager.deprecatedFixedAesInitializationVector());
               }
               byte[] newEncryptedBytes = encrypt(plainBytes, newKeyParameter);
               // Write out the bytes to a file with the suffix ".new"
@@ -344,11 +344,10 @@ public class EncryptedFileReaderWriter {
   private static byte[] encrypt(byte[] unencryptedBytes, KeyParameter keyParameter) {
     try {
       // Create an AES encoded version of the unencryptedBytes, using the credentials
-      byte[] randomIvBytes = generateRandomIv();
+      byte[] randomIvBytes = WalletManager.generateRandomIv();
       byte[] encryptedBytes = AESUtils.encrypt(unencryptedBytes,keyParameter,randomIvBytes);
       byte[] rebornBytes = AESUtils.decrypt(encryptedBytes,keyParameter,randomIvBytes);
       byte[] fileBytes = appendByteArrays(randomIvBytes,encryptedBytes);
-      //filebytes = ivBytes + encryptedBytes
       if (Arrays.equals(unencryptedBytes, rebornBytes)) {
         return fileBytes;
       } else {
@@ -377,12 +376,7 @@ public class EncryptedFileReaderWriter {
       throw new EncryptedFileReaderWriterException("Cannot encryptAndWrite", e);
     }
   }
-  private static byte[] generateRandomIv(){
-    SecureRandom secureRandom = new SecureRandom();
-    byte[] ivBytes = new byte[16];
-    secureRandom.nextBytes(ivBytes);
-    return ivBytes;
-  }
+
   private static byte[] appendByteArrays(byte [] firstByteArray,byte [] secondByteArray){
     byte [] resultByteArray = new byte[firstByteArray.length+secondByteArray.length];
     System.arraycopy(firstByteArray, 0, resultByteArray, 0, firstByteArray.length);

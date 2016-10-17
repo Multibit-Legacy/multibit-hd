@@ -1553,12 +1553,10 @@ public class WalletService extends AbstractService {
       byte[] decryptedOldBackupAESKey = AESUtils.decrypt(
               encryptedOldBackupAESKey,
               oldWalletPasswordDerivedAESKey,
-              walletSummary.getIntializationVector());
+              walletSummary.getInitializationVector());
 
       KeyParameter newWalletPasswordDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(newPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
-      SecureRandom secureRandom = new SecureRandom();
-      byte[] ivBytes = new byte [16];
-      secureRandom.nextBytes(ivBytes);
+      byte[] ivBytes = WalletManager.generateRandomIv();
       byte[] encryptedNewBackupAESKey = AESUtils.encrypt(
               decryptedOldBackupAESKey,
               newWalletPasswordDerivedAESKey,
@@ -1606,7 +1604,7 @@ public class WalletService extends AbstractService {
 
       // Save the new encrypted backup key using the new password
       walletSummary.setEncryptedBackupKey(encryptedNewBackupAESKey);
-      walletSummary.setIntializationVector(ivBytes);
+      walletSummary.setInitializationVector(ivBytes);
 
       // Save the wallet summary file
       WalletManager.updateWalletSummary(currentWalletSummaryFile, walletSummary);

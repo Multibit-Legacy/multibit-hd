@@ -191,7 +191,7 @@ public enum WalletManager implements WalletEventListener {
   /**
    * @return A copy of the AES initialisation vector
    */
-  public static byte[] aesInitialisationVector() {
+  public static byte[] deprecatedFixedAesInitializationVector() {
     return Arrays.copyOf(AES_INITIALISATION_VECTOR, AES_INITIALISATION_VECTOR.length);
   }
 
@@ -972,7 +972,7 @@ public enum WalletManager implements WalletEventListener {
 
       byte [] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, keyParameter, ivBytes);
       if(!EncryptedWalletFile.isParseable(decryptedBytes)){
-          decryptedBytes = AESUtils.decrypt(fileBytes, keyParameter, WalletManager.aesInitialisationVector());
+          decryptedBytes = AESUtils.decrypt(fileBytes, keyParameter, WalletManager.deprecatedFixedAesInitializationVector());
       }
       InputStream inputStream = new ByteArrayInputStream(decryptedBytes);
       Protos.Wallet walletProto = WalletProtobufSerializer.parseToProto(inputStream);
@@ -1604,7 +1604,7 @@ public enum WalletManager implements WalletEventListener {
     SecureRandom secureRandom = new SecureRandom();
     byte[] ivBytes = new byte[16];
     secureRandom.nextBytes(ivBytes);
-    walletSummary.setIntializationVector(ivBytes);
+    walletSummary.setInitializationVector(ivBytes);
     byte[] paddedPasswordBytes = padPasswordBytes(passwordBytes);
     byte[] encryptedPaddedPassword = AESUtils.encrypt(paddedPasswordBytes, secretDerivedAESKey, ivBytes);
     walletSummary.setEncryptedPassword(encryptedPaddedPassword);
@@ -1631,11 +1631,9 @@ public enum WalletManager implements WalletEventListener {
     byte[] passwordBytes = password.toString().getBytes(Charsets.UTF_8);
     KeyParameter walletPasswordDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(passwordBytes, SCRYPT_SALT);
     byte[] encryptedSecretDerivedAESkey = walletSummary.getEncryptedBackupKey();
-    KeyParameter secretDerivedAESKey = new KeyParameter(AESUtils.decrypt(encryptedSecretDerivedAESkey,walletPasswordDerivedAESKey,WalletManager.aesInitialisationVector()));
-    SecureRandom secureRandom = new SecureRandom();
-    byte[] randomIvBytes = new byte[16];
-    secureRandom.nextBytes(randomIvBytes);;
-    walletSummary.setIntializationVector(randomIvBytes);
+    KeyParameter secretDerivedAESKey = new KeyParameter(AESUtils.decrypt(encryptedSecretDerivedAESkey,walletPasswordDerivedAESKey,WalletManager.deprecatedFixedAesInitializationVector()));
+    byte[] randomIvBytes = generateRandomIv();
+    walletSummary.setInitializationVector(randomIvBytes);
     byte[] paddedPasswordBytes = padPasswordBytes(passwordBytes);
     byte[] encryptedPaddedPassword = AESUtils.encrypt(paddedPasswordBytes, secretDerivedAESKey,randomIvBytes);
     walletSummary.setEncryptedPassword(encryptedPaddedPassword);
@@ -1966,5 +1964,11 @@ public enum WalletManager implements WalletEventListener {
     } else {
       log.info("No current wallet summary to provide wallet");
     }
+  }
+  public static byte[] generateRandomIv(){
+    SecureRandom secureRandom = new SecureRandom();
+    byte[] ivBytes = new byte[16];
+    secureRandom.nextBytes(ivBytes);
+    return ivBytes;
   }
 }

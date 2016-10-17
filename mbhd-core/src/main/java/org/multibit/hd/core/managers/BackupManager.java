@@ -497,7 +497,7 @@ public enum BackupManager {
       // Decrypt the backup bytes
       byte[] decryptedBytes = AESUtils.decrypt(encryptedWalletBytes, backupAESKey, ivBytes);
       if(!EncryptedWalletFile.isParseable(decryptedBytes)){
-        decryptedBytes = AESUtils.decrypt(fileBytes, backupAESKey, WalletManager.aesInitialisationVector());
+        decryptedBytes = AESUtils.decrypt(fileBytes, backupAESKey, WalletManager.deprecatedFixedAesInitializationVector());
       }
 
       File tempDirectory = Files.createTempDir();
