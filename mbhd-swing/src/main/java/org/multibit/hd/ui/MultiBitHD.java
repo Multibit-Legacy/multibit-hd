@@ -26,7 +26,6 @@ import org.multibit.hd.ui.platform.GenericApplicationFactory;
 import org.multibit.hd.ui.platform.GenericApplicationSpecification;
 import org.multibit.hd.ui.services.ExternalDataListeningService;
 import org.multibit.hd.ui.views.MainView;
-import org.multibit.hd.ui.views.SplashScreen;
 import org.multibit.hd.ui.views.themes.ThemeKey;
 import org.multibit.hd.ui.views.themes.Themes;
 import org.slf4j.Logger;
@@ -53,7 +52,6 @@ public class MultiBitHD {
   // Special case logger that is not static
   private final Logger log = LoggerFactory.getLogger(MultiBitHD.class);
   private MainController mainController;
-  private SplashScreen splashScreen;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -138,17 +136,6 @@ public class MultiBitHD {
     Optional<ExternalDataListeningService> externalDataListeningService = initialiseListeningService(args);
     if (!externalDataListeningService.isPresent()) {
       return false;
-    }
-
-    log.info("This is the primary instance so showing splash screen.");
-    // Provide an AWT splash screen to ensure faster initial rendering
-    splashScreen = new SplashScreen();
-    // Provide a short thread sleep to allow the AWT time to take over
-    // and fill the Frame with the splash screen image
-    try {
-      Thread.sleep(100);
-    } catch (InterruptedException e) {
-      // Do nothing
     }
 
     // Prepare the CA certs (run on a separate thread)
@@ -403,10 +390,7 @@ public class MultiBitHD {
     // Provide a backdrop to the user and trigger the showing of the wizard
     mainView.refresh(false);
 
-    log.debug("MainView is ready - hide the splash screen");
-    if (splashScreen != null) {
-      splashScreen.dispose();
-    }
+    log.debug("MainView is ready");
 
     // See the MainController wizard hide event for the next stage
 
