@@ -598,7 +598,7 @@ public class RestoreWalletReportPanelView extends AbstractWizardPanelView<Welcom
       byte[] decryptedPaddedWalletPasswordBytes = org.multibit.commons.crypto.AESUtils.decrypt(
         walletSummary.getEncryptedPassword(),
         backupAESKey,
-        WalletManager.aesInitialisationVector());
+        walletSummary.getInitializationVector());
       byte[] decryptedWalletPasswordBytes = WalletManager.unpadPasswordBytes(decryptedPaddedWalletPasswordBytes);
       String decryptedWalletPassword = new String(decryptedWalletPasswordBytes, "UTF8");
 

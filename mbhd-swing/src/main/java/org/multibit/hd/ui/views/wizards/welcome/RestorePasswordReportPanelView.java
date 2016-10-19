@@ -195,7 +195,7 @@ public class RestorePasswordReportPanelView extends AbstractWizardPanelView<Welc
       // Get the padded credentials out of the wallet summary. This is put in when a wallet is created.
       walletSummary.getEncryptedPassword(),
       backupAESKey,
-      WalletManager.aesInitialisationVector()
+      WalletManager.deprecatedFixedAesInitializationVector()
     );
 
     try {

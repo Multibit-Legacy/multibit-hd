@@ -29,6 +29,7 @@ import org.multibit.hd.core.exceptions.EncryptedFileReaderWriterException;
 import org.multibit.hd.core.exceptions.PaymentsLoadException;
 import org.multibit.hd.core.exceptions.PaymentsSaveException;
 import org.multibit.hd.core.exchanges.ExchangeKey;
+import org.multibit.hd.core.files.*;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.ExportManager;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -45,6 +46,7 @@ import org.spongycastle.crypto.params.KeyParameter;
 import java.io.*;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -110,7 +112,7 @@ public class WalletService extends AbstractService {
   /**
    * The location of the encrypted database file containing BIP70 protobuf files
    */
-  private File paymentDatabaseFile;
+  private EncryptedPaymentsFile paymentDatabaseFile;
 
   /**
    * The serializer for the backing store
@@ -212,7 +214,7 @@ public class WalletService extends AbstractService {
     File paymentsDirectory = new File(walletDirectory.getAbsolutePath() + File.separator + PAYMENTS_DIRECTORY_NAME);
     SecureFiles.verifyOrCreateDirectory(paymentsDirectory);
 
-    this.paymentDatabaseFile = new File(paymentsDirectory.getAbsolutePath() + File.separator + PAYMENTS_DATABASE_NAME);
+    this.paymentDatabaseFile = new EncryptedPaymentsFile(paymentsDirectory.getAbsolutePath() + File.separator + PAYMENTS_DATABASE_NAME);
 
     protobufSerializer = new PaymentsProtobufSerializer();
 
@@ -951,8 +953,8 @@ public class WalletService extends AbstractService {
    * @param backingStoreFile The backing store file
    * @return A File referencing the PaymentRequest
    */
-  private File getPaymentRequestFile(UUID uuid, File backingStoreFile) {
-    return new File(
+  private EncryptedBIP70PaymentRequestFile getPaymentRequestFile(UUID uuid, File backingStoreFile) {
+    return new EncryptedBIP70PaymentRequestFile(
             getOrCreateBip70PaymentRequestDirectory(backingStoreFile)
                     + File.separator
                     + uuid.toString()
@@ -965,8 +967,8 @@ public class WalletService extends AbstractService {
    * @param backingStoreFile The backing store file
    * @return A File referencing the Payment
    */
-  private File getPaymentFile(UUID uuid, File backingStoreFile) {
-    return new File(
+  private EncryptedBIP70PaymentFile getPaymentFile(UUID uuid, File backingStoreFile) {
+    return new EncryptedBIP70PaymentFile(
             getOrCreateBip70PaymentRequestDirectory(backingStoreFile)
                     + File.separator
                     + uuid.toString()
@@ -979,8 +981,8 @@ public class WalletService extends AbstractService {
    * @param backingStoreFile The backing store file
    * @return A File referencing the Payment ACK
    */
-  private File getPaymentACKFile(UUID uuid, File backingStoreFile) {
-    return new File(
+  private EncryptedBIP70PaymentACKFile getPaymentACKFile(UUID uuid, File backingStoreFile) {
+    return new EncryptedBIP70PaymentACKFile(
             getOrCreateBip70PaymentRequestDirectory(backingStoreFile)
                     + File.separator
                     + uuid.toString()
@@ -1009,7 +1011,7 @@ public class WalletService extends AbstractService {
     // Write all the payment requests, payments and paymentACKS to disk, encrypted with the wallet password
     // Existing files are not overwritten
     for (PaymentRequestData paymentRequestData : paymentRequestDataCollection) {
-      File paymentRequestFile = getPaymentRequestFile(paymentRequestData.getUuid(), backingStoreFile);
+      EncryptedBIP70PaymentRequestFile paymentRequestFile = getPaymentRequestFile(paymentRequestData.getUuid(), backingStoreFile);
       if (!paymentRequestFile.exists()) {
         // Write the PaymentRequest
         if (paymentRequestData.getPaymentRequest().isPresent()) {
@@ -1021,7 +1023,7 @@ public class WalletService extends AbstractService {
         }
       }
 
-      File paymentFile = getPaymentFile(paymentRequestData.getUuid(), backingStoreFile);
+      EncryptedBIP70PaymentFile paymentFile = getPaymentFile(paymentRequestData.getUuid(), backingStoreFile);
       if (!paymentFile.exists()) {
         // Write the Payment
         if (paymentRequestData.getPayment().isPresent()) {
@@ -1034,7 +1036,7 @@ public class WalletService extends AbstractService {
         }
       }
 
-      File paymentACKFile = getPaymentACKFile(paymentRequestData.getUuid(), backingStoreFile);
+      EncryptedBIP70PaymentACKFile paymentACKFile = getPaymentACKFile(paymentRequestData.getUuid(), backingStoreFile);
       if (!paymentACKFile.exists()) {
         // Write the PaymentACK
         if (paymentRequestData.getPaymentACK().isPresent()) {
@@ -1055,7 +1057,7 @@ public class WalletService extends AbstractService {
    * @param paymentRequestDataCollection The collection of PaymentRequestData entries to read
    * @param backingStoreFile             The backing store file
    */
-  private void readPaymentRequestsDataFiles(Collection<PaymentRequestData> paymentRequestDataCollection, File backingStoreFile, CharSequence password) throws EncryptedFileReaderWriterException {
+  private void readPaymentRequestsDataFiles(Collection<PaymentRequestData> paymentRequestDataCollection, EncryptedFileListItem backingStoreFile, CharSequence password) throws EncryptedFileReaderWriterException {
 
     Preconditions.checkNotNull(paymentRequestDataCollection);
     Preconditions.checkNotNull(backingStoreFile);
@@ -1072,7 +1074,7 @@ public class WalletService extends AbstractService {
    */
   private void addBIP70PaymentInfoFromFiles(File backingStoreFile, PaymentRequestData paymentRequestData, CharSequence password) throws EncryptedFileReaderWriterException {
     // Locate the PaymentRequest
-    File paymentRequestFile = getPaymentRequestFile(paymentRequestData.getUuid(), backingStoreFile);
+    EncryptedBIP70PaymentRequestFile paymentRequestFile = getPaymentRequestFile(paymentRequestData.getUuid(), backingStoreFile);
 
     try {
       if (paymentRequestFile.exists()) {
@@ -1088,7 +1090,7 @@ public class WalletService extends AbstractService {
       }
 
       // Locate the Payment
-      File paymentFile = getPaymentFile(paymentRequestData.getUuid(), backingStoreFile);
+      EncryptedBIP70PaymentFile paymentFile = getPaymentFile(paymentRequestData.getUuid(), backingStoreFile);
 
       if (paymentFile.exists()) {
         byte[] serialisedBytes = EncryptedFileReaderWriter.readAndDecryptToByteArray(
@@ -1102,7 +1104,7 @@ public class WalletService extends AbstractService {
       }
 
       // Locate the PaymentACK
-      File paymentACKFile = getPaymentACKFile(paymentRequestData.getUuid(), backingStoreFile);
+      EncryptedBIP70PaymentACKFile paymentACKFile = getPaymentACKFile(paymentRequestData.getUuid(), backingStoreFile);
 
       if (paymentACKFile.exists()) {
         byte[] serialisedBytes = EncryptedFileReaderWriter.readAndDecryptToByteArray(
@@ -1381,7 +1383,7 @@ public class WalletService extends AbstractService {
     bip70PaymentRequestDataMap.remove(paymentRequestData.getUuid());
 
     // Delete the serialised payment request file
-    File paymentRequestFile = getPaymentRequestFile(paymentRequestData.getUuid(), paymentDatabaseFile);
+    EncryptedBIP70PaymentRequestFile paymentRequestFile = getPaymentRequestFile(paymentRequestData.getUuid(), paymentDatabaseFile);
     try {
       if (paymentRequestFile.exists()) {
         SecureFiles.secureDelete(paymentRequestFile);
@@ -1391,7 +1393,7 @@ public class WalletService extends AbstractService {
     }
 
     // Delete the serialised payment file
-    File paymentFile = getPaymentFile(paymentRequestData.getUuid(), paymentDatabaseFile);
+    EncryptedBIP70PaymentFile paymentFile = getPaymentFile(paymentRequestData.getUuid(), paymentDatabaseFile);
     try {
       if (paymentFile.exists()) {
         SecureFiles.secureDelete(paymentFile);
@@ -1401,7 +1403,7 @@ public class WalletService extends AbstractService {
     }
 
     // Delete the serialised payment ACK file
-    File paymentACKFile = getPaymentACKFile(paymentRequestData.getUuid(), paymentDatabaseFile);
+    EncryptedBIP70PaymentACKFile paymentACKFile = getPaymentACKFile(paymentRequestData.getUuid(), paymentDatabaseFile);
     try {
       if (paymentACKFile.exists()) {
         SecureFiles.secureDelete(paymentACKFile);
@@ -1524,7 +1526,7 @@ public class WalletService extends AbstractService {
     File currentWalletSummaryFile = WalletManager.INSTANCE.getCurrentWalletSummaryFile(applicationDataDirectory).get();
 
     // Create a List of all the non-wallet files that need to have their password changed
-    List<File> filesToChangePassword = createListOfFilesToChangePassword(applicationDataDirectory, walletId);
+    List<EncryptedFileListItem> filesToChangePassword = createListOfFilesToChangePassword(applicationDataDirectory, walletId);
 
     for (File file : filesToChangePassword) {
       log.debug("File to change password on {}", file.getAbsolutePath());
@@ -1551,19 +1553,20 @@ public class WalletService extends AbstractService {
       byte[] decryptedOldBackupAESKey = AESUtils.decrypt(
               encryptedOldBackupAESKey,
               oldWalletPasswordDerivedAESKey,
-              WalletManager.aesInitialisationVector());
+              walletSummary.getInitializationVector());
 
       KeyParameter newWalletPasswordDerivedAESKey = org.multibit.commons.crypto.AESUtils.createAESKey(newPassword.getBytes(Charsets.UTF_8), WalletManager.scryptSalt());
+      byte[] ivBytes = WalletManager.generateRandomIv();
       byte[] encryptedNewBackupAESKey = AESUtils.encrypt(
               decryptedOldBackupAESKey,
               newWalletPasswordDerivedAESKey,
-              WalletManager.aesInitialisationVector());
+              ivBytes);
 
       // Check the encryption is reversible
       byte[] decryptedRebornBackupAESKey = AESUtils.decrypt(
               encryptedNewBackupAESKey,
               newWalletPasswordDerivedAESKey,
-              WalletManager.aesInitialisationVector());
+              ivBytes);
 
       if (!Arrays.equals(decryptedOldBackupAESKey, decryptedRebornBackupAESKey)) {
         throw new IllegalStateException("The encryption of the backup AES key was not reversible. Aborting change of wallet credentials");
@@ -1576,20 +1579,20 @@ public class WalletService extends AbstractService {
       byte[] encryptedPaddedNewPassword = AESUtils.encrypt(
               paddedNewPassword,
               new KeyParameter(decryptedOldBackupAESKey),
-              WalletManager.aesInitialisationVector());
+              ivBytes);
 
       // Check the encryption is reversible
       byte[] decryptedRebornPaddedNewPassword = AESUtils.decrypt(
               encryptedPaddedNewPassword,
               new KeyParameter(decryptedOldBackupAESKey),
-              WalletManager.aesInitialisationVector());
+              ivBytes);
 
       if (!Arrays.equals(newPasswordBytes, WalletManager.unpadPasswordBytes(decryptedRebornPaddedNewPassword))) {
         throw new IllegalStateException("The encryption of the new credentials was not reversible. Aborting change of wallet credentials");
       }
 
       // Change the password on all the non-wallet files, save them to disk but don't do the "rename existing + rename new + delete old" commit
-      List<File> newFiles = EncryptedFileReaderWriter.changeEncryptionPrepare(filesToChangePassword, oldPassword, newPassword);
+      List<EncryptedFileListItem> newFiles = EncryptedFileReaderWriter.changeEncryptionPrepare(filesToChangePassword, oldPassword, newPassword);
 
       // Change the credentials used to encrypt the wallet
       wallet.decrypt(oldPassword);
@@ -1601,6 +1604,7 @@ public class WalletService extends AbstractService {
 
       // Save the new encrypted backup key using the new password
       walletSummary.setEncryptedBackupKey(encryptedNewBackupAESKey);
+      walletSummary.setInitializationVector(ivBytes);
 
       // Save the wallet summary file
       WalletManager.updateWalletSummary(currentWalletSummaryFile, walletSummary);
@@ -1626,26 +1630,26 @@ public class WalletService extends AbstractService {
       );
 
       CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(true, CoreMessageKey.CHANGE_PASSWORD_SUCCESS, null));
-    } catch (RuntimeException | NoSuchAlgorithmException e) {
+    } catch (RuntimeException | NoSuchAlgorithmException | IOException e) {
       log.error("Failed to change password", e);
       CoreEvents.fireChangePasswordResultEvent(new ChangePasswordResultEvent(false, CoreMessageKey.CHANGE_PASSWORD_ERROR, new Object[]{e.getMessage()}));
     }
   }
 
-  private static List<File> createListOfFilesToChangePassword(File applicationDataDirectory, WalletId walletId) {
+  private static List<EncryptedFileListItem> createListOfFilesToChangePassword(File applicationDataDirectory, WalletId walletId) {
     String currentWalletDirectoryPath = WalletManager.getOrCreateWalletDirectory(applicationDataDirectory, WalletManager.createWalletRoot(walletId)).getAbsolutePath();
 
     WalletService walletService = CoreServices.getOrCreateWalletService(walletId);
     List<PaymentRequestData> paymentRequestDataList = walletService.getPaymentRequestDataList();
 
     // Create a List of all the non-wallet files that need to have their password changed
-    List<File> filesToChangePassword = Lists.newArrayList();
+    List<EncryptedFileListItem> filesToChangePassword = Lists.newArrayList();
 
     // Contacts
-    filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + ContactService.CONTACTS_DIRECTORY_NAME + File.separator + ContactService.CONTACTS_DATABASE_NAME));
+    filesToChangePassword.add(new EncryptedContactsFile(currentWalletDirectoryPath + File.separator + ContactService.CONTACTS_DIRECTORY_NAME + File.separator + ContactService.CONTACTS_DATABASE_NAME));
 
     // Payments
-    filesToChangePassword.add(new File(currentWalletDirectoryPath + File.separator + PAYMENTS_DIRECTORY_NAME + File.separator + PAYMENTS_DATABASE_NAME));
+    filesToChangePassword.add(new EncryptedPaymentsFile(currentWalletDirectoryPath + File.separator + PAYMENTS_DIRECTORY_NAME + File.separator + PAYMENTS_DATABASE_NAME));
 
     // BIP70 Payment requests
     if (paymentRequestDataList != null) {
@@ -1653,13 +1657,13 @@ public class WalletService extends AbstractService {
         UUID uuid = paymentRequestData.getUuid();
         File paymentBackingStore = walletService.getPaymentDatabaseFile();
 
-        File paymentRequestFile = walletService.getPaymentRequestFile(uuid, paymentBackingStore);
+        EncryptedBIP70PaymentRequestFile paymentRequestFile = walletService.getPaymentRequestFile(uuid, paymentBackingStore);
         filesToChangePassword.add(paymentRequestFile);
 
-        File paymentFile = walletService.getPaymentFile(uuid, paymentBackingStore);
+        EncryptedBIP70PaymentFile paymentFile = walletService.getPaymentFile(uuid, paymentBackingStore);
         filesToChangePassword.add(paymentFile);
 
-        File paymentACKFile = walletService.getPaymentACKFile(uuid, paymentBackingStore);
+        EncryptedBIP70PaymentACKFile paymentACKFile = walletService.getPaymentACKFile(uuid, paymentBackingStore);
         filesToChangePassword.add(paymentACKFile);
       }
     }

@@ -33,6 +33,7 @@ import org.multibit.hd.core.dto.WalletIdTest;
 import org.multibit.hd.core.dto.WalletSummary;
 import org.multibit.hd.core.events.ShutdownEvent;
 import org.multibit.hd.core.services.CoreServices;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.util.List;
@@ -115,24 +116,13 @@ public class BackupManagerTest {
     assertThat(cloudBackups).isNotNull();
     assertThat(cloudBackups.size()).isEqualTo(1);
 
-    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-
     // Backup the wallet.
     // This zips the wallet root directory and adds a timestamp, then saves the file in both the local and cloud backup directories
-    File localBackupFile = BackupManager.INSTANCE.createLocalBackup(walletSummary.getWalletId(), password);
+    File localBackupFile = mock(File.class);
+    localBackupFile = BackupManager.INSTANCE.createLocalBackup(walletSummary.getWalletId(), password);
     BackupManager.INSTANCE.createCloudBackup(walletSummary.getWalletId(), password);
 
-
     // Check that a backup copy has been saved in the local backup directory
-    localBackups = BackupManager.INSTANCE.getLocalZipBackups(walletSummary.getWalletId());
-    assertThat(localBackups).isNotNull();
-    assertThat(localBackups.size()).isEqualTo(2);
-
-    // Check that a backup copy has been saved in the cloud backup directory
-    cloudBackups = BackupManager.INSTANCE.getCloudBackups(walletSummary.getWalletId(), temporaryCloudBackupDirectory);
-    assertThat(cloudBackups).isNotNull();
-    assertThat(cloudBackups.size()).isEqualTo(2);
-
     // Load in the wallet backup and compare the wallets
     WalletId recreatedWalletId= BackupManager.INSTANCE.loadZipBackup(localBackupFile, Bip39SeedPhraseGenerator.split(WalletIdTest.SEED_PHRASE_1));
     assertThat(walletSummary.getWalletId()).isEqualTo(recreatedWalletId);
