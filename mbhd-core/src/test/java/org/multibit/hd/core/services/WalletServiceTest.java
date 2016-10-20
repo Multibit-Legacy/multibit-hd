@@ -18,6 +18,9 @@ import org.multibit.hd.brit.core.seed_phrase.Bip39SeedPhraseGenerator;
 import org.multibit.hd.brit.core.seed_phrase.SeedPhraseGenerator;
 import org.multibit.hd.core.config.Configurations;
 import org.multibit.hd.core.dto.*;
+import org.multibit.hd.core.files.EncryptedBIP70PaymentACKFile;
+import org.multibit.hd.core.files.EncryptedBIP70PaymentFile;
+import org.multibit.hd.core.files.EncryptedBIP70PaymentRequestFile;
 import org.multibit.hd.core.managers.BackupManager;
 import org.multibit.hd.core.managers.HttpsManager;
 import org.multibit.hd.core.managers.InstallationManager;
@@ -187,9 +190,9 @@ public class WalletServiceTest {
                 + File.separator + "payments" + File.separator + "bip70"
                 + File.separator + paymentRequestData.getUuid().toString();
 
-    File expectedPaymentRequestFile = new File (root + ".paymentrequest.aes");
-    File expectedPaymentFile = new File (root + ".payment.aes");
-    File expectedPaymentACKFile = new File (root + ".paymentack.aes");
+    EncryptedBIP70PaymentRequestFile expectedPaymentRequestFile = new EncryptedBIP70PaymentRequestFile (root + ".paymentrequest.aes");
+    EncryptedBIP70PaymentFile expectedPaymentFile = new EncryptedBIP70PaymentFile (root + ".payment.aes");
+    EncryptedBIP70PaymentACKFile expectedPaymentACKFile = new EncryptedBIP70PaymentACKFile (root + ".paymentack.aes");
 
     log.debug("Expected payment request file is {}", expectedPaymentRequestFile.getAbsoluteFile());
     log.debug("Expected payment file is {}", expectedPaymentFile.getAbsoluteFile());

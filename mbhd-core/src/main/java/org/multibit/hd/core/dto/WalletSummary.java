@@ -53,6 +53,10 @@ public class WalletSummary {
    * The backup AES key, encrypted with an AES key derived from the wallet credentials
    */
   private byte[] encryptedBackupKey;
+  /**
+   * The random IV used to encrypt Password and BackupKey
+   */
+  private byte[] initializationVector;
 
   /**
    * Default constructor for Jackson
@@ -147,7 +151,13 @@ public class WalletSummary {
   public void setEncryptedPassword(byte[] encryptedPassword) {
     this.encryptedPassword = Arrays.copyOf(encryptedPassword, encryptedPassword.length);
   }
+  public byte[] getInitializationVector() {
+    return Arrays.copyOf(initializationVector, initializationVector.length);
+  }
 
+  public void setInitializationVector(byte[] initializationVector) {
+    this.initializationVector = Arrays.copyOf(initializationVector, initializationVector.length);
+  }
   public byte[] getEncryptedBackupKey() {
     return Arrays.copyOf(encryptedBackupKey, encryptedBackupKey.length);
   }
@@ -196,6 +206,7 @@ public class WalletSummary {
             ", notes='" + notes + '\'' +
             ", encryptedPassword=" + Arrays.toString(encryptedPassword) +
             ", encryptedBackupKey=" + Arrays.toString(encryptedBackupKey) +
+            ", initializationVector=" + Arrays.toString(initializationVector) +
             '}';
   }
 }
