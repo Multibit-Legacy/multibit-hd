@@ -42,39 +42,11 @@ public class ShowThenCancelAboutUseCase extends AbstractFestUseCase {
       .requireVisible()
       .requireEnabled();
 
-   // Verify "donate now" is present
-    window
-      .button(MessageKey.DONATE_NOW.getKey())
-      .requireVisible()
-      .requireEnabled();
-
     // Verify Finish is present
     window
       .button(MessageKey.FINISH.getKey())
       .requireVisible()
       .requireEnabled();
-
-    // TODO click donate button
-    // Click on the donate now button
-//    window
-//      .button(MessageKey.DONATE_NOW.getKey())
-//      .click();
-//
-//    pauseForViewReset();
-//
-//    // Verify the send screen is shown
-//    assertLabelText(MessageKey.SEND_BITCOIN_TITLE);
-//
-//    // Click on the cancel button on the send screen
-//    window
-//      .button(MessageKey.CANCEL.getKey())
-//      .click();
-//
-//    // Check that the Settings screen is shown
-//    window
-//      .button(MessageKey.SHOW_LANGUAGE_WIZARD.getKey())
-//      .requireVisible()
-//      .requireEnabled();
 
     // Click Finish
     window

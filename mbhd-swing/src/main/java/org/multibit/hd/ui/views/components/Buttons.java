@@ -650,20 +650,6 @@ public class Buttons {
   /**
    * @param action The click action
    *
-   * @return A new "donate" button with icon
-   */
-  public static JButton newDonateNowButton(Action action) {
-
-    JButton button = newButton(action, MessageKey.DONATE_NOW, MessageKey.DONATE_NOW);
-
-    AwesomeDecorator.applyIcon(AwesomeIcon.HEART, button, true, MultiBitUI.NORMAL_ICON_SIZE);
-
-    return button;
-  }
-
-  /**
-   * @param action The click action
-   *
    * @return A new "Pay this payment request" button with icon
    */
   public static JButton newPayThisPaymentRequestButton(Action action) {

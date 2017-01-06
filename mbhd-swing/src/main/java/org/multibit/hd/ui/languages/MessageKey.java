@@ -204,7 +204,7 @@ public enum MessageKey {
   LOWER("lower"),
   HIGHER("higher"),
 
-  DONATE_NOW("donate_now"),
+//  DONATE_NOW("donate_now"),
 
   CLIENT_FEE("client_fee"),
   CLIENT_FEE_NOW("client_fee_now"),

@@ -71,7 +71,6 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
     contentPanel.add(Labels.newValueLabel(version), "push,align left,wrap");
 
     contentPanel.add(Buttons.newLaunchBrowserButton(getLaunchBrowserAction(),MessageKey.VISIT_WEBSITE, MessageKey.VISIT_WEBSITE_TOOLTIP), "wrap");
-    contentPanel.add(Buttons.newDonateNowButton(createDonateNowAction()), "wrap");
     contentPanel.add(Labels.newAboutNote(), "grow,push,span 2,wrap");
 
   }
@@ -115,23 +114,23 @@ public class AboutPanelView extends AbstractWizardPanelView<AboutWizardModel, St
   /**
     * @return Action to process the 'donate now' button press
     */
-   private Action createDonateNowAction() {
-     return new AbstractAction() {
-       @Override
-       public void actionPerformed(ActionEvent e) {
-         try {
-           Panels.hideLightBoxIfPresent();
-
-           SendBitcoinParameter donateParameter = new SendBitcoinParameter(
-             new BitcoinURI("bitcoin:" + FeeService.DONATION_ADDRESS + "?amount=" + FeeService.DEFAULT_DONATION_AMOUNT),
-             null
-           );
-           Panels.showLightBox(Wizards.newSendBitcoinWizard(donateParameter).getWizardScreenHolder());
-         } catch (BitcoinURIParseException pe) {
-           // Should not happen
-           log.error(pe.getMessage());
-         }
-       }
-     };
-   }
+//   private Action createDonateNowAction() {
+//     return new AbstractAction() {
+//       @Override
+//       public void actionPerformed(ActionEvent e) {
+//         try {
+//           Panels.hideLightBoxIfPresent();
+//
+//           SendBitcoinParameter donateParameter = new SendBitcoinParameter(
+//             new BitcoinURI("bitcoin:" + FeeService.DONATION_ADDRESS + "?amount=" + FeeService.DEFAULT_DONATION_AMOUNT),
+//             null
+//           );
+//           Panels.showLightBox(Wizards.newSendBitcoinWizard(donateParameter).getWizardScreenHolder());
+//         } catch (BitcoinURIParseException pe) {
+//           // Should not happen
+//           log.error(pe.getMessage());
+//         }
+//       }
+//     };
+//   }
 }
