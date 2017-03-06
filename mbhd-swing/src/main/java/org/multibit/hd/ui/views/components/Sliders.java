@@ -21,7 +21,7 @@ public class Sliders {
   /**
    * Resolution of a single tick of the slider, in satoshi
    */
-  public static final int RESOLUTION = 500;
+  public static final int RESOLUTION = 2500;
 
   /**
    * Utilities have no public constructor
