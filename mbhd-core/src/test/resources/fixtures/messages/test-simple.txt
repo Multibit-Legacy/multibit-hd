@@ -1,7 +1,7 @@
 -----BEGIN BITCOIN SIGNED MESSAGE-----
 Hello World
 -----BEGIN BITCOIN SIGNATURE-----
-Version: MultiBit HD (0.5.0)
+Version: MultiBit HD (0.5.1)
 Comment: https://multibit.org
 Address: 16R2kAxaUNM4xj6ykKbxEugpJdYyJzTP13
 
